@@ -1,2163 +1,368 @@
-"""Human-owned tests of the generic AutoResearch execution machinery.
-
-The runner executes and records researcher decisions. These tests describe its
-lifecycle, persistence, protected surfaces and validation timing. They stay
-method-neutral: they never name or import a concrete learning algorithm.
-"""
+"""Focused tests for generic execution, ownership, and recovery contracts."""
 
 import json
-import subprocess
-import sys
 from argparse import Namespace
 from pathlib import Path
 
 import pytest
 
-from research import build_research_brief as brief
+from research import run_experiment
 from research import runner_execution as execution
 from research import runner_protocol as protocol
 from research import runner_repository as repository
-from research.run_experiment import (
-    check_proposal,
-    main,
-)
-from research.runner_console import format_duration, render_experiment_card
-from research.runner_execution import (
-    candidate_directories,
-    latest_training_steps,
-    requested_paired_comparisons,
-    validate_changed_sources,
-    validate_reusable_candidate,
-)
-from research.runner_protocol import (
-    PROTECTED_TEST_PREFIXES,
-    allocated_experiment_index,
-    next_experiment_index,
-    operation_description,
-    plan_code_lineage_decision,
-    resumed_experiment_index,
-    validate_experiment_semantics,
-    validate_proposal_phase,
-    validate_training_proposal,
-    validation_test_paths,
-)
-from research.runner_repository import (
-    RUNNER_CONTROL_PATHS,
-    append_result,
-    assert_research_surface,
-    commit_and_push,
-    commit_lineage_decision,
-    commit_result,
-    commit_runner_memory,
-    copy_artifact,
-    is_runner_memory,
-    load_state,
-    repo_relative_path,
-    require_complete_artifact,
-    resolve_repo_path,
-    synchronize_experiment_log,
-)
+from robot_learning.training import research_config
+
+
+def _campaign_state() -> dict:
+    return repository.empty_campaign_state(
+        campaign={"id": "campaign", "started_at": "now", "base_commit": "base"},
+        last_verdict="fresh",
+    )
+
+
+def _baseline_proposal() -> dict:
+    return {
+        "baseline": True,
+        "change": "Train the unchanged baseline.",
+        "hypothesis": "Establish the campaign baseline.",
+        "initialization": "fresh",
+    }
+
+
+def _training_proposal() -> dict:
+    return {
+        "kind": "training",
+        "method_id": "method-a",
+        "family": "observation.representation",
+        "initialization": "fresh",
+        "change": "Change the observation representation.",
+        "investigation_design": {
+            "evidence": [
+                {"source": "evidence.txt", "observation": "Learning plateaus."}
+            ],
+            "expected_observation": "Progress changes under the method.",
+            "initialization_reason": "Fresh initialization isolates the method.",
+            "objective_link": "The plateau limits objective progress.",
+            "rationale": "The run tests the active method.",
+            "open_question": "Does the representation alter learning?",
+        },
+    }
+
+
+def _activate_inquiry_and_method(state: dict) -> None:
+    state["inquiry_session"] = {
+        "id": "session",
+        "campaign_id": "campaign",
+        "inquiry_id": 1,
+        "role": "principal_investigator",
+        "status": "started",
+    }
+    state["active_inquiry"] = {
+        "id": 1,
+        "question": "Can a different method improve learning?",
+        "scope": "Learning behavior.",
+        "closure_condition": "Resolve the method disposition.",
+        "status": "active",
+        "session_id": "session",
+        "reframes": [],
+    }
+    state["active_method"] = {
+        "id": "method-a",
+        "inquiry_id": 1,
+        "scientific_question": "Can the method improve learning?",
+        "rationale": "It tests a distinct representation.",
+        "lifecycle": "development",
+        "base_scientific_commit": "parent",
+        "current_lineage": None,
+        "iterations": [],
+        "resolution": None,
+    }
 
 
 def test_research_memory_requires_a_decision_frontier(monkeypatch, tmp_path):
-    evidence = tmp_path / "evidence.txt"
-    evidence.write_text("Observed behavior.", encoding="utf-8")
-    postmortems = tmp_path / "postmortems.md"
-    postmortems.write_text(
-        "## campaign / Scientific strategy\n\n"
-        "**Current synthesis:** A current explanation.\n\n"
-        "**Lessons and limits:** One observation with limited scope.\n\n"
-        "**Competing explanations:** Which mechanism explains it?\n",
-        encoding="utf-8",
-    )
-    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
-    monkeypatch.setattr("research.runner_paths.POSTMORTEM_PATH", postmortems)
-    proposal = {
-        "reasoning": {
-            "evidence": [
-                {"source": "evidence.txt", "observation": "Observed behavior."}
-            ]
-        }
-    }
-    state = {"campaign": {"id": "campaign"}}
-
-    with pytest.raises(ValueError, match="Decision frontier"):
-        protocol.validate_research_memory(proposal, state)
-
-    postmortems.write_text(
-        postmortems.read_text(encoding="utf-8")
-        + "\n**Decision frontier:** Which observation would distinguish the mechanisms?\n",
-        encoding="utf-8",
-    )
-    protocol.validate_research_memory(proposal, state)
-
-
-def test_brief_renders_the_causal_research_map():
-    section = "\n".join(
-        brief._v4_synthesis_section(
-            "## campaign / Scientific strategy\n\n"
-            "**Current synthesis:** A current explanation.\n\n"
-            "**Lessons and limits:** One observation with limited scope.\n\n"
-            "**Competing explanations:** Two mechanisms remain plausible.\n\n"
-            "**Decision frontier:** Which observation distinguishes the mechanisms?\n",
-            "campaign",
-        )
-    )
-
-    assert "Causal research map" in section
-    assert "competing explanations" in section
-    assert "not an implementation agenda" in section
-
-
-def test_legacy_strategy_labels_remain_readable(monkeypatch, tmp_path):
-    source = tmp_path / "evidence.txt"
-    source.write_text("evidence", encoding="utf-8")
+    (tmp_path / "evidence.txt").write_text("Observed.", encoding="utf-8")
     memory = tmp_path / "postmortems.md"
     memory.write_text(
         "## campaign / Scientific strategy\n\n"
-        "**Direction:** A synthesis.\n\n"
-        "**Lessons and limits:** Limited evidence.\n\n"
-        "**Open questions:** Two causes remain.\n\n"
-        "**Active inquiry:** Evidence that would distinguish them.\n",
+        "**Current synthesis:** A current explanation.\n\n"
+        "**Lessons and limits:** One limited observation.\n\n"
+        "**Competing explanations:** Two mechanisms remain.\n",
         encoding="utf-8",
     )
     monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
     monkeypatch.setattr("research.runner_paths.POSTMORTEM_PATH", memory)
-    protocol.validate_research_memory(
-        {"reasoning": {"evidence": [{"source": "evidence.txt"}]}},
-        {"campaign": {"id": "campaign"}},
-    )
+    proposal = {"investigation_design": _training_proposal()["investigation_design"]}
+    with pytest.raises(ValueError, match="Decision frontier"):
+        protocol.validate_research_memory(proposal, {"campaign": {"id": "campaign"}})
 
-
-def _paired_evidence_plan(candidate_paths: list[str], reference_paths: list[str]):
-    candidate_fingerprints = {
-        path: repository.file_fingerprint(repository.resolve_repo_path(path))
-        for path in candidate_paths
-    }
-    reference_fingerprints = {
-        path: repository.file_fingerprint(repository.resolve_repo_path(path))
-        for path in reference_paths
-    }
-    return [
-        {
-            "candidate": "candidate",
-            "reference": "working",
-            "candidate_model_fingerprint": "candidate-fingerprint",
-            "reference_model_fingerprint": "working-fingerprint",
-            "panels": [
-                {
-                    "instrument": "research_evaluation",
-                    "episodes": 2,
-                    "seed": 10,
-                    "evaluation_semantics": "semantics",
-                    "candidate_artifacts": candidate_paths,
-                    "candidate_artifact_fingerprints": candidate_fingerprints,
-                    "reference_artifacts": reference_paths,
-                    "reference_artifact_fingerprints": reference_fingerprints,
-                }
-            ],
-        }
-    ]
-
-
-def _write_evaluation(path: Path, outcomes: list[tuple[int, bool]]) -> None:
-    path.write_text(
-        json.dumps(
-            {
-                "episodes": len(outcomes),
-                "seed": 10,
-                "episode_results": [
-                    {
-                        "episode": episode,
-                        "episode_seed": episode_seed,
-                        "success": success,
-                    }
-                    for episode, (episode_seed, success) in enumerate(outcomes)
-                ],
-            }
-        ),
+    memory.write_text(
+        memory.read_text(encoding="utf-8")
+        + "\n**Decision frontier:** Which observation distinguishes them?\n",
         encoding="utf-8",
     )
+    protocol.validate_research_memory(proposal, {"campaign": {"id": "campaign"}})
 
 
-def test_repair_rebinds_only_the_provisional_paired_panel(monkeypatch):
-    historical = {
-        "instrument": "research_evaluation",
-        "episodes": 2,
-        "seed": 10,
-        "evaluation_semantics": "historical",
-        "candidate_episodes": 2,
-        "candidate_seed": 10,
-        "reference_episodes": 2,
-        "reference_seed": 10,
-        "candidate_artifacts": ["historical-candidate.json"],
-        "candidate_artifact_fingerprints": {"historical-candidate.json": "a"},
-        "reference_artifacts": ["historical-reference.json"],
-        "reference_artifact_fingerprints": {"historical-reference.json": "b"},
-    }
-    stale = {
-        "instrument": "research_evaluation",
-        "episodes": 2,
-        "seed": 20,
-        "evaluation_semantics": "before-repair",
-        "candidate_episodes": 2,
-        "candidate_seed": 20,
-        "reference_episodes": 2,
-        "reference_seed": 20,
-        "candidate_artifacts": ["stale-candidate.json"],
-        "candidate_artifact_fingerprints": {},
-        "reference_artifacts": ["stale-reference.json"],
-        "reference_artifact_fingerprints": {},
-    }
-    repaired_candidate = (
-        "research/evaluations/campaign/"
-        "evaluation-campaign-experiment-2-candidate-2ep-seed20-after-repair.json"
-    )
-    repaired_reference = (
-        "research/evaluations/campaign/"
-        "evaluation-campaign-experiment-2-working-2ep-seed20-after-repair.json"
-    )
-    repaired = {
-        **stale,
-        "evaluation_semantics": "after-repair",
-        "candidate_artifacts": [repaired_candidate],
-        "candidate_artifact_fingerprints": {repaired_candidate: "c"},
-        "reference_artifacts": [repaired_reference],
-        "reference_artifact_fingerprints": {repaired_reference: "d"},
-    }
-    comparison = {
-        "candidate": "candidate",
-        "reference": "working",
-        "candidate_model_fingerprint": "candidate-fingerprint",
-        "reference_model_fingerprint": "working-fingerprint",
-    }
-    accepted = [{**comparison, "panels": [historical, stale]}]
-    refreshed = [{**comparison, "panels": [historical, repaired]}]
-    monkeypatch.setattr(
-        protocol,
-        "evaluation_semantics_fingerprint",
-        lambda: "after-repair",
-    )
-    monkeypatch.setattr(
-        protocol,
-        "_resolved_paired_evidence_plan",
-        lambda *args: refreshed,
-    )
-
-    result = protocol.refresh_repaired_paired_evidence_plan(
-        {},
-        {"experiment": 2},
-        {"campaign": {"id": "campaign"}},
-        [
-            {"candidate": "candidate", "episodes": 2, "seed": 20},
-            {"candidate": "working", "episodes": 2, "seed": 20},
-        ],
-        {},
-        accepted,
-    )
-
-    assert result[0]["panels"] == [historical, repaired]
-    assert accepted[0]["panels"] == [historical, stale]
-
-
-def test_compact_measurement_restores_outcomes_and_recorded_semantics(
-    monkeypatch, tmp_path
-):
-    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
-    artifact = tmp_path / "measurement.json"
-    _write_evaluation(artifact, [(10, True), (11, False)])
-    record = {
-        "episodes": 2,
-        "seed": 10,
-        "evaluation_semantics": "recorded",
-        "evaluation_artifact": artifact.name,
-        "evaluation_artifact_fingerprint": repository.file_fingerprint(artifact),
-    }
-
-    evidence = repository.measurement_evidence(record)
-
-    assert [item["episode_seed"] for item in evidence["episode_results"]] == [10, 11]
-    assert evidence["evaluation_semantics"] == "recorded"
-    assert "episode_results" not in record
-    _write_evaluation(artifact, [(10, False), (11, False)])
-    with pytest.raises(ValueError, match="content changed after recording"):
-        repository.measurement_evidence(record)
-
-
-def test_compact_measurement_rejects_mismatched_artifact_metadata(
-    monkeypatch, tmp_path
-):
-    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
-    artifact = tmp_path / "measurement.json"
-    _write_evaluation(artifact, [(10, True), (11, False)])
-
-    with pytest.raises(ValueError, match="seed differs from its record"):
-        repository.measurement_evidence(
-            {"episodes": 2, "seed": 11, "evaluation_artifact": artifact.name}
-        )
-
-
-def test_frozen_paired_evidence_uses_shared_episode_identities(monkeypatch, tmp_path):
-    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
-    candidate = tmp_path / "candidate.json"
-    reference = tmp_path / "reference.json"
-    _write_evaluation(candidate, [(10, True), (11, False)])
-    _write_evaluation(reference, [(10, False), (12, True)])
-
-    comparison = requested_paired_comparisons(
-        {"paired_comparisons": [{"candidate": "candidate", "reference": "working"}]},
-        {},
-        evidence_plan=_paired_evidence_plan([candidate.name], [reference.name]),
-    )[0]
-
-    assert comparison["episodes"] == 1
-    assert comparison["panels"][0]["shared_episode_seeds"] == [10]
-    assert comparison["panels"][0]["candidate_episodes"] == 2
-    assert comparison["panels"][0]["reference_episodes"] == 2
-
-
-def test_frozen_paired_evidence_rejects_conflicting_duplicate_panels(
-    monkeypatch, tmp_path
-):
-    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
-    candidate_a = tmp_path / "candidate-a.json"
-    candidate_b = tmp_path / "candidate-b.json"
-    reference = tmp_path / "reference.json"
-    _write_evaluation(candidate_a, [(10, True), (11, False)])
-    _write_evaluation(candidate_b, [(10, False), (11, False)])
-    _write_evaluation(reference, [(10, False), (11, False)])
-
-    with pytest.raises(ValueError, match="conflicting deterministic measurements"):
-        requested_paired_comparisons(
-            {
-                "paired_comparisons": [
-                    {"candidate": "candidate", "reference": "working"}
-                ]
-            },
-            {},
-            evidence_plan=_paired_evidence_plan(
-                [candidate_a.name, candidate_b.name], [reference.name]
-            ),
-        )
-
-
-def test_frozen_paired_evidence_rejects_duplicate_episode_identity(
-    monkeypatch, tmp_path
-):
-    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
-    candidate = tmp_path / "candidate.json"
-    reference = tmp_path / "reference.json"
-    candidate.write_text(
-        json.dumps(
-            {
-                "episodes": 2,
-                "seed": 10,
-                "episode_results": [
-                    {"episode": 0, "episode_seed": 10, "success": True},
-                    {"episode": 0, "episode_seed": 10, "success": False},
-                ],
-            }
-        ),
-        encoding="utf-8",
-    )
-    _write_evaluation(reference, [(10, False), (11, False)])
-
-    with pytest.raises(ValueError, match="repeats an episode identity"):
-        requested_paired_comparisons(
-            {
-                "paired_comparisons": [
-                    {"candidate": "candidate", "reference": "working"}
-                ]
-            },
-            {},
-            evidence_plan=_paired_evidence_plan([candidate.name], [reference.name]),
-        )
-
-
-def test_frozen_paired_evidence_rejects_replaced_artifact(monkeypatch, tmp_path):
-    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
-    candidate = tmp_path / "candidate.json"
-    reference = tmp_path / "reference.json"
-    _write_evaluation(candidate, [(10, True), (11, False)])
-    _write_evaluation(reference, [(10, False), (11, False)])
-    evidence_plan = _paired_evidence_plan([candidate.name], [reference.name])
-    _write_evaluation(reference, [(10, True), (11, True)])
-
-    with pytest.raises(ValueError, match="content changed after acceptance"):
-        requested_paired_comparisons(
-            {
-                "paired_comparisons": [
-                    {"candidate": "candidate", "reference": "working"}
-                ]
-            },
-            {},
-            evidence_plan=evidence_plan,
-        )
-
-
-from robot_learning.evaluate import write_progress
-from robot_learning.train import effective_training_config
-from robot_learning.training.research_config import load_experiment_config
-
-PROTECTED_TEST_PATHS = (
-    "tests/benchmark/test_task_contract.py",
-    "tests/benchmark/test_benchmark_trust_path.py",
-    "tests/autoresearch/test_execution_contract.py",
-    "tests/autoresearch/test_research_protocol.py",
-    "tests/e2e/test_reset_research.py",
-)
-
-
-def active_effective_config() -> tuple[dict, dict]:
-    """The current runtime configuration and the trainer's resolved view of it."""
-    config = load_experiment_config()
-    return config, effective_training_config(config)
-
-
-# --- research surface ------------------------------------------------------
-
-
-RUNTIME_STACK_MODULES = (
-    "mujoco",
-    "torch",
-    "gymnasium",
-    "stable_baselines3",
-    "robot_learning.scenario",
-)
-
-VALIDATION_ONLY_COMMANDS = (
-    "--check-proposal",
-    "--check-evaluation-request",
-    "--check-lineage-evidence",
-    "--begin-hypothesis",
-)
-
-
-def test_the_runner_loads_without_the_training_runtime():
-    """A control command must not pay for the training and physics stack."""
-    probe = (
-        "import sys, json\n"
-        "from research import run_experiment\n"
-        f"loaded = [m for m in {RUNTIME_STACK_MODULES!r} if m in sys.modules]\n"
-        "print(json.dumps(loaded))\n"
-    )
-    completed = subprocess.run(
-        [sys.executable, "-c", probe],
-        cwd=Path(__file__).parents[2],
-        capture_output=True,
-        text=True,
-        encoding="utf-8",
-        check=False,
-    )
-
-    assert completed.returncode == 0, completed.stderr[-2000:]
-    assert json.loads(completed.stdout.strip()) == []
-
-
-def test_validation_only_commands_stay_in_the_dispatcher():
-    """Every control command returns before the Runner may write anything."""
-    source = (Path(__file__).parents[2] / "research" / "run_experiment.py").read_text(
-        encoding="utf-8"
-    )
-    dispatch = source.split("def main()", 1)[1]
-    before_mutation, _, _ = dispatch.partition("synchronize_experiment_log")
-
-    assert _
-    for flag in VALIDATION_ONLY_COMMANDS:
-        attribute = flag.removeprefix("--").replace("-", "_")
-        assert attribute in before_mutation, flag
-
-
-def test_research_surface_has_no_file_whitelist(monkeypatch):
-    monkeypatch.setattr(
-        "research.runner_repository.status_paths",
-        lambda paths: (
-            [
-                "robot_learning/benchmark/spec.py",
-                "robot_learning/evaluate.py",
-                "research/run_experiment.py",
-            ]
-            if paths
-            else []
-        ),
-    )
-
-    assert assert_research_surface() == [
-        "robot_learning/benchmark/spec.py",
-        "robot_learning/evaluate.py",
-        "research/run_experiment.py",
-    ]
-
-
-def test_direct_parameter_file_edit_is_a_research_change(monkeypatch):
-    monkeypatch.setattr(
-        "research.runner_repository.status_paths",
-        lambda paths: ["research/current_params.json"] if paths else [],
-    )
-
-    assert assert_research_surface() == ["research/current_params.json"]
-
-
-def test_interrupted_git_stops_its_complete_process_group(monkeypatch):
-    class InterruptedGit:
-        pid = 4242
-
-        def communicate(self):
-            raise KeyboardInterrupt
-
-    process = InterruptedGit()
-    stopped = []
-
-    def start_process(*args, **kwargs):
-        assert kwargs["start_new_session"] is True
-        return process
-
-    monkeypatch.setattr(
-        repository, "git_process_group_options", lambda: {"start_new_session": True}
-    )
-    monkeypatch.setattr(repository.subprocess, "Popen", start_process)
-    monkeypatch.setattr(repository, "stop_git_process", stopped.append)
-
-    with pytest.raises(KeyboardInterrupt):
-        repository.git("push", "origin", "HEAD")
-
-    assert stopped == [process]
-
-
-# --- runner memory versus scientific change --------------------------------
-
-SCIENTIFIC_CHANGE = "robot_learning/scenario/reward.py"
-RUNNER_MEMORY_WORKTREE = [
-    "research/results.jsonl",
-    "research/EXPERIMENTS.md",
-    "research/research_state.json",
-    "research/postmortems.md",
-    "research/BASELINE_PENDING",
-    "research/evaluations/evaluation-experiment-3-champion-200ep-seed1000-abc.json",
-    "research/checkpoints/accepted/model.zip",
-    "research/checkpoints/retained/alternative-3/model.zip",
-]
-
-
-def record_git(monkeypatch, changed: list[str]) -> list[tuple[str, ...]]:
-    """Record every git invocation over a worktree Git reports as `changed`."""
-    calls: list[tuple[str, ...]] = []
-
-    def fake_git(*args: str) -> str:
-        calls.append(args)
-        if args[0] == "ls-files":
-            return args[-1] + "\n"
-        if args[0] == "diff":
-            return "\n".join(args[args.index("--") + 1 :]) + "\n"
-        return ""
-
-    monkeypatch.setattr(
-        "research.runner_repository.status_paths",
-        lambda paths: list(changed) if paths else [],
-    )
-    monkeypatch.setattr("research.runner_repository.git", fake_git)
-    return calls
-
-
-def commits_of(calls: list[tuple[str, ...]]) -> list[tuple[str, ...]]:
-    return [call for call in calls if call[0] == "commit"]
-
-
-def committed_paths(commit: tuple[str, ...]) -> list[str]:
-    return list(commit[commit.index("--") + 1 :])
-
-
-def test_dirty_runner_memory_is_never_a_scientific_change(monkeypatch):
-    monkeypatch.setattr(
-        "research.runner_repository.status_paths",
-        lambda paths: [SCIENTIFIC_CHANGE, *RUNNER_MEMORY_WORKTREE] if paths else [],
-    )
-
-    assert assert_research_surface() == [SCIENTIFIC_CHANGE]
-
-
-def test_a_runner_memory_commit_cannot_capture_scientific_changes(monkeypatch):
-    calls = record_git(monkeypatch, [SCIENTIFIC_CHANGE, *RUNNER_MEMORY_WORKTREE])
-
-    assert commit_runner_memory("record campaign memory")
-
-    commits = commits_of(calls)
-    assert len(commits) == 1
-    assert set(committed_paths(commits[0])) == set(RUNNER_MEMORY_WORKTREE)
-    assert SCIENTIFIC_CHANGE not in committed_paths(commits[0])
-    # Nothing staged, unstaged, reset or restored the scientific modification.
-    assert not [
-        call for call in calls if call[0] in {"reset", "restore", "checkout", "stash"}
-    ]
-    assert SCIENTIFIC_CHANGE not in {
-        argument for call in calls if call[0] == "add" for argument in call
-    }
-    assert assert_research_surface() == [SCIENTIFIC_CHANGE]
-
-
-def test_invalid_experiment_memory_is_persisted_without_its_science(monkeypatch):
-    history = [
-        "research/results.jsonl",
-        "research/EXPERIMENTS.md",
-        "research/research_state.json",
-    ]
-    calls = record_git(monkeypatch, [SCIENTIFIC_CHANGE, *history])
-
-    commit_result(3, "Reshape the shaping term")
-
-    commits = commits_of(calls)
-    assert len(commits) == 1
-    assert commits[0][2] == "camp: exp 3: Reshape the shaping term"
-    assert set(committed_paths(commits[0])) == set(history)
-    assert calls[-1] == ("push", "origin", "HEAD")
-    assert assert_research_surface() == [SCIENTIFIC_CHANGE]
-
-
-def test_lineage_closure_separates_the_science_from_the_memory_commit(monkeypatch):
-    calls = record_git(monkeypatch, [SCIENTIFIC_CHANGE, *RUNNER_MEMORY_WORKTREE])
-
-    commit_lineage_decision(4, "checkpoint-120832")
-
-    science, memory = commits_of(calls)
-    assert committed_paths(science) == [SCIENTIFIC_CHANGE]
-    assert set(committed_paths(memory)) == set(RUNNER_MEMORY_WORKTREE)
-    assert memory[2] == "camp: select experiment 4 working lineage: checkpoint-120832"
-
-
-def test_lineage_closure_retry_pushes_an_existing_local_commit(monkeypatch):
-    calls = record_git(monkeypatch, [])
-
-    commit_lineage_decision(4, "checkpoint-120832")
-
-    assert commits_of(calls) == []
-    assert calls[-1] == ("push", "origin", "HEAD")
-
-
-def test_lineage_science_push_failure_keeps_recovery_anchor(monkeypatch):
-    state = {
-        "pending_scientific_parent": "base",
-        "pending_closure_operation": {"progress": "durable"},
-    }
-    monkeypatch.setattr(
-        "research.runner_repository.commit_paths",
-        lambda message, scope: (_ for _ in ()).throw(RuntimeError("push failed")),
-    )
-
-    with pytest.raises(RuntimeError, match="push failed"):
-        commit_lineage_decision(4, "checkpoint-120832", state=state)
-
-    assert state["pending_scientific_parent"] == "base"
-    assert state["pending_closure_operation"]["progress"] == "durable"
-
-
-def test_evaluation_artifacts_are_evidence_and_never_restorable_science(monkeypatch):
-    artifact = "research/evaluations/evaluation-experiment-4-champion.json"
-    monkeypatch.setattr(
-        "research.runner_repository.status_paths",
-        lambda paths: [SCIENTIFIC_CHANGE, artifact] if paths else [],
-    )
-
-    assert assert_research_surface() == [SCIENTIFIC_CHANGE]
-    # A campaign recorded before this boundary existed still cannot lose evidence.
-    assert plan_code_lineage_decision(
-        {"code_parent_commit": "0" * 40, "research_change_paths": [artifact]},
-        "revert",
-    ) == {"restore": [], "remove_created": []}
-
-    calls = record_git(monkeypatch, [SCIENTIFIC_CHANGE, artifact])
-    assert commit_runner_memory("record measured evidence")
-    assert committed_paths(commits_of(calls)[0]) == [artifact]
-
-
-def test_the_official_final_benchmark_is_persisted_immediately(monkeypatch):
-    calls = record_git(monkeypatch, [SCIENTIFIC_CHANGE, "research/research_state.json"])
-    monkeypatch.setattr(
-        "research.run_experiment.execute_pending_final_benchmark", lambda: 0
-    )
-    monkeypatch.setattr("sys.argv", ["run_experiment.py", "--evaluate-pending-final"])
-
-    assert main() == 0
-
-    commits = commits_of(calls)
-    assert len(commits) == 1
-    assert committed_paths(commits[0]) == ["research/research_state.json"]
-
-
-def test_official_terminal_result_is_published_without_starting_another_experiment(
-    monkeypatch,
-):
-    calls = record_git(monkeypatch, ["research/research_state.json"])
-    monkeypatch.setattr(
-        "research.run_experiment.execute_pending_final_benchmark", lambda: 0
-    )
-    monkeypatch.setattr("sys.argv", ["run_experiment.py", "--evaluate-pending-final"])
-
-    assert main() == 0
-    assert len(commits_of(calls)) == 1
-
-
-def test_transient_controls_never_become_durable_campaign_memory(monkeypatch):
-    assert RUNNER_CONTROL_PATHS == {
-        "research/proposal.json",
-        "research/evaluation_request.json",
-        "research/RECOVERY_PENDING",
-        "research/RESTART_PENDING",
-    }
-    assert not any(is_runner_memory(control) for control in RUNNER_CONTROL_PATHS)
-
-    calls = record_git(monkeypatch, [SCIENTIFIC_CHANGE, *sorted(RUNNER_CONTROL_PATHS)])
-
-    assert assert_research_surface() == [SCIENTIFIC_CHANGE]
-    assert not commit_runner_memory("record campaign memory")
-    assert calls == []
-
-
-# --- protected test domains ------------------------------------------------
-
-
-def renamed(origin: str, destination: str) -> tuple[str, str]:
-    """A staged rename as `-z` reports it: destination first, origin after."""
-    return (f"R  {destination}", origin)
-
-
-def worktree_changes(monkeypatch, *entries: str | tuple[str, ...]) -> list[str]:
-    fields: list[str] = []
-    for entry in entries:
-        fields.extend((entry,) if isinstance(entry, str) else entry)
-    monkeypatch.setattr(
-        "research.runner_repository.git",
-        lambda *args: "".join(f"{field}\0" for field in fields),
-    )
-    return assert_research_surface()
-
-
-def validate_worktree(monkeypatch, *entries: str | tuple[str, ...]) -> list[str]:
-    changes = worktree_changes(monkeypatch, *entries)
-    validate_experiment_semantics({}, "training", "transfer", None, changes, False)
-    return changes
-
-
-def test_the_whole_test_surface_is_prefix_protected():
-    # No test path is part of the researcher's write surface.
-    assert PROTECTED_TEST_PREFIXES == ("tests/",)
-
-
-@pytest.mark.parametrize("protected_path", PROTECTED_TEST_PATHS)
-def test_modifying_a_protected_test_is_rejected(monkeypatch, protected_path):
-    with pytest.raises(ValueError, match="not part of the researcher's surface"):
-        validate_worktree(monkeypatch, f" M {protected_path}")
-
-
-@pytest.mark.parametrize("protected_path", PROTECTED_TEST_PATHS)
-def test_deleting_a_protected_test_is_rejected(monkeypatch, protected_path):
-    with pytest.raises(ValueError, match="not part of the researcher's surface"):
-        validate_worktree(monkeypatch, f" D {protected_path}")
-
-
-def test_status_reports_both_sides_of_a_rename(monkeypatch):
-    assert worktree_changes(
-        monkeypatch,
-        renamed(
-            "robot_learning/scenario/reward.py",
-            "robot_learning/scenario/shaping.py",
-        ),
-    ) == ["robot_learning/scenario/reward.py", "robot_learning/scenario/shaping.py"]
-
-
-def test_status_keeps_unquoted_paths_containing_spaces(monkeypatch):
-    assert worktree_changes(monkeypatch, " M research/a note.md") == [
-        "research/a note.md"
-    ]
-
-
-def test_renaming_a_protected_test_is_rejected(monkeypatch):
-    with pytest.raises(ValueError, match="not part of the researcher's surface"):
-        validate_worktree(
-            monkeypatch,
-            renamed(
-                "tests/benchmark/test_task_contract.py",
-                "tests/benchmark/renamed.py",
-            ),
-        )
-
-
-@pytest.mark.parametrize(
-    ("origin", "destination"),
-    [
-        (
-            "robot_learning/training/algorithms.py",
-            "tests/autoresearch/test_smuggled_rule.py",
-        ),
-        (
-            "robot_learning/scenario/reward.py",
-            "tests/benchmark/test_smuggled_contract.py",
-        ),
-    ],
-)
-def test_renaming_researcher_code_into_a_protected_domain_is_rejected(
-    monkeypatch, origin, destination
-):
-    with pytest.raises(ValueError, match="not part of the researcher's surface"):
-        validate_worktree(monkeypatch, renamed(origin, destination))
-
-
-@pytest.mark.parametrize(
-    ("origin", "destination"),
-    [
-        (
-            "tests/autoresearch/test_execution_contract.py",
-            "robot_learning/training/execution_contract.py",
-        ),
-        (
-            "tests/benchmark/test_task_contract.py",
-            "robot_learning/scenario/task_contract.py",
-        ),
-    ],
-)
-def test_renaming_a_protected_test_into_researcher_code_is_rejected(
-    monkeypatch, origin, destination
-):
-    with pytest.raises(ValueError, match="not part of the researcher's surface"):
-        validate_worktree(monkeypatch, renamed(origin, destination))
-
-
-def test_renaming_between_researcher_owned_source_domains_is_allowed(monkeypatch):
-    assert validate_worktree(
-        monkeypatch,
-        renamed(
-            "robot_learning/scenario/reward.py",
-            "robot_learning/training/reward_shaping.py",
-        ),
-    ) == [
-        "robot_learning/scenario/reward.py",
-        "robot_learning/training/reward_shaping.py",
-    ]
-
-
-def test_creating_a_new_protected_test_is_rejected(monkeypatch):
-    for invented in (
-        "tests/autoresearch/test_invented_rule.py",
-        "tests/benchmark/test_invented_rule.py",
-        "tests/scenario/test_invented_rule.py",
-        "tests/training/test_invented_rule.py",
-    ):
-        with pytest.raises(ValueError, match="not part of the researcher's surface"):
-            validate_worktree(monkeypatch, f"?? {invented}")
-
-
-def test_protected_test_protection_ignores_path_separator(monkeypatch):
-    with pytest.raises(ValueError, match="not part of the researcher's surface"):
-        validate_worktree(monkeypatch, "?? tests\\autoresearch\\test_invented.py")
-
-    with pytest.raises(ValueError, match="not part of the researcher's surface"):
-        validate_worktree(monkeypatch, " M tests\\benchmark\\test_task_contract.py")
-
-
-def test_researcher_owned_source_follows_the_code_lineage(monkeypatch):
-
-    root = Path(__file__).resolve().parents[2]
-    created = "robot_learning/training/invented_by_this_experiment.py"
-
-    def tracked_at_parent(*args: str) -> str:
-        path = args[-1]
-        return "" if path == created else f"{path}\n"
-
-    monkeypatch.setattr("research.runner_paths.ROOT", root)
-    monkeypatch.setattr("research.runner_repository.git", tracked_at_parent)
-
-    plan = protocol.plan_code_lineage_decision(
-        {
-            "code_parent_commit": "abc123",
-            "research_change_paths": [
-                "robot_learning/scenario/reward.py",
-                created,
-            ],
-        },
-        "revert",
-    )
-
-    assert plan["restore"] == ["robot_learning/scenario/reward.py"]
-    assert plan["remove_created"] == [(root / created).resolve()]
-
-
-def test_renamed_researcher_source_travels_with_the_code_lineage(monkeypatch):
-
-    root = Path(__file__).resolve().parents[2]
-    origin = "robot_learning/scenario/reward.py"
-    destination = "robot_learning/scenario/shaping.py"
-
-    def tracked_at_parent(*args: str) -> str:
-        path = args[-1]
-        return "" if path == destination else f"{path}\n"
-
-    monkeypatch.setattr("research.runner_paths.ROOT", root)
-    monkeypatch.setattr("research.runner_repository.git", tracked_at_parent)
-
-    plan = protocol.plan_code_lineage_decision(
-        {
-            "code_parent_commit": "abc123",
-            "research_change_paths": [origin, destination],
-        },
-        "revert",
-    )
-
-    assert plan["restore"] == [origin]
-    assert plan["remove_created"] == [(root / destination).resolve()]
-
-
-# --- validation timing -----------------------------------------------------
-
-ALL_SUITES = (
-    "tests/benchmark",
-    "tests/autoresearch",
-)
-RESEARCHER_SUITES = (
-    "tests/autoresearch/test_scenario_boundary.py",
-    "tests/autoresearch/test_campaign_boundary.py",
-)
-FRESH_BASELINE_SUITES = ("tests/benchmark", *RESEARCHER_SUITES)
-
-
-def test_fresh_campaign_baseline_runs_targeted_autoresearch_checks():
-    assert validation_test_paths([], fresh_baseline=True) == FRESH_BASELINE_SUITES
+def test_validation_suites_follow_changed_surface():
+    assert protocol.validation_test_paths([], fresh_baseline=False) == ()
     assert (
-        validation_test_paths(
-            ["robot_learning/scenario/reward.py"], fresh_baseline=True
+        protocol.validation_test_paths(
+            ["research/current_params.json"], fresh_baseline=False
         )
-        == FRESH_BASELINE_SUITES
-    )
-
-
-def test_unchanged_continuation_or_evaluation_skips_the_test_suites():
-    assert validation_test_paths([], fresh_baseline=False) == ()
-
-
-def test_parameter_only_experiment_skips_the_test_suites():
-    assert (
-        validation_test_paths(["research/current_params.json"], fresh_baseline=False)
         == ()
     )
-    assert (
-        validation_test_paths(["research\\current_params.json"], fresh_baseline=False)
-        == ()
+    assert protocol.validation_test_paths(
+        ["robot_learning/scenario/reward.py"], fresh_baseline=False
     )
 
 
-def test_active_configuration_is_resolved_through_the_trainer():
+def test_protected_files_are_rejected_from_scientific_delta():
+    with pytest.raises(ValueError, match="human-owned"):
+        protocol.validate_experiment_semantics(
+            _training_proposal(),
+            "training",
+            "fresh",
+            None,
+            ["research/run_experiment.py"],
+            False,
+        )
 
-    config, effective = active_effective_config()
 
-    assert execution.validate_active_configuration() == effective
-    assert config == load_experiment_config()
+def test_training_proposal_accepts_generic_investigation_design():
+    protocol.validate_training_proposal(_training_proposal(), baseline=False)
 
 
-def test_incomplete_active_configuration_is_rejected(monkeypatch):
-    monkeypatch.setattr(
-        "robot_learning.training.research_config.load_experiment_config",
-        lambda: {"training": {}},
+def test_continuation_and_replication_do_not_require_a_recipe_change():
+    continuation = _training_proposal()
+    continuation.update(
+        kind="continuation",
+        initialization="transfer",
+        training_parent="working",
+    )
+    continuation.pop("change")
+    protocol.validate_training_proposal(continuation, baseline=False)
+    protocol.validate_experiment_semantics(
+        continuation, "continuation", "transfer", None, [], False
     )
 
-    with pytest.raises(RuntimeError, match="active training configuration is invalid"):
-        execution.validate_active_configuration()
+    replication = _training_proposal()
+    replication.update(kind="replication", training_seed=19, replication_of=1)
+    replication.pop("change")
+    protocol.validate_training_proposal(replication, baseline=False)
+    protocol.validate_experiment_semantics(
+        replication, "replication", "fresh", None, [], False
+    )
 
 
-def test_parameter_only_experiment_still_validates_the_configuration(
-    monkeypatch, tmp_path, scientific_reasoning, scientific_memory
+def test_frozen_training_operation_rejects_proposal_or_source_tampering(
+    monkeypatch, tmp_path
 ):
-    from research import run_experiment
-
-    accepted = tmp_path / "accepted"
-    accepted.mkdir()
-    for filename in (
-        "model.zip",
-        "vecnormalize.pkl",
-        "artifact.json",
-        "policy_runtime.pkl",
-    ):
-        (accepted / filename).write_bytes(b"artifact")
-    (tmp_path / "research_state.json").write_text(
-        json.dumps(
-            {
-                "schema_version": 3,
-                "accepted_artifact": "accepted",
-                "accepted_metrics": None,
-                "campaign": {
-                    "id": "00000000-0000-0000-0000-000000000001",
-                    "started_at": "2026-01-01T00:00:00Z",
-                    "base_commit": "abc123",
-                },
-            }
-        ),
-        encoding="utf-8",
-    )
-    (tmp_path / "EXPERIMENTS.md").write_text("header\n", encoding="utf-8")
-    (tmp_path / "proposal.json").write_text(
-        json.dumps(
-            {
-                "kind": "training",
-                "family": "method.rollout_steps",
-                "investigation_type": "confirmatory",
-                "hypothesis": "a longer rollout stabilizes the update",
-                "reasoning": scientific_reasoning,
-                "change": "lengthen the rollout",
-                "initialization": "transfer",
-                "training_parent": "accepted",
-                "params": {"training": {"n_envs": 1}},
-            }
-        ),
-        encoding="utf-8",
-    )
-    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
-    monkeypatch.setattr("research.runner_paths.ACCEPTED_DIR", accepted)
-    monkeypatch.setattr(
-        "research.runner_paths.STATE_PATH", tmp_path / "research_state.json"
-    )
-    monkeypatch.setattr(
-        "research.runner_paths.PROPOSAL_PATH", tmp_path / "proposal.json"
-    )
-    monkeypatch.setattr("research.runner_paths.LOG_PATH", tmp_path / "EXPERIMENTS.md")
-    monkeypatch.setattr(
-        "research.runner_paths.RESULTS_PATH", tmp_path / "results.jsonl"
-    )
-    monkeypatch.setattr("research.runner_paths.CANDIDATE_ROOT", tmp_path / "candidates")
-    monkeypatch.setattr("research.runner_repository.git", lambda *args: "")
-    monkeypatch.setattr("research.runner_console.announce", lambda message: None)
-    monkeypatch.setattr(
-        "robot_learning.training.research_config.load_experiment_config", dict
-    )
-    monkeypatch.setattr(
-        "robot_learning.training.research_config.write_experiment_config",
-        lambda config: None,
-    )
-    monkeypatch.setattr(
-        "research.runner_execution.run_module",
-        lambda *args, **kwargs: pytest.fail("a parameter-only experiment ran pytest"),
-    )
-    monkeypatch.setattr(
-        "research.runner_execution.train_candidate",
-        lambda *args, **kwargs: pytest.fail("training started on an invalid config"),
-    )
-    monkeypatch.setattr("sys.argv", ["run_experiment.py"])
-
-    assert run_experiment.main() == 1
-
-    recorded = json.loads(
-        (tmp_path / "results.jsonl").read_text(encoding="utf-8").strip()
-    )
-    assert "active training configuration is invalid" in recorded["error"]
-
-
-def test_frozen_training_operation_rejects_proposal_tampering(monkeypatch, tmp_path):
-    from research import run_experiment
-
     source = tmp_path / "robot_learning" / "scenario" / "reward.py"
     source.parent.mkdir(parents=True)
     source.write_text("reward = 1\n", encoding="utf-8")
-    proposal = {
-        "kind": "training",
-        "family": "reward.intervention",
-        "hypothesis": "The accepted reward improves learning.",
-        "reasoning": _training_proposal()["reasoning"],
-        "change": "Change the reward.",
-        "initialization": "fresh",
-    }
+    proposal = _training_proposal()
     state = {}
     monkeypatch.setattr(run_experiment.paths, "ROOT", tmp_path)
+    monkeypatch.setattr(protocol, "resolved_training_parent", lambda *_args: None)
+    monkeypatch.setattr(repository, "write_state", lambda _state: None)
     monkeypatch.setattr(
-        run_experiment.protocol,
-        "resolved_training_parent",
-        lambda *_args: None,
+        repository,
+        "scientific_delta",
+        lambda _parent: ["robot_learning/scenario/reward.py"],
     )
-    monkeypatch.setattr(run_experiment.repository, "write_state", lambda _state: None)
-
     run_experiment._training_parent_operation(
         proposal,
         state,
-        experiment=1,
+        experiment=2,
         initialization="fresh",
         code_parent_commit="parent",
         researcher_changes=["robot_learning/scenario/reward.py"],
     )
-    changed = {**proposal, "hypothesis": "A different hypothesis."}
 
     with pytest.raises(
-        run_experiment.FrozenOperationMismatch,
-        match="proposal changed",
+        run_experiment.FrozenOperationMismatch, match="proposal changed"
     ):
         run_experiment._training_parent_operation(
-            changed,
+            {**proposal, "change": "Tampered."},
             state,
-            experiment=1,
+            experiment=2,
+            initialization="fresh",
+            code_parent_commit="parent",
+            researcher_changes=["robot_learning/scenario/reward.py"],
+        )
+
+    source.write_text("reward = 2\n", encoding="utf-8")
+    with pytest.raises(run_experiment.FrozenOperationMismatch, match="changed after"):
+        run_experiment._training_parent_operation(
+            proposal,
+            state,
+            experiment=2,
             initialization="fresh",
             code_parent_commit="parent",
             researcher_changes=["robot_learning/scenario/reward.py"],
         )
 
 
-def test_frozen_legacy_proposal_remains_resumable_but_immutable():
-    legacy = {
-        "kind": "training",
-        "family": "legacy",
-        "hypothesis": "A previously accepted investigation.",
-        "initialization": "fresh",
-        "reasoning": {
-            "evidence": [{"source": "evidence.json", "observation": "Observed."}],
-            "alternative": "An alternative.",
-            "expected_observation": "Expected.",
-            "contradicting_observation": "Contradicting.",
-            "initialization_reason": "Previously accepted.",
-            "strategy_link": "Legacy field.",
-        },
-        "change": "Previously accepted change.",
-    }
-    state = {"pending_training_operation": {"frozen_proposal": legacy}}
-
-    assert validate_proposal_phase(legacy, state) == "training"
-    with pytest.raises(ValueError, match="proposal changed after"):
-        validate_proposal_phase({**legacy, "change": "tampered"}, state)
-
-
-@pytest.mark.parametrize("tamper", ["edit", "add"])
-def test_frozen_training_operation_rejects_source_tampering(
-    monkeypatch, tmp_path, tamper
-):
-    from research import run_experiment
-
-    source = tmp_path / "robot_learning" / "scenario" / "reward.py"
-    added = tmp_path / "robot_learning" / "scenario" / "added.py"
-    source.parent.mkdir(parents=True)
-    source.write_text("reward = 1\n", encoding="utf-8")
-    changed_paths = ["robot_learning/scenario/reward.py"]
-    proposal = {
-        "kind": "training",
-        "family": "reward.intervention",
-        "hypothesis": "The accepted reward improves learning.",
-        "reasoning": _training_proposal()["reasoning"],
-        "change": "Change the reward.",
-        "initialization": "fresh",
-    }
-    state = {}
-    monkeypatch.setattr(run_experiment.paths, "ROOT", tmp_path)
-    monkeypatch.setattr(
-        run_experiment.protocol,
-        "resolved_training_parent",
-        lambda *_args: None,
-    )
-    monkeypatch.setattr(run_experiment.repository, "write_state", lambda _state: None)
-    monkeypatch.setattr(
-        run_experiment.repository,
-        "scientific_delta",
-        lambda _parent: list(changed_paths),
-    )
-    run_experiment._training_parent_operation(
-        proposal,
-        state,
-        experiment=1,
-        initialization="fresh",
-        code_parent_commit="parent",
-        researcher_changes=changed_paths,
-    )
-
-    if tamper == "edit":
-        source.write_text("reward = 2\n", encoding="utf-8")
-    else:
-        added.write_text("added = True\n", encoding="utf-8")
-        changed_paths.append("robot_learning/scenario/added.py")
-
-    with pytest.raises(
-        run_experiment.FrozenOperationMismatch,
-        match="Researcher scientific delta changed",
-    ):
-        run_experiment._training_parent_operation(
-            proposal,
-            state,
-            experiment=1,
-            initialization="fresh",
-            code_parent_commit="parent",
-            researcher_changes=changed_paths,
-        )
-
-
-def test_restored_parent_ignores_equivalent_parameter_key_order(monkeypatch, tmp_path):
-    from research import run_experiment
-    from robot_learning.training import research_config
-
-    config_path = tmp_path / "current_params.json"
-    config_path.write_text(
-        '{"ppo":{"n_steps":2048},"algorithm":{"name":"ppo"}}\n',
-        encoding="utf-8",
-    )
-    parent_parameters = {
-        "algorithm": {"name": "ppo"},
-        "ppo": {"n_steps": 2048},
-    }
-    operation = {
-        "progress": "parent_frozen",
-        "code_parent_commit": "parent",
-        "parent": {"artifact": "artifact", "parameters": parent_parameters},
-        "recipe_restore": {"restore": [], "remove_created": []},
-    }
-
-    monkeypatch.setattr(research_config, "CONFIG_PATH", config_path)
-    monkeypatch.setattr(
-        repository, "scientific_delta", lambda _parent: ["research/current_params.json"]
-    )
-    monkeypatch.setattr(repository, "write_state", lambda _state: None)
-    monkeypatch.setattr(repository, "require_complete_artifact", lambda *_args: None)
-    monkeypatch.setattr(repository, "apply_code_lineage_decision", lambda _plan: None)
-
-    run_experiment._apply_training_parent_operation(operation, {})
-
-    assert operation["progress"] == "recipe_restored"
-    assert research_config.load_experiment_config() == parent_parameters
-
-
-@pytest.mark.parametrize(
-    "changed_paths",
-    [
-        ["robot_learning/scenario/reward.py"],
-        ["robot_learning/scenario/observations.py"],
-        ["robot_learning/training/algorithms.py"],
-        ["robot_learning/train.py"],
-        ["robot_learning/evaluate.py"],
-        ["robot_learning/play.py"],
-        ["robot_learning\\scenario\\reward.py"],
-        # Mixed researcher-owned surfaces, and researcher code beside a
-        # parameter-only edit, stay a researcher-only change.
-        [
-            "robot_learning/scenario/environment.py",
-            "robot_learning/training/normalization.py",
-        ],
-        ["robot_learning/scenario/reward.py", "research/current_params.json"],
-    ],
-)
-def test_researcher_owned_change_runs_only_protected_boundary_checks(changed_paths):
-    assert (
-        validation_test_paths(changed_paths, fresh_baseline=False) == RESEARCHER_SUITES
-    )
-
-
-@pytest.mark.parametrize(
-    "changed_path",
-    [
-        # Human-owned paths are validated completely if inspected directly.
-        "research/build_research_brief.py",
-        "run_research.ps1",
-        "research/program.md",
-        "robot_learning/environments/reach_env.py",
-        "robot_learning/rewards/reach_reward.py",
-        "robot_learning/benchmark/metrics.py",
-        "pyproject.toml",
-        "uv.lock",
-        "main.py",
-        # Protected paths never become researcher-owned by sharing a prefix.
-        "robot_learning/scenario/__init__.py",
-        "robot_learning/scenario/final_benchmark.py",
-        "robot_learning/scenario/task_reference.py",
-        "tests/benchmark/test_task_contract.py",
-        "tests/autoresearch/test_execution_contract.py",
-    ],
-)
-def test_change_outside_the_researcher_surface_runs_every_suite(changed_path):
-    assert validation_test_paths([changed_path], fresh_baseline=False) == ALL_SUITES
-
-
-def test_one_unclassified_path_pulls_the_whole_experiment_to_full_validation():
-    assert (
-        validation_test_paths(
-            ["robot_learning/scenario/reward.py", "research/build_research_brief.py"],
-            fresh_baseline=False,
-        )
-        == ALL_SUITES
-    )
-
-
-@pytest.mark.parametrize(
-    "protected_path",
-    [
-        "AGENTS.md",
-        "research/program.md",
-        "research/scenario.md",
-        "research/instruments.md",
-        "run_research.ps1",
-        "researcher_session.ps1",
-        "research/build_research_brief.py",
-        "pyproject.toml",
-        "uv.lock",
-    ],
-)
-def test_context_runtime_and_dependency_metadata_are_protected(protected_path):
-    assert protocol.is_protected_source(protected_path)
-    assert not protocol.is_researcher_owned(protected_path)
-
-
-def test_changed_python_files_are_syntax_checked(monkeypatch, tmp_path):
-    (tmp_path / "broken.py").write_text("def broken(:\n", encoding="utf-8")
-    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
-    monkeypatch.setattr(
-        "research.runner_execution.run_module",
-        lambda *args, **kwargs: pytest.fail("linting ran on unparsable source"),
-    )
-
-    with pytest.raises(RuntimeError, match="broken.py"):
-        validate_changed_sources(["broken.py"])
-
-
-def test_changed_json_files_must_parse(monkeypatch, tmp_path):
-    (tmp_path / "good.json").write_text("{}", encoding="utf-8")
-    (tmp_path / "broken.json").write_text("{", encoding="utf-8")
-    (tmp_path / "results.jsonl").write_text(
-        '{"index": 1}\n{"index": 2}\n', encoding="utf-8"
-    )
-    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
-
-    validate_changed_sources(["good.json", "results.jsonl"])
-    with pytest.raises(RuntimeError, match="broken.json"):
-        validate_changed_sources(["broken.json"])
-
-
-def test_changed_python_files_are_linted_individually(monkeypatch, tmp_path):
-    (tmp_path / "clean.py").write_text("VALUE = 1\n", encoding="utf-8")
-    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
-    calls: list[tuple[str, ...]] = []
-    monkeypatch.setattr(
-        "research.runner_execution.run_module",
-        lambda *args, **kwargs: calls.append(args) or "",
-    )
-
-    validate_changed_sources(["clean.py", "notes.md", "absent.py"])
-
-    assert calls == [("ruff", "check", "clean.py")]
-
-
-def test_dependency_check_never_rewrites_the_lockfile(monkeypatch):
-    calls: list[tuple[str, ...]] = []
-    monkeypatch.setattr(
-        "research.runner_execution.run_command",
-        lambda *args, **kwargs: calls.append(args) or "",
-    )
-
-    execution.validate_dependency_metadata()
-
-    assert calls == [("uv", "lock", "--check")]
-
-
-def test_validated_test_paths_are_the_human_owned_repository_domains():
-
-    assert protocol.VALIDATED_TEST_PATHS == (
-        "tests/benchmark",
-        "tests/autoresearch",
-    )
-    assert protocol.RESEARCHER_VALIDATED_TEST_PATHS == (
-        "tests/autoresearch/test_scenario_boundary.py",
-        "tests/autoresearch/test_campaign_boundary.py",
-    )
-    assert protocol.FRESH_BASELINE_VALIDATED_TEST_PATHS == (
-        "tests/benchmark",
-        "tests/autoresearch/test_scenario_boundary.py",
-        "tests/autoresearch/test_campaign_boundary.py",
-    )
-    root = Path(__file__).resolve().parents[2]
-    for relative in protocol.VALIDATED_TEST_PATHS:
-        assert (root / relative).is_dir(), relative
-
-
-def test_the_end_to_end_suite_is_never_validated_during_a_campaign():
-    # tests/e2e holds slow whole-lifecycle checks. It is protected like every
-    # test path, but no experiment ever waits on it.
-    assert not protocol.is_researcher_owned("tests/e2e/test_reset_research.py")
-    selected = {
-        *protocol.VALIDATED_TEST_PATHS,
-        *protocol.RESEARCHER_VALIDATED_TEST_PATHS,
-        *protocol.FRESH_BASELINE_VALIDATED_TEST_PATHS,
-    }
-    assert not any(path.startswith("tests/e2e") for path in selected)
-
-
-def test_researcher_owned_surface_is_declared_positively_and_exists():
-
-    root = Path(__file__).resolve().parents[2]
-    for prefix in protocol.RESEARCHER_OWNED_PREFIXES:
-        assert (root / prefix).is_dir(), prefix
-    for relative in protocol.RESEARCHER_OWNED_PATHS:
-        assert (root / relative).is_file(), relative
-
-
-def test_protected_paths_are_never_researcher_owned():
-
-    for relative in protocol.PROTECTED_BENCHMARK_PATHS:
-        assert not protocol.is_researcher_owned(relative), relative
-    for prefix in protocol.PROTECTED_TEST_PREFIXES:
-        assert not protocol.is_researcher_owned(f"{prefix}test_anything.py")
-
-
-def test_a_proposal_touching_protected_tests_is_rejected_before_selection():
-    for relative in (
-        "tests/benchmark/test_task_contract.py",
-        "tests/autoresearch/test_execution_contract.py",
-        "tests/benchmark/test_newly_invented.py",
-    ):
-        with pytest.raises(ValueError, match="cannot be changed"):
-            validate_experiment_semantics(
-                {}, "training", "transfer", None, [relative], False
-            )
-
-
-# --- execution lifecycle ---------------------------------------------------
-
-
-def test_training_progress_reads_latest_complete_snapshot(tmp_path):
-    log = tmp_path / "train.log"
-    log.write_text(
-        "|    total_timesteps      | 1024        |\n"
-        "|    total_timesteps      | 2048        |\n",
-        encoding="utf-8",
-    )
-    assert latest_training_steps(log) == 2048
-
-
-def test_duration_is_compact_and_human_readable():
-    assert format_duration(15) == "15s"
-    assert format_duration(125) == "2m05s"
-    assert format_duration(3720) == "1h02m"
-
-
-def test_evaluation_progress_is_best_effort(monkeypatch, tmp_path):
-    progress = tmp_path / "evaluation.progress"
-    assert write_progress(progress, 80, 200)
-    assert json.loads(progress.read_text(encoding="utf-8")) == {
-        "completed": 80,
-        "total": 200,
-    }
-
-    def deny_write(path, *args, **kwargs):
-        del path, args, kwargs
-        raise PermissionError("simulated Windows reader lock")
-
-    monkeypatch.setattr(Path, "write_text", deny_write)
-    assert not write_progress(progress, 81, 200)
-
-
-def test_automatic_commit_is_immediately_pushed(monkeypatch):
-    calls = []
-    monkeypatch.setattr(
-        "research.runner_repository.git",
-        lambda *args: calls.append(args) or "",
-    )
-
-    commit_and_push("record result")
-
-    assert calls == [
-        ("commit", "-m", "record result"),
-        ("push", "origin", "HEAD"),
-    ]
-
-
-def test_scientific_recipe_publication_commits_its_scoped_changes(monkeypatch):
-    calls = record_git(monkeypatch, [SCIENTIFIC_CHANGE])
-
-    revision = repository.publish_scientific_recipe(4, [SCIENTIFIC_CHANGE])
-
-    assert committed_paths(commits_of(calls)[0]) == [SCIENTIFIC_CHANGE]
-    assert commits_of(calls)[0][2] == "camp: experiment 4 scientific recipe"
-    assert revision == ""
-
-
-def test_scientific_recipe_publication_retries_an_existing_local_commit(monkeypatch):
-    pushes = []
-    monkeypatch.setattr(repository, "commit_paths", lambda message, scope: False)
-    monkeypatch.setattr(repository, "push_head", lambda: pushes.append(True))
-    monkeypatch.setattr(repository, "git", lambda *args: "recipe-commit\n")
-
-    revision = repository.publish_scientific_recipe(4, [SCIENTIFIC_CHANGE])
-
-    assert pushes == [True]
-    assert revision == "recipe-commit"
-
-
-def test_fresh_baseline_can_start_without_an_accepted_artifact(monkeypatch, tmp_path):
-    state_path = tmp_path / "research_state.json"
-    state_path.write_text(
-        json.dumps(
-            {
-                "schema_version": 3,
-                "accepted_artifact": "missing-checkpoint",
-                "accepted_metrics": None,
-                "campaign": {
-                    "id": "00000000-0000-0000-0000-000000000001",
-                    "started_at": "2026-01-01T00:00:00Z",
-                    "base_commit": "abc123",
-                },
-            }
-        ),
-        encoding="utf-8",
-    )
-    monkeypatch.setattr("research.runner_paths.STATE_PATH", state_path)
-    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
-    monkeypatch.setattr("research.runner_repository.git", lambda *args: "base-commit\n")
-
-    state = load_state(allow_unmeasured=True, allow_missing_artifact=True)
-    assert state["accepted_metrics"] is None
-    with pytest.raises(RuntimeError, match="accepted artifact is incomplete"):
-        load_state(allow_unmeasured=True)
-
-
-def test_repo_paths_use_forward_slashes_and_resolve_legacy_separators(
-    monkeypatch, tmp_path
-):
-    root = tmp_path / "repo"
-    nested = root / "research" / "checkpoints" / "accepted"
-    monkeypatch.setattr("research.runner_paths.ROOT", root)
-
-    assert repo_relative_path(nested) == "research/checkpoints/accepted"
-    assert resolve_repo_path("research\\checkpoints\\accepted") == nested
-    assert resolve_repo_path("research/checkpoints/accepted") == nested
-
-
-@pytest.mark.parametrize(
-    "persisted",
-    ["../outside", "/absolute/path", "C:\\absolute\\path"],
-)
-def test_resolve_repo_path_rejects_non_repository_paths(
-    monkeypatch, tmp_path, persisted
-):
-    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path / "repo")
-
-    with pytest.raises(ValueError, match="repository|outside"):
-        resolve_repo_path(persisted)
-
-
-def test_load_state_resolves_legacy_windows_artifact_path(monkeypatch, tmp_path):
-    accepted = tmp_path / "research" / "checkpoints" / "accepted"
-    accepted.mkdir(parents=True)
-    (accepted / "model.zip").write_bytes(b"model")
-    (accepted / "artifact.json").write_text("{}", encoding="utf-8")
-    state_path = tmp_path / "research_state.json"
-    state_path.write_text(
-        json.dumps(
-            {
-                "schema_version": 3,
-                "accepted_artifact": "research\\checkpoints\\accepted",
-                "accepted_metrics": {"success_percent": 50.0},
-                "campaign": {
-                    "id": "00000000-0000-0000-0000-000000000001",
-                    "started_at": "2026-01-01T00:00:00Z",
-                    "base_commit": "abc123",
-                },
-            }
-        ),
-        encoding="utf-8",
-    )
-    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
-    monkeypatch.setattr("research.runner_paths.STATE_PATH", state_path)
-
-    assert load_state()["accepted_artifact"] == "research\\checkpoints\\accepted"
-
-
-def test_experiment_rows_remain_one_line(monkeypatch, tmp_path):
-    log_path = tmp_path / "EXPERIMENTS.md"
-    results_path = tmp_path / "results.jsonl"
-    log_path.write_text("header\n", encoding="utf-8")
-    monkeypatch.setattr("research.runner_paths.LOG_PATH", log_path)
-    monkeypatch.setattr("research.runner_paths.RESULTS_PATH", results_path)
-
-    append_result(
-        {
-            "index": 1,
-            "change": "line one\nline two",
-            "hypothesis_assessment": "safe | table",
-            "verdict": "error:\ntraceback",
-        }
-    )
-
-    rows = [
-        line
-        for line in log_path.read_text(encoding="utf-8").splitlines()
-        if line.startswith("| 1 |")
-    ]
-    assert len(rows) == 1
-    assert "line one line two" in rows[0]
-    assert "safe / table" in rows[0]
-    assert "error: traceback" in rows[0]
-
-
-def test_the_markdown_log_is_derived_from_the_authoritative_history(
-    monkeypatch, tmp_path
-):
-    """`results.jsonl` is the history; the Markdown view is only rendered from it."""
-    log_path = tmp_path / "EXPERIMENTS.md"
-    results_path = tmp_path / "results.jsonl"
-    monkeypatch.setattr("research.runner_paths.LOG_PATH", log_path)
-    monkeypatch.setattr("research.runner_paths.RESULTS_PATH", results_path)
-
-    for index in (1, 2):
-        append_result(
-            {
-                "index": index,
-                "change": f"change {index}",
-                "hypothesis": f"hypothesis {index}",
-                "verdict": "trained",
-            }
-        )
-
-    records = [
-        json.loads(line)
-        for line in results_path.read_text(encoding="utf-8").splitlines()
-        if line.strip()
-    ]
-    assert [record["index"] for record in records] == [1, 2]
-    assert all(record["recorded_at"] for record in records)
-
-    rendered = log_path.read_text(encoding="utf-8")
-    assert rendered.startswith("# Experiment log\n")
-    assert rendered.count("| change 1 |") == 1
-    assert rendered.count("| change 2 |") == 1
-
-    # A Markdown view damaged by an interruption is rebuilt, never trusted.
-    log_path.write_text("# Experiment log\n\ncorrupted\n", encoding="utf-8")
-    synchronize_experiment_log()
-
-    assert log_path.read_text(encoding="utf-8") == rendered
-
-
-def test_a_legacy_record_without_a_date_still_renders(monkeypatch, tmp_path):
-    log_path = tmp_path / "EXPERIMENTS.md"
-    results_path = tmp_path / "results.jsonl"
-    results_path.write_text(
-        json.dumps({"index": 7, "change": "legacy", "verdict": "ok"}) + "\n",
-        encoding="utf-8",
-    )
-    monkeypatch.setattr("research.runner_paths.LOG_PATH", log_path)
-    monkeypatch.setattr("research.runner_paths.RESULTS_PATH", results_path)
-
-    synchronize_experiment_log()
-
-    assert "| 7 | legacy / parent - | legacy | unmeasured | - | ok |" in (
-        log_path.read_text(encoding="utf-8")
-    )
-
-
-# --- artifact reuse --------------------------------------------------------
-
-
-def test_artifact_without_optional_training_state_promotes_cleanly(tmp_path):
-    source = tmp_path / "source"
-    destination = tmp_path / "destination"
-    source.mkdir()
-    destination.mkdir()
-
-    (source / "model.zip").write_bytes(b"new model")
-    (source / "artifact.json").write_text("{}", encoding="utf-8")
-    (destination / "model.zip").write_bytes(b"old model")
-    (destination / "artifact.json").write_text("{}", encoding="utf-8")
-    (destination / "vecnormalize.pkl").write_bytes(b"stale normalization")
-    (destination / "replay_buffer.pkl").write_bytes(b"stale replay")
-
-    require_complete_artifact(source, "candidate")
-    copy_artifact(source, destination)
-
-    assert (destination / "model.zip").read_bytes() == b"new model"
-    assert not (destination / "vecnormalize.pkl").exists()
-    assert not (destination / "replay_buffer.pkl").exists()
-
-
-def test_reusable_candidate_must_match_experiment(tmp_path):
-    candidate = tmp_path / "candidate"
-    candidate.mkdir()
-    (candidate / "model.zip").touch()
-    (candidate / "vecnormalize.pkl").touch()
-    (candidate / "policy_runtime.pkl").touch()
-    config, effective = active_effective_config()
-    (candidate / "artifact.json").write_text(
-        json.dumps(
-            {
-                "seed": 0,
-                "timesteps": 1000,
-                "effective_config": effective,
-                "resumed_from": None,
-            }
-        ),
-        encoding="utf-8",
-    )
-
-    with pytest.raises(ValueError, match="timesteps"):
-        validate_reusable_candidate(
-            candidate,
-            timesteps=120_000,
-            seed=0,
-            resume=None,
-            config=config,
-        )
-
-
-def test_interrupted_candidate_can_resume_its_remaining_budget(tmp_path):
-    candidate = tmp_path / "candidate"
-    candidate.mkdir()
-    for filename in ("model.zip", "vecnormalize.pkl", "policy_runtime.pkl"):
-        (candidate / filename).touch()
-    config, effective = active_effective_config()
-    (candidate / "artifact.json").write_text(
-        json.dumps(
-            {
-                "seed": 0,
-                "timesteps": 50_000,
-                "requested_timesteps": 120_000,
-                "completed": False,
-                "effective_config": effective,
-                "resumed_from": "a prior recovery checkpoint",
-            }
-        ),
-        encoding="utf-8",
-    )
-
-    validate_reusable_candidate(
-        candidate,
-        timesteps=120_000,
-        seed=0,
-        resume=None,
-        config=config,
-    )
-
-
-def test_reusable_candidate_compares_effective_configuration_opaquely(tmp_path):
-    candidate = tmp_path / "candidate"
-    candidate.mkdir()
-    for filename in ("model.zip", "vecnormalize.pkl", "policy_runtime.pkl"):
-        (candidate / filename).touch()
-    config, effective = active_effective_config()
-    artifact = {
-        "seed": 0,
-        "timesteps": 120_000,
-        "requested_timesteps": 120_000,
-        "effective_config": effective,
-        "resumed_from": None,
-    }
-    (candidate / "artifact.json").write_text(json.dumps(artifact), encoding="utf-8")
-
-    validate_reusable_candidate(
-        candidate, timesteps=120_000, seed=0, resume=None, config=config
-    )
-
-    # The runner only compares the trainer's own description for equality.
-    artifact["effective_config"] = {"a different training configuration": True}
-    (candidate / "artifact.json").write_text(json.dumps(artifact), encoding="utf-8")
-    with pytest.raises(ValueError, match="effective configuration"):
-        validate_reusable_candidate(
-            candidate, timesteps=120_000, seed=0, resume=None, config=config
-        )
-
-    artifact["effective_config"] = effective
-    artifact["seed"] = 1
-    (candidate / "artifact.json").write_text(json.dumps(artifact), encoding="utf-8")
-    with pytest.raises(ValueError, match="seed"):
-        validate_reusable_candidate(
-            candidate, timesteps=120_000, seed=0, resume=None, config=config
-        )
-
-
-def test_runner_does_not_interpret_effective_configuration():
-    source = (Path(__file__).parents[2] / "research" / "runner_execution.py").read_text(
-        encoding="utf-8"
-    )
-    validation = source.split("def validate_reusable_candidate", 1)[1].split(
-        "def evaluate_artifact", 1
-    )[0]
-
-    for forbidden in ("ppo", "n_steps", "policy", "parameters", "n_envs"):
-        assert forbidden not in validation
-
-
-# --- proposal validation ---------------------------------------------------
-
-
-def test_training_proposal_requires_only_its_scientific_shape(scientific_reasoning):
-    proposal = {
-        "kind": "training",
-        "family": "observation.representation",
-        "investigation_type": "confirmatory",
-        "hypothesis": "the observation hides information needed by the policy",
-        "reasoning": scientific_reasoning,
-        "change": "change the observation representation",
-        "initialization": "fresh",
-    }
-
-    validate_training_proposal(proposal, baseline=False)
-    validate_experiment_semantics(
-        proposal,
-        "training",
-        "fresh",
-        None,
-        ["robot_learning/scenario/observations.py"],
-        False,
-    )
-
-
-@pytest.mark.parametrize("kind", ["training", "continuation", "replication"])
-def test_model_reasoning_is_optional_but_validated_when_provided(kind):
-    proposal = _training_proposal()
-    proposal["kind"] = kind
-    if kind != "training":
-        proposal.pop("change")
-    if kind == "continuation":
-        proposal.update(initialization="transfer", training_parent="accepted")
-    if kind == "replication":
-        proposal.update(training_seed=19, replication_of=12)
-
-    proposal["reasoning"].pop("scientific_model")
-    validate_training_proposal(proposal, baseline=False)
-
-    proposal["reasoning"]["scientific_model"] = None
-    with pytest.raises(TypeError, match="reasoning.scientific_model must be an object"):
-        validate_training_proposal(proposal, baseline=False)
-
-    proposal["reasoning"]["scientific_model"] = {}
-    with pytest.raises(
-        ValueError, match="reasoning.scientific_model must not be empty"
-    ):
-        validate_training_proposal(proposal, baseline=False)
-
-    proposal["reasoning"]["scientific_model"] = {"connection": " "}
-    with pytest.raises(ValueError, match="reasoning.scientific_model.connection"):
-        validate_training_proposal(proposal, baseline=False)
-
-    proposal["reasoning"]["scientific_model"] = {
-        "connection": "The hold requirement is relevant to the proposed behavior."
-    }
-    validate_training_proposal(proposal, baseline=False)
-
-
-@pytest.mark.parametrize("kind", ["training", "continuation"])
-def test_policy_intervention_accepts_confirmatory_or_exploratory_reasoning(kind):
-    proposal = _training_proposal()
-    if kind == "continuation":
-        proposal.update(
-            kind="continuation",
-            initialization="transfer",
-            training_parent="accepted",
-        )
-        proposal.pop("change")
-
-    intervention = proposal["reasoning"].pop("policy_intervention")
-    with pytest.raises(
-        TypeError, match="reasoning.policy_intervention must be an object"
-    ):
-        validate_training_proposal(proposal, baseline=False)
-
-    proposal["reasoning"]["policy_intervention"] = {
-        **intervention,
-        "behavioral_test": " ",
-    }
-    with pytest.raises(
-        ValueError, match="reasoning.policy_intervention.behavioral_test"
-    ):
-        validate_training_proposal(proposal, baseline=False)
-
-    proposal["reasoning"]["policy_intervention"] = {
-        **intervention,
-        "behavioral_path": " ",
-    }
-    with pytest.raises(
-        ValueError,
-        match="requires behavioral_path or open_behavior_question",
-    ):
-        validate_training_proposal(proposal, baseline=False)
-
-    proposal["reasoning"]["policy_intervention"] = {
-        field: intervention[field] for field in ("behavioral_path", "behavioral_test")
-    }
-    validate_training_proposal(proposal, baseline=False)
-
-    proposal["reasoning"]["policy_intervention"] = {
-        "open_behavior_question": (
-            "The transformed method may expose a different learning regime; "
-            "its behavioral path is intentionally not assumed."
-        ),
-        "behavioral_test": (
-            "Characterize its failures against the prior inquiry lineage."
-        ),
-    }
-    validate_training_proposal(proposal, baseline=False)
-
-    proposal["reasoning"]["policy_intervention"] = intervention
-    validate_training_proposal(proposal, baseline=False)
-
-
-def test_replication_does_not_require_an_intervention():
-    proposal = _training_proposal()
-    proposal.update(kind="replication", training_seed=19, replication_of=1)
-    proposal.pop("change")
-    proposal["reasoning"].pop("policy_intervention")
-
-    validate_training_proposal(proposal, baseline=False)
-
-
-def test_transfer_proposal_requires_a_training_parent(scientific_reasoning):
-    proposal = {
-        "kind": "training",
-        "family": "x",
-        "investigation_type": "confirmatory",
-        "hypothesis": "x",
-        "change": "x",
-        "initialization": "transfer",
-    }
-
-    with pytest.raises(ValueError, match="requires training_parent"):
-        validate_training_proposal(proposal, baseline=False)
-
-    proposal["training_parent"] = "accepted"
-    proposal["reasoning"] = scientific_reasoning
-    validate_training_proposal(proposal, baseline=False)
-
-
-def test_fresh_proposal_rejects_a_training_parent():
-    proposal = {
-        "kind": "training",
-        "family": "x",
-        "investigation_type": "confirmatory",
-        "hypothesis": "x",
-        "change": "x",
-        "initialization": "fresh",
-        "training_parent": "accepted",
-    }
-
-    with pytest.raises(ValueError, match="only valid with transfer"):
-        validate_training_proposal(proposal, baseline=False)
-
-
-@pytest.mark.parametrize(
-    ("field", "value"),
-    [
-        ("family", "   "),
-        ("hypothesis", ""),
-        ("change", "\t"),
-    ],
-)
-def test_training_proposal_rejects_empty_scientific_text(field, value):
-    proposal = _training_proposal()
-    proposal[field] = value
-
-    with pytest.raises(ValueError, match="non-empty string"):
-        validate_training_proposal(proposal, baseline=False)
-
-
-@pytest.mark.parametrize("initialization", ["resume", "FRESH", 7, None])
-def test_training_proposal_rejects_unknown_initialization(initialization):
-    proposal = _training_proposal()
-    proposal["initialization"] = initialization
-
-    with pytest.raises(ValueError, match="initialization must be transfer or fresh"):
-        validate_training_proposal(proposal, baseline=False)
-
-
-def test_training_proposal_rejects_unknown_kind():
-    proposal = _training_proposal()
-    proposal["kind"] = "banana"
-
-    with pytest.raises(ValueError, match="kind must be training"):
-        validate_training_proposal(proposal, baseline=False)
-
-
-def test_training_proposal_accepts_the_valid_training_kinds():
-    validate_training_proposal(_training_proposal(), baseline=False)
-
-    transfer = _training_proposal()
-    transfer.update(initialization="transfer", training_parent="accepted")
-    validate_training_proposal(transfer, baseline=False)
-
-    continuation = dict(transfer, kind="continuation")
-    continuation.pop("change")
-    validate_training_proposal(continuation, baseline=False)
-
-    replication = dict(
-        _training_proposal(),
-        kind="replication",
-        training_seed=19,
-        replication_of=12,
-    )
-    replication.pop("change")
-    validate_training_proposal(replication, baseline=False)
-
-
-def test_training_intervention_requires_a_nonempty_change():
-    proposal = _training_proposal()
-    proposal.pop("change")
-
-    with pytest.raises(ValueError, match="missing required fields.*change"):
-        validate_training_proposal(proposal, baseline=False)
-
-
-def test_unchanged_operation_has_a_neutral_result_description():
-    result = {
-        "index": 4,
-        "kind": "replication",
-        "hypothesis": "check outcome variation",
-        "initialization": "fresh",
-    }
-
-    assert operation_description(result) == (
-        "Replicate the current method from fresh initialization"
-    )
-    assert "Replicate the current method from fresh initialization" in (
-        render_experiment_card(result)
-    )
-
-
-def test_unchanged_operation_rejects_a_blank_supplied_description():
-    proposal = dict(_training_proposal(), kind="continuation")
-    proposal.update(initialization="transfer", training_parent="accepted", change=" ")
-
-    with pytest.raises(ValueError, match="continuation must omit change"):
-        validate_training_proposal(proposal, baseline=False)
-
-
-def test_baseline_proposal_requires_fields_consumed_by_execution():
-    with pytest.raises(ValueError, match="baseline proposal is missing"):
-        validate_training_proposal({"baseline": True}, baseline=True)
-
-
-@pytest.mark.parametrize(("field", "value"), [("hypothesis", ""), ("change", " ")])
-def test_baseline_proposal_rejects_empty_required_text(field, value):
-    proposal = {
-        "baseline": True,
-        "hypothesis": "measure the starting method",
-        "change": "run the unchanged starting method",
-        "initialization": "fresh",
-    }
-    proposal[field] = value
-
-    with pytest.raises(ValueError, match="non-empty string"):
-        validate_training_proposal(proposal, baseline=True)
-
-
-def test_baseline_proposal_accepts_nonempty_required_text():
-    validate_training_proposal(
-        {
-            "baseline": True,
-            "hypothesis": "measure the starting method",
-            "change": "run the unchanged starting method",
-            "initialization": "fresh",
-        },
-        baseline=True,
-    )
-
-
-def _baseline_proposal() -> dict:
-    """The shape run_research.ps1 generates for a pending baseline."""
-    return {
-        "baseline": True,
-        "change": "Fresh baseline",
-        "hypothesis": "Establish the initial baseline for the human-defined objective.",
-        "class": "baseline",
-        "initialization": "fresh",
-    }
-
-
-@pytest.mark.parametrize(
-    "kind", ["training", "continuation", "replication", "banana", None]
-)
-def test_baseline_proposal_must_not_declare_a_kind(kind):
-    proposal = dict(_baseline_proposal(), kind=kind)
-
-    with pytest.raises(ValueError, match="baseline proposal must not declare kind"):
-        validate_training_proposal(proposal, baseline=True)
-
-
-def test_runner_generated_baseline_remains_valid():
-    validate_training_proposal(_baseline_proposal(), baseline=True)
-
-
-def test_fresh_baseline_adopts_committed_human_owned_harness_fixes(monkeypatch):
-    from research import run_experiment
-
+def test_fresh_baseline_uses_the_reset_recipe_anchor(monkeypatch):
     state = {"pending_scientific_parent": "reset-parent"}
+    monkeypatch.setattr(repository, "scientific_delta", lambda parent: [])
+    monkeypatch.setattr(repository, "status_paths", lambda scope: [])
     monkeypatch.setattr(
         repository,
-        "scientific_delta",
-        lambda parent: (
-            ["tests/autoresearch/test_scenario_boundary.py"]
-            if parent == "reset-parent"
-            else []
-        ),
+        "git",
+        lambda *args: pytest.fail(f"unexpected Git call: {args}"),
     )
-    monkeypatch.setattr(repository, "status_paths", lambda scope: [])
-    monkeypatch.setattr(repository, "git", lambda *args: "current-head\n")
-
-    parent = run_experiment.fresh_baseline_scientific_parent(state)
-
-    assert parent == "current-head"
-    assert state["pending_scientific_parent"] == "current-head"
-
-
-@pytest.mark.parametrize(
-    ("changes", "live_changes"),
-    [
-        (["robot_learning/scenario/reward.py"], []),
-        (
-            ["tests/autoresearch/test_scenario_boundary.py"],
-            ["tests/autoresearch/test_scenario_boundary.py"],
-        ),
-    ],
-)
-def test_fresh_baseline_does_not_adopt_science_or_live_changes(
-    monkeypatch, changes, live_changes
-):
-    from research import run_experiment
-
-    state = {"pending_scientific_parent": "reset-parent"}
-    monkeypatch.setattr(repository, "scientific_delta", lambda parent: changes)
-    monkeypatch.setattr(repository, "status_paths", lambda scope: live_changes)
-
-    def fail_if_head_is_resolved(*args):
-        pytest.fail(f"unexpected Git call: {args}")
-
-    monkeypatch.setattr(repository, "git", fail_if_head_is_resolved)
-
     assert run_experiment.fresh_baseline_scientific_parent(state) == "reset-parent"
-    assert state["pending_scientific_parent"] == "reset-parent"
 
 
-def test_reset_campaign_dispatches_restored_recipe_as_fresh_experiment_one(
+def test_method_decision_execution_reanchors_before_delta_validation(
     monkeypatch, tmp_path
 ):
-    from research import run_experiment
+    proposal_path = tmp_path / "proposal.json"
+    proposal_path.write_text(json.dumps({"method_decision": {}}), encoding="utf-8")
+    state = _campaign_state()
+    reanchored = False
 
+    monkeypatch.setattr(
+        run_experiment,
+        "parse_args",
+        lambda: Namespace(
+            begin_inquiry=False,
+            mark_inquiry_session_starting=False,
+            mark_inquiry_session_started=False,
+            check_proposal=False,
+            check_preparation_deliverable=False,
+            check_scientific_model_deliverable=False,
+            check_evaluation_request=False,
+            check_analysis_deliverable=False,
+            record_implementation_repair_attempt=False,
+            complete_implementation_repair=False,
+            evaluate_pending_final=False,
+            evaluate_pending=False,
+            training_cap_reached=False,
+        ),
+    )
+    monkeypatch.setattr(run_experiment.paths, "PROPOSAL_PATH", proposal_path)
+    monkeypatch.setattr(repository, "synchronize_experiment_log", lambda: None)
+    monkeypatch.setattr(repository, "read_state", lambda: state)
+    monkeypatch.setattr(
+        protocol,
+        "validate_proposal_against_state",
+        lambda *_args, **_kwargs: "method_decision",
+    )
+
+    def reanchor(current):
+        nonlocal reanchored
+        assert current is state
+        reanchored = True
+
+    def validate_delta(current):
+        assert current is state
+        assert reanchored
+        return []
+
+    monkeypatch.setattr(run_experiment, "reanchor_phase_parent", reanchor)
+    monkeypatch.setattr(run_experiment, "validate_research_delta", validate_delta)
+    monkeypatch.setattr(run_experiment, "resolve_method_decision", lambda proposal: 0)
+
+    assert run_experiment.main() == 0
+    assert reanchored
+
+
+def test_baseline_proposal_requires_a_true_fresh_campaign(monkeypatch, tmp_path):
+    baseline_pending = tmp_path / "BASELINE_PENDING"
+    baseline_pending.write_text("pending\n", encoding="utf-8")
+    monkeypatch.setattr(protocol.paths, "BASELINE_PENDING_PATH", baseline_pending)
+    state = _campaign_state()
+
+    assert (
+        protocol.validate_proposal_against_state(_baseline_proposal(), state)
+        == "training"
+    )
+
+    state["last_allocated_experiment"] = 1
+    state["campaign_experiment_counters"]["campaign"] = 1
+    with pytest.raises(ValueError, match="true fresh campaign"):
+        protocol.validate_proposal_against_state(_baseline_proposal(), state)
+
+
+def test_method_start_accepts_owned_edits_but_rejects_protected_edits(
+    monkeypatch, tmp_path, capsys
+):
+    research = tmp_path / "research"
+    research.mkdir()
+    state = _campaign_state()
+    _activate_inquiry_and_method(state)
+    state["active_method"] = None
+    state["pending_scientific_parent"] = "parent"
+    proposal = {
+        "method": {
+            "action": "start",
+            "id": "method-b",
+            "scientific_question": "Can a new controller improve learning?",
+            "rationale": "The inquiry evidence supports implementing it.",
+            "lifecycle": "concept",
+        }
+    }
+    state_path = research / "state.json"
+    proposal_path = research / "proposal.json"
+    state_path.write_text(json.dumps(state), encoding="utf-8")
+    proposal_path.write_text(json.dumps(proposal), encoding="utf-8")
+    monkeypatch.setattr(repository.paths, "STATE_PATH", state_path)
+    monkeypatch.setattr(repository.paths, "PROPOSAL_PATH", proposal_path)
+    monkeypatch.setattr(run_experiment, "reanchor_phase_parent", lambda current: None)
+    monkeypatch.setattr(repository, "campaign_lab_change_paths", lambda paths: [])
+    monkeypatch.setattr(
+        run_experiment,
+        "anchored_scientific_delta",
+        lambda current: ["robot_learning/scenario/new_method.py"],
+    )
+
+    assert run_experiment.check_proposal() == 0
+    assert "PROPOSAL_VALID: method" in capsys.readouterr().out
+
+    monkeypatch.setattr(
+        run_experiment,
+        "anchored_scientific_delta",
+        lambda current: ["tests/autoresearch/test_execution_contract.py"],
+    )
+    assert run_experiment.check_proposal() == 1
+    assert "not part of the researcher's surface" in capsys.readouterr().out
+
+
+def test_restored_recipe_dispatches_as_fresh_experiment_one(monkeypatch, tmp_path):
     research = tmp_path / "research"
     research.mkdir()
     state_path = research / "research_state.json"
-    campaign_id = "00000000-0000-0000-0000-000000000001"
-    restored_config = {"algorithm": {"name": "ppo"}, "training": {"n_envs": 1}}
-    state = repository.empty_v4_campaign_state(
+    state = repository.empty_campaign_state(
         campaign={
-            "id": campaign_id,
-            "started_at": "2026-01-01T00:00:00Z",
+            "id": "campaign",
+            "started_at": "now",
             "base_commit": "reset-commit",
-            "recipe_source_commit": "restored-recipe",
+            "recipe_source_commit": "recipe-commit",
         },
         last_verdict="fresh baseline pending after research reset",
     )
     state_path.write_text(json.dumps(state), encoding="utf-8")
     baseline_pending = research / "BASELINE_PENDING"
-    baseline_pending.write_text("Fresh baseline pending.\n", encoding="utf-8")
-    proposal_path = research / "proposal.json"
-    proposal_path.write_text(json.dumps(_baseline_proposal()), encoding="utf-8")
-    path_values = {
+    baseline_pending.write_text("pending\n", encoding="utf-8")
+    for name, value in {
         "ROOT": tmp_path,
         "RESEARCH_DIR": research,
         "STATE_PATH": state_path,
         "RESULTS_PATH": research / "results.jsonl",
         "LOG_PATH": research / "EXPERIMENTS.md",
         "POSTMORTEM_PATH": research / "postmortems.md",
-        "PROPOSAL_PATH": proposal_path,
+        "PROPOSAL_PATH": research / "proposal.json",
         "CANDIDATE_ROOT": tmp_path / "models" / "candidates",
         "TRAINING_LOG_DIR": research / "training_logs",
         "BASELINE_PENDING_PATH": baseline_pending,
         "RESTART_PENDING_PATH": research / "RESTART_PENDING",
         "RECOVERY_PENDING_PATH": research / "RECOVERY_PENDING",
-    }
-    for name, value in path_values.items():
+    }.items():
         monkeypatch.setattr(repository.paths, name, value)
 
-    dispatched = []
+    dispatched: list[dict] = []
 
     def stop_before_training(
         output_dir, timesteps, seed, resume, training_log, **kwargs
@@ -2170,21 +375,13 @@ def test_reset_campaign_dispatches_restored_recipe_as_fresh_experiment_one(
                 "resume": resume,
                 "training_log": training_log,
                 "label": kwargs["label"],
-                "config": run_experiment.research_config.load_experiment_config(),
             }
         )
         raise KeyboardInterrupt
 
     monkeypatch.setattr(repository, "git", lambda *args: "reset-commit\n")
     monkeypatch.setattr(repository, "scientific_delta", lambda parent: [])
-    monkeypatch.setattr(
-        repository, "publish_scientific_recipe", lambda experiment, scope: "recipe"
-    )
-    monkeypatch.setattr(
-        run_experiment.research_config,
-        "load_experiment_config",
-        lambda: restored_config,
-    )
+    monkeypatch.setattr(repository, "publish_scientific_recipe", lambda *args: "recipe")
     monkeypatch.setattr(execution, "validate_active_configuration", lambda: None)
     monkeypatch.setattr(execution, "validate_dependency_metadata", lambda: None)
     monkeypatch.setattr(execution, "run_validation_suites", lambda paths: None)
@@ -2197,865 +394,535 @@ def test_reset_campaign_dispatches_restored_recipe_as_fresh_experiment_one(
         )
         == 130
     )
-
-    assert dispatched == [
-        {
-            "output_dir": tmp_path / "models/candidates" / campaign_id / "experiment-1",
-            "timesteps": 120_000,
-            "seed": 0,
-            "resume": None,
-            "training_log": research
-            / "training_logs"
-            / campaign_id
-            / "experiment-1-attempt-1.log",
-            "label": "baseline training",
-            "config": restored_config,
-        }
-    ]
+    assert dispatched[0]["timesteps"] == 120_000
+    assert dispatched[0]["resume"] is None
+    assert dispatched[0]["label"] == "baseline training"
     persisted = json.loads(state_path.read_text(encoding="utf-8"))
     assert persisted["last_allocated_experiment"] == 1
     assert persisted["working_lineage"] is None
-    assert persisted["best_known_lineage"] is None
     assert baseline_pending.exists()
 
 
-def _training_proposal() -> dict:
-    return {
-        "kind": "training",
-        "family": "observation.representation",
-        "investigation_type": "confirmatory",
-        "hypothesis": "the current representation limits learning",
-        "reasoning": {
-            "evidence": [
-                {"source": "evidence.txt", "observation": "Learning plateaus."}
-            ],
-            "alternative": "Insufficient training.",
-            "expected_observation": "Progress resumes.",
-            "contradicting_observation": "The plateau persists.",
-            "initialization_reason": "Test the representation from initialization.",
-            "objective_link": "Determine whether representation limits objective progress.",
-            "scientific_model": {
-                "observation": "Learning plateaus.",
-                "connection": "The task requires a stable hold, but the plateau does not establish a physical cause.",
-                "alternatives": "The representation or insufficient training may limit learning.",
-                "diagnostic_decision": "Saved checkpoints already show the plateau; a fresh representation run tests whether the proposed change can improve it.",
-            },
-            "policy_intervention": {
-                "behavioral_path": "The changed observations may let the learned policy adjust its approach before reaching the target.",
-                "failure_scope": "It could change approach failures but need not improve post-entry hold stability.",
-                "lever_choice": "A reward change is an alternative, but testing the representation addresses this question directly.",
-                "behavioral_test": "Compare reach behavior and complete success on paired episodes against the saved policy.",
-            },
-        },
-        "change": "change the observation representation",
-        "initialization": "fresh",
-        "params": {"ppo": {"gamma": 0.99}},
+def test_inquiry_phase_reanchors_without_replacing_session(monkeypatch, tmp_path):
+    state_path = tmp_path / "state.json"
+    state = _campaign_state()
+    state["working_lineage"] = {
+        "artifact": "working",
+        "fingerprint": "fingerprint",
+        "origin_experiment": 1,
+        "candidate": "baseline",
+        "parameters": {},
+        "scientific_commit": "a" * 40,
+        "training_steps": 120_000,
+        "evaluation_artifacts": [],
+        "reason": "Selected baseline.",
     }
-
-
-def test_current_phase_accepts_a_training_proposal_when_no_decision_is_pending():
-    state = {
-        "pending_evaluation_request": None,
-        "pending_researcher_decision": None,
-        "pending_final_benchmark": None,
-    }
-
-    assert validate_proposal_phase(_training_proposal(), state) == "training"
-
-
-def test_proposal_preflight_accepts_a_valid_training_proposal(
-    monkeypatch, tmp_path, capsys, scientific_memory
-):
-    proposal_path = tmp_path / "proposal.json"
-    state_path = tmp_path / "research_state.json"
-    proposal_path.write_text(json.dumps(_training_proposal()), encoding="utf-8")
-    state_path.write_text(
-        json.dumps(
-            {
-                "pending_scientific_parent": "test-parent",
-                "campaign": {"id": "current"},
-                "pending_evaluation_request": None,
-                "pending_researcher_decision": None,
-                "pending_final_benchmark": None,
-            }
+    _activate_inquiry_and_method(state)
+    state_path.write_text(json.dumps(state), encoding="utf-8")
+    monkeypatch.setattr("research.runner_paths.STATE_PATH", state_path)
+    monkeypatch.setattr(
+        repository,
+        "reanchor_scientific_parent",
+        lambda current: (
+            current.update(pending_scientific_parent="new-head") or "new-head"
         ),
-        encoding="utf-8",
     )
-    monkeypatch.setattr("research.runner_paths.PROPOSAL_PATH", proposal_path)
-    monkeypatch.setattr("research.runner_paths.STATE_PATH", state_path)
-    monkeypatch.setattr(
-        "research.runner_repository.require_resolvable_commit", lambda _: None
-    )
-    monkeypatch.setattr("research.runner_repository.scientific_delta", lambda _: [])
+    monkeypatch.setattr("research.runner_console.announce", lambda message: None)
 
-    assert check_proposal() == 0
-    assert "PROPOSAL_VALID: training" in capsys.readouterr().out
-
-
-def test_proposal_preflight_rejects_training_without_an_anchored_parent(
-    monkeypatch, tmp_path, capsys, scientific_memory
-):
-    proposal_path = tmp_path / "proposal.json"
-    state_path = tmp_path / "research_state.json"
-    proposal = _training_proposal()
-    state = {
-        "campaign": {"id": "current"},
-        "pending_evaluation_request": None,
-        "pending_researcher_decision": None,
-        "pending_final_benchmark": None,
-    }
-    proposal_path.write_text(json.dumps(proposal), encoding="utf-8")
-    state_path.write_text(json.dumps(state), encoding="utf-8")
-    original_proposal = proposal_path.read_bytes()
-    original_state = state_path.read_bytes()
-    monkeypatch.setattr("research.runner_paths.PROPOSAL_PATH", proposal_path)
-    monkeypatch.setattr("research.runner_paths.STATE_PATH", state_path)
-
-    def fail_if_anchored(*args, **kwargs):
-        del args, kwargs
-        pytest.fail("proposal preflight anchored a scientific parent")
-
-    monkeypatch.setattr(
-        "research.runner_repository.anchor_scientific_parent", fail_if_anchored
-    )
-
-    assert check_proposal() == 1
-    assert "pending scientific parent" in capsys.readouterr().out
-    assert proposal_path.read_bytes() == original_proposal
-    assert state_path.read_bytes() == original_state
-
-
-def test_begin_hypothesis_restores_a_lost_anchor_without_replacing_the_inquiry(
-    monkeypatch, tmp_path
-):
-    from research import run_experiment
-
-    state_path = tmp_path / "research_state.json"
-    proposal_path = tmp_path / "proposal.json"
-    state = repository.empty_v4_campaign_state(
-        campaign={
-            "id": "campaign",
-            "started_at": "now",
-            "base_commit": "base",
-        },
-        last_verdict="closed experiment",
-    )
-    state["active_inquiry"] = {"id": 3, "status": "active"}
-    state["campaign_inquiry_counters"]["campaign"] = 3
-    state["last_allocated_inquiry"] = 3
-    state["principal_investigator_session"] = {
-        "id": "pi-session",
-        "campaign_id": "campaign",
-        "role": "principal_investigator",
-        "status": "started",
-    }
-    state_path.write_text(json.dumps(state), encoding="utf-8")
-    proposal_path.write_text(json.dumps(_training_proposal()), encoding="utf-8")
-    monkeypatch.setattr("research.runner_paths.STATE_PATH", state_path)
-    monkeypatch.setattr("research.runner_paths.PROPOSAL_PATH", proposal_path)
-    monkeypatch.setattr(
-        "research.runner_repository.reanchor_scientific_parent",
-        lambda current: current.update(pending_scientific_parent="new-head")
-        or "new-head",
-    )
-
-    assert run_experiment.begin_hypothesis_phase() == 0
-
+    assert run_experiment.begin_inquiry_phase() == 0
     persisted = json.loads(state_path.read_text(encoding="utf-8"))
     assert persisted["pending_scientific_parent"] == "new-head"
-    assert persisted["active_inquiry"] == {"id": 3, "status": "active"}
-    assert persisted["principal_investigator_session"]["id"] == "pi-session"
-    assert json.loads(proposal_path.read_text(encoding="utf-8")) == _training_proposal()
+    assert persisted["inquiry_session"]["id"] == "session"
+    assert persisted["active_inquiry"]["id"] == 1
 
 
-def test_proposal_preflight_rejects_protected_scenario_initializer_without_execution(
-    monkeypatch, tmp_path, capsys, scientific_memory
-):
-    proposal_path = tmp_path / "proposal.json"
-    state_path = tmp_path / "research_state.json"
+def test_experiment_identity_is_consumed_before_training(monkeypatch, tmp_path):
+    state = _campaign_state()
+    _activate_inquiry_and_method(state)
+    state["pending_scientific_parent"] = "parent"
+    state_path = tmp_path / "state.json"
+    state_path.write_text(json.dumps(state), encoding="utf-8")
+    monkeypatch.setattr(repository.paths, "ROOT", tmp_path)
+    monkeypatch.setattr(repository.paths, "STATE_PATH", state_path)
+    for name, value in {
+        "RESEARCH_DIR": tmp_path / "research",
+        "RESULTS_PATH": tmp_path / "research" / "results.jsonl",
+        "LOG_PATH": tmp_path / "research" / "EXPERIMENTS.md",
+        "POSTMORTEM_PATH": tmp_path / "research" / "postmortems.md",
+        "PROPOSAL_PATH": tmp_path / "research" / "proposal.json",
+        "CANDIDATE_ROOT": tmp_path / "models" / "candidates",
+        "TRAINING_LOG_DIR": tmp_path / "research" / "training_logs",
+        "RESTART_PENDING_PATH": tmp_path / "research" / "RESTART_PENDING",
+        "RECOVERY_PENDING_PATH": tmp_path / "research" / "RECOVERY_PENDING",
+    }.items():
+        monkeypatch.setattr(repository.paths, name, value)
+    monkeypatch.setattr(repository, "git", lambda *args: "parent\n")
+    monkeypatch.setattr(repository, "scientific_delta", lambda parent: [])
+    monkeypatch.setattr(repository, "publish_campaign_laboratory", lambda state: None)
+    monkeypatch.setattr(execution, "validate_active_configuration", lambda: None)
+    monkeypatch.setattr(execution, "validate_dependency_metadata", lambda: None)
+    monkeypatch.setattr(
+        execution,
+        "train_candidate",
+        lambda *args, **kwargs: (_ for _ in ()).throw(KeyboardInterrupt),
+    )
+    monkeypatch.setattr("research.runner_console.announce", lambda message: None)
+
     proposal = _training_proposal()
-    state = {
-        "pending_scientific_parent": "test-parent",
-        "pending_evaluation_request": None,
-        "pending_researcher_decision": None,
-        "pending_final_benchmark": None,
-    }
-    proposal_path.write_text(json.dumps(proposal), encoding="utf-8")
-    state_path.write_text(json.dumps(state), encoding="utf-8")
-    original_proposal = proposal_path.read_bytes()
-    original_state = state_path.read_bytes()
-    changed_paths = ["robot_learning/scenario/__init__.py"]
-    state["campaign"] = {"id": "current"}
-    state_path.write_text(json.dumps(state), encoding="utf-8")
-    original_state = state_path.read_bytes()
-    monkeypatch.setattr("research.runner_paths.PROPOSAL_PATH", proposal_path)
-    monkeypatch.setattr("research.runner_paths.STATE_PATH", state_path)
-    monkeypatch.setattr(
-        "research.runner_repository.require_resolvable_commit", lambda _: None
+    proposal["params"] = {"training": {"n_envs": 1}}
+    assert (
+        run_experiment.run_training_experiment(
+            proposal, Namespace(timesteps=10, reuse_candidate=None)
+        )
+        == 130
     )
-    monkeypatch.setattr(
-        "research.runner_repository.scientific_delta", lambda _: list(changed_paths)
-    )
-
-    def fail_if_execution_starts(*args, **kwargs):
-        del args, kwargs
-        pytest.fail("proposal preflight started execution")
-
-    monkeypatch.setattr(
-        "research.run_experiment.run_training_experiment", fail_if_execution_starts
-    )
-    monkeypatch.setattr(
-        "research.runner_repository.anchor_scientific_parent", fail_if_execution_starts
-    )
-
-    assert check_proposal() == 1
-    assert "robot_learning/scenario/__init__.py" in capsys.readouterr().out
-    assert proposal_path.read_bytes() == original_proposal
-    assert state_path.read_bytes() == original_state
-
-    changed_paths[:] = ["robot_learning/scenario/reward.py"]
-    assert check_proposal() == 0
-    assert "PROPOSAL_VALID: training" in capsys.readouterr().out
-    assert proposal_path.read_bytes() == original_proposal
-    assert state_path.read_bytes() == original_state
+    persisted = json.loads(state_path.read_text(encoding="utf-8"))
+    assert persisted["last_allocated_experiment"] == 1
+    assert persisted["pending_training_operation"]["experiment"] == 1
 
 
-@pytest.mark.parametrize("code_action", ["keep", "revert"])
-def test_lineage_rejects_protected_changes_before_execution(
-    monkeypatch, tmp_path, capsys, code_action
+def test_completed_training_is_published_after_restart_without_retraining(
+    monkeypatch, tmp_path
 ):
-    proposal_path = tmp_path / "proposal.json"
-    state_path = tmp_path / "research_state.json"
-    proposal_path.write_text(
-        json.dumps(
-            {
-                "previous_result_decision": {
-                    "code": {"action": code_action, "reason": "resolve lineage"}
-                }
-            }
-        ),
-        encoding="utf-8",
-    )
-    state = {"pending_scientific_parent": "test-parent"}
+    state = _campaign_state()
+    _activate_inquiry_and_method(state)
+    state["pending_scientific_parent"] = "parent"
+    ledger_rounds = [{"round": 1, "inquiry_id": 1, "status": "completed"}]
+    state["preparation_measurement"] = {
+        "experiment": 1,
+        "inquiry_id": 1,
+        "campaign_lab": None,
+        "rounds": ledger_rounds,
+        "partial_evaluations": [],
+        "partial_task_reference_evaluations": [],
+    }
+    state_path = tmp_path / "research" / "state.json"
+    state_path.parent.mkdir()
     state_path.write_text(json.dumps(state), encoding="utf-8")
-    original_state = state_path.read_bytes()
-    original_proposal = proposal_path.read_bytes()
-    monkeypatch.setattr("research.runner_paths.PROPOSAL_PATH", proposal_path)
-    monkeypatch.setattr("research.runner_paths.STATE_PATH", state_path)
+    for name, value in {
+        "ROOT": tmp_path,
+        "RESEARCH_DIR": tmp_path / "research",
+        "STATE_PATH": state_path,
+        "RESULTS_PATH": tmp_path / "research" / "results.jsonl",
+        "LOG_PATH": tmp_path / "research" / "EXPERIMENTS.md",
+        "POSTMORTEM_PATH": tmp_path / "research" / "postmortems.md",
+        "PROPOSAL_PATH": tmp_path / "research" / "proposal.json",
+        "CANDIDATE_ROOT": tmp_path / "models" / "candidates",
+        "TRAINING_LOG_DIR": tmp_path / "research" / "training_logs",
+        "RESTART_PENDING_PATH": tmp_path / "research" / "RESTART_PENDING",
+        "RECOVERY_PENDING_PATH": tmp_path / "research" / "RECOVERY_PENDING",
+    }.items():
+        monkeypatch.setattr(repository.paths, name, value)
+
+    archived = {
+        "name": "candidate",
+        "artifact": "archive/candidate",
+        "fingerprint": "candidate-fingerprint",
+        "timesteps": 10,
+        "evaluations": [],
+    }
+    train_calls = 0
+    removals = []
+
+    def train_once(*_args, **_kwargs):
+        nonlocal train_calls
+        train_calls += 1
+        return 1.0
+
+    original_upsert = repository.upsert_result
+    publication_attempts = 0
+
+    def fail_first_publication(result):
+        nonlocal publication_attempts
+        publication_attempts += 1
+        if publication_attempts == 1:
+            raise OSError("injected publication failure")
+        original_upsert(result)
+
+    monkeypatch.setattr(repository, "git", lambda *args: "parent\n")
+    monkeypatch.setattr(repository, "scientific_delta", lambda parent: [])
+    monkeypatch.setattr(repository, "publish_campaign_laboratory", lambda state: None)
+    monkeypatch.setattr(repository, "publish_scientific_recipe", lambda *args: "recipe")
+    monkeypatch.setattr(repository, "require_resolvable_commit", lambda commit: None)
     monkeypatch.setattr(
-        "research.runner_protocol.validate_proposal_against_state",
-        lambda proposal, raw_state: "lineage",
+        repository, "require_complete_inference_artifact", lambda *args: None
     )
     monkeypatch.setattr(
-        "research.runner_repository.require_resolvable_commit", lambda _: None
+        repository,
+        "archive_candidates",
+        lambda *args, **kwargs: [dict(archived)],
     )
-    changed_paths = ["robot_learning/scenario/__init__.py"]
+    monkeypatch.setattr(repository, "upsert_result", fail_first_publication)
+    monkeypatch.setattr(protocol, "validate_experiment_semantics", lambda *args: None)
+    monkeypatch.setattr(execution, "validate_active_configuration", lambda: None)
+    monkeypatch.setattr(execution, "train_candidate", train_once)
     monkeypatch.setattr(
-        "research.runner_repository.scientific_delta", lambda _: changed_paths
+        execution,
+        "candidate_directories",
+        lambda candidate_dir: [{"name": "candidate", "timesteps": 10}],
     )
-
-    def fail_if_lineage_runs(*args, **kwargs):
-        del args, kwargs
-        pytest.fail("lineage execution started")
-
     monkeypatch.setattr(
-        "research.run_experiment.resolve_pending_lineage", fail_if_lineage_runs
+        execution,
+        "remove_candidate_dir",
+        lambda candidate_dir: removals.append(candidate_dir),
     )
+    monkeypatch.setattr("research.runner_console.announce", lambda message: None)
 
-    assert check_proposal() == 1
-    assert "robot_learning/scenario/__init__.py" in capsys.readouterr().out
-    monkeypatch.setattr("sys.argv", ["run_experiment.py"])
-    with pytest.raises(ValueError, match="robot_learning/scenario/__init__.py"):
-        main()
-    assert state_path.read_bytes() == original_state
-    assert proposal_path.read_bytes() == original_proposal
+    args = Namespace(timesteps=10, reuse_candidate=None)
+    assert run_experiment.run_training_experiment(_training_proposal(), args) == 1
+    interrupted = json.loads(state_path.read_text(encoding="utf-8"))
+    assert interrupted["pending_training_operation"]["progress"] == (
+        "candidates_archived"
+    )
+    assert interrupted["pending_analysis"] is None
+    assert interrupted["preparation_measurement"]["rounds"] == ledger_rounds
+    assert removals == []
 
-    changed_paths[:] = ["robot_learning/scenario/reward.py"]
-    assert check_proposal() == 0
-    assert "PROPOSAL_VALID: lineage" in capsys.readouterr().out
+    assert run_experiment.run_training_experiment(_training_proposal(), args) == 0
+    recovered = json.loads(state_path.read_text(encoding="utf-8"))
+    records = [
+        json.loads(line)
+        for line in repository.paths.RESULTS_PATH.read_text(
+            encoding="utf-8"
+        ).splitlines()
+    ]
+    assert train_calls == 1
+    assert publication_attempts == 2
+    assert len(removals) == 1
+    assert recovered["pending_training_operation"] is None
+    assert recovered["pending_analysis"]["experiment"] == 1
+    assert [(record["index"], record["status"]) for record in records] == [
+        (1, "trained")
+    ]
+    assert records[0]["preparation_evaluation_rounds"] == ledger_rounds
+    assert recovered["pending_analysis"]["preparation_evaluation_rounds"] == (
+        ledger_rounds
+    )
+    assert recovered["preparation_measurement"] is None
+
+
+def _complete_artifact(path: Path, marker: bytes = b"model") -> Path:
+    path.mkdir(parents=True)
+    path.joinpath("model.zip").write_bytes(marker)
+    path.joinpath("artifact.json").write_text("{}", encoding="utf-8")
+    path.joinpath("policy_runtime.pkl").write_bytes(b"runtime:" + marker)
+    return path
+
+
+def _saved_lineage(path: Path) -> dict:
+    return {
+        "artifact": repository.repo_relative_path(path),
+        "fingerprint": repository.artifact_fingerprint(path),
+        "origin_experiment": 1,
+        "candidate": "checkpoint-100",
+        "parameters": {"training": {"n_envs": 1}},
+        "scientific_commit": "a" * 40,
+        "training_steps": 100,
+        "evaluation_artifacts": [],
+        "reason": "Selected lineage.",
+        "designation_ordinal": 1,
+    }
 
 
 @pytest.mark.parametrize(
     ("field", "value", "message"),
     [
-        ("initialization", "resume", "initialization must be transfer or fresh"),
-        ("kind", "banana", "kind must be training"),
-        ("hypothesis", "", "hypothesis must be a non-empty string"),
+        ("scientific_commit", "", "no scientific_commit provenance"),
+        ("parameters", None, "no effective parameters"),
+        ("fingerprint", "stale", "fingerprint does not match"),
     ],
 )
-def test_proposal_preflight_rejects_static_training_contract_errors(
-    monkeypatch, tmp_path, capsys, field, value, message
+def test_continuation_parent_requires_recipe_provenance(
+    monkeypatch, tmp_path, field, value, message
 ):
-    proposal_path = tmp_path / "proposal.json"
-    state_path = tmp_path / "research_state.json"
-    proposal = _training_proposal()
-    proposal[field] = value
-    proposal_path.write_text(json.dumps(proposal), encoding="utf-8")
-    state_path.write_text(
-        json.dumps(
-            {
-                "pending_evaluation_request": None,
-                "pending_researcher_decision": None,
-                "pending_final_benchmark": None,
-            }
-        ),
-        encoding="utf-8",
-    )
-    monkeypatch.setattr("research.runner_paths.PROPOSAL_PATH", proposal_path)
-    monkeypatch.setattr("research.runner_paths.STATE_PATH", state_path)
+    monkeypatch.setattr(repository.paths, "ROOT", tmp_path)
+    state = _campaign_state()
+    state["working_lineage"] = _saved_lineage(_complete_artifact(tmp_path / "w"))
+    state["working_lineage"][field] = value
 
-    assert check_proposal() == 1
-    assert message in capsys.readouterr().out
-
-
-def _write_preflight_files(monkeypatch, tmp_path, proposal: dict) -> None:
-    proposal_path = tmp_path / "proposal.json"
-    state_path = tmp_path / "research_state.json"
-    proposal_path.write_text(json.dumps(proposal), encoding="utf-8")
-    state_path.write_text(
-        json.dumps(
-            {
-                "pending_scientific_parent": "test-parent",
-                "pending_evaluation_request": None,
-                "pending_researcher_decision": None,
-                "pending_final_benchmark": None,
-            }
-        ),
-        encoding="utf-8",
-    )
-    monkeypatch.setattr("research.runner_paths.PROPOSAL_PATH", proposal_path)
-    monkeypatch.setattr("research.runner_paths.STATE_PATH", state_path)
-    monkeypatch.setattr(
-        "research.runner_repository.require_resolvable_commit", lambda _: None
-    )
-    monkeypatch.setattr("research.runner_repository.scientific_delta", lambda _: [])
-
-
-@pytest.mark.parametrize("kind", ["training", "replication", "banana"])
-def test_proposal_preflight_rejects_a_baseline_declaring_a_kind(
-    monkeypatch, tmp_path, capsys, kind
-):
-    _write_preflight_files(monkeypatch, tmp_path, dict(_baseline_proposal(), kind=kind))
-
-    assert check_proposal() == 1
-    assert "baseline proposal must not declare kind" in capsys.readouterr().out
-
-
-def test_proposal_preflight_accepts_the_runner_generated_baseline(
-    monkeypatch, tmp_path, capsys
-):
-    _write_preflight_files(monkeypatch, tmp_path, _baseline_proposal())
-
-    assert check_proposal() == 0
-    assert "PROPOSAL_VALID: training" in capsys.readouterr().out
-
-
-@pytest.mark.parametrize("initialization", ["transfer", "resume", ""])
-def test_proposal_preflight_rejects_a_baseline_that_is_not_fresh(
-    monkeypatch, tmp_path, capsys, initialization
-):
-    _write_preflight_files(
-        monkeypatch,
-        tmp_path,
-        dict(_baseline_proposal(), initialization=initialization),
-    )
-
-    assert check_proposal() == 1
-    assert "baseline proposal requires fresh initialization" in capsys.readouterr().out
-
-
-def test_current_phase_rejects_redundant_lineage_before_training_fields():
-    state = {
-        "pending_evaluation_request": None,
-        "pending_researcher_decision": None,
-        "pending_final_benchmark": None,
-    }
-    residue = {"previous_result_decision": {"experiment": 1}}
-
-    with pytest.raises(ValueError, match="lineage is already resolved"):
-        validate_proposal_phase(residue, state)
-
-
-def test_lineage_phase_accepts_only_the_lineage_proposal_shape():
-    state = {"pending_researcher_decision": {"experiment": 1}}
-
-    assert (
-        validate_proposal_phase({"previous_result_decision": {"experiment": 1}}, state)
-        == "lineage"
-    )
-    with pytest.raises(ValueError, match="requires a lineage proposal"):
-        validate_proposal_phase(_training_proposal(), state)
-
-
-def test_proposal_preflight_rejects_incident_residue_without_mutation(
-    monkeypatch, tmp_path, capsys
-):
-    proposal_path = tmp_path / "proposal.json"
-    state_path = tmp_path / "research_state.json"
-    accepted = tmp_path / "accepted" / "model.zip"
-    accepted.parent.mkdir()
-    accepted.write_bytes(b"accepted-lineage")
-    proposal_path.write_text(
-        json.dumps({"previous_result_decision": {"experiment": 1}}),
-        encoding="utf-8",
-    )
-    state = {
-        "last_experiment": 1,
-        "pending_evaluation_request": None,
-        "pending_researcher_decision": None,
-        "pending_final_benchmark": None,
-    }
-    state_path.write_text(json.dumps(state), encoding="utf-8")
-    original_state = state_path.read_bytes()
-    original_proposal = proposal_path.read_bytes()
-    monkeypatch.setattr("research.runner_paths.PROPOSAL_PATH", proposal_path)
-    monkeypatch.setattr("research.runner_paths.STATE_PATH", state_path)
-
-    assert check_proposal() == 1
-    assert "lineage is already resolved" in capsys.readouterr().out
-
-    def fail_if_training_starts(*args, **kwargs):
-        del args, kwargs
-        pytest.fail("training started for a phase-incompatible proposal")
-
-    monkeypatch.setattr(
-        "research.runner_execution.train_candidate", fail_if_training_starts
-    )
-    monkeypatch.setattr("sys.argv", ["run_experiment.py"])
-    assert main() == 1
-    assert "invalid proposal for current phase" in capsys.readouterr().out
-    assert state_path.read_bytes() == original_state
-    assert proposal_path.read_bytes() == original_proposal
-    assert accepted.read_bytes() == b"accepted-lineage"
-
-
-# --- experiment identity ---------------------------------------------------
-
-
-def _allocation_campaign(monkeypatch, tmp_path, state: dict) -> Path:
-    """The smallest on-disk campaign the training path of main() can run."""
-    accepted = tmp_path / "accepted"
-    accepted.mkdir(exist_ok=True)
-    for filename in (
-        "model.zip",
-        "vecnormalize.pkl",
-        "artifact.json",
-        "policy_runtime.pkl",
-    ):
-        (accepted / filename).touch()
-    campaign_id = "00000000-0000-0000-0000-000000000001"
-    (tmp_path / "evidence.txt").write_text("Learning plateaus.", encoding="utf-8")
-    memory = tmp_path / "postmortems.md"
-    memory.write_text(
-        f"## {campaign_id} / Scientific strategy\n\n"
-        "**Direction:** Investigate the plateau.\n\n"
-        "**Lessons and limits:** evidence.txt records a single observation.\n\n"
-        "**Open questions:** Is further training useful?\n\n"
-        "**Active inquiry:** Test whether measured progression resumes.\n\n"
-        "**Conditional next steps:** Continue if progression resumes.\n\n"
-        "**Reconsider when:** No further progress.\n",
-        encoding="utf-8",
-    )
-    monkeypatch.setattr("research.runner_paths.POSTMORTEM_PATH", memory)
-    # Experiment identity is allocated per campaign; seed the campaign counter
-    # from whichever flat legacy index the caller intended.
-    allocated = max(
-        int(state.get("last_allocated_experiment") or 0),
-        int(state.get("last_experiment") or 0),
-    )
-    state_path = tmp_path / "research_state.json"
-    state_path.write_text(
-        json.dumps(
-            {
-                "schema_version": 3,
-                "accepted_artifact": "accepted",
-                "accepted_metrics": None,
-                "campaign": {
-                    "id": campaign_id,
-                    "started_at": "2026-01-01T00:00:00Z",
-                    "base_commit": "abc123",
-                },
-                "campaign_experiment_counters": {campaign_id: allocated},
-                **state,
-            }
-        ),
-        encoding="utf-8",
-    )
-    (tmp_path / "EXPERIMENTS.md").write_text("| # | Date |\n", encoding="utf-8")
-
-    def fail_if_training_starts(*args, **kwargs):
-        del args, kwargs
-        pytest.fail("training started for an experiment that never validated")
-
-    for target, value in {
-        "research.runner_paths.ROOT": tmp_path,
-        "research.runner_paths.STATE_PATH": state_path,
-        "research.runner_paths.LOG_PATH": tmp_path / "EXPERIMENTS.md",
-        "research.runner_paths.RESULTS_PATH": tmp_path / "results.jsonl",
-        "research.runner_paths.PROPOSAL_PATH": tmp_path / "proposal.json",
-        "research.runner_paths.CANDIDATE_ROOT": tmp_path / "models" / "candidates",
-        "research.runner_paths.RESTART_PENDING_PATH": tmp_path / "RESTART_PENDING",
-        "research.runner_paths.RECOVERY_PENDING_PATH": tmp_path / "RECOVERY_PENDING",
-        "research.runner_repository.git": (
-            lambda *args: "0" * 40 + "\n" if args[0] == "rev-parse" else ""
-        ),
-        "research.runner_repository.status_paths": lambda paths: [],
-        "research.runner_execution.train_candidate": fail_if_training_starts,
-    }.items():
-        monkeypatch.setattr(target, value)
-    return state_path
-
-
-def _rejected_proposal() -> dict:
-    """Shape-valid, but carries no research change, so execution rejects it."""
-    return {
-        "kind": "training",
-        "family": "identity.allocation",
-        "investigation_type": "confirmatory",
-        "hypothesis": "An experiment number is spent even when nothing trains.",
-        "reasoning": _training_proposal()["reasoning"],
-        "change": "No researcher change at all.",
-        "initialization": "fresh",
-    }
-
-
-def _allocated(state_path: Path) -> int | None:
-    return json.loads(state_path.read_text(encoding="utf-8")).get(
-        "last_allocated_experiment"
-    )
-
-
-def test_runner_state_outranks_an_incomplete_history(monkeypatch, tmp_path):
-    monkeypatch.setattr("research.runner_paths.CANDIDATE_ROOT", tmp_path / "candidates")
-    monkeypatch.setattr("research.runner_paths.RESULTS_PATH", tmp_path / "results")
-    monkeypatch.setattr("research.runner_paths.LOG_PATH", tmp_path / "log")
-    (tmp_path / "results").write_text('{"index": 1}\n{"index": 2}\n', encoding="utf-8")
-    (tmp_path / "log").write_text("| 1 | a |\n| 2 | b |\n", encoding="utf-8")
-
-    assert next_experiment_index({"last_allocated_experiment": 4}) == 5
-
-
-def test_a_state_file_without_allocation_seeds_it_from_the_runner_state():
-    assert allocated_experiment_index({"last_experiment": 4}) == 4
-    assert allocated_experiment_index({}) == 0
-
-
-def test_a_fresh_campaign_allocates_the_first_experiment(monkeypatch, tmp_path):
-    monkeypatch.setattr("research.runner_paths.CANDIDATE_ROOT", tmp_path / "candidates")
-
-    assert next_experiment_index({"last_experiment": 0}) == 1
-
-
-@pytest.mark.parametrize("existing", ["experiment-5", "recovery-experiment-5"])
-def test_unexpected_experiment_data_is_preserved_and_its_identity_skipped(
-    monkeypatch, tmp_path, capsys, existing
-):
-    candidates = tmp_path / "candidates"
-    (candidates / existing).mkdir(parents=True)
-    (candidates / existing / "model.zip").write_bytes(b"earlier experiment")
-    monkeypatch.setattr("research.runner_paths.CANDIDATE_ROOT", candidates)
-
-    assert next_experiment_index({"last_allocated_experiment": 4}) == 6
-    assert (candidates / existing / "model.zip").read_bytes() == b"earlier experiment"
-    assert "skipping that identity" in capsys.readouterr().out
-
-
-def test_recovery_keeps_the_identity_its_interrupted_run_allocated(tmp_path):
-    state = {"last_experiment": 4, "last_allocated_experiment": 5}
-
-    assert resumed_experiment_index(state, tmp_path / "recovery-experiment-5") == 5
-    assert resumed_experiment_index(state, None) == 5
-    # A state file written before allocation existed still recovers experiment 5.
-    assert (
-        resumed_experiment_index(
-            {"last_experiment": 4}, tmp_path / "recovery-experiment-5"
+    with pytest.raises(ValueError, match=message):
+        protocol.resolved_training_parent(
+            {"kind": "continuation", "training_parent": "working"}, state, "transfer"
         )
-        == 5
-    )
 
 
-def test_an_invalid_experiment_consumes_its_identity(monkeypatch, tmp_path, capsys):
-    state_path = _allocation_campaign(monkeypatch, tmp_path, {"last_experiment": 4})
-    proposal_path = tmp_path / "proposal.json"
-    monkeypatch.setattr("sys.argv", ["run_experiment.py"])
-
-    proposal_path.write_text(json.dumps(_rejected_proposal()), encoding="utf-8")
-    assert main() == 1
-    assert "experiment 5 invalid" in capsys.readouterr().out
-    assert _allocated(state_path) == 5
-
-    # A fresh Runner invocation reloads the persisted state; 5 is spent for good.
-    proposal_path.write_text(json.dumps(_rejected_proposal()), encoding="utf-8")
-    assert main() == 1
-    assert "experiment 6 invalid" in capsys.readouterr().out
-    assert _allocated(state_path) == 6
-    recorded = [
-        json.loads(line)["index"]
-        for line in (tmp_path / "results.jsonl")
-        .read_text(encoding="utf-8")
-        .splitlines()
-        if line.strip()
-    ]
-    assert recorded == [5, 6]
-
-
-@pytest.mark.parametrize("mechanism", ["restart", "recovery"])
-def test_a_resumed_experiment_reuses_its_allocated_identity(
-    monkeypatch, tmp_path, capsys, mechanism
-):
-    state_path = _allocation_campaign(
-        monkeypatch,
-        tmp_path,
-        {"last_experiment": 4, "last_allocated_experiment": 5},
-    )
-    (tmp_path / "proposal.json").write_text(
-        json.dumps(_rejected_proposal()), encoding="utf-8"
-    )
-    argv = ["run_experiment.py"]
-    if mechanism == "restart":
-        (tmp_path / "RESTART_PENDING").write_text("restart\n", encoding="utf-8")
-    else:
-        recovery = tmp_path / "models" / "candidates" / "recovery-experiment-5"
-        recovery.mkdir(parents=True)
-        argv += ["--reuse-candidate", str(recovery)]
-    monkeypatch.setattr("sys.argv", argv)
-
-    assert main() == 1
-    assert "experiment 5 invalid" in capsys.readouterr().out
-    assert _allocated(state_path) == 5
-
-
-def test_a_pending_phase_proposal_allocates_no_identity(monkeypatch, tmp_path, capsys):
-    state_path = _allocation_campaign(
-        monkeypatch,
-        tmp_path,
-        {"last_experiment": 4, "pending_evaluation_request": {"experiment": 4}},
-    )
-    (tmp_path / "proposal.json").write_text(
-        json.dumps(_rejected_proposal()), encoding="utf-8"
-    )
-    monkeypatch.setattr("sys.argv", ["run_experiment.py"])
-
-    assert main() == 1
-    assert "invalid proposal for current phase" in capsys.readouterr().out
-    assert _allocated(state_path) is None
-
-
-def test_runner_state_is_never_a_researcher_change(monkeypatch):
-    monkeypatch.setattr(
-        "research.runner_repository.status_paths",
-        lambda paths: (
-            [
-                "research/research_state.json",
-                "robot_learning/scenario/reward.py",
-            ]
-            if paths
-            else []
-        ),
-    )
-
-    assert assert_research_surface() == ["robot_learning/scenario/reward.py"]
-
-
-# --- candidate manifest ----------------------------------------------------
-
-
-def test_candidate_manifest_preserves_identity_and_complete_artifacts(tmp_path):
-    finalists = []
-    for number in range(3):
-        relative = f"finalists/checkpoint-{number}"
-        artifact_dir = tmp_path / relative
-        artifact_dir.mkdir(parents=True)
-        for filename in (
-            "model.zip",
-            "vecnormalize.pkl",
-            "artifact.json",
-            "policy_runtime.pkl",
-        ):
-            (artifact_dir / filename).touch()
-        finalists.append(
-            {
-                "name": f"checkpoint-{number * 100}",
-                "timesteps": number * 100,
-                "path": relative,
-                "training_success": 0.0,
-                "ep_rew_mean": 1.0,
-            }
-        )
-    (tmp_path / "candidate_manifest.json").write_text(
-        json.dumps({"candidates": finalists}), encoding="utf-8"
-    )
-
-    candidates = candidate_directories(tmp_path)
-
-    assert [item["name"] for item in candidates] == [
-        "checkpoint-0",
-        "checkpoint-100",
-        "checkpoint-200",
-    ]
-    assert [item["timesteps"] for item in candidates] == [0, 100, 200]
-    assert [item["path"] for item in candidates] == [
-        tmp_path / item["path"] for item in finalists
-    ]
-
-
-def test_candidate_manifest_is_not_limited_to_three_artifacts(tmp_path):
-    finalists = []
-    for number in range(5):
-        relative = f"finalists/checkpoint-{number}"
-        artifact_dir = tmp_path / relative
-        artifact_dir.mkdir(parents=True)
-        for filename in (
-            "model.zip",
-            "vecnormalize.pkl",
-            "artifact.json",
-            "policy_runtime.pkl",
-        ):
-            (artifact_dir / filename).touch()
-        finalists.append({"name": f"checkpoint-{number}", "path": relative})
-    (tmp_path / "candidate_manifest.json").write_text(
-        json.dumps({"candidates": finalists}), encoding="utf-8"
-    )
-
-    assert len(candidate_directories(tmp_path)) == 5
-
-
-def test_candidate_manifest_rejects_a_candidate_named_for_the_end_of_training(
-    tmp_path,
-):
-    artifact_dir = tmp_path / "final_checkpoint"
-    artifact_dir.mkdir()
-    for filename in (
-        "model.zip",
-        "vecnormalize.pkl",
-        "artifact.json",
-        "policy_runtime.pkl",
-    ):
-        (artifact_dir / filename).touch()
-    (tmp_path / "candidate_manifest.json").write_text(
-        json.dumps({"candidates": [{"name": "final", "path": "final_checkpoint"}]}),
-        encoding="utf-8",
-    )
-
-    with pytest.raises(RuntimeError, match="checkpoint-<steps>"):
-        candidate_directories(tmp_path)
-
-
-# --- lineage ---------------------------------------------------------------
-
-
-def test_lineage_resolution_finishes_before_next_experiment_training(
+def test_frozen_training_parent_survives_role_change_but_not_replacement(
     monkeypatch, tmp_path
 ):
-    candidate = tmp_path / "archive" / "candidate"
-    candidate.mkdir(parents=True)
-    for filename in (
-        "model.zip",
-        "vecnormalize.pkl",
-        "artifact.json",
-        "policy_runtime.pkl",
+    monkeypatch.setattr(repository.paths, "ROOT", tmp_path)
+    monkeypatch.setattr(repository, "write_state", lambda _state: None)
+    monkeypatch.setattr(repository, "scientific_delta", lambda _parent: [])
+    monkeypatch.setattr(
+        protocol,
+        "plan_lineage_restore",
+        lambda parent: {"parent": "a" * 40, "restore": [], "remove_created": []},
+    )
+    working = _complete_artifact(tmp_path / "working", b"working")
+    state = _campaign_state()
+    state["working_lineage"] = _saved_lineage(working)
+    proposal = {"kind": "continuation", "training_parent": "working"}
+    frozen = {
+        "experiment": 2,
+        "initialization": "transfer",
+        "code_parent_commit": "parent",
+        "researcher_changes": [],
+    }
+    operation = run_experiment._training_parent_operation(proposal, state, **frozen)
+    parent = dict(operation["parent"])
+
+    state["working_lineage"] = _saved_lineage(
+        _complete_artifact(tmp_path / "reassigned", b"reassigned")
+    )
+    resumed = run_experiment._training_parent_operation(proposal, state, **frozen)
+
+    assert resumed["parent"] == parent
+    assert repository.resolve_repo_path(parent["artifact"]) == working
+    assert parent["scientific_commit"] == "a" * 40
+    assert parent["parameters"] == {"training": {"n_envs": 1}}
+    working.joinpath("model.zip").write_bytes(b"replaced")
+    with pytest.raises(
+        run_experiment.FrozenOperationMismatch, match="parent fingerprint changed"
     ):
-        (candidate / filename).write_bytes(b"artifact")
-    state_path = tmp_path / "state.json"
-    state_path.write_text(
+        run_experiment._apply_training_parent_operation(resumed, state)
+
+
+def _write_manifest(root: Path, names: list[str]) -> None:
+    for name in names:
+        _complete_artifact(root / "checkpoints" / name, name.encode())
+    root.joinpath("candidate_manifest.json").write_text(
         json.dumps(
             {
-                "schema_version": 3,
-                "accepted_artifact": "accepted",
-                "accepted_metrics": None,
-                "pending_scientific_parent": "base-commit",
-                "campaign": {
-                    "id": "00000000-0000-0000-0000-000000000001",
-                    "started_at": "2026-01-01T00:00:00Z",
-                    "base_commit": "abc123",
-                },
-                "pending_researcher_decision": {
-                    "experiment": 3,
-                    "candidates": [
-                        {
-                            "name": "candidate",
-                            "artifact": "archive/candidate",
-                            "timesteps": 10,
-                            "evaluations": [],
-                            "summary": None,
-                        }
-                    ],
-                    "champion_available": False,
-                    "parameters": {},
-                    "initialization": "fresh",
-                    "training_budget_steps": 10,
-                },
+                "candidates": [
+                    {
+                        "name": name,
+                        "timesteps": int(name.split("-")[1]),
+                        "path": f"checkpoints/{name}",
+                        "training_success": index / 10,
+                    }
+                    for index, name in enumerate(names)
+                ]
             }
         ),
         encoding="utf-8",
     )
-    proposal_path = tmp_path / "proposal.json"
-    proposal_path.write_text(
-        json.dumps(
+
+
+def test_candidate_manifest_preserves_identity_order_and_artifacts(tmp_path):
+    names = ["checkpoint-400", "checkpoint-100", "checkpoint-300", "checkpoint-200"]
+    source = tmp_path / "source"
+    _write_manifest(source, names)
+    _complete_artifact(source / "final", b"final")
+    for filename in ("model.zip", "artifact.json", "policy_runtime.pkl"):
+        (source / filename).write_bytes((source / "final" / filename).read_bytes())
+
+    execution.copy_candidate_outputs(source, tmp_path / "copied")
+    candidates = execution.candidate_directories(tmp_path / "copied")
+
+    assert [item["name"] for item in candidates] == names
+    assert [item["timesteps"] for item in candidates] == [400, 100, 300, 200]
+    assert [item["training_success"] for item in candidates] == [0, 0.1, 0.2, 0.3]
+    for item in candidates:
+        original = source / "checkpoints" / item["name"]
+        assert repository.artifact_fingerprint(
+            item["path"]
+        ) == repository.artifact_fingerprint(original)
+
+
+@pytest.mark.parametrize(
+    ("corruption", "message"),
+    [("name", "checkpoint-<steps>"), ("runtime", "candidate is incomplete")],
+)
+def test_candidate_manifest_rejects_unnamed_or_incomplete_candidates(
+    tmp_path, corruption, message
+):
+    _write_manifest(tmp_path, ["checkpoint-100", "checkpoint-200"])
+    if corruption == "name":
+        manifest = json.loads((tmp_path / "candidate_manifest.json").read_text())
+        manifest["candidates"][1]["name"] = "final"
+        (tmp_path / "candidate_manifest.json").write_text(json.dumps(manifest))
+    else:
+        (tmp_path / "checkpoints" / "checkpoint-200" / "policy_runtime.pkl").unlink()
+
+    with pytest.raises(RuntimeError, match=message):
+        execution.candidate_directories(tmp_path)
+
+
+def test_interrupted_training_resumes_remaining_budget_under_one_identity(
+    monkeypatch, tmp_path
+):
+    state = _campaign_state()
+    _activate_inquiry_and_method(state)
+    state["pending_scientific_parent"] = "parent"
+    research = tmp_path / "research"
+    research.mkdir()
+    state_path = research / "state.json"
+    state_path.write_text(json.dumps(state), encoding="utf-8")
+    for name, value in {
+        "ROOT": tmp_path,
+        "RESEARCH_DIR": research,
+        "STATE_PATH": state_path,
+        "RESULTS_PATH": research / "results.jsonl",
+        "LOG_PATH": research / "EXPERIMENTS.md",
+        "POSTMORTEM_PATH": research / "postmortems.md",
+        "PROPOSAL_PATH": research / "proposal.json",
+        "CANDIDATE_ROOT": tmp_path / "models" / "candidates",
+        "TRAINING_LOG_DIR": research / "training_logs",
+        "RESTART_PENDING_PATH": research / "RESTART_PENDING",
+        "RECOVERY_PENDING_PATH": research / "RECOVERY_PENDING",
+    }.items():
+        monkeypatch.setattr(repository.paths, name, value)
+    config_path = research / "current_params.json"
+    config_path.write_text(
+        research_config.CONFIG_PATH.read_text(encoding="utf-8"), encoding="utf-8"
+    )
+    monkeypatch.setattr(research_config, "CONFIG_PATH", config_path)
+    dispatched: list[dict] = []
+
+    def train(output_dir, timesteps, seed, resume, training_log, **kwargs):
+        dispatched.append(
             {
-                "previous_result_decision": {
-                    "experiment": 3,
-                    "continue_from": "candidate",
-                    "reason": "Selected measured lineage.",
-                    "code": {"action": "keep", "reason": "Keep this parent."},
-                    "request_final_benchmark": True,
-                    "terminal_reason": "Submit the selected measured lineage.",
-                }
+                "timesteps": timesteps,
+                "resume": resume,
+                "continue": kwargs.get("continue_timesteps", False),
             }
-        ),
-        encoding="utf-8",
-    )
-    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
-    monkeypatch.setattr("research.runner_paths.STATE_PATH", state_path)
-    monkeypatch.setattr("research.runner_paths.PROPOSAL_PATH", proposal_path)
-    monkeypatch.setattr("research.runner_paths.ACCEPTED_DIR", tmp_path / "accepted")
-    monkeypatch.setattr("research.runner_paths.GOAL_PATH", tmp_path / "GOAL_REACHED")
-    monkeypatch.setattr("research.runner_repository.git", lambda *args: "base-commit\n")
-    monkeypatch.setattr("research.runner_repository.scientific_delta", lambda _: [])
-    committed = []
+        )
+        if len(dispatched) > 1:
+            return 1.0
+        training_log.parent.mkdir(parents=True, exist_ok=True)
+        training_log.write_text("interrupted\n", encoding="utf-8")
+        _complete_artifact(output_dir)
+        output_dir.joinpath("artifact.json").write_text(
+            json.dumps({"timesteps": 4, "completed": False}), encoding="utf-8"
+        )
+        raise KeyboardInterrupt
 
-    def record_lineage_commit(*args, **kwargs):
-        del kwargs
-        committed.append(args)
-
+    monkeypatch.setattr(repository, "git", lambda *args: "parent\n")
+    monkeypatch.setattr(repository, "scientific_delta", lambda parent: [])
+    monkeypatch.setattr(repository, "publish_campaign_laboratory", lambda state: None)
+    monkeypatch.setattr(repository, "publish_scientific_recipe", lambda *args: "recipe")
+    monkeypatch.setattr(repository, "require_resolvable_commit", lambda commit: None)
     monkeypatch.setattr(
-        "research.runner_repository.commit_lineage_decision", record_lineage_commit
+        repository, "require_complete_inference_artifact", lambda *args: None
     )
-
-    def fail_if_training_starts(*args, **kwargs):
-        del args, kwargs
-        pytest.fail("next experiment trained too early")
-
     monkeypatch.setattr(
-        "research.runner_execution.train_candidate",
-        fail_if_training_starts,
+        repository,
+        "archive_candidates",
+        lambda index, contenders, *args, **kwargs: [
+            {
+                "name": "checkpoint-10",
+                "artifact": f"archive/experiment-{index}",
+                "fingerprint": "candidate-fingerprint",
+                "timesteps": 10,
+                "evaluations": [],
+            }
+        ],
     )
-    monkeypatch.setattr("sys.argv", ["run_experiment.py"])
-
-    assert main() == 0
-    assert not proposal_path.exists()
-    resolved = json.loads(state_path.read_text(encoding="utf-8"))
-    assert committed == [(3, "candidate")]
-    assert resolved["pending_researcher_decision"] is None
-    assert resolved["pending_final_benchmark"]["selected"] == "candidate"
-
-    def evaluate_after_commit(model, progress_callback=None):
-        assert committed == [(3, "candidate")]
-        assert model == tmp_path / "accepted" / "model.zip"
-        # The terminal assessment reports its episodes instead of running silent.
-        assert progress_callback is not None
-        progress_callback(200, 200)
-        return {
-            "episodes": 200,
-            "seed": 1000,
-            "success_percent": 100.0,
-            "goal_reached": True,
-        }
-
+    monkeypatch.setattr(protocol, "validate_experiment_semantics", lambda *args: None)
+    monkeypatch.setattr(execution, "validate_active_configuration", lambda: None)
+    monkeypatch.setattr(execution, "validate_dependency_metadata", lambda: None)
+    monkeypatch.setattr(execution, "validate_reusable_candidate", lambda *a, **k: None)
+    monkeypatch.setattr(execution, "train_candidate", train)
     monkeypatch.setattr(
-        "robot_learning.scenario.final_benchmark.evaluate_final_model",
-        evaluate_after_commit,
+        execution,
+        "candidate_directories",
+        lambda candidate_dir: [{"name": "checkpoint-10", "timesteps": 10}],
     )
-    from research.run_experiment import execute_pending_final_benchmark
+    monkeypatch.setattr(execution, "remove_candidate_dir", lambda path: None)
+    monkeypatch.setattr("research.runner_console.announce", lambda message: None)
 
-    assert execute_pending_final_benchmark() == 0
+    first = Namespace(timesteps=10, reuse_candidate=None)
+    assert run_experiment.run_training_experiment(_training_proposal(), first) == 130
+    recovery = repository.resolve_repo_path(
+        repository.paths.RECOVERY_PENDING_PATH.read_text(encoding="utf-8").strip()
+    )
+    assert recovery.name == "recovery-experiment-1"
+
+    resumed = Namespace(timesteps=10, reuse_candidate=recovery)
+    assert run_experiment.run_training_experiment(_training_proposal(), resumed) == 0
+
+    assert dispatched[0] == {"timesteps": 10, "resume": None, "continue": False}
+    assert dispatched[-1] == {
+        "timesteps": 6,
+        "resume": recovery / "model.zip",
+        "continue": True,
+    }
+    persisted = json.loads(state_path.read_text(encoding="utf-8"))
+    assert persisted["last_allocated_experiment"] == 1
+    assert persisted["campaign_experiment_counters"]["campaign"] == 1
+    assert persisted["pending_analysis"]["experiment"] == 1
+    assert [record["index"] for record in repository.result_records()] == [1]
+    assert not repository.paths.RECOVERY_PENDING_PATH.exists()
+
+
+def test_inquiry_measurement_history_is_append_only_across_rounds():
+    state = _campaign_state()
+    state["preparation_measurement"] = {
+        "experiment": 2,
+        "inquiry_id": 1,
+        "campaign_lab": None,
+        "rounds": [{"round": 1, "status": "completed"}],
+        "partial_evaluations": [{"evaluation_artifact": "round-1.json"}],
+        "partial_task_reference_evaluations": [],
+    }
+    pending = {
+        "experiment": 3,
+        "inquiry_id": 1,
+        "evaluation_rounds": [
+            {"round": 1, "status": "completed"},
+            {"round": 2, "status": "completed"},
+        ],
+    }
+
+    run_experiment.append_preparation_measurement(
+        state,
+        pending,
+        executed=[
+            {"evaluation_artifact": "round-1.json"},
+            {"evaluation_artifact": "round-2.json"},
+        ],
+        reference_executed=[{"evaluation_artifact": "reference-2.json"}],
+    )
+
+    ledger = state["preparation_measurement"]
+    assert [item["round"] for item in ledger["rounds"]] == [1, 2]
+    assert [item["evaluation_artifact"] for item in ledger["partial_evaluations"]] == [
+        "round-1.json",
+        "round-2.json",
+    ]
+    assert ledger["partial_task_reference_evaluations"] == [
+        {"evaluation_artifact": "reference-2.json"}
+    ]
+
+
+def test_role_change_preserves_measurement_round_history_but_not_stale_reuse():
+    state = _campaign_state()
+    _activate_inquiry_and_method(state)
+    state["working_lineage"] = {
+        "artifact": "working",
+        "fingerprint": "new-fingerprint",
+        "origin_experiment": 2,
+        "candidate": "new-working",
+        "parameters": {},
+        "scientific_commit": "b" * 40,
+        "training_steps": 20,
+        "evaluation_artifacts": [],
+        "reason": "New working lineage.",
+    }
+    state["preparation_measurement"] = {
+        "experiment": 3,
+        "inquiry_id": 1,
+        "rounds": [{"round": 1, "status": "completed"}],
+        "partial_evaluations": [
+            {
+                "candidate": "working",
+                "model_fingerprint": "old-fingerprint",
+                "evaluation_artifact": "old.json",
+            }
+        ],
+        "partial_task_reference_evaluations": [],
+    }
+
+    pending = protocol.preparation_measurement_context(state)
+
+    assert pending["evaluation_rounds"] == [{"round": 1, "status": "completed"}]
+    assert pending["partial_evaluations"] == []

@@ -64,26 +64,31 @@ def test_runner_marks_an_early_training_interrupt_for_restart(monkeypatch, tmp_p
         run_experiment,
         "parse_args",
         lambda: Namespace(
-            migrate_research_state=False,
-            begin_hypothesis=False,
-            conclusion_only=False,
-            mark_principal_investigator_session_started=False,
+            begin_inquiry=False,
+            training_cap_reached=False,
+            mark_inquiry_session_starting=False,
+            mark_inquiry_session_started=False,
             check_proposal=False,
             check_preparation_deliverable=False,
             check_scientific_model_deliverable=False,
             check_evaluation_request=False,
             check_analysis_deliverable=False,
-            check_lineage_evidence=None,
+            record_implementation_repair_attempt=False,
+            complete_implementation_repair=False,
             evaluate_pending_final=False,
             evaluate_pending=False,
+            timesteps=10,
+            reuse_candidate=None,
         ),
     )
-    monkeypatch.setattr(run_experiment.repository, "synchronize_experiment_log", lambda: None)
+    monkeypatch.setattr(
+        run_experiment.repository, "synchronize_experiment_log", lambda: None
+    )
     monkeypatch.setattr(run_experiment.repository, "read_state", dict)
     monkeypatch.setattr(
         run_experiment.protocol,
         "validate_proposal_against_state",
-        lambda proposal, state: "training",
+        lambda proposal, state, **kwargs: "training",
     )
     monkeypatch.setattr(
         run_experiment,

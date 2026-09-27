@@ -1,35 +1,125 @@
-"""The v4 Researcher lifecycle separates inquiry, analysis, and closure roles.
+"""Inquiry-centered lifecycle boundaries exposed by the launcher and state."""
 
-The campaign PI owns inquiry and experiment preparation across restarts.
-Post-training analysis may request another measurement round, closure remains a
-separate phase, and evaluation design remains only for schema-v3 compatibility.
-"""
-
+import json
+import shutil
+import subprocess
 import sys
 from importlib.metadata import version
 from pathlib import Path
 
 import pytest
 
-from research import (
-    reset_campaign,
-    run_experiment,
-    runner_paths,
-    runner_protocol,
-    runner_repository,
-)
+from research import reset_campaign, run_experiment, runner_paths, runner_protocol
+from research import runner_repository as repository
 
 ROOT = Path(__file__).resolve().parents[2]
-SCRIPT = (ROOT / "run_research.ps1").read_text(encoding="utf-8")
+SCRIPT_PATH = ROOT / "run_research.ps1"
+SCRIPT = SCRIPT_PATH.read_text(encoding="utf-8")
 AGENTS = (ROOT / "AGENTS.md").read_text(encoding="utf-8")
+POWERSHELL = shutil.which("pwsh") or shutil.which("powershell")
+powershell_only = pytest.mark.skipif(
+    POWERSHELL is None, reason="no PowerShell host to run the launcher functions"
+)
+OPERATION_FUNCTIONS = (
+    "New-LegalOperation",
+    "Get-InquiryOperations",
+    "Get-AnalysisOperations",
+    "Format-OperationContract",
+)
 
 
-def test_evaluation_design_is_only_the_legacy_compatibility_path():
-    analysis_branch = (
-        "schema_version -eq 4 -and $null -ne $researchState.pending_analysis"
+def _launcher_operations(
+    tmp_path: Path, state: dict, *, analysis: bool = False, cap: bool = False
+) -> dict:
+    """Evaluate the launcher's own operation functions against one state."""
+    state_path = tmp_path / "state.json"
+    state_path.write_text(json.dumps(state), encoding="utf-8")
+    names = ", ".join(f"'{name}'" for name in OPERATION_FUNCTIONS)
+    call = (
+        "Get-AnalysisOperations -State $state"
+        if analysis
+        else f"Get-InquiryOperations -State $state -TrainingCapReached:${str(cap).lower()}"
     )
-    assert analysis_branch in SCRIPT
-    assert "if ($null -ne $researchState.pending_evaluation_request)" in SCRIPT
+    script = tmp_path / "operations.ps1"
+    script.write_text(
+        f"""
+$ast = [System.Management.Automation.Language.Parser]::ParseFile(
+    '{SCRIPT_PATH}', [ref]$null, [ref]$null)
+$names = @({names})
+$definitions = $ast.FindAll({{
+    param($node)
+    $node -is [System.Management.Automation.Language.FunctionDefinitionAst] -and
+        $node.Name -in $names
+}}, $true)
+foreach ($definition in $definitions) {{
+    . ([scriptblock]::Create($definition.Extent.Text))
+}}
+$state = Get-Content -Raw '{state_path}' | ConvertFrom-Json
+$operations = @({call})
+[pscustomobject]@{{
+    legal = @($operations | Where-Object {{ $_.Legal }} | ForEach-Object {{ $_.Name }})
+    blocked = @($operations | Where-Object {{ -not $_.Legal }} | ForEach-Object {{ $_.Name }})
+    contract = Format-OperationContract $operations
+}} | ConvertTo-Json -Compress
+""",
+        encoding="utf-8",
+    )
+    completed = subprocess.run(
+        [
+            POWERSHELL,
+            "-NoProfile",
+            "-NonInteractive",
+            "-ExecutionPolicy",
+            "Bypass",
+            "-File",
+            str(script),
+        ],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert completed.returncode == 0, completed.stderr
+    return json.loads(completed.stdout)
+
+
+def _method(lifecycle: str, *, lineage: bool = True) -> dict:
+    return {
+        "id": "method-a",
+        "inquiry_id": 1,
+        "scientific_question": "Can the method learn the task?",
+        "rationale": "It tests a different learning mechanism.",
+        "lifecycle": lifecycle,
+        "base_scientific_commit": "b" * 40,
+        "current_lineage": {"artifact": "archive/method"} if lineage else None,
+        "iterations": [],
+    }
+
+
+def _inquiry_state(method: dict | None) -> dict:
+    return {
+        "active_inquiry": {"id": 1, "question": "Q", "scope": "S"},
+        "active_method": method,
+        "pending_analysis": None,
+    }
+
+
+def _campaign() -> dict:
+    return {"id": "campaign", "started_at": "now", "base_commit": "base"}
+
+
+def _lineage() -> dict:
+    return {
+        "artifact": "archive/working",
+        "fingerprint": "fingerprint",
+        "origin_experiment": 1,
+        "candidate": "checkpoint",
+        "parameters": {},
+        "scientific_commit": "a" * 40,
+        "training_steps": 120_000,
+        "evaluation_artifacts": [],
+        "reason": "Selected baseline.",
+        "designation_ordinal": 1,
+    }
 
 
 def test_researcher_context_names_the_exact_native_learning_stack():
@@ -46,21 +136,7 @@ def test_scientific_model_phase_precedes_baseline_and_does_not_repeat():
     model_status = baseline.index("Get-ScientificModelSessionStatus 1")
     baseline_runner = baseline.index("$runnerExitCode = Invoke-Runner")
     assert model_phase < model_status < baseline_runner
-    assert (
-        'if (-not (Test-Path "research\\scientific_model.md" -PathType Leaf))'
-        in baseline[:model_phase]
-    )
-    assert (
-        "Invoke-ResearcherSession -Prompt $scientificModelRetryPrompt"
-        in baseline[:baseline_runner]
-    )
-    assert "-Experiment 1 -Continue" in baseline[:baseline_runner]
     assert "-Experiment 1 -Preliminary" in baseline[:baseline_runner]
-    assert "-Experiment 1 -Continue -Preliminary" in baseline[:baseline_runner]
-    assert baseline.index("if (-not $scientificModelPhasePrompt.Trim()") < model_phase
-    assert (
-        "elseif (-not (Test-ScientificModelDeliverable))" in baseline[:baseline_runner]
-    )
 
 
 def test_scientific_model_is_campaign_memory_and_protected_context():
@@ -71,191 +147,83 @@ def test_scientific_model_is_campaign_memory_and_protected_context():
     )
     assert runner_protocol.is_protected_source(model)
     assert not runner_protocol.is_researcher_owned(model)
-    assert runner_repository.is_runner_memory(model)
-    assert model not in runner_repository.RUNNER_CONTROL_PATHS
+    assert repository.is_runner_memory(model)
 
 
-def test_measurement_rounds_resume_the_originating_researcher_session():
-    analysis = SCRIPT.split(
-        "if ($researchState.schema_version -eq 4 -and "
-        "$null -ne $researchState.pending_analysis)",
-        1,
-    )[1].split("if ($null -ne $researchState.pending_evaluation_request)", 1)[0]
-    assert "$script:ResumeAnalysisSession = $true" in analysis
-    assert (
-        "Invoke-ResearcherSession -Prompt $analysisPrompt "
-        '-Phase "post-training analysis" -Experiment $analysisExperiment -Continue'
-        in analysis
-    )
-    assert (
-        "Invoke-ResearcherSession -Prompt $researchPrompt "
-        '-Phase "principal investigator" -Experiment 0 '
-        "-SessionId $piSession.id -Continue" in SCRIPT
-    )
+def test_inquiry_session_requires_selected_baseline():
+    state = repository.empty_campaign_state(campaign=_campaign(), last_verdict="fresh")
+    with pytest.raises(ValueError, match="same initial baseline designation"):
+        repository.ensure_inquiry_session(state)
 
+    state["working_lineage"] = _lineage()
+    with pytest.raises(ValueError, match="same initial baseline designation"):
+        repository.ensure_inquiry_session(state)
 
-def test_preparation_runtime_errors_resume_the_same_pi_session_without_evidence():
-    repair = SCRIPT.split("function Invoke-PreparationMeasurement", 1)[1].split(
-        "function Test-StopAfterOperation", 1
-    )[0]
-    assert "There is no pending preparation measurement to execute." not in repair
-    assert "$repair = if ($pending)" in repair
-    assert '-Phase "principal investigator" -Experiment 0' in repair
-    assert "-SessionId $piSession.id -Continue" in repair
-    assert "This produced no scientific evidence" in repair
-    assert "Do not modify research/evaluation_request.json" in repair
-    assert "the launcher does not diagnose the cause" in repair
-    assert "compatibility repair" not in repair
-    assert "compatibility problem" not in repair
-    assert "--record-implementation-repair-attempt" in repair
-    assert "Test-ImplementationRepair" in repair
-    assert "$attempts -ge 2" in repair
+    state["best_known_lineage"] = {**_lineage(), "fingerprint": "other"}
+    with pytest.raises(ValueError, match="same initial baseline designation"):
+        repository.ensure_inquiry_session(state)
 
-
-def test_principal_investigator_session_is_campaign_persistent():
-    assert "--mark-principal-investigator-session-started" in SCRIPT
-    assert "$researchState.principal_investigator_session" in SCRIPT
-    assert "-SessionId $piSession.id -Continue" in SCRIPT
-    assert "if (-not $SessionId)" in SCRIPT
-    initial_call = SCRIPT.index(
-        'Invoke-ResearcherSession -Prompt $researchPrompt '
-        '-Phase "principal investigator" -Experiment 0 -SessionId $piSession.id'
-    )
-    mark_started = SCRIPT.index(
-        'Invoke-Runner -Arguments @("--mark-principal-investigator-session-started")'
-    )
-    assert initial_call < mark_started
-    assert (
-        "continue as the campaign's principal investigator at an inquiry boundary"
-        in SCRIPT
-    )
-
-
-def test_principal_investigator_deliverables_restore_the_phase_anchor_before_validation():
-    phase = SCRIPT.split(
-        'Write-Status "=== Principal investigator advancing the active inquiry ==="',
-        1,
-    )[1]
-    first_session = phase.index(
-        "Invoke-ResearcherSession -Prompt $researchPrompt "
-        '-Phase "principal investigator"'
-    )
-    first_reanchor = phase.index(
-        "Invoke-HypothesisAnchor -ConclusionOnly:$budgetReached",
-        first_session,
-    )
-    first_validation = phase.index(
-        'Get-ProposalSessionStatus "principal investigator" 1',
-        first_session,
-    )
-    retry_session = phase.index(
-        "Invoke-ResearcherSession -Prompt $retryPrompt "
-        '-Phase "principal investigator"',
-        first_validation,
-    )
-    retry_reanchor = phase.index(
-        "Invoke-HypothesisAnchor -ConclusionOnly:$budgetReached",
-        retry_session,
-    )
-    retry_validation = phase.index(
-        'Get-ProposalSessionStatus "principal investigator" 2',
-        retry_session,
-    )
-
-    assert first_session < first_reanchor < first_validation
-    assert retry_session < retry_reanchor < retry_validation
-
-
-def test_valid_durable_measurement_resumes_before_the_principal_investigator():
-    phase_anchor = SCRIPT.index(
-        "$runnerExitCode = Invoke-HypothesisAnchor -ConclusionOnly:$budgetReached"
-    )
-    durable_request = SCRIPT.index(
-        'if (Test-Path "research\\evaluation_request.json" -PathType Leaf)',
-        phase_anchor,
-    )
-    validation = SCRIPT.index("if (Test-PreparationDeliverable)", durable_request)
-    execution = SCRIPT.index("Invoke-PreparationMeasurement", validation)
-    investigator = SCRIPT.index(
-        'Write-Status "=== Principal investigator advancing the active inquiry ==="',
-        phase_anchor,
-    )
-
-    assert phase_anchor < durable_request < validation < execution < investigator
-
-
-def test_principal_investigator_identity_is_allocated_once():
-    state = {
-        "campaign": {
-            "id": "campaign",
-            "started_at": "now",
-            "base_commit": "base",
-        },
-        "principal_investigator_session": None,
-    }
-
-    first = runner_repository.ensure_principal_investigator_session(state)
-    second = runner_repository.ensure_principal_investigator_session(state)
-
+    state["best_known_lineage"] = _lineage()
+    first = repository.ensure_inquiry_session(state)
+    second = repository.ensure_inquiry_session(state)
     assert first == second
     assert first["campaign_id"] == "campaign"
+    assert first["inquiry_id"] == 1
     assert first["role"] == "principal_investigator"
     assert first["status"] == "allocated"
 
 
-def test_fresh_reset_clears_campaign_lab_and_pi_state():
+def test_inquiry_session_start_intent_is_durable_before_backend_mapping(
+    monkeypatch, tmp_path
+):
+    state = repository.empty_campaign_state(
+        campaign=_campaign(), last_verdict="baseline selected"
+    )
+    state["working_lineage"] = _lineage()
+    state["best_known_lineage"] = _lineage()
+    repository.ensure_inquiry_session(state)
+    state_path = tmp_path / "state.json"
+    monkeypatch.setattr(repository.paths, "STATE_PATH", state_path)
+
+    starting = repository.mark_inquiry_session_starting(state)
+    assert starting["status"] == "starting"
+    assert repository.read_state()["inquiry_session"] == starting
+
+    started = repository.mark_inquiry_session_started(repository.read_state())
+    assert started["id"] == starting["id"]
+    assert started["status"] == "started"
+
+
+def test_later_inquiry_allocation_allows_working_and_best_known_to_diverge():
+    state = repository.empty_campaign_state(
+        campaign=_campaign(), last_verdict="first inquiry closed"
+    )
+    state["campaign_inquiry_counters"]["campaign"] = 1
+    state["last_allocated_inquiry"] = 1
+    state["last_inquiry"] = 1
+    state["working_lineage"] = _lineage()
+    state["best_known_lineage"] = {
+        **_lineage(),
+        "artifact": "archive/challenger",
+        "fingerprint": "challenger",
+        "candidate": "challenger",
+        "origin_experiment": 2,
+        "designation_ordinal": 2,
+    }
+
+    session = repository.ensure_inquiry_session(state)
+
+    assert session["inquiry_id"] == 2
+
+
+def test_fresh_reset_clears_inquiry_method_and_lab_state():
     assert "research/lab" in reset_campaign.CAMPAIGN_PATHS
-    state = runner_repository.empty_v4_campaign_state(
-        campaign={"id": "campaign", "started_at": "now", "base_commit": "base"},
-        last_verdict="fresh",
-    )
-    assert state["principal_investigator_session"] is None
+    state = repository.empty_campaign_state(campaign=_campaign(), last_verdict="fresh")
+    assert state["schema_version"] == repository.STATE_SCHEMA_VERSION
+    assert state["inquiry_session"] is None
+    assert state["active_inquiry"] is None
+    assert state["active_method"] is None
     assert state["campaign_lab"] is None
-
-
-def test_principal_investigator_persona_reaches_every_researcher_phase():
-    persona = (
-        "You are the principal investigator responsible for leading this campaign "
-        "toward a learned policy that satisfies the human objective"
-    )
-    prompts = (
-        SCRIPT.split("$analysisPrompt = @(", 1)[1].split(") -join", 1)[0],
-        SCRIPT.split("$evaluationPrompt = @(", 1)[1].split(") -join", 1)[0],
-        SCRIPT.split("$decisionPrompt = @(", 1)[1].split(") -join", 1)[0],
-        SCRIPT.split("$researchPrompt = @(", 1)[1].split(") -join", 1)[0],
-    )
-
-    assert persona in SCRIPT
-    assert all("$researcherPersonaGuidance" in prompt for prompt in prompts)
-    scientific_model_prompt = SCRIPT.split("$scientificModelPhasePrompt = @'", 1)[
-        1
-    ].split("'@", 1)[0]
-    assert persona in scientific_model_prompt
-    assert "autonomous principal scientist" not in SCRIPT
-    assert "autonomous robotics research engineer" not in SCRIPT
-
-
-def test_research_funnel_guidance_is_injected_at_decision_points():
-    analysis = SCRIPT.split("$analysisPrompt = @(", 1)[1].split(") -join", 1)[0]
-    analysis_retry = SCRIPT.split("$analysisRetryPrompt = @(", 1)[1].split(
-        ") -join", 1
-    )[0]
-    decision = SCRIPT.split("$decisionPrompt = @(", 1)[1].split(") -join", 1)[0]
-    decision_retry = SCRIPT.split("$decisionRetryPrompt = @(", 1)[1].split(
-        ") -join", 1
-    )[0]
-    preparation = SCRIPT.split("$researchPrompt = @(", 1)[1].split(") -join", 1)[0]
-    preparation_retry = SCRIPT.split("$retryPrompt = @(", 1)[1].split(
-        ") -join", 1
-    )[0]
-
-    for prompt in (analysis, analysis_retry, decision, decision_retry, preparation):
-        assert "$developingMethodGuidance" in prompt
-    for prompt in (preparation, preparation_retry):
-        assert "$openBehaviorQuestionGuidance" in prompt
-        assert "$laboratoryReuseGuidance" in prompt
-    assert "$laboratoryReuseGuidance" in analysis
-    assert "$laboratoryReuseGuidance" in decision
 
 
 @pytest.mark.parametrize(
@@ -273,3 +241,130 @@ def test_scientific_model_deliverable_preflight(
     )
     assert (run_experiment.main() == 0) is valid
     assert ("SCIENTIFIC_MODEL_DELIVERABLE_VALID" in capsys.readouterr().out) is valid
+
+
+@powershell_only
+def test_without_inquiry_only_opening_or_concluding_is_legal(tmp_path):
+    operations = _launcher_operations(
+        tmp_path, _inquiry_state(None) | {"active_inquiry": None}
+    )
+    assert set(operations["legal"]) == {"inquiry open", "campaign_conclusion"}
+    assert "evaluation_request" in operations["blocked"]
+
+
+@powershell_only
+def test_inquiry_without_method_can_declare_measure_reframe_or_close(tmp_path):
+    operations = _launcher_operations(tmp_path, _inquiry_state(None))
+    assert {
+        "method start",
+        "evaluation_request",
+        "inquiry reframe",
+        "inquiry close",
+    } <= set(operations["legal"])
+    assert {"training", "campaign_conclusion"} <= set(operations["blocked"])
+
+
+@powershell_only
+def test_training_cap_removes_only_training_allocation(tmp_path):
+    free = _launcher_operations(tmp_path, _inquiry_state(_method("development")))
+    capped = _launcher_operations(
+        tmp_path, _inquiry_state(_method("development")), cap=True
+    )
+    assert "training" in free["legal"]
+    assert set(capped["legal"]) == set(free["legal"]) - {"training"}
+    assert {
+        "evaluation_request",
+        "inquiry reframe",
+        "method_decision retain",
+        "method_decision abandon",
+    } <= set(capped["legal"])
+    assert {"training", "method_decision promote", "inquiry close"} <= set(
+        capped["blocked"]
+    )
+    assert "method_decision continue/refine/mature" in capped["blocked"]
+
+
+@powershell_only
+def test_mature_method_at_cap_offers_promotion_without_pressure(tmp_path):
+    operations = _launcher_operations(
+        tmp_path, _inquiry_state(_method("mature")), cap=True
+    )
+    assert {
+        "method_decision promote",
+        "method_decision retain",
+        "method_decision abandon",
+        "evaluation_request",
+    } <= set(operations["legal"])
+    contract = operations["contract"].lower()
+    assert "paired evidence" in contract
+    assert "do not" not in contract
+
+
+@powershell_only
+def test_unresolved_method_without_lineage_cannot_be_retained(tmp_path):
+    operations = _launcher_operations(
+        tmp_path, _inquiry_state(_method("concept", lineage=False))
+    )
+    assert "method_decision retain" in operations["blocked"]
+    assert "method_decision abandon" in operations["legal"]
+
+
+@pytest.mark.parametrize("lifecycle", ["promoted", "retained", "abandoned"])
+@powershell_only
+def test_final_method_lets_the_inquiry_close(tmp_path, lifecycle):
+    operations = _launcher_operations(tmp_path, _inquiry_state(_method(lifecycle)))
+    assert "inquiry close" in operations["legal"]
+    assert "training" in operations["blocked"]
+    assert not any(name.startswith("method_decision") for name in operations["legal"])
+
+
+@powershell_only
+def test_post_training_analysis_decides_the_iteration(tmp_path):
+    state = _inquiry_state(_method("development", lineage=False))
+    state["pending_analysis"] = {"experiment": 4, "baseline": False}
+    operations = _launcher_operations(tmp_path, state, analysis=True)
+    assert {
+        "evaluation_request",
+        "method_decision continue",
+        "method_decision refine",
+        "method_decision mature",
+        "method_decision abandon",
+    } <= set(operations["legal"])
+    assert {"method_decision promote", "method_decision retain"} <= set(
+        operations["blocked"]
+    )
+    assert "experiment 4" in operations["contract"]
+    assert (
+        "candidate is required because the method has no current lineage"
+        in (operations["contract"])
+    )
+
+
+@powershell_only
+def test_post_training_promotion_requires_prior_maturity(tmp_path):
+    state = _inquiry_state(_method("mature"))
+    state["pending_analysis"] = {"experiment": 5, "baseline": False}
+    operations = _launcher_operations(tmp_path, state, analysis=True)
+    assert {"method_decision promote", "method_decision retain"} <= set(
+        operations["legal"]
+    )
+
+
+@powershell_only
+def test_baseline_analysis_allows_only_measurement_or_selection(tmp_path):
+    state = {
+        "active_inquiry": None,
+        "active_method": None,
+        "pending_analysis": {"experiment": 1, "baseline": True},
+    }
+    operations = _launcher_operations(tmp_path, state, analysis=True)
+    assert set(operations["legal"]) == {"evaluation_request", "baseline_decision"}
+    assert "inquiry open" in operations["blocked"]
+
+
+def test_pending_decision_publication_resumes_before_any_session():
+    loop = SCRIPT.split("try {", 1)[1]
+    resume = loop.index("$null -ne $terminalState.pending_method_decision")
+    runner = loop.index("Invoke-Runner", resume)
+    assert runner < loop.index("Invoke-ResearcherSession", resume)
+    assert "pending_analysis_operation" not in SCRIPT

@@ -13,6 +13,7 @@ from pathlib import Path
 
 import pytest
 
+from research import runner_repository as repository
 from research.run_experiment import (
     check_evaluation_request,
     execute_pending_evaluations,
@@ -25,10 +26,10 @@ SESSION_LIBRARY_PATH = ROOT / "researcher_session.ps1"
 SESSION_LIBRARY = SESSION_LIBRARY_PATH.read_text(encoding="utf-8")
 POWERSHELL = shutil.which("pwsh") or shutil.which("powershell")
 EVALUATION_EXECUTION_FAILURE = (
-    "Runner execution of the validated evaluation request failed."
+    "Runner execution of the accepted measurement request failed."
 )
-LINEAGE_EXECUTION_FAILURE = (
-    "Runner application of the validated lineage decision failed."
+ANALYSIS_EXECUTION_FAILURE = (
+    "Runner execution of the accepted analysis deliverable failed."
 )
 
 powershell_only = pytest.mark.skipif(
@@ -234,8 +235,6 @@ def test_every_researcher_invocation_goes_through_the_one_process_boundary():
     for prompt in (
         "$scientificModelRetryPrompt",
         "$analysisRetryPrompt",
-        "$evaluationRetryPrompt",
-        "$decisionRetryPrompt",
         "$retryPrompt",
     ):
         assert re.search(
@@ -274,8 +273,6 @@ def test_the_opencode_server_is_isolated_from_foreground_console_interrupts():
 def test_the_exit_code_never_decides_whether_a_bounded_phase_is_complete():
     for phase in (
         "proposalStatus",
-        "evaluationStatus",
-        "lineageStatus",
         "analysisStatus",
         "scientificModelStatus",
     ):
@@ -290,8 +287,6 @@ def test_the_exit_code_never_decides_whether_a_bounded_phase_is_complete():
 def test_each_phase_reports_its_session_before_deciding_to_retry():
     for status, retry in (
         ("$proposalStatus", "=== Research proposal missing or invalid"),
-        ("$evaluationStatus", "=== Evaluation request missing or invalid"),
-        ("$lineageStatus", "=== Lineage deliverable invalid"),
         ("$analysisStatus", "=== Analysis deliverable missing or invalid"),
         ("$scientificModelStatus", "=== Scientific model missing or invalid"),
     ):
@@ -302,7 +297,6 @@ def test_every_phase_validates_its_deliverable_with_the_protected_validator():
     for validator in (
         "--check-proposal",
         "--check-evaluation-request",
-        "--check-lineage-evidence",
         "--check-analysis-deliverable",
         "--check-scientific-model-deliverable",
     ):
@@ -334,7 +328,7 @@ def test_session_observation_is_console_only():
 
 
 def test_runner_execution_failure_never_reopens_the_researcher_phase():
-    for marker in (EVALUATION_EXECUTION_FAILURE, LINEAGE_EXECUTION_FAILURE):
+    for marker in (EVALUATION_EXECUTION_FAILURE, ANALYSIS_EXECUTION_FAILURE):
         assert marker in LOOP
         remainder = LOOP.split(marker, 1)[1].split("continue", 1)[0]
         assert "Invoke-ResearcherSession" not in remainder
@@ -357,9 +351,9 @@ def test_analysis_preflight_rejects_duplicate_strategy_before_accepting_closure(
 
     campaign_id = "current"
     state = {
-        "schema_version": 4,
+        "schema_version": repository.STATE_SCHEMA_VERSION,
         "campaign": {"id": campaign_id},
-        "pending_analysis": {"experiment": 4},
+        "pending_analysis": {"experiment": 4, "baseline": False},
     }
     strategy = (
         f"## {campaign_id} / Scientific strategy\n\n"
@@ -389,7 +383,7 @@ def test_analysis_preflight_rejects_duplicate_strategy_before_accepting_closure(
 
     postmortems.write_text(strategy, encoding="utf-8")
     assert run_experiment.check_analysis_deliverable() == 0
-    assert "ANALYSIS_DELIVERABLE_VALID: closure" in capsys.readouterr().out
+    assert "ANALYSIS_DELIVERABLE_VALID: decision" in capsys.readouterr().out
 
 
 # --- the evaluation-request preflight --------------------------------------
@@ -405,7 +399,7 @@ def _valid_request() -> dict:
                 "instrument": "research_evaluation",
                 "candidate": "experiment-3",
                 "episodes": 200,
-                "seed": 1000,
+                "seed": 10000,
                 "selection": "the only model the hypothesis is about",
                 "omitted_alternative": None,
             }
@@ -415,8 +409,11 @@ def _valid_request() -> dict:
 
 def _pending_state() -> dict:
     return {
-        "accepted_artifact": "research/checkpoints/accepted",
         "pending_scientific_parent": "test-parent",
+        "working_lineage": None,
+        "best_known_lineage": None,
+        "retained_lineages": [],
+        "active_method": None,
         "pending_evaluation_request": {
             "experiment": 3,
             "champion_available": True,
@@ -438,17 +435,23 @@ def _preflight_files(monkeypatch, tmp_path, request: dict | str) -> Path:
         request_path.write_text(request, encoding="utf-8")
     else:
         request_path.write_text(json.dumps(request), encoding="utf-8")
-    accepted = tmp_path / "research" / "checkpoints" / "accepted"
-    accepted.mkdir(parents=True)
-    accepted.joinpath("model.zip").write_bytes(b"model")
-    accepted.joinpath("artifact.json").write_text("{}", encoding="utf-8")
+    candidate = tmp_path / "models" / "candidates" / "experiment-3"
+    candidate.mkdir(parents=True)
+    candidate.joinpath("model.zip").write_bytes(b"model")
+    candidate.joinpath("artifact.json").write_text("{}", encoding="utf-8")
+    candidate.joinpath("policy_runtime.pkl").write_bytes(b"runtime")
     monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
     monkeypatch.setattr("research.runner_paths.STATE_PATH", state_path)
     monkeypatch.setattr("research.runner_paths.EVALUATION_REQUEST_PATH", request_path)
     monkeypatch.setattr(
+        "research.runner_paths.EVALUATION_DIR", tmp_path / "research" / "evaluations"
+    )
+    monkeypatch.setattr(
         "research.runner_repository.require_resolvable_commit", lambda _: None
     )
     monkeypatch.setattr("research.runner_repository.scientific_delta", lambda _: [])
+    monkeypatch.setattr("research.runner_repository.status_paths", lambda scope: [])
+    monkeypatch.setattr("research.runner_repository.campaign_lab_manifest", list)
 
     def fail_if_measured(*args, **kwargs):
         del args, kwargs
@@ -653,37 +656,6 @@ def test_evaluation_preflight_rejects_with_a_usable_reason(
     assert state_path.read_bytes() == original_state
 
 
-def test_evaluation_preflight_rejects_the_legacy_champion_alias(
-    monkeypatch, tmp_path, capsys
-):
-    _preflight_files(
-        monkeypatch,
-        tmp_path,
-        dict(
-            _valid_request(),
-            measurements=[
-                {
-                    "instrument": "research_evaluation",
-                    "candidate": "champion",
-                    "episodes": 200,
-                    "seed": 1000,
-                    "selection": "the incumbent under the legacy alias",
-                    "omitted_alternative": None,
-                },
-                {
-                    "instrument": "task_reference",
-                    "candidate": "champion",
-                    "selection": "the incumbent under the legacy alias",
-                    "omitted_alternative": None,
-                },
-            ],
-        ),
-    )
-
-    assert check_evaluation_request() == 1
-    assert "unknown measurement candidate 'champion'" in capsys.readouterr().out
-
-
 def test_evaluation_preflight_rejects_protected_changes_without_mutation(
     monkeypatch, tmp_path, capsys
 ):
@@ -727,12 +699,10 @@ def test_invalid_paired_comparison_runs_no_evaluator_and_writes_no_state(
 
     assert check_evaluation_request() == 1
     reason = capsys.readouterr().out
-    assert "unknown paired comparison reference 'champion'" in reason
+    assert "unknown measurement model 'champion'" in reason
     assert state_path.read_bytes() == original_state
 
-    with pytest.raises(
-        ValueError, match="unknown paired comparison reference 'champion'"
-    ):
+    with pytest.raises(ValueError, match="unknown measurement model 'champion'"):
         execute_pending_evaluations()
     assert state_path.read_bytes() == original_state
 

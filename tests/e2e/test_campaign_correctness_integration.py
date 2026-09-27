@@ -87,11 +87,11 @@ def redirect_paths(monkeypatch, root: Path) -> None:
 def reasoning() -> dict:
     return {
         "evidence": [{"source": "research/results.jsonl", "observation": "Measured."}],
-        "alternative": "The observed behavior may not persist.",
         "expected_observation": "Continuation preserves the measured behavior.",
-        "contradicting_observation": "Continuation loses the measured behavior.",
         "initialization_reason": "Continue the selected parent unchanged.",
-        "strategy_link": "Test whether the established recipe benefits from continuation.",
+        "objective_link": "Test whether the established recipe benefits from continuation.",
+        "rationale": "The continuation measures whether learning has plateaued.",
+        "open_question": "Does further learning improve the method?",
     }
 
 
@@ -127,7 +127,7 @@ def test_campaign_lifecycle_survives_recipe_restore_and_clean_clone(
     write(root, "robot_learning/scenario/reward.py", "RECIPE = 'B'\n")
     write(root, "research/current_params.json", '{"recipe": "B"}\n')
     write(root, "robot_learning/scenario/recipe_b_only.py", "ACTIVE = True\n")
-    old_state = repository.empty_v4_campaign_state(
+    old_state = repository.empty_campaign_state(
         campaign={"id": "old-campaign", "started_at": "then", "base_commit": recipe_a},
         last_verdict="old campaign",
     )
@@ -173,11 +173,25 @@ def test_campaign_lifecycle_survives_recipe_restore_and_clean_clone(
         del training_log
         marker = f"experiment-{len(training_calls) + 1}".encode()
         training_calls.append((timesteps, seed, resume, kwargs["label"]))
-        artifact = output_dir
+        artifact = output_dir / f"checkpoint-{timesteps}"
         artifact.mkdir(parents=True, exist_ok=True)
         artifact.joinpath("model.zip").write_bytes(marker)
         artifact.joinpath("artifact.json").write_text(
             json.dumps({"completed": True, "timesteps": timesteps}),
+            encoding="utf-8",
+        )
+        output_dir.joinpath("candidate_manifest.json").write_text(
+            json.dumps(
+                {
+                    "candidates": [
+                        {
+                            "name": f"checkpoint-{timesteps}",
+                            "path": f"checkpoint-{timesteps}",
+                            "timesteps": timesteps,
+                        }
+                    ]
+                }
+            ),
             encoding="utf-8",
         )
         save_runtime(
@@ -247,6 +261,8 @@ def test_campaign_lifecycle_survives_recipe_restore_and_clean_clone(
                         "candidate": first_candidate,
                         "episodes": 2,
                         "seed": 10,
+                        "selection": "Measure the baseline candidate before selection.",
+                        "omitted_alternative": None,
                     }
                 ],
             }
@@ -257,26 +273,27 @@ def test_campaign_lifecycle_survives_recipe_restore_and_clean_clone(
     first = repository.read_state()["pending_analysis"]
     first_evidence = first["candidates"][0]["evaluations"][0]["evaluation_artifact"]
     runner_paths.POSTMORTEM_PATH.write_text(
+        f"## {campaign_id} / Scientific strategy\n\n"
+        "**Current synthesis:** Establish the baseline before inquiry work.\n\n"
+        "**Lessons and limits:** One development panel is available.\n\n"
+        "**Competing explanations:** Learning duration may limit performance.\n\n"
+        "**Decision frontier:** Whether continuation improves paired outcomes.\n\n"
         f"## {campaign_id} / Experiment 1\n\n"
         "**Hypothesis assessment:** The baseline establishes measured behavior.\n\n"
         f"**Evidence inspected:** `{first_evidence}`\n",
         encoding="utf-8",
     )
     first_decision = {
-        "previous_result_decision": {
+        "baseline_decision": {
             "experiment": 1,
-            "continue_from": first_candidate,
-            "reason": "Continue the measured baseline.",
-            "best_known": {
-                "candidate": first_candidate,
-                "reason": "It is the only measured model.",
-                "evidence": [first_evidence],
-            },
-            "code": {"action": "keep", "reason": "Keep recipe A."},
+            "candidate": first_candidate,
+            "reason": "Select the measured baseline.",
         }
     }
     assert (
-        run_experiment.resolve_pending_lineage(first_decision, repository.read_state())
+        run_experiment.resolve_baseline_decision(
+            first_decision, repository.read_state()
+        )
         == 0
     )
     first_closed = repository.read_state()
@@ -288,6 +305,37 @@ def test_campaign_lifecycle_survives_recipe_restore_and_clean_clone(
     assert first_working["artifact"] == first_closed["best_known_lineage"]["artifact"]
     assert first_working["artifact"].startswith("research/checkpoints/retained/")
 
+    assert run_experiment.begin_inquiry_phase() == 0
+    assert (
+        run_experiment.resolve_inquiry_operation(
+            {
+                "inquiry": {
+                    "action": "open",
+                    "question": "Does continued learning improve recipe A?",
+                    "scope": "Continuation behavior and paired evaluation.",
+                    "closure_condition": "Decide whether to continue or stop the method.",
+                }
+            },
+            "inquiry",
+        )
+        == 0
+    )
+    assert (
+        run_experiment.resolve_inquiry_operation(
+            {
+                "method": {
+                    "action": "start",
+                    "id": "continued-recipe-a",
+                    "scientific_question": "Does recipe A benefit from more training?",
+                    "rationale": "The baseline leaves this learning question open.",
+                    "lifecycle": "development",
+                }
+            },
+            "method",
+        )
+        == 0
+    )
+
     write(root, "robot_learning/scenario/reward.py", "RECIPE = 'B'\n")
     write(root, "research/current_params.json", '{"recipe": "B"}\n')
     write(root, "robot_learning/scenario/recipe_b_only.py", "ACTIVE = True\n")
@@ -297,9 +345,9 @@ def test_campaign_lifecycle_survives_recipe_restore_and_clean_clone(
 
     continuation = {
         "kind": "continuation",
+        "method_id": "continued-recipe-a",
         "family": "training.duration",
-        "hypothesis": "Recipe A benefits from more training.",
-        "reasoning": reasoning(),
+        "investigation_design": reasoning(),
         "initialization": "transfer",
         "training_parent": "working",
     }
@@ -338,6 +386,8 @@ def test_campaign_lifecycle_survives_recipe_restore_and_clean_clone(
                         "candidate": second_candidate,
                         "episodes": 2,
                         "seed": 10,
+                        "selection": "Measure the current method on the baseline panel.",
+                        "omitted_alternative": None,
                     }
                 ],
                 "paired_comparisons": [
@@ -354,23 +404,23 @@ def test_campaign_lifecycle_survives_recipe_restore_and_clean_clone(
     assert comparison["source_artifacts"][1] == first_evidence
     second_evidence = second["candidates"][0]["evaluations"][0]["evaluation_artifact"]
     runner_paths.POSTMORTEM_PATH.write_text(
-        f"## {campaign_id} / Experiment 2\n\n"
+        runner_paths.POSTMORTEM_PATH.read_text(encoding="utf-8")
+        + f"\n## {campaign_id} / Experiment 2\n\n"
         "**Hypothesis assessment:** The continuation improved on the reused panel.\n\n"
         f"**Evidence inspected:** `{second_evidence}`, `{first_evidence}`\n",
         encoding="utf-8",
     )
     second_decision = {
-        "previous_result_decision": {
+        "method_decision": {
             "experiment": 2,
-            "continue_from": second_candidate,
-            "reason": "Continue the improved trajectory.",
+            "action": "continue",
+            "outcome": "Continue developing the measured trajectory.",
+            "reason": "The paired evidence supports another development iteration.",
+            "candidate": second_candidate,
             "code": {"action": "keep", "reason": "Keep restored recipe A."},
         }
     }
-    assert (
-        run_experiment.resolve_pending_lineage(second_decision, repository.read_state())
-        == 0
-    )
+    assert run_experiment.resolve_method_decision(second_decision) == 0
 
     clone = tmp_path / "clone"
     subprocess.run(
@@ -388,12 +438,16 @@ def test_campaign_lifecycle_survives_recipe_restore_and_clean_clone(
         .splitlines()
         if line.strip()
     ]
-    assert [record["status"] for record in cloned_results] == ["closed", "closed"]
+    assert [record["status"] for record in cloned_results] == [
+        "analyzed",
+        "analyzed",
+    ]
     assert cloned_results[1]["paired_comparisons"][0]["source_artifacts"][1] == (
         first_evidence
     )
-    assert cloned_state["pending_closure_operation"] is None
-    assert cloned_state["working_lineage"]["training_steps"] == 200
+    assert cloned_state["pending_method_decision"] is None
+    assert cloned_state["working_lineage"]["training_steps"] == 100
+    assert cloned_state["active_method"]["current_lineage"]["training_steps"] == 200
     assert (
         cloned_state["best_known_lineage"]["fingerprint"]
         == first_working["fingerprint"]

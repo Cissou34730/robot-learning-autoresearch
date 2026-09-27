@@ -1,1583 +1,795 @@
+"""Independent model roles in the inquiry-centered lifecycle."""
+
 import json
+import subprocess
 from pathlib import Path
 
 import pytest
 
+from research import run_experiment
 from research import runner_protocol as protocol
 from research import runner_repository as repository
-from research.run_experiment import apply_previous_result_decision
-
-
-@pytest.fixture(autouse=True)
-def _redirect_research_dir(monkeypatch, tmp_path):
-    monkeypatch.setattr("research.runner_paths.RESEARCH_DIR", tmp_path / "research")
-    monkeypatch.setattr("research.runner_paths.LOG_PATH", tmp_path / "EXPERIMENTS.md")
 
 
 def _artifact(path: Path, marker: str) -> Path:
     path.mkdir(parents=True)
-    path.joinpath("model.zip").write_bytes(marker.encode("ascii"))
+    path.joinpath("model.zip").write_bytes(marker.encode())
     path.joinpath("artifact.json").write_text(
         json.dumps({"marker": marker}), encoding="utf-8"
     )
-    path.joinpath("policy_runtime.pkl").write_bytes(
-        b"runtime:" + marker.encode("ascii")
-    )
+    path.joinpath("policy_runtime.pkl").write_bytes(b"runtime:" + marker.encode())
     return path
 
 
-def _lineage(path: Path, *, steps: int) -> dict:
+def _lineage(path: Path, *, steps: int, experiment: int = 1) -> dict:
     return {
         "artifact": path.name,
         "fingerprint": repository.artifact_fingerprint(path),
-        "origin_experiment": 1,
+        "origin_experiment": experiment,
         "candidate": path.name,
         "parameters": {"algorithm": {"name": path.name}},
         "scientific_commit": "a" * 40,
         "training_steps": steps,
         "evaluation_artifacts": [],
         "reason": f"Preserve {path.name}.",
+        "designation_ordinal": 1,
     }
 
 
-def _research_evidence(path: Path, *, seed: int = 1) -> None:
-    path.write_text(
-        json.dumps(
-            {
-                "episodes": 2,
-                "seed": seed,
-                "episode_results": [
-                    {"episode": episode, "episode_seed": seed + episode, "success": True}
-                    for episode in range(2)
-                ],
-            }
-        ),
-        encoding="utf-8",
-    )
-
-
-def test_v4_lineage_roles_are_independent_training_parents(monkeypatch, tmp_path):
-    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
-    working = _artifact(tmp_path / "working-checkpoint", "working")
-    best_known = _artifact(tmp_path / "best-known-checkpoint", "best-known")
-    inquiry = _artifact(tmp_path / "inquiry-checkpoint", "inquiry")
-    retained = _artifact(tmp_path / "retained-checkpoint", "retained")
-    inquiry_lineage = _lineage(inquiry, steps=70_000)
-    inquiry_lineage["inquiry_id"] = 3
-    state = {
-        "schema_version": 4,
-        "active_inquiry": {"id": 3, "status": "active"},
-        "working_lineage": _lineage(working, steps=120_000),
-        "best_known_lineage": _lineage(best_known, steps=80_000),
-        "inquiry_lineage": inquiry_lineage,
-        "retained_lineages": [
-            {"id": "alternative", **_lineage(retained, steps=60_000)}
-        ],
-    }
-
-    working_parent = protocol.training_parent(
-        {"training_parent": "working"}, state, "transfer"
-    )
-    best_parent = protocol.training_parent(
-        {"training_parent": "best_known"}, state, "transfer"
-    )
-    inquiry_parent = protocol.training_parent(
-        {"training_parent": "developing_method"}, state, "transfer"
-    )
-    retained_parent = protocol.training_parent(
-        {"training_parent": "alternative"}, state, "transfer"
-    )
-
-    assert working_parent == ("working", working, 120_000)
-    assert best_parent == ("best_known", best_known, 80_000)
-    assert inquiry_parent == ("developing_method", inquiry, 70_000)
-    assert retained_parent == ("alternative", retained, 60_000)
-    assert working.joinpath("model.zip").read_bytes() == b"working"
-    assert best_known.joinpath("model.zip").read_bytes() == b"best-known"
-
-
-def test_v4_continuation_freezes_complete_parent_identity(monkeypatch, tmp_path):
-    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
-    working = _artifact(tmp_path / "working-checkpoint", "working")
-    lineage = _lineage(working, steps=120_000)
-    lineage["candidate"] = "checkpoint-100352"
-    state = {
-        "schema_version": 4,
-        "working_lineage": lineage,
-        "best_known_lineage": None,
-        "retained_lineages": [],
-    }
-
-    resolved = protocol.resolved_training_parent(
-        {
-            "kind": "continuation",
-            "training_parent": "working",
-        },
-        state,
-        "transfer",
-    )
-
-    assert resolved == {
-        "identifier": "working",
-        "artifact": working.name,
-        "fingerprint": lineage["fingerprint"],
-        "origin_experiment": 1,
-        "candidate": "checkpoint-100352",
-        "parameters": lineage["parameters"],
-        "scientific_commit": "a" * 40,
-        "training_steps": 120_000,
+def _active_inquiry(session_id: str = "session") -> dict:
+    return {
+        "id": 1,
+        "question": "Can a distinct method improve control?",
+        "scope": "Method learning behavior.",
+        "closure_condition": "Resolve whether to promote, retain, or abandon it.",
+        "status": "active",
+        "session_id": session_id,
+        "reframes": [],
     }
 
 
-def test_v4_continuation_requires_parent_recipe_provenance(monkeypatch, tmp_path):
-    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
-    working = _artifact(tmp_path / "working-checkpoint", "working")
-    lineage = _lineage(working, steps=120_000)
-    lineage["scientific_commit"] = None
-    state = {
-        "schema_version": 4,
-        "working_lineage": lineage,
-        "best_known_lineage": None,
-        "retained_lineages": [],
-    }
-
-    with pytest.raises(ValueError, match="has no scientific_commit provenance"):
-        protocol.resolved_training_parent(
-            {"kind": "continuation", "training_parent": "working"},
-            state,
-            "transfer",
-        )
-
-
-def test_lineage_restore_includes_effective_parameter_file(monkeypatch, tmp_path):
-    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
-    monkeypatch.setattr(repository, "require_resolvable_commit", lambda commit: None)
-    monkeypatch.setattr(
-        repository,
-        "scientific_delta",
-        lambda commit: [
-            "robot_learning/scenario/reward.py",
-            "research/current_params.json",
-            "research/run_experiment.py",
-        ],
-    )
-    monkeypatch.setattr(repository, "tracked_at_commit", lambda commit, path: True)
-
-    plan = protocol.plan_lineage_restore({"scientific_commit": "a" * 40})
-
-    assert plan["restore"] == [
-        "robot_learning/scenario/reward.py",
-        "research/current_params.json",
-    ]
-
-
-def test_lineage_restore_is_noop_when_parent_recipe_is_current(monkeypatch):
-    monkeypatch.setattr(repository, "require_resolvable_commit", lambda commit: None)
-    monkeypatch.setattr(repository, "scientific_delta", lambda commit: [])
-
-    assert protocol.plan_lineage_restore({"scientific_commit": "a" * 40}) == {
-        "parent": "a" * 40,
-        "restore": [],
-        "remove_created": [],
+def _active_method(
+    lineage: dict | None = None, *, lifecycle: str = "development"
+) -> dict:
+    return {
+        "id": "method-a",
+        "inquiry_id": 1,
+        "scientific_question": "Can this method improve control?",
+        "rationale": "It tests a distinct learning path.",
+        "lifecycle": lifecycle,
+        "base_scientific_commit": "a" * 40,
+        "current_lineage": lineage,
+        "iterations": [],
+        "resolution": None,
     }
 
 
-def test_v4_measurement_catalog_exposes_roles_and_retained(monkeypatch, tmp_path):
-    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
-    working = _artifact(tmp_path / "working-checkpoint", "working")
-    best_known = _artifact(tmp_path / "best-known-checkpoint", "best-known")
-    inquiry = _artifact(tmp_path / "inquiry-checkpoint", "inquiry")
-    retained = _artifact(tmp_path / "retained-checkpoint", "retained")
-    inquiry_lineage = _lineage(inquiry, steps=70_000)
-    inquiry_lineage["inquiry_id"] = 3
-    state = {
-        "schema_version": 4,
-        "active_inquiry": {"id": 3, "status": "active"},
-        "working_lineage": _lineage(working, steps=120_000),
-        "best_known_lineage": _lineage(best_known, steps=80_000),
-        "inquiry_lineage": inquiry_lineage,
-        "retained_lineages": [
-            {"id": "alternative", **_lineage(retained, steps=60_000)}
-        ],
-    }
-    pending = {
-        "candidates": [
-            {
-                "name": "checkpoint-40k",
-                "artifact": "current-checkpoint",
-                "evaluations": [],
-            }
-        ]
-    }
-
-    available = protocol.available_evaluation_candidates(pending, state)
-
-    assert set(available) == {
-        "checkpoint-40k",
-        "working",
-        "best_known",
-        "developing_method",
-        "alternative",
-    }
-    assert available["working"]["artifact"] == working.name
-    assert available["best_known"]["artifact"] == best_known.name
-    assert available["developing_method"]["artifact"] == inquiry.name
-    assert available["alternative"]["artifact"] == retained.name
-
-
-def test_v4_rejects_legacy_role_aliases(monkeypatch, tmp_path):
-    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
-    working = _artifact(tmp_path / "working-checkpoint", "working")
-    state = {
-        "schema_version": 4,
-        "working_lineage": _lineage(working, steps=120_000),
-        "best_known_lineage": None,
-        "retained_lineages": [],
-    }
-
-    for identifier in ("accepted", "champion"):
-        try:
-            protocol.training_parent({"training_parent": identifier}, state, "transfer")
-        except ValueError as error:
-            assert str(error) == f"unknown training parent {identifier!r}"
-        else:
-            raise AssertionError(f"legacy role {identifier!r} was accepted")
-
-
-def test_v4_reselecting_role_preserves_original_checkpoint_identity(
-    monkeypatch, tmp_path
-):
-    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
-    working = _artifact(tmp_path / "working", "working")
-    working_lineage = _lineage(working, steps=100_352)
-    working_lineage["candidate"] = "checkpoint-100352"
-    state = {
-        "schema_version": 4,
-        "campaign": {"id": "campaign", "started_at": "now", "base_commit": "base"},
-        "working_lineage": working_lineage,
-        "best_known_lineage": None,
-        "retained_lineages": [],
-        "pending_researcher_decision": {
-            "experiment": 2,
-            "candidates": [],
-            "parameters": {},
-            "initialization": "fresh",
-            "parent_training_steps": 0,
-        },
-    }
-
-    plan = protocol.plan_previous_result_decision(
-        {
-            "previous_result_decision": {
-                "experiment": 2,
-                "continue_from": "working",
-                "reason": "Keep the current working model.",
-                "code": {"action": "keep", "reason": "Keep the recipe."},
-            }
-        },
-        state,
-    )
-
-    assert plan["working_record"]["candidate"] == "checkpoint-100352"
-    assert plan["working_record"]["training_steps"] == 100_352
-
-
-def test_v4_working_and_best_known_planning_are_independent(monkeypatch, tmp_path):
-    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
-    working = _artifact(tmp_path / "working", "working")
-    best = _artifact(tmp_path / "best", "best")
-    candidate = _artifact(tmp_path / "candidate", "candidate")
-    state = {
-        "schema_version": 4,
-        "working_lineage": _lineage(working, steps=120_000),
-        "best_known_lineage": _lineage(best, steps=90_000),
-        "retained_lineages": [],
-        "pending_researcher_decision": {
-            "experiment": 2,
-            "candidates": [
-                {
-                    "name": "checkpoint-5000",
-                    "artifact": candidate.name,
-                    "timesteps": 5_000,
-                    "evaluations": [],
-                }
-            ],
-            "parameters": {"algorithm": {"name": "ppo"}},
-            "initialization": "transfer",
-            "parent_training_steps": 120_000,
-        },
-    }
-    original_best_artifact = state["best_known_lineage"]["artifact"]
-    plan = protocol.plan_previous_result_decision(
-        {
-            "previous_result_decision": {
-                "experiment": 2,
-                "continue_from": "checkpoint-5000",
-                "reason": "Explore its learning trajectory.",
-                "code": {"action": "keep", "reason": "The recipe remains active."},
-            }
-        },
-        state,
-    )
-
-    assert plan["working_record"]["artifact"].startswith(
-        "research/checkpoints/retained/"
-    )
-    assert plan["working_record"]["training_steps"] == 125_000
-    assert plan["best_known_record"]["artifact"].startswith(
-        "research/checkpoints/retained/"
-    )
-    assert state["best_known_lineage"]["artifact"] == original_best_artifact
-
-
-def test_v4_inquiry_lineage_advances_without_promoting_working(monkeypatch, tmp_path):
-    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
-    working = _artifact(tmp_path / "working", "working")
-    candidate = _artifact(tmp_path / "candidate", "experimental")
-    state = {
-        "schema_version": 4,
-        "campaign": {"id": "campaign", "started_at": "now", "base_commit": "base"},
-        "active_inquiry": {"id": 4, "status": "active"},
-        "working_lineage": _lineage(working, steps=120_000),
-        "best_known_lineage": _lineage(working, steps=120_000),
-        "inquiry_lineage": None,
-        "retained_lineages": [],
-        "pending_researcher_decision": {
-            "experiment": 2,
-            "candidates": [
-                {
-                    "name": "checkpoint-5000",
-                    "artifact": candidate.name,
-                    "timesteps": 5_000,
-                    "evaluations": [],
-                }
-            ],
-            "parameters": {"algorithm": {"name": "ppo"}},
-            "initialization": "fresh",
-            "parent_training_steps": 0,
-        },
-    }
-
-    plan = protocol.plan_previous_result_decision(
-        {
-            "previous_result_decision": {
-                "experiment": 2,
-                "continue_from": "working",
-                "reason": "Keep the established control unchanged.",
-                "developing_method": {
-                    "candidate": "checkpoint-5000",
-                    "reason": "Advance the inquiry despite lower current performance.",
-                },
-                "code": {
-                    "action": "keep",
-                    "reason": "Keep developing the experimental recipe.",
-                },
-            }
-        },
-        state,
-    )
-
-    assert plan["working_record"]["fingerprint"] == repository.artifact_fingerprint(
-        working
-    )
-    assert plan["inquiry_lineage_record"]["candidate"] == "checkpoint-5000"
-    assert plan["inquiry_lineage_record"]["inquiry_id"] == 4
-    assert plan["inquiry_lineage_name"] == "checkpoint-5000"
-
-
-def test_v4_inquiry_lineage_is_an_independent_training_parent(monkeypatch, tmp_path):
-    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
-    experimental = _artifact(tmp_path / "experimental", "experimental")
-    lineage = _lineage(experimental, steps=45_000)
-    lineage["inquiry_id"] = 2
-    state = {
-        "schema_version": 4,
-        "active_inquiry": {"id": 2, "status": "active"},
-        "working_lineage": None,
-        "best_known_lineage": None,
-        "inquiry_lineage": lineage,
-        "retained_lineages": [],
-    }
-
-    parent = protocol.training_parent(
-        {"training_parent": "developing_method"}, state, "transfer"
-    )
-
-    assert parent == ("developing_method", experimental, 45_000)
-    assert experimental in repository.role_and_retention_artifacts(state)
-
-
-def test_v4_state_rejects_an_experimental_lineage_from_another_inquiry(
-    monkeypatch, tmp_path
-):
-    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
-    experimental = _artifact(tmp_path / "experimental", "experimental")
-    lineage = _lineage(experimental, steps=45_000)
-    lineage["inquiry_id"] = 1
-    state = repository.empty_v4_campaign_state(
+def _state(tmp_path: Path) -> dict:
+    state = repository.empty_campaign_state(
         campaign={"id": "campaign", "started_at": "now", "base_commit": "base"},
         last_verdict="fresh",
     )
-    state["active_inquiry"] = {"id": 2, "status": "active"}
-    state["inquiry_lineage"] = lineage
+    state["inquiry_session"] = {
+        "id": "session",
+        "campaign_id": "campaign",
+        "inquiry_id": 1,
+        "role": "principal_investigator",
+        "status": "started",
+    }
+    state["active_inquiry"] = _active_inquiry()
+    return state
 
-    with pytest.raises(
-        ValueError, match="inquiry_lineage must belong to the active inquiry"
-    ):
-        repository.validate_v4_state(state, allow_missing_artifact=False)
 
-
-def test_v4_planning_reuses_one_durable_artifact_for_matching_aliases(
-    monkeypatch, tmp_path
-):
+def test_model_roles_are_independent_training_parents(monkeypatch, tmp_path):
     monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
-    durable = _artifact(
-        tmp_path / "research" / "checkpoints" / "retained" / "existing",
-        "same",
-    )
-    candidate = _artifact(tmp_path / "candidate", "same")
-    best_known = _lineage(durable, steps=10_000)
-    best_known["artifact"] = repository.repo_relative_path(durable)
-    state = {
-        "schema_version": 4,
-        "campaign": {"id": "campaign", "started_at": "now", "base_commit": "base"},
-        "working_lineage": None,
-        "best_known_lineage": best_known,
-        "retained_lineages": [],
-        "pending_researcher_decision": {
-            "experiment": 2,
-            "candidates": [
-                {
-                    "name": "checkpoint-5000",
-                    "artifact": repository.repo_relative_path(candidate),
-                    "timesteps": 5_000,
-                    "evaluations": [],
-                }
-            ],
-            "parameters": {},
-            "initialization": "fresh",
-            "parent_training_steps": 0,
-        },
-    }
-
-    plan = protocol.plan_previous_result_decision(
-        {
-            "previous_result_decision": {
-                "experiment": 2,
-                "continue_from": "checkpoint-5000",
-                "reason": "Use the identical candidate.",
-                "code": {"action": "keep", "reason": "Keep the recipe."},
-            }
-        },
-        state,
-    )
-
-    durable_path = repository.repo_relative_path(durable)
-    assert plan["working_record"]["artifact"] == durable_path
-    assert plan["best_known_record"]["artifact"] == durable_path
-    assert plan["artifact_publications"] == []
-
-
-def test_v4_best_known_requires_a_recorded_measurement_for_a_new_model(
-    monkeypatch, tmp_path
-):
-    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
-    candidate = _artifact(tmp_path / "candidate", "candidate")
-    state = {
-        "schema_version": 4,
-        "working_lineage": None,
-        "best_known_lineage": None,
-        "retained_lineages": [],
-        "pending_researcher_decision": {
-            "experiment": 1,
-            "candidates": [
-                {
-                    "name": "checkpoint",
-                    "artifact": candidate.name,
-                    "timesteps": 5_000,
-                    "evaluations": [],
-                }
-            ],
-            "parameters": {},
-            "initialization": "fresh",
-            "parent_training_steps": 0,
-        },
-    }
-    proposal = {
-        "previous_result_decision": {
-            "experiment": 1,
-            "continue_from": "checkpoint",
-            "reason": "Keep it.",
-            "code": {"action": "keep", "reason": "No code change."},
-            "best_known": {
-                "candidate": "checkpoint",
-                "reason": "Measured well.",
-            },
-        }
-    }
-
-    try:
-        protocol.plan_previous_result_decision(proposal, state)
-    except ValueError as error:
-        assert "checkpoint" in str(error)
-        assert "available model identifiers" in str(error)
-        assert "no recorded measurement" in str(error)
-    else:
-        raise AssertionError("best-known designation accepted unrelated evidence")
-
-
-def test_v4_omitted_best_known_keeps_the_incumbent(monkeypatch, tmp_path):
-    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
-    incumbent = _artifact(tmp_path / "incumbent", "incumbent")
-    existing = _lineage(incumbent, steps=10_000)
-    state = {
-        "schema_version": 4,
-        "working_lineage": existing.copy(),
-        "best_known_lineage": existing.copy(),
-        "retained_lineages": [],
-        "pending_researcher_decision": {
-            "experiment": 1,
-            "candidates": [],
-            "parameters": {},
-            "initialization": "fresh",
-            "parent_training_steps": 0,
-        },
-    }
-
-    plan = protocol.plan_previous_result_decision(
-        {
-            "previous_result_decision": {
-                "experiment": 1,
-                "continue_from": "best_known",
-                "reason": "Keep the incumbent.",
-                "code": {"action": "keep", "reason": "No code change."},
-            }
-        },
-        state,
-    )
-
-    assert plan["best_known_record"]["fingerprint"] == existing["fingerprint"]
-    assert plan["best_known_record"]["candidate"] == existing["candidate"]
-    assert plan["best_known_record"]["evaluation_artifacts"] == existing[
-        "evaluation_artifacts"
-    ]
-
-
-def test_v4_baseline_closure_may_request_the_final_benchmark(monkeypatch, tmp_path):
-    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
-    incumbent = _artifact(tmp_path / "incumbent", "incumbent")
-    existing = _lineage(incumbent, steps=10_000)
-    state = {
-        "schema_version": 4,
-        "working_lineage": existing.copy(),
-        "best_known_lineage": existing.copy(),
-        "retained_lineages": [],
-        "pending_researcher_decision": {
-            "experiment": 1,
-            "candidates": [],
-            "parameters": {},
-            "initialization": "fresh",
-            "parent_training_steps": 0,
-        },
-    }
-    proposal = {
-        "previous_result_decision": {
-            "experiment": 1,
-            "continue_from": "best_known",
-            "reason": "Keep the incumbent.",
-            "code": {"action": "keep", "reason": "No code change."},
-            "request_final_benchmark": True,
-            "terminal_reason": "Submit the incumbent.",
-        }
-    }
-
-    assert protocol.plan_previous_result_decision(proposal, state)[
-        "request_final_benchmark"
-    ]
-
-
-def test_v4_same_best_known_model_is_idempotent(monkeypatch, tmp_path):
-    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
-    incumbent = _artifact(tmp_path / "incumbent", "incumbent")
-    existing = _lineage(incumbent, steps=10_000)
-    state = {
-        "schema_version": 4,
-        "working_lineage": existing.copy(),
-        "best_known_lineage": existing.copy(),
-        "retained_lineages": [],
-        "pending_researcher_decision": {
-            "experiment": 1,
-            "candidates": [],
-            "parameters": {},
-            "initialization": "fresh",
-            "parent_training_steps": 0,
-        },
-    }
-
-    plan = protocol.plan_previous_result_decision(
-        {
-            "previous_result_decision": {
-                "experiment": 1,
-                "continue_from": "best_known",
-                "reason": "Keep the incumbent.",
-                "code": {"action": "keep", "reason": "No code change."},
-                "best_known": {
-                    "candidate": "best_known",
-                    "reason": "Confirm the incumbent.",
-                },
-            }
-        },
-        state,
-    )
-
-    assert plan["best_known_record"]["fingerprint"] == existing["fingerprint"]
-    assert plan["best_known_record"]["candidate"] == existing["candidate"]
-
-
-def test_v4_unknown_best_known_identifier_lists_available_models(monkeypatch, tmp_path):
-    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
-    candidate = _artifact(tmp_path / "candidate", "candidate")
-    state = {
-        "schema_version": 4,
-        "working_lineage": None,
-        "best_known_lineage": None,
-        "retained_lineages": [],
-        "pending_researcher_decision": {
-            "experiment": 1,
-            "candidates": [
-                {
-                    "name": "checkpoint",
-                    "artifact": candidate.name,
-                    "timesteps": 5_000,
-                    "evaluations": [],
-                }
-            ],
-            "parameters": {},
-            "initialization": "fresh",
-            "parent_training_steps": 0,
-        },
-    }
-
-    proposal = {
-        "previous_result_decision": {
-            "experiment": 1,
-            "continue_from": "checkpoint",
-            "reason": "Keep it.",
-            "code": {"action": "keep", "reason": "No code change."},
-            "best_known": {
-                "candidate": "missing-model",
-                "reason": "Try an unavailable model.",
-            },
-        }
-    }
-
-    with pytest.raises(ValueError) as error:
-        protocol.plan_previous_result_decision(proposal, state)
-    message = str(error.value)
-    assert "missing-model" in message
-    assert "available model identifiers" in message
-    assert "checkpoint" in message
-
-
-def test_v4_best_known_uses_historical_fingerprint_binding_not_role_paths(
-    monkeypatch, tmp_path
-):
-    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
-    monkeypatch.setattr(
-        "research.runner_paths.RESULTS_PATH", tmp_path / "results.jsonl"
-    )
-    candidate = _artifact(tmp_path / "candidate", "candidate")
-    fingerprint = repository.artifact_fingerprint(candidate)
-    evidence = tmp_path / "historical-evaluation.json"
-    evidence.write_text("{}", encoding="utf-8")
-    repository.append_result(
-        {
-            "campaign_id": "campaign",
-            "index": 1,
-            "requested_evaluations": [
-                {
-                    "instrument": "research_evaluation",
-                    "candidate": "old-alias",
-                    "episodes": 2,
-                    "seed": 10,
-                    "evaluation_semantics": "semantics",
-                    "model_fingerprint": fingerprint,
-                    "metrics": {
-                        "evaluation_artifact": evidence.name,
-                        "evaluation_artifact_fingerprint": repository.file_fingerprint(
-                            evidence
-                        ),
-                    },
-                }
-            ],
-        }
-    )
-    state = {
-        "schema_version": 4,
-        "campaign": {"id": "campaign"},
-        "working_lineage": None,
-        "best_known_lineage": None,
-        "retained_lineages": [],
-        "pending_researcher_decision": {
-            "experiment": 2,
-            "candidates": [
-                {
-                    "name": "checkpoint",
-                    "artifact": candidate.name,
-                    "timesteps": 5_000,
-                    "evaluations": [],
-                }
-            ],
-            "parameters": {},
-            "initialization": "fresh",
-            "parent_training_steps": 0,
-        },
-    }
-    proposal = {
-        "previous_result_decision": {
-            "experiment": 2,
-            "continue_from": "checkpoint",
-            "reason": "Keep it.",
-            "code": {"action": "keep", "reason": "No code change."},
-            "best_known": {
-                "candidate": "checkpoint",
-                "reason": "Historical evidence measures these exact weights.",
-            },
-        }
-    }
-
-    plan = protocol.plan_previous_result_decision(proposal, state)
-
-    assert plan["best_known_record"]["evaluation_artifacts"] == [evidence.name]
-
-    evidence.write_text('{"replaced": true}', encoding="utf-8")
-    with pytest.raises(ValueError, match="content changed after measurement"):
-        protocol.plan_previous_result_decision(proposal, state)
-
-
-def test_v4_best_known_reports_missing_legacy_model_identity(monkeypatch, tmp_path):
-    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
-    monkeypatch.setattr(
-        "research.runner_paths.RESULTS_PATH", tmp_path / "results.jsonl"
-    )
-    candidate = _artifact(tmp_path / "candidate", "candidate")
-    evidence = tmp_path / "legacy-evaluation.json"
-    evidence.write_text("{}", encoding="utf-8")
-    repository.append_result(
-        {
-            "campaign_id": "campaign",
-            "index": 1,
-            "requested_evaluations": [
-                {
-                    "candidate": "checkpoint",
-                    "episodes": 2,
-                    "seed": 10,
-                    "evaluation_semantics": "semantics",
-                    "metrics": {"evaluation_artifact": evidence.name},
-                }
-            ],
-        }
-    )
-    state = {
-        "schema_version": 4,
-        "campaign": {"id": "campaign"},
-        "working_lineage": None,
-        "best_known_lineage": None,
-        "retained_lineages": [],
-        "pending_researcher_decision": {
-            "experiment": 2,
-            "candidates": [
-                {
-                    "name": "checkpoint",
-                    "artifact": candidate.name,
-                    "timesteps": 5_000,
-                    "evaluations": [],
-                }
-            ],
-            "parameters": {},
-            "initialization": "fresh",
-            "parent_training_steps": 0,
-        },
-    }
-    proposal = {
-        "previous_result_decision": {
-            "experiment": 2,
-            "continue_from": "checkpoint",
-            "reason": "Keep it.",
-            "code": {"action": "keep", "reason": "No code change."},
-            "best_known": {
-                "candidate": "checkpoint",
-                "reason": "Try to use imported legacy evidence.",
-            },
-        }
-    }
-
-    with pytest.raises(ValueError, match="no recorded measurement"):
-        protocol.plan_previous_result_decision(proposal, state)
-
-
-def test_v4_retained_lineage_is_selectable_and_preserved(monkeypatch, tmp_path):
-    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
+    working = _artifact(tmp_path / "working", "working")
+    best = _artifact(tmp_path / "best", "best")
+    method = _artifact(tmp_path / "method", "method")
     retained = _artifact(tmp_path / "retained", "retained")
-    candidate = _artifact(tmp_path / "candidate", "candidate")
-    state = {
-        "schema_version": 4,
-        "working_lineage": None,
-        "best_known_lineage": None,
-        "retained_lineages": [],
-        "pending_researcher_decision": {
-            "experiment": 1,
+    state = _state(tmp_path)
+    state["working_lineage"] = _lineage(working, steps=120_000)
+    state["best_known_lineage"] = _lineage(best, steps=90_000)
+    state["active_method"] = _active_method(_lineage(method, steps=70_000))
+    state["retained_lineages"] = [
+        {"id": "alternative", **_lineage(retained, steps=60_000)}
+    ]
+
+    assert protocol.training_parent(
+        {"training_parent": "working"}, state, "transfer"
+    ) == ("working", working, 120_000)
+    assert protocol.training_parent(
+        {"training_parent": "best_known"}, state, "transfer"
+    ) == ("best_known", best, 90_000)
+    assert protocol.training_parent(
+        {"training_parent": "active_method"}, state, "transfer"
+    ) == ("active_method", method, 70_000)
+    assert protocol.training_parent(
+        {"training_parent": "alternative"}, state, "transfer"
+    ) == ("alternative", retained, 60_000)
+
+
+def test_measurement_catalog_exposes_active_method_without_requiring_working(
+    monkeypatch, tmp_path
+):
+    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
+    method = _artifact(tmp_path / "method", "method")
+    state = _state(tmp_path)
+    state["active_method"] = _active_method(_lineage(method, steps=20_000))
+
+    available = protocol.available_evaluation_candidates(
+        {
             "candidates": [
                 {
-                    "name": "checkpoint",
-                    "artifact": candidate.name,
-                    "timesteps": 5_000,
+                    "name": "checkpoint-10k",
+                    "artifact": "candidate",
                     "evaluations": [],
                 }
+            ]
+        },
+        state,
+    )
+
+    assert set(available) == {"checkpoint-10k", "active_method"}
+    assert available["active_method"]["artifact"] == method.name
+
+
+def test_active_method_artifact_survives_cleanup_roles(monkeypatch, tmp_path):
+    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
+    method = _artifact(tmp_path / "method", "method")
+    state = _state(tmp_path)
+    state["active_method"] = _active_method(_lineage(method, steps=20_000))
+
+    assert method in repository.role_and_retention_artifacts(state)
+
+
+def test_active_inquiry_requires_complete_bounds_and_matching_session(tmp_path):
+    state = _state(tmp_path)
+    repository.validate_research_state(state, allow_missing_artifact=True)
+
+    state["active_inquiry"]["question"] = ""
+    with pytest.raises(ValueError, match="question"):
+        repository.validate_research_state(state, allow_missing_artifact=True)
+
+    state = _state(tmp_path)
+    state["inquiry_session"]["id"] = "other"
+    with pytest.raises(ValueError, match="own the current inquiry_session"):
+        repository.validate_research_state(state, allow_missing_artifact=True)
+
+
+def test_schema_five_rejects_missing_fields_and_legacy_panel_shapes(tmp_path):
+    state = _state(tmp_path)
+    del state["pending_scientific_commit"]
+    with pytest.raises(RuntimeError, match="research state is incomplete"):
+        repository.validate_research_state(state, allow_missing_artifact=True)
+
+    state = _state(tmp_path)
+    working = _artifact(tmp_path / "working", "working")
+    state["working_lineage"] = _lineage(working, steps=120_000)
+    state["working_lineage"]["selected_panels"] = [["research_evaluation", 100, 200]]
+    with pytest.raises(TypeError, match="panel identity objects"):
+        repository.validate_research_state(state, allow_missing_artifact=True)
+
+    state = _state(tmp_path)
+    state["active_method"] = _active_method()
+    state["active_method"]["status"] = "active"
+    state["active_method"]["stage"] = "development"
+    with pytest.raises(ValueError, match="requires exactly"):
+        repository.validate_research_state(state, allow_missing_artifact=True)
+
+
+def test_method_is_declared_before_nonbaseline_training(tmp_path):
+    evidence = tmp_path / "evidence.txt"
+    evidence.write_text("observation", encoding="utf-8")
+    state = _state(tmp_path)
+    proposal = {
+        "kind": "training",
+        "method_id": "method-a",
+        "initialization": "fresh",
+        "change": "Change the method.",
+        "investigation_design": {
+            "evidence": [
+                {"source": "evidence.txt", "observation": "Observed behavior."}
             ],
-            "parameters": {},
-            "initialization": "fresh",
-            "parent_training_steps": 0,
+            "objective_link": "The behavior affects the objective.",
+            "initialization_reason": "Fresh isolates the changed method.",
+            "rationale": "This run tests the method.",
+            "expected_observation": "Learning changes measurably.",
+            "open_question": "How will learning change?",
         },
     }
-    retained_plan = protocol.plan_previous_result_decision(
+    with pytest.raises(ValueError, match="declared active_method"):
+        protocol.validate_proposal_against_state(proposal, state)
+
+
+def test_method_start_creates_a_first_class_method():
+    state = _state(Path("."))
+    state["pending_scientific_parent"] = "b" * 40
+    plan = protocol.plan_method_start(
         {
-            "previous_result_decision": {
-                "experiment": 1,
-                "continue_from": "checkpoint",
-                "reason": "Keep it.",
-                "code": {"action": "keep", "reason": "No code change."},
-                "retain": [
-                    {
-                        "candidate": "checkpoint",
-                        "id": "alternate",
-                        "reason": "Keep the checkpoint reusable.",
-                    }
-                ],
+            "method": {
+                "action": "start",
+                "id": "method-a",
+                "scientific_question": "Can this method learn robust control?",
+                "rationale": "It explores a distinct representation.",
+                "lifecycle": "concept",
             }
         },
         state,
     )
-    state["retained_lineages"] = retained_plan["retained"]
-    state["retained_lineages"][0]["artifact"] = retained.name
-    state["retained_lineages"][0]["fingerprint"] = (
-        protocol.repository.artifact_fingerprint(retained)
-    )
-
-    parent = protocol.training_parent(
-        {"training_parent": "alternate"}, state, "transfer"
-    )
-
-    assert parent == ("alternate", retained, 5_000)
-    assert retained in protocol.repository.role_and_retention_artifacts(state)
-
-
-def test_v4_state_rejects_legacy_accepted_aliases(monkeypatch, tmp_path):
-    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
-    state = {
-        "schema_version": 4,
-        "working_lineage": None,
-        "best_known_lineage": None,
-        "retained_lineages": [],
-        "campaign": {
-            "id": "campaign-test",
-            "started_at": "2026-09-05T00:00:00Z",
-            "base_commit": "a" * 40,
-        },
-        "accepted_artifact": "legacy",
+    assert plan["method"] == {
+        "id": "method-a",
+        "inquiry_id": 1,
+        "scientific_question": "Can this method learn robust control?",
+        "rationale": "It explores a distinct representation.",
+        "lifecycle": "concept",
+        "base_scientific_commit": "b" * 40,
+        "current_lineage": None,
+        "iterations": [],
+        "resolution": None,
     }
 
-    try:
-        repository.validate_v4_state(state, allow_missing_artifact=False)
-    except RuntimeError as error:
-        assert "legacy accepted aliases" in str(error)
-    else:
-        raise AssertionError("schema-v4 state accepted a legacy role alias")
 
-
-def test_v4_best_known_replacement_resolves_incumbent_evidence_from_state(
+def test_method_iteration_can_abandon_a_collapsed_run_without_candidate(
     monkeypatch, tmp_path
 ):
-    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
-    incumbent = _artifact(tmp_path / "incumbent", "incumbent")
-    candidate = _artifact(tmp_path / "candidate", "candidate")
-    incumbent_evidence = tmp_path / "incumbent-evaluation.json"
-    candidate_evidence = tmp_path / "candidate-evaluation.json"
-    _research_evidence(incumbent_evidence)
-    _research_evidence(candidate_evidence)
-    state = {
-        "schema_version": 4,
-        "working_lineage": _lineage(incumbent, steps=10_000),
-        "best_known_lineage": _lineage(incumbent, steps=10_000),
-        "retained_lineages": [],
-        "pending_researcher_decision": {
-            "experiment": 2,
-            "candidates": [
-                {
-                    "name": "checkpoint",
-                    "artifact": candidate.name,
-                    "timesteps": 5_000,
-                    "evaluations": [{"evaluation_artifact": candidate_evidence.name}],
-                }
-            ],
-            "parameters": {},
-            "initialization": "fresh",
-            "parent_training_steps": 0,
-        },
-    }
-    state["best_known_lineage"]["evaluation_artifacts"] = [incumbent_evidence.name]
-    state["pending_researcher_decision"]["partial_evaluations"] = [
-        {
-            "candidate": "checkpoint",
-            "episodes": 2,
-            "seed": 1,
-            "evaluation_semantics": "shared-evaluation-semantics",
-            "model_fingerprint": repository.artifact_fingerprint(candidate),
-            "metrics": {
-                "evaluation_artifact": candidate_evidence.name,
-                "evaluation_artifact_fingerprint": repository.file_fingerprint(
-                    candidate_evidence
-                ),
-            },
-        },
-        {
-            "candidate": "best_known",
-            "episodes": 2,
-            "seed": 1,
-            "evaluation_semantics": "shared-evaluation-semantics",
-            "model_fingerprint": repository.artifact_fingerprint(incumbent),
-            "metrics": {
-                "evaluation_artifact": incumbent_evidence.name,
-                "evaluation_artifact_fingerprint": repository.file_fingerprint(
-                    incumbent_evidence
-                ),
-            },
-        },
+    monkeypatch.setattr(protocol, "validate_postmortem_evidence", lambda *a, **k: "x")
+    monkeypatch.setattr(repository, "scientific_delta", lambda parent: [])
+    state = _state(tmp_path)
+    state["active_method"] = _active_method()
+    state["active_method"]["iterations"] = [
+        {"experiment": 2, "status": "training_error"}
     ]
-    decision = {
-        "previous_result_decision": {
-            "experiment": 2,
-            "continue_from": "checkpoint",
-            "reason": "Continue exploring.",
-            "code": {"action": "keep", "reason": "No code change."},
-            "best_known": {
-                "candidate": "checkpoint",
-                "reason": "Designate from comparable evidence.",
-            },
-        }
+    state["pending_analysis"] = {
+        "experiment": 2,
+        "baseline": False,
+        "method_id": "method-a",
+        "candidates": [],
+        "parameters": {},
+        "initialization": "fresh",
+        "parent_training_steps": 0,
+        "code_parent_commit": "a" * 40,
+        "result": {},
     }
-
-    plan = protocol.plan_previous_result_decision(decision, state)
-
-    assert plan["best_known_record"]["artifact"].startswith(
-        "research/checkpoints/retained/"
-    )
-
-    state["pending_researcher_decision"]["partial_evaluations"][0][
-        "model_fingerprint"
-    ] = repository.artifact_fingerprint(incumbent)
-    with pytest.raises(ValueError, match="no recorded measurement"):
-        protocol.plan_previous_result_decision(decision, state)
-
-
-def test_v4_best_known_replacement_rejects_missing_incumbent_state_evidence(
-    monkeypatch, tmp_path
-):
-    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
-    incumbent = _artifact(tmp_path / "incumbent", "incumbent")
-    candidate = _artifact(tmp_path / "candidate", "candidate")
-    candidate_evidence = tmp_path / "candidate-evaluation.json"
-    candidate_evidence.write_text("{}", encoding="utf-8")
-    state = {
-        "schema_version": 4,
-        "working_lineage": _lineage(incumbent, steps=10_000),
-        "best_known_lineage": _lineage(incumbent, steps=10_000),
-        "retained_lineages": [],
-        "pending_researcher_decision": {
-            "experiment": 2,
-            "candidates": [
-                {
-                    "name": "checkpoint",
-                    "artifact": candidate.name,
-                    "timesteps": 5_000,
-                    "evaluations": [],
-                }
-            ],
-            "parameters": {},
-            "initialization": "fresh",
-            "parent_training_steps": 0,
-            "partial_evaluations": [
-                {
-                    "candidate": "checkpoint",
-                    "episodes": 200,
-                    "seed": 1,
-                    "evaluation_semantics": "semantics",
-                    "model_fingerprint": repository.artifact_fingerprint(candidate),
-                    "metrics": {
-                        "evaluation_artifact": candidate_evidence.name,
-                        "evaluation_artifact_fingerprint": repository.file_fingerprint(
-                            candidate_evidence
-                        ),
-                    },
-                }
-            ],
-        },
-    }
-    proposal = {
-        "previous_result_decision": {
-            "experiment": 2,
-            "continue_from": "checkpoint",
-            "reason": "Continue exploring.",
-            "code": {"action": "keep", "reason": "No code change."},
-            "best_known": {
-                "candidate": "checkpoint",
-                "reason": "Designate from candidate evidence.",
-            },
-        }
-    }
-
-    plan = protocol.plan_previous_result_decision(proposal, state)
-    assert plan["best_known_record"]["candidate"] == "checkpoint"
-
-
-def test_v4_best_known_replacement_does_not_require_incumbent_panel_equality(
-    monkeypatch, tmp_path
-):
-    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
-    monkeypatch.setattr(
-        "research.runner_paths.RESULTS_PATH", tmp_path / "results.jsonl"
-    )
-    incumbent = _artifact(tmp_path / "incumbent", "incumbent")
-    candidate = _artifact(tmp_path / "candidate", "candidate")
-    incumbent_evidence = tmp_path / "incumbent-evaluation.json"
-    candidate_evidence = tmp_path / "candidate-evaluation.json"
-    _research_evidence(incumbent_evidence)
-    _research_evidence(candidate_evidence)
-    state = {
-        "schema_version": 4,
-        "campaign": {"id": "campaign", "started_at": "now", "base_commit": "base"},
-        "working_lineage": _lineage(incumbent, steps=10_000),
-        "best_known_lineage": _lineage(incumbent, steps=10_000),
-        "retained_lineages": [],
-        "pending_analysis": {
-            "experiment": 2,
-            "candidates": [
-                {
-                    "name": "checkpoint",
-                    "artifact": candidate.name,
-                    "timesteps": 5_000,
-                    "evaluations": [{"evaluation_artifact": candidate_evidence.name}],
-                }
-            ],
-            "parameters": {},
-            "initialization": "fresh",
-            "parent_training_steps": 0,
-            "partial_evaluations": [
-                {
-                    "candidate": "checkpoint",
-                    "episodes": 200,
-                    "seed": 1,
-                    "evaluation_semantics": "candidate-semantics",
-                    "model_fingerprint": repository.artifact_fingerprint(candidate),
-                    "metrics": {
-                        "evaluation_artifact": candidate_evidence.name,
-                        "evaluation_artifact_fingerprint": repository.file_fingerprint(
-                            candidate_evidence
-                        ),
-                    },
-                },
-                {
-                    "candidate": "best_known",
-                    "episodes": 1000,
-                    "seed": 1,
-                    "evaluation_semantics": "incumbent-semantics",
-                    "model_fingerprint": repository.artifact_fingerprint(incumbent),
-                    "metrics": {
-                        "evaluation_artifact": incumbent_evidence.name,
-                        "evaluation_artifact_fingerprint": repository.file_fingerprint(
-                            incumbent_evidence
-                        ),
-                    },
-                },
-            ],
-        },
-    }
-    state["best_known_lineage"]["evaluation_artifacts"] = [incumbent_evidence.name]
-    proposal = {
-        "previous_result_decision": {
-            "experiment": 2,
-            "continue_from": "checkpoint",
-            "reason": "Continue exploring.",
-            "code": {"action": "keep", "reason": "No code change."},
-            "best_known": {
-                "candidate": "checkpoint",
-                "reason": "Designate from comparable evidence.",
-            },
-        }
-    }
-    monkeypatch.setattr(
-        protocol, "validate_postmortem_evidence", lambda *args, **kwargs: None
-    )
-
-    plan = protocol.plan_previous_result_decision(proposal, state)
-    assert plan["best_known_record"]["evaluation_artifacts"] == [
-        candidate_evidence.name
-    ]
-
-
-def test_best_known_evidence_compatibility_keeps_task_reference_exact():
-    task_reference = {
-        "instrument": "task_reference",
-        "settings": ("task_reference", "fixed-panel", 1, 100, 42),
-    }
-
-    assert protocol._evidence_records_compatible(task_reference, dict(task_reference))
-    assert not protocol._evidence_records_compatible(
-        task_reference,
+    plan = protocol.plan_method_decision(
         {
-            "instrument": "task_reference",
-            "settings": ("task_reference", "fixed-panel", 2, 100, 42),
-        },
-    )
-    assert not protocol._evidence_records_compatible(
-        task_reference,
-        {
-            "instrument": "research_evaluation",
-            "settings": ("research_evaluation", 100, 42, "broad-semantics"),
-        },
-    )
-
-
-def test_v4_cleanup_preserves_working_artifact(monkeypatch, tmp_path):
-    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
-    monkeypatch.setattr(repository, "write_state", lambda state: None)
-    candidate = _artifact(tmp_path / "candidate", "candidate")
-    state = {
-        "schema_version": 4,
-        "working_lineage": None,
-        "best_known_lineage": None,
-        "retained_lineages": [],
-        "pending_researcher_decision": {
-            "experiment": 1,
-            "candidates": [
-                {
-                    "name": "checkpoint",
-                    "artifact": candidate.name,
-                    "timesteps": 5_000,
-                    "evaluations": [],
-                }
-            ],
-            "parameters": {},
-            "initialization": "fresh",
-            "parent_training_steps": 0,
-        },
-    }
-    proposal = {
-        "previous_result_decision": {
-            "experiment": 1,
-            "continue_from": "checkpoint",
-            "reason": "Keep the promising model.",
-            "code": {"action": "keep", "reason": "No code change."},
-        }
-    }
-
-    assert not apply_previous_result_decision(proposal, state)
-
-    assert state["working_lineage"]["artifact"].startswith(
-        "research/checkpoints/retained/"
-    )
-    assert candidate.joinpath("model.zip").read_bytes() == b"candidate"
-    assert candidate.joinpath("artifact.json").is_file()
-
-
-def test_v4_publication_copies_complete_artifact_and_reuses_matching_destination(
-    monkeypatch, tmp_path
-):
-    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
-    source = tmp_path / "models" / "candidates" / "source"
-    source.mkdir(parents=True)
-    for filename, content in {
-        "model.zip": b"model",
-        "artifact.json": b"{}",
-        "policy_runtime.pkl": b"runtime",
-        "vecnormalize.pkl": b"normalization",
-        "replay_buffer.pkl": b"replay",
-    }.items():
-        (source / filename).write_bytes(content)
-    destination = tmp_path / "research" / "checkpoints" / "retained" / "lineage"
-    publication = {
-        "source": repository.repo_relative_path(source),
-        "destination": repository.repo_relative_path(destination),
-        "fingerprint": repository.artifact_fingerprint(source),
-    }
-
-    repository.validate_artifact_publication(publication)
-    repository.publish_artifact(publication)
-    for source_file in source.iterdir():
-        source_file.unlink()
-    source.rmdir()
-    repository.publish_artifact(publication)
-
-    assert repository.artifact_fingerprint(destination) == publication["fingerprint"]
-    assert (destination / "policy_runtime.pkl").read_bytes() == b"runtime"
-    assert (destination / "vecnormalize.pkl").read_bytes() == b"normalization"
-    assert (destination / "replay_buffer.pkl").read_bytes() == b"replay"
-
-
-def test_v4_publication_refuses_different_matching_destination(monkeypatch, tmp_path):
-    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
-    source = _artifact(tmp_path / "source", "source")
-    destination = _artifact(
-        tmp_path / "research" / "checkpoints" / "retained" / "lineage", "other"
-    )
-    publication = {
-        "source": repository.repo_relative_path(source),
-        "destination": repository.repo_relative_path(destination),
-        "fingerprint": repository.artifact_fingerprint(source),
-    }
-
-    with pytest.raises(ValueError, match="collides with a different artifact"):
-        repository.validate_artifact_publication(publication)
-
-
-def test_v4_publication_requires_saved_policy_runtime(monkeypatch, tmp_path):
-    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
-    source = tmp_path / "source"
-    source.mkdir()
-    source.joinpath("model.zip").write_bytes(b"model")
-    source.joinpath("artifact.json").write_text("{}", encoding="utf-8")
-    publication = {
-        "source": repository.repo_relative_path(source),
-        "destination": "research/checkpoints/retained/lineage",
-        "fingerprint": repository.artifact_fingerprint(source),
-    }
-
-    with pytest.raises(ValueError, match="policy_runtime.pkl"):
-        repository.validate_artifact_publication(publication)
-
-
-def test_v4_durable_artifact_path_is_compact_and_identity_derived(
-    monkeypatch, tmp_path
-):
-    monkeypatch.setattr("research.runner_paths.RESEARCH_DIR", tmp_path / "research")
-    fingerprint = "a" * 64
-
-    first = repository.durable_artifact_destination(
-        campaign_id="campaign",
-        origin_experiment=123,
-        candidate="checkpoint-100352-" + "long-name-" * 20,
-        fingerprint=fingerprint,
-    )
-    second = repository.durable_artifact_destination(
-        campaign_id="campaign",
-        origin_experiment=123,
-        candidate="checkpoint-120832-" + "long-name-" * 20,
-        fingerprint=fingerprint,
-    )
-
-    assert first != second
-    assert first.name.startswith("e123-c")
-    assert first.name.endswith(f"-{fingerprint}")
-    assert len(first.name) == 79
-
-
-def test_v4_publication_failure_leaves_no_partial_destination(monkeypatch, tmp_path):
-    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
-    source = _artifact(tmp_path / "source", "source")
-    destination = tmp_path / "research" / "checkpoints" / "retained" / "lineage"
-    publication = {
-        "source": repository.repo_relative_path(source),
-        "destination": repository.repo_relative_path(destination),
-        "fingerprint": repository.artifact_fingerprint(source),
-    }
-    original_copy = repository.copy_artifact
-
-    def fail_after_staging(source_path, destination_path):
-        original_copy(source_path, destination_path)
-        raise OSError("injected publication failure")
-
-    monkeypatch.setattr(repository, "copy_artifact", fail_after_staging)
-    with pytest.raises(OSError, match="injected publication failure"):
-        repository.publish_artifact(publication)
-
-    assert not destination.exists()
-    assert not list(destination.parent.glob(".lineage-*.tmp"))
-
-
-def test_v4_restore_uses_predecision_lineage_recipe(monkeypatch, tmp_path):
-    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
-    working = _artifact(tmp_path / "working", "working")
-    candidate = _artifact(tmp_path / "candidate", "candidate")
-    state = {
-        "schema_version": 4,
-        "working_lineage": _lineage(working, steps=10_000),
-        "best_known_lineage": None,
-        "retained_lineages": [],
-        "pending_analysis": {
-            "experiment": 2,
-            "candidates": [
-                {
-                    "name": "checkpoint",
-                    "artifact": candidate.name,
-                    "timesteps": 5_000,
-                    "evaluations": [],
-                }
-            ],
-            "parameters": {},
-            "initialization": "fresh",
-            "parent_training_steps": 0,
-        },
-    }
-    monkeypatch.setattr(repository, "require_resolvable_commit", lambda commit: None)
-    monkeypatch.setattr(
-        protocol, "validate_postmortem_evidence", lambda *args, **kwargs: None
-    )
-    monkeypatch.setattr(
-        repository,
-        "scientific_delta",
-        lambda commit: [
-            "robot_learning/scenario/reward.py",
-            "robot_learning/training/new_helper.py",
-        ],
-    )
-    monkeypatch.setattr(
-        repository,
-        "tracked_at_commit",
-        lambda commit, path: path == "robot_learning/scenario/reward.py",
-    )
-
-    plan = protocol.plan_previous_result_decision(
-        {
-            "previous_result_decision": {
+            "method_decision": {
                 "experiment": 2,
-                "continue_from": "checkpoint",
-                "reason": "Continue the candidate.",
-                "code": {
-                    "action": "restore",
-                    "reason": "Return to the working recipe.",
-                    "lineage": "working",
-                },
+                "action": "abandon",
+                "outcome": "The collapsed run rejects this implementation.",
+                "reason": "The method did not produce a usable policy.",
+                "code": {"action": "revert", "reason": "Discard the failed recipe."},
+            }
+        },
+        state,
+    )
+    assert plan["active_method"]["lifecycle"] == "abandoned"
+    assert plan["active_method"]["current_lineage"] is None
+    assert plan["active_method"]["iterations"][0]["status"] == "abandon"
+
+
+def test_post_training_continue_uses_the_shared_method_decision_executor(
+    monkeypatch, tmp_path
+):
+    monkeypatch.setattr(protocol, "validate_postmortem_evidence", lambda *a, **k: "x")
+    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
+    candidate = _artifact(tmp_path / "candidate", "candidate")
+    state = _state(tmp_path)
+    state["active_method"] = _active_method()
+    state["active_method"]["iterations"] = [
+        {"experiment": 2, "status": "awaiting_analysis"}
+    ]
+    state["pending_analysis"] = {
+        "experiment": 2,
+        "inquiry_id": 1,
+        "baseline": False,
+        "method_id": "method-a",
+        "candidates": [
+            {
+                "name": "candidate",
+                "artifact": candidate.name,
+                "fingerprint": repository.artifact_fingerprint(candidate),
+                "timesteps": 5_000,
+                "evaluations": [],
+            }
+        ],
+        "parameters": {},
+        "initialization": "fresh",
+        "parent_training_steps": 0,
+        "code_parent_commit": "a" * 40,
+        "result": {
+            "schema_version": 1,
+            "record_type": "experiment",
+            "campaign_id": "campaign",
+            "index": 2,
+            "status": "trained",
+            "verdict": "awaiting analysis",
+        },
+    }
+    proposal = {
+        "method_decision": {
+            "experiment": 2,
+            "action": "continue",
+            "outcome": "The method warrants another iteration.",
+            "reason": "The first run established a usable lineage.",
+            "candidate": "candidate",
+            "code": {"action": "keep", "reason": "Keep the method recipe."},
+        }
+    }
+    research = tmp_path / "research"
+    research.mkdir()
+    monkeypatch.setattr(repository.paths, "RESEARCH_DIR", research)
+    monkeypatch.setattr(repository.paths, "STATE_PATH", research / "state.json")
+    monkeypatch.setattr(repository.paths, "PROPOSAL_PATH", research / "proposal.json")
+    monkeypatch.setattr(repository.paths, "RESULTS_PATH", research / "results.jsonl")
+    monkeypatch.setattr(repository.paths, "LOG_PATH", research / "EXPERIMENTS.md")
+    monkeypatch.setattr(
+        repository.paths, "POSTMORTEM_PATH", research / "postmortems.md"
+    )
+    monkeypatch.setattr(repository, "publish_campaign_laboratory", lambda current: None)
+    monkeypatch.setattr(run_experiment, "_publish_method_science", lambda plan: None)
+    monkeypatch.setattr(run_experiment, "_publish_runner_memory", lambda message: None)
+    repository.write_state(state)
+    repository.paths.PROPOSAL_PATH.write_text(json.dumps(proposal), encoding="utf-8")
+
+    assert run_experiment.resolve_method_decision(proposal) == 0
+    resolved = repository.read_state()
+    assert resolved["pending_method_decision"] is None
+    assert resolved["pending_analysis"] is None
+    assert resolved["active_method"]["lifecycle"] == "development"
+    assert resolved["active_method"]["current_lineage"]["candidate"] == "candidate"
+    result = repository.result_records()[0]
+    assert result["method_decision"]["action"] == "continue"
+
+
+def test_maturing_a_method_does_not_promote_it(monkeypatch, tmp_path):
+    monkeypatch.setattr(protocol, "validate_postmortem_evidence", lambda *a, **k: "x")
+    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
+    monkeypatch.setattr("research.runner_paths.RESEARCH_DIR", tmp_path / "research")
+    candidate = _artifact(tmp_path / "candidate", "candidate")
+    working = _artifact(tmp_path / "working", "working")
+    state = _state(tmp_path)
+    state["working_lineage"] = _lineage(working, steps=120_000)
+    state["active_method"] = _active_method()
+    state["active_method"]["iterations"] = [
+        {"experiment": 2, "status": "awaiting_analysis"}
+    ]
+    state["pending_analysis"] = {
+        "experiment": 2,
+        "baseline": False,
+        "method_id": "method-a",
+        "candidates": [
+            {
+                "name": "candidate",
+                "artifact": candidate.name,
+                "fingerprint": repository.artifact_fingerprint(candidate),
+                "timesteps": 5_000,
+                "evaluations": [],
+            }
+        ],
+        "parameters": {},
+        "initialization": "fresh",
+        "parent_training_steps": 0,
+        "code_parent_commit": "a" * 40,
+        "result": {},
+    }
+
+    plan = protocol.plan_method_decision(
+        {
+            "method_decision": {
+                "experiment": 2,
+                "action": "mature",
+                "outcome": "The method is ready for inquiry-level comparison.",
+                "reason": "Its development question is resolved.",
+                "candidate": "candidate",
+                "code": {"action": "keep", "reason": "Keep the mature recipe."},
             }
         },
         state,
     )
 
-    assert plan["code_plan"]["parent"] == "a" * 40
-    assert plan["code_plan"]["restore"] == ["robot_learning/scenario/reward.py"]
-    assert plan["code_plan"]["remove_created"] == [
-        (tmp_path / "robot_learning/training/new_helper.py").resolve()
-    ]
-
-
-def test_v4_restore_rejects_lineage_without_recipe_provenance(monkeypatch, tmp_path):
-    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
-    working = _artifact(tmp_path / "working", "working")
-    candidate = _artifact(tmp_path / "candidate", "candidate")
-    lineage = _lineage(working, steps=10_000)
-    lineage["scientific_commit"] = None
-    monkeypatch.setattr(
-        protocol, "validate_postmortem_evidence", lambda *args, **kwargs: None
+    assert plan["active_method"]["lifecycle"] == "mature"
+    assert (
+        plan["working_record"]["fingerprint"] == state["working_lineage"]["fingerprint"]
     )
-    state = {
-        "schema_version": 4,
-        "working_lineage": lineage,
-        "best_known_lineage": None,
-        "retained_lineages": [],
-        "pending_analysis": {
-            "experiment": 2,
-            "candidates": [
-                {
-                    "name": "checkpoint",
-                    "artifact": candidate.name,
-                    "timesteps": 5_000,
-                    "evaluations": [],
-                }
-            ],
-            "parameters": {},
-            "initialization": "fresh",
-            "parent_training_steps": 0,
-        },
-    }
-
-    with pytest.raises(ValueError, match="scientific_commit provenance"):
-        protocol.plan_previous_result_decision(
-            {
-                "previous_result_decision": {
-                    "experiment": 2,
-                    "continue_from": "checkpoint",
-                    "reason": "Continue.",
-                    "code": {
-                        "action": "restore",
-                        "reason": "Restore.",
-                        "lineage": "working",
-                    },
-                }
-            },
-            state,
-        )
+    assert plan["working_name"] == "working"
 
 
-def test_v4_cleanup_completion_is_recorded_without_removed_retained(
+def test_abandon_restores_the_pre_method_recipe_and_leaves_git_clean(
     monkeypatch, tmp_path
 ):
-    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
-    monkeypatch.setattr(repository, "write_state", lambda state: None)
-    selected = _artifact(tmp_path / "selected", "selected")
-    disposable = _artifact(tmp_path / "disposable", "disposable")
-    state = {
-        "working_lineage": _lineage(selected, steps=10_000),
-        "best_known_lineage": None,
-        "retained_lineages": [],
-        "pending_closure_operation": {
-            "progress": "durable",
-            "plan": {
-                "pending": {
-                    "candidates": [
-                        {
-                            "name": "selected",
-                            "artifact": selected.name,
-                        },
-                        {
-                            "name": "disposable",
-                            "artifact": disposable.name,
-                        },
-                    ]
-                },
-                "removed_retained": [],
-            },
-        },
-    }
+    root = tmp_path / "repo"
+    source = root / "robot_learning" / "scenario" / "method.py"
+    harness = root / "research" / "run_experiment.py"
+    source.parent.mkdir(parents=True)
+    harness.parent.mkdir(parents=True)
+    source.write_text("recipe = 'pre-method'\n", encoding="utf-8")
+    harness.write_text("harness = 'original'\n", encoding="utf-8")
+    subprocess.run(["git", "init", "--quiet"], cwd=root, check=True)
+    subprocess.run(
+        ["git", "config", "user.email", "test@example.com"], cwd=root, check=True
+    )
+    subprocess.run(["git", "config", "user.name", "Test"], cwd=root, check=True)
+    subprocess.run(["git", "add", "."], cwd=root, check=True)
+    subprocess.run(["git", "commit", "--quiet", "-m", "base"], cwd=root, check=True)
+    base = subprocess.run(
+        ["git", "rev-parse", "HEAD"],
+        cwd=root,
+        check=True,
+        capture_output=True,
+        text=True,
+    ).stdout.strip()
+    source.write_text("recipe = 'later-anchor'\n", encoding="utf-8")
+    harness.write_text("harness = 'maintainer-fix'\n", encoding="utf-8")
+    subprocess.run(["git", "add", "."], cwd=root, check=True)
+    subprocess.run(
+        ["git", "commit", "--quiet", "-m", "later anchor"], cwd=root, check=True
+    )
+    latest = subprocess.run(
+        ["git", "rev-parse", "HEAD"],
+        cwd=root,
+        check=True,
+        capture_output=True,
+        text=True,
+    ).stdout.strip()
+    source.write_text("recipe = 'method-edit'\n", encoding="utf-8")
 
-    from research.run_experiment import finalize_pending_v4_closure
-
-    finalize_pending_v4_closure(state)
-
-    assert state["pending_closure_operation"]["progress"] == "cleanup_complete"
-    assert selected.joinpath("model.zip").is_file()
-    assert not disposable.joinpath("model.zip").exists()
-
-
-def test_v4_cleanup_complete_resume_does_not_regress_progress(monkeypatch, tmp_path):
-    monkeypatch.setattr(repository, "write_state", lambda state: None)
-    state = {
-        "pending_closure_operation": {
-            "progress": "cleanup_complete",
-            "plan": {"pending": {}},
+    state = _state(tmp_path)
+    state["pending_scientific_parent"] = latest
+    state["active_method"] = _active_method(lifecycle="concept")
+    state["active_method"]["base_scientific_commit"] = base
+    proposal = {
+        "method_decision": {
+            "action": "abandon",
+            "outcome": "Abandon before allocating training.",
+            "reason": "The implementation invalidated the method premise.",
+            "code": {"action": "revert", "reason": "Restore the pre-method recipe."},
         }
     }
+    state_path = tmp_path / "state.json"
+    proposal_path = tmp_path / "proposal.json"
+    monkeypatch.setattr(repository.paths, "ROOT", root)
+    monkeypatch.setattr(repository.paths, "STATE_PATH", state_path)
+    monkeypatch.setattr(repository.paths, "PROPOSAL_PATH", proposal_path)
+    monkeypatch.setattr(repository.paths, "RESULTS_PATH", tmp_path / "results.jsonl")
+    monkeypatch.setattr(repository.paths, "LOG_PATH", tmp_path / "EXPERIMENTS.md")
+    monkeypatch.setattr(repository, "publish_campaign_laboratory", lambda current: None)
+    monkeypatch.setattr(repository, "push_head", lambda: None)
+    monkeypatch.setattr(run_experiment, "_publish_runner_memory", lambda message: None)
+    repository.write_state(state)
+    proposal_path.write_text(json.dumps(proposal), encoding="utf-8")
 
-    from research.run_experiment import apply_pending_v4_closure
+    assert run_experiment.resolve_method_decision(proposal) == 0
+    assert source.read_text(encoding="utf-8") == "recipe = 'pre-method'\n"
+    assert harness.read_text(encoding="utf-8") == "harness = 'maintainer-fix'\n"
+    status = subprocess.run(
+        ["git", "status", "--short"],
+        cwd=root,
+        check=True,
+        capture_output=True,
+        text=True,
+    ).stdout
+    assert status == ""
+    resolved = repository.read_state()
+    assert resolved["active_method"]["lifecycle"] == "abandoned"
 
-    assert not apply_pending_v4_closure(state)
-    assert state["pending_closure_operation"]["progress"] == "cleanup_complete"
 
-
-def test_v4_cleanup_retries_after_partial_deletion(monkeypatch, tmp_path):
+def _mature_resolution_case(
+    monkeypatch, tmp_path, *, lifecycle: str
+) -> tuple[dict, dict]:
     monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
-    monkeypatch.setattr(repository, "write_state", lambda state: None)
-    first = _artifact(tmp_path / "first", "first")
-    second = _artifact(tmp_path / "second", "second")
-    state = {
-        "working_lineage": None,
-        "best_known_lineage": None,
-        "retained_lineages": [],
-        "pending_closure_operation": {
-            "progress": "durable",
-            "plan": {
-                "pending": {
-                    "candidates": [
-                        {"name": "first", "artifact": first.name},
-                        {"name": "second", "artifact": second.name},
-                    ]
-                },
-                "removed_retained": [],
-            },
-        },
-    }
-    original_remove = repository.remove_heavyweight_artifacts
-    interrupted = False
+    monkeypatch.setattr("research.runner_paths.RESEARCH_DIR", tmp_path / "research")
+    candidate = _artifact(tmp_path / "candidate", "candidate")
+    working = _artifact(tmp_path / "working", "working")
+    state = _state(tmp_path)
+    state["working_lineage"] = _lineage(working, steps=120_000)
+    state["best_known_lineage"] = _lineage(working, steps=120_000)
+    state["active_method"] = _active_method(
+        _lineage(candidate, steps=5_000, experiment=2), lifecycle=lifecycle
+    )
+    state["active_method"]["iterations"] = [{"experiment": 2, "status": "mature"}]
+    state["pending_scientific_parent"] = "a" * 40
+    evaluation_semantics = "shared-semantics"
 
-    def interrupt_second(artifact):
-        nonlocal interrupted
-        if artifact == second and not interrupted:
-            interrupted = True
-            raise OSError("injected cleanup failure")
+    def evaluation(name: str, fingerprint: str) -> dict:
+        artifact = tmp_path / f"{name}-evaluation.json"
+        artifact.write_text(
+            json.dumps(
+                {
+                    "episodes": 2,
+                    "seed": 100,
+                    "episode_results": [
+                        {"episode": 0, "episode_seed": 100, "success": False},
+                        {"episode": 1, "episode_seed": 101, "success": True},
+                    ],
+                }
+            ),
+            encoding="utf-8",
+        )
+        return {
+            "candidate": name,
+            "instrument": "research_evaluation",
+            "episodes": 2,
+            "seed": 100,
+            "evaluation_semantics": evaluation_semantics,
+            "model_fingerprint": fingerprint,
+            "evaluation_artifact": artifact.name,
+            "evaluation_artifact_fingerprint": repository.file_fingerprint(artifact),
+        }
+
+    state["preparation_measurement"] = {
+        "experiment": 2,
+        "inquiry_id": 1,
+        "rounds": [],
+        "partial_evaluations": [
+            evaluation("active_method", repository.artifact_fingerprint(candidate)),
+            evaluation("working", repository.artifact_fingerprint(working)),
+        ],
+        "partial_task_reference_evaluations": [],
+    }
+    proposal = {
+        "method_decision": {
+            "action": "promote",
+            "outcome": "Promote after mature comparison.",
+            "reason": "The paired inquiry measurement supports promotion.",
+            "code": {"action": "keep", "reason": "Keep the method recipe."},
+        }
+    }
+    return state, proposal
+
+
+def test_method_promotion_requires_prior_maturity(monkeypatch, tmp_path):
+    state, proposal = _mature_resolution_case(
+        monkeypatch, tmp_path, lifecycle="development"
+    )
+    with pytest.raises(ValueError, match="already marked mature"):
+        protocol.plan_method_decision(proposal, state)
+
+
+def test_mature_promotion_requires_paired_working_evidence(monkeypatch, tmp_path):
+    state, proposal = _mature_resolution_case(monkeypatch, tmp_path, lifecycle="mature")
+    state["preparation_measurement"]["partial_evaluations"] = state[
+        "preparation_measurement"
+    ]["partial_evaluations"][:1]
+    with pytest.raises(ValueError, match="fingerprint-bound.*working"):
+        protocol.plan_method_decision(proposal, state)
+
+
+def test_mature_inquiry_measurement_can_promote_without_training(monkeypatch, tmp_path):
+    state, proposal = _mature_resolution_case(monkeypatch, tmp_path, lifecycle="mature")
+    state["preparation_measurement"]["rounds"] = [
+        {"round": 1, "status": "completed", "paired_comparisons": []}
+    ]
+    plan = protocol.plan_method_decision(proposal, state)
+    assert plan["working_record"]["candidate"] == "candidate"
+    assert plan["active_method"]["lifecycle"] == "promoted"
+    assert plan["active_method"]["resolution"]["action"] == "promote"
+    assert plan["best_known_record"]["candidate"] == "working"
+
+    research = tmp_path / "research"
+    research.mkdir(exist_ok=True)
+    monkeypatch.setattr(repository.paths, "STATE_PATH", research / "state.json")
+    monkeypatch.setattr(repository.paths, "PROPOSAL_PATH", research / "proposal.json")
+    monkeypatch.setattr(repository.paths, "RESULTS_PATH", research / "results.jsonl")
+    monkeypatch.setattr(repository.paths, "LOG_PATH", research / "EXPERIMENTS.md")
+    monkeypatch.setattr(repository, "publish_campaign_laboratory", lambda current: None)
+    monkeypatch.setattr(run_experiment, "_publish_runner_memory", lambda message: None)
+    monkeypatch.setattr(run_experiment, "_publish_method_science", lambda plan: None)
+    repository.write_state(state)
+    repository.paths.PROPOSAL_PATH.write_text(json.dumps(proposal), encoding="utf-8")
+
+    assert run_experiment.resolve_method_decision(proposal) == 0
+    resolved = repository.read_state()
+    assert resolved["working_lineage"]["candidate"] == "candidate"
+    assert resolved["active_method"]["lifecycle"] == "promoted"
+    assert resolved["last_experiment"] == 0
+    assert resolved["last_allocated_experiment"] == 0
+    assert not repository.paths.RESULTS_PATH.exists()
+    assert resolved["preparation_measurement"]["rounds"][0]["round"] == 1
+
+    monkeypatch.setattr(protocol, "scientific_strategy_section", lambda *args: "ok")
+    monkeypatch.setattr(protocol, "scientific_strategy_registers", lambda section: {})
+    close = {
+        "inquiry": {
+            "action": "close",
+            "outcome": "The mature method was promoted with paired evidence.",
+        }
+    }
+    assert run_experiment.resolve_inquiry_operation(close, "inquiry") == 0
+    inquiry_record = repository.history_records()[-1]
+    assert inquiry_record["record_type"] == "inquiry"
+    assert inquiry_record["measurement_rounds"][0]["round"] == 1
+    assert inquiry_record["method"]["lifecycle"] == "promoted"
+
+
+def test_mature_method_can_be_retained_without_changing_working(monkeypatch, tmp_path):
+    state, proposal = _mature_resolution_case(monkeypatch, tmp_path, lifecycle="mature")
+    proposal["method_decision"].update(
+        action="retain",
+        retained_id="mature-alternative",
+    )
+    plan = protocol.plan_method_decision(proposal, state)
+    assert plan["working_record"]["candidate"] == "working"
+    assert plan["retained"][-1]["id"] == "mature-alternative"
+    assert plan["active_method"]["lifecycle"] == "retained"
+
+
+def test_mature_method_abandon_recovers_after_durable_cleanup(monkeypatch, tmp_path):
+    state, proposal = _mature_resolution_case(monkeypatch, tmp_path, lifecycle="mature")
+    monkeypatch.setattr(repository, "scientific_delta", lambda parent: [])
+    proposal["method_decision"].update(
+        action="abandon",
+        code={"action": "revert", "reason": "Return to the inquiry anchor."},
+    )
+    plan = protocol.plan_method_decision(proposal, state)
+    assert plan["working_record"]["candidate"] == "working"
+    assert plan["active_method"]["lifecycle"] == "abandoned"
+    assert plan["active_method"]["current_lineage"] is None
+    assert plan["released_method_lineage"]["candidate"] == "candidate"
+
+    research = tmp_path / "research"
+    research.mkdir(exist_ok=True)
+    monkeypatch.setattr(repository.paths, "STATE_PATH", research / "state.json")
+    monkeypatch.setattr(repository.paths, "PROPOSAL_PATH", research / "proposal.json")
+    monkeypatch.setattr(repository, "publish_campaign_laboratory", lambda current: None)
+    original_remove = repository.remove_heavyweight_artifacts
+    cleanup_attempts = 0
+
+    def track_cleanup(artifact):
+        nonlocal cleanup_attempts
+        cleanup_attempts += 1
         original_remove(artifact)
 
-    monkeypatch.setattr(repository, "remove_heavyweight_artifacts", interrupt_second)
+    clear_attempts = 0
 
-    from research.run_experiment import finalize_pending_v4_closure
+    def fail_first_clear(message):
+        nonlocal clear_attempts
+        if message.startswith("clear method"):
+            clear_attempts += 1
+            if clear_attempts == 1:
+                raise OSError("injected pending-clear failure")
 
-    with pytest.raises(OSError, match="cleanup failure"):
-        finalize_pending_v4_closure(state)
+    monkeypatch.setattr(repository, "remove_heavyweight_artifacts", track_cleanup)
+    monkeypatch.setattr(run_experiment, "_publish_runner_memory", fail_first_clear)
+    monkeypatch.setattr(run_experiment, "_publish_method_science", lambda plan: None)
+    repository.write_state(state)
+    repository.paths.PROPOSAL_PATH.write_text(json.dumps(proposal), encoding="utf-8")
 
-    assert not first.joinpath("model.zip").exists()
-    assert second.joinpath("model.zip").exists()
-    assert state["pending_closure_operation"]["progress"] == "durable"
+    with pytest.raises(OSError, match="injected pending-clear failure"):
+        run_experiment.resolve_method_decision(proposal)
+    interrupted = repository.read_state()
+    assert interrupted["pending_method_decision"]["progress"] == "cleanup_published"
+    assert cleanup_attempts == 1
+    assert not (tmp_path / "candidate" / "model.zip").exists()
 
-    monkeypatch.setattr(repository, "remove_heavyweight_artifacts", original_remove)
-    finalize_pending_v4_closure(state)
-    assert not second.joinpath("model.zip").exists()
-    assert state["pending_closure_operation"]["progress"] == "cleanup_complete"
+    assert run_experiment.resolve_method_decision(proposal) == 0
+    resolved = repository.read_state()
+    assert resolved["pending_method_decision"] is None
+    assert resolved["active_method"]["lifecycle"] == "abandoned"
+    assert cleanup_attempts == 1
+    assert not (tmp_path / "candidate" / "model.zip").exists()
+    assert (tmp_path / "working" / "model.zip").exists()
 
 
-def test_v4_clearance_push_failure_restores_recoverable_operation(
+def test_mature_method_decision_publication_recovers_without_an_experiment(
     monkeypatch, tmp_path
 ):
-    operation = {
-        "experiment": 4,
-        "progress": "cleanup_complete",
-        "plan": {"pending": {"candidates": []}, "removed_retained": []},
-    }
-    state = {"pending_closure_operation": operation}
-    writes = []
-    calls = 0
-
-    def commit_memory(message):
-        nonlocal calls
-        calls += 1
-        if calls == 2:
-            raise RuntimeError("injected push failure")
-        return True
-
-    monkeypatch.setattr(repository, "commit_runner_memory", commit_memory)
-    monkeypatch.setattr(
-        repository, "write_state", lambda value: writes.append(value.copy())
+    state, proposal = _mature_resolution_case(monkeypatch, tmp_path, lifecycle="mature")
+    proposal["method_decision"].update(
+        action="retain",
+        retained_id="durable-method",
     )
+    research = tmp_path / "research"
+    research.mkdir(exist_ok=True)
+    state_path = research / "research_state.json"
+    proposal_path = research / "proposal.json"
+    results_path = research / "results.jsonl"
+    monkeypatch.setattr(repository.paths, "STATE_PATH", state_path)
+    monkeypatch.setattr(repository.paths, "PROPOSAL_PATH", proposal_path)
+    monkeypatch.setattr(repository.paths, "RESULTS_PATH", results_path)
+    monkeypatch.setattr(repository.paths, "LOG_PATH", research / "EXPERIMENTS.md")
+    monkeypatch.setattr(repository, "publish_campaign_laboratory", lambda current: None)
+    monkeypatch.setattr(run_experiment, "_publish_runner_memory", lambda message: None)
+    monkeypatch.setattr(run_experiment, "_publish_method_science", lambda plan: None)
+    repository.write_state(state)
+    proposal_path.write_text(json.dumps(proposal), encoding="utf-8")
 
-    from research.run_experiment import publish_v4_closure_completion
+    original_publish = repository.publish_artifact
+    attempts = 0
 
-    with pytest.raises(RuntimeError, match="injected push failure"):
-        publish_v4_closure_completion(state)
+    def fail_first_publication(publication):
+        nonlocal attempts
+        attempts += 1
+        if attempts == 1:
+            raise OSError("injected publication failure")
+        original_publish(publication)
 
-    assert state["pending_closure_operation"] is operation
-    assert writes[-1]["pending_closure_operation"] is operation
+    monkeypatch.setattr(repository, "publish_artifact", fail_first_publication)
+    with pytest.raises(OSError, match="injected publication failure"):
+        run_experiment.resolve_method_decision(proposal)
+    interrupted = repository.read_state()
+    assert interrupted["pending_method_decision"]["progress"] == "planned"
+    assert interrupted["last_experiment"] == 0
+
+    assert run_experiment.resolve_method_decision(proposal) == 0
+    recovered = repository.read_state()
+    assert recovered["pending_method_decision"] is None
+    assert recovered["active_method"]["lifecycle"] == "retained"
+    assert recovered["retained_lineages"][-1]["id"] == "durable-method"
+    assert recovered["last_experiment"] == 0
+    assert not results_path.exists()
 
 
-def test_v4_clearance_interrupt_restores_recoverable_operation(monkeypatch):
-    operation = {
-        "experiment": 4,
-        "progress": "cleanup_complete",
-        "plan": {"pending": {"candidates": []}, "removed_retained": []},
+@pytest.mark.parametrize(
+    "progress",
+    [
+        "planned",
+        "artifacts_published",
+        "code_applied",
+        "science_published",
+        "decision_recorded",
+        "memory_published",
+        "cleanup_complete",
+        "cleanup_published",
+    ],
+)
+def test_method_decision_resumes_from_each_persisted_progress(
+    monkeypatch, tmp_path, progress
+):
+    state, proposal = _mature_resolution_case(monkeypatch, tmp_path, lifecycle="mature")
+    proposal["method_decision"].update(
+        action="retain",
+        retained_id="resume-method",
+    )
+    plan = protocol.plan_method_decision(proposal, state)
+    state["pending_method_decision"] = {
+        "method_id": plan["method_id"],
+        "action": plan["method_action"],
+        "plan": run_experiment._serialize_method_decision_plan(plan),
+        "progress": progress,
     }
-    state = {"pending_closure_operation": operation}
-    writes = []
-    interrupted = False
+    if progress in {
+        "decision_recorded",
+        "memory_published",
+        "cleanup_complete",
+        "cleanup_published",
+    }:
+        state["working_lineage"] = plan["working_record"]
+        state["best_known_lineage"] = plan["best_known_record"]
+        state["active_method"] = plan["active_method"]
+        state["retained_lineages"] = plan["retained"]
+        state["best_known_designation_counter"] = plan["designation_counter"]
+        state["pending_scientific_parent"] = None
 
-    def write_state(value):
-        nonlocal interrupted
-        writes.append(value.copy())
-        if value["pending_closure_operation"] is None and not interrupted:
-            interrupted = True
-            raise KeyboardInterrupt
+    research = tmp_path / "research"
+    research.mkdir(exist_ok=True)
+    monkeypatch.setattr(repository.paths, "STATE_PATH", research / "state.json")
+    monkeypatch.setattr(repository.paths, "PROPOSAL_PATH", research / "proposal.json")
+    monkeypatch.setattr(repository, "publish_artifact", lambda publication: None)
+    monkeypatch.setattr(repository, "apply_code_lineage_decision", lambda code: None)
+    monkeypatch.setattr(run_experiment, "_publish_method_science", lambda value: None)
+    monkeypatch.setattr(run_experiment, "_publish_runner_memory", lambda message: None)
+    repository.write_state(state)
 
-    monkeypatch.setattr(repository, "commit_runner_memory", lambda message: True)
-    monkeypatch.setattr(repository, "write_state", write_state)
+    run_experiment.complete_method_decision_operation(state)
 
-    from research.run_experiment import publish_v4_closure_completion
+    assert state["pending_method_decision"] is None
+    assert state["active_method"]["lifecycle"] == "retained"
+    assert state["retained_lineages"][-1]["id"] == "resume-method"
 
-    with pytest.raises(KeyboardInterrupt):
-        publish_v4_closure_completion(state)
 
-    assert state["pending_closure_operation"] is operation
-    assert writes[-1]["pending_closure_operation"] is operation
+def test_continuation_freezes_complete_parent_identity(monkeypatch, tmp_path):
+    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
+    working = _artifact(tmp_path / "working", "working")
+    lineage = _lineage(working, steps=120_000)
+    lineage["candidate"] = "checkpoint-100352"
+    state = _state(tmp_path)
+    state["working_lineage"] = lineage
+
+    resolved = protocol.resolved_training_parent(
+        {"kind": "continuation", "training_parent": "working"},
+        state,
+        "transfer",
+    )
+    assert resolved["identifier"] == "working"
+    assert resolved["candidate"] == "checkpoint-100352"
+    assert resolved["training_steps"] == 120_000

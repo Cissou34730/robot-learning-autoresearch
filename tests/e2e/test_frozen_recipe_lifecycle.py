@@ -19,17 +19,20 @@ from research import runner_repository as repository
 def _training_proposal() -> dict:
     return {
         "kind": "training",
+        "method_id": "method-a",
         "family": "observation.representation",
-        "hypothesis": "the current representation limits learning",
-        "reasoning": {
+        "investigation_design": {
             "evidence": [
-                {"source": "evidence.txt", "observation": "Learning plateaus."}
+                {
+                    "source": "research/evidence.txt",
+                    "observation": "Learning plateaus.",
+                }
             ],
-            "alternative": "Insufficient training.",
-            "expected_observation": "Progress resumes.",
-            "contradicting_observation": "The plateau persists.",
+            "objective_link": "Improve learned control.",
             "initialization_reason": "Test the representation from initialization.",
-            "strategy_link": "Determine whether representation limits progress.",
+            "rationale": "Determine whether representation limits progress.",
+            "expected_observation": "Progress resumes.",
+            "open_question": "Does the altered representation resume progress?",
         },
         "change": "change the observation representation",
         "initialization": "fresh",
@@ -51,6 +54,20 @@ def _configure_recipe_repository(monkeypatch, tmp_path):
         "EXPECTED = 'A'\n", encoding="utf-8"
     )
     config_path.write_text(json.dumps({"recipe": "A"}), encoding="utf-8")
+    tmp_path.joinpath(".gitignore").write_text(
+        "models/\nresearch/training_logs/\n", encoding="utf-8"
+    )
+    research.joinpath("evidence.txt").write_text(
+        "Learning plateaus.\n", encoding="utf-8"
+    )
+    research.joinpath("postmortems.md").write_text(
+        "## campaign / Scientific strategy\n\n"
+        "**Current synthesis:** The baseline plateaus.\n\n"
+        "**Lessons and limits:** Representation is unresolved.\n\n"
+        "**Competing explanations:** Duration may also matter.\n\n"
+        "**Decision frontier:** Test the active method.\n",
+        encoding="utf-8",
+    )
     tmp_path.joinpath("AGENTS.md").write_text("harness A\n", encoding="utf-8")
     subprocess.run(["git", "init"], cwd=tmp_path, check=True, capture_output=True)
     subprocess.run(
@@ -118,23 +135,41 @@ def _configure_recipe_repository(monkeypatch, tmp_path):
         "reason": "Preserve recipe A.",
     }
     state_path = research / "research_state.json"
-    state_path.write_text(
-        json.dumps(
-            {
-                "schema_version": 4,
-                "campaign": {
-                    "id": "campaign",
-                    "started_at": "now",
-                    "base_commit": recipe_a,
-                },
-                "working_lineage": lineage,
-                "best_known_lineage": None,
-                "retained_lineages": [],
-                "pending_scientific_parent": recipe_b,
-            }
-        ),
-        encoding="utf-8",
+    state = repository.empty_campaign_state(
+        campaign={"id": "campaign", "started_at": "now", "base_commit": recipe_a},
+        last_verdict="baseline selected",
     )
+    state["working_lineage"] = lineage
+    state["best_known_lineage"] = lineage
+    state["pending_scientific_parent"] = recipe_b
+    state["inquiry_session"] = {
+        "id": "session-a",
+        "campaign_id": "campaign",
+        "inquiry_id": 1,
+        "role": "principal_investigator",
+        "status": "started",
+    }
+    state["active_inquiry"] = {
+        "id": 1,
+        "question": "What limits learning?",
+        "scope": "Representation and training duration.",
+        "closure_condition": "Resolve whether the method merits continuation.",
+        "status": "active",
+        "session_id": "session-a",
+        "reframes": [],
+    }
+    state["active_method"] = {
+        "id": "method-a",
+        "inquiry_id": 1,
+        "scientific_question": "Can the proposed method improve learning?",
+        "rationale": "It tests the active inquiry.",
+        "lifecycle": "development",
+        "base_scientific_commit": recipe_b,
+        "current_lineage": None,
+        "iterations": [],
+        "resolution": None,
+    }
+    state_path.write_text(json.dumps(state), encoding="utf-8")
     path_values = {
         "research.runner_paths.ROOT": tmp_path,
         "research.runner_paths.RESEARCH_DIR": research,
@@ -152,6 +187,7 @@ def _configure_recipe_repository(monkeypatch, tmp_path):
     for target, value in path_values.items():
         monkeypatch.setattr(target, value)
     monkeypatch.setattr("research.runner_console.announce", lambda message: None)
+    monkeypatch.setattr(execution, "run_validation_suites", lambda paths: None)
     return recipe_a, recipe_b, artifact, state_path
 
 
@@ -163,9 +199,9 @@ def test_continuation_restores_and_recovers_frozen_parent_recipe(monkeypatch, tm
     )
     proposal = {
         "kind": "continuation",
+        "method_id": "method-a",
         "family": "training.duration",
-        "hypothesis": "The established recipe benefits from more training.",
-        "reasoning": _training_proposal()["reasoning"],
+        "investigation_design": _training_proposal()["investigation_design"],
         "initialization": "transfer",
         "training_parent": "working",
     }
@@ -182,7 +218,7 @@ def test_continuation_restores_and_recovers_frozen_parent_recipe(monkeypatch, tm
         assert tmp_path.joinpath("robot_learning/training/recipe_a.py").is_file()
         assert not tmp_path.joinpath("robot_learning/training/recipe_b.py").exists()
         assert tmp_path.joinpath("tests/scenario/test_reward.py").read_text() == (
-            "EXPECTED = 'A'\n"
+            "EXPECTED = 'B'\n"
         )
         assert json.loads(
             tmp_path.joinpath("research/current_params.json").read_text()
@@ -207,6 +243,27 @@ def test_continuation_restores_and_recovers_frozen_parent_recipe(monkeypatch, tm
             json.dumps({"timesteps": timesteps}), encoding="utf-8"
         )
         output_dir.joinpath("policy_runtime.pkl").write_bytes(b"runtime")
+        checkpoint = output_dir / f"checkpoint-{timesteps}"
+        checkpoint.mkdir()
+        checkpoint.joinpath("model.zip").write_bytes(b"continued")
+        checkpoint.joinpath("artifact.json").write_text(
+            json.dumps({"timesteps": timesteps}), encoding="utf-8"
+        )
+        checkpoint.joinpath("policy_runtime.pkl").write_bytes(b"runtime")
+        output_dir.joinpath("candidate_manifest.json").write_text(
+            json.dumps(
+                {
+                    "candidates": [
+                        {
+                            "name": checkpoint.name,
+                            "path": checkpoint.name,
+                            "timesteps": timesteps,
+                        }
+                    ]
+                }
+            ),
+            encoding="utf-8",
+        )
         return 0.0
 
     monkeypatch.setattr(
@@ -242,11 +299,9 @@ def test_continuation_restores_and_recovers_frozen_parent_recipe(monkeypatch, tm
     assert train_calls == [(10, artifact / "model.zip")]
     assert published_scopes == [
         {
-            "research/current_params.json",
             "robot_learning/scenario/reward.py",
             "robot_learning/training/recipe_a.py",
             "robot_learning/training/recipe_b.py",
-            "tests/scenario/test_reward.py",
         }
     ]
     persisted = json.loads(state_path.read_text(encoding="utf-8"))
@@ -267,9 +322,9 @@ def test_transfer_intervention_keeps_current_recipe(monkeypatch, tmp_path):
     reward.write_text("RECIPE = 'B intervention'\n", encoding="utf-8")
     proposal = {
         "kind": "training",
+        "method_id": "method-a",
         "family": "reward.intervention",
-        "hypothesis": "The current reward intervention improves learning.",
-        "reasoning": _training_proposal()["reasoning"],
+        "investigation_design": _training_proposal()["investigation_design"],
         "change": "Keep the current reward intervention.",
         "initialization": "transfer",
         "training_parent": "working",
@@ -315,9 +370,9 @@ def test_continuation_restoration_failure_keeps_frozen_operation(monkeypatch, tm
     )
     proposal = {
         "kind": "continuation",
+        "method_id": "method-a",
         "family": "training.duration",
-        "hypothesis": "The established recipe benefits from more training.",
-        "reasoning": _training_proposal()["reasoning"],
+        "investigation_design": _training_proposal()["investigation_design"],
         "initialization": "transfer",
         "training_parent": "working",
     }
@@ -342,7 +397,7 @@ def test_continuation_restoration_failure_keeps_frozen_operation(monkeypatch, tm
     assert run_experiment.run_training_experiment(proposal, args) == 1
     interrupted = json.loads(state_path.read_text(encoding="utf-8"))
     operation = interrupted["pending_training_operation"]
-    assert operation["progress"] == "parent_frozen"
+    assert operation["progress"] == "recipe_restoring"
     assert operation["parent"]["artifact"] == artifact.relative_to(tmp_path).as_posix()
     assert operation["parent"]["scientific_commit"] == recipe_a
     assert "injected restoration failure" in operation["last_error"]
@@ -355,7 +410,9 @@ def test_continuation_restoration_failure_keeps_frozen_operation(monkeypatch, tm
     )
     assert run_experiment.run_training_experiment(proposal, args) == 130
     recovered = json.loads(state_path.read_text(encoding="utf-8"))
-    assert recovered["pending_training_operation"]["progress"] == "recipe_restored"
+    assert (
+        recovered["pending_training_operation"]["progress"] == "configuration_applying"
+    )
     assert recovered["pending_training_operation"]["parent"] == operation["parent"]
 
 
@@ -373,9 +430,9 @@ def test_continuation_recovers_candidate_after_process_crash(
     )
     proposal = {
         "kind": "continuation",
+        "method_id": "method-a",
         "family": "training.duration",
-        "hypothesis": "The established recipe benefits from more training.",
-        "reasoning": _training_proposal()["reasoning"],
+        "investigation_design": _training_proposal()["investigation_design"],
         "initialization": "transfer",
         "training_parent": "working",
     }
@@ -403,6 +460,27 @@ def test_continuation_recovers_candidate_after_process_crash(
             json.dumps(metadata), encoding="utf-8"
         )
         output_dir.joinpath("policy_runtime.pkl").write_bytes(b"runtime")
+        checkpoint = output_dir / f"checkpoint-{completed_steps}"
+        checkpoint.mkdir(parents=True, exist_ok=True)
+        checkpoint.joinpath("model.zip").write_bytes(b"continued")
+        checkpoint.joinpath("artifact.json").write_text(
+            json.dumps(metadata), encoding="utf-8"
+        )
+        checkpoint.joinpath("policy_runtime.pkl").write_bytes(b"runtime")
+        output_dir.joinpath("candidate_manifest.json").write_text(
+            json.dumps(
+                {
+                    "candidates": [
+                        {
+                            "name": checkpoint.name,
+                            "path": checkpoint.name,
+                            "timesteps": completed_steps,
+                        }
+                    ]
+                }
+            ),
+            encoding="utf-8",
+        )
         return 0.0
 
     monkeypatch.setattr(

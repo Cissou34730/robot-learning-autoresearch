@@ -8,9 +8,12 @@ Campaign boundaries ensure that:
 5. Brief generation filters to current campaign
 """
 
+import json
 import uuid
 
-from research import runner_paths, runner_protocol, runner_repository
+import pytest
+
+from research import reset_campaign, runner_paths, runner_protocol, runner_repository
 
 
 class TestCampaignIdentifierAccess:
@@ -49,24 +52,83 @@ class TestCampaignIdentifierAccess:
         assert runner_repository.current_campaign_id(state) is None
 
     def test_inquiry_identity_is_independent_from_experiment_identity(self):
-        state = {
-            "campaign": {
-                "id": "campaign",
-                "started_at": "now",
-                "base_commit": "base",
+        state = runner_repository.empty_campaign_state(
+            campaign={"id": "campaign", "started_at": "now", "base_commit": "base"},
+            last_verdict="baseline selected",
+        )
+        state["working_lineage"] = {"artifact": "working"}
+        state["campaign_experiment_counters"]["campaign"] = 7
+        state["campaign_inquiry_counters"]["campaign"] = 2
+        state["last_allocated_experiment"] = 7
+        state["last_experiment"] = 7
+
+        session = runner_repository.ensure_inquiry_session(state)
+        inquiry = runner_protocol.plan_inquiry_operation(
+            {
+                "inquiry": {
+                    "action": "open",
+                    "question": "What should be investigated?",
+                    "scope": "Current-campaign evidence.",
+                    "closure_condition": "A supported decision is available.",
+                }
             },
-            "campaign_experiment_counters": {"campaign": 7},
-            "campaign_inquiry_counters": {"campaign": 2},
-            "last_allocated_experiment": 7,
-            "last_experiment": 7,
-            "active_inquiry": None,
-        }
+            state,
+        )
 
-        inquiry = runner_protocol.ensure_active_inquiry(state)
-
-        assert inquiry["id"] == 3
+        assert inquiry["inquiry_id"] == 3
+        assert session["inquiry_id"] == 3
         assert state["campaign_experiment_counters"]["campaign"] == 7
         assert state["last_allocated_experiment"] == 7
+
+
+@pytest.mark.parametrize(
+    "pending_field",
+    (
+        "pending_baseline_decision",
+        "pending_method_decision",
+        "pending_campaign_conclusion",
+        "campaign_conclusion",
+    ),
+)
+def test_baseline_reference_rejects_unfinished_current_lifecycle_operations(
+    monkeypatch, pending_field
+):
+    state = runner_repository.empty_campaign_state(
+        campaign={
+            "id": str(uuid.uuid4()),
+            "started_at": "now",
+            "base_commit": "base",
+        },
+        last_verdict="baseline selected",
+    )
+    lineage = {
+        "candidate": "checkpoint-1",
+        "artifact": "research/checkpoints/accepted/campaign/experiment-1",
+        "fingerprint": "f" * 64,
+        "scientific_commit": "a" * 40,
+        "parameters": {},
+        "training_steps": 1,
+        "origin_experiment": 1,
+        "reason": "baseline",
+        "evaluation_artifacts": ["research/evaluations/campaign/panel.json"],
+        "designation_ordinal": 1,
+    }
+    state["working_lineage"] = dict(lineage)
+    state["best_known_lineage"] = dict(lineage)
+    state["last_experiment"] = 1
+    state["last_allocated_experiment"] = 1
+    state["campaign_experiment_counters"][state["campaign"]["id"]] = 1
+    state[pending_field] = {"action": "unfinished"}
+
+    monkeypatch.setattr(reset_campaign, "git_json", lambda *_args: state)
+    monkeypatch.setattr(
+        runner_repository,
+        "validate_research_state",
+        lambda *_args, **_kwargs: None,
+    )
+
+    with pytest.raises(ValueError, match="closed measured experiment 1"):
+        reset_campaign.verify_baseline_source("baseline-ref")
 
 
 class TestCampaignArtifactPaths:
@@ -251,17 +313,14 @@ class TestExperimentNumberingScopedPerCampaign:
         """Two campaigns should allocate indices 1,2,3... independently."""
         campaign1 = str(uuid.uuid4())
         campaign2 = str(uuid.uuid4())
-        state = {
-            "schema_version": 3,
-            "campaign": {
+        state = runner_repository.empty_campaign_state(
+            campaign={
                 "id": campaign1,
                 "started_at": "2026-09-01T00:00:00Z",
                 "base_commit": "abc",
             },
-            "campaign_experiment_counters": {},
-            "last_allocated_experiment": 0,
-            "last_experiment": 0,
-        }
+            last_verdict="fresh",
+        )
 
         # Allocate experiments for campaign 1
         idx1_c1 = runner_protocol.next_experiment_index(state, campaign_id=campaign1)
@@ -299,16 +358,6 @@ class TestExperimentNumberingScopedPerCampaign:
             == 3
         )
 
-    def test_allocated_experiment_index_fallback_to_global(self):
-        """allocated_experiment_index without campaign_id should use global fallback."""
-        state = {
-            "last_allocated_experiment": 10,
-            "last_experiment": 5,
-        }
-
-        index = runner_protocol.allocated_experiment_index(state)
-        assert index == 10
-
     def test_experiment_working_paths_scoped_by_campaign(self):
         """experiment_working_paths should include campaign_id when provided."""
         campaign_id = str(uuid.uuid4())
@@ -317,15 +366,6 @@ class TestExperimentNumberingScopedPerCampaign:
         assert len(paths) == 2
         assert campaign_id in str(paths[0])
         assert campaign_id in str(paths[1])
-
-    def test_experiment_working_paths_legacy_fallback(self):
-        """experiment_working_paths without campaign_id should use legacy root."""
-        paths = runner_protocol.experiment_working_paths(1)
-
-        assert len(paths) == 2
-        # Should not include UUIDs
-        assert "experiment-1" in str(paths[0])
-        assert "experiment-1" in str(paths[1])
 
 
 class TestEvaluationArtifactAttribution:
@@ -347,21 +387,6 @@ class TestEvaluationArtifactAttribution:
         assert "-experiment-1-" in name
         assert "100ep-seed42-abc123" in name
 
-    def test_evaluation_artifact_name_without_campaign_id(self):
-        """evaluation_artifact_name without campaign_id should use legacy format."""
-        name = runner_protocol.evaluation_artifact_name(
-            experiment=1,
-            candidate="baseline",
-            episodes=100,
-            seed=42,
-            semantics="abc123",
-        )
-        assert "evaluation-experiment-1-" in name
-        assert "100ep-seed42-abc123" in name
-        # Legacy format should not have campaign UUID
-        parts = name.split("-")
-        assert len([p for p in parts if len(p) == 36 and p.count("-") == 4]) == 0
-
     def test_task_reference_artifact_name_with_campaign_id(self):
         """task_reference_artifact_name should include campaign_id when provided."""
         campaign_id = str(uuid.uuid4())
@@ -372,17 +397,6 @@ class TestEvaluationArtifactAttribution:
         assert "task-reference-" in name
         assert "-experiment-1-" in name
         assert "-reach" in name
-
-    def test_task_reference_artifact_name_without_campaign_id(self):
-        """task_reference_artifact_name without campaign_id should use legacy format."""
-        name = runner_protocol.task_reference_artifact_name(
-            experiment=1, candidate="baseline", panel="reach"
-        )
-        assert "task-reference-experiment-1-" in name
-        assert "-reach" in name
-        # Legacy format should not have campaign UUID
-        parts = name.split("-")
-        assert len([p for p in parts if len(p) == 36 and p.count("-") == 4]) == 0
 
 
 class TestBriefGenerationCampaignFiltering:
@@ -405,8 +419,8 @@ class TestBriefGenerationCampaignFiltering:
         assert "Training completed" in memories[0]
         assert "45%" in memories[0]
 
-    def test_postmortem_memory_legacy_format(self):
-        """_postmortem_memory should still extract legacy format when no campaign_id."""
+    def test_postmortem_memory_without_campaign_does_not_leak_history(self):
+        """Campaign-unscoped scientific memory is never injected."""
         from research.build_research_brief import _postmortem_memory
 
         postmortems = """
@@ -415,8 +429,7 @@ class TestBriefGenerationCampaignFiltering:
 """
 
         memories = _postmortem_memory(postmortems, campaign_id=None)
-        assert len(memories) == 1
-        assert "Training completed" in memories[0]
+        assert memories == []
 
     def test_postmortem_memory_campaign_isolation(self):
         """_postmortem_memory should not extract other campaign sections."""
@@ -450,31 +463,23 @@ class TestComprehensiveCampaignIsolation:
         campaign1 = str(uuid.uuid4())
         campaign2 = str(uuid.uuid4())
 
-        # Initialize state for campaign1
-        state1 = {
-            "schema_version": 3,
-            "campaign": {
+        state1 = runner_repository.empty_campaign_state(
+            campaign={
                 "id": campaign1,
                 "started_at": "2026-01-01T00:00:00Z",
                 "base_commit": "abc1",
             },
-            "campaign_experiment_counters": {},
-            "last_allocated_experiment": 0,
-            "last_experiment": 0,
-        }
+            last_verdict="fresh",
+        )
 
-        # Initialize state for campaign2 (simulated)
-        state2 = {
-            "schema_version": 3,
-            "campaign": {
+        state2 = runner_repository.empty_campaign_state(
+            campaign={
                 "id": campaign2,
                 "started_at": "2026-01-02T00:00:00Z",
                 "base_commit": "abc2",
             },
-            "campaign_experiment_counters": {},
-            "last_allocated_experiment": 0,
-            "last_experiment": 0,
-        }
+            last_verdict="fresh",
+        )
 
         # Allocate 3 experiments for campaign1
         indices1 = []
@@ -565,18 +570,14 @@ class TestComprehensiveCampaignIsolation:
         """Campaign state should persist and recover correctly."""
         campaign_id = str(uuid.uuid4())
 
-        # Simulate initial campaign state
-        state = {
-            "schema_version": 3,
-            "campaign": {
+        state = runner_repository.empty_campaign_state(
+            campaign={
                 "id": campaign_id,
                 "started_at": "2026-01-01T12:00:00Z",
                 "base_commit": "deadbeef",
             },
-            "campaign_experiment_counters": {campaign_id: 0},
-            "last_allocated_experiment": 0,
-            "last_experiment": 0,
-        }
+            last_verdict="fresh",
+        )
 
         # Allocate some experiments
         for i in range(1, 4):
@@ -617,3 +618,182 @@ def test_postmortem_memory_stops_at_another_campaign_heading():
     assert len(memories) == 1
     assert "Campaign one result" in memories[0]
     assert "CAMPAIGN_TWO_ONLY" not in memories[0]
+
+
+def _brief_state(campaign_id: str) -> dict:
+    state = runner_repository.empty_campaign_state(
+        campaign={"id": campaign_id, "started_at": "now", "base_commit": "base"},
+        last_verdict="method matured",
+    )
+    state["inquiry_session"] = {
+        "id": "pi-session",
+        "campaign_id": campaign_id,
+        "inquiry_id": 2,
+        "role": "principal_investigator",
+        "status": "started",
+    }
+    state["active_inquiry"] = {
+        "id": 2,
+        "question": "Does the method reach more targets?",
+        "scope": "Saved lineages only.",
+        "closure_condition": "Paired evidence decides.",
+        "status": "active",
+        "session_id": "pi-session",
+        "reframes": [],
+    }
+    state["active_method"] = {
+        "id": "method-a",
+        "inquiry_id": 2,
+        "scientific_question": "Does the method learn the task?",
+        "rationale": "It changes the learning signal.",
+        "lifecycle": "mature",
+        "base_scientific_commit": "b" * 40,
+        "current_lineage": {
+            "artifact": "archive/method-a",
+            "fingerprint": "method-model",
+            "origin_experiment": 3,
+            "candidate": "checkpoint-40k",
+            "parameters": {},
+            "scientific_commit": "a" * 40,
+            "training_steps": 40_000,
+            "evaluation_artifacts": [],
+            "reason": "Matured lineage.",
+            "designation_ordinal": 1,
+        },
+        "iterations": [{"experiment": 3, "status": "mature", "outcome": "stable"}],
+        "resolution": None,
+    }
+    state["pending_method_decision"] = {
+        "method_id": "method-a",
+        "action": "promote",
+        "plan": {},
+        "progress": "planned",
+    }
+    state["campaign_lab"] = {
+        "commit": "c" * 40,
+        "fingerprint": "f" * 64,
+        "manifest": [{"path": "research/lab/paired_panel.py", "fingerprint": "d" * 64}],
+    }
+    state["preparation_measurement"] = {
+        "inquiry_id": 2,
+        "partial_evaluations": [
+            {
+                "candidate": "working",
+                "episodes": 160,
+                "seed": 9000,
+                "evaluation_semantics": "semantics-v1",
+                "model_fingerprint": "working-model",
+                "metrics": {"evaluation_artifact": "research/evaluations/working.json"},
+            }
+        ],
+        "partial_task_reference_evaluations": [
+            {
+                "candidate": "active_method",
+                "panel": "reach-panel",
+                "panel_version": 2,
+                "episodes": 200,
+                "seed": 1,
+                "model_fingerprint": "method-model",
+                "evaluation_artifact": "research/evaluations/reference.json",
+            }
+        ],
+        "rounds": [
+            {
+                "round": 1,
+                "results": {
+                    "research_evaluations": [
+                        {
+                            "candidate": "best_known",
+                            "status": "reused",
+                            "reused_from_round": 1,
+                            "seed": 9000,
+                            "episodes": 160,
+                            "evaluation_semantics": "semantics-v1",
+                            "model_fingerprint": "best-model",
+                            "evaluation_artifact": "research/evaluations/best.json",
+                        }
+                    ],
+                    "paired_comparisons": [
+                        {
+                            "candidate": "active_method",
+                            "reference": "working",
+                            "candidate_model_fingerprint": "method-model",
+                            "reference_model_fingerprint": "working-model",
+                            "source_artifacts": [
+                                "research/evaluations/method.json",
+                                "research/evaluations/working.json",
+                            ],
+                        }
+                    ],
+                },
+            }
+        ],
+    }
+    return state
+
+
+def test_brief_indexes_current_campaign_measurements_and_laboratory(
+    tmp_path, monkeypatch
+):
+    from research import build_research_brief as brief
+
+    campaign_id = str(uuid.uuid4())
+    other_campaign = str(uuid.uuid4())
+    (tmp_path / "research_state.json").write_text(
+        json.dumps(_brief_state(campaign_id)), encoding="utf-8"
+    )
+
+    def experiment(campaign: str, artifact: str) -> dict:
+        return {
+            "campaign_id": campaign,
+            "index": 3,
+            "inquiry_id": 2,
+            "method_id": "method-a",
+            "status": "analyzed",
+            "method_decision": {"action": "mature"},
+            "requested_evaluations": [
+                {
+                    "candidate": "checkpoint-40k",
+                    "episodes": 80,
+                    "seed": 7000,
+                    "evaluation_semantics": "semantics-v1",
+                    "model_fingerprint": "checkpoint-model",
+                    "metrics": {"evaluation_artifact": artifact},
+                }
+            ],
+        }
+
+    (tmp_path / "results.jsonl").write_text(
+        "\n".join(
+            json.dumps(record)
+            for record in (
+                experiment(campaign_id, "research/evaluations/current.json"),
+                experiment(other_campaign, "research/evaluations/OTHER_CAMPAIGN.json"),
+            )
+        ),
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(brief, "RESEARCH_DIR", tmp_path)
+
+    text = brief.render_research_brief()
+    index = text.split("## Measurement / panel index", 1)[1].split(
+        "## Campaign laboratory index", 1
+    )[0]
+    laboratory = text.split("## Campaign laboratory index", 1)[1]
+
+    assert "OTHER_CAMPAIGN" not in text
+    assert "experiment 3" in index and "`method-a`" in index
+    assert "`checkpoint-40k`" in index
+    assert "episodes [7000, 7080)" in index
+    assert "research/evaluations/current.json" in index
+    assert "`working`" in index and "episodes [9000, 9160)" in index
+    assert "panel `reach-panel` version 2" in index
+    assert "research/evaluations/reference.json" in index
+    assert "`active_method`" in index and "against `working`" in index
+    assert "research/evaluations/method.json" in index
+    assert "`best_known`" in index and "reused from round 1" in index
+    assert "research/lab/paired_panel.py" in laboratory
+    assert "Lifecycle: `mature`" in text
+    assert "Pending method decision: `promote` for method `method-a`" in text
+    for obsolete in ("Resolution", "Status / stage", "method_iteration_decision"):
+        assert obsolete not in text

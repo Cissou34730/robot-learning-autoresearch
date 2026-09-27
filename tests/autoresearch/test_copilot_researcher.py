@@ -141,7 +141,9 @@ def test_a_repository_wide_test_run_is_refused():
     )
     # A path used only as an option value is not a selector either, even when a
     # value-less option precedes the value-taking one.
-    assert adapter.command_denial("uv run pytest --rootdir tests") == adapter.SUITE_DENIAL
+    assert (
+        adapter.command_denial("uv run pytest --rootdir tests") == adapter.SUITE_DENIAL
+    )
     assert (
         adapter.command_denial(f"uv run pytest --strict --rootdir {existing}")
         == adapter.SUITE_DENIAL
@@ -1054,6 +1056,24 @@ def test_a_missing_persisted_session_fails_without_creating_a_replacement():
         asyncio.run(adapter.open_session(client, args, {}))
 
     assert client.created == []
+
+
+def test_first_invocation_recovery_resumes_or_creates_the_same_session():
+    class MissingSessionClient(FakeClient):
+        async def resume_session(self, session_id, **kwargs):
+            self.resumed.append((session_id, kwargs))
+            raise LookupError("missing")
+
+    client = MissingSessionClient()
+    args = adapter.parse_args(
+        ["p", "--session-id", "campaign-pi", "--resume-or-create"]
+    )
+
+    session = asyncio.run(adapter.open_session(client, args, {}))
+
+    assert client.resumed == [("campaign-pi", {})]
+    assert client.created == [{"session_id": "campaign-pi"}]
+    assert session.session_id == "campaign-pi"
 
 
 def install_fake_sdk(monkeypatch, client):
