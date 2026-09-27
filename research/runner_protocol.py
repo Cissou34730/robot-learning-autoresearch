@@ -186,6 +186,27 @@ SUPPORTED_MEASUREMENT_INSTRUMENTS = {
     "research_evaluation",
     "task_reference",
 }
+# A researcher-authored structured assessment of a measured paired comparison.
+# The Runner validates only its structure and that the referenced protected
+# record matches the measured ledger; it never scores the method, imposes a
+# significance threshold, requires a minimum episode count, or names a winner.
+COMPARISON_ASSESSMENT_FIELDS = {
+    "record",
+    "method",
+    "method_version",
+    "uncertainty",
+    "interpretation",
+    "limitations",
+}
+COMPARISON_RECORD_FIELDS = {
+    "candidate",
+    "reference",
+    "artifacts",
+    "episodes",
+    "candidate_wins",
+    "reference_wins",
+}
+COMPARISON_RECORD_COUNT_FIELDS = ("episodes", "candidate_wins", "reference_wins")
 # The reasoning a proposal must make explicit, reduced to three questions: what
 # the campaign objective gains, why this initialization, and which observation
 # would change the next decision. Every other reasoning field is optional
@@ -1162,6 +1183,82 @@ def ignore_legacy_purpose(request: dict) -> dict:
     return {**request, "measurements": cleaned}
 
 
+def validate_comparison_assessment(
+    assessment: object, *, candidate: str, reference: str
+) -> None:
+    """Check the Researcher's structured assessment of a paired comparison.
+
+    The Runner validates the assessment's structure and that its referenced
+    protected record names this comparison. It never judges the analysis method,
+    the uncertainty value, an episode minimum, or which model is preferable;
+    those remain the Researcher's. The referenced counts and artifacts are
+    reconciled against the measured ledger when the comparison is executed.
+    """
+    if not isinstance(assessment, dict):
+        raise TypeError("paired comparison assessment must be an object")
+    unsupported = sorted(set(assessment) - COMPARISON_ASSESSMENT_FIELDS)
+    if unsupported:
+        raise ValueError(
+            f"comparison assessment cannot set unsupported fields {unsupported}"
+        )
+    missing = sorted(COMPARISON_ASSESSMENT_FIELDS - set(assessment))
+    if missing:
+        raise ValueError(f"comparison assessment is missing fields {missing}")
+    for field in ("method", "method_version", "interpretation", "limitations"):
+        value = assessment[field]
+        if not isinstance(value, str) or not value.strip():
+            raise ValueError(f"comparison assessment requires a non-empty {field}")
+    uncertainty = assessment["uncertainty"]
+    if isinstance(uncertainty, dict):
+        if not uncertainty:
+            raise ValueError("comparison assessment uncertainty cannot be empty")
+    elif isinstance(uncertainty, bool) or not isinstance(
+        uncertainty, (int, float, str)
+    ):
+        raise TypeError(
+            "comparison assessment uncertainty must be a number, string or object"
+        )
+    elif isinstance(uncertainty, str) and not uncertainty.strip():
+        raise ValueError("comparison assessment uncertainty cannot be empty")
+    record = assessment["record"]
+    if not isinstance(record, dict):
+        raise TypeError("comparison assessment record must be an object")
+    unsupported = sorted(set(record) - COMPARISON_RECORD_FIELDS)
+    if unsupported:
+        raise ValueError(
+            f"comparison assessment record cannot set unsupported fields {unsupported}"
+        )
+    for field in ("candidate", "reference"):
+        value = record.get(field)
+        if not isinstance(value, str) or not value.strip():
+            raise ValueError(
+                f"comparison assessment record requires a non-empty {field}"
+            )
+    if (
+        record["candidate"].strip() != candidate
+        or record["reference"].strip() != reference
+    ):
+        raise ValueError(
+            "comparison assessment record must reference this comparison's "
+            f"candidate {candidate!r} and reference {reference!r}"
+        )
+    artifacts = record.get("artifacts")
+    if not isinstance(artifacts, list) or any(
+        not isinstance(path, str) or not path.strip() for path in artifacts
+    ):
+        raise ValueError(
+            "comparison assessment record artifacts must be a list of paths"
+        )
+    for field in COMPARISON_RECORD_COUNT_FIELDS:
+        value = record.get(field)
+        if not isinstance(value, int) or isinstance(value, bool) or value < 0:
+            raise ValueError(
+                f"comparison assessment record requires a non-negative integer {field}"
+            )
+    if record["candidate_wins"] + record["reference_wins"] > record["episodes"]:
+        raise ValueError("comparison assessment record wins cannot exceed its episodes")
+
+
 def validate_evaluation_request(
     request: dict,
     *,
@@ -1213,7 +1310,7 @@ def validate_evaluation_request(
     for comparison in comparisons:
         if not isinstance(comparison, dict):
             raise TypeError("each paired comparison must be an object")
-        unsupported = sorted(set(comparison) - {"candidate", "reference"})
+        unsupported = sorted(set(comparison) - {"candidate", "reference", "assessment"})
         if unsupported:
             raise ValueError(
                 f"paired comparison cannot set unsupported fields {unsupported}"
@@ -1222,6 +1319,12 @@ def validate_evaluation_request(
             value = comparison.get(field)
             if not isinstance(value, str) or not value.strip():
                 raise ValueError(f"paired comparison requires a non-empty {field}")
+        if comparison.get("assessment") is not None:
+            validate_comparison_assessment(
+                comparison["assessment"],
+                candidate=comparison["candidate"].strip(),
+                reference=comparison["reference"].strip(),
+            )
     # Collect each measurement's candidate and, for a research evaluation, its
     # panel before the distinct-model limit is enforced.
     measured: list[tuple[str, tuple[int, int] | None]] = []
