@@ -1177,8 +1177,9 @@ def execute_pending_operation() -> int:
             return _execute_campaign_conclusion(state, pending)
         raise RuntimeError(f"unsupported pending operation kind: {kind}")
     except Exception as error:
-        pending["failure"] = str(error)[:500]
-        repository.write_state(state)
+        if pending["progress"] not in {"result_ready", "completed"}:
+            pending["failure"] = str(error)[:500]
+            repository.write_state(state)
         raise
 
 

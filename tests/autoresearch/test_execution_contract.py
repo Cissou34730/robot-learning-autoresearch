@@ -227,25 +227,69 @@ def test_completed_training_transaction_retries_publication_without_retraining(
     monkeypatch.setattr(execution, "remove_candidate_dir", lambda _path: None)
     original = repository.upsert_operation_event
 
-    class SimulatedCrash(BaseException):
-        pass
-
     def fail_once(event):
         calls["history"] += 1
         if calls["history"] == 1:
-            raise SimulatedCrash
+            raise OSError("injected publication failure")
         original(event)
 
     monkeypatch.setattr(repository, "upsert_operation_event", fail_once)
-    with pytest.raises(SimulatedCrash):
+    with pytest.raises(OSError, match="publication failure"):
         run_experiment.execute_pending_operation()
     interrupted = repository.read_state()
     assert interrupted["pending_operation"]["progress"] == "result_ready"
+    assert interrupted["pending_operation"]["failure"] is None
     assert interrupted["pending_operation"]["data"]["archived_candidates"] == archived
 
     assert run_experiment.execute_pending_operation() == 0
     assert calls["training"] == 1
-    assert repository.read_state()["pending_operation"] is None
+    completed = repository.read_state()
+    assert completed["pending_operation"] is None
+    assert [event["id"] for event in completed["operation_events"]] == ["T1"]
+    assert [event["id"] for event in repository.history_records()] == ["T1"]
+
+
+def test_completed_result_retries_memory_publication_without_reacceptance(
+    monkeypatch, tmp_path
+):
+    state = _configure(monkeypatch, tmp_path)
+    request = {
+        "inquiry": {
+            "action": "open",
+            "question": "Question",
+            "goal_connection": "Connection",
+            "closure_condition": "Closure",
+            "rationale": "Rationale",
+        }
+    }
+    paths.OPERATION_REQUEST_PATH.write_text(json.dumps(request), encoding="utf-8")
+    run_experiment.accept_operation(request, state)
+    calls: list[str] = []
+
+    def fail_complete_once(message):
+        calls.append(message)
+        if message == "complete E1 inquiry" and calls.count(message) == 1:
+            persisted = repository.read_state()
+            assert persisted["pending_operation"]["progress"] == "completed"
+            assert [event["id"] for event in persisted["operation_events"]] == ["E1"]
+            assert [event["id"] for event in repository.history_records()] == ["E1"]
+            raise OSError("injected memory commit failure")
+        return True
+
+    monkeypatch.setattr(repository, "commit_runner_memory", fail_complete_once)
+    with pytest.raises(OSError, match="memory commit failure"):
+        run_experiment.execute_pending_operation()
+    interrupted = repository.read_state()
+    assert interrupted["pending_operation"]["progress"] == "completed"
+    assert interrupted["pending_operation"]["failure"] is None
+
+    assert run_experiment.execute_pending_operation() == 0
+    completed = repository.read_state()
+    assert completed["pending_operation"] is None
+    assert [event["id"] for event in completed["operation_events"]] == ["E1"]
+    assert [event["id"] for event in repository.history_records()] == ["E1"]
+    assert not paths.OPERATION_REQUEST_PATH.exists()
+    assert calls == ["complete E1 inquiry", "finalize E1"]
 
 
 def test_completion_publishes_memory_and_consumes_the_request(monkeypatch, tmp_path):
