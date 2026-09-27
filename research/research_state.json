@@ -8,7 +8,17 @@
     "session_id": "f093be16-cf7f-4306-9a2f-15097184f5fe",
     "status": "active"
   },
-  "active_method": null,
+  "active_method": {
+    "base_scientific_commit": "0191ff0ad79cdc23c741a0f4d317b8b97797d912",
+    "current_lineage": null,
+    "id": "branch_aware_reach_hold",
+    "inquiry_id": 1,
+    "iterations": [],
+    "lifecycle": "development",
+    "rationale": "The disjoint 200-episode panel reproduced five failures, all for targets with angles from approximately -150 to -128 degrees. Three never entered the 1 cm tolerance, while two entered for only one to three steps before leaving. This concentrates evidence on a branch- or sector-dependent approach limitation, with hold instability as a consequence after marginal entry, and justifies developing a method that makes the relevant kinematic alternatives and approach state easier to control.",
+    "resolution": null,
+    "scientific_question": "Can a target-conditioned controller with explicit inverse-kinematic branch and negative-angle-sector awareness eliminate the baseline's approach failures while preserving stable two-second holds across the full official target distribution?"
+  },
   "best_known_designation_counter": 1,
   "best_known_lineage": {
     "artifact": "research/checkpoints/retained/a4e64322-8d31-4479-9b0f-c04211eaf8b4/e1-cada55eb5-37127558e28ca282b6cf3e83e68596ce4b81525c545eb6e921e758b5bf0c7076",
@@ -94,7 +104,7 @@
     "operation": "baseline",
     "working": "checkpoint-100352"
   },
-  "last_verdict": "inquiry 1 opened",
+  "last_verdict": "method branch_aware_reach_hold started for inquiry 1",
   "official_benchmark_artifact": null,
   "official_benchmark_model": null,
   "official_benchmark_verdict": null,
@@ -104,16 +114,1909 @@
   "pending_campaign_conclusion": null,
   "pending_evaluation_request": null,
   "pending_final_benchmark": null,
-  "pending_inquiry_operation": null,
+  "pending_inquiry_operation": {
+    "action": "start_method",
+    "inquiry_id": 1,
+    "method": {
+      "base_scientific_commit": "0191ff0ad79cdc23c741a0f4d317b8b97797d912",
+      "current_lineage": null,
+      "id": "branch_aware_reach_hold",
+      "inquiry_id": 1,
+      "iterations": [],
+      "lifecycle": "development",
+      "rationale": "The disjoint 200-episode panel reproduced five failures, all for targets with angles from approximately -150 to -128 degrees. Three never entered the 1 cm tolerance, while two entered for only one to three steps before leaving. This concentrates evidence on a branch- or sector-dependent approach limitation, with hold instability as a consequence after marginal entry, and justifies developing a method that makes the relevant kinematic alternatives and approach state easier to control.",
+      "resolution": null,
+      "scientific_question": "Can a target-conditioned controller with explicit inverse-kinematic branch and negative-angle-sector awareness eliminate the baseline's approach failures while preserving stable two-second holds across the full official target distribution?"
+    },
+    "progress": "artifacts_released"
+  },
   "pending_method_decision": null,
   "pending_scientific_commit": {
     "code_parent_commit": "79302c227fcfb61db91fbbcf991dc7ab70453100",
     "experiment": 1,
     "scientific_commit": "312cbd377334b9f5af73f37b6aee790d6b23de04"
   },
-  "pending_scientific_parent": "e4d34f6fe7b93989d862cec1c6476682fbdd6a45",
+  "pending_scientific_parent": "0191ff0ad79cdc23c741a0f4d317b8b97797d912",
   "pending_training_operation": null,
-  "preparation_measurement": null,
+  "preparation_measurement": {
+    "campaign_lab": null,
+    "experiment": 2,
+    "inquiry_id": 1,
+    "partial_evaluations": [
+      {
+        "candidate": "working",
+        "episodes": 200,
+        "evaluation_semantics": "48e4acc98c39",
+        "instrument": "research_evaluation",
+        "label": "baseline failure-mechanism trajectory panel",
+        "metrics": {
+          "episode_results": [
+            {
+              "episode": 0,
+              "episode_seed": 20000,
+              "reward_total": 100.69921518226501,
+              "steps": 105,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 1,
+              "episode_seed": 20001,
+              "reward_total": 104.97687582902759,
+              "steps": 116,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 2,
+              "episode_seed": 20002,
+              "reward_total": 103.8940511306941,
+              "steps": 114,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 3,
+              "episode_seed": 20003,
+              "reward_total": 103.35449228621867,
+              "steps": 111,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 4,
+              "episode_seed": 20004,
+              "reward_total": 103.54628306875048,
+              "steps": 109,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 5,
+              "episode_seed": 20005,
+              "reward_total": 102.99125787510401,
+              "steps": 112,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 6,
+              "episode_seed": 20006,
+              "reward_total": 103.87106335142253,
+              "steps": 117,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 7,
+              "episode_seed": 20007,
+              "reward_total": 104.24309920832198,
+              "steps": 112,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 8,
+              "episode_seed": 20008,
+              "reward_total": 105.08972585508064,
+              "steps": 110,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 9,
+              "episode_seed": 20009,
+              "reward_total": 103.2992283084487,
+              "steps": 111,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 10,
+              "episode_seed": 20010,
+              "reward_total": 103.38251426905063,
+              "steps": 113,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 11,
+              "episode_seed": 20011,
+              "reward_total": 104.40698788976465,
+              "steps": 117,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 12,
+              "episode_seed": 20012,
+              "reward_total": 104.82807776170958,
+              "steps": 115,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 13,
+              "episode_seed": 20013,
+              "reward_total": 105.09053977918192,
+              "steps": 107,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 14,
+              "episode_seed": 20014,
+              "reward_total": 104.26544574877929,
+              "steps": 110,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 15,
+              "episode_seed": 20015,
+              "reward_total": 102.985109012544,
+              "steps": 106,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 16,
+              "episode_seed": 20016,
+              "reward_total": 102.7887240915316,
+              "steps": 115,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 17,
+              "episode_seed": 20017,
+              "reward_total": 101.74326041849943,
+              "steps": 108,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 18,
+              "episode_seed": 20018,
+              "reward_total": 102.83982229229886,
+              "steps": 111,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 19,
+              "episode_seed": 20019,
+              "reward_total": 104.60741121170868,
+              "steps": 117,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 20,
+              "episode_seed": 20020,
+              "reward_total": 103.12770842860733,
+              "steps": 110,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 21,
+              "episode_seed": 20021,
+              "reward_total": 104.15811091026228,
+              "steps": 115,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 22,
+              "episode_seed": 20022,
+              "reward_total": 101.00097873597602,
+              "steps": 108,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 23,
+              "episode_seed": 20023,
+              "reward_total": 104.54937304662003,
+              "steps": 107,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 24,
+              "episode_seed": 20024,
+              "reward_total": 105.55046039838535,
+              "steps": 115,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 25,
+              "episode_seed": 20025,
+              "reward_total": 102.56266895234853,
+              "steps": 115,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 26,
+              "episode_seed": 20026,
+              "reward_total": 103.66389463120635,
+              "steps": 111,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 27,
+              "episode_seed": 20027,
+              "reward_total": 102.01730967191095,
+              "steps": 110,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 28,
+              "episode_seed": 20028,
+              "reward_total": 104.88657877333473,
+              "steps": 115,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 29,
+              "episode_seed": 20029,
+              "reward_total": 104.46907447026982,
+              "steps": 118,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 30,
+              "episode_seed": 20030,
+              "reward_total": 103.27468427010152,
+              "steps": 110,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 31,
+              "episode_seed": 20031,
+              "reward_total": 104.39152777153534,
+              "steps": 108,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 32,
+              "episode_seed": 20032,
+              "reward_total": 103.37750607167946,
+              "steps": 113,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 33,
+              "episode_seed": 20033,
+              "reward_total": 103.14607844744512,
+              "steps": 112,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 34,
+              "episode_seed": 20034,
+              "reward_total": 105.16165821952106,
+              "steps": 114,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 35,
+              "episode_seed": 20035,
+              "reward_total": 103.23020572020818,
+              "steps": 112,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 36,
+              "episode_seed": 20036,
+              "reward_total": 104.36266285093862,
+              "steps": 106,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 37,
+              "episode_seed": 20037,
+              "reward_total": 104.86032522761975,
+              "steps": 114,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 38,
+              "episode_seed": 20038,
+              "reward_total": 103.95275780298084,
+              "steps": 113,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 39,
+              "episode_seed": 20039,
+              "reward_total": 104.76927524217363,
+              "steps": 109,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 40,
+              "episode_seed": 20040,
+              "reward_total": 104.75508575226402,
+              "steps": 110,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 41,
+              "episode_seed": 20041,
+              "reward_total": 105.26173374652541,
+              "steps": 111,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 42,
+              "episode_seed": 20042,
+              "reward_total": 103.89844457441467,
+              "steps": 112,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 43,
+              "episode_seed": 20043,
+              "reward_total": 102.68840562300902,
+              "steps": 111,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 44,
+              "episode_seed": 20044,
+              "reward_total": 102.77693308063252,
+              "steps": 113,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 45,
+              "episode_seed": 20045,
+              "reward_total": 104.25785214946698,
+              "steps": 118,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 46,
+              "episode_seed": 20046,
+              "reward_total": 103.98419743927495,
+              "steps": 116,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 47,
+              "episode_seed": 20047,
+              "reward_total": 102.79848888083374,
+              "steps": 115,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 48,
+              "episode_seed": 20048,
+              "reward_total": 101.86975123085332,
+              "steps": 106,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 49,
+              "episode_seed": 20049,
+              "reward_total": -5.986764918035943,
+              "steps": 500,
+              "success": false,
+              "terminated": false,
+              "truncated": true
+            },
+            {
+              "episode": 50,
+              "episode_seed": 20050,
+              "reward_total": 103.66014617933892,
+              "steps": 113,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 51,
+              "episode_seed": 20051,
+              "reward_total": 104.07016027527399,
+              "steps": 119,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 52,
+              "episode_seed": 20052,
+              "reward_total": 104.91794277124873,
+              "steps": 108,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 53,
+              "episode_seed": 20053,
+              "reward_total": 104.04751934168146,
+              "steps": 113,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 54,
+              "episode_seed": 20054,
+              "reward_total": 104.66065300603277,
+              "steps": 112,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 55,
+              "episode_seed": 20055,
+              "reward_total": 103.43728104657752,
+              "steps": 114,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 56,
+              "episode_seed": 20056,
+              "reward_total": 102.55174335189255,
+              "steps": 110,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 57,
+              "episode_seed": 20057,
+              "reward_total": 102.82705662106622,
+              "steps": 109,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 58,
+              "episode_seed": 20058,
+              "reward_total": 101.27483587962091,
+              "steps": 106,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 59,
+              "episode_seed": 20059,
+              "reward_total": 103.52698147933515,
+              "steps": 116,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 60,
+              "episode_seed": 20060,
+              "reward_total": 102.98381202413177,
+              "steps": 105,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 61,
+              "episode_seed": 20061,
+              "reward_total": 101.39316561040553,
+              "steps": 107,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 62,
+              "episode_seed": 20062,
+              "reward_total": 103.16553115894837,
+              "steps": 113,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 63,
+              "episode_seed": 20063,
+              "reward_total": 104.63153938205787,
+              "steps": 110,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 64,
+              "episode_seed": 20064,
+              "reward_total": 103.46626438951739,
+              "steps": 111,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 65,
+              "episode_seed": 20065,
+              "reward_total": 103.95150458525086,
+              "steps": 106,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 66,
+              "episode_seed": 20066,
+              "reward_total": 104.91069327765098,
+              "steps": 108,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 67,
+              "episode_seed": 20067,
+              "reward_total": 103.12876454631939,
+              "steps": 113,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 68,
+              "episode_seed": 20068,
+              "reward_total": 102.85992343927201,
+              "steps": 113,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 69,
+              "episode_seed": 20069,
+              "reward_total": 103.18240303518655,
+              "steps": 109,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 70,
+              "episode_seed": 20070,
+              "reward_total": 105.33810409892706,
+              "steps": 111,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 71,
+              "episode_seed": 20071,
+              "reward_total": 105.0380136551376,
+              "steps": 110,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 72,
+              "episode_seed": 20072,
+              "reward_total": 104.63546396914509,
+              "steps": 110,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 73,
+              "episode_seed": 20073,
+              "reward_total": 104.81330124735143,
+              "steps": 114,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 74,
+              "episode_seed": 20074,
+              "reward_total": 104.60933004631514,
+              "steps": 116,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 75,
+              "episode_seed": 20075,
+              "reward_total": 102.38801901235982,
+              "steps": 111,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 76,
+              "episode_seed": 20076,
+              "reward_total": 104.11901789018954,
+              "steps": 112,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 77,
+              "episode_seed": 20077,
+              "reward_total": 100.59009856964366,
+              "steps": 104,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 78,
+              "episode_seed": 20078,
+              "reward_total": 105.59910354763528,
+              "steps": 113,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 79,
+              "episode_seed": 20079,
+              "reward_total": 105.66530213548785,
+              "steps": 113,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 80,
+              "episode_seed": 20080,
+              "reward_total": 104.78253189277169,
+              "steps": 110,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 81,
+              "episode_seed": 20081,
+              "reward_total": 104.65218113274463,
+              "steps": 106,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 82,
+              "episode_seed": 20082,
+              "reward_total": 104.46877467621704,
+              "steps": 108,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 83,
+              "episode_seed": 20083,
+              "reward_total": 103.77402629355569,
+              "steps": 116,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 84,
+              "episode_seed": 20084,
+              "reward_total": 104.21417176388167,
+              "steps": 115,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 85,
+              "episode_seed": 20085,
+              "reward_total": 104.3643780824907,
+              "steps": 119,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 86,
+              "episode_seed": 20086,
+              "reward_total": 103.62257978393406,
+              "steps": 112,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 87,
+              "episode_seed": 20087,
+              "reward_total": 103.22856584413103,
+              "steps": 112,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 88,
+              "episode_seed": 20088,
+              "reward_total": 105.34108815739374,
+              "steps": 114,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 89,
+              "episode_seed": 20089,
+              "reward_total": 103.93945896988882,
+              "steps": 106,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 90,
+              "episode_seed": 20090,
+              "reward_total": 104.89183116764977,
+              "steps": 116,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 91,
+              "episode_seed": 20091,
+              "reward_total": 102.72200216559183,
+              "steps": 116,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 92,
+              "episode_seed": 20092,
+              "reward_total": 103.00075738717587,
+              "steps": 105,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 93,
+              "episode_seed": 20093,
+              "reward_total": 104.25849613694751,
+              "steps": 119,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 94,
+              "episode_seed": 20094,
+              "reward_total": 103.86303662710797,
+              "steps": 117,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 95,
+              "episode_seed": 20095,
+              "reward_total": 104.0130131708028,
+              "steps": 112,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 96,
+              "episode_seed": 20096,
+              "reward_total": 102.3395882929081,
+              "steps": 107,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 97,
+              "episode_seed": 20097,
+              "reward_total": 104.8130289042102,
+              "steps": 114,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 98,
+              "episode_seed": 20098,
+              "reward_total": 104.65911267438135,
+              "steps": 111,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 99,
+              "episode_seed": 20099,
+              "reward_total": 102.8772713424843,
+              "steps": 107,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 100,
+              "episode_seed": 20100,
+              "reward_total": 103.48245894951056,
+              "steps": 111,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 101,
+              "episode_seed": 20101,
+              "reward_total": 103.33106364077022,
+              "steps": 112,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 102,
+              "episode_seed": 20102,
+              "reward_total": 104.9865713569675,
+              "steps": 110,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 103,
+              "episode_seed": 20103,
+              "reward_total": 102.75056213588702,
+              "steps": 116,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 104,
+              "episode_seed": 20104,
+              "reward_total": 104.92209097267346,
+              "steps": 115,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 105,
+              "episode_seed": 20105,
+              "reward_total": 103.52063673411843,
+              "steps": 113,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 106,
+              "episode_seed": 20106,
+              "reward_total": 102.54998462425377,
+              "steps": 115,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 107,
+              "episode_seed": 20107,
+              "reward_total": 102.7037007639597,
+              "steps": 110,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 108,
+              "episode_seed": 20108,
+              "reward_total": 103.98063276274965,
+              "steps": 113,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 109,
+              "episode_seed": 20109,
+              "reward_total": 102.60857944463018,
+              "steps": 112,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 110,
+              "episode_seed": 20110,
+              "reward_total": 104.49707130822,
+              "steps": 106,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 111,
+              "episode_seed": 20111,
+              "reward_total": -3.0960883688924503,
+              "steps": 500,
+              "success": false,
+              "terminated": false,
+              "truncated": true
+            },
+            {
+              "episode": 112,
+              "episode_seed": 20112,
+              "reward_total": 103.84254193275882,
+              "steps": 114,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 113,
+              "episode_seed": 20113,
+              "reward_total": 103.38809918400861,
+              "steps": 111,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 114,
+              "episode_seed": 20114,
+              "reward_total": 104.46429360263116,
+              "steps": 113,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 115,
+              "episode_seed": 20115,
+              "reward_total": 104.9612545593757,
+              "steps": 109,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 116,
+              "episode_seed": 20116,
+              "reward_total": 104.57040495272108,
+              "steps": 108,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 117,
+              "episode_seed": 20117,
+              "reward_total": 103.62033078908009,
+              "steps": 109,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 118,
+              "episode_seed": 20118,
+              "reward_total": 104.53163956212622,
+              "steps": 111,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 119,
+              "episode_seed": 20119,
+              "reward_total": 102.8444197218355,
+              "steps": 115,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 120,
+              "episode_seed": 20120,
+              "reward_total": 104.66341428741367,
+              "steps": 112,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 121,
+              "episode_seed": 20121,
+              "reward_total": 101.45293668984843,
+              "steps": 108,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 122,
+              "episode_seed": 20122,
+              "reward_total": 103.42029983372316,
+              "steps": 107,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 123,
+              "episode_seed": 20123,
+              "reward_total": 103.47528580104687,
+              "steps": 109,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 124,
+              "episode_seed": 20124,
+              "reward_total": 103.66431771632426,
+              "steps": 113,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 125,
+              "episode_seed": 20125,
+              "reward_total": 104.42501535395539,
+              "steps": 111,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 126,
+              "episode_seed": 20126,
+              "reward_total": 102.24371330736635,
+              "steps": 111,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 127,
+              "episode_seed": 20127,
+              "reward_total": 103.97381246312469,
+              "steps": 114,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 128,
+              "episode_seed": 20128,
+              "reward_total": 102.29313140204049,
+              "steps": 110,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 129,
+              "episode_seed": 20129,
+              "reward_total": 101.03555504520324,
+              "steps": 107,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 130,
+              "episode_seed": 20130,
+              "reward_total": 104.75706357641856,
+              "steps": 107,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 131,
+              "episode_seed": 20131,
+              "reward_total": 104.46176615839487,
+              "steps": 110,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 132,
+              "episode_seed": 20132,
+              "reward_total": 101.65921877476688,
+              "steps": 108,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 133,
+              "episode_seed": 20133,
+              "reward_total": 103.392580907254,
+              "steps": 112,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 134,
+              "episode_seed": 20134,
+              "reward_total": 105.6636334388486,
+              "steps": 113,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 135,
+              "episode_seed": 20135,
+              "reward_total": 104.1619970076116,
+              "steps": 118,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 136,
+              "episode_seed": 20136,
+              "reward_total": 103.00062940769408,
+              "steps": 115,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 137,
+              "episode_seed": 20137,
+              "reward_total": 102.74537245065926,
+              "steps": 105,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 138,
+              "episode_seed": 20138,
+              "reward_total": 103.55087804792437,
+              "steps": 113,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 139,
+              "episode_seed": 20139,
+              "reward_total": 104.80322395905135,
+              "steps": 111,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 140,
+              "episode_seed": 20140,
+              "reward_total": 105.00733347432347,
+              "steps": 109,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 141,
+              "episode_seed": 20141,
+              "reward_total": 104.51387972649746,
+              "steps": 112,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 142,
+              "episode_seed": 20142,
+              "reward_total": 102.80218894251506,
+              "steps": 111,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 143,
+              "episode_seed": 20143,
+              "reward_total": 105.0329324343085,
+              "steps": 111,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 144,
+              "episode_seed": 20144,
+              "reward_total": 99.99955081920888,
+              "steps": 106,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 145,
+              "episode_seed": 20145,
+              "reward_total": 101.10628614681912,
+              "steps": 107,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 146,
+              "episode_seed": 20146,
+              "reward_total": 104.60000835247757,
+              "steps": 117,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 147,
+              "episode_seed": 20147,
+              "reward_total": 102.1149602612191,
+              "steps": 111,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 148,
+              "episode_seed": 20148,
+              "reward_total": 104.37807926473658,
+              "steps": 111,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 149,
+              "episode_seed": 20149,
+              "reward_total": 102.39555925897349,
+              "steps": 105,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 150,
+              "episode_seed": 20150,
+              "reward_total": 104.61635566526247,
+              "steps": 114,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 151,
+              "episode_seed": 20151,
+              "reward_total": 102.99725831999035,
+              "steps": 115,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 152,
+              "episode_seed": 20152,
+              "reward_total": 105.1068173927829,
+              "steps": 108,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 153,
+              "episode_seed": 20153,
+              "reward_total": 105.30279570974693,
+              "steps": 113,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 154,
+              "episode_seed": 20154,
+              "reward_total": 104.40802988565278,
+              "steps": 112,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 155,
+              "episode_seed": 20155,
+              "reward_total": 104.80834623837839,
+              "steps": 114,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 156,
+              "episode_seed": 20156,
+              "reward_total": 104.91582358667785,
+              "steps": 107,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 157,
+              "episode_seed": 20157,
+              "reward_total": 102.27573574394457,
+              "steps": 105,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 158,
+              "episode_seed": 20158,
+              "reward_total": 105.0564870741882,
+              "steps": 110,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 159,
+              "episode_seed": 20159,
+              "reward_total": 103.06290414509661,
+              "steps": 112,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 160,
+              "episode_seed": 20160,
+              "reward_total": 104.08101638414475,
+              "steps": 117,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 161,
+              "episode_seed": 20161,
+              "reward_total": 103.65406288646648,
+              "steps": 112,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 162,
+              "episode_seed": 20162,
+              "reward_total": 104.69804819338889,
+              "steps": 110,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 163,
+              "episode_seed": 20163,
+              "reward_total": -3.7760221697880696,
+              "steps": 500,
+              "success": false,
+              "terminated": false,
+              "truncated": true
+            },
+            {
+              "episode": 164,
+              "episode_seed": 20164,
+              "reward_total": 104.0360612738688,
+              "steps": 117,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 165,
+              "episode_seed": 20165,
+              "reward_total": 103.94082410918784,
+              "steps": 109,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 166,
+              "episode_seed": 20166,
+              "reward_total": -4.289208390612524,
+              "steps": 500,
+              "success": false,
+              "terminated": false,
+              "truncated": true
+            },
+            {
+              "episode": 167,
+              "episode_seed": 20167,
+              "reward_total": 104.57541566169338,
+              "steps": 113,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 168,
+              "episode_seed": 20168,
+              "reward_total": 103.92636795289106,
+              "steps": 109,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 169,
+              "episode_seed": 20169,
+              "reward_total": 102.6806728972475,
+              "steps": 115,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 170,
+              "episode_seed": 20170,
+              "reward_total": 102.81595065238699,
+              "steps": 116,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 171,
+              "episode_seed": 20171,
+              "reward_total": 105.29909610664234,
+              "steps": 112,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 172,
+              "episode_seed": 20172,
+              "reward_total": 104.134136728177,
+              "steps": 111,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 173,
+              "episode_seed": 20173,
+              "reward_total": 103.34408996542979,
+              "steps": 109,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 174,
+              "episode_seed": 20174,
+              "reward_total": 103.04080854256564,
+              "steps": 114,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 175,
+              "episode_seed": 20175,
+              "reward_total": 104.1188762080971,
+              "steps": 111,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 176,
+              "episode_seed": 20176,
+              "reward_total": 102.56029995493654,
+              "steps": 115,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 177,
+              "episode_seed": 20177,
+              "reward_total": 104.80533691465848,
+              "steps": 110,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 178,
+              "episode_seed": 20178,
+              "reward_total": 102.50516616273882,
+              "steps": 112,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 179,
+              "episode_seed": 20179,
+              "reward_total": 104.33750212422343,
+              "steps": 113,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 180,
+              "episode_seed": 20180,
+              "reward_total": 103.84218955856497,
+              "steps": 119,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 181,
+              "episode_seed": 20181,
+              "reward_total": 103.80509672603841,
+              "steps": 114,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 182,
+              "episode_seed": 20182,
+              "reward_total": 102.56127988934792,
+              "steps": 106,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 183,
+              "episode_seed": 20183,
+              "reward_total": 104.28488171939587,
+              "steps": 110,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 184,
+              "episode_seed": 20184,
+              "reward_total": -18.763504890364057,
+              "steps": 500,
+              "success": false,
+              "terminated": false,
+              "truncated": true
+            },
+            {
+              "episode": 185,
+              "episode_seed": 20185,
+              "reward_total": 105.3526046479426,
+              "steps": 115,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 186,
+              "episode_seed": 20186,
+              "reward_total": 103.13136576330677,
+              "steps": 107,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 187,
+              "episode_seed": 20187,
+              "reward_total": 104.93782372374488,
+              "steps": 115,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 188,
+              "episode_seed": 20188,
+              "reward_total": 104.01555786827228,
+              "steps": 113,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 189,
+              "episode_seed": 20189,
+              "reward_total": 103.89778569319245,
+              "steps": 117,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 190,
+              "episode_seed": 20190,
+              "reward_total": 103.0813993191419,
+              "steps": 110,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 191,
+              "episode_seed": 20191,
+              "reward_total": 105.27382070595704,
+              "steps": 109,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 192,
+              "episode_seed": 20192,
+              "reward_total": 104.45771157744264,
+              "steps": 114,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 193,
+              "episode_seed": 20193,
+              "reward_total": 105.4227212788854,
+              "steps": 115,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 194,
+              "episode_seed": 20194,
+              "reward_total": 104.85736021291771,
+              "steps": 111,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 195,
+              "episode_seed": 20195,
+              "reward_total": 105.41660561507669,
+              "steps": 116,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 196,
+              "episode_seed": 20196,
+              "reward_total": 103.56334794549497,
+              "steps": 110,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 197,
+              "episode_seed": 20197,
+              "reward_total": 101.18983864671165,
+              "steps": 108,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 198,
+              "episode_seed": 20198,
+              "reward_total": 104.69984349851921,
+              "steps": 114,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            },
+            {
+              "episode": 199,
+              "episode_seed": 20199,
+              "reward_total": 103.79552498826553,
+              "steps": 111,
+              "success": true,
+              "terminated": true,
+              "truncated": false
+            }
+          ],
+          "episodes": 200,
+          "evaluation_artifact": "research/evaluations/a4e64322-8d31-4479-9b0f-c04211eaf8b4/evaluation-a4e64322-8d31-4479-9b0f-c04211eaf8b4-experiment-2-working-200ep-seed20000-48e4acc98c39.json",
+          "evaluation_artifact_fingerprint": "98207fabb1b18da6fac4906b0ba356946f89de2b19a87af2f794003f84c09287",
+          "evaluation_semantics": "48e4acc98c39",
+          "model_fingerprint": "37127558e28ca282b6cf3e83e68596ce4b81525c545eb6e921e758b5bf0c7076",
+          "official_benchmark": false,
+          "schema_version": 5,
+          "seed": 20000,
+          "success_percent": 97.5,
+          "successes": 195
+        },
+        "model_fingerprint": "37127558e28ca282b6cf3e83e68596ce4b81525c545eb6e921e758b5bf0c7076",
+        "omitted_alternative": "best_known",
+        "seed": 20000,
+        "selection": "The working and best-known roles refer to the same retained checkpoint-100352, which is the strongest measured baseline. Measuring it on a disjoint panel preserves the existing paired task-reference evidence while testing reproducibility across new target draws."
+      }
+    ],
+    "partial_task_reference_evaluations": [],
+    "rounds": [
+      {
+        "experiment": 2,
+        "inquiry_id": 1,
+        "measurements": [
+          {
+            "candidate": "working",
+            "episodes": 200,
+            "instrument": "research_evaluation",
+            "label": "baseline failure-mechanism trajectory panel",
+            "omitted_alternative": "best_known",
+            "seed": 20000,
+            "selection": "The working and best-known roles refer to the same retained checkpoint-100352, which is the strongest measured baseline. Measuring it on a disjoint panel preserves the existing paired task-reference evidence while testing reproducibility across new target draws."
+          }
+        ],
+        "paired_comparisons": [],
+        "question": "For the retained baseline checkpoint-100352, do failures arise before a first tolerance entry, from failure to settle after entry, or from boundary exits during the required hold, and how do those failure modes vary with target geometry?",
+        "reason": "The fixed task-reference panel identifies four truncation failures and their target clustering, but its episode summaries do not establish tolerance-entry timing, uninterrupted hold length, boundary crossings, endpoint or joint velocity, or actuator saturation. A disjoint research panel with trajectory-resolved diagnostics can discriminate approach/geometry from settling/hold mechanisms and determine whether the next method should target reach planning, damping/velocity control, or sustained endpoint regulation.",
+        "results": {
+          "paired_comparisons": [],
+          "research_evaluations": [
+            {
+              "candidate": "working",
+              "episodes": 200,
+              "evaluation_artifact": "research/evaluations/a4e64322-8d31-4479-9b0f-c04211eaf8b4/evaluation-a4e64322-8d31-4479-9b0f-c04211eaf8b4-experiment-2-working-200ep-seed20000-48e4acc98c39.json",
+              "evaluation_artifact_fingerprint": "98207fabb1b18da6fac4906b0ba356946f89de2b19a87af2f794003f84c09287",
+              "evaluation_semantics": "48e4acc98c39",
+              "instrument": "research_evaluation",
+              "label": "baseline failure-mechanism trajectory panel",
+              "model_fingerprint": "37127558e28ca282b6cf3e83e68596ce4b81525c545eb6e921e758b5bf0c7076",
+              "official_benchmark": false,
+              "omitted_alternative": "best_known",
+              "schema_version": 5,
+              "seed": 20000,
+              "selection": "The working and best-known roles refer to the same retained checkpoint-100352, which is the strongest measured baseline. Measuring it on a disjoint panel preserves the existing paired task-reference evidence while testing reproducibility across new target draws.",
+              "status": "executed",
+              "success_percent": 97.5,
+              "successes": 195
+            }
+          ],
+          "task_reference_evaluations": []
+        },
+        "round": 1,
+        "status": "completed"
+      }
+    ]
+  },
   "retained_lineages": [],
   "schema_version": 5,
   "terminal_campaign_status": null,
