@@ -11,6 +11,7 @@ import {
   lastMessageID,
   policyForContext,
   relativeTo,
+  resolveSession,
   serverConfig,
   sessionLiveness,
   shutdownRuntime,
@@ -75,6 +76,81 @@ test("runtime bookkeeping is not reported as research work", () => {
   assert.equal(isIgnoredChange("reports/opencode-sessions.json"), true);
   assert.equal(isIgnoredChange("robot_learning/scenario/reward.py"), false);
   assert.equal(isIgnoredChange("reports/campaign-x.md"), false);
+});
+
+test("resume-or-create preserves one logical session across the creation window", async () => {
+  const root = mkdtempSync(join(tmpdir(), "opencode-session-"));
+  let creates = 0;
+  let gets = 0;
+  const client = {
+    session: {
+      list: async () => ({ data: [] }),
+      create: async () => {
+        creates += 1;
+        return { data: { id: "backend-session" } };
+      },
+      get: async () => {
+        gets += 1;
+        return { data: { id: "backend-session" } };
+      },
+    },
+  } as unknown as OpencodeClient;
+  const args = parseArgs([
+    "prompt",
+    "--session-id",
+    "inquiry-session",
+    "--resume-or-create",
+  ]);
+
+  try {
+    assert.equal(await resolveSession(client, args, root), "backend-session");
+    assert.equal(await resolveSession(client, args, root), "backend-session");
+    assert.equal(creates, 1);
+    assert.equal(gets, 1);
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
+});
+
+test("resume-or-create recovers a backend session created before mapping", async () => {
+  const root = mkdtempSync(join(tmpdir(), "opencode-session-recovery-"));
+  let creates = 0;
+  const client = {
+    session: {
+      list: async () => ({
+        data: [
+          {
+            id: "orphaned-backend-session",
+            title: "researcher principal investigator e0 [inquiry-session]",
+          },
+        ],
+      }),
+      create: async () => {
+        creates += 1;
+        return { data: { id: "replacement" } };
+      },
+    },
+  } as unknown as OpencodeClient;
+  const args = parseArgs([
+    "prompt",
+    "--session-id",
+    "inquiry-session",
+    "--phase",
+    "principal investigator",
+    "--experiment",
+    "0",
+    "--resume-or-create",
+  ]);
+
+  try {
+    assert.equal(
+      await resolveSession(client, args, root),
+      "orphaned-backend-session",
+    );
+    assert.equal(creates, 0);
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
 });
 
 test("reasoning is expressed as a provider model option", () => {

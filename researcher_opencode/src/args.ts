@@ -13,6 +13,7 @@ export type AdapterArgs = {
   model: string;
   reasoning: string;
   resume: boolean;
+  resumeOrCreate: boolean;
   timeout: number;
   serverUrl: string | null;
   campaignId: string | null;
@@ -34,7 +35,7 @@ const VALUE_FLAGS = new Set([
   "--phase",
   "--attempt",
 ]);
-const SWITCH_FLAGS = new Set(["--resume", "--preliminary"]);
+const SWITCH_FLAGS = new Set(["--resume", "--resume-or-create", "--preliminary"]);
 
 function integer(flag: string, value: string): number {
   const parsed = Number(value);
@@ -54,12 +55,14 @@ export function parseArgs(
   const flags = new Map<string, string>();
   const positionals: string[] = [];
   let resume = false;
+  let resumeOrCreate = false;
   let preliminary = false;
 
   for (let index = 0; index < argv.length; index += 1) {
     const token = argv[index]!;
     if (SWITCH_FLAGS.has(token)) {
       if (token === "--resume") resume = true;
+      else if (token === "--resume-or-create") resumeOrCreate = true;
       else preliminary = true;
       continue;
     }
@@ -91,6 +94,9 @@ export function parseArgs(
   if (!sessionId) {
     throw new UsageError("--session-id is required");
   }
+  if (resume && resumeOrCreate) {
+    throw new UsageError("--resume and --resume-or-create are mutually exclusive");
+  }
 
   const reasoning = flags.get("--reasoning") ?? "high";
   if (!REASONING_CHOICES.includes(reasoning)) {
@@ -114,6 +120,7 @@ export function parseArgs(
     model: flags.get("--model") ?? defaults.model,
     reasoning,
     resume,
+    resumeOrCreate,
     timeout,
     serverUrl: flags.get("--server-url") ?? null,
     campaignId: flags.get("--campaign-id") ?? null,

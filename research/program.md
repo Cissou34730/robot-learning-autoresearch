@@ -88,81 +88,125 @@ not different evidence standards or preferred experiment types.
 
 1. At campaign start, create `research/scientific_model.md` from the protected
    robot and task implementation before campaign evidence exists.
-2. The Runner trains the unchanged baseline as experiment 1.
-3. The campaign PI opens and advances durable scientific inquiries. An inquiry
-   may use repeated preparation measurements, close with a recorded outcome, or
-   request training.
-4. Post-training analysis may request one or more measurement rounds or close
-   the experiment.
-5. Closure resolves the working lineage, the policy and recipe still being
-   developed for the active inquiry, retention and optional best-known
-   designation.
-6. Inquiry preparation may request measurements on saved lineages, close the
-   active inquiry without training, prepare training or replication, request
-   the official benchmark, or conclude that no further work is warranted.
-7. Accepted experiments return to training, analysis and closure. Inquiry and
-   experiment identities are independent.
+2. The Runner trains the unchanged recipe from scratch as experiment 1. Until
+   the baseline is selected, the only legal operations are baseline measurement
+   rounds and `baseline_decision`. The selected baseline becomes both the
+   initial `working` and `best_known` model; the first inquiry starts only after
+   that matching designation exists.
+3. The Runner allocates one principal-investigator session per inquiry. That
+   session opens the inquiry by declaring its question, scope and closure
+   condition and owns it from allocation through measurements, method work,
+   training, post-training analysis, method decisions and maturity, across
+   launcher restarts. Closing the inquiry clears the session.
+4. An inquiry may measure saved models, reframe its bounds, declare one active
+   method, train or replicate that method when scientifically useful, compare a
+   mature method with other roles, or close with a durable outcome.
+5. The active method exists before its first training run. It persists across
+   iterations and carries its scientific question, rationale, `lifecycle`,
+   current lineage when one exists, and iteration history. A failed training
+   run is evidence and does not silently discard it.
+6. A training execution is an immutable experiment record. It is one instrument
+   inside the inquiry, not the lifecycle unit. Post-training analysis may request
+   further measurements or submit one `method_decision` for the experiment.
+7. Closing an inquiry requires a promoted, retained or abandoned method, or no
+   method. A later inquiry receives a new identity and session while retaining
+   current-campaign artifacts and model roles.
+8. Campaign conclusion and the official benchmark remain explicit operations,
+   legal once no inquiry is active.
 
-A measurement round returns to the same scientific phase. The campaign-level PI
-session owns inquiry and experiment preparation across launcher restarts.
-Post-training analysis, evaluation and closure sessions remain separate, with
-same-session continuation for their measurement rounds.
+### Method lifecycle
+
+A method's `lifecycle` is one of:
+
+- `concept` or `development` - declared at method start; `continue` and
+  `refine` decisions keep or return it to `development`;
+- `mature` - recorded by a post-training `mature` decision; the training
+  iteration ends and the inquiry may measure, train, promote, retain or abandon
+  it;
+- `promoted`, `retained` or `abandoned` - final outcomes of this inquiry's
+  method, after which the inquiry may close.
+
+Every transition is one `method_decision`. During post-training analysis it
+names the experiment; from the inquiry it names none. `continue`, `refine` and
+`mature` decide a training iteration and therefore require pending
+post-training analysis. `retain` and `abandon` are available whenever their
+invariants hold, in either phase. `promote` requires a method already marked
+`mature` and compatible, fingerprint-bound paired evidence against `working`,
+normally from a later inquiry measurement.
 
 Exact request schemas, artifact rules and phase deliverables are defined in
 `research/instruments.md`.
 
 ## Scientific phases
 
-### Inquiry and experiment preparation
+### Inquiry operation
 
 Begin from the human objective, current evidence and causal research map. Choose
 the operation that best advances the active inquiry; no operation is the
-default.
+default. The launcher states which operations are legal from the current
+state; each is a valid scientific choice when the evidence supports it.
 
-Preparation may produce:
+Depending on the state, an inquiry session may produce:
 
-- `research/evaluation_request.json` for a measurement on saved lineages;
-- `research/proposal.json` closing the active inquiry with a durable outcome;
-- `research/proposal.json` for training or replication;
+- `research/proposal.json` opening, reframing or closing an inquiry;
+- `research/proposal.json` declaring the inquiry's active method;
+- `research/proposal.json` with a `method_decision` that promotes a mature
+  method, retains it, or abandons it without training;
+- `research/evaluation_request.json` for a question-relative measurement on
+  saved lineages;
+- `research/proposal.json` for training, continuation or replication belonging
+  to the active method;
 - `research/proposal.json` requesting the terminal official assessment; or
 - `research/proposal.json` concluding that no further experiment is warranted.
 
 Update the causal research map so the current distinctions survive the session.
 Closing an inquiry continues the campaign and allocates no experiment.
-If the inquiry owns a developing method, closure must explicitly promote it to
-working, retain it as an alternative, or abandon it. Promotion does not silently
-change the best-known designation.
+
+A measurement round returns to the same inquiry and PI session. Evaluation is
+relative to the inquiry question: early method evaluation may inspect its own
+checkpoints or learning behavior without comparing against `working`.
+Incumbent comparison and promotion are explicit mature-method decisions.
 
 ### Post-training analysis
 
 Interpret the trained policies and available evidence in relation to the
-campaign's objective and current inquiry. Request another measurement when it
-can change the scientific or lineage decision. Otherwise record the experiment
-postmortem and submit the closure decision.
+campaign's objective, active inquiry and active method. Request another
+measurement when it can change the method decision. Otherwise record the
+experiment postmortem and submit one `method_decision` for the experiment.
 
 Measurements may characterize behavior, compare policies, examine learning
 dynamics, test an explanation or reveal that the question itself should change.
-The same session continues after requested measurements during one launcher
-run.
+The inquiry's PI session continues after requested measurements and across
+launcher restarts.
 
 Analysis tools and outputs may be preserved under `research/lab/`. Published
 laboratory files are shown in the brief and remain optional inputs to later
 inquiry and analysis work.
 
-### Experiment closure
+### Method decision
 
 Record observations, interpretations, limitations and the investigation's
-effect on the working understanding. Resolve the working policy and the
-inquiry's developing method independently, along with retained alternatives and
-any best-known designation. The roles impose no required score ordering, and
-selecting one does not imply selecting another. A failed hypothesis does not
-automatically make a measured policy useless, and a useful policy does not
-establish its proposed cause.
+effect on the working understanding. Choose the transition the evidence
+supports: continue or refine the method, mark it mature, promote a mature method
+with paired evidence, retain its current lineage, or abandon it. Maturity is a
+complete decision; it ends the iteration and the inquiry may then measure the
+mature method before promoting, retaining or abandoning it.
+The active method, working, best-known and retained roles remain independent.
+Best-known designation is optional and evidence-backed. A failed hypothesis or
+training collapse does not automatically make the method scientifically
+irrelevant, and a useful policy does not establish its proposed cause.
 
 Further investigation, final assessment and campaign conclusion are scientific
 decisions, not automatic consequences of closure.
 
 ## Official assessment and stopping
+
+`MaxExperiments` is only a cap on allocating training executions. Reaching it
+removes only the allocation of another training experiment. Pending analysis
+and every `method_decision`, saved-model measurement, promotion of a mature
+method with evidence, retention or abandonment, inquiry reframing or closure,
+and campaign conclusion after closure remain available without consuming
+another experiment identity.
 
 Request the official benchmark only when you expect the selected frozen
 best-known policy to return `goal_reached`. It is an irreversible terminal

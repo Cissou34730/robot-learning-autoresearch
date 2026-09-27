@@ -44,7 +44,8 @@ uv run python tools/campaign_report.py   # Human: factual campaign / bias report
 
 The human may add `-RecipeRef <git-ref>` to `Fresh` to restore the complete
 researcher-owned scientific surface from one resolved commit before creating an
-empty v4 campaign. This imports no trained policy or evidence. `Baseline` is the
+empty campaign in the current schema. This imports no trained policy or
+evidence. `Baseline` is the
 separate operation for restoring a prepared experiment-1 policy and its evidence.
 The reset wrapper and research launcher share one mutex scoped to the worktree,
 so two checkouts never block each other. Reset backups resolve through Git's
@@ -88,11 +89,11 @@ human-only maintenance operation, never a Researcher experiment command.
 - `research/lab/` - campaign-scoped Researcher laboratory tools and analyses,
   published independently from policy/training recipes and removed by reset.
 - `research/evaluations/` - durable detailed development measurements.
-- `research/checkpoints/accepted/` and `research/checkpoints/retained/` - readable
-  legacy archive locations and durable reusable policy lineages. Version-4
-  campaign state names the independent `working_lineage`, `best_known_lineage`,
-  and retained IDs; selected challenger artifacts are published under the
-  campaign-scoped retained archive before cleanup.
+- `research/checkpoints/accepted/` and `research/checkpoints/retained/` - durable
+  reusable policy lineages. Campaign state names independent
+  `working_lineage`, `best_known_lineage`, active-method lineage, and retained
+  IDs; selected candidates are published under the campaign-scoped retained
+  archive before cleanup.
 - `models/candidates/` - disposable training candidates.
 - `tools/campaign_report.py` - human-only campaign decision and usage report.
 - `reports/` - ignored human reports and campaign-scoped aggregate session usage;
@@ -141,9 +142,10 @@ path takes precedence over any researcher-owned prefix.
 - `research/lab/`;
 - the preliminary phase deliverable `research/scientific_model.md` (only before
   baseline training); the later phase deliverables `research/proposal.json`,
-  `research/evaluation_request.json` and `research/postmortems.md`. During v4
+  `research/evaluation_request.json` and `research/postmortems.md`. During
   post-training analysis, exactly one actionable request is submitted: a
-  measurement request or a closure proposal with its postmortem.
+  measurement request, a `baseline_decision` for the baseline, or one
+  `method_decision` with its postmortem.
 
 Within this surface, the Researcher has unrestricted scientific authority.
 Nothing is sacred, preferred, required to remain recognizable, or exempt from
@@ -202,13 +204,26 @@ derived view. Researcher-owned scientific code travels in the experiment's
 `code_changes` and Git lineage; tests never do, because the Researcher does not
 own them.
 
-Version-4 closure publishes every selected working or best-known candidate to
+An accepted training operation and each completed candidate remain recoverable
+until candidate archival, the experiment result, and `pending_analysis` are
+durable. Restart reuses completed or archived candidates instead of allocating
+another experiment or training them again.
+
+Each inquiry owns one principal-investigator session from allocation through
+its measurements, training, post-training analysis, method decisions and
+maturity; closing the inquiry clears that session. An active method has one
+`lifecycle` field (`concept`, `development`, `mature`, `promoted`, `retained`
+or `abandoned`) and every transition is one `method_decision`, published
+restart-safely through `pending_method_decision`.
+
+Method-decision publication preserves every selected active, working or
+best-known candidate in
 `research/checkpoints/retained/<campaign-id>/` before candidate cleanup and
 commits the artifact with the state that references it. A retained inference
 artifact consists of `model.zip`, `artifact.json` and `policy_runtime.pkl`;
 preprocessing state and its per-episode reset behavior are part of that saved
-runtime contract. Working and best-known lineages are independent Researcher
-designations, not Runner rankings.
+runtime contract. Active-method, working, best-known and retained lineages are
+independent Researcher designations, not Runner rankings.
 
 An unchanged continuation restores the selected parent's complete scientific
 recipe and configuration before validation and training. An ordinary transfer

@@ -45,9 +45,20 @@ test("the prompt is the only positional and may appear last", () => {
   assert.equal(args.prompt, "a prompt with spaces");
 });
 
+test("resume-or-create is distinct from strict resume", () => {
+  const args = parseArgs([...BASE, "--resume-or-create"]);
+  assert.equal(args.resume, false);
+  assert.equal(args.resumeOrCreate, true);
+  assert.throws(
+    () => parseArgs([...BASE, "--resume", "--resume-or-create"]),
+    /mutually exclusive/,
+  );
+});
+
 test("defaults match the adapter contract", () => {
   const args = parseArgs(BASE);
   assert.equal(args.resume, false);
+  assert.equal(args.resumeOrCreate, false);
   assert.equal(args.preliminary, false);
   assert.equal(args.attempt, 1);
   assert.equal(args.timeout, 1800);

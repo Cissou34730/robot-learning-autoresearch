@@ -973,10 +973,14 @@ def session_options(args, console: Console, finished: asyncio.Event) -> dict:
 
 
 async def open_session(client, args, options: dict):
-    if args.resume:
+    if args.resume or args.resume_or_create:
         try:
             return await client.resume_session(args.session_id, **options)
         except Exception as error:
+            if args.resume_or_create:
+                return await client.create_session(
+                    session_id=args.session_id, **options
+                )
             raise RuntimeError(
                 "could not resume the persisted researcher session "
                 f"{args.session_id!r}; refusing to create a replacement"
@@ -1080,7 +1084,9 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     )
     # Continuation is explicit: a retry resumes this phase's own session and can
     # never inherit whatever session happened to run last on this machine.
-    parser.add_argument("--resume", action="store_true")
+    continuation = parser.add_mutually_exclusive_group()
+    continuation.add_argument("--resume", action="store_true")
+    continuation.add_argument("--resume-or-create", action="store_true")
     parser.add_argument("--timeout", type=float, default=1800.0)
     # Accounting metadata only; these values never enter the model prompt.
     parser.add_argument("--campaign-id")

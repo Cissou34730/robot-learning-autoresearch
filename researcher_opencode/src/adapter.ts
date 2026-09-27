@@ -351,7 +351,7 @@ export async function sessionLiveness(
 }
 
 /** Open a new session, or prove the recorded one may be resumed. */
-async function resolveSession(
+export async function resolveSession(
   client: OpencodeClient,
   args: AdapterArgs,
   root: string,
@@ -362,8 +362,11 @@ async function resolveSession(
     reasoning: args.reasoning,
   };
   const existing = getEntry(root, args.sessionId);
+  const title = args.phase
+    ? `researcher ${args.phase}${args.experiment === null ? "" : ` e${args.experiment}`} [${args.sessionId}]`
+    : `researcher session [${args.sessionId}]`;
 
-  if (args.resume) {
+  if (args.resume || (args.resumeOrCreate && existing)) {
     if (!existing) {
       throw new AdapterError(
         EXIT_RUNTIME_FAILURE,
@@ -388,6 +391,37 @@ async function resolveSession(
     return existing.opencode_session_id;
   }
 
+  if (args.resumeOrCreate) {
+    const listed = await client.session.list();
+    if (listed.error || !listed.data) {
+      throw new AdapterError(
+        EXIT_RUNTIME_FAILURE,
+        `could not reconcile the first OpenCode session invocation: ${describeError(listed.error)}`,
+      );
+    }
+    const matches = listed.data.filter((session) => session.title === title);
+    if (matches.length > 1) {
+      throw new AdapterError(
+        EXIT_RUNTIME_FAILURE,
+        `multiple OpenCode sessions match harness session ${args.sessionId}`,
+      );
+    }
+    if (matches.length === 1) {
+      const entry: SessionMappingEntry = {
+        opencode_session_id: matches[0].id,
+        directory: root,
+        model: args.model,
+        reasoning: args.reasoning,
+        campaign_id: args.campaignId,
+        experiment: args.experiment,
+        phase: args.phase,
+        created_at: new Date().toISOString(),
+      };
+      putEntry(root, args.sessionId, entry);
+      return matches[0].id;
+    }
+  }
+
   if (existing) {
     throw new AdapterError(
       EXIT_RUNTIME_FAILURE,
@@ -396,9 +430,6 @@ async function resolveSession(
     );
   }
 
-  const title = args.phase
-    ? `researcher ${args.phase}${args.experiment === null ? "" : ` e${args.experiment}`}`
-    : "researcher session";
   const created = await client.session.create({ body: { title } });
   if (created.error || !created.data) {
     throw new AdapterError(

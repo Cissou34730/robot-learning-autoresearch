@@ -67,13 +67,15 @@ $researcherPersonaGuidance = @(
 $scientificModelUseGuidance = "Use research/scientific_model.md as the campaign's initial physical model. Test its interpretation against observed behavior and carry forward what the campaign learns; do not treat it as an intervention menu."
 $researchFreedomGuidance = "Everything in the researcher-owned surface is fully yours. Nothing there is sacred, preferred, required to remain recognizable, or exempt from replacement. You may inspect, create, rewrite, combine, or remove any researcher-owned scientific implementation or tool; existing files and module structure carry no scientific authority."
 $scientificMemoryGuidance = "Maintain the Scientific strategy as a causal research map with four durable registers: current synthesis, lessons and limits, competing explanations, and the decision frontier. The frontier records the unresolved distinction and evidence that would discriminate or redirect it, not a candidate implementation."
-$developingMethodGuidance = @(
-    "The Runner exposes two independent closure decisions: continue_from selects the working policy, while developing_method optionally preserves a candidate and its complete recipe for another experiment in the same inquiry."
-    "A later proposal may name training_parent developing_method. Selecting, preserving, replacing, or releasing that role is a scientific decision; the prompt assigns no preference among those outcomes."
+$activeMethodGuidance = @(
+    "An inquiry owns one principal-investigator session from its allocation and opening through measurements, method work, training, post-training analysis, method decisions, and maturity; closing the inquiry clears that session."
+    "An active method is declared before its first training run and remains the same scientific program across training iterations. Its lifecycle is concept, development, mature, promoted, retained, or abandoned."
+    "Its current lineage and iteration history are independent of the working, best-known, and retained roles. A training collapse is evidence and does not automatically discard the method."
+    "Every method transition is one method_decision. A mature method has ended its training iteration and may be measured, promoted with compatible paired evidence against working, retained, or abandoned from the inquiry."
 ) -join " "
-$openBehaviorQuestionGuidance = @(
-    "For reasoning.policy_intervention, use behavioral_path when the proposal makes a behavioral prediction, or open_behavior_question when it does not."
-    "In either case, behavioral_test states how the claimed path or open question will be examined. Neither form is preferred."
+$investigationDesignGuidance = @(
+    "Frame training through investigation_design. State either a predicted_behavioral_path or an open_question; neither form is preferred."
+    "Connect the design to evidence, the objective, initialization, rationale, and an expected observation without assuming an incumbent-local intervention."
 ) -join " "
 $laboratoryReuseGuidance = @(
     "The brief lists published research/lab files as available campaign artifacts."
@@ -166,14 +168,8 @@ function Invoke-Runner {
         -ArgumentList $runnerArguments -Operation "research runner"
 }
 
-function Invoke-HypothesisAnchor {
-    param([switch]$ConclusionOnly)
-
-    $arguments = @("--begin-hypothesis")
-    if ($ConclusionOnly) {
-        $arguments += "--conclusion-only"
-    }
-    $exitCode = Invoke-Runner -Arguments $arguments
+function Invoke-InquiryAnchor {
+    $exitCode = Invoke-Runner -Arguments @("--begin-inquiry")
     if (Test-StopAfterOperation $exitCode "research runner") {
         return 130
     }
@@ -197,9 +193,9 @@ function Invoke-PreparationMeasurement {
                     "The accepted measurement remains pending for maintainer review."
                 )
             }
-            $piSession = $script:researchState.principal_investigator_session
+            $piSession = $script:researchState.inquiry_session
             if (-not $piSession -or -not $piSession.id) {
-                throw "The campaign has no persisted principal-investigator session identity."
+                throw "The inquiry has no persisted principal-investigator session identity."
             }
             $repairAttempt = $attempts + 1
             $repairPrompt = @(
@@ -421,7 +417,7 @@ if (-not $createdNew) {
 function Assert-ResearchRuntime {
     uv run python -c "import robot_learning.train; import research.run_experiment" | Out-Host
     if ($LASTEXITCODE -ne 0) {
-        throw "The research runtime is internally inconsistent: robot_learning.train and research.run_experiment could not both be imported. No researcher session, training, evaluation or lineage decision was started."
+        throw "The research runtime is internally inconsistent: robot_learning.train and research.run_experiment could not both be imported. No researcher session, training, evaluation, or lifecycle decision was started."
     }
 }
 
@@ -438,8 +434,12 @@ function Invoke-ResearcherSession {
         [Parameter(Mandatory)][int]$Experiment,
         [string]$SessionId,
         [switch]$Continue,
+        [switch]$ResumeOrCreate,
         [switch]$Preliminary
     )
+    if ($Continue -and $ResumeOrCreate) {
+        throw "A researcher session cannot be both strict-resume and resume-or-create."
+    }
     if ($SessionId) {
         $script:ResearcherSessionId = $SessionId
         $script:ResearcherSessionPhase = $Phase
@@ -454,6 +454,17 @@ function Invoke-ResearcherSession {
             $script:ResearcherSessionExperiment -ne $Experiment
         ) {
             throw "The active researcher session belongs to another phase."
+        }
+    }
+    elseif ($ResumeOrCreate) {
+        if (-not $script:ResearcherSessionId) {
+            throw "There is no persisted researcher session identity to resume or create."
+        }
+        if (
+            $script:ResearcherSessionPhase -ne $Phase -or
+            $script:ResearcherSessionExperiment -ne $Experiment
+        ) {
+            throw "The persisted researcher session belongs to another phase."
         }
     }
     else {
@@ -482,6 +493,9 @@ function Invoke-ResearcherSession {
     }
     if ($Continue) {
         $sessionArgs += "--resume"
+    }
+    elseif ($ResumeOrCreate) {
+        $sessionArgs += "--resume-or-create"
     }
     if ($Preliminary) {
         $sessionArgs += "--preliminary"
@@ -545,46 +559,6 @@ function Save-ResearchMemory {
     }
 }
 
-function Test-LineageResearchMemory([int]$experiment) {
-    $script:LineageValidationFeedback = ""
-    if (-not (Test-Path "research\proposal.json")) {
-        $script:LineageValidationFeedback = "research/proposal.json was not created"
-        return $false
-    }
-    if (-not (Test-Path "research\postmortems.md")) {
-        $script:LineageValidationFeedback = "research/postmortems.md was not created"
-        return $false
-    }
-    $state = Get-Content "research\research_state.json" -Raw | ConvertFrom-Json
-    $campaignId = $state.campaign.id
-    $headingPattern = if ($campaignId) {
-        "(?m)^## $([regex]::Escape($campaignId)) / Experiment $experiment\b"
-    }
-    else {
-        "(?m)^## Experiment $experiment\b"
-    }
-    if (-not ((Get-Content "research\postmortems.md" -Raw) -match $headingPattern)) {
-        $script:LineageValidationFeedback = (
-            "research/postmortems.md has no entry for the current campaign " +
-            "and experiment $experiment"
-        )
-        return $false
-    }
-    # The decision must name existing detailed evidence of this experiment.
-    $validationOutput = @(
-        uv run python research/run_experiment.py --check-lineage-evidence $experiment 2>&1
-    )
-    $validationExitCode = $LASTEXITCODE
-    $validationOutput | ForEach-Object { Write-Host $_ }
-    $script:LineageValidationFeedback = (
-        $validationOutput | ForEach-Object { $_.ToString().Trim() }
-    ) -join " "
-    if ($validationExitCode -ne 0 -and -not $script:LineageValidationFeedback) {
-        $script:LineageValidationFeedback = "lineage evidence validation failed"
-    }
-    return ($validationExitCode -eq 0)
-}
-
 function Test-ResearchProposal {
     $validationOutput = @(
         uv run python research/run_experiment.py --check-proposal 2>&1
@@ -616,8 +590,14 @@ function Test-EvaluationRequest {
 }
 
 function Test-PreparationDeliverable {
+    param([switch]$TrainingCapReached)
+
+    $arguments = @("--check-preparation-deliverable")
+    if ($TrainingCapReached) {
+        $arguments += "--training-cap-reached"
+    }
     $validationOutput = @(
-        uv run python research/run_experiment.py --check-preparation-deliverable 2>&1
+        uv run python research/run_experiment.py @arguments 2>&1
     )
     $validationExitCode = $LASTEXITCODE
     $script:PreparationValidationFeedback = (
@@ -677,7 +657,11 @@ function Test-ImplementationRepair {
 
 # The phases below observe the same facts: what the process did,
 # whether the deliverable exists, and whether the protected validator accepts it.
-function Get-ProposalSessionStatus([string]$phase, [int]$attempt) {
+function Get-ProposalSessionStatus(
+    [string]$phase,
+    [int]$attempt,
+    [switch]$TrainingCapReached
+) {
     # Preparation accepts either a proposal or a saved-lineage measurement
     # request, so both files are observed before the deliverable is judged.
     $measurementPresent = Test-Path "research\evaluation_request.json"
@@ -685,7 +669,8 @@ function Get-ProposalSessionStatus([string]$phase, [int]$attempt) {
     $valid = $false
     $reason = "research/proposal.json or research/evaluation_request.json was not created"
     if ($present) {
-        $valid = Test-PreparationDeliverable
+        $valid = Test-PreparationDeliverable `
+            -TrainingCapReached:$TrainingCapReached
         $reason = if ($valid) { "" } else { $script:PreparationValidationFeedback }
     }
     $deliverable = if ($measurementPresent) {
@@ -697,41 +682,6 @@ function Get-ProposalSessionStatus([string]$phase, [int]$attempt) {
     New-ResearcherSessionStatus -Phase $phase -Attempt $attempt `
         -ExitCode $script:ResearcherExitCode `
         -Deliverable $deliverable `
-        -Present $present -Valid $valid -Reason $reason
-}
-
-function Get-EvaluationSessionStatus([int]$attempt) {
-    $present = Test-Path "research\evaluation_request.json"
-    $valid = $false
-    $reason = "research/evaluation_request.json was not created"
-    if ($present) {
-        $valid = Test-EvaluationRequest
-        $reason = if ($valid) { "" } else { $script:EvaluationValidationFeedback }
-    }
-    New-ResearcherSessionStatus -Phase "evaluation design" -Attempt $attempt `
-        -ExitCode $script:ResearcherExitCode `
-        -Deliverable "research/evaluation_request.json" `
-        -Present $present -Valid $valid -Reason $reason
-}
-
-function Get-LineageSessionStatus([int]$experiment, [int]$attempt) {
-    $present = (Test-Path "research\postmortems.md") -and (
-        Test-Path "research\proposal.json"
-    )
-    $valid = $false
-    $reason = ""
-    if (Test-LineageResearchMemory $experiment) {
-        $valid = Test-ResearchProposal
-        if (-not $valid) {
-            $reason = $script:ProposalValidationFeedback
-        }
-    }
-    else {
-        $reason = $script:LineageValidationFeedback
-    }
-    New-ResearcherSessionStatus -Phase "lineage decision" -Attempt $attempt `
-        -ExitCode $script:ResearcherExitCode `
-        -Deliverable "research/postmortems.md and research/proposal.json" `
         -Present $present -Valid $valid -Reason $reason
 }
 
@@ -763,6 +713,220 @@ function Get-ScientificModelSessionStatus([int]$attempt) {
         -Present $present -Valid $valid -Reason $reason
 }
 
+# The operations offered to the Researcher are derived from persisted state, so
+# a prompt states the Runner's contract for the current state and nothing
+# narrower. Unavailable operations carry the invariant that blocks them.
+function New-LegalOperation([string]$Name, [bool]$Legal, [string]$Detail) {
+    [pscustomobject]@{ Name = $Name; Legal = $Legal; Detail = $Detail }
+}
+
+function Get-InquiryOperations {
+    param(
+        [Parameter(Mandatory)]$State,
+        [switch]$TrainingCapReached
+    )
+    $inquiry = $State.active_inquiry
+    $method = $State.active_method
+    $operations = @()
+    if ($null -eq $inquiry) {
+        $operations += New-LegalOperation "inquiry open" $true (
+            "research/proposal.json with inquiry action open and non-empty " +
+            "question, scope, and closure_condition; this inquiry's PI session " +
+            "then owns it until close"
+        )
+        $operations += New-LegalOperation "campaign_conclusion" $true (
+            "research/proposal.json with action request_final_benchmark, only " +
+            "when you expect the designated best_known to return goal_reached, " +
+            "or no_further_experiment"
+        )
+        $operations += New-LegalOperation "evaluation_request" $false (
+            "measurement belongs to an open inquiry"
+        )
+        return $operations
+    }
+    $lifecycle = if ($null -ne $method) { [string]$method.lifecycle } else { "" }
+    $hasLineage = $null -ne $method -and $null -ne $method.current_lineage
+    $methodLineage = if ($hasLineage) { ", active_method" } else { "" }
+    $operations += New-LegalOperation "evaluation_request" $true (
+        "research/evaluation_request.json without experiment, measuring saved " +
+        "lineages (working, best_known$methodLineage, or a retained ID) for the " +
+        "inquiry question"
+    )
+    $operations += New-LegalOperation "inquiry reframe" $true (
+        "research/proposal.json with revised question, scope, closure_condition, " +
+        "and rationale; inquiry and PI session identity are unchanged"
+    )
+    $inquiryClose = (
+        "research/proposal.json with inquiry action close and a durable outcome; " +
+        "closing clears the PI session, after which another inquiry or " +
+        "campaign_conclusion is legal"
+    )
+    if ($null -eq $method) {
+        $operations += New-LegalOperation "method start" $true (
+            "research/proposal.json declaring the inquiry's method with " +
+            "lifecycle concept or development before its first training"
+        )
+        $operations += New-LegalOperation "inquiry close" $true $inquiryClose
+        $operations += New-LegalOperation "training" $false (
+            "training belongs to a declared active method"
+        )
+    }
+    elseif ($lifecycle -in @("promoted", "retained", "abandoned")) {
+        $operations += New-LegalOperation "inquiry close" $true $inquiryClose
+        $operations += New-LegalOperation "training" $false (
+            "method $($method.id) is $lifecycle; no further iteration belongs " +
+            "to this inquiry"
+        )
+    }
+    else {
+        if ($TrainingCapReached) {
+            $operations += New-LegalOperation "training" $false (
+                "the training allocation cap is reached; allocating another " +
+                "training experiment is the only operation this removes"
+            )
+        }
+        else {
+            $operations += New-LegalOperation "training" $true (
+                "research/proposal.json with kind training, continuation, or " +
+                "replication and method_id $($method.id)"
+            )
+        }
+        if ($lifecycle -eq "mature") {
+            $operations += New-LegalOperation "method_decision promote" $true (
+                "research/proposal.json without experiment; requires compatible, " +
+                "fingerprint-bound paired evidence of the current active_method " +
+                "lineage against working, normally from an inquiry measurement " +
+                "after maturity; working changes and best_known changes only " +
+                "when explicitly designated"
+            )
+        }
+        else {
+            $operations += New-LegalOperation "method_decision promote" $false (
+                "promotion requires a method already marked mature by a " +
+                "post-training method_decision"
+            )
+        }
+        if ($hasLineage) {
+            $operations += New-LegalOperation "method_decision retain" $true (
+                "research/proposal.json without experiment preserving the " +
+                "current method lineage under a unique retained_id"
+            )
+        }
+        else {
+            $operations += New-LegalOperation "method_decision retain" $false (
+                "retention requires a current method lineage"
+            )
+        }
+        $operations += New-LegalOperation "method_decision abandon" $true (
+            "research/proposal.json without experiment and with code revert or " +
+            "restore; it cannot restore active_method"
+        )
+        $operations += New-LegalOperation "method_decision continue/refine/mature" $false (
+            "these actions decide a training iteration and require pending " +
+            "post-training analysis"
+        )
+        $operations += New-LegalOperation "inquiry close" $false (
+            "the $lifecycle method must first be promoted, retained, or abandoned"
+        )
+    }
+    $operations += New-LegalOperation "campaign_conclusion" $false (
+        "the campaign may conclude only after the active inquiry is closed"
+    )
+    return $operations
+}
+
+function Get-AnalysisOperations {
+    param([Parameter(Mandatory)]$State)
+    $pending = $State.pending_analysis
+    $experiment = [int]$pending.experiment
+    $operations = @()
+    $operations += New-LegalOperation "evaluation_request" $true (
+        "research/evaluation_request.json with experiment $experiment for " +
+        "another measurement round of its candidates or saved lineages"
+    )
+    if ($pending.baseline) {
+        $operations += New-LegalOperation "baseline_decision" $true (
+            "research/proposal.json with experiment $experiment, a measured " +
+            "candidate, and a reason; the selection becomes both working and " +
+            "best_known"
+        )
+        $operations += New-LegalOperation "inquiry open" $false (
+            "an inquiry starts only after the selected baseline is designated " +
+            "as both working and best_known"
+        )
+        return $operations
+    }
+    $method = $State.active_method
+    $lifecycle = [string]$method.lifecycle
+    $hasLineage = $null -ne $method.current_lineage
+    $candidateRequirement = if ($hasLineage) {
+        "candidate may be omitted to keep the current active_method lineage"
+    }
+    else {
+        "candidate is required because the method has no current lineage"
+    }
+    $decision = (
+        "research/proposal.json with method_decision experiment $experiment, " +
+        "after the experiment postmortem; $candidateRequirement"
+    )
+    $operations += New-LegalOperation "method_decision continue" $true (
+        "$decision; the method stays in development with the selected candidate " +
+        "or available lineage"
+    )
+    $operations += New-LegalOperation "method_decision refine" $true (
+        "$decision; the method stays in development with the selected candidate " +
+        "or available lineage for a revised iteration"
+    )
+    $operations += New-LegalOperation "method_decision mature" $true (
+        "$decision; the method becomes mature with the selected lineage and the " +
+        "inquiry may then measure, promote, retain, or abandon it without training"
+    )
+    if ($lifecycle -eq "mature") {
+        $operations += New-LegalOperation "method_decision promote" $true (
+            "$decision; requires compatible, fingerprint-bound paired evidence " +
+            "of the current active_method lineage against working"
+        )
+    }
+    else {
+        $operations += New-LegalOperation "method_decision promote" $false (
+            "promotion requires a method already marked mature and paired " +
+            "evidence against working, normally from a later inquiry measurement"
+        )
+    }
+    if ($hasLineage) {
+        $operations += New-LegalOperation "method_decision retain" $true (
+            "$decision; preserves the method's current lineage under a unique " +
+            "retained_id"
+        )
+    }
+    else {
+        $operations += New-LegalOperation "method_decision retain" $false (
+            "retention preserves an existing current method lineage and this " +
+            "method has none yet"
+        )
+    }
+    $operations += New-LegalOperation "method_decision abandon" $true (
+        "$decision; requires code revert or restore and cannot restore active_method"
+    )
+    return $operations
+}
+
+function Format-OperationContract($Operations) {
+    $legal = @(
+        $Operations | Where-Object { $_.Legal } |
+            ForEach-Object { "$($_.Name): $($_.Detail)" }
+    )
+    $blocked = @(
+        $Operations | Where-Object { -not $_.Legal } |
+            ForEach-Object { "$($_.Name) ($($_.Detail))" }
+    )
+    $contract = "Legal operations from the current state: " + ($legal -join "; ") + "."
+    if ($blocked.Count -gt 0) {
+        $contract += " Not legal from the current state: " + ($blocked -join "; ") + "."
+    }
+    return $contract
+}
+
 try {
 if ($ResearcherBackend -eq "opencode") {
     $openCodeServer = Start-OpenCodeCampaignServer
@@ -781,19 +945,34 @@ if ($ResearcherBackend -eq "opencode") {
     }
 
     $terminalState = Get-Content "research\research_state.json" -Raw | ConvertFrom-Json
-    if ($terminalState.schema_version -eq 4 -and $null -ne $terminalState.pending_inquiry_operation) {
-        Write-Status "=== Resuming the pending inquiry closure ==="
+    if ($null -ne $terminalState.pending_inquiry_operation) {
+        Write-Status "=== Resuming the pending inquiry operation ==="
         $runnerExitCode = Invoke-Runner
         if (Test-StopAfterOperation $runnerExitCode "research runner") {
             break
         }
         if ($runnerExitCode -ne 0) {
-            throw "Inquiry closure publication failed. The pending outcome remains recoverable."
+            throw "Inquiry operation publication failed. The pending outcome remains recoverable."
         }
         Update-ResearchBrief
         continue
     }
-    if ($terminalState.schema_version -eq 4 -and $null -ne $terminalState.pending_campaign_conclusion) {
+    if (
+        $null -ne $terminalState.pending_baseline_decision -or
+        $null -ne $terminalState.pending_method_decision
+    ) {
+        Write-Status "=== Resuming the pending decision publication ==="
+        $runnerExitCode = Invoke-Runner
+        if (Test-StopAfterOperation $runnerExitCode "research runner") {
+            break
+        }
+        if ($runnerExitCode -ne 0) {
+            throw "Decision publication failed. The pending decision remains recoverable."
+        }
+        Update-ResearchBrief
+        continue
+    }
+    if ($null -ne $terminalState.pending_campaign_conclusion) {
         # Finish a conclusion before any terminal status is honored, so a
         # restart cannot exit on terminal state with the decision unpublished.
         Write-Status "=== Resuming the pending campaign conclusion ==="
@@ -866,8 +1045,28 @@ if ($ResearcherBackend -eq "opencode") {
         Write-Status "=== Restarted experiment complete ===" Green
         continue
     }
+    if ($null -ne $terminalState.pending_training_operation) {
+        if (-not (Test-Path "research\proposal.json")) {
+            throw "Accepted training operation has no proposal to resume."
+        }
+        Write-Status "=== Resuming the accepted training operation ==="
+        $runnerExitCode = Invoke-Runner
+        if (Test-StopAfterOperation $runnerExitCode "research runner") {
+            break
+        }
+        if ($runnerExitCode -ne 0) {
+            throw "Accepted training operation remains pending after recovery failed."
+        }
+        Update-ResearchBrief
+        continue
+    }
 
     $researchState = Get-Content "research\research_state.json" -Raw | ConvertFrom-Json
+    $allocatedExperiment = [Math]::Max(
+        [int]$researchState.last_allocated_experiment,
+        [int]$researchState.last_experiment
+    )
+    $budgetReached = $MaxExperiments -gt 0 -and $allocatedExperiment -ge $MaxExperiments
     if ($null -ne $researchState.pending_final_benchmark) {
         Write-Status "=== Evaluating the committed accepted lineage on the final benchmark ==="
         $runnerExitCode = Invoke-Runner -Arguments @("--evaluate-pending-final")
@@ -882,9 +1081,14 @@ if ($ResearcherBackend -eq "opencode") {
         continue
     }
 
-    if ($researchState.schema_version -eq 4 -and $null -ne $researchState.pending_analysis) {
+    if ($null -ne $researchState.pending_analysis) {
         Update-ResearchBrief
         $analysisExperiment = [int]$researchState.pending_analysis.experiment
+        $methodAnalysis = -not [bool]$researchState.pending_analysis.baseline
+        $analysisInquirySession = $researchState.inquiry_session
+        if ($methodAnalysis -and (-not $analysisInquirySession -or -not $analysisInquirySession.id)) {
+            throw "Method analysis has no persisted inquiry PI session."
+        }
         if ($null -ne $researchState.pending_analysis.evaluation_plan) {
             Write-Status "=== Resuming the researcher's accepted measurement plan ==="
             $runnerExitCode = Invoke-Runner -Arguments @("--evaluate-pending")
@@ -922,11 +1126,14 @@ if ($ResearcherBackend -eq "opencode") {
         else {
             "Current phase: initial post-training analysis for trained experiment $analysisExperiment."
         }
-        $resumeAnalysisSession = (
+        $resumeAnalysisSession = $methodAnalysis -or (
             $script:ResumeAnalysisSession -and
             $script:ResearcherSessionId -and
             $script:ResearcherSessionPhase -eq "post-training analysis" -and
             $script:ResearcherSessionExperiment -eq $analysisExperiment
+        )
+        $analysisContract = Format-OperationContract (
+            Get-AnalysisOperations -State $researchState
         )
         $analysisPrompt = @(
             $analysisPhasePrompt
@@ -935,7 +1142,7 @@ if ($ResearcherBackend -eq "opencode") {
             $scientificModelUseGuidance
             $researchFreedomGuidance
             $scientificMemoryGuidance
-            $developingMethodGuidance
+            $(if ($methodAnalysis) { $activeMethodGuidance })
             $laboratoryReuseGuidance
             $(if ($resumeAnalysisSession) {
                     "The measurement you requested is complete. Continue the same investigation from its results and your existing session context."
@@ -943,11 +1150,25 @@ if ($ResearcherBackend -eq "opencode") {
                 else {
                     "Assess the trained policies and evidence against the human objective and the campaign's active inquiry."
                 })
-            "Choose exactly one outcome: write research/evaluation_request.json for another measurement round, or append the experiment postmortem and write a closure-only research/proposal.json. At closure resolve the independent working and developing_method fields, code action, retention, optional best-known designation, and any final-assessment request."
-            "Further training is an ordinary next experiment after closure; do not prepare that proposal now."
+            $(if ($researchState.pending_analysis.baseline) {
+                    "Before the initial baseline is selected, the only legal operations are a baseline measurement round and baseline_decision. No inquiry, method, training, or campaign conclusion exists until the selected baseline is designated as both working and best_known."
+                }
+                else {
+                    "Choose exactly one outcome: another question-relative measurement round, or one method_decision for this experiment after appending its postmortem. Working comparison or promotion is never implicit."
+                })
+            $analysisContract
+            $(if ($methodAnalysis -and $budgetReached) {
+                    "The training allocation cap is reached. It removes only later training allocation; every method_decision above remains valid, and after the decision the inquiry can still measure, promote a mature method with evidence, retain, abandon, reframe, or close."
+                })
+            $(if ($methodAnalysis) {
+                    "Further training is a later inquiry operation; do not prepare that proposal during analysis."
+                })
             "Do not run training, measurements, Git mutations, final assessment, or research/run_experiment.py; the launcher validates and executes the accepted deliverable."
         ) -join " "
-        if ($resumeAnalysisSession) {
+        if ($methodAnalysis) {
+            Invoke-ResearcherSession -Prompt $analysisPrompt -Phase "principal investigator" -Experiment 0 -SessionId $analysisInquirySession.id -Continue
+        }
+        elseif ($resumeAnalysisSession) {
             Invoke-ResearcherSession -Prompt $analysisPrompt -Phase "post-training analysis" -Experiment $analysisExperiment -Continue
         }
         else {
@@ -964,12 +1185,18 @@ if ($ResearcherBackend -eq "opencode") {
             Write-Status "=== Analysis deliverable missing or invalid; retrying the same phase once ===" Yellow
             $analysisRetryPrompt = @(
                 "Current phase: post-training analysis for experiment $analysisExperiment. The previous deliverable failed validation: $analysisProblem."
-                "The same Researcher session context remains available. Correct only the invalid or missing deliverable: a valid research/evaluation_request.json for another measurement round, or the required postmortem plus a closure-only research/proposal.json."
-                $developingMethodGuidance
+                "The same Researcher session context remains available. Correct only the invalid or missing deliverable."
+                $analysisContract
+                $(if ($methodAnalysis) { $activeMethodGuidance })
                 "Reread relevant contract and state files as needed to resolve the validation error; reuse the existing context for everything else."
                 "Do not run training, measurements, Git mutations, final assessment, or research/run_experiment.py; the launcher validates and executes the accepted deliverable."
             ) -join " "
-            Invoke-ResearcherSession -Prompt $analysisRetryPrompt -Phase "post-training analysis" -Experiment $analysisExperiment -Continue
+            if ($methodAnalysis) {
+                Invoke-ResearcherSession -Prompt $analysisRetryPrompt -Phase "principal investigator" -Experiment 0 -SessionId $analysisInquirySession.id -Continue
+            }
+            else {
+                Invoke-ResearcherSession -Prompt $analysisRetryPrompt -Phase "post-training analysis" -Experiment $analysisExperiment -Continue
+            }
             if (Test-StopAfterOperation $script:ResearcherExitCode "researcher session") {
                 break CampaignLoop
             }
@@ -997,7 +1224,7 @@ if ($ResearcherBackend -eq "opencode") {
             throw "Runner execution of the accepted analysis deliverable failed. The researcher phase is not reopened."
         }
         Update-ResearchBrief
-        if ($analysisRequestedMeasurement) {
+        if ($analysisRequestedMeasurement -and -not $methodAnalysis) {
             $script:ResumeAnalysisSession = $true
         }
         Write-Status "=== Post-training analysis outcome recorded ===" Green
@@ -1006,78 +1233,17 @@ if ($ResearcherBackend -eq "opencode") {
 
     if ($null -ne $researchState.pending_evaluation_request) {
         Update-ResearchBrief
-        if ($researchState.schema_version -eq 4) {
-            # A version-4 preparation measurement returns to experiment
-            # preparation after execution; it never enters the legacy
-            # evaluation-design phase.
-            Write-Status "=== Resuming the researcher's preparation measurement ==="
-            $runnerExitCode = Invoke-PreparationMeasurement
-            if ($runnerExitCode -eq 130) {
-                Write-Status "=== Preparation measurement paused; completed measurements were saved ===" Yellow
-                break
-            }
-            if ($runnerExitCode -ne 0) {
-                throw "Runner execution of the accepted preparation measurement request failed. The researcher phase is not reopened."
-            }
-            Update-ResearchBrief
-            Write-Status "=== Preparation measurement complete; returning to preparation ===" Green
-            continue
-        }
-        $evaluationPlanExists = $null -ne $researchState.pending_evaluation_request.evaluation_plan
-        if (-not $evaluationPlanExists) {
-            Remove-Item "research\evaluation_request.json" -ErrorAction SilentlyContinue
-            Write-Status "=== Researcher designing evaluation for experiment $($researchState.pending_evaluation_request.experiment) ==="
-            $evaluationPrompt = @(
-                "Current phase: design the research evaluation for experiment $($researchState.pending_evaluation_request.experiment). Do not exit without the required deliverable."
-                "Read AGENTS.md, research/program.md, research/scenario.md, research/instruments.md, research/brief.md, and research/scientific_model.md."
-                $researcherPersonaGuidance
-                $scientificModelUseGuidance
-                $researchFreedomGuidance
-                "Expected deliverable: research/evaluation_request.json for the current experiment, using the contract in research/instruments.md."
-                "Do not start training or evaluation, resolve lineage, propose the next experiment, or invoke research/run_experiment.py; the launcher validates and executes the request."
-            ) -join " "
-            Invoke-ResearcherSession -Prompt $evaluationPrompt -Phase "evaluation design" -Experiment $researchState.pending_evaluation_request.experiment
-            if (Test-StopAfterOperation $script:ResearcherExitCode "researcher session") {
-                break
-            }
-            $evaluationStatus = Get-EvaluationSessionStatus 1
-            Write-ResearcherSessionStatus $evaluationStatus
-            if (-not $evaluationStatus.Complete) {
-                $evaluationProblem = $evaluationStatus.Reason
-                Write-Status "=== Evaluation request missing or invalid; retrying the same phase once ===" Yellow
-                $evaluationRetryPrompt = @(
-                    "Current phase: evaluation design for experiment $($researchState.pending_evaluation_request.experiment). The previous deliverable failed validation: $evaluationProblem. Do not exit without a corrected deliverable."
-                    "The same Researcher session context remains available. Correct only the invalid or missing research/evaluation_request.json."
-                    "Reread relevant contract and state files as needed to resolve the validation error; reuse the existing context for everything else."
-                    "Do not change phase, start training or evaluation, resolve lineage, propose the next experiment, or invoke research/run_experiment.py."
-                ) -join " "
-                Invoke-ResearcherSession -Prompt $evaluationRetryPrompt -Phase "evaluation design" -Experiment $researchState.pending_evaluation_request.experiment -Continue
-                if (Test-StopAfterOperation $script:ResearcherExitCode "researcher session") {
-                    break CampaignLoop
-                }
-                $evaluationStatus = Get-EvaluationSessionStatus 2
-                Write-ResearcherSessionStatus $evaluationStatus
-                if (-not $evaluationStatus.Complete) {
-                    throw "Researcher ended twice without a valid research/evaluation_request.json. Last validation error: $($evaluationStatus.Reason)"
-                }
-            }
-        }
-        else {
-            Write-Status "=== Resuming the researcher's evaluation plan ==="
-        }
-        $runnerExitCode = Invoke-Runner -Arguments @("--evaluate-pending")
-        if (Test-StopAfterOperation $runnerExitCode "research runner") {
-            break
-        }
+        Write-Status "=== Resuming the researcher's inquiry measurement ==="
+        $runnerExitCode = Invoke-PreparationMeasurement
         if ($runnerExitCode -eq 130) {
-            Write-Status "=== Requested evaluation paused; completed measurements were saved ===" Yellow
+            Write-Status "=== Inquiry measurement paused; completed measurements were saved ===" Yellow
             break
         }
         if ($runnerExitCode -ne 0) {
-            throw "Runner execution of the validated evaluation request failed. The researcher deliverable was already accepted, so the researcher phase is not reopened."
+            throw "Runner execution of the accepted inquiry measurement failed. The researcher phase is not reopened."
         }
         Update-ResearchBrief
-        Write-Status "=== Requested evaluations complete ===" Green
+        Write-Status "=== Inquiry measurement complete; returning to the inquiry ===" Green
         continue
     }
 
@@ -1209,88 +1375,22 @@ The final output should be a compact but substantive **Scientific model of the r
         continue
     }
 
-    if ($null -ne $researchState.pending_researcher_decision) {
-        Update-ResearchBrief
-        $closingExperiment = [int]$researchState.pending_researcher_decision.experiment
-        Write-Status "=== Researcher resolving lineage and scientific recipe for experiment $closingExperiment ==="
-        $decisionPrompt = @(
-            "Current phase: close experiment $closingExperiment and resolve its lineage and scientific recipe. Do not exit without the required deliverables."
-            "Read AGENTS.md, research/program.md, research/scenario.md, research/instruments.md, research/brief.md, and research/scientific_model.md."
-            $researcherPersonaGuidance
-            $scientificModelUseGuidance
-            $scientificMemoryGuidance
-            $developingMethodGuidance
-            $laboratoryReuseGuidance
-            "Use campaign artifacts for scientific evidence; inspect read-only Git only if the current experiment's scientific recipe delta is needed to justify keep or revert."
-            "Close the experiment from the available evidence. Resolve independently: working, developing_method, the recipe remaining in the worktree, retained alternatives, optional best-known designation, and any official-benchmark request. The availability of each choice does not imply that it should change."
-            "Request the official benchmark only if you expect it to return goal_reached; it is a verdict you claim, not an instrument for resolving development uncertainty."
-            "Expected deliverables: the required experiment entry in research/postmortems.md and the lineage-only research/proposal.json, using the contracts in research/instruments.md."
-            "Do not design another evaluation, modify the next learning method, propose the next experiment, or invoke research/run_experiment.py; the launcher validates and executes the decision."
-        ) -join " "
-        Invoke-ResearcherSession -Prompt $decisionPrompt -Phase "lineage decision" -Experiment $closingExperiment
-        if (Test-StopAfterOperation $script:ResearcherExitCode "researcher session") {
-            break
-        }
-        $pendingExperiment = [int]$researchState.pending_researcher_decision.experiment
-        $lineageStatus = Get-LineageSessionStatus $pendingExperiment 1
-        Write-ResearcherSessionStatus $lineageStatus
-        if (-not $lineageStatus.Complete) {
-            $lineageProblem = $lineageStatus.Reason
-            Write-Status "=== Lineage deliverable invalid; retrying the same phase once ===" Yellow
-            $decisionRetryPrompt = @(
-                "Current phase: close experiment $pendingExperiment and resolve its lineage and scientific recipe. The previous deliverable failed validation: $lineageProblem. Do not exit without corrected deliverables."
-                "The same Researcher session context remains available. Correct only the invalid or missing experiment entry in research/postmortems.md and lineage-only research/proposal.json."
-                $developingMethodGuidance
-                "Reread relevant contract and state files as needed to resolve the validation error; reuse the existing context for everything else."
-                "Do not design another evaluation, modify the next learning method, propose the next experiment, or invoke research/run_experiment.py."
-            ) -join " "
-            Invoke-ResearcherSession -Prompt $decisionRetryPrompt -Phase "lineage decision" -Experiment $researchState.pending_researcher_decision.experiment -Continue
-            if (Test-StopAfterOperation $script:ResearcherExitCode "researcher session") {
-                break CampaignLoop
-            }
-            $lineageStatus = Get-LineageSessionStatus $pendingExperiment 2
-            Write-ResearcherSessionStatus $lineageStatus
-            if (-not $lineageStatus.Complete) {
-                throw "Researcher ended twice without valid lineage deliverables for experiment $pendingExperiment. Last validation error: $($lineageStatus.Reason)"
-            }
-        }
-        $runnerExitCode = Invoke-Runner
-        if (Test-StopAfterOperation $runnerExitCode "research runner") {
-            break
-        }
-        if ($runnerExitCode -ne 0) {
-            throw "Runner application of the validated lineage decision failed. The researcher deliverables were already accepted, so the researcher phase is not reopened."
-        }
-        Update-ResearchBrief
-        Write-Status "=== Lineage decision finalized; requesting next hypothesis ===" Green
-        continue
-    }
-
-    $allocatedExperiment = [Math]::Max(
-        [int]$researchState.last_allocated_experiment,
-        [int]$researchState.last_experiment
-    )
-    $budgetReached = $MaxExperiments -gt 0 -and $allocatedExperiment -ge $MaxExperiments
     if ($budgetReached) {
-        # The budget forbids allocating another training experiment, but the
-        # campaign can still be concluded without one.
-        Write-Status "Experiment budget reached: $allocatedExperiment of $MaxExperiments. Only a campaign conclusion may be prepared." Yellow
+        Write-Status "Training allocation cap reached: $allocatedExperiment of $MaxExperiments. Non-training inquiry operations remain available." Yellow
     }
 
     # Anchor the rollback baseline before the researcher can change or commit
     # science. An unfinished experiment keeps the anchor it already established.
-    $runnerExitCode = Invoke-HypothesisAnchor -ConclusionOnly:$budgetReached
+    $runnerExitCode = Invoke-InquiryAnchor
     if ($runnerExitCode -eq 130) {
         break
     }
     $researchState = Get-Content "research\research_state.json" -Raw | ConvertFrom-Json
 
-    # Refreshed after the anchor so a budget-exhausted phase brief reflects the
-    # conclusion-only state it is actually in.
     Update-ResearchBrief
 
     if (Test-Path "research\evaluation_request.json" -PathType Leaf) {
-        if (Test-PreparationDeliverable) {
+        if (Test-PreparationDeliverable -TrainingCapReached:$budgetReached) {
             Write-Status "=== Resuming the researcher's saved-lineage measurement request ==="
             $runnerExitCode = Invoke-PreparationMeasurement
             if ($runnerExitCode -eq 130) {
@@ -1301,93 +1401,86 @@ The final output should be a compact but substantive **Scientific model of the r
                 throw "Runner execution of the accepted preparation measurement request failed. The researcher phase is not reopened."
             }
             Update-ResearchBrief
-            Write-Status "=== Preparation measurement complete; the next hypothesis returns with new evidence ===" Green
+            Write-Status "=== Preparation measurement complete; the inquiry resumes with new evidence ===" Green
             continue
         }
         Write-Status "=== Existing preparation deliverable is invalid; returning it to the principal investigator ===" Yellow
     }
 
-    Write-Status "=== Principal investigator advancing the active inquiry ==="
+    Write-Status "=== Principal investigator advancing the inquiry ==="
     $resultCountBefore = @(Get-Content "research\results.jsonl" -ErrorAction SilentlyContinue).Count
     $nextExperiment = $allocatedExperiment + 1
-    $piSession = $researchState.principal_investigator_session
+    $piSession = $researchState.inquiry_session
     if (-not $piSession -or -not $piSession.id) {
-        throw "The campaign has no persisted principal-investigator session identity."
+        throw "The inquiry has no persisted principal-investigator session identity."
     }
-    $resumePreparationSession = $piSession.status -eq "started"
+    $resumePreparationSession = $piSession.status -in @("starting", "started")
     $hasPreparationEvidence = $null -ne $researchState.preparation_measurement
+    $inquiryOperations = Get-InquiryOperations -State $researchState `
+        -TrainingCapReached:$budgetReached
+    $inquiryContract = Format-OperationContract $inquiryOperations
+    $trainingLegal = @(
+        $inquiryOperations | Where-Object { $_.Name -eq "training" -and $_.Legal }
+    ).Count -gt 0
     $researchPrompt = @(
-        $(if ($budgetReached) {
-                "Current phase: conclude the campaign. The experiment budget is exhausted; no further experiment may be prepared."
-            }
-            elseif ($resumePreparationSession -and $hasPreparationEvidence) {
+        $(if ($resumePreparationSession -and $hasPreparationEvidence) {
                 "Current phase: continue the campaign's active inquiry. The measurement you requested is complete; continue from its results and your existing session context."
             }
             elseif ($resumePreparationSession) {
-                "Current phase: continue as the campaign's principal investigator at an inquiry boundary. Reconsider the accumulated evidence before choosing the next operation."
+                "Current phase: continue as principal investigator for this inquiry identity. Reconsider the accumulated evidence before choosing the next operation."
             }
             else {
-                "Current phase: conduct the campaign's active inquiry. No evaluation, training analysis, or lineage decision is pending."
+                "Current phase: define or conduct one bounded inquiry. No training analysis or measurement is pending."
             })
         "Read AGENTS.md, research/program.md, research/scenario.md, research/instruments.md, research/brief.md, and research/scientific_model.md."
         $researcherPersonaGuidance
         $scientificModelUseGuidance
         $scientificMemoryGuidance
-        $(if ($budgetReached) { "" } else { $researchFreedomGuidance })
-        $(if ($budgetReached) { "" } else { $developingMethodGuidance })
-        $(if ($budgetReached) { "" } else { $openBehaviorQuestionGuidance })
-        $(if ($budgetReached) { "" } else { $laboratoryReuseGuidance })
+        $researchFreedomGuidance
+        $activeMethodGuidance
+        $(if ($trainingLegal) { $investigationDesignGuidance })
+        $laboratoryReuseGuidance
+        "Choose one scientifically justified operation; no operation is the default."
+        $inquiryContract
         $(if ($budgetReached) {
-                "Only two outcomes are legal in this phase: request the official final assessment of the standing best-known model, or conclude that no further experiment is warranted. Each is written as a campaign_conclusion in research/proposal.json."
-            }
-            else {
-                "Choose the scientifically justified inquiry outcome: measure saved lineages, close the inquiry and continue the campaign, prepare training or replication, request the official assessment, or conclude that no further work is warranted. No outcome is the default."
+                "The training allocation cap is reached. It removes only the allocation of another training experiment; every other operation listed as legal remains a valid scientific choice."
             })
-        $(if ($budgetReached) {
-                ""
-            }
-            else {
-                "Request the official final assessment only if you expect it to return goal_reached; it is a terminal verdict, not an instrument for resolving development uncertainty."
-            })
+        "Request the official final assessment only if you expect it to return goal_reached; it is a terminal verdict, not an instrument for resolving development uncertainty."
         "Use the brief and campaign artifacts for scientific evidence; inspect read-only Git only if the selected operation requires understanding the current code state or delta."
-        $(if ($budgetReached) {
-                "Expected deliverable: research/proposal.json containing only a campaign_conclusion, using the contract in research/instruments.md."
-            }
-            else {
-                "Expected deliverable: either research/evaluation_request.json to measure saved lineages, or research/proposal.json containing an inquiry closure, a training or replication proposal, or a campaign conclusion, using the contracts in research/instruments.md. Include only edits called for by the selected operation. A completed measurement round returns to this same inquiry. A preparation request may name only saved lineages (working, best_known, developing_method, or a retained ID); candidates of a not-yet-run experiment are not available."
-            })
-        $(if ($budgetReached) {
-                "The phase is incomplete until the campaign conclusion has been written. A campaign conclusion is recorded as a decision, never as an experiment."
-            }
-            else {
-                "The phase is complete when one legal inquiry deliverable has been written. Closing an inquiry records a durable scientific outcome and starts no experiment; it does not end the campaign. If the brief shows a developing_method, the closure must explicitly promote it to working, retain it under an ID, or abandon it."
-            })
-        $(if ($budgetReached) {
-                "Do not start training or evaluation, or write a lineage decision; the launcher validates and executes the proposal."
-            }
-            else {
-                "Do not start training, execute measurements, write a lineage decision, or invoke research/run_experiment.py; the launcher validates and executes the proposal or accepted measurement request."
-            })
+        "Expected deliverable: exactly one legal operation above, written as research/evaluation_request.json or research/proposal.json according to research/instruments.md."
+        "The phase is complete when that deliverable has been written. Closing an inquiry records its durable outcome, clears its PI session, starts no experiment, and does not end the campaign."
+        "Do not start training, execute measurements, or invoke research/run_experiment.py; the launcher validates and executes the proposal or accepted measurement request."
     ) -join " "
-    if ($resumePreparationSession) {
+    if ($piSession.status -eq "allocated") {
+        $runnerExitCode = Invoke-Runner -Arguments @("--mark-inquiry-session-starting")
+        if ($runnerExitCode -ne 0) {
+            throw "Could not mark the inquiry session as starting."
+        }
+        $researchState = Get-Content "research\research_state.json" -Raw | ConvertFrom-Json
+        $piSession = $researchState.inquiry_session
+    }
+    if ($piSession.status -eq "started") {
         Invoke-ResearcherSession -Prompt $researchPrompt -Phase "principal investigator" -Experiment 0 -SessionId $piSession.id -Continue
     }
+    elseif ($piSession.status -eq "starting") {
+        Invoke-ResearcherSession -Prompt $researchPrompt -Phase "principal investigator" -Experiment 0 -SessionId $piSession.id -ResumeOrCreate
+    }
     else {
-        Invoke-ResearcherSession -Prompt $researchPrompt -Phase "principal investigator" -Experiment 0 -SessionId $piSession.id
+        throw "The inquiry PI session has an invalid persisted status."
     }
     if (
-        -not $resumePreparationSession -and
+        $piSession.status -eq "starting" -and
         $script:ResearcherExitCode -in @(0, 5, 130)
     ) {
-        $runnerExitCode = Invoke-Runner -Arguments @("--mark-principal-investigator-session-started")
+        $runnerExitCode = Invoke-Runner -Arguments @("--mark-inquiry-session-started")
         if ($runnerExitCode -ne 0) {
-            throw "Could not mark the principal-investigator session as started."
+            throw "Could not mark the inquiry session as started."
         }
     }
     if (Test-StopAfterOperation $script:ResearcherExitCode "researcher session") {
         break
     }
-    $runnerExitCode = Invoke-HypothesisAnchor -ConclusionOnly:$budgetReached
+    $runnerExitCode = Invoke-InquiryAnchor
     if ($runnerExitCode -eq 130) {
         break
     }
@@ -1399,7 +1492,8 @@ The final output should be a compact but substantive **Scientific model of the r
 
     # Observed before the runner's own bookkeeping, so a brief or commit failure
     # cannot swallow what the session did.
-    $proposalStatus = Get-ProposalSessionStatus "principal investigator" 1
+    $proposalStatus = Get-ProposalSessionStatus "principal investigator" 1 `
+        -TrainingCapReached:$budgetReached
     Write-ResearcherSessionStatus $proposalStatus
     Update-ResearchBrief
     Save-ResearchMemory
@@ -1407,30 +1501,21 @@ The final output should be a compact but substantive **Scientific model of the r
         $proposalProblem = $proposalStatus.Reason
         Write-Status "=== Research proposal missing or invalid; retrying the same phase once ===" Yellow
         $retryPrompt = @(
-            $(if ($budgetReached) {
-                    "Current phase: conclude the campaign. The experiment budget is exhausted; no further experiment may be prepared. The previous deliverable failed validation: $proposalProblem. Do not exit without a corrected deliverable."
-                    "The same Researcher session context remains available. Correct only the invalid or missing research/proposal.json, which must contain a campaign_conclusion, preserving valid researcher-owned edits that belong to this unfinished experiment."
-                    "Only two outcomes are legal: request the official final assessment of the standing best-known model, or conclude that no further experiment is warranted. Each is written as a campaign_conclusion in research/proposal.json."
-                    "Reread relevant contract and state files as needed to resolve the validation error; reuse the existing context for everything else."
-                    "Expected deliverable: a corrected research/proposal.json containing only a campaign_conclusion."
-                    "Do not start training, execute measurements, write a lineage decision, or invoke research/run_experiment.py."
-                }
-                else {
-                    "Current phase: conduct the active inquiry. The previous deliverable failed validation: $proposalProblem. Do not exit without a corrected deliverable."
-                    "The same principal-investigator session remains available. Correct only the invalid or missing research/proposal.json or research/evaluation_request.json, preserving valid researcher-owned edits."
-                    $developingMethodGuidance
-                    $openBehaviorQuestionGuidance
-                    $laboratoryReuseGuidance
-                    "Reread relevant contract and state files as needed to resolve the validation error; reuse the existing context for everything else."
-                    "Expected deliverable: a corrected inquiry closure, training/replication proposal, campaign conclusion, or saved-lineage research/evaluation_request.json."
-                    "Do not start training, execute measurements, write a lineage decision, or invoke research/run_experiment.py."
-                })
+            "Current phase: continue the inquiry. The previous deliverable failed validation: $proposalProblem. Do not exit without a corrected deliverable."
+            "The same principal-investigator session remains available. Correct only the invalid or missing research/proposal.json or research/evaluation_request.json, preserving valid researcher-owned edits."
+            $activeMethodGuidance
+            $(if ($trainingLegal) { $investigationDesignGuidance })
+            $laboratoryReuseGuidance
+            $inquiryContract
+            "Reread relevant contract and state files as needed to resolve the validation error; reuse the existing context for everything else."
+            "Expected deliverable: exactly one corrected legal operation above."
+            "Do not start training, execute measurements, or invoke research/run_experiment.py."
         ) -join " "
         Invoke-ResearcherSession -Prompt $retryPrompt -Phase "principal investigator" -Experiment 0 -SessionId $piSession.id -Continue
         if (Test-StopAfterOperation $script:ResearcherExitCode "researcher session") {
             break CampaignLoop
         }
-        $runnerExitCode = Invoke-HypothesisAnchor -ConclusionOnly:$budgetReached
+        $runnerExitCode = Invoke-InquiryAnchor
         if ($runnerExitCode -eq 130) {
             break CampaignLoop
         }
@@ -1440,7 +1525,8 @@ The final output should be a compact but substantive **Scientific model of the r
             throw "The researcher executed an experiment during the inquiry retry. The loop stopped without attempting another execution; restart it to continue from the persisted state."
         }
 
-        $proposalStatus = Get-ProposalSessionStatus "principal investigator" 2
+        $proposalStatus = Get-ProposalSessionStatus "principal investigator" 2 `
+            -TrainingCapReached:$budgetReached
         Write-ResearcherSessionStatus $proposalStatus
         Update-ResearchBrief
         Save-ResearchMemory
@@ -1462,10 +1548,14 @@ The final output should be a compact but substantive **Scientific model of the r
             throw "Runner execution of the accepted preparation measurement request failed. The researcher phase is not reopened."
         }
         Update-ResearchBrief
-        Write-Status "=== Preparation measurement complete; the next hypothesis returns with new evidence ===" Green
+        Write-Status "=== Preparation measurement complete; the inquiry resumes with new evidence ===" Green
         continue
     }
-    $runnerExitCode = Invoke-Runner
+    $runnerArguments = @()
+    if ($budgetReached) {
+        $runnerArguments += "--training-cap-reached"
+    }
+    $runnerExitCode = Invoke-Runner -Arguments $runnerArguments
     if (Test-StopAfterOperation $runnerExitCode "research runner") {
         break
     }
@@ -1477,7 +1567,13 @@ The final output should be a compact but substantive **Scientific model of the r
         throw "Experiment runner failed. The loop stopped safely."
     }
     Update-ResearchBrief
-    Write-Status "=== Experiment $nextExperiment session closed ===" Green
+    $completedState = Get-Content "research\research_state.json" -Raw | ConvertFrom-Json
+    if ([int]$completedState.last_experiment -gt $allocatedExperiment) {
+        Write-Status "=== Experiment $nextExperiment training complete ===" Green
+    }
+    else {
+        Write-Status "=== Inquiry operation recorded ===" Green
+    }
     for ($delay = 0; $delay -lt 50; $delay++) {
         if (Test-CampaignStopRequested) {
             $script:CampaignExitCode = 130
