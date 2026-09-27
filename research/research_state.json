@@ -1,14 +1,14 @@
 {
   "best_known_lineage": null,
   "campaign": {
-    "base_commit": "ade9e12bc3a1615d8346ce76a635b859cacd46c7",
-    "id": "cb59cc58-de8f-4128-b137-0abb050c5f0d",
+    "base_commit": "b27ff04e90ae508d15c817fd15f9dbea5b55d3cb",
+    "id": "f7e0bace-c0b5-4892-95a4-a1440c71de04",
     "recipe_source_commit": "9fbe544002f73f9b50ded6986a6a6b6db90fea40",
-    "started_at": "2026-09-27T17:08:02.130156+00:00"
+    "started_at": "2026-09-27T19:51:50.669333+00:00"
   },
   "campaign_conclusion": null,
   "campaign_experiment_counters": {
-    "cb59cc58-de8f-4128-b137-0abb050c5f0d": 0
+    "f7e0bace-c0b5-4892-95a4-a1440c71de04": 0
   },
   "first_terminal_proposal": null,
   "last_allocated_experiment": 0,
