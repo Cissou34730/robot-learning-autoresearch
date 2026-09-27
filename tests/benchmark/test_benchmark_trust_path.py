@@ -142,30 +142,53 @@ def test_researcher_cannot_change_the_enforcement_mechanism():
 
 
 def _pending_final_benchmark_state(monkeypatch, tmp_path):
-    from research.runner_repository import artifact_fingerprint
-
-    accepted = tmp_path / "accepted"
-    accepted.mkdir()
-    for filename in ("model.zip", "vecnormalize.pkl", "artifact.json"):
-        (accepted / filename).write_bytes(b"artifact")
-    state_path = tmp_path / "state.json"
-    state_path.write_text(
-        json.dumps(
-            {
-                "schema_version": 2,
-                "accepted_artifact": "accepted",
-                "accepted_metrics": None,
-                "official_metrics": None,
-                "pending_final_benchmark": {
-                    "experiment": 9,
-                    "selected": "candidate",
-                    "artifact": "accepted",
-                    "fingerprint": artifact_fingerprint(accepted),
-                },
-            }
-        ),
-        encoding="utf-8",
+    from research.runner_repository import (
+        artifact_fingerprint,
+        empty_campaign_state,
     )
+
+    best_known_artifact = tmp_path / "best-known"
+    best_known_artifact.mkdir()
+    for filename in ("model.zip", "vecnormalize.pkl", "artifact.json"):
+        (best_known_artifact / filename).write_bytes(b"artifact")
+    fingerprint = artifact_fingerprint(best_known_artifact)
+    best_known = {
+        "candidate": "checkpoint-1",
+        "artifact": "best-known",
+        "fingerprint": fingerprint,
+        "origin_experiment": 9,
+        "parameters": {},
+        "scientific_commit": None,
+        "training_steps": 1,
+        "evaluation_artifacts": [],
+        "reason": "Selected for the official benchmark.",
+        "designation_ordinal": 1,
+    }
+    campaign_id = "550e8400-e29b-41d4-a716-446655440000"
+    state = empty_campaign_state(
+        campaign={"id": campaign_id, "started_at": "now", "base_commit": "base"},
+        last_verdict="Official benchmark pending.",
+    )
+    state["campaign_experiment_counters"][campaign_id] = 9
+    state["last_allocated_experiment"] = 9
+    state["last_experiment"] = 9
+    state["working_lineage"] = dict(best_known)
+    state["best_known_lineage"] = best_known
+    state["best_known_designation_counter"] = 1
+    state["campaign_conclusion"] = {
+        "action": "request_final_benchmark",
+        "reason": "The best-known lineage is ready.",
+    }
+    state["pending_final_benchmark"] = {
+        "experiment": 9,
+        "selected": "best_known",
+        "artifact": "best-known",
+        "fingerprint": fingerprint,
+        "best_known": best_known,
+        "terminal_reason": "The best-known lineage is ready.",
+    }
+    state_path = tmp_path / "state.json"
+    state_path.write_text(json.dumps(state), encoding="utf-8")
     monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
     monkeypatch.setattr("research.runner_paths.STATE_PATH", state_path)
     monkeypatch.setattr("research.runner_paths.GOAL_PATH", tmp_path / "GOAL_REACHED")
