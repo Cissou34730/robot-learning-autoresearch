@@ -17,8 +17,8 @@ import pytest
 from research.runner_protocol import (
     TASK_REFERENCE_ENTRY_FIELDS,
     task_reference_artifact_name,
-    validate_evaluation_request,
-    validate_experiment_semantics,
+    validate_measurement_request,
+    validate_research_delta_ownership,
 )
 from robot_learning.benchmark import final_contract, reference_contract
 from robot_learning.benchmark.reference_evaluation import (
@@ -264,18 +264,15 @@ def test_final_benchmark_does_not_depend_on_the_task_reference():
 
 
 @pytest.mark.parametrize("protected_path", PROTECTED_REFERENCE_PATHS)
-def test_research_proposal_cannot_change_the_task_reference(protected_path):
-    with pytest.raises(ValueError, match="human-owned task, context"):
-        validate_experiment_semantics(
-            {}, "training", "transfer", None, [protected_path], False
-        )
+def test_pi_delta_cannot_change_the_task_reference(protected_path):
+    with pytest.raises(ValueError, match="human-owned"):
+        validate_research_delta_ownership([protected_path])
 
 
 def _request(**overrides) -> dict:
     request = {
-        "experiment": 3,
-        "question": "Does the candidate hold as well as the champion?",
-        "reason": "A stable comparison decides the lineage question.",
+        "description": "Compare a candidate on a protected task-reference panel.",
+        "rationale": "A stable factual comparison informs the next decision.",
     }
     request.update(overrides)
     return request
@@ -288,27 +285,23 @@ def test_request_accepts_research_only_reference_only_and_both():
             "candidate": "checkpoint-1",
             "episodes": 10,
             "seed": 5,
-            "selection": "the candidate under test",
-            "omitted_alternative": None,
         }
     ]
     reference = [
         {
             "instrument": "task_reference",
             "candidate": "champion",
-            "selection": "the incumbent to compare against",
-            "omitted_alternative": None,
         }
     ]
 
-    validate_evaluation_request(_request(measurements=research))
-    validate_evaluation_request(_request(measurements=reference))
-    validate_evaluation_request(_request(measurements=research + reference))
+    validate_measurement_request(_request(measurements=research))
+    validate_measurement_request(_request(measurements=reference))
+    validate_measurement_request(_request(measurements=research + reference))
 
 
 def test_request_must_ask_for_at_least_one_measurement():
     with pytest.raises(ValueError, match="at least one measurement"):
-        validate_evaluation_request(_request(measurements=[]))
+        validate_measurement_request(_request(measurements=[]))
 
 
 @pytest.mark.parametrize(
@@ -325,8 +318,8 @@ def test_request_must_ask_for_at_least_one_measurement():
     ],
 )
 def test_request_rejects_researcher_owned_reference_panel_parameters(entry):
-    with pytest.raises(ValueError, match="cannot set unsupported fields"):
-        validate_evaluation_request(_request(measurements=[entry]))
+    with pytest.raises(ValueError, match="has unsupported fields"):
+        validate_measurement_request(_request(measurements=[entry]))
 
 
 @pytest.mark.parametrize(
@@ -337,15 +330,15 @@ def test_request_rejects_researcher_owned_reference_panel_parameters(entry):
     ],
 )
 def test_request_rejects_a_reference_evaluation_without_a_model(entry):
-    with pytest.raises(ValueError, match="requires a non-empty candidate"):
-        validate_evaluation_request(_request(measurements=[entry]))
+    with pytest.raises(ValueError, match="candidate must be a non-empty string"):
+        validate_measurement_request(_request(measurements=[entry]))
 
 
 def test_request_rejects_a_malformed_reference_list():
     with pytest.raises(TypeError, match="must be a list"):
-        validate_evaluation_request(_request(measurements={}))
+        validate_measurement_request(_request(measurements={}))
     with pytest.raises(TypeError, match="must be an object"):
-        validate_evaluation_request(_request(measurements=["champion"]))
+        validate_measurement_request(_request(measurements=["champion"]))
 
 
 def test_reference_entry_fields_stay_minimal():
@@ -353,13 +346,13 @@ def test_reference_entry_fields_stay_minimal():
         "instrument",
         "candidate",
         "label",
-        "selection",
-        "omitted_alternative",
     }
 
 
-def test_reference_artifacts_cannot_collide_with_research_artifacts():
-    name = task_reference_artifact_name(3, "champion", "task-reference-v1")
+def test_reference_artifacts_use_campaign_and_operation_identity():
+    name = task_reference_artifact_name(
+        "M3", "champion", "task-reference-v1", campaign_id="campaign"
+    )
 
-    assert name.startswith("task-reference-experiment-3-champion-")
+    assert name.startswith("task-reference-campaign-m3-champion-")
     assert not name.startswith("evaluation-experiment-")

@@ -1,42 +1,19 @@
+"""Schema-6 lifecycle persistence through a clean clone."""
+
+from __future__ import annotations
+
 import json
 import subprocess
-from argparse import Namespace
+import sys
 from pathlib import Path
 
-import numpy as np
-from gymnasium.spaces import Box
-
-from research import reset_campaign, run_experiment, runner_paths
+from research import run_experiment
 from research import runner_execution as execution
-from research import runner_protocol as protocol
+from research import runner_paths as paths
 from research import runner_repository as repository
-from robot_learning.policy_runtime import PolicyIO, load_runtime, save_runtime
-from robot_learning.training import research_config
 
 
-class DeterministicFixturePolicy:
-    def __init__(self):
-        self.observation_space = Box(-np.inf, np.inf, (1,), dtype=np.float32)
-        self.action_space = Box(-1, 1, (2,), dtype=np.float32)
-
-    def predict(self, observation, **_kwargs):
-        value = float(np.asarray(observation)[0])
-        return np.array([value, -value], dtype=np.float32), None
-
-
-def load_fixture_policy(_model_path, _algorithm=None):
-    return DeterministicFixturePolicy()
-
-
-def fixture_observation(_data):
-    return np.array([0.25], dtype=np.float32)
-
-
-def fixture_action(action):
-    return np.asarray(action, dtype=np.float32) * 0.5
-
-
-def git(root: Path, *arguments: str) -> str:
+def _git(root: Path, *arguments: str) -> str:
     return subprocess.run(
         ["git", "-C", str(root), *arguments],
         check=True,
@@ -45,429 +22,221 @@ def git(root: Path, *arguments: str) -> str:
     ).stdout.strip()
 
 
-def write(root: Path, relative: str, content: str) -> Path:
-    destination = root / relative
-    destination.parent.mkdir(parents=True, exist_ok=True)
-    destination.write_text(content, encoding="utf-8", newline="\n")
-    return destination
+def _start(monkeypatch, kind: str, objective: str, backend_id: str) -> None:
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        [
+            "run_experiment.py",
+            "--start-session",
+            kind,
+            "--session-objective",
+            objective,
+            "--backend-session-id",
+            backend_id,
+            "--backend-adapter",
+            "copilot",
+            "--backend-model",
+            "gpt-5.6-luna",
+            "--backend-reasoning",
+            "high",
+        ],
+    )
+    assert run_experiment.main() == 0
 
 
-def redirect_paths(monkeypatch, root: Path) -> None:
+def _submit(monkeypatch, request: dict) -> dict:
+    paths.OPERATION_REQUEST_PATH.write_text(json.dumps(request), encoding="utf-8")
+    monkeypatch.setattr(sys, "argv", ["run_experiment.py"])
+    assert run_experiment.main() == 0
+    return repository.read_state()
+
+
+def _checkpoint(state: dict, next_step: str) -> dict:
+    completed = list(state["scientific_session"]["operation_ids"])
+    return {
+        "checkpoint": {
+            "human_goal_connection": "The session advances the protected objective.",
+            "current_goal_gap": "The objective is not yet established.",
+            "current_synthesis": "The operation history contains the current facts.",
+            "evidence_references": completed,
+            "decision_frontier": "Choose the next goal-directed transition.",
+            "completed_operations": completed,
+            "candidates_and_roles": "Candidate identities and roles remain explicit.",
+            "next_direction_or_closure": next_step,
+            "cumulative_resource_use": "One bounded mocked session.",
+        }
+    }
+
+
+def test_schema6_goal_flow_survives_clean_clone(monkeypatch, tmp_path):
+    root = tmp_path / "repository"
+    remote = tmp_path / "remote.git"
     research = root / "research"
-    replacements = {
+    research.mkdir(parents=True)
+    root.joinpath("README.md").write_text("fixture\n", encoding="utf-8")
+    _git(root, "init", "-b", "main")
+    _git(root, "config", "user.name", "Test Runner")
+    _git(root, "config", "user.email", "test@example.invalid")
+    _git(root, "add", ".")
+    _git(root, "commit", "-m", "fixture")
+    base = _git(root, "rev-parse", "HEAD")
+    _git(tmp_path, "init", "--bare", str(remote))
+    _git(root, "remote", "add", "origin", str(remote))
+
+    for name, value in {
         "ROOT": root,
         "RESEARCH_DIR": research,
-        "LOG_PATH": research / "EXPERIMENTS.md",
-        "RESULTS_PATH": research / "results.jsonl",
-        "PROPOSAL_PATH": research / "proposal.json",
-        "POSTMORTEM_PATH": research / "postmortems.md",
-        "EVALUATION_REQUEST_PATH": research / "evaluation_request.json",
         "STATE_PATH": research / "research_state.json",
-        "TRAINING_LOG_DIR": research / "training_logs",
-        "BASELINE_PENDING_PATH": research / "BASELINE_PENDING",
-        "RECOVERY_PENDING_PATH": research / "RECOVERY_PENDING",
-        "RESTART_PENDING_PATH": research / "RESTART_PENDING",
-        "GOAL_PATH": research / "GOAL_REACHED",
-        "ACCEPTED_DIR": research / "checkpoints" / "accepted",
-        "CANDIDATE_ROOT": root / "models" / "candidates",
+        "RESULTS_PATH": research / "results.jsonl",
+        "LOG_PATH": research / "EXPERIMENTS.md",
+        "OPERATION_REQUEST_PATH": research / "operation_request.json",
+        "SCIENTIFIC_MODEL_PATH": research / "scientific_model.md",
         "EVALUATION_DIR": research / "evaluations",
-    }
-    for name, value in replacements.items():
-        monkeypatch.setattr(runner_paths, name, value)
+    }.items():
+        monkeypatch.setattr(paths, name, value)
+    monkeypatch.setattr(repository, "scientific_delta", lambda _parent: [])
+    monkeypatch.setattr(repository, "commit_runner_memory", lambda _message: True)
+    monkeypatch.setattr(repository, "publish_scientific_recipe", lambda *_args: base)
     monkeypatch.setattr(
-        research_config, "CONFIG_PATH", research / "current_params.json"
+        run_experiment, "_protected_panel_overlap", lambda *_args: False
     )
     monkeypatch.setattr(
-        reset_campaign,
-        "reset_backup_root",
-        lambda: root / ".git" / "research-reset-backups",
+        run_experiment.protocol, "evaluation_semantics_fingerprint", lambda: "semantics"
     )
+    monkeypatch.setattr(run_experiment.research_config, "load_experiment_config", dict)
 
-
-def reasoning() -> dict:
-    return {
-        "evidence": [{"source": "research/results.jsonl", "observation": "Measured."}],
-        "expected_observation": "Continuation preserves the measured behavior.",
-        "initialization_reason": "Continue the selected parent unchanged.",
-        "objective_link": "Test whether the established recipe benefits from continuation.",
-        "rationale": "The continuation measures whether learning has plateaued.",
-        "open_question": "Does further learning improve the method?",
+    artifact = root / "research" / "checkpoints" / "candidates" / "seed"
+    artifact.mkdir(parents=True)
+    artifact.joinpath("model.zip").write_bytes(b"model")
+    artifact.joinpath("artifact.json").write_text("{}", encoding="utf-8")
+    artifact.joinpath("policy_runtime.pkl").write_bytes(b"runtime")
+    candidate = {
+        "id": "T0:seed",
+        "artifact": repository.repo_relative_path(artifact),
+        "fingerprint": repository.artifact_fingerprint(artifact),
+        "origin_operation": "T0",
+        "name": "seed",
+        "parameters": {},
+        "scientific_commit": base,
+        "training_steps": 0,
+        "evaluation_artifacts": [],
     }
-
-
-def test_campaign_lifecycle_survives_recipe_restore_and_clean_clone(
-    monkeypatch, tmp_path
-):
-    root = tmp_path / "repo"
-    remote = tmp_path / "remote.git"
-    root.mkdir()
-    git(tmp_path, "init", "--bare", str(remote))
-    git(root, "init", "-b", "master")
-    git(root, "config", "user.name", "Test Runner")
-    git(root, "config", "user.email", "test@example.invalid")
-    git(root, "config", "core.autocrlf", "false")
-    git(root, "config", "core.longpaths", "true")
-    git(root, "remote", "add", "origin", str(remote))
-    redirect_paths(monkeypatch, root)
-    write(
-        root,
-        ".gitignore",
-        "__pycache__/\n*.pyc\nmodels/\nresearch/checkpoints/challengers/\n"
-        "research/training_logs/\nresearch/proposal.json\n"
-        "research/evaluation_request.json\n",
+    state = repository.empty_campaign_state(
+        campaign={"id": "campaign", "started_at": "now", "base_commit": base},
+        last_verdict="fresh",
     )
-    write(root, "robot_learning/benchmark/final_contract.py", "TASK = 'fixed'\n")
-    write(root, "robot_learning/scenario/reward.py", "RECIPE = 'A'\n")
-    write(root, "research/current_params.json", '{"recipe": "A"}\n')
-    write(root, "tests/scenario/test_reward.py", "EXPECTED = 'A'\n")
-    git(root, "add", ".")
-    git(root, "commit", "-m", "recipe A")
-    recipe_a = git(root, "rev-parse", "HEAD")
-
-    write(root, "robot_learning/scenario/reward.py", "RECIPE = 'B'\n")
-    write(root, "research/current_params.json", '{"recipe": "B"}\n')
-    write(root, "robot_learning/scenario/recipe_b_only.py", "ACTIVE = True\n")
-    old_state = repository.empty_campaign_state(
-        campaign={"id": "old-campaign", "started_at": "then", "base_commit": recipe_a},
-        last_verdict="old campaign",
-    )
-    repository.write_state(old_state)
-    write(root, "research/results.jsonl", "")
-    write(root, "research/EXPERIMENTS.md", "old history\n")
-    write(root, "research/postmortems.md", "old analysis\n")
-    git(root, "add", ".")
-    git(root, "commit", "-m", "recipe B and old campaign")
-    git(root, "push", "origin", "HEAD")
-
-    campaign_id, source, _ = reset_campaign.reset_fresh(recipe_a)
-
-    assert source == recipe_a
-    assert (root / "robot_learning/scenario/reward.py").read_text() == "RECIPE = 'A'\n"
-    assert json.loads((root / "research/current_params.json").read_text()) == {
-        "recipe": "A"
+    state["scientific_model"] = {
+        "status": "ready",
+        "path": "research/scientific_model.md",
+        "commit": base,
     }
-    assert not (root / "robot_learning/scenario/recipe_b_only.py").exists()
-    reset_state = repository.read_state()
-    assert reset_state["campaign"]["recipe_source_commit"] == recipe_a
-    assert reset_state["campaign_experiment_counters"] == {campaign_id: 0}
-    assert reset_state["working_lineage"] is None
-    assert reset_state["best_known_lineage"] is None
+    state["candidates"][candidate["id"]] = candidate
+    repository.write_state(state)
 
-    validated_recipes: list[str] = []
-    training_calls: list[tuple[int, int, Path | None, str]] = []
-    evaluation_calls: list[bytes] = []
-    pause_next_validation = False
+    _start(monkeypatch, "startup", "Prepare for goal review.", "backend-1")
+    state = _submit(
+        monkeypatch, _checkpoint(repository.read_state(), "Review the goal.")
+    )
+    _start(monkeypatch, "goal_review", "Open the most useful inquiry.", "backend-2")
+    state = _submit(
+        monkeypatch,
+        {
+            "inquiry": {
+                "action": "open",
+                "question": "Does the seed candidate satisfy the task reference?",
+                "goal_connection": "The result determines whether this route is viable.",
+                "closure_condition": "Measure the candidate and decide the route.",
+                "rationale": "The bounded measurement can change the goal decision.",
+            }
+        },
+    )
+    state = _submit(monkeypatch, _checkpoint(state, "Measure inside the inquiry."))
+    _start(monkeypatch, "inquiry", "Measure the seed candidate.", "backend-3")
 
-    def validate_configuration():
-        nonlocal pause_next_validation
-        recipe = json.loads(research_config.CONFIG_PATH.read_text())["recipe"]
-        assert (root / "robot_learning/scenario/reward.py").read_text() == (
-            f"RECIPE = '{recipe}'\n"
-        )
-        validated_recipes.append(recipe)
-        if pause_next_validation:
-            pause_next_validation = False
-            raise KeyboardInterrupt
-
-    def train_candidate(output_dir, timesteps, seed, resume, training_log, **kwargs):
-        del training_log
-        marker = f"experiment-{len(training_calls) + 1}".encode()
-        training_calls.append((timesteps, seed, resume, kwargs["label"]))
-        artifact = output_dir / f"checkpoint-{timesteps}"
-        artifact.mkdir(parents=True, exist_ok=True)
-        artifact.joinpath("model.zip").write_bytes(marker)
-        artifact.joinpath("artifact.json").write_text(
-            json.dumps({"completed": True, "timesteps": timesteps}),
-            encoding="utf-8",
-        )
-        output_dir.joinpath("candidate_manifest.json").write_text(
-            json.dumps(
-                {
-                    "candidates": [
-                        {
-                            "name": f"checkpoint-{timesteps}",
-                            "path": f"checkpoint-{timesteps}",
-                            "timesteps": timesteps,
-                        }
-                    ]
-                }
-            ),
-            encoding="utf-8",
-        )
-        save_runtime(
-            artifact / "model.zip",
-            policy_io=PolicyIO(fixture_observation, fixture_action),
-            loader=load_fixture_policy,
-            normalizer=None,
-        )
-        return 0.0
-
-    def evaluate_artifact(artifact, seed, output_path, **kwargs):
-        del kwargs
-        model = Path(artifact).joinpath("model.zip").read_bytes()
-        evaluation_calls.append(model)
-        payload = {
-            "episodes": 2,
+    def evaluate(_artifact, seed, *, episodes, output_path, **_kwargs):
+        metrics = {
+            "episodes": episodes,
             "seed": seed,
-            "success_percent": 50.0 if model == b"experiment-1" else 100.0,
+            "success_percent": 0.0,
             "episode_results": [
-                {"episode": 0, "episode_seed": seed, "success": True},
-                {
-                    "episode": 1,
-                    "episode_seed": seed + 1,
-                    "success": model == b"experiment-2",
-                },
+                {"episode": index, "episode_seed": seed + index, "success": False}
+                for index in range(episodes)
             ],
         }
         output_path.parent.mkdir(parents=True, exist_ok=True)
-        output_path.write_text(json.dumps(payload), encoding="utf-8")
-        return payload
+        output_path.write_text(json.dumps(metrics), encoding="utf-8")
+        return metrics
 
-    monkeypatch.setattr(
-        execution, "validate_active_configuration", validate_configuration
-    )
-    monkeypatch.setattr(execution, "validate_dependency_metadata", lambda: None)
-    monkeypatch.setattr(execution, "run_validation_suites", lambda paths: None)
-    monkeypatch.setattr(execution, "train_candidate", train_candidate)
-    monkeypatch.setattr(execution, "evaluate_artifact", evaluate_artifact)
-    monkeypatch.setattr(protocol, "evaluation_semantics_fingerprint", lambda: "test")
-    monkeypatch.setattr("research.runner_console.announce", lambda message: None)
-
-    baseline = {
-        "baseline": True,
-        "change": "Fresh baseline",
-        "hypothesis": "Establish the initial baseline.",
-        "class": "baseline",
-        "initialization": "fresh",
-    }
-    assert (
-        run_experiment.run_training_experiment(
-            baseline, Namespace(timesteps=100, reuse_candidate=None)
-        )
-        == 0
-    )
-    assert training_calls == [(100, 0, None, "baseline training")]
-    first = repository.read_state()["pending_analysis"]
-    first_candidate = first["candidates"][0]["name"]
-    runner_paths.EVALUATION_REQUEST_PATH.write_text(
-        json.dumps(
-            {
-                "experiment": 1,
-                "question": "How does the baseline behave?",
-                "reason": "Establish reusable development evidence.",
+    monkeypatch.setattr(execution, "evaluate_artifact", evaluate)
+    state = _submit(
+        monkeypatch,
+        {
+            "measurement": {
+                "description": "Measure the seed candidate.",
+                "rationale": "The factual result resolves the bounded question.",
                 "measurements": [
                     {
                         "instrument": "research_evaluation",
-                        "candidate": first_candidate,
+                        "candidate": candidate["id"],
                         "episodes": 2,
-                        "seed": 10,
-                        "selection": "Measure the baseline candidate before selection.",
-                        "omitted_alternative": None,
+                        "seed": 100,
                     }
                 ],
             }
-        ),
-        encoding="utf-8",
+        },
     )
-    assert run_experiment.execute_pending_evaluations() == 0
-    first = repository.read_state()["pending_analysis"]
-    first_evidence = first["candidates"][0]["evaluations"][0]["evaluation_artifact"]
-    runner_paths.POSTMORTEM_PATH.write_text(
-        f"## {campaign_id} / Scientific strategy\n\n"
-        "**Current synthesis:** Establish the baseline before inquiry work.\n\n"
-        "**Lessons and limits:** One development panel is available.\n\n"
-        "**Competing explanations:** Learning duration may limit performance.\n\n"
-        "**Decision frontier:** Whether continuation improves paired outcomes.\n\n"
-        f"## {campaign_id} / Experiment 1\n\n"
-        "**Hypothesis assessment:** The baseline establishes measured behavior.\n\n"
-        f"**Evidence inspected:** `{first_evidence}`\n",
-        encoding="utf-8",
-    )
-    first_decision = {
-        "baseline_decision": {
-            "experiment": 1,
-            "candidate": first_candidate,
-            "reason": "Select the measured baseline.",
-        }
-    }
-    assert (
-        run_experiment.resolve_baseline_decision(
-            first_decision, repository.read_state()
-        )
-        == 0
-    )
-    first_closed = repository.read_state()
-    first_working = first_closed["working_lineage"]
-    assert (
-        first_working["fingerprint"]
-        == first_closed["best_known_lineage"]["fingerprint"]
-    )
-    assert first_working["artifact"] == first_closed["best_known_lineage"]["artifact"]
-    assert first_working["artifact"].startswith("research/checkpoints/retained/")
-
-    assert run_experiment.begin_inquiry_phase() == 0
-    assert (
-        run_experiment.resolve_inquiry_operation(
-            {
-                "inquiry": {
-                    "action": "open",
-                    "question": "Does continued learning improve recipe A?",
-                    "scope": "Continuation behavior and paired evaluation.",
-                    "closure_condition": "Decide whether to continue or stop the method.",
-                }
-            },
-            "inquiry",
-        )
-        == 0
-    )
-    assert (
-        run_experiment.resolve_inquiry_operation(
-            {
-                "method": {
-                    "action": "start",
-                    "id": "continued-recipe-a",
-                    "scientific_question": "Does recipe A benefit from more training?",
-                    "rationale": "The baseline leaves this learning question open.",
-                    "lifecycle": "development",
-                }
-            },
-            "method",
-        )
-        == 0
-    )
-
-    write(root, "robot_learning/scenario/reward.py", "RECIPE = 'B'\n")
-    write(root, "research/current_params.json", '{"recipe": "B"}\n')
-    write(root, "robot_learning/scenario/recipe_b_only.py", "ACTIVE = True\n")
-    git(root, "add", "robot_learning/scenario", "research/current_params.json")
-    git(root, "commit", "-m", "change to recipe B")
-    git(root, "push", "origin", "HEAD")
-
-    continuation = {
-        "kind": "continuation",
-        "method_id": "continued-recipe-a",
-        "family": "training.duration",
-        "investigation_design": reasoning(),
-        "initialization": "transfer",
-        "training_parent": "working",
-    }
-    pause_next_validation = True
-    assert (
-        run_experiment.run_training_experiment(
-            continuation, Namespace(timesteps=100, reuse_candidate=None)
-        )
-        == 130
-    )
-    interrupted = repository.read_state()["pending_training_operation"]
-    assert interrupted["frozen_proposal"] == continuation
-    assert interrupted["progress"] == "configuration_applying"
-    assert training_calls == [(100, 0, None, "baseline training")]
-    assert (
-        run_experiment.run_training_experiment(
-            continuation, Namespace(timesteps=100, reuse_candidate=None)
-        )
-        == 0
-    )
-    assert validated_recipes == ["A", "A", "A"]
-    assert not (root / "robot_learning/scenario/recipe_b_only.py").exists()
-    assert training_calls[1][0:2] == (100, 0)
-    assert training_calls[1][2] == root / first_working["artifact"] / "model.zip"
-    second = repository.read_state()["pending_analysis"]
-    second_candidate = second["candidates"][0]["name"]
-    runner_paths.EVALUATION_REQUEST_PATH.write_text(
-        json.dumps(
-            {
-                "experiment": 2,
-                "question": "Did continuation improve on identical episodes?",
-                "reason": "Compare against the reusable baseline panel.",
-                "measurements": [
-                    {
-                        "instrument": "research_evaluation",
-                        "candidate": second_candidate,
-                        "episodes": 2,
-                        "seed": 10,
-                        "selection": "Measure the current method on the baseline panel.",
-                        "omitted_alternative": None,
-                    }
-                ],
-                "paired_comparisons": [
-                    {"candidate": second_candidate, "reference": "working"}
-                ],
+    state = _submit(
+        monkeypatch,
+        {
+            "inquiry": {
+                "action": "close",
+                "outcome": "The seed route does not meet the objective.",
+                "reason": "The bounded measurement satisfies the closure condition.",
             }
-        ),
-        encoding="utf-8",
+        },
     )
-    assert run_experiment.execute_pending_evaluations() == 0
-    assert evaluation_calls == [b"experiment-1", b"experiment-2"]
-    second = repository.read_state()["pending_analysis"]
-    comparison = second["result"]["paired_comparisons"][0]
-    assert comparison["source_artifacts"][1] == first_evidence
-    second_evidence = second["candidates"][0]["evaluations"][0]["evaluation_artifact"]
-    runner_paths.POSTMORTEM_PATH.write_text(
-        runner_paths.POSTMORTEM_PATH.read_text(encoding="utf-8")
-        + f"\n## {campaign_id} / Experiment 2\n\n"
-        "**Hypothesis assessment:** The continuation improved on the reused panel.\n\n"
-        f"**Evidence inspected:** `{second_evidence}`, `{first_evidence}`\n",
-        encoding="utf-8",
+    state = _submit(monkeypatch, _checkpoint(state, "Return to goal review."))
+    _start(monkeypatch, "goal_review", "Choose the campaign conclusion.", "backend-4")
+    state = _submit(
+        monkeypatch,
+        {
+            "campaign_conclusion": {
+                "action": "no_credible_route",
+                "reason": "The bounded evidence leaves no credible route.",
+            }
+        },
     )
-    second_decision = {
-        "method_decision": {
-            "experiment": 2,
-            "action": "continue",
-            "outcome": "Continue developing the measured trajectory.",
-            "reason": "The paired evidence supports another development iteration.",
-            "candidate": second_candidate,
-            "code": {"action": "keep", "reason": "Keep restored recipe A."},
-        }
-    }
-    assert run_experiment.resolve_method_decision(second_decision) == 0
+    assert state["terminal_state"]["status"] == "no_credible_route"
+    assert state["scientific_session"] is None
+    assert state["pending_operation"] is None
 
+    _git(root, "add", ".")
+    _git(root, "commit", "-m", "persist schema-6 campaign")
+    _git(root, "push", "-u", "origin", "HEAD")
     clone = tmp_path / "clone"
-    subprocess.run(
-        ["git", "-c", "core.longpaths=true", "clone", str(remote), str(clone)],
-        check=True,
-        capture_output=True,
-    )
-    cloned_state = json.loads(
+    _git(tmp_path, "-c", "core.longpaths=true", "clone", str(remote), str(clone))
+    cloned = json.loads(
         clone.joinpath("research/research_state.json").read_text(encoding="utf-8")
     )
-    cloned_results = [
-        json.loads(line)
-        for line in clone.joinpath("research/results.jsonl")
-        .read_text(encoding="utf-8")
-        .splitlines()
-        if line.strip()
-    ]
-    assert [record["status"] for record in cloned_results] == [
-        "analyzed",
-        "analyzed",
-    ]
-    assert cloned_results[1]["paired_comparisons"][0]["source_artifacts"][1] == (
-        first_evidence
+    monkeypatch.setattr(paths, "ROOT", clone)
+    repository.validate_research_state(cloned, allow_missing_artifact=True)
+    cloned_candidate = cloned["candidates"][candidate["id"]]
+    cloned_artifact = clone / cloned_candidate["artifact"]
+    repository.require_complete_inference_artifact(
+        cloned_artifact, "cloned schema-6 candidate"
     )
-    assert cloned_state["pending_method_decision"] is None
-    assert cloned_state["working_lineage"]["training_steps"] == 100
-    assert cloned_state["active_method"]["current_lineage"]["training_steps"] == 200
     assert (
-        cloned_state["best_known_lineage"]["fingerprint"]
-        == first_working["fingerprint"]
+        repository.artifact_fingerprint(cloned_artifact)
+        == (cloned_candidate["fingerprint"])
     )
-    assert clone.joinpath("robot_learning/scenario/reward.py").read_text() == (
-        "RECIPE = 'A'\n"
-    )
-    assert not clone.joinpath("robot_learning/scenario/recipe_b_only.py").exists()
-    for role in ("working_lineage", "best_known_lineage"):
-        artifact = clone / cloned_state[role]["artifact"]
-        for filename in ("model.zip", "artifact.json", "policy_runtime.pkl"):
-            assert artifact.joinpath(filename).is_file()
-        assert (
-            repository.artifact_fingerprint(artifact)
-            == cloned_state[role]["fingerprint"]
-        )
-        runtime = load_runtime(artifact / "model.zip")
-        observation = runtime.io.observe(None)
-        np.testing.assert_allclose(observation, [0.25])
-        np.testing.assert_allclose(
-            runtime.io.action(runtime.predict(observation)),
-            [0.125, -0.125],
-        )
+    assert cloned["terminal_state"]["status"] == "no_credible_route"
+    assert [event["kind"] for event in cloned["operation_events"]] == [
+        "checkpoint",
+        "inquiry",
+        "checkpoint",
+        "measurement",
+        "inquiry",
+        "checkpoint",
+        "campaign_conclusion",
+    ]

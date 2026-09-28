@@ -208,7 +208,7 @@ def _trust_test_repository(path: Path) -> None:
             "user.email=tests@example.invalid",
             "commit",
             "-qm",
-            "baseline",
+            "fixture",
         ],
         check=True,
     )
@@ -280,14 +280,12 @@ def test_native_learning_stack_and_pi_ownership_are_explicit():
     assert "## PI-owned paths" in AGENTS
 
 
-def test_fresh_startup_is_state_driven_and_has_no_baseline_branch():
+def test_fresh_startup_waits_for_the_scientific_model():
     assert '$state.scientific_model.status -eq "pending"' in SCRIPT
     assert "--mark-scientific-model-ready" in SCRIPT
     assert "Established facts" in SCRIPT
     assert "Physical consequences" in SCRIPT
     assert "Unknowns" in SCRIPT
-    assert "BASELINE_PENDING" not in SCRIPT
-    assert "baseline training" not in SCRIPT.lower()
 
 
 @powershell_only
@@ -314,22 +312,11 @@ Closed-loop settling behavior is not established.
     )
 
 
-def test_launcher_uses_one_schema6_request_and_no_retired_flow():
+def test_launcher_uses_one_schema6_operation_request():
     assert "research/operation_request.json" in SCRIPT
     assert "Runner resuming the existing PI operation request" in SCRIPT
     assert "--check-operation" in SCRIPT
     assert "--execute-pending" in SCRIPT
-    for retired in (
-        "research\\proposal.json",
-        "research\\evaluation_request.json",
-        "pending_analysis",
-        "method_decision",
-        "post-training",
-        "inquiry_session",
-        "ResumeOrCreate",
-        "MaxExperiments",
-    ):
-        assert retired not in SCRIPT
 
 
 def test_prompt_contains_goal_directed_imperatives_and_source_router():
@@ -441,7 +428,7 @@ def test_max_inquiries_only_removes_inquiry_creation(tmp_path):
 
 
 @powershell_only
-def test_inquiry_session_offers_peer_operations_and_checkpoint(tmp_path):
+def test_bounded_session_offers_peer_inquiry_operations_and_checkpoint(tmp_path):
     operations = _launcher_operations(tmp_path, _state("inquiry", inquiry=True))
     assert any(item.startswith("measurement:") for item in operations)
     assert any(item.startswith("training:") for item in operations)
@@ -792,7 +779,6 @@ def test_schema6_state_and_model_are_the_only_fresh_start_contract():
     assert state["active_inquiry"] is None
     assert state["pi_checkpoint"] is None
     assert state["scientific_session"] is None
-    assert not {"pending_analysis", "active_method", "inquiry_session"} & set(state)
 
 
 def test_scientific_model_and_request_paths_remain_protected():
@@ -804,7 +790,6 @@ def test_scientific_model_and_request_paths_remain_protected():
 
 def test_program_is_informative_and_instruments_are_mechanical():
     assert "The human goal" in PROGRAM
-    assert "There is no mandatory baseline phase." in PROGRAM
     assert "There is no mandatory post-training phase" in PROGRAM
     assert (
         "Each Runner round trip reads `research/operation_request.json`" in INSTRUMENTS

@@ -202,6 +202,7 @@ def test_generic_core_may_only_use_the_scenario_package():
         "robot_learning/evaluate.py",
         "robot_learning/play.py",
         "research/run_experiment.py",
+        "research/runner_assessment.py",
         "research/runner_console.py",
     }
     for relative_path in users:
@@ -230,10 +231,9 @@ def test_research_evaluation_panel_is_a_single_orchestration_setting():
     assert "default=RESEARCH_EVALUATION_EPISODES" in (
         ROOT / "robot_learning" / "evaluate.py"
     ).read_text(encoding="utf-8")
-    assert any(
-        "episodes: int = RESEARCH_EVALUATION_EPISODES" in source
-        for source in runner_sources().values()
-    )
+    assert "research_config.RESEARCH_EVALUATION_EPISODES" in (
+        ROOT / "research" / "runner_execution.py"
+    ).read_text(encoding="utf-8")
 
 
 def test_the_brief_imposes_no_hypothesis_taxonomy():
@@ -371,7 +371,7 @@ def test_compact_context_leads_with_protected_human_goal(monkeypatch, tmp_path):
             "source": "research/scenario.md",
             "summary": "The campaign objective is a learned policy with at least 98% official success.",
         },
-        last_verdict="baseline selected",
+        last_verdict="candidate selected",
     )
     (tmp_path / "research_state.json").write_text(json.dumps(state), encoding="utf-8")
     monkeypatch.setattr("research.build_research_brief.RESEARCH_DIR", tmp_path)

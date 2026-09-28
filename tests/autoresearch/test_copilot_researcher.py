@@ -110,8 +110,8 @@ def test_read_only_git_stays_available(command):
     [
         "uv run python research/run_experiment.py",
         "uv run python -m research.run_experiment --check-operation",
-        "uv run python research/run_experiment.py --evaluate-pending",
-        "uv run python research/run_experiment.py --migrate-research-state",
+        "uv run python research/run_experiment.py --execute-pending",
+        "uv run python research/run_experiment.py --run-official-assessment",
         "uv run python research/migrate_policy_runtime.py --help",
         "uv run python -m research.migrate_policy_runtime --help",
         "uv run python research/reset_campaign.py --mode fresh",
@@ -294,9 +294,9 @@ def test_ordinary_research_commands_are_not_obstructed():
     [
         # Naming a protected path is research; only running it is execution.
         "Get-Content research/run_experiment.py",
-        "rg request_final_benchmark research/runner_protocol.py",
-        "Select-String -Path research/program.md -Pattern final_benchmark",
-        "python -c \"print(proposal['request_final_benchmark'])\"",
+        "rg request_official_assessment research/runner_protocol.py",
+        "Select-String -Path research/program.md -Pattern official_assessment",
+        "python -c \"print(operation['campaign_conclusion'])\"",
         "cat robot_learning/train.py",
     ],
 )
@@ -420,12 +420,14 @@ def test_a_shell_command_is_one_trimmed_line(capsys):
 def test_changed_files_are_reported_once_each(capsys):
     console = adapter.Console()
 
-    console.file_changed("modified", "research/proposal.json")
-    console.file_changed("modified", "research/proposal.json")
-    console.file_changed("created", "research/postmortems.md")
+    console.file_changed("modified", "research/operation_request.json")
+    console.file_changed("modified", "research/operation_request.json")
+    console.file_changed("created", "research/lab/diagnostic.py")
 
     out = capsys.readouterr().out
-    assert out == "  ~ research/proposal.json\n  + research/postmortems.md\n"
+    assert out == (
+        "  ~ research/operation_request.json\n  + research/lab/diagnostic.py\n"
+    )
     assert len(console.changed_files) == 2
 
 
@@ -486,7 +488,10 @@ def test_the_summary_reports_work_not_a_verdict(capsys):
     console.prompt_tokens, console.output_tokens = 9000, 120
     console.nano_aiu = 356_660_000
 
-    console.summary("fdb8162a-19eb-45ee-9835-9b22f70f4a80", ["research/proposal.json"])
+    console.summary(
+        "fdb8162a-19eb-45ee-9835-9b22f70f4a80",
+        ["research/operation_request.json"],
+    )
 
     out = capsys.readouterr().out
     assert "1 file(s) changed" in out
@@ -496,11 +501,11 @@ def test_the_summary_reports_work_not_a_verdict(capsys):
 
 
 def test_the_session_end_is_a_labelled_line_with_its_own_duration(capsys):
-    console = adapter.Console("e3·proposal")
+    console = adapter.Console("S3·inquiry")
 
     console.summary(
         "fdb8162a-19eb-45ee-9835-9b22f70f4a80",
-        ["research/proposal.json"],
+        ["research/operation_request.json"],
         elapsed_seconds=422,
     )
 
@@ -514,7 +519,7 @@ def test_the_session_end_is_a_labelled_line_with_its_own_duration(capsys):
 def test_the_session_label_is_coloured_apart_from_tool_lines(monkeypatch):
     stream = FakeTty()
     monkeypatch.setattr(sys, "stdout", stream)
-    console = adapter.Console("e3·proposal")
+    console = adapter.Console("S3·inquiry")
 
     console.summary("fdb8162a-19eb-45ee-9835-9b22f70f4a80", [])
 
@@ -527,7 +532,7 @@ def test_the_session_label_is_coloured_apart_from_tool_lines(monkeypatch):
 def test_the_models_own_words_are_coloured_apart_from_harness_output(monkeypatch):
     stream = FakeTty()
     monkeypatch.setattr(sys, "stdout", stream)
-    console = adapter.Console("e3·proposal")
+    console = adapter.Console("S3·inquiry")
 
     console.delta("The parent ")
     console.delta("used N=8.")
@@ -635,31 +640,36 @@ def test_a_file_written_outside_the_edit_tools_is_still_reported(capsys):
     console = adapter.Console()
 
     # The runtime emitted no change event, because the shell wrote the file.
-    console.summary("session-id", ["research/postmortems.md", "research/proposal.json"])
+    console.summary(
+        "session-id",
+        ["research/lab/diagnostic.py", "research/operation_request.json"],
+    )
 
     out = capsys.readouterr().out
-    assert "  ~ research/postmortems.md" in out
-    assert "  ~ research/proposal.json" in out
+    assert "  ~ research/lab/diagnostic.py" in out
+    assert "  ~ research/operation_request.json" in out
     assert "2 file(s) changed" in out
 
 
 def test_a_file_already_announced_is_not_listed_twice(capsys):
     console = adapter.Console()
-    console.file_changed("modified", "research/proposal.json")
+    console.file_changed("modified", "research/operation_request.json")
 
-    console.summary("session-id", ["research/proposal.json"])
+    console.summary("session-id", ["research/operation_request.json"])
 
-    assert capsys.readouterr().out.count("research/proposal.json") == 1
+    assert capsys.readouterr().out.count("research/operation_request.json") == 1
 
 
 def test_the_changed_set_comes_from_the_worktree_not_the_runtime(monkeypatch):
     monkeypatch.setattr(
         adapter,
         "worktree_status",
-        lambda: {"research/proposal.json": "M", "new.py": "??"},
+        lambda: {"research/operation_request.json": "M", "new.py": "??"},
     )
 
-    changed = adapter.changed_since({"research/proposal.json": "M", "gone.py": "??"})
+    changed = adapter.changed_since(
+        {"research/operation_request.json": "M", "gone.py": "??"}
+    )
 
     assert changed == ["gone.py", "new.py"]
 
@@ -694,7 +704,7 @@ def test_only_meaningful_events_reach_the_console(capsys):
 
 def test_a_turn_reports_the_work_it_contained(capsys):
     events = pytest.importorskip("copilot.session_events")
-    console = adapter.Console("e3·proposal")
+    console = adapter.Console("S3·inquiry")
     on_event, _ = adapter.build_handlers(console, asyncio.Event())
 
     def emit(data):
@@ -722,9 +732,9 @@ def test_a_turn_reports_the_work_it_contained(capsys):
     emit(events.AssistantTurnEndData(turn_id="t1"))
 
     out = capsys.readouterr().out
-    assert "-- [e3·proposal] turn 1 · gpt-5.6-luna" in out
+    assert "-- [S3·inquiry] turn 1 · gpt-5.6-luna" in out
     digest = out.splitlines()[-1]
-    assert digest.startswith("-- [e3·proposal] turn 1 · ")
+    assert digest.startswith("-- [S3·inquiry] turn 1 · ")
     assert "2 tools" in digest
     assert "1 file" in digest
     assert "out 400" in digest
@@ -732,7 +742,7 @@ def test_a_turn_reports_the_work_it_contained(capsys):
 
 def test_a_turn_reports_only_what_happened_during_it(capsys):
     events = pytest.importorskip("copilot.session_events")
-    console = adapter.Console("e1·proposal")
+    console = adapter.Console("S1·startup")
     on_event, _ = adapter.build_handlers(console, asyncio.Event())
 
     def emit(data):
@@ -805,12 +815,10 @@ def test_a_standalone_session_carries_no_launcher_label(capsys):
     assert "[" not in out
 
 
-def test_the_console_label_names_the_experiment_and_the_phase():
-    labelled = adapter.parse_args(
-        ["p", "--session-id", "s", "--experiment", "4", "--phase", "analysis"]
-    )
+def test_the_console_label_names_the_bounded_phase():
+    labelled = adapter.parse_args(["p", "--session-id", "s", "--phase", "inquiry"])
 
-    assert adapter.console_label(labelled) == "e4·analysis"
+    assert adapter.console_label(labelled) == "inquiry"
     assert adapter.console_label(adapter.parse_args(["p", "--session-id", "s"])) == ""
 
 
@@ -1281,14 +1289,9 @@ def test_a_runtime_failure_becomes_an_exit_code_not_a_traceback(monkeypatch, cap
 
 
 def test_the_adapter_never_judges_a_research_deliverable():
-    for deliverable in (
-        "proposal.json",
-        "evaluation_request.json",
-        "postmortems.md",
-        "results.jsonl",
-        "research_state.json",
-    ):
-        assert deliverable not in SOURCE
+    assert "runner_protocol" not in SOURCE
+    assert "validate_operation_request" not in SOURCE
+    assert "json.load" not in SOURCE
 
 
 def test_the_copilot_runtime_loads_only_where_it_is_used():

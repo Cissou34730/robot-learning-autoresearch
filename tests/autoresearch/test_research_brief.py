@@ -207,11 +207,11 @@ def test_failed_and_superseded_attempts_are_history_not_evidence(
     assert "completed or allocated" not in text
 
 
-def test_brief_rejects_non_schema6_state(monkeypatch, tmp_path: Path):
+def test_brief_rejects_unknown_state_fields(monkeypatch, tmp_path: Path):
     research = tmp_path / "research"
     research.mkdir()
     state = _state()
-    state["pending_analysis"] = None
+    state["unknown_control_field"] = None
     (research / "research_state.json").write_text(json.dumps(state), encoding="utf-8")
     monkeypatch.setattr(brief, "RESEARCH_DIR", research)
 

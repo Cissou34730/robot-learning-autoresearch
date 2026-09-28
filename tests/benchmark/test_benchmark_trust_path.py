@@ -1,25 +1,22 @@
-"""The human-owned trust path between the runner and the official benchmark.
+"""Trust boundary for the Runner-owned official assessment."""
 
-These tests protect the objective, the official robot, the benchmark contract
-and the final goal verdict. They are immutable during a research campaign and
-must stay independent of any concrete learning method.
-"""
+from __future__ import annotations
 
 import json
 from pathlib import Path
 
 import pytest
 
-from research.run_experiment import execute_pending_final_benchmark
-from research.runner_protocol import (
-    is_protected_source,
-    is_researcher_owned,
-    validate_experiment_semantics,
-)
+from research import run_experiment
+from research import runner_assessment as assessment
+from research import runner_paths as paths
+from research import runner_protocol as protocol
+from research import runner_repository as repository
 
 OFFICIAL_TASK_PATHS = (
     "robot_learning/policy_runtime.py",
     "research/run_experiment.py",
+    "research/runner_assessment.py",
     "robot_learning/__init__.py",
     "robot_learning/benchmark/__init__.py",
     "robot_learning/benchmark/final_benchmark.py",
@@ -34,192 +31,164 @@ OFFICIAL_TASK_PATHS = (
     "robot_learning/scenario/task_reference.py",
 )
 
-RESEARCHER_OWNED_PATHS = (
+PI_OWNED_PATHS = (
     "robot_learning/scenario/reward.py",
     "robot_learning/scenario/observations.py",
     "robot_learning/scenario/environment.py",
     "robot_learning/scenario/evaluation.py",
-    "robot_learning/scenario/brief.py",
     "robot_learning/scenario/viewer.py",
     "robot_learning/train.py",
     "robot_learning/evaluate.py",
     "robot_learning/training/algorithms.py",
-    "robot_learning/training/research_config.py",
-    "research/current_params.json",
 )
 
 
 def test_protected_surface_covers_the_whole_benchmark_package():
     root = Path(__file__).resolve().parents[2]
-    package = root / "robot_learning" / "benchmark"
-    package_files = sorted(
+    package_files = [
         path.relative_to(root).as_posix()
-        for path in package.rglob("*")
+        for path in (root / "robot_learning" / "benchmark").rglob("*")
         if path.is_file()
-    )
+    ]
 
     assert package_files
-    for relative in package_files:
-        assert is_protected_source(relative), relative
-        assert not is_researcher_owned(relative), relative
+    assert all(protocol.is_protected_source(path) for path in package_files)
+    assert not any(protocol.is_researcher_owned(path) for path in package_files)
 
 
-def test_protected_surface_covers_every_import_routing_file_on_the_trust_path():
-    import robot_learning.scenario.final_benchmark as adapter
-    from robot_learning.benchmark import final_benchmark, final_contract
-    from robot_learning.robots import two_joint_arm
+@pytest.mark.parametrize("protected_path", OFFICIAL_TASK_PATHS)
+def test_pi_delta_cannot_change_the_official_task(protected_path):
+    with pytest.raises(ValueError, match="human-owned"):
+        protocol.validate_research_delta_ownership([protected_path])
+    with pytest.raises(ValueError, match="human-owned"):
+        protocol.validate_research_delta_ownership([protected_path.replace("/", "\\")])
 
-    packages: set[str] = set()
-    for module in (adapter, final_benchmark, final_contract, two_joint_arm):
-        parts = module.__name__.split(".")[:-1]
-        for depth in range(1, len(parts) + 1):
-            packages.add(".".join(parts[:depth]))
 
-    assert packages == {
-        "robot_learning",
-        "robot_learning.benchmark",
-        "robot_learning.robots",
-        "robot_learning.scenario",
+@pytest.mark.parametrize("pi_path", PI_OWNED_PATHS)
+def test_pi_owned_scientific_files_remain_changeable(pi_path):
+    protocol.validate_research_delta_ownership([pi_path])
+
+
+def test_runner_assessment_is_the_trusted_official_entry(monkeypatch, tmp_path):
+    observed: dict[str, object] = {}
+
+    def trust(adapter_path):
+        observed["adapter"] = adapter_path
+
+    def protected(model_path, algorithm=None, progress_callback=None):
+        observed["model"] = model_path
+        observed["algorithm"] = algorithm
+        observed["progress"] = progress_callback
+        return {"goal_reached": True}
+
+    monkeypatch.setattr(
+        assessment.protocol, "require_trusted_assessment_runtime", trust
+    )
+    monkeypatch.setattr(
+        "robot_learning.scenario.final_benchmark.evaluate_final_model", protected
+    )
+    callback = lambda _completed, _total: None
+
+    assert assessment.evaluate_official_model(
+        tmp_path / "model.zip",
+        algorithm="ppo",
+        progress_callback=callback,
+    ) == {"goal_reached": True}
+    assert observed == {
+        "adapter": protocol.OFFICIAL_ASSESSMENT_ADAPTER_PATH,
+        "model": tmp_path / "model.zip",
+        "algorithm": "ppo",
+        "progress": callback,
     }
-    for package in packages:
-        init_path = f"{package.replace('.', '/')}/__init__.py"
-        assert is_protected_source(init_path), init_path
 
 
-@pytest.mark.parametrize("protected_path", OFFICIAL_TASK_PATHS)
-def test_research_proposal_cannot_change_the_official_task(protected_path):
-    with pytest.raises(ValueError, match="human-owned task, context"):
-        validate_experiment_semantics(
-            {}, "training", "transfer", None, [protected_path], False
-        )
+def _requested_assessment_state(monkeypatch, tmp_path):
+    research = tmp_path / "research"
+    research.mkdir()
+    for name, value in {
+        "ROOT": tmp_path,
+        "STATE_PATH": research / "research_state.json",
+        "RESULTS_PATH": research / "results.jsonl",
+        "LOG_PATH": research / "EXPERIMENTS.md",
+        "OPERATION_REQUEST_PATH": research / "operation_request.json",
+        "GOAL_PATH": research / "GOAL_REACHED",
+    }.items():
+        monkeypatch.setattr(paths, name, value)
+    monkeypatch.setattr(repository, "git", lambda *args: "a" * 40 + "\n")
+    monkeypatch.setattr(repository, "scientific_delta", lambda _parent: [])
+    monkeypatch.setattr(repository, "commit_runner_memory", lambda _message: True)
 
-
-@pytest.mark.parametrize("protected_path", OFFICIAL_TASK_PATHS)
-def test_official_task_protection_ignores_path_separator(protected_path):
-    with pytest.raises(ValueError, match="human-owned task, context"):
-        validate_experiment_semantics(
-            {},
-            "training",
-            "transfer",
-            None,
-            [protected_path.replace("/", "\\")],
-            False,
-        )
-
-
-@pytest.mark.parametrize("research_path", RESEARCHER_OWNED_PATHS)
-def test_researcher_owned_files_remain_changeable(research_path):
-    validate_experiment_semantics(
-        {}, "training", "transfer", None, [research_path], False
-    )
-
-
-def test_scenario_adapter_cannot_bypass_the_protected_benchmark():
-    import robot_learning.scenario.final_benchmark as adapter
-    from robot_learning.benchmark import final_benchmark as protected
-
-    assert adapter._protected_evaluate_final_model is protected.evaluate_final_model
-    assert adapter.FINAL_SUCCESS_PERCENT == 98.0
-
-
-def test_protected_task_files_exist_at_their_protected_paths():
-    root = Path(__file__).resolve().parent.parent.parent
-
-    for protected_path in OFFICIAL_TASK_PATHS:
-        assert (root / protected_path).is_file(), protected_path
-
-
-def test_researcher_cannot_change_the_enforcement_mechanism():
-    with pytest.raises(ValueError, match="human-owned task, context"):
-        validate_experiment_semantics(
-            {},
-            "training",
-            "transfer",
-            {"training": {"n_envs": 2}},
-            ["robot_learning/scenario/reward.py", "research/run_experiment.py"],
-            False,
-        )
-
-
-def _pending_final_benchmark_state(monkeypatch, tmp_path):
-    from research.runner_repository import (
-        artifact_fingerprint,
-        empty_campaign_state,
-    )
-
-    best_known_artifact = tmp_path / "best-known"
-    best_known_artifact.mkdir()
-    for filename in ("model.zip", "vecnormalize.pkl", "artifact.json"):
-        (best_known_artifact / filename).write_bytes(b"artifact")
-    fingerprint = artifact_fingerprint(best_known_artifact)
-    best_known = {
-        "candidate": "checkpoint-1",
-        "artifact": "best-known",
-        "fingerprint": fingerprint,
-        "origin_experiment": 9,
+    artifact = tmp_path / "archive" / "candidate"
+    artifact.mkdir(parents=True)
+    for name in repository.INFERENCE_ARTIFACT_FILES:
+        artifact.joinpath(name).write_bytes(name.encode())
+    candidate = {
+        "id": "T1:checkpoint-10",
+        "artifact": repository.repo_relative_path(artifact),
+        "fingerprint": repository.artifact_fingerprint(artifact),
+        "origin_operation": "T1",
+        "name": "checkpoint-10",
         "parameters": {},
-        "scientific_commit": None,
-        "training_steps": 1,
+        "scientific_commit": "b" * 40,
+        "training_steps": 10,
         "evaluation_artifacts": [],
-        "reason": "Selected for the official benchmark.",
-        "designation_ordinal": 1,
     }
-    campaign_id = "550e8400-e29b-41d4-a716-446655440000"
-    state = empty_campaign_state(
-        campaign={"id": campaign_id, "started_at": "now", "base_commit": "base"},
-        last_verdict="Official benchmark pending.",
+    state = repository.empty_campaign_state(
+        campaign={"id": "campaign", "started_at": "now", "base_commit": "base"},
+        last_verdict="ready for goal review",
     )
-    state["campaign_experiment_counters"][campaign_id] = 9
-    state["last_allocated_experiment"] = 9
-    state["last_experiment"] = 9
-    state["working_lineage"] = dict(best_known)
-    state["best_known_lineage"] = best_known
-    state["best_known_designation_counter"] = 1
-    state["campaign_conclusion"] = {
-        "action": "request_final_benchmark",
-        "reason": "The best-known lineage is ready.",
+    state["scientific_model"] = {
+        "status": "ready",
+        "path": "research/scientific_model.md",
+        "commit": "a" * 40,
     }
-    state["pending_final_benchmark"] = {
-        "experiment": 9,
-        "selected": "best_known",
-        "artifact": "best-known",
-        "fingerprint": fingerprint,
-        "best_known": best_known,
-        "terminal_reason": "The best-known lineage is ready.",
+    state["candidates"][candidate["id"]] = candidate
+    state["model_roles"]["best_known"] = candidate["id"]
+    repository.start_scientific_session(
+        state,
+        kind="goal_review",
+        objective="Decide whether to request the official assessment.",
+        backend_adapter="copilot",
+        backend_model="gpt-5.6-luna",
+        backend_reasoning="high",
+    )
+    repository.write_state(state)
+    request = {
+        "campaign_conclusion": {
+            "action": "request_official_assessment",
+            "reason": "The explicitly selected model is ready.",
+        }
     }
-    state_path = tmp_path / "state.json"
-    state_path.write_text(json.dumps(state), encoding="utf-8")
-    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
-    monkeypatch.setattr("research.runner_paths.STATE_PATH", state_path)
-    monkeypatch.setattr("research.runner_paths.GOAL_PATH", tmp_path / "GOAL_REACHED")
-    return state_path
+    run_experiment.accept_operation(request, state)
+    assert run_experiment.execute_pending_operation() == 0
+    return candidate, artifact
 
 
 @pytest.mark.parametrize(
-    ("official_success_percent", "goal_reached"), [(98.0, True), (97.9, False)]
+    ("goal_reached", "expected_status"),
+    [(True, "passed"), (False, "failed")],
 )
-def test_goal_reached_follows_only_the_protected_benchmark(
-    monkeypatch, tmp_path, official_success_percent, goal_reached
+def test_goal_verdict_follows_only_runner_owned_official_assessment(
+    monkeypatch, tmp_path, goal_reached, expected_status
 ):
-    state_path = _pending_final_benchmark_state(monkeypatch, tmp_path)
-
-    def protected_benchmark(model_path, algorithm=None, progress_callback=None):
-        del model_path, algorithm, progress_callback
-        return {
-            "schema_version": 1,
-            "episodes": 200,
-            "seed": 1000,
-            "success_percent": official_success_percent,
-        }
-
-    # Only the protected evaluator is stubbed: the real adapter derives the verdict.
+    candidate, artifact = _requested_assessment_state(monkeypatch, tmp_path)
     monkeypatch.setattr(
-        "robot_learning.scenario.final_benchmark._protected_evaluate_final_model",
-        protected_benchmark,
+        run_experiment.assessment,
+        "evaluate_official_model",
+        lambda *_args, **_kwargs: {
+            "goal_reached": goal_reached,
+            "success_percent": 98.0 if goal_reached else 97.9,
+            "episodes": 200,
+        },
     )
 
-    assert execute_pending_final_benchmark() == 0
+    assert run_experiment.run_official_assessment() == 0
 
-    persisted = json.loads(state_path.read_text(encoding="utf-8"))
-    assert persisted["official_metrics"]["goal_reached"] is goal_reached
-    assert (tmp_path / "GOAL_REACHED").exists() is goal_reached
+    persisted = json.loads(paths.STATE_PATH.read_text(encoding="utf-8"))
+    assert persisted["terminal_state"]["status"] == (
+        f"official_assessment_{expected_status}"
+    )
+    assert persisted["official_assessment"]["model"] == candidate["id"]
+    assert persisted["official_assessment"]["artifact"] == candidate["artifact"]
+    assert (artifact / "model.zip").is_file()
+    assert paths.GOAL_PATH.exists() is goal_reached

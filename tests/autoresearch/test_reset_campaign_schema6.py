@@ -79,9 +79,6 @@ def test_fresh_campaign_writes_only_schema6_memory(monkeypatch, tmp_path):
     research = _bind_paths(monkeypatch, tmp_path)
     obsolete = (
         "operation_request.json",
-        "BASELINE_PENDING",
-        "proposal.json",
-        "evaluation_request.json",
         "postmortems.md",
         "archive.md",
         "last_train_summary.md",
@@ -120,13 +117,6 @@ def test_fresh_campaign_writes_only_schema6_memory(monkeypatch, tmp_path):
     assert state["active_inquiry"] is None
     assert state["pi_checkpoint"] is None
     assert state["scientific_session"] is None
-    assert not {
-        "baseline",
-        "inquiry_session",
-        "active_method",
-        "pending_analysis",
-        "last_experiment",
-    } & set(state)
     assert json.loads(paths.STATE_PATH.read_text(encoding="utf-8")) == state
     assert paths.RESULTS_PATH.read_text(encoding="utf-8") == ""
     assert paths.LOG_PATH.read_text(

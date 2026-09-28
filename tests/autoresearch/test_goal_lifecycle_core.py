@@ -37,6 +37,9 @@ def _configure(monkeypatch, tmp_path: Path) -> dict:
     monkeypatch.setattr(repository, "scientific_delta", lambda _parent: [])
     monkeypatch.setattr(repository, "campaign_lab_manifest", list)
     monkeypatch.setattr(
+        run_experiment, "_protected_panel_overlap", lambda *_args: False
+    )
+    monkeypatch.setattr(
         repository, "publish_scientific_recipe", lambda *_args: "a" * 40
     )
     state = repository.empty_campaign_state(
@@ -178,9 +181,7 @@ def _checkpoint(state: dict) -> dict:
     }
 
 
-def test_state_is_a_strict_replacement_without_baseline_or_method_fields(
-    monkeypatch, tmp_path
-):
+def test_state_is_a_strict_schema6_operation_state(monkeypatch, tmp_path):
     state = _configure(monkeypatch, tmp_path)
 
     assert state["model_roles"] == {
@@ -193,16 +194,7 @@ def test_state_is_a_strict_replacement_without_baseline_or_method_fields(
     assert state["scientific_session"] is None
     assert state["pi_checkpoint"] is None
     assert state["operation_events"] == []
-    assert not {
-        "pending_analysis",
-        "pending_method_decision",
-        "active_method",
-        "inquiry_session",
-    } & set(state)
-
-    state["pending_analysis"] = None
-    with pytest.raises(RuntimeError, match="pending_analysis"):
-        repository.validate_research_state(state, allow_missing_artifact=True)
+    assert set(state) == repository.STATE_FIELDS
 
 
 def test_inquiry_closure_is_method_independent_and_sessions_end_at_checkpoints(
@@ -249,7 +241,7 @@ def test_inquiry_closure_is_method_independent_and_sessions_end_at_checkpoints(
 
 def test_one_pending_transaction_freezes_the_request(monkeypatch, tmp_path):
     state = _configure(monkeypatch, tmp_path)
-    _start_session(state, "goal_review", "Choose the first useful operation.")
+    _start_session(state, "startup", "Choose the first useful operation.")
     request = {
         "training": {
             "initialization": "fresh",
@@ -273,7 +265,7 @@ def test_training_returns_facts_to_same_session_without_assigning_roles(
     monkeypatch, tmp_path
 ):
     state = _configure(monkeypatch, tmp_path)
-    session = _start_session(state, "goal_review", "Establish useful model evidence.")
+    session = _start_session(state, "startup", "Establish useful model evidence.")
     request = {
         "training": {
             "initialization": "fresh",
@@ -342,7 +334,7 @@ def test_training_returns_facts_to_same_session_without_assigning_roles(
 
 def test_completed_training_rejects_existing_candidate_key(monkeypatch, tmp_path):
     state = _configure(monkeypatch, tmp_path)
-    _start_session(state, "goal_review", "Train without replacing prior evidence.")
+    _start_session(state, "startup", "Train without replacing prior evidence.")
     existing_artifact = _artifact(tmp_path / "archive" / "existing", b"existing")
     existing = _candidate("T1:checkpoint-10", existing_artifact)
     state["candidates"][existing["id"]] = existing
@@ -403,7 +395,7 @@ def test_measurement_has_independent_identity_and_returns_to_same_session(
     monkeypatch, tmp_path
 ):
     state = _configure(monkeypatch, tmp_path)
-    session = _start_session(state, "goal_review", "Measure the available candidate.")
+    session = _start_session(state, "startup", "Measure the available candidate.")
     artifact = _artifact(tmp_path / "archive" / "candidate")
     candidate = _candidate("T1:checkpoint-10", artifact)
     state["candidates"][candidate["id"]] = candidate
@@ -461,7 +453,7 @@ def test_research_evaluation_rejects_semantics_changes_after_acceptance(
     monkeypatch, tmp_path
 ):
     state = _configure(monkeypatch, tmp_path)
-    _start_session(state, "goal_review", "Measure a candidate.")
+    _start_session(state, "startup", "Measure a candidate.")
     evaluator = tmp_path / "robot_learning" / "scenario" / "evaluation.py"
     evaluator.parent.mkdir(parents=True)
     evaluator.write_text("version = 1\n", encoding="utf-8")
@@ -495,7 +487,7 @@ def test_python_module_uses_frozen_module_manifest_not_evaluation_semantics(
     monkeypatch, tmp_path
 ):
     state = _configure(monkeypatch, tmp_path)
-    _start_session(state, "goal_review", "Run a PI-authored diagnostic.")
+    _start_session(state, "startup", "Run a PI-authored diagnostic.")
     module = tmp_path / "research" / "lab" / "diagnostic.py"
     module.parent.mkdir(parents=True)
     module.write_text("version = 1\n", encoding="utf-8")
@@ -527,7 +519,7 @@ def test_generic_measurement_executes_pi_owned_tool_and_records_artifact(
     monkeypatch, tmp_path
 ):
     state = _configure(monkeypatch, tmp_path)
-    session = _start_session(state, "goal_review", "Run a PI-authored diagnostic.")
+    session = _start_session(state, "startup", "Run a PI-authored diagnostic.")
     module = tmp_path / "research" / "lab" / "diagnostic.py"
     module.parent.mkdir(parents=True)
     module.write_text("def main():\n    return None\n", encoding="utf-8")
@@ -577,7 +569,7 @@ def test_identical_raw_measurement_after_completion_allocates_next_operation(
     monkeypatch, tmp_path
 ):
     state = _configure(monkeypatch, tmp_path)
-    _start_session(state, "goal_review", "Repeat one bounded diagnostic.")
+    _start_session(state, "startup", "Repeat one bounded diagnostic.")
     module = tmp_path / "research" / "lab" / "diagnostic.py"
     module.parent.mkdir(parents=True)
     module.write_text("def main():\n    return None\n", encoding="utf-8")
@@ -654,7 +646,7 @@ def test_completed_python_module_recovery_rejects_mutated_archived_evidence(
     monkeypatch, tmp_path
 ):
     state = _configure(monkeypatch, tmp_path)
-    _start_session(state, "goal_review", "Recover one completed diagnostic.")
+    _start_session(state, "startup", "Recover one completed diagnostic.")
     module = tmp_path / "research" / "lab" / "diagnostic.py"
     module.parent.mkdir(parents=True)
     module.write_text("def main():\n    return None\n", encoding="utf-8")
@@ -722,7 +714,7 @@ def test_python_module_publishes_changed_non_lab_science_before_execution(
     monkeypatch, tmp_path
 ):
     state = _configure(monkeypatch, tmp_path)
-    session = _start_session(state, "goal_review", "Run changed scientific code.")
+    session = _start_session(state, "startup", "Run changed scientific code.")
     module = tmp_path / "robot_learning" / "scenario" / "diagnostic.py"
     module.parent.mkdir(parents=True)
     module.write_text("def main():\n    return None\n", encoding="utf-8")
@@ -775,7 +767,7 @@ def test_comparisons_are_resolved_to_planned_canonical_candidates_at_acceptance(
     monkeypatch, tmp_path
 ):
     state = _configure(monkeypatch, tmp_path)
-    _start_session(state, "goal_review", "Compare two measured candidates.")
+    _start_session(state, "startup", "Compare two measured candidates.")
     first_artifact = _artifact(tmp_path / "archive" / "first", b"first")
     second_artifact = _artifact(tmp_path / "archive" / "second", b"second")
     first = _candidate("T1:checkpoint-10", first_artifact)
@@ -825,7 +817,7 @@ def test_paired_comparison_uses_only_the_exact_frozen_shared_episodes(
     monkeypatch, tmp_path
 ):
     state = _configure(monkeypatch, tmp_path)
-    _start_session(state, "goal_review", "Compare exact shared evidence.")
+    _start_session(state, "startup", "Compare exact shared evidence.")
     first = _candidate("T1:checkpoint-10", _artifact(tmp_path / "first", b"first"))
     second = _candidate("T2:checkpoint-10", _artifact(tmp_path / "second", b"second"))
     state["candidates"] = {first["id"]: first, second["id"]: second}
@@ -908,7 +900,7 @@ def test_measurement_recovery_rejects_damaged_partial_artifact(
     monkeypatch, tmp_path, damage
 ):
     state = _configure(monkeypatch, tmp_path)
-    _start_session(state, "goal_review", "Recover a partially completed measurement.")
+    _start_session(state, "startup", "Recover a partially completed measurement.")
     artifact = _artifact(tmp_path / "archive" / "candidate")
     candidate = _candidate("T1:checkpoint-10", artifact)
     state["candidates"][candidate["id"]] = candidate
@@ -988,7 +980,7 @@ def test_failed_operation_can_be_reaccepted_with_repaired_provenance(
     monkeypatch, tmp_path, capsys
 ):
     state = _configure(monkeypatch, tmp_path)
-    _start_session(state, "goal_review", "Repair a failed training operation.")
+    _start_session(state, "startup", "Repair a failed training operation.")
     source = tmp_path / "robot_learning" / "scenario" / "reward.py"
     source.parent.mkdir(parents=True)
     source.write_text("reward = 1\n", encoding="utf-8")
@@ -1085,7 +1077,7 @@ def test_failed_operation_can_be_reaccepted_with_repaired_provenance(
 
 def test_transfer_parent_is_explicit_and_frozen(monkeypatch, tmp_path):
     state = _configure(monkeypatch, tmp_path)
-    _start_session(state, "goal_review", "Train from a selected candidate.")
+    _start_session(state, "startup", "Train from a selected candidate.")
     artifact = _artifact(tmp_path / "archive" / "candidate")
     candidate = _candidate("T1:checkpoint-10", artifact)
     state["candidates"][candidate["id"]] = candidate
@@ -1117,7 +1109,7 @@ def test_model_roles_change_only_through_explicit_evidence_backed_operation(
     monkeypatch, tmp_path
 ):
     state = _configure(monkeypatch, tmp_path)
-    _start_session(state, "goal_review", "Assign a model role from evidence.")
+    _start_session(state, "startup", "Assign a model role from evidence.")
     artifact = _artifact(tmp_path / "archive" / "candidate")
     candidate = _candidate("T1:checkpoint-10", artifact)
     state["candidates"][candidate["id"]] = candidate
@@ -1288,7 +1280,7 @@ def test_recipe_restoration_is_mechanical_and_does_not_change_roles(
     monkeypatch, tmp_path
 ):
     state = _configure(monkeypatch, tmp_path)
-    session = _start_session(state, "goal_review", "Restore a selected recipe.")
+    session = _start_session(state, "startup", "Restore a selected recipe.")
     artifact = _artifact(tmp_path / "archive" / "candidate")
     candidate = _candidate("T1:checkpoint-10", artifact)
     state["candidates"][candidate["id"]] = candidate
@@ -1323,7 +1315,7 @@ def test_recipe_restoration_rejects_worktree_changes_after_acceptance(
     monkeypatch, tmp_path
 ):
     state = _configure(monkeypatch, tmp_path)
-    _start_session(state, "goal_review", "Restore a selected recipe.")
+    _start_session(state, "startup", "Restore a selected recipe.")
     artifact = _artifact(tmp_path / "archive" / "candidate")
     candidate = _candidate("T1:checkpoint-10", artifact)
     state["candidates"][candidate["id"]] = candidate
@@ -1353,7 +1345,7 @@ def test_recipe_restore_recovers_from_crash_after_restoring_progress_write(
     monkeypatch, tmp_path
 ):
     state = _configure(monkeypatch, tmp_path)
-    _start_session(state, "goal_review", "Restore a selected recipe.")
+    _start_session(state, "startup", "Restore a selected recipe.")
     candidate = _candidate(
         "T1:checkpoint-10", _artifact(tmp_path / "archive" / "candidate")
     )
@@ -1408,7 +1400,7 @@ def test_recipe_restore_recovers_from_crash_after_idempotent_apply(
     monkeypatch, tmp_path
 ):
     state = _configure(monkeypatch, tmp_path)
-    _start_session(state, "goal_review", "Restore a selected recipe.")
+    _start_session(state, "startup", "Restore a selected recipe.")
     candidate = _candidate(
         "T1:checkpoint-10", _artifact(tmp_path / "archive" / "candidate")
     )
@@ -1593,7 +1585,7 @@ def test_max_inquiries_is_not_a_training_or_campaign_stopping_rule(
 ):
     state = _configure(monkeypatch, tmp_path)
     state["counters"]["inquiry"] = 15
-    _start_session(state, "goal_review", "Choose the next useful operation.")
+    _start_session(state, "startup", "Choose the first useful operation.")
     training = {
         "training": {
             "initialization": "fresh",
@@ -1604,6 +1596,10 @@ def test_max_inquiries_is_not_a_training_or_campaign_stopping_rule(
         }
     }
     assert protocol.validate_operation_request(training, state) == "training"
+    run_experiment.accept_operation(_checkpoint(state), state)
+    assert run_experiment.execute_pending_operation() == 0
+    state = repository.read_state()
+    _start_session(state, "goal_review", "Choose the next goal-level action.")
     opening = {
         "inquiry": {
             "action": "open",
@@ -1621,7 +1617,7 @@ def test_supersession_graph_requires_one_reciprocal_same_request_successor(
     monkeypatch, tmp_path
 ):
     state = _configure(monkeypatch, tmp_path)
-    _start_session(state, "goal_review", "Repair one failed operation.")
+    _start_session(state, "startup", "Repair one failed operation.")
     monkeypatch.setattr(run_experiment.research_config, "load_experiment_config", dict)
     request = {
         "training": {

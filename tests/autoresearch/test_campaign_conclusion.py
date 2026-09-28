@@ -189,9 +189,7 @@ def test_requested_official_assessment_is_runner_owned_and_recorded(
             "episodes": 200,
         }
 
-    monkeypatch.setattr(
-        "robot_learning.scenario.final_benchmark.evaluate_final_model", evaluate
-    )
+    monkeypatch.setattr(run_experiment.assessment, "evaluate_official_model", evaluate)
     monkeypatch.setattr(repository, "commit_runner_memory", lambda _message: True)
     monkeypatch.setattr(sys, "argv", ["run_experiment.py", "--run-official-assessment"])
 
@@ -294,7 +292,8 @@ def test_official_assessment_restart_reconciles_state_and_history(
     run_experiment.accept_operation(request, state)
     assert run_experiment.execute_pending_operation() == 0
     monkeypatch.setattr(
-        "robot_learning.scenario.final_benchmark.evaluate_final_model",
+        run_experiment.assessment,
+        "evaluate_official_model",
         lambda *_args, **_kwargs: {
             "goal_reached": False,
             "success_percent": 75.0,
@@ -362,7 +361,8 @@ def test_official_assessment_recovery_revalidates_the_assessed_artifact(
     )
     assert run_experiment.execute_pending_operation() == 0
     monkeypatch.setattr(
-        "robot_learning.scenario.final_benchmark.evaluate_final_model",
+        run_experiment.assessment,
+        "evaluate_official_model",
         lambda *_args, **_kwargs: {
             "goal_reached": True,
             "success_percent": 100.0,

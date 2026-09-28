@@ -13,7 +13,6 @@ from research.runner_protocol import (
     NOT_OWNED_PATHS_REMEDY,
     TEST_SURFACE_REJECTION,
     is_researcher_owned,
-    validate_experiment_semantics,
     validate_research_delta_ownership,
 )
 
@@ -40,14 +39,16 @@ def test_a_test_path_is_never_researcher_owned(path):
 
 
 @pytest.mark.parametrize("path", TEST_PATHS)
-def test_a_proposal_delta_containing_a_test_path_is_rejected(path):
-    with pytest.raises(ValueError, match="not part of the researcher's surface"):
+def test_a_scientific_operation_delta_containing_a_test_path_is_rejected(path):
+    with pytest.raises(ValueError, match="human-owned and cannot be changed"):
         validate_research_delta_ownership([RESEARCHER_PATH, path])
 
 
 def test_the_rejection_names_the_paths_and_prescribes_dropping_them():
     offending = ["tests/scenario/test_reward.py", "tests/training/test_policy.py"]
-    expected = f"{TEST_SURFACE_REJECTION}: {sorted(offending)}; {NOT_OWNED_PATHS_REMEDY}"
+    expected = (
+        f"{TEST_SURFACE_REJECTION}: {sorted(offending)}; {NOT_OWNED_PATHS_REMEDY}"
+    )
 
     with pytest.raises(ValueError) as error:
         validate_research_delta_ownership([RESEARCHER_PATH, *offending])
@@ -64,21 +65,10 @@ def test_the_rejection_names_the_paths_and_prescribes_dropping_them():
 
 
 def test_the_remedy_sentence_is_exact():
-    assert NOT_OWNED_PATHS_REMEDY == (
-        "drop those paths from the proposal, because they are not the "
-        "researcher's changes to make"
-    )
+    assert NOT_OWNED_PATHS_REMEDY == "remove those paths from the scientific operation"
 
 
-def test_a_proposal_delta_of_researcher_owned_paths_still_validates():
+def test_a_scientific_delta_of_pi_owned_paths_still_validates():
     validate_research_delta_ownership(
         ["robot_learning/scenario/reward.py", "robot_learning/training/algorithms.py"]
-    )
-    validate_experiment_semantics(
-        {},
-        "training",
-        "transfer",
-        None,
-        ["robot_learning/scenario/reward.py"],
-        False,
     )

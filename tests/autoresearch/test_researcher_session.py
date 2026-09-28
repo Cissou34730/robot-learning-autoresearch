@@ -1,793 +1,297 @@
-"""A bounded Researcher session is observed, not guessed.
+"""Behavioral launcher-to-Runner coverage for the schema-6 lifecycle."""
 
-Three independent facts describe every session -- the process outcome, the
-presence of the expected deliverable and its validity -- and none of them is
-read from whatever the Researcher printed.
-"""
+from __future__ import annotations
 
 import json
-import re
-import shutil
-import subprocess
+import sys
 from pathlib import Path
 
-import pytest
-
+from research import run_experiment
+from research import runner_execution as execution
+from research import runner_paths as paths
 from research import runner_repository as repository
-from research.run_experiment import (
-    check_evaluation_request,
-    execute_pending_evaluations,
-    main,
-)
 
-ROOT = Path(__file__).resolve().parents[2]
-LOOP = (ROOT / "run_research.ps1").read_text(encoding="utf-8")
-SESSION_LIBRARY_PATH = ROOT / "researcher_session.ps1"
-SESSION_LIBRARY = SESSION_LIBRARY_PATH.read_text(encoding="utf-8")
-POWERSHELL = shutil.which("pwsh") or shutil.which("powershell")
-EVALUATION_EXECUTION_FAILURE = (
-    "Runner execution of the accepted measurement request failed."
-)
-ANALYSIS_EXECUTION_FAILURE = (
-    "Runner execution of the accepted analysis deliverable failed."
-)
 
-powershell_only = pytest.mark.skipif(
-    POWERSHELL is None, reason="no PowerShell host to run the launcher library"
-)
-
-
-def run_session_script(body: str, tmp_path: Path) -> str:
-    script = tmp_path / "session_case.ps1"
-    script.write_text(f". '{SESSION_LIBRARY_PATH}'\n{body}\n", encoding="utf-8")
-    completed = subprocess.run(
-        [
-            POWERSHELL,
-            "-NoProfile",
-            "-NonInteractive",
-            "-ExecutionPolicy",
-            "Bypass",
-            "-File",
-            str(script),
-        ],
-        capture_output=True,
-        text=True,
-        check=False,
-    )
-    assert completed.returncode == 0, completed.stderr
-    return completed.stdout
-
-
-def observe(
-    *,
-    exit_code: str,
-    present: bool,
-    valid: bool,
-    reason: str = "",
-    attempt: int = 1,
-    variable: str = "status",
-) -> str:
-    return (
-        f"${variable} = New-ResearcherSessionStatus -Phase 'new hypothesis' "
-        f"-Attempt {attempt} -ExitCode {exit_code} "
-        f"-Deliverable 'research/proposal.json' "
-        f"-Present ${str(present).lower()} -Valid ${str(valid).lower()} "
-        f"-Reason '{reason}'\n"
-        f"Write-ResearcherSessionStatus ${variable}\n"
-        f'Write-Host "complete=$(${variable}.Complete)"\n'
-    )
-
-
-# --- the three observed facts ----------------------------------------------
-
-
-@powershell_only
-def test_successful_process_with_a_valid_deliverable_completes_the_phase(tmp_path):
-    console = run_session_script(
-        observe(exit_code="0", present=True, valid=True), tmp_path
-    )
-
-    assert "complete=True" in console
-    assert "process=0" in console
-    assert "research/proposal.json=valid" in console
-    # A normal session stays a single quiet line.
-    assert "=== Researcher session" not in console
-
-
-@powershell_only
-def test_successful_process_without_a_deliverable_leaves_the_phase_open(tmp_path):
-    console = run_session_script(
-        observe(
-            exit_code="0",
-            present=False,
-            valid=False,
-            reason="research/proposal.json was not created",
-        ),
-        tmp_path,
-    )
-
-    assert "complete=False" in console
-    assert "Process exit : 0" in console
-    assert "Deliverable  : research/proposal.json (missing)" in console
-    assert "Validation   : not run" in console
-
-
-@powershell_only
-def test_failed_process_without_a_deliverable_reports_both_facts(tmp_path):
-    console = run_session_script(
-        observe(
-            exit_code="1",
-            present=False,
-            valid=False,
-            reason="research/proposal.json was not created",
-        ),
-        tmp_path,
-    )
-
-    assert "complete=False" in console
-    assert "Process exit : 1" in console
-    assert "Deliverable  : research/proposal.json (missing)" in console
-    assert "Validation   : not run" in console
-
-
-@powershell_only
-def test_invalid_deliverable_keeps_the_validator_reason(tmp_path):
-    reason = "PROPOSAL_INVALID: proposal initialization must be transfer or fresh"
-    console = run_session_script(
-        observe(exit_code="0", present=True, valid=False, reason=reason), tmp_path
-    )
-
-    assert "complete=False" in console
-    assert "Process exit : 0" in console
-    assert "Deliverable  : research/proposal.json (present)" in console
-    assert "Validation   : invalid" in console
-    assert f"Reason       : {reason}" in console
-
-
-@powershell_only
-def test_failed_process_with_a_valid_deliverable_is_not_discarded(tmp_path):
-    console = run_session_script(
-        observe(exit_code="1", present=True, valid=True), tmp_path
-    )
-
-    # The process anomaly is reported, the scientific deliverable is kept.
-    assert "complete=True" in console
-    assert "Process exit : 1" in console
-    assert "Validation   : valid" in console
-
-
-@powershell_only
-def test_a_missing_exit_code_is_reported_as_such(tmp_path):
-    console = run_session_script(
-        observe(exit_code="$null", present=False, valid=False), tmp_path
-    )
-
-    assert "Process exit : unavailable" in console
-
-
-@powershell_only
-def test_the_first_attempt_stays_visible_after_the_retry(tmp_path):
-    body = observe(
-        exit_code="1",
-        present=False,
-        valid=False,
-        reason="research/proposal.json was not created",
-        attempt=1,
-        variable="first",
-    ) + observe(
-        exit_code="0",
-        present=True,
-        valid=False,
-        reason="PROPOSAL_INVALID: proposal initialization must be fresh",
-        attempt=2,
-        variable="second",
-    )
-    console = run_session_script(body, tmp_path)
-
-    first = console.index("attempt 1")
-    second = console.index("attempt 2")
-    assert first < second
-    assert console.index("Process exit : 1") < second
-    assert console.index("Validation   : invalid") > first
-
-
-# --- how the launcher uses those facts -------------------------------------
-
-
-def test_every_researcher_invocation_goes_through_the_one_process_boundary():
-    lines = LOOP.splitlines()
-    entry_indices = [
-        index for index, line in enumerate(lines) if "researcher_copilot.py" in line
-    ]
-
-    # One command builds every session; continuation is an argument, not a branch.
-    # Exactly one place in the launcher loop names the runtime entry point.
-    assert len(entry_indices) == 1
-    entry_index = entry_indices[0]
-
-    # The invocation is assembled from an argument array, not a frozen command
-    # string: the entry point is one quoted token among the uv arguments, so
-    # rewording those arguments cannot break this test.
-    tokens = [token.strip().strip('",') for token in lines[entry_index].split()]
-    assert "researcher_copilot.py" in tokens
-    assert "run" in tokens
-    assert "python" in tokens
-
-    # That array is the one handed to the single process boundary, and the
-    # observed exit code is whatever that boundary returned.
-    array_name = ""
-    for line in reversed(lines[:entry_index]):
-        opener = re.search(r"\$(\w+)\s*=\s*@\($", line.strip())
-        if opener:
-            array_name = opener.group(1)
-            break
-    assert array_name, "the runtime entry point is not built as an argument array"
-    boundary = re.search(
-        r"\$script:ResearcherExitCode\s*=\s*Invoke-CooperativeProcess"
-        r"(?:(?!\$script:ResearcherExitCode).)*"
-        rf"-ArgumentList \${re.escape(array_name)}\b",
-        LOOP,
-        re.DOTALL,
-    )
-    assert boundary is not None
-
-    # Continuation is an argument to the one invocation path, never a second branch.
-    for prompt in (
-        "$scientificModelRetryPrompt",
-        "$analysisRetryPrompt",
-        "$retryPrompt",
-    ):
-        assert re.search(
-            rf"Invoke-ResearcherSession -Prompt {re.escape(prompt)}[^\n]*-Continue",
-            LOOP,
-        )
-
-
-def test_the_launcher_offers_both_runtimes_and_still_defaults_to_copilot():
-    normalized = " ".join(LOOP.split())
-
-    # Both runtimes are selectable; the default keeps existing commands behaving
-    # exactly as before this option existed.
-    assert '[ValidateSet("copilot", "opencode")]' in LOOP
-    assert '[string]$ResearcherBackend = "copilot"' in LOOP
-    assert "researcher_opencode/src/main.ts" in normalized
-
-    # A model id is only meaningful to the runtime that resolves it, so each
-    # runtime carries its own default rather than sharing one.
-    assert 'copilot  = "gpt-5.6-luna"' in LOOP
-    assert 'opencode = "opencode-go/deepseek-v4.1-flash"' in LOOP
-
-    # The OpenCode runtime has no 'max' effort; saying so beats substituting one.
-    assert '$ResearcherBackend -eq "opencode" -and $Reasoning -eq "max"' in LOOP
-
-    # A missing runtime is reported, never silently ignored.
-    assert "The OpenCode runtime entry point is missing" in LOOP
-    assert "The OpenCode runtime needs Node.js on PATH" in LOOP
-
-
-def test_the_opencode_server_is_isolated_from_foreground_console_interrupts():
-    assert "-WindowStyle Hidden" in LOOP
-    assert "-NoNewWindow" not in LOOP
-
-
-def test_the_exit_code_never_decides_whether_a_bounded_phase_is_complete():
-    for phase in (
-        "proposalStatus",
-        "analysisStatus",
-        "scientificModelStatus",
-    ):
-        assert LOOP.count(f"if (-not ${phase}.Complete)") == 2
-
-    assert "ResearcherExitCode -ne" not in LOOP
-    assert "ResearcherExitCode -eq" not in LOOP
-    # Completion is a property of the deliverable alone.
-    assert "Complete    = ($Present -and $Valid)" in SESSION_LIBRARY
-
-
-def test_each_phase_reports_its_session_before_deciding_to_retry():
-    for status, retry in (
-        ("$proposalStatus", "=== Research proposal missing or invalid"),
-        ("$analysisStatus", "=== Analysis deliverable missing or invalid"),
-        ("$scientificModelStatus", "=== Scientific model missing or invalid"),
-    ):
-        assert LOOP.index(f"Write-ResearcherSessionStatus {status}") < LOOP.index(retry)
-
-
-def test_every_phase_validates_its_deliverable_with_the_protected_validator():
-    for validator in (
-        "--check-proposal",
-        "--check-evaluation-request",
-        "--check-analysis-deliverable",
-        "--check-scientific-model-deliverable",
-    ):
-        assert validator in LOOP
-
-
-def test_session_observation_reads_no_researcher_output():
-    for text in (LOOP, SESSION_LIBRARY):
-        for forbidden in (
-            "Tee-Object",
-            "Select-String",
-            "Out-String",
-            "--format json",
-        ):
-            assert forbidden not in text
-    # The provider command is invoked, never captured or interpreted.
-    assert "= uv run" not in LOOP
-    assert "researcher_copilot" not in SESSION_LIBRARY
-    assert "copilot" not in SESSION_LIBRARY
-
-
-def test_session_observation_is_console_only():
-    for text in (LOOP, SESSION_LIBRARY):
-        for durable in ("session_history", "process_events", "researcher_runs"):
-            assert durable not in text
-    # The observation has one destination, and it is the console.
-    for persisting in ("Out-File", "Add-Content", "Set-Content", "ConvertTo-Json"):
-        assert persisting not in SESSION_LIBRARY
-
-
-def test_runner_execution_failure_never_reopens_the_researcher_phase():
-    for marker in (EVALUATION_EXECUTION_FAILURE, ANALYSIS_EXECUTION_FAILURE):
-        assert marker in LOOP
-        remainder = LOOP.split(marker, 1)[1].split("continue", 1)[0]
-        assert "Invoke-ResearcherSession" not in remainder
-        assert "retry" not in remainder.lower()
-
-
-def test_launcher_stops_for_either_terminal_official_assessment():
-    terminal_guard = LOOP.split("terminal_campaign_status", 1)[1].split(
-        'if (Test-Path "research\\RECOVERY_PENDING")', 1
-    )[0]
-
-    assert "Official assessment complete" in terminal_guard
-    assert "break" in terminal_guard
-
-
-def test_analysis_preflight_rejects_duplicate_strategy_before_accepting_closure(
-    tmp_path, monkeypatch, capsys
-):
-    from research import run_experiment, runner_paths
-
-    campaign_id = "current"
-    state = {
-        "schema_version": repository.STATE_SCHEMA_VERSION,
-        "campaign": {"id": campaign_id},
-        "pending_analysis": {"experiment": 4, "baseline": False},
-    }
-    strategy = (
-        f"## {campaign_id} / Scientific strategy\n\n"
-        "**Current synthesis:** Current.\n\n"
-        "**Lessons and limits:** Evidence is limited.\n\n"
-        "**Open questions:** The mechanism remains unresolved.\n\n"
-        "**Active inquiry:** Determine which observation changes the conclusion.\n"
-    )
-    postmortems = tmp_path / "postmortems.md"
-    postmortems.write_text(strategy + "\n" + strategy, encoding="utf-8")
-    proposal = tmp_path / "proposal.json"
-    proposal.write_text("{}", encoding="utf-8")
-    monkeypatch.setattr(runner_paths, "POSTMORTEM_PATH", postmortems)
-    monkeypatch.setattr(runner_paths, "PROPOSAL_PATH", proposal)
+def _configure(monkeypatch, tmp_path: Path) -> dict:
+    research = tmp_path / "research"
+    research.mkdir()
+    for name, value in {
+        "ROOT": tmp_path,
+        "RESEARCH_DIR": research,
+        "STATE_PATH": research / "research_state.json",
+        "RESULTS_PATH": research / "results.jsonl",
+        "LOG_PATH": research / "EXPERIMENTS.md",
+        "OPERATION_REQUEST_PATH": research / "operation_request.json",
+        "SCIENTIFIC_MODEL_PATH": research / "scientific_model.md",
+        "TRAINING_LOG_DIR": research / "training_logs",
+        "CANDIDATE_ROOT": tmp_path / "models" / "candidates",
+        "EVALUATION_DIR": research / "evaluations",
+        "GOAL_PATH": research / "GOAL_REACHED",
+    }.items():
+        monkeypatch.setattr(paths, name, value)
+    monkeypatch.setattr(repository, "git", lambda *args: "a" * 40 + "\n")
+    monkeypatch.setattr(repository, "scientific_delta", lambda _parent: [])
+    monkeypatch.setattr(repository, "campaign_lab_manifest", list)
+    monkeypatch.setattr(repository, "commit_runner_memory", lambda _message: True)
     monkeypatch.setattr(
-        runner_paths, "EVALUATION_REQUEST_PATH", tmp_path / "evaluation_request.json"
+        repository, "publish_scientific_recipe", lambda *_args: "b" * 40
     )
-    monkeypatch.setattr(run_experiment.repository, "read_state", lambda: state)
-    monkeypatch.setattr(run_experiment, "reanchor_phase_parent", lambda _: None)
+    monkeypatch.setattr(run_experiment.research_config, "load_experiment_config", dict)
     monkeypatch.setattr(
-        run_experiment.protocol, "validate_proposal_against_state", lambda *_: None
+        run_experiment, "_protected_panel_overlap", lambda *_args: False
     )
-    monkeypatch.setattr(run_experiment, "validate_research_delta", lambda _: None)
-
-    assert run_experiment.check_analysis_deliverable() == 1
-    assert "duplicate scientific strategy sections" in capsys.readouterr().out
-
-    postmortems.write_text(strategy, encoding="utf-8")
-    assert run_experiment.check_analysis_deliverable() == 0
-    assert "ANALYSIS_DELIVERABLE_VALID: decision" in capsys.readouterr().out
-
-
-# --- the evaluation-request preflight --------------------------------------
-
-
-def _valid_request() -> dict:
-    return {
-        "experiment": 3,
-        "question": "does the intervention change the outcome",
-        "reason": "the champion and the candidate must be compared",
-        "measurements": [
-            {
-                "instrument": "research_evaluation",
-                "candidate": "experiment-3",
-                "episodes": 200,
-                "seed": 10000,
-                "selection": "the only model the hypothesis is about",
-                "omitted_alternative": None,
-            }
-        ],
-    }
-
-
-def _pending_state() -> dict:
-    return {
-        "pending_scientific_parent": "test-parent",
-        "working_lineage": None,
-        "best_known_lineage": None,
-        "retained_lineages": [],
-        "active_method": None,
-        "pending_evaluation_request": {
-            "experiment": 3,
-            "champion_available": True,
-            "candidates": [
-                {
-                    "name": "experiment-3",
-                    "artifact": "models/candidates/experiment-3",
-                }
-            ],
+    monkeypatch.setattr(
+        run_experiment.protocol, "evaluation_semantics_fingerprint", lambda: "semantics"
+    )
+    state = repository.empty_campaign_state(
+        campaign={"id": "campaign", "started_at": "now", "base_commit": "base"},
+        human_goal={
+            "source": "research/scenario.md",
+            "summary": "Reach the protected task objective.",
         },
+        last_verdict="fresh campaign",
+    )
+    state["scientific_model"] = {
+        "status": "ready",
+        "path": "research/scientific_model.md",
+        "commit": "a" * 40,
+    }
+    repository.write_state(state)
+    return state
+
+
+def _run(monkeypatch, *arguments: str) -> int:
+    monkeypatch.setattr(sys, "argv", ["run_experiment.py", *arguments])
+    return run_experiment.main()
+
+
+def _start(monkeypatch, kind: str, objective: str, backend_id: str) -> None:
+    assert (
+        _run(
+            monkeypatch,
+            "--start-session",
+            kind,
+            "--session-objective",
+            objective,
+            "--backend-session-id",
+            backend_id,
+            "--backend-adapter",
+            "copilot",
+            "--backend-model",
+            "gpt-5.6-luna",
+            "--backend-reasoning",
+            "high",
+        )
+        == 0
+    )
+
+
+def _submit(monkeypatch, request: dict) -> dict:
+    paths.OPERATION_REQUEST_PATH.write_text(json.dumps(request), encoding="utf-8")
+    assert _run(monkeypatch) == 0
+    return repository.read_state()
+
+
+def _checkpoint(state: dict, *, next_step: str) -> dict:
+    session = state["scientific_session"]
+    completed = list(session["operation_ids"])
+    return {
+        "checkpoint": {
+            "human_goal_connection": "The bounded work informs the human goal.",
+            "current_goal_gap": "The protected objective is not yet established.",
+            "current_synthesis": "The recorded operations provide the current facts.",
+            "evidence_references": completed,
+            "decision_frontier": "Choose the next goal-directed transition.",
+            "completed_operations": completed,
+            "candidates_and_roles": "Candidate and role state remain explicit.",
+            "next_direction_or_closure": next_step,
+            "cumulative_resource_use": "Only mocked lightweight operations ran.",
+        }
     }
 
 
-def _preflight_files(monkeypatch, tmp_path, request: dict | str) -> Path:
-    state_path = tmp_path / "research_state.json"
-    request_path = tmp_path / "evaluation_request.json"
-    state_path.write_text(json.dumps(_pending_state()), encoding="utf-8")
-    if isinstance(request, str):
-        request_path.write_text(request, encoding="utf-8")
-    else:
-        request_path.write_text(json.dumps(request), encoding="utf-8")
-    candidate = tmp_path / "models" / "candidates" / "experiment-3"
-    candidate.mkdir(parents=True)
-    candidate.joinpath("model.zip").write_bytes(b"model")
-    candidate.joinpath("artifact.json").write_text("{}", encoding="utf-8")
-    candidate.joinpath("policy_runtime.pkl").write_bytes(b"runtime")
-    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
-    monkeypatch.setattr("research.runner_paths.STATE_PATH", state_path)
-    monkeypatch.setattr("research.runner_paths.EVALUATION_REQUEST_PATH", request_path)
-    monkeypatch.setattr(
-        "research.runner_paths.EVALUATION_DIR", tmp_path / "research" / "evaluations"
-    )
-    monkeypatch.setattr(
-        "research.runner_repository.require_resolvable_commit", lambda _: None
-    )
-    monkeypatch.setattr("research.runner_repository.scientific_delta", lambda _: [])
-    monkeypatch.setattr("research.runner_repository.status_paths", lambda scope: [])
-    monkeypatch.setattr("research.runner_repository.campaign_lab_manifest", list)
-
-    def fail_if_measured(*args, **kwargs):
-        del args, kwargs
-        pytest.fail("the preflight executed a measurement")
-
-    monkeypatch.setattr("research.runner_execution.evaluate_artifact", fail_if_measured)
-    return state_path
-
-
-def test_evaluation_preflight_accepts_a_valid_request_without_measuring(
-    monkeypatch, tmp_path, capsys
+def test_launcher_runner_flow_uses_peer_operations_and_no_post_training_gate(
+    monkeypatch, tmp_path
 ):
-    state_path = _preflight_files(monkeypatch, tmp_path, _valid_request())
-    original_state = state_path.read_bytes()
+    _configure(monkeypatch, tmp_path)
 
-    assert check_evaluation_request() == 0
-    assert "EVALUATION_REQUEST_VALID" in capsys.readouterr().out
-    assert state_path.read_bytes() == original_state
-
-
-@pytest.mark.parametrize(
-    ("requested", "message"),
-    [
-        (
-            dict(_valid_request(), question=""),
-            "requires a non-empty question",
-        ),
-        (
-            {
-                "experiment": 3,
-                "question": "q",
-                "reason": "r",
-                "measurements": [],
-            },
-            "at least one measurement",
-        ),
-        (
-            dict(_valid_request(), experiment=2),
-            "wrong experiment",
-        ),
-        (
-            dict(
-                _valid_request(),
-                measurements=[
-                    {"instrument": "task_reference", "candidate": "champion", "seed": 7}
-                ],
-            ),
-            "task_reference measurement cannot set unsupported fields",
-        ),
-        # Entry-level rules, all resolved before the first measurement.
-        (
-            dict(
-                _valid_request(),
-                measurements=[
-                    {
-                        "instrument": "research_evaluation",
-                        "candidate": "experiment-9",
-                        "episodes": 200,
-                        "seed": 1,
-                        "selection": "the model under test",
-                        "omitted_alternative": None,
-                    }
-                ],
-            ),
-            "unknown measurement candidate 'experiment-9'",
-        ),
-        (
-            dict(
-                _valid_request(),
-                measurements=[
-                    {
-                        "instrument": "research_evaluation",
-                        "candidate": "experiment-3",
-                        "episodes": 0,
-                        "seed": 1,
-                        "selection": "the model under test",
-                        "omitted_alternative": None,
-                    }
-                ],
-            ),
-            "research_evaluation episodes must be positive",
-        ),
-        (
-            dict(
-                _valid_request(),
-                measurements=[
-                    {
-                        "instrument": "research_evaluation",
-                        "candidate": "experiment-3",
-                        "episodes": "many",
-                        "seed": 1,
-                        "selection": "the model under test",
-                        "omitted_alternative": None,
-                    }
-                ],
-            ),
-            "research_evaluation episodes must be an integer",
-        ),
-        (
-            dict(
-                _valid_request(),
-                measurements=[
-                    {
-                        "instrument": "research_evaluation",
-                        "candidate": "experiment-3",
-                        "episodes": 200,
-                        "selection": "the model under test",
-                        "omitted_alternative": None,
-                    }
-                ],
-            ),
-            "research_evaluation is missing required fields: ['seed']",
-        ),
-        (
-            dict(_valid_request(), measurements=["experiment-3"]),
-            "each measurement must be an object",
-        ),
-        (
-            dict(
-                _valid_request(),
-                measurements=[
-                    {
-                        "instrument": "research_evaluation",
-                        "candidate": "experiment-3",
-                        "episodes": 200,
-                        "seed": 1,
-                        "official_benchmark": True,
-                    }
-                ],
-            ),
-            "research_evaluation measurement cannot set unsupported fields",
-        ),
-        (
-            dict(
-                _valid_request(),
-                measurements=[
-                    {
-                        "instrument": "task_reference",
-                        "candidate": "experiment-9",
-                        "selection": "the model under test",
-                        "omitted_alternative": None,
-                    }
-                ],
-            ),
-            "unknown measurement candidate 'experiment-9'",
-        ),
-        (
-            dict(
-                _valid_request(),
-                measurements=[
-                    {"instrument": "official_benchmark", "candidate": "champion"}
-                ],
-            ),
-            "unknown measurement instrument 'official_benchmark'",
-        ),
-        (
-            dict(_valid_request(), evaluations=[]),
-            "evaluations is obsolete",
-        ),
-        (
-            dict(_valid_request(), task_reference_evaluations=[]),
-            "task_reference_evaluations is obsolete",
-        ),
-        # A single unusable entry keeps the whole request out of execution.
-        (
-            dict(
-                _valid_request(),
-                measurements=[
-                    {
-                        "instrument": "research_evaluation",
-                        "candidate": "experiment-3",
-                        "episodes": 200,
-                        "seed": 1,
-                        "selection": "the model under test",
-                        "omitted_alternative": None,
-                    },
-                    {
-                        "instrument": "research_evaluation",
-                        "candidate": "experiment-3",
-                        "episodes": -5,
-                        "seed": 2,
-                        "selection": "the model under test",
-                        "omitted_alternative": None,
-                    },
-                ],
-            ),
-            "research_evaluation episodes must be positive",
-        ),
-        ("{not json", "Expecting"),
-    ],
-)
-def test_evaluation_preflight_rejects_with_a_usable_reason(
-    monkeypatch, tmp_path, capsys, requested, message
-):
-    state_path = _preflight_files(monkeypatch, tmp_path, requested)
-    original_state = state_path.read_bytes()
-
-    assert check_evaluation_request() == 1
-    console = capsys.readouterr().out
-    assert "EVALUATION_REQUEST_INVALID" in console
-    assert message in console
-    assert state_path.read_bytes() == original_state
-
-
-def test_evaluation_preflight_rejects_protected_changes_without_mutation(
-    monkeypatch, tmp_path, capsys
-):
-    state_path = _preflight_files(monkeypatch, tmp_path, _valid_request())
-    original_state = state_path.read_bytes()
-    monkeypatch.setattr(
-        "research.runner_repository.scientific_delta",
-        lambda _: ["robot_learning/scenario/__init__.py"],
+    _start(monkeypatch, "startup", "Prepare the campaign for goal review.", "backend-1")
+    state = _submit(
+        monkeypatch,
+        _checkpoint(repository.read_state(), next_step="Review the human goal."),
     )
+    assert state["scientific_session"] is None
 
-    assert check_evaluation_request() == 1
-    assert "robot_learning/scenario/__init__.py" in capsys.readouterr().out
-    assert state_path.read_bytes() == original_state
-    with pytest.raises(ValueError, match="robot_learning/scenario/__init__.py"):
-        execute_pending_evaluations()
-    assert state_path.read_bytes() == original_state
-
-
-def test_evaluation_preflight_accepts_researcher_owned_changes(
-    monkeypatch, tmp_path, capsys
-):
-    _preflight_files(monkeypatch, tmp_path, _valid_request())
-    monkeypatch.setattr(
-        "research.runner_repository.scientific_delta",
-        lambda _: ["robot_learning/scenario/reward.py"],
-    )
-
-    assert check_evaluation_request() == 0
-    assert "EVALUATION_REQUEST_VALID" in capsys.readouterr().out
-
-
-def test_invalid_paired_comparison_runs_no_evaluator_and_writes_no_state(
-    monkeypatch, tmp_path, capsys
-):
-    request = dict(
-        _valid_request(),
-        paired_comparisons=[{"candidate": "experiment-3", "reference": "champion"}],
-    )
-    state_path = _preflight_files(monkeypatch, tmp_path, request)
-    original_state = state_path.read_bytes()
-
-    assert check_evaluation_request() == 1
-    reason = capsys.readouterr().out
-    assert "unknown measurement model 'champion'" in reason
-    assert state_path.read_bytes() == original_state
-
-    with pytest.raises(ValueError, match="unknown measurement model 'champion'"):
-        execute_pending_evaluations()
-    assert state_path.read_bytes() == original_state
-
-
-@pytest.mark.parametrize(
-    "measurements",
-    [
-        [
-            {
-                "instrument": "research_evaluation",
-                "candidate": "experiment-9",
-                "episodes": 200,
-                "seed": 1,
+    _start(monkeypatch, "goal_review", "Choose the obstacle to resolve.", "backend-2")
+    state = _submit(
+        monkeypatch,
+        {
+            "inquiry": {
+                "action": "open",
+                "question": "What blocks reliable task completion?",
+                "goal_connection": "The blocking behavior prevents the human goal.",
+                "closure_condition": "Measure a candidate and decide its role.",
+                "rationale": "Resolving this obstacle determines the next route.",
             }
-        ],
-        [
-            {
-                "instrument": "research_evaluation",
-                "candidate": "experiment-3",
-                "episodes": 0,
-                "seed": 1,
-            }
-        ],
-        [
-            {
-                "instrument": "research_evaluation",
-                "candidate": "experiment-3",
-                "episodes": 200,
-            }
-        ],
-    ],
-)
-def test_execution_rejects_exactly_what_the_preflight_rejects(
-    monkeypatch, tmp_path, capsys, measurements
-):
-    """One contract: validation-only and execution resolve the same plan."""
-    _preflight_files(
-        monkeypatch, tmp_path, dict(_valid_request(), measurements=measurements)
+        },
     )
+    assert state["active_inquiry"]["id"] == "I1"
+    state = _submit(
+        monkeypatch,
+        _checkpoint(state, next_step="Start a bounded inquiry session."),
+    )
+    assert state["scientific_session"] is None
 
-    assert check_evaluation_request() == 1
-    preflight_reason = capsys.readouterr().out.split("EVALUATION_REQUEST_INVALID: ")[1]
-
-    with pytest.raises((TypeError, ValueError)) as execution_error:
-        execute_pending_evaluations()
-
-    assert str(execution_error.value) in preflight_reason
-
-
-def test_evaluation_preflight_reports_a_missing_deliverable(
-    monkeypatch, tmp_path, capsys
-):
+    _start(monkeypatch, "inquiry", "Resolve the active obstacle.", "backend-3")
+    archived_artifact = tmp_path / "archive" / "checkpoint-10"
+    archived_artifact.mkdir(parents=True)
+    archived_artifact.joinpath("model.zip").write_bytes(b"model")
+    archived_artifact.joinpath("artifact.json").write_text(
+        '{"timesteps": 10, "completed": true}', encoding="utf-8"
+    )
+    archived_artifact.joinpath("policy_runtime.pkl").write_bytes(b"runtime")
+    archived = [
+        {
+            "name": "checkpoint-10",
+            "artifact": repository.repo_relative_path(archived_artifact),
+            "fingerprint": repository.artifact_fingerprint(archived_artifact),
+            "timesteps": 10,
+            "training_success": 0.5,
+            "ep_rew_mean": 1.0,
+        }
+    ]
+    monkeypatch.setattr(execution, "validate_active_configuration", dict)
+    monkeypatch.setattr(execution, "train_candidate", lambda *_args, **_kwargs: 1.0)
     monkeypatch.setattr(
-        "research.runner_paths.STATE_PATH", tmp_path / "research_state.json"
+        execution,
+        "candidate_directories",
+        lambda _path: [
+            {"name": "checkpoint-10", "path": archived_artifact, "timesteps": 10}
+        ],
     )
     monkeypatch.setattr(
-        "research.runner_paths.EVALUATION_REQUEST_PATH",
-        tmp_path / "evaluation_request.json",
+        repository, "archive_candidates", lambda *_args, **_kwargs: archived
     )
-
-    assert check_evaluation_request() == 1
-    assert "research/evaluation_request.json was not created" in capsys.readouterr().out
-
-
-def test_evaluation_preflight_rejects_a_request_outside_its_phase(
-    monkeypatch, tmp_path, capsys
-):
-    state_path = tmp_path / "research_state.json"
-    request_path = tmp_path / "evaluation_request.json"
-    state_path.write_text(
-        json.dumps({"pending_evaluation_request": None}), encoding="utf-8"
+    monkeypatch.setattr(execution, "remove_candidate_dir", lambda _path: None)
+    state = _submit(
+        monkeypatch,
+        {
+            "training": {
+                "initialization": "fresh",
+                "seed": 7,
+                "steps": 10,
+                "description": "Train the current scientific recipe.",
+                "rationale": "The learning dynamics inform the inquiry.",
+            }
+        },
     )
-    request_path.write_text(json.dumps(_valid_request()), encoding="utf-8")
-    monkeypatch.setattr("research.runner_paths.STATE_PATH", state_path)
-    monkeypatch.setattr("research.runner_paths.EVALUATION_REQUEST_PATH", request_path)
+    bounded_session_id = state["scientific_session"]["id"]
+    assert state["scientific_session"]["operation_ids"] == ["T1"]
+    assert state["pending_operation"] is None
+    assert state["terminal_state"] is None
+    assert state["model_roles"]["working"] is None
+    assert state["model_roles"]["best_known"] is None
 
-    assert check_evaluation_request() == 1
-    assert "awaiting a research evaluation" in capsys.readouterr().out
+    candidate_id = "T1:checkpoint-10"
 
+    def evaluate(_artifact, seed, *, episodes, output_path, **_kwargs):
+        metrics = {
+            "episodes": episodes,
+            "seed": seed,
+            "success_percent": 100.0,
+            "episode_results": [
+                {"episode": index, "episode_seed": seed + index, "success": True}
+                for index in range(episodes)
+            ],
+        }
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        output_path.write_text(json.dumps(metrics), encoding="utf-8")
+        return metrics
 
-def test_the_preflight_is_reachable_as_a_validation_only_command(
-    monkeypatch, tmp_path, capsys
-):
-    _preflight_files(monkeypatch, tmp_path, dict(_valid_request(), experiment=9))
-    monkeypatch.setattr("sys.argv", ["run_experiment.py", "--check-evaluation-request"])
+    monkeypatch.setattr(execution, "evaluate_artifact", evaluate)
+    state = _submit(
+        monkeypatch,
+        {
+            "measurement": {
+                "description": "Measure the trained candidate.",
+                "rationale": "The factual result decides whether to designate it.",
+                "measurements": [
+                    {
+                        "instrument": "research_evaluation",
+                        "candidate": candidate_id,
+                        "episodes": 2,
+                        "seed": 100,
+                    }
+                ],
+            }
+        },
+    )
+    assert state["scientific_session"]["id"] == bounded_session_id
+    assert state["scientific_session"]["operation_ids"] == ["T1", "M1"]
 
-    assert main() == 1
-    assert "EVALUATION_REQUEST_INVALID" in capsys.readouterr().out
+    state = _submit(
+        monkeypatch,
+        {
+            "model_role": {
+                "action": "set_best_known",
+                "candidate": candidate_id,
+                "reason": "The completed measurement supports this designation.",
+                "evidence": ["M1"],
+            }
+        },
+    )
+    assert state["model_roles"]["best_known"] == candidate_id
+    state = _submit(
+        monkeypatch,
+        {
+            "inquiry": {
+                "action": "close",
+                "outcome": "The candidate is ready for official assessment.",
+                "reason": "The inquiry closure condition is met.",
+            }
+        },
+    )
+    assert state["active_inquiry"] is None
+    state = _submit(
+        monkeypatch,
+        _checkpoint(state, next_step="Request the official assessment."),
+    )
+    assert state["scientific_session"] is None
+
+    _start(monkeypatch, "goal_review", "Choose the terminal goal action.", "backend-4")
+    state = _submit(
+        monkeypatch,
+        {
+            "campaign_conclusion": {
+                "action": "request_official_assessment",
+                "reason": "Completed evidence supports the explicit best-known model.",
+            }
+        },
+    )
+    assert state["terminal_state"]["status"] == "official_assessment_requested"
+    monkeypatch.setattr(
+        run_experiment.assessment,
+        "evaluate_official_model",
+        lambda *_args, **_kwargs: {
+            "goal_reached": True,
+            "success_percent": 100.0,
+            "episodes": 200,
+        },
+    )
+    assert _run(monkeypatch, "--run-official-assessment") == 0
+
+    final = repository.read_state()
+    assert final["terminal_state"]["status"] == "official_assessment_passed"
+    assert final["scientific_session"] is None
+    assert final["pending_operation"] is None
+    assert [event["kind"] for event in final["operation_events"]] == [
+        "checkpoint",
+        "inquiry",
+        "checkpoint",
+        "training",
+        "measurement",
+        "model_role",
+        "inquiry",
+        "checkpoint",
+        "campaign_conclusion",
+    ]
