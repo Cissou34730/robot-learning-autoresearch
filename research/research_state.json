@@ -1383,16 +1383,16 @@
     }
   },
   "counters": {
-    "event": 6,
+    "event": 7,
     "inquiry": 1,
     "measurement": 2,
-    "session": 4,
+    "session": 5,
     "training": 2
   },
   "human_goal": {
     "source": "research/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "restored",
   "model_roles": {
     "best_known": "T1:checkpoint-100352",
     "retained": {},
@@ -2250,9 +2250,105 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-09-28T22:49:39Z",
+      "error": null,
+      "id": "E7",
+      "inquiry_id": "I1",
+      "kind": "restore_recipe",
+      "request": {
+        "candidate": "T1:checkpoint-100352",
+        "reason": "Restore the recorded T1 baseline recipe before the next intervention so the rejected T2 dense joint-limit penalty cannot contaminate subsequent training. T1 remains the best-known reproducible candidate, while the next experiment must change posture or branch selection without adding another broad per-step PPO reward term."
+      },
+      "result": {
+        "candidate": "T1:checkpoint-100352",
+        "restored_paths": [
+          "robot_learning/scenario/environment.py",
+          "robot_learning/scenario/reward.py"
+        ],
+        "scientific_commit": "e63fb781f524a41d78f44169b01e8960b909aed5",
+        "status": "restored"
+      },
+      "session_id": "S5",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "candidate_id": "T1:checkpoint-100352",
+        "parameters": {
+          "algorithm": {
+            "name": "ppo"
+          },
+          "policy": {
+            "activation": "tanh",
+            "net_arch": [
+              64,
+              64
+            ]
+          },
+          "ppo": {
+            "batch_size": 64,
+            "ent_coef": 0.01,
+            "gae_lambda": 0.95,
+            "gamma": 0.99,
+            "learning_rate": 0.0003,
+            "n_steps": 1024
+          },
+          "training": {
+            "checkpoint_every_steps": 5000,
+            "n_envs": 1
+          }
+        },
+        "parent": "e63fb781f524a41d78f44169b01e8960b909aed5",
+        "remove_created": [],
+        "restore": [
+          "robot_learning/scenario/environment.py",
+          "robot_learning/scenario/reward.py"
+        ],
+        "session_id": "S5"
+      },
+      "pre_restore_manifest": [
+        {
+          "exists": true,
+          "fingerprint": "5c370c1a71e1f82cfb188c75c1e0d7295f63159d5b6e372be300d47f84b98ed5",
+          "path": "robot_learning/scenario/environment.py"
+        },
+        {
+          "exists": true,
+          "fingerprint": "b265296ff36adf62c4b912554524cf18c0dca5326aaece7e2dbdfaef0dd56908",
+          "path": "robot_learning/scenario/reward.py"
+        }
+      ],
+      "result": {
+        "candidate": "T1:checkpoint-100352",
+        "restored_paths": [
+          "robot_learning/scenario/environment.py",
+          "robot_learning/scenario/reward.py"
+        ],
+        "scientific_commit": "e63fb781f524a41d78f44169b01e8960b909aed5",
+        "status": "restored"
+      }
+    },
+    "failure": null,
+    "id": "E7",
+    "inquiry_id": "I1",
+    "kind": "restore_recipe",
+    "progress": "completed",
+    "request": {
+      "restore_recipe": {
+        "candidate": "T1:checkpoint-100352",
+        "reason": "Restore the recorded T1 baseline recipe before the next intervention so the rejected T2 dense joint-limit penalty cannot contaminate subsequent training. T1 remains the best-known reproducible candidate, while the next experiment must change posture or branch selection without adding another broad per-step PPO reward term."
+      }
+    },
+    "request_fingerprint": "e1d36afa2ff7f40a430bb504d1dda9107b7da74f05d0695ce9b669b3f343242a",
+    "session_id": "S5",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T1:checkpoint-100352 remains the best-known candidate, assigned by E4, with 100,352 training steps and 0.97 training-stream success; M1 and M2 both measure it at 151/160 (94.375%). T2:checkpoint-100352 is rejected after M2 at 22/160 (13.75%) and is not assigned a working or retained role. No working candidate is assigned and no separate retained scientific role is needed.",
     "completed_operations": [
@@ -2282,6 +2378,21 @@
     "path": "research/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "864f1ad5-b662-4fda-9a2b-f9778991efc3",
+    "id": "S5",
+    "inquiry_id": "I1",
+    "kind": "inquiry",
+    "objective": "Advance I1 toward its closure condition: Close the inquiry when a reproducible baseline candidate has behavioral evidence decomposed by reach, first entry, longest uninterrupted hold, residual motion, branch or posture, and target geometry, and that evidence supports one actionable next intervention or establishes that no credible route toward the goal remains.",
+    "operation_ids": [
+      "E7"
+    ],
+    "scientific_parent_commit": "e63fb781f524a41d78f44169b01e8960b909aed5"
+  },
   "terminal_state": null
 }
