@@ -18,7 +18,9 @@
   "candidates": {
     "T1:checkpoint-100352": {
       "artifact": "research/checkpoints/candidates/3b9f0c1b-33c6-451a-b321-744b012458e5/t1/checkpoint-100352",
-      "evaluation_artifacts": [],
+      "evaluation_artifacts": [
+        "research/evaluations/3b9f0c1b-33c6-451a-b321-744b012458e5/evaluation-3b9f0c1b-33c6-451a-b321-744b012458e5-m1-T1-checkpoint-100352-160ep-seed4200-7623f5b89fc1.json"
+      ],
       "fingerprint": "1a8952087047d381047c519598a2bb57437cf04cb2e7ace9515fbfd89db2b2e9",
       "id": "T1:checkpoint-100352",
       "name": "checkpoint-100352",
@@ -700,7 +702,7 @@
   "counters": {
     "event": 3,
     "inquiry": 1,
-    "measurement": 0,
+    "measurement": 1,
     "session": 3,
     "training": 1
   },
@@ -974,9 +976,143 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-09-28T22:28:39Z",
+      "error": null,
+      "id": "M1",
+      "inquiry_id": "I1",
+      "kind": "measurement",
+      "request": {
+        "description": "Measure the final T1 baseline candidate on the fixed research evaluation panel and record complete-hold outcomes with reach, first-entry, hold-duration, residual-motion, IK branch/posture, joint-limit, conditioning, interruption, and target-geometry diagnostics.",
+        "measurements": [
+          {
+            "candidate": "T1:checkpoint-100352",
+            "episodes": 160,
+            "instrument": "research_evaluation",
+            "seed": 4200
+          }
+        ],
+        "rationale": "T1 training success reached 0.97 on its training stream, but that does not establish official-distribution success or identify the limiting mechanism. Evaluating the final checkpoint under the held-out research panel is the most discriminating next action for I1 because it tests complete uninterrupted hold and supplies the behavioral decomposition required to choose an intervention."
+      },
+      "result": {
+        "measurements": [
+          {
+            "candidate": "T1:checkpoint-100352",
+            "candidate_id": "T1:checkpoint-100352",
+            "instrument": "research_evaluation",
+            "label": "measurement 1",
+            "metrics": {
+              "episodes": 160,
+              "evaluation_artifact": "research/evaluations/3b9f0c1b-33c6-451a-b321-744b012458e5/evaluation-3b9f0c1b-33c6-451a-b321-744b012458e5-m1-T1-checkpoint-100352-160ep-seed4200-7623f5b89fc1.json",
+              "evaluation_artifact_fingerprint": "dce2ee0364ce00579e4230858921e9191ce41d581d4a781b4f25151a698b690e",
+              "evaluation_semantics": "7623f5b89fc1",
+              "model_fingerprint": "1a8952087047d381047c519598a2bb57437cf04cb2e7ace9515fbfd89db2b2e9",
+              "official_benchmark": false,
+              "schema_version": 6,
+              "seed": 4200,
+              "success_percent": 94.375,
+              "successes": 151
+            }
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": null
+      },
+      "session_id": "S3",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "evaluation_semantics": "7623f5b89fc1",
+      "measurements": [
+        {
+          "artifact": "research/checkpoints/candidates/3b9f0c1b-33c6-451a-b321-744b012458e5/t1/checkpoint-100352",
+          "candidate": "T1:checkpoint-100352",
+          "candidate_id": "T1:checkpoint-100352",
+          "episodes": 160,
+          "instrument": "research_evaluation",
+          "label": "measurement 1",
+          "model_fingerprint": "1a8952087047d381047c519598a2bb57437cf04cb2e7ace9515fbfd89db2b2e9",
+          "seed": 4200
+        }
+      ],
+      "module_provenance": null,
+      "paired_comparisons": [],
+      "partial_results": [
+        {
+          "candidate": "T1:checkpoint-100352",
+          "candidate_id": "T1:checkpoint-100352",
+          "instrument": "research_evaluation",
+          "label": "measurement 1",
+          "metrics": {
+            "episodes": 160,
+            "evaluation_artifact": "research/evaluations/3b9f0c1b-33c6-451a-b321-744b012458e5/evaluation-3b9f0c1b-33c6-451a-b321-744b012458e5-m1-T1-checkpoint-100352-160ep-seed4200-7623f5b89fc1.json",
+            "evaluation_artifact_fingerprint": "dce2ee0364ce00579e4230858921e9191ce41d581d4a781b4f25151a698b690e",
+            "evaluation_semantics": "7623f5b89fc1",
+            "model_fingerprint": "1a8952087047d381047c519598a2bb57437cf04cb2e7ace9515fbfd89db2b2e9",
+            "official_benchmark": false,
+            "schema_version": 6,
+            "seed": 4200,
+            "success_percent": 94.375,
+            "successes": 151
+          }
+        }
+      ],
+      "result": {
+        "measurements": [
+          {
+            "candidate": "T1:checkpoint-100352",
+            "candidate_id": "T1:checkpoint-100352",
+            "instrument": "research_evaluation",
+            "label": "measurement 1",
+            "metrics": {
+              "episodes": 160,
+              "evaluation_artifact": "research/evaluations/3b9f0c1b-33c6-451a-b321-744b012458e5/evaluation-3b9f0c1b-33c6-451a-b321-744b012458e5-m1-T1-checkpoint-100352-160ep-seed4200-7623f5b89fc1.json",
+              "evaluation_artifact_fingerprint": "dce2ee0364ce00579e4230858921e9191ce41d581d4a781b4f25151a698b690e",
+              "evaluation_semantics": "7623f5b89fc1",
+              "model_fingerprint": "1a8952087047d381047c519598a2bb57437cf04cb2e7ace9515fbfd89db2b2e9",
+              "official_benchmark": false,
+              "schema_version": 6,
+              "seed": 4200,
+              "success_percent": 94.375,
+              "successes": 151
+            }
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": null
+      },
+      "task_reference_contract": null
+    },
+    "failure": null,
+    "id": "M1",
+    "inquiry_id": "I1",
+    "kind": "measurement",
+    "progress": "completed",
+    "request": {
+      "measurement": {
+        "description": "Measure the final T1 baseline candidate on the fixed research evaluation panel and record complete-hold outcomes with reach, first-entry, hold-duration, residual-motion, IK branch/posture, joint-limit, conditioning, interruption, and target-geometry diagnostics.",
+        "measurements": [
+          {
+            "candidate": "T1:checkpoint-100352",
+            "episodes": 160,
+            "instrument": "research_evaluation",
+            "seed": 4200
+          }
+        ],
+        "rationale": "T1 training success reached 0.97 on its training stream, but that does not establish official-distribution success or identify the limiting mechanism. Evaluating the final checkpoint under the held-out research panel is the most discriminating next action for I1 because it tests complete uninterrupted hold and supplies the behavioral decomposition required to choose an intervention."
+      }
+    },
+    "request_fingerprint": "802bf1181eb652c250f0fc70a6e3fc9d0e987416b12266372d6173033f450e79",
+    "session_id": "S3",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No candidates exist. Working, best-known, and retained model roles are all empty.",
     "completed_operations": [
@@ -1013,7 +1149,8 @@
     "kind": "inquiry",
     "objective": "Advance I1 toward its closure condition: Close the inquiry when a reproducible baseline candidate has behavioral evidence decomposed by reach, first entry, longest uninterrupted hold, residual motion, branch or posture, and target geometry, and that evidence supports one actionable next intervention or establishes that no credible route toward the goal remains.",
     "operation_ids": [
-      "T1"
+      "T1",
+      "M1"
     ],
     "scientific_parent_commit": "e63fb781f524a41d78f44169b01e8960b909aed5"
   },
