@@ -375,7 +375,7 @@ function Invoke-PISession {
     }
     Write-ConsoleCard `
         -Title "PI session | $displaySession | turn $script:PISessionInvocation" `
-        -Color Magenta
+        -Color White
     $sessionArgs = @(
         "--session-id", $script:PISessionId
         "--model", $Model
@@ -878,11 +878,11 @@ try {
         $state = Get-Content "research\research_state.json" -Raw | ConvertFrom-Json
 
         if ($state.scientific_model.status -eq "pending") {
-            Write-Status "START | campaign preparation" -Color Magenta -Label session
+            Write-Status "START | campaign preparation" -Color White -Label session
             if ((Invoke-ScientificModelPhase -State $state) -eq 130) {
                 break
             }
-            Write-Status "END | campaign preparation" -Color Magenta -Label session
+            Write-Status "END | campaign preparation" -Color White -Label session
             Update-ResearchBrief
             continue
         }

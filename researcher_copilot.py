@@ -56,7 +56,7 @@ _RESET = "\033[0m"
 _DIM = "\033[90m"
 # The model's own words: one bright block behind a matching gutter, so a line it
 # writes is never mistaken for muted Runner output.
-_MESSAGE = "\033[1;95m"
+_MESSAGE = "\033[1;96m"
 _PLAIN_GUTTER = "  "
 _GUTTER = f"{_MESSAGE}{_PLAIN_GUTTER}│{_RESET}{_MESSAGE} "
 _MARKER_COLORS = {
@@ -66,7 +66,7 @@ _MARKER_COLORS = {
     "-": "\033[31m",
     "~": "\033[36m",
     "!": "\033[1;91m",
-    "--": "\033[1;95m",
+    "--": "\033[1;96m",
     "[session]": "\033[95m",
 }
 

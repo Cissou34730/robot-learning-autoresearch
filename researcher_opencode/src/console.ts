@@ -15,7 +15,7 @@ const RESET = "\u001b[0m";
 const DIM = "\u001b[90m";
 /** The model's own words: one bright block behind a matching gutter, so a line
  * it writes is never mistaken for muted Runner output. */
-const MESSAGE = "\u001b[1;95m";
+const MESSAGE = "\u001b[1;96m";
 const PLAIN_GUTTER = "  ";
 const GUTTER = `${MESSAGE}${PLAIN_GUTTER}\u2502${RESET}${MESSAGE} `;
 const UUID_PATTERN =
@@ -43,7 +43,7 @@ const MARKER_COLORS: Record<string, string> = {
   "-": "\u001b[31m",
   "~": "\u001b[36m",
   "!": "\u001b[1;91m",
-  "--": "\u001b[1;95m",
+  "--": "\u001b[1;96m",
   "[session]": "\u001b[95m",
 };
 

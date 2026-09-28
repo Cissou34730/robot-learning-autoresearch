@@ -17,7 +17,6 @@ _RESET = "\033[0m"
 _DIM = "\033[90m"
 _CYAN = "\033[1;96m"
 _GREEN = "\033[1;92m"
-_MAGENTA = "\033[1;95m"
 _YELLOW = "\033[1;93m"
 _RED = "\033[1;91m"
 _WHITE = "\033[1;97m"
@@ -28,8 +27,8 @@ _UUID = re.compile(
 )
 _SEMANTIC_COLORS = {
     "campaign": _WHITE,
-    "session": _MAGENTA,
-    "pi": _MAGENTA,
+    "session": _WHITE,
+    "pi": _CYAN,
     "inquiry": _YELLOW,
     "operation": _CYAN,
     "measurement": _CYAN,
