@@ -16,6 +16,8 @@ from research import runner_repository as repository
 ROOT = Path(__file__).resolve().parents[2]
 SCRIPT_PATH = ROOT / "run_research.ps1"
 SCRIPT = SCRIPT_PATH.read_text(encoding="utf-8")
+TRUST_SCRIPT_PATH = ROOT / "researcher_session.ps1"
+TRUST_SCRIPT = TRUST_SCRIPT_PATH.read_text(encoding="utf-8")
 AGENTS = (ROOT / "AGENTS.md").read_text(encoding="utf-8")
 PROGRAM = (ROOT / "research" / "program.md").read_text(encoding="utf-8")
 INSTRUMENTS = (ROOT / "research" / "instruments.md").read_text(encoding="utf-8")
@@ -154,28 +156,10 @@ if (Test-ScientificModelRegisters -Content $content) {{ exit 0 }} else {{ exit 1
 def _run_launcher_trust_script(
     tmp_path: Path, body: str
 ) -> subprocess.CompletedProcess:
-    names = (
-        "Test-PIWritablePath",
-        "Get-WorktreeDeltaPaths",
-        "Get-WorktreePathFingerprint",
-        "New-PITrustBaseline",
-        "Assert-PIWorktreeTrust",
-    )
-    quoted_names = ", ".join(f"'{name}'" for name in names)
     script = tmp_path / "trust-gate.ps1"
     script.write_text(
         f"""
-$ast = [System.Management.Automation.Language.Parser]::ParseFile(
-    '{SCRIPT_PATH}', [ref]$null, [ref]$null)
-$names = @({quoted_names})
-$definitions = $ast.FindAll({{
-    param($node)
-    $node -is [System.Management.Automation.Language.FunctionDefinitionAst] -and
-        $node.Name -in $names
-}}, $true)
-foreach ($definition in $definitions) {{
-    . ([scriptblock]::Create($definition.Extent.Text))
-}}
+. '{TRUST_SCRIPT_PATH}'
 {body}
 """,
         encoding="utf-8",
@@ -198,9 +182,13 @@ foreach ($definition in $definitions) {{
 
 def _trust_test_repository(path: Path) -> None:
     (path / "research" / "evaluations" / "campaign").mkdir(parents=True)
+    (path / "robot_learning" / "scenario").mkdir(parents=True)
     (path / "robot_learning" / "training").mkdir(parents=True)
     (path / "docs").mkdir()
     (path / "run_research.ps1").write_text("# trusted launcher\n", encoding="utf-8")
+    (path / "robot_learning" / "scenario" / "final_benchmark.py").write_text(
+        "VALUE = 'protected'\n", encoding="utf-8"
+    )
     (path / "research" / "research_state.json").write_text(
         '{"status":"initial"}\n', encoding="utf-8"
     )
@@ -529,12 +517,12 @@ def test_launcher_trust_gate_allows_only_the_documented_pi_surface(tmp_path):
         tmp_path,
         f"""
 $root = '{quoted_root}'
-$baseline = New-PITrustBaseline -Root $root
+$snapshot = New-PITrustSnapshot -Root $root
 Set-Content -LiteralPath (Join-Path $root 'robot_learning\\training\\algorithm.py') `
     -Value 'VALUE = 2'
 Set-Content -LiteralPath (Join-Path $root 'research\\operation_request.json') `
     -Value '{{"checkpoint": {{}}}}'
-Assert-PIWorktreeTrust -Baseline $baseline -Root $root
+Assert-PITrustSnapshot -Snapshot $snapshot -Root $root
 """,
     )
     assert completed.returncode == 0, completed.stderr
@@ -554,52 +542,204 @@ Assert-PIWorktreeTrust -Baseline $baseline -Root $root
     "relative",
     [
         "run_research.ps1",
-        "research/run_experiment.py",
-        "research/research_state.json",
         "robot_learning/scenario/final_benchmark.py",
-        "tests/autoresearch/test_guard.py",
         "docs/untracked-plan.md",
     ],
 )
-def test_launcher_trust_gate_rejects_human_owned_or_unclassified_edits(
+def test_launcher_trust_snapshot_rejects_protected_file_modification(
     tmp_path, relative
 ):
     root = tmp_path / "repo"
     root.mkdir()
     _trust_test_repository(root)
-    target = root / relative
-    target.parent.mkdir(parents=True, exist_ok=True)
-    if not target.exists():
-        target.write_text("trusted\n", encoding="utf-8")
-        subprocess.run(["git", "-C", str(root), "add", relative], check=True)
-        subprocess.run(
-            [
-                "git",
-                "-C",
-                str(root),
-                "-c",
-                "user.name=Tests",
-                "-c",
-                "user.email=tests@example.invalid",
-                "commit",
-                "-qm",
-                "add protected target",
-            ],
-            check=True,
-        )
     quoted_root = str(root).replace("'", "''")
-    quoted_target = str(target).replace("'", "''")
+    quoted_relative = relative.replace("/", "\\")
     completed = _run_launcher_trust_script(
         tmp_path,
         f"""
 $root = '{quoted_root}'
-$baseline = New-PITrustBaseline -Root $root
-Add-Content -LiteralPath '{quoted_target}' -Value 'PI mutation'
-Assert-PIWorktreeTrust -Baseline $baseline -Root $root
+$snapshot = New-PITrustSnapshot -Root $root
+Add-Content -LiteralPath (Join-Path $root '{quoted_relative}') -Value 'PI mutation'
+Assert-PITrustSnapshot -Snapshot $snapshot -Root $root
 """,
     )
     assert completed.returncode != 0
-    assert "outside the AGENTS.md scientific surface" in completed.stderr
+    assert relative in completed.stderr
+
+
+@powershell_only
+def test_launcher_trust_snapshot_ignores_assume_unchanged_index_mask(tmp_path):
+    root = tmp_path / "repo"
+    root.mkdir()
+    _trust_test_repository(root)
+    quoted_root = str(root).replace("'", "''")
+    completed = _run_launcher_trust_script(
+        tmp_path,
+        f"""
+$root = '{quoted_root}'
+$snapshot = New-PITrustSnapshot -Root $root
+& git -C $root update-index --assume-unchanged run_research.ps1
+Add-Content -LiteralPath (Join-Path $root 'run_research.ps1') -Value 'hidden mutation'
+Assert-PITrustSnapshot -Snapshot $snapshot -Root $root
+""",
+    )
+    assert completed.returncode != 0
+    assert "run_research.ps1" in completed.stderr
+
+
+@powershell_only
+def test_launcher_trust_snapshot_rejects_protected_commit_and_head_change(tmp_path):
+    root = tmp_path / "repo"
+    root.mkdir()
+    _trust_test_repository(root)
+    quoted_root = str(root).replace("'", "''")
+    completed = _run_launcher_trust_script(
+        tmp_path,
+        f"""
+$root = '{quoted_root}'
+$snapshot = New-PITrustSnapshot -Root $root
+Add-Content -LiteralPath (Join-Path $root 'run_research.ps1') -Value 'committed mutation'
+& git -C $root add run_research.ps1
+& git -C $root -c user.name=Tests -c user.email=tests@example.invalid `
+    commit -qm 'untrusted protected commit'
+Assert-PITrustSnapshot -Snapshot $snapshot -Root $root
+""",
+    )
+    assert completed.returncode != 0
+    assert "HEAD" in completed.stderr
+    assert "run_research.ps1" in completed.stderr
+
+
+@powershell_only
+def test_launcher_trust_snapshot_rejects_added_non_pi_file(tmp_path):
+    root = tmp_path / "repo"
+    root.mkdir()
+    _trust_test_repository(root)
+    quoted_root = str(root).replace("'", "''")
+    completed = _run_launcher_trust_script(
+        tmp_path,
+        f"""
+$root = '{quoted_root}'
+$snapshot = New-PITrustSnapshot -Root $root
+Set-Content -LiteralPath (Join-Path $root 'docs\\new-plan.md') -Value 'new'
+Assert-PITrustSnapshot -Snapshot $snapshot -Root $root
+""",
+    )
+    assert completed.returncode != 0
+    assert "docs/new-plan.md" in completed.stderr
+
+
+@powershell_only
+def test_launcher_trust_snapshot_rejects_deleted_non_pi_file(tmp_path):
+    root = tmp_path / "repo"
+    root.mkdir()
+    _trust_test_repository(root)
+    quoted_root = str(root).replace("'", "''")
+    completed = _run_launcher_trust_script(
+        tmp_path,
+        f"""
+$root = '{quoted_root}'
+$snapshot = New-PITrustSnapshot -Root $root
+Remove-Item -LiteralPath (Join-Path $root 'docs\\untracked-plan.md')
+Assert-PITrustSnapshot -Snapshot $snapshot -Root $root
+""",
+    )
+    assert completed.returncode != 0
+    assert "docs/untracked-plan.md" in completed.stderr
+
+
+@powershell_only
+def test_launcher_trust_snapshot_allows_pi_edit_and_generated_request(tmp_path):
+    root = tmp_path / "repo"
+    root.mkdir()
+    _trust_test_repository(root)
+    quoted_root = str(root).replace("'", "''")
+    completed = _run_launcher_trust_script(
+        tmp_path,
+        f"""
+$root = '{quoted_root}'
+$snapshot = New-PITrustSnapshot -Root $root
+Set-Content -LiteralPath (Join-Path $root 'robot_learning\\training\\algorithm.py') `
+    -Value 'VALUE = 2'
+Set-Content -LiteralPath (Join-Path $root 'research\\operation_request.json') `
+    -Value '{{"checkpoint": {{}}}}'
+Assert-PITrustSnapshot -Snapshot $snapshot -Root $root
+""",
+    )
+    assert completed.returncode == 0, completed.stderr
+
+
+@powershell_only
+def test_preliminary_snapshot_allows_only_scientific_model_handoff(tmp_path):
+    root = tmp_path / "repo"
+    root.mkdir()
+    _trust_test_repository(root)
+    model = root / "research" / "scientific_model.md"
+    model.write_text("initial model\n", encoding="utf-8")
+    subprocess.run(
+        ["git", "-C", str(root), "add", "research/scientific_model.md"], check=True
+    )
+    subprocess.run(
+        [
+            "git",
+            "-C",
+            str(root),
+            "-c",
+            "user.name=Tests",
+            "-c",
+            "user.email=tests@example.invalid",
+            "commit",
+            "-qm",
+            "add scientific model",
+        ],
+        check=True,
+    )
+    quoted_root = str(root).replace("'", "''")
+    completed = _run_launcher_trust_script(
+        tmp_path,
+        f"""
+$root = '{quoted_root}'
+$snapshot = New-PITrustSnapshot -Root $root -Preliminary
+Set-Content -LiteralPath (Join-Path $root 'research\\scientific_model.md') `
+    -Value 'updated model'
+Assert-PITrustSnapshot -Snapshot $snapshot -Root $root
+Set-Content -LiteralPath (Join-Path $root 'research\\operation_request.json') `
+    -Value '{{"checkpoint": {{}}}}'
+Assert-PITrustSnapshot -Snapshot $snapshot -Root $root
+""",
+    )
+    assert completed.returncode != 0
+    assert "research/operation_request.json" in completed.stderr
+
+
+@powershell_only
+def test_launcher_trust_snapshot_refresh_accepts_trusted_runner_commit(tmp_path):
+    root = tmp_path / "repo"
+    root.mkdir()
+    _trust_test_repository(root)
+    quoted_root = str(root).replace("'", "''")
+    completed = _run_launcher_trust_script(
+        tmp_path,
+        f"""
+$root = '{quoted_root}'
+$snapshot = New-PITrustSnapshot -Root $root
+Set-Content -LiteralPath (Join-Path $root 'research\\research_state.json') `
+    -Value '{{"status":"trusted"}}'
+& git -C $root add research/research_state.json
+& git -C $root -c user.name=Tests -c user.email=tests@example.invalid `
+    commit -qm 'trusted runner state'
+try {{
+    Assert-PITrustSnapshot -Snapshot $snapshot -Root $root
+    throw 'old snapshot unexpectedly accepted the new HEAD'
+}}
+catch {{
+    if ($_.Exception.Message -notlike '*HEAD*') {{ throw }}
+}}
+$snapshot = New-PITrustSnapshot -Root $root
+Assert-PITrustSnapshot -Snapshot $snapshot -Root $root
+""",
+    )
+    assert completed.returncode == 0, completed.stderr
 
 
 def test_every_post_pi_mutable_entry_point_uses_the_launcher_gate():
@@ -615,9 +755,17 @@ def test_every_post_pi_mutable_entry_point_uses_the_launcher_gate():
     model_check = SCRIPT.split("function Test-ScientificModelDeliverable", 1)[1].split(
         "function Invoke-ScientificModelPhase", 1
     )[0]
+    brief_update = SCRIPT.split("function Update-ResearchBrief", 1)[1].split(
+        "function Get-HumanGoalSummary", 1
+    )[0]
 
-    for entry_point in (runner, pi, operation_check, model_check):
+    for entry_point in (runner, pi, brief_update, operation_check, model_check):
         assert "Enter-TrustedMutableInvocation" in entry_point
+    assert "$exitCode -eq 0" in runner
+    assert "New-PITrustSnapshot" in runner
+    assert "git status" not in TRUST_SCRIPT
+    assert "git diff" not in TRUST_SCRIPT
+    assert "git ls-files" not in TRUST_SCRIPT
 
 
 @powershell_only

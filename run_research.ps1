@@ -35,9 +35,8 @@ $script:PISessionId = $null
 $script:PISessionStateId = $null
 $script:PISessionInvocation = 0
 $script:PIExitCode = $null
-$script:PITrustBaseline = $null
+$script:PITrustSnapshot = $null
 $script:PITrustPreliminary = $false
-$script:PIWorkPendingTrust = $false
 
 if ($script:StopRequestPath) {
     $stopParent = Split-Path -Parent $script:StopRequestPath
@@ -139,141 +138,11 @@ function Invoke-CooperativeProcess {
     }
 }
 
-function Test-PIWritablePath {
-    param(
-        [Parameter(Mandatory)][string]$Path,
-        [switch]$Preliminary
-    )
-
-    $relative = ($Path -replace '\\', '/').TrimStart([char[]]"./").ToLowerInvariant()
-    if ($relative -in @(
-        "robot_learning/scenario/__init__.py",
-        "robot_learning/scenario/final_benchmark.py",
-        "robot_learning/scenario/task_reference.py"
-    )) {
-        return $false
-    }
-    if ($Preliminary) {
-        return $relative -eq "research/scientific_model.md"
-    }
-    return (
-        $relative -in @(
-            "robot_learning/train.py",
-            "robot_learning/evaluate.py",
-            "robot_learning/play.py",
-            "research/current_params.json",
-            "research/operation_request.json"
-        ) -or
-        $relative.StartsWith("robot_learning/scenario/") -or
-        $relative.StartsWith("robot_learning/training/") -or
-        $relative.StartsWith("research/lab/")
-    )
-}
-
-function Get-WorktreeDeltaPaths {
-    param([string]$Root = $PSScriptRoot)
-
-    $tracked = @(& git -C $Root diff --name-only --no-renames HEAD --)
-    if ($LASTEXITCODE -ne 0) {
-        throw "Could not inspect tracked worktree changes before trusted execution."
-    }
-    $untracked = @(& git -C $Root ls-files --others --exclude-standard --)
-    if ($LASTEXITCODE -ne 0) {
-        throw "Could not inspect untracked worktree changes before trusted execution."
-    }
-    return @(
-        $tracked + $untracked |
-            ForEach-Object { ($_ -replace '\\', '/').Trim() } |
-            Where-Object { $_ } |
-            Sort-Object -Unique
-    )
-}
-
-function Get-WorktreePathFingerprint {
-    param(
-        [Parameter(Mandatory)][string]$Path,
-        [string]$Root = $PSScriptRoot
-    )
-
-    $fullPath = Join-Path $Root ($Path -replace '/', '\')
-    $status = @(
-        & git -C $Root status --porcelain=v1 --untracked-files=all -- $Path
-    ) -join "`n"
-    if ($LASTEXITCODE -ne 0) {
-        throw "Could not inspect worktree state for $Path."
-    }
-    if (Test-Path -LiteralPath $fullPath -PathType Leaf) {
-        $content = (Get-FileHash -LiteralPath $fullPath -Algorithm SHA256).Hash
-        return "file|$status|$content"
-    }
-    if (Test-Path -LiteralPath $fullPath -PathType Container) {
-        return "directory|$status"
-    }
-    return "missing|$status"
-}
-
-function New-PITrustBaseline {
-    param(
-        [switch]$Preliminary,
-        [string]$Root = $PSScriptRoot
-    )
-
-    $baseline = @{}
-    foreach ($relative in Get-WorktreeDeltaPaths -Root $Root) {
-        if (-not (Test-PIWritablePath -Path $relative -Preliminary:$Preliminary)) {
-            $baseline[$relative] = Get-WorktreePathFingerprint `
-                -Path $relative -Root $Root
-        }
-    }
-    return $baseline
-}
-
-function Assert-PIWorktreeTrust {
-    param(
-        [Parameter(Mandatory)][hashtable]$Baseline,
-        [switch]$Preliminary,
-        [string]$Root = $PSScriptRoot
-    )
-
-    $violations = [System.Collections.Generic.List[string]]::new()
-    $current = @(
-        Get-WorktreeDeltaPaths -Root $Root |
-            Where-Object {
-                -not (Test-PIWritablePath -Path $_ -Preliminary:$Preliminary)
-            }
-    )
-    foreach ($relative in $current) {
-        if (-not $Baseline.ContainsKey($relative)) {
-            $violations.Add($relative)
-            continue
-        }
-        $fingerprint = Get-WorktreePathFingerprint -Path $relative -Root $Root
-        if ($fingerprint -ne $Baseline[$relative]) {
-            $violations.Add($relative)
-        }
-    }
-    foreach ($relative in $Baseline.Keys) {
-        if ($relative -notin $current) {
-            $violations.Add([string]$relative)
-        }
-    }
-    if ($violations.Count -gt 0) {
-        $paths = @($violations | Sort-Object -Unique)
-        throw (
-            "PI work changed paths outside the AGENTS.md scientific surface: " +
-            "$($paths -join ', '). Refusing to load mutable Runner or adapter code."
-        )
-    }
-}
-
 function Enter-TrustedMutableInvocation {
-    if (-not $script:PIWorkPendingTrust) {
+    if (-not $script:PITrustSnapshot) {
         return
     }
-    Assert-PIWorktreeTrust -Baseline $script:PITrustBaseline `
-        -Preliminary:$script:PITrustPreliminary
-    $script:PIWorkPendingTrust = $false
-    $script:PITrustBaseline = $null
+    Assert-PITrustSnapshot -Snapshot $script:PITrustSnapshot
 }
 
 function Invoke-Runner {
@@ -284,8 +153,13 @@ function Invoke-Runner {
         Select-Object -First 1
     $runnerArguments = @("run", "python", "research/run_experiment.py")
     $runnerArguments += $Arguments
-    return Invoke-CooperativeProcess -FilePath $uv.Source `
+    $exitCode = Invoke-CooperativeProcess -FilePath $uv.Source `
         -ArgumentList $runnerArguments -Operation "research runner"
+    if ($exitCode -eq 0) {
+        $script:PITrustSnapshot = New-PITrustSnapshot `
+            -Preliminary:$script:PITrustPreliminary
+    }
+    return $exitCode
 }
 
 function Test-StopAfterOperation {
@@ -471,7 +345,7 @@ function Invoke-PISession {
 
     Enter-TrustedMutableInvocation
     $script:PITrustPreliminary = [bool]$Preliminary
-    $script:PITrustBaseline = New-PITrustBaseline -Preliminary:$Preliminary
+    $script:PITrustSnapshot = New-PITrustSnapshot -Preliminary:$Preliminary
 
     if ($Preliminary) {
         if ($Continue -and -not $script:PISessionId) {
@@ -514,45 +388,41 @@ function Invoke-PISession {
         $sessionArgs += "--preliminary"
     }
 
-    try {
-        if ($PIBackend -eq "opencode") {
-            $entry = "researcher_opencode/src/main.ts"
-            if (-not (Test-Path -LiteralPath $entry)) {
-                throw "The OpenCode runtime entry point is missing: $entry"
-            }
-            $node = Get-OpenCodeNode
-            if (-not $script:OpenCodeServerUrl) {
-                throw "The OpenCode campaign server is not running."
-            }
-            $sessionArgs += @("--server-url", $script:OpenCodeServerUrl)
-            $nodeArgs = @()
-            $nodeArgs += $node.Strip
-            $nodeArgs += $entry
-            $nodeArgs += $sessionArgs
-            $nodeArgs += $Prompt
-            $script:PIExitCode = Invoke-CooperativeProcess `
-                -FilePath $node.Path -ArgumentList $nodeArgs `
-                -Operation "OpenCode PI"
+    if ($PIBackend -eq "opencode") {
+        $entry = "researcher_opencode/src/main.ts"
+        if (-not (Test-Path -LiteralPath $entry)) {
+            throw "The OpenCode runtime entry point is missing: $entry"
         }
-        else {
-            $uv = Get-Command uv -CommandType Application -ErrorAction Stop |
-                Select-Object -First 1
-            $copilotArgs = @(
-                "run", "--group", "researcher", "python", "researcher_copilot.py"
-            )
-            $copilotArgs += $sessionArgs
-            $copilotArgs += $Prompt
-            $script:PIExitCode = Invoke-CooperativeProcess `
-                -FilePath $uv.Source -ArgumentList $copilotArgs `
-                -Operation "Copilot PI"
+        $node = Get-OpenCodeNode
+        if (-not $script:OpenCodeServerUrl) {
+            throw "The OpenCode campaign server is not running."
         }
+        $sessionArgs += @("--server-url", $script:OpenCodeServerUrl)
+        $nodeArgs = @()
+        $nodeArgs += $node.Strip
+        $nodeArgs += $entry
+        $nodeArgs += $sessionArgs
+        $nodeArgs += $Prompt
+        $script:PIExitCode = Invoke-CooperativeProcess `
+            -FilePath $node.Path -ArgumentList $nodeArgs `
+            -Operation "OpenCode PI"
     }
-    finally {
-        $script:PIWorkPendingTrust = $true
+    else {
+        $uv = Get-Command uv -CommandType Application -ErrorAction Stop |
+            Select-Object -First 1
+        $copilotArgs = @(
+            "run", "--group", "researcher", "python", "researcher_copilot.py"
+        )
+        $copilotArgs += $sessionArgs
+        $copilotArgs += $Prompt
+        $script:PIExitCode = Invoke-CooperativeProcess `
+            -FilePath $uv.Source -ArgumentList $copilotArgs `
+            -Operation "Copilot PI"
     }
 }
 
 function Update-ResearchBrief {
+    Enter-TrustedMutableInvocation
     uv run python research/build_research_brief.py
     if ($LASTEXITCODE -ne 0) {
         throw "Could not build the compact PI research brief."
