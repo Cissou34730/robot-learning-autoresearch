@@ -834,7 +834,7 @@
     }
   },
   "counters": {
-    "event": 2,
+    "event": 3,
     "inquiry": 1,
     "measurement": 0,
     "session": 2,
@@ -843,7 +843,7 @@
   "human_goal": {
     "source": "research/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -1112,26 +1112,141 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-09-28T14:15:23Z",
+      "error": null,
+      "id": "E3",
+      "inquiry_id": null,
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "T1 produced late candidates through 120832 steps. No candidate has a working, best-known, or retained role because independent development evidence is still absent.",
+        "completed_operations": [
+          "E2"
+        ],
+        "cumulative_resource_use": "One fresh PPO training operation and one inquiry-opening operation; no evaluation operation has completed.",
+        "current_goal_gap": "T1:checkpoint-120832 has 0.94 in-training success, but no independent development measurement establishes episode success, hold reliability, or failure geometry.",
+        "current_synthesis": "T1 corrected the credible omission of folded inner-radius configurations and learned substantial competence, but training success cannot establish official-distribution performance. The active uncertainty is whether late-training behavior generalizes and whether failures arise from approach, branch selection, overshoot, or interrupted holding.",
+        "decision_frontier": "Measure T1:checkpoint-115712 and T1:checkpoint-120832 on matched independent research panels with hold diagnostics and the protected task-reference panel, then use the results to select a best-known candidate or a targeted intervention.",
+        "evidence_references": [
+          "T1"
+        ],
+        "human_goal_connection": "Independent complete-hold evaluation is the necessary next test of whether the full-distribution PPO candidate is credible for the 98% official objective.",
+        "next_direction_or_closure": "After this checkpoint, run the bounded comparative measurement for the two strongest late T1 candidates. Close the inquiry after interpreting those results and either assign the evidence-supported best-known candidate or select one goal-linked next intervention."
+      },
+      "result": {
+        "session_id": "S2",
+        "status": "checkpointed"
+      },
+      "session_id": "S2",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "63406003a7be45ce6f14f516282662e80e5731cd",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "T1 produced late candidates through 120832 steps. No candidate has a working, best-known, or retained role because independent development evidence is still absent.",
+        "completed_operations": [
+          "E2"
+        ],
+        "cumulative_resource_use": "One fresh PPO training operation and one inquiry-opening operation; no evaluation operation has completed.",
+        "current_goal_gap": "T1:checkpoint-120832 has 0.94 in-training success, but no independent development measurement establishes episode success, hold reliability, or failure geometry.",
+        "current_synthesis": "T1 corrected the credible omission of folded inner-radius configurations and learned substantial competence, but training success cannot establish official-distribution performance. The active uncertainty is whether late-training behavior generalizes and whether failures arise from approach, branch selection, overshoot, or interrupted holding.",
+        "decision_frontier": "Measure T1:checkpoint-115712 and T1:checkpoint-120832 on matched independent research panels with hold diagnostics and the protected task-reference panel, then use the results to select a best-known candidate or a targeted intervention.",
+        "evidence_references": [
+          "T1"
+        ],
+        "human_goal_connection": "Independent complete-hold evaluation is the necessary next test of whether the full-distribution PPO candidate is credible for the 98% official objective.",
+        "inquiry_id": null,
+        "next_direction_or_closure": "After this checkpoint, run the bounded comparative measurement for the two strongest late T1 candidates. Close the inquiry after interpreting those results and either assign the evidence-supported best-known candidate or select one goal-linked next intervention.",
+        "session_id": "S2"
+      },
+      "presentation": {
+        "backend_session_id": "02f3f8a9-52c1-46fa-a3bf-343bac0f626b",
+        "campaign_id": "a1297064-def3-4191-8914-19ef91412bcb",
+        "campaign_usage": "8m02s | 8.11 AIU | prompt 1m (84% cached) | output 17.9k",
+        "session_id": "S2",
+        "session_kind": "goal_review",
+        "session_usage": "3m30s | 3.43 AIU | prompt 532.9k (86% cached) | output 5.7k"
+      },
+      "result": {
+        "session_id": "S2",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "3268ffe16ea961abd2e779b3a20eb6162582f606",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E3",
+    "inquiry_id": null,
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "T1 produced late candidates through 120832 steps. No candidate has a working, best-known, or retained role because independent development evidence is still absent.",
+        "completed_operations": [
+          "E2"
+        ],
+        "cumulative_resource_use": "One fresh PPO training operation and one inquiry-opening operation; no evaluation operation has completed.",
+        "current_goal_gap": "T1:checkpoint-120832 has 0.94 in-training success, but no independent development measurement establishes episode success, hold reliability, or failure geometry.",
+        "current_synthesis": "T1 corrected the credible omission of folded inner-radius configurations and learned substantial competence, but training success cannot establish official-distribution performance. The active uncertainty is whether late-training behavior generalizes and whether failures arise from approach, branch selection, overshoot, or interrupted holding.",
+        "decision_frontier": "Measure T1:checkpoint-115712 and T1:checkpoint-120832 on matched independent research panels with hold diagnostics and the protected task-reference panel, then use the results to select a best-known candidate or a targeted intervention.",
+        "evidence_references": [
+          "T1"
+        ],
+        "human_goal_connection": "Independent complete-hold evaluation is the necessary next test of whether the full-distribution PPO candidate is credible for the 98% official objective.",
+        "next_direction_or_closure": "After this checkpoint, run the bounded comparative measurement for the two strongest late T1 candidates. Close the inquiry after interpreting those results and either assign the evidence-supported best-known candidate or select one goal-linked next intervention."
+      }
+    },
+    "request_fingerprint": "be142d1ad2cd998722078234d9394abba6fb03edf086dd0ccb0d43c89339c80b",
+    "session_id": "S2",
+    "supersedes": null
+  },
   "pi_checkpoint": {
-    "candidates_and_roles": "T1 produced candidates through 120832 steps. No candidate has a working, best-known, or retained role because none has independent development evidence yet.",
+    "candidates_and_roles": "T1 produced late candidates through 120832 steps. No candidate has a working, best-known, or retained role because independent development evidence is still absent.",
     "completed_operations": [
-      "T1"
+      "E2"
     ],
-    "cumulative_resource_use": "One fresh PPO training operation, seed 7, requested 120000 steps and archived checkpoints through 120832 steps; no evaluation operation has been run.",
-    "current_goal_gap": "The strongest T1 candidate reaches 0.94 in-training success at 120832 steps, but no independent development evaluation has established its episode success, hold reliability, or proximity to the 98% goal.",
-    "current_synthesis": "The known training-distribution omission was a credible causal obstacle because it excluded the folded inner-radius configurations present in the official task. After correcting that omission, PPO learned substantial task competence and improved late in training, but training success is not sufficient evidence of official-distribution performance. The dominant unresolved question is now whether the learned behavior generalizes to held-out targets and whether remaining failures are approach, branch, overshoot, or uninterrupted-hold failures.",
-    "decision_frontier": "Determine independent success and hold-failure structure for the strongest late T1 candidates before assigning a working or best-known role; distinguish a promising but undertrained candidate from a policy requiring a control or reward intervention.",
+    "cumulative_resource_use": "One fresh PPO training operation and one inquiry-opening operation; no evaluation operation has completed.",
+    "current_goal_gap": "T1:checkpoint-120832 has 0.94 in-training success, but no independent development measurement establishes episode success, hold reliability, or failure geometry.",
+    "current_synthesis": "T1 corrected the credible omission of folded inner-radius configurations and learned substantial competence, but training success cannot establish official-distribution performance. The active uncertainty is whether late-training behavior generalizes and whether failures arise from approach, branch selection, overshoot, or interrupted holding.",
+    "decision_frontier": "Measure T1:checkpoint-115712 and T1:checkpoint-120832 on matched independent research panels with hold diagnostics and the protected task-reference panel, then use the results to select a best-known candidate or a targeted intervention.",
     "evidence_references": [
       "T1"
     ],
-    "human_goal_connection": "Training on the full official target-radius distribution is a necessary first route toward a policy that achieves at least 98% complete uninterrupted-hold episode success across the official task distribution.",
+    "human_goal_connection": "Independent complete-hold evaluation is the necessary next test of whether the full-distribution PPO candidate is credible for the 98% official objective.",
     "inquiry_id": null,
-    "next_direction_or_closure": "At goal review, open an inquiry to measure the strongest T1 candidates on independent research and task-reference panels, using hold-specific diagnostics to decide whether to continue training or change the controller/reward.",
-    "scientific_commit": "935a032229bfc6fe10e921bb80942e7a7abf4a0e",
-    "session_id": "S1"
+    "next_direction_or_closure": "After this checkpoint, run the bounded comparative measurement for the two strongest late T1 candidates. Close the inquiry after interpreting those results and either assign the evidence-supported best-known candidate or select one goal-linked next intervention.",
+    "scientific_commit": "3268ffe16ea961abd2e779b3a20eb6162582f606",
+    "session_id": "S2"
   },
   "schema_version": 6,
   "scientific_model": {
@@ -1139,21 +1254,6 @@
     "path": "research/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "02f3f8a9-52c1-46fa-a3bf-343bac0f626b",
-    "id": "S2",
-    "inquiry_id": null,
-    "kind": "goal_review",
-    "objective": "Decide whether to request official assessment, open one bounded goal-linked inquiry, or conclude that no credible route remains.",
-    "operation_ids": [
-      "E2"
-    ],
-    "scientific_parent_commit": "63406003a7be45ce6f14f516282662e80e5731cd"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
