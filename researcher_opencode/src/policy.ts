@@ -488,8 +488,7 @@ export function isDependencyManagement(tokens: string[]): boolean {
       const runArguments = lowered.slice(subcommandIndex + 1);
       if (
         runArguments.some(
-          (token) =>
-            token.startsWith("--with") || token === "-w" || token.startsWith("-w="),
+          (token) => token.startsWith("--with") || token.startsWith("-w"),
         )
       ) {
         return true;

@@ -258,6 +258,8 @@ def test_dependency_management_is_refused(command):
         "uv --offline run --with=requests python -c pass",
         "uv --offline run -w requests python -c pass",
         "uv --offline run -w=requests python -c pass",
+        "uv run -wrequests python -c pass",
+        "uv --offline run -wrequests python -c pass",
         r"C:\Tools\uv.exe --offline add numpy",
         r'"C:\Program Files\uv\uv.exe" --project=. sync',
         r'& "C:\Program Files\uv\uv.exe" --offline add numpy',

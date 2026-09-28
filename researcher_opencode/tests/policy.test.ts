@@ -122,6 +122,8 @@ test("uv global options cannot hide dependency management", () => {
     "uv --offline run --with=requests python -c pass",
     "uv --offline run -w requests python -c pass",
     "uv --offline run -w=requests python -c pass",
+    "uv run -wrequests python -c pass",
+    "uv --offline run -wrequests python -c pass",
     "C:\\Tools\\uv.exe --offline add numpy",
     '"C:\\Program Files\\uv\\uv.exe" --project=. sync',
     '& "C:\\Program Files\\uv\\uv.exe" --offline add numpy',

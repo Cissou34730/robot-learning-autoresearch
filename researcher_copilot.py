@@ -712,7 +712,7 @@ def is_dependency_management(tokens: list[str]) -> bool:
         if operation == "run":
             run_arguments = lowered[subcommand_index + 1 :]
             if any(
-                token.startswith(("--with", "-w=")) or token == "-w"
+                token.startswith(("--with", "-w"))
                 for token in run_arguments
             ):
                 return True
