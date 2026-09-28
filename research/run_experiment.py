@@ -304,6 +304,7 @@ def _transaction_data(kind: str, request: dict, state: dict) -> dict:
             "scientific_paths": list(changed),
             "effective_parameters": _load_experiment_config(),
             "scientific_commit": None,
+            "presentation": _session_completion_presentation(state, session),
             "result": None,
         }
     if kind == "model_role":
@@ -325,7 +326,21 @@ def _transaction_data(kind: str, request: dict, state: dict) -> dict:
         "plan": protocol.plan_campaign_conclusion(
             request["campaign_conclusion"], state
         ),
+        "presentation": _session_completion_presentation(state, session),
         "result": None,
+    }
+
+
+def _session_completion_presentation(state: dict, session: dict) -> dict:
+    campaign_id = repository.current_campaign_id(state)
+    backend_session_id = str(session["backend_session_id"])
+    return {
+        "campaign_id": campaign_id,
+        "session_id": str(session["id"]),
+        "session_kind": str(session["kind"]),
+        "backend_session_id": backend_session_id,
+        "session_usage": console.usage_summary(campaign_id, backend_session_id),
+        "campaign_usage": console.usage_summary(campaign_id),
     }
 
 
@@ -1426,10 +1441,10 @@ def _operation_request_detail(pending: dict) -> str:
     return ""
 
 
-def _operation_completion_detail(pending: dict, elapsed: float) -> str:
+def _operation_completion_detail(pending: dict) -> str:
     result = pending["data"].get("result") or {}
     kind = pending["kind"]
-    parts = [console.format_duration(elapsed)]
+    parts: list[str] = []
     if kind == "measurement":
         parts.append(f"{len(result.get('measurements', []))} result(s)")
         comparisons = len(result.get("paired_comparisons", []))
@@ -1453,21 +1468,16 @@ def _operation_completion_detail(pending: dict, elapsed: float) -> str:
 
 
 def _completion_presentation(state: dict, pending: dict) -> dict:
-    session_usage = None
-    if pending["kind"] in {"checkpoint", "campaign_conclusion"}:
-        session = state.get("scientific_session")
-        if isinstance(session, dict):
-            session_usage = console.usage_summary(
-                repository.current_campaign_id(state),
-                str(session["backend_session_id"]),
-            )
-    return {
+    presentation = {
         "campaign_id": repository.current_campaign_id(state),
         "kind": str(pending["kind"]),
         "pending": pending,
         "session_id": str(pending["session_id"]),
-        "session_usage": session_usage,
     }
+    stored = pending["data"].get("presentation")
+    if isinstance(stored, dict):
+        presentation.update(copy.deepcopy(stored))
+    return presentation
 
 
 def _announce_consequential_completion(presentation: dict) -> None:
@@ -1489,15 +1499,17 @@ def _announce_consequential_completion(presentation: dict) -> None:
         console.boundary(
             "session",
             "END",
-            session_id,
-            presentation["session_usage"] or "usage unavailable",
+            f"{presentation['session_id']} "
+            f"{str(presentation['session_kind']).replace('_', ' ')}",
+            presentation["session_usage"],
         )
     elif kind == "campaign_conclusion":
         console.boundary(
             "session",
             "END",
-            presentation["session_id"],
-            presentation["session_usage"] or "usage unavailable",
+            f"{presentation['session_id']} "
+            f"{str(presentation['session_kind']).replace('_', ' ')}",
+            presentation["session_usage"],
         )
         status = str(result.get("status", "")).replace("_", " ")
         action = "END" if result.get("status") == "no_credible_route" else "DECISION"
@@ -1505,17 +1517,17 @@ def _announce_consequential_completion(presentation: dict) -> None:
             "campaign",
             action,
             status,
-            console.usage_summary(presentation["campaign_id"]),
+            presentation["campaign_usage"],
         )
 
 
-def _announce_completed_operation(presentation: dict, detail: str) -> None:
+def _announce_completed_operation(presentation: dict) -> None:
     pending = copy.deepcopy(presentation["pending"])
     console.boundary(
         "operation",
         "COMPLETE",
         _operation_subject(pending),
-        detail,
+        _operation_completion_detail(pending),
     )
     _announce_consequential_completion(presentation)
 
@@ -1556,10 +1568,9 @@ def execute_pending_operation() -> int:
     console.boundary("operation", action, subject, detail)
     if pending["progress"] == "completed":
         _finalize_operation(state, pending)
-        _announce_completed_operation(presentation, "finalized")
+        _announce_completed_operation(presentation)
         return 0
     kind = pending["kind"]
-    started = time.monotonic()
     console.boundary("operation", "START", subject)
     try:
         if kind == "measurement":
@@ -1584,14 +1595,10 @@ def execute_pending_operation() -> int:
             repository.write_state(state)
         console.boundary("error", "OPERATION FAILED", subject, str(error))
         raise
-    elapsed = time.monotonic() - started
     if exit_code == 130:
         console.boundary("warning", "OPERATION PAUSED", subject)
         return exit_code
-    _announce_completed_operation(
-        presentation,
-        _operation_completion_detail(pending, elapsed),
-    )
+    _announce_completed_operation(presentation)
     return exit_code
 
 
@@ -1890,7 +1897,7 @@ def main() -> int:
         presentation = finalization[1]
         if not isinstance(presentation, dict):
             raise TypeError("published finalization is missing completion presentation")
-        _announce_completed_operation(presentation, "finalized")
+        _announce_completed_operation(presentation)
         return 0
     if finalization is not None and finalization[0] == "retry":
         state = repository.load_state(allow_missing_artifact=True)

@@ -1,5 +1,7 @@
 import json
 import re
+import subprocess
+import sys
 from io import StringIO
 
 import pytest
@@ -98,6 +100,35 @@ def test_progress_clips_one_line_without_exposing_a_tail(monkeypatch):
     assert "\n" in rendered
     assert "..." in rendered
     assert "x" * 60 not in rendered
+
+
+def test_redirected_boundary_collapses_whitespace_without_wrapping():
+    detail = "strategic usage\n  prompt 12k   output 800 " + "x" * 160
+    completed = subprocess.run(
+        [
+            sys.executable,
+            "-c",
+            (
+                "from research import runner_console; "
+                "runner_console.boundary("
+                f"'session', 'END', 'S4 goal review', {detail!r})"
+            ),
+        ],
+        cwd=runner_console._ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert completed.returncode == 0, completed.stderr
+    rendered = completed.stdout.splitlines()
+    assert len(rendered) == 1
+    assert "[session] END | S4 goal review | strategic usage prompt 12k output 800" in (
+        rendered[0]
+    )
+    assert rendered[0].endswith("x" * 160)
+    assert "  " not in rendered[0]
+    assert "\x1b[" not in rendered[0]
 
 
 def test_usage_summary_aggregates_existing_durable_accounting(tmp_path, monkeypatch):
@@ -295,6 +326,14 @@ def test_campaign_conclusion_pairs_session_end_with_campaign_boundary(
                 "reason": request["campaign_conclusion"]["reason"],
                 "model": model,
             },
+            "presentation": {
+                "campaign_id": "11111111-1111-1111-1111-111111111111",
+                "session_id": "S4",
+                "session_kind": "goal_review",
+                "backend_session_id": "backend-session",
+                "session_usage": "session usage",
+                "campaign_usage": "campaign usage",
+            },
             "result": None,
         },
     }
@@ -333,24 +372,11 @@ def test_campaign_conclusion_pairs_session_end_with_campaign_boundary(
             (scope, action, subject, detail)
         ),
     )
-    monkeypatch.setattr(
-        run_experiment.console,
-        "usage_summary",
-        lambda _campaign_id, session_id=None: (
-            "session usage" if session_id is not None else "usage"
-        ),
-    )
-    monkeypatch.setattr(
-        run_experiment.repository,
-        "current_campaign_id",
-        lambda _state: state["campaign"]["id"],
-    )
-
     assert run_experiment.execute_pending_operation() == 0
 
     assert boundaries[-2:] == [
-        ("session", "END", "S4", "session usage"),
-        ("campaign", campaign_action, campaign_subject, "usage"),
+        ("session", "END", "S4 goal review", "session usage"),
+        ("campaign", campaign_action, campaign_subject, "campaign usage"),
     ]
     assert sum(entry[0:2] == ("session", "END") for entry in boundaries) == 1
     assert sum(entry[0:2] == ("campaign", campaign_action) for entry in boundaries) == 1
@@ -394,12 +420,20 @@ def test_campaign_conclusion_pairs_session_end_with_campaign_boundary(
                 "supersedes": None,
                 "data": {
                     "plan": {"session_id": "S3"},
+                    "presentation": {
+                        "campaign_id": "campaign",
+                        "session_id": "S3",
+                        "session_kind": "inquiry",
+                        "backend_session_id": "backend-S3",
+                        "session_usage": "session usage",
+                        "campaign_usage": "campaign usage",
+                    },
                     "result": {"status": "checkpointed", "session_id": "S3"},
                 },
             },
             [
                 ("checkpoint", "COMPLETE", "S3", ""),
-                ("session", "END", "S3", "usage unavailable"),
+                ("session", "END", "S3 inquiry", "session usage"),
             ],
         ),
         (
@@ -415,11 +449,19 @@ def test_campaign_conclusion_pairs_session_end_with_campaign_boundary(
                 "supersedes": None,
                 "data": {
                     "plan": {},
+                    "presentation": {
+                        "campaign_id": "campaign",
+                        "session_id": "S4",
+                        "session_kind": "goal_review",
+                        "backend_session_id": "backend-S4",
+                        "session_usage": "session usage",
+                        "campaign_usage": "campaign usage",
+                    },
                     "result": {"status": "no_credible_route", "model": None},
                 },
             },
             [
-                ("session", "END", "S4", "usage unavailable"),
+                ("session", "END", "S4 goal review", "session usage"),
                 ("campaign", "END", "no credible route", "campaign usage"),
             ],
         ),
@@ -440,6 +482,14 @@ def test_campaign_conclusion_pairs_session_end_with_campaign_boundary(
                 "supersedes": None,
                 "data": {
                     "plan": {},
+                    "presentation": {
+                        "campaign_id": "campaign",
+                        "session_id": "S5",
+                        "session_kind": "goal_review",
+                        "backend_session_id": "backend-S5",
+                        "session_usage": "session usage",
+                        "campaign_usage": "campaign usage",
+                    },
                     "result": {
                         "status": "official_assessment_requested",
                         "model": "T1:checkpoint-10",
@@ -447,7 +497,7 @@ def test_campaign_conclusion_pairs_session_end_with_campaign_boundary(
                 },
             },
             [
-                ("session", "END", "S5", "usage unavailable"),
+                ("session", "END", "S5 goal review", "session usage"),
                 (
                     "campaign",
                     "DECISION",
@@ -488,14 +538,6 @@ def test_completed_pending_recovery_uses_the_shared_completion_presenter(
             (scope, action, subject, detail)
         ),
     )
-    monkeypatch.setattr(
-        run_experiment.console,
-        "usage_summary",
-        lambda _campaign_id, session_id=None: (
-            "session usage" if session_id is not None else "campaign usage"
-        ),
-    )
-
     assert run_experiment.execute_pending_operation() == 0
 
     assert sum(entry[0:2] == ("operation", "COMPLETE") for entry in boundaries) == 1

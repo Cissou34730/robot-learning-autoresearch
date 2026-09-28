@@ -481,6 +481,97 @@ def test_finalization_push_crash_retries_only_publication_without_duplicate_even
     assert sum(entry[0:2] == ("inquiry", "OPEN") for entry in boundaries) == 1
 
 
+@pytest.mark.parametrize("finalize_commit_reached", [False, True])
+def test_session_ending_finalization_recovery_preserves_completion_presentation(
+    monkeypatch, tmp_path, finalize_commit_reached
+):
+    state = _configure(monkeypatch, tmp_path, session_kind="goal_review")
+    request = {
+        "campaign_conclusion": {
+            "action": "no_credible_route",
+            "reason": "The durable evidence leaves no credible route.",
+        }
+    }
+    paths.OPERATION_REQUEST_PATH.write_text(json.dumps(request), encoding="utf-8")
+    committed: dict[str, dict] = {}
+    calls: list[str] = []
+    boundaries: list[tuple[str, str, str, str]] = []
+    pushes = {"count": 0}
+
+    class SimulatedCrash(BaseException):
+        pass
+
+    def commit(message):
+        calls.append(message)
+        if message == "complete E1 campaign_conclusion":
+            committed["HEAD"] = copy.deepcopy(repository.read_state())
+            return True
+        if calls.count("finalize E1") == 1:
+            if finalize_commit_reached:
+                committed["HEAD^"] = committed["HEAD"]
+                committed["HEAD"] = copy.deepcopy(repository.read_state())
+            raise SimulatedCrash
+        committed["HEAD"] = copy.deepcopy(repository.read_state())
+        return True
+
+    def git(*args):
+        if args == ("log", "-1", "--format=%s", "HEAD"):
+            return "camp: finalize E1\n"
+        return "a" * 40 + "\n"
+
+    monkeypatch.setattr(
+        run_experiment.console,
+        "usage_summary",
+        lambda _campaign_id, session_id=None: (
+            "session usage" if session_id is not None else "campaign usage"
+        ),
+    )
+    monkeypatch.setattr(
+        run_experiment.console,
+        "boundary",
+        lambda scope, action, subject="", detail="": boundaries.append(
+            (scope, action, subject, detail)
+        ),
+    )
+    monkeypatch.setattr(repository, "commit_runner_memory", commit)
+    monkeypatch.setattr(repository, "git", git)
+    monkeypatch.setattr(
+        repository,
+        "read_committed_state",
+        lambda revision: copy.deepcopy(committed[revision]),
+    )
+    monkeypatch.setattr(
+        repository,
+        "push_head",
+        lambda: pushes.__setitem__("count", pushes["count"] + 1),
+    )
+
+    pending = run_experiment.accept_operation(request, state)
+    assert pending["data"]["presentation"] == {
+        "campaign_id": "campaign",
+        "session_id": "S1",
+        "session_kind": "goal_review",
+        "backend_session_id": state["scientific_session"]["backend_session_id"],
+        "session_usage": "session usage",
+        "campaign_usage": "campaign usage",
+    }
+    with pytest.raises(SimulatedCrash):
+        run_experiment.execute_pending_operation()
+
+    monkeypatch.setattr(sys, "argv", ["run_experiment.py"])
+    assert run_experiment.main() == 0
+
+    assert boundaries[-3:] == [
+        ("operation", "COMPLETE", "campaign decision", ""),
+        ("session", "END", "S1 goal review", "session usage"),
+        ("campaign", "END", "no credible route", "campaign usage"),
+    ]
+    assert sum(entry[0:2] == ("operation", "COMPLETE") for entry in boundaries) == 1
+    assert sum(entry[0:2] == ("session", "END") for entry in boundaries) == 1
+    assert sum(entry[0:2] == ("campaign", "END") for entry in boundaries) == 1
+    assert pushes["count"] == int(finalize_commit_reached)
+
+
 def test_completion_publishes_memory_and_consumes_the_request(monkeypatch, tmp_path):
     state = _configure(monkeypatch, tmp_path, session_kind="goal_review")
     request = {

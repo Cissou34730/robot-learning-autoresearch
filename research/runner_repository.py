@@ -167,11 +167,12 @@ PENDING_DATA_FIELDS = {
         "scientific_paths",
         "effective_parameters",
         "scientific_commit",
+        "presentation",
         "result",
     },
     "model_role": {"plan", "publication", "result"},
     "restore_recipe": {"plan", "pre_restore_manifest", "result"},
-    "campaign_conclusion": {"plan", "result"},
+    "campaign_conclusion": {"plan", "presentation", "result"},
 }
 PENDING_PROGRESS = {
     "measurement": {"accepted", "result_ready", "completed"},
@@ -1113,6 +1114,25 @@ def _validate_pending_data(kind: str, data: object) -> None:
         return
     if kind == "checkpoint":
         _validate_manifest(data["scientific_manifest"], "checkpoint manifest")
+    if kind in {"checkpoint", "campaign_conclusion"}:
+        presentation = _require_exact_fields(
+            data["presentation"],
+            {
+                "campaign_id",
+                "session_id",
+                "session_kind",
+                "backend_session_id",
+                "session_usage",
+                "campaign_usage",
+            },
+            f"pending {kind} presentation",
+        )
+        for field in presentation:
+            _nonempty(
+                presentation,
+                field,
+                f"pending {kind} presentation {field}",
+            )
     if kind == "model_role" and data["publication"] is not None:
         _require_exact_fields(
             data["publication"],

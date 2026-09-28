@@ -213,8 +213,11 @@ def announce(message: str) -> None:
     text = compact_text(message.lstrip("\n"))
     timestamp = f"[{datetime.now():%H:%M:%S}]"  # noqa: DTZ005 - local console time
     prefix = f"{timestamp} "
+    if not sys.stdout.isatty():
+        print(leading_break + prefix + " ".join(text.split()), flush=True)
+        return
     wrapped = _wrap_console_text(text, initial_prefix=prefix)
-    if sys.stdout.isatty() and text.startswith("[") and "]" in text:
+    if text.startswith("[") and "]" in text:
         marker = text[1 : text.index("]")].casefold()
         color = _SEMANTIC_COLORS.get(marker, _CYAN)
         wrapped[0] = wrapped[0].replace(
@@ -222,7 +225,7 @@ def announce(message: str) -> None:
             f"{color}[{marker}]{_RESET}",
             1,
         )
-    elif sys.stdout.isatty() and text.startswith("==="):
+    elif text.startswith("==="):
         wrapped = [_style_card_sections(f"{_CYAN}{line}{_RESET}") for line in wrapped]
     print(leading_break + "\n".join(wrapped), flush=True)
 
