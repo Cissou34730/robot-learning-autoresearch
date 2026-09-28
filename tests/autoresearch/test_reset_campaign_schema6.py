@@ -132,27 +132,39 @@ def test_fresh_campaign_writes_only_schema6_memory(monkeypatch, tmp_path):
 
 
 def test_recipe_import_excludes_campaign_memory_and_laboratory(monkeypatch):
+    source_recipe = [
+        "robot_learning/scenario/reward.py",
+        "robot_learning/training/algorithms.py",
+        "robot_learning/train.py",
+        "robot_learning/evaluate.py",
+        "robot_learning/play.py",
+        "research/current_params.json",
+    ]
+    later_science = "robot_learning/scenario/later_extension.py"
+    monkeypatch.setattr(repository, "require_resolvable_commit", lambda commit: None)
     monkeypatch.setattr(
-        reset_campaign.protocol,
-        "plan_recipe_paths",
-        lambda _commit: {
-            "parent": "source",
-            "restore": [
-                "robot_learning/scenario/reward.py",
-                "research/current_params.json",
-                "research/lab/diagnostic.py",
-            ],
-            "remove_created": ["robot_learning/training/obsolete.py"],
-        },
+        repository,
+        "scientific_delta",
+        lambda commit: [
+            *source_recipe,
+            later_science,
+            "research/lab/diagnostic.py",
+            "research/research_state.json",
+            "research/evaluations/source/evidence.json",
+            "robot_learning/scenario/__init__.py",
+            "tests/autoresearch/test_scenario_boundary.py",
+        ],
+    )
+    monkeypatch.setattr(
+        repository,
+        "tracked_at_commit",
+        lambda commit, relative: relative != later_science,
     )
 
     assert reset_campaign.scientific_plan("source") == {
         "parent": "source",
-        "restore": [
-            "robot_learning/scenario/reward.py",
-            "research/current_params.json",
-        ],
-        "remove_created": ["robot_learning/training/obsolete.py"],
+        "restore": source_recipe,
+        "remove_created": [later_science],
     }
 
     monkeypatch.setattr(
@@ -166,6 +178,169 @@ def test_recipe_import_excludes_campaign_memory_and_laboratory(monkeypatch):
     )
     with pytest.raises(RuntimeError, match="non-scientific path"):
         reset_campaign.scientific_plan("source")
+
+
+def test_fresh_recipe_ref_restores_recipe_into_empty_schema6_campaign(
+    monkeypatch, tmp_path
+):
+    root = tmp_path
+    source = "a" * 40
+    recipe = {
+        "robot_learning/scenario/reward.py": "SOURCE_REWARD = True\n",
+        "robot_learning/scenario/source_only.py": "SOURCE_ONLY = True\n",
+        "robot_learning/training/algorithms.py": "SOURCE_ALGORITHM = True\n",
+        "robot_learning/train.py": "SOURCE_TRAIN = True\n",
+        "robot_learning/evaluate.py": "SOURCE_EVALUATE = True\n",
+        "robot_learning/play.py": "SOURCE_PLAY = True\n",
+        "research/current_params.json": '{"algorithm":{"name":"ppo"}}\n',
+    }
+    for relative, content in recipe.items():
+        target = root / relative
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text(f"CURRENT_{target.stem.upper()} = True\n", encoding="utf-8")
+
+    candidate = _candidate("f" * 64)
+    source_state = _prepared_source_state(candidate)
+    source_state["active_inquiry"] = {"id": "I7", "question": "source inquiry"}
+    source_state["scientific_session"] = {"id": "S7", "kind": "inquiry"}
+    source_state["pi_checkpoint"] = {"session_id": "S7"}
+    source_state["operation_events"] = [
+        {"id": "M9", "kind": "measurement", "status": "completed"}
+    ]
+    source_state["official_assessment"] = {"candidate": candidate["id"]}
+    source_state["terminal_state"] = {"status": "goal_reached"}
+    source_memory = {
+        "research/research_state.json": json.dumps(source_state),
+        "research/results.jsonl": '{"id":"T1","status":"completed"}\n',
+        "research/EXPERIMENTS.md": "# Source campaign history\n",
+        "research/scientific_model.md": "# Source scientific model\n",
+        "research/operation_request.json": '{"kind":"training"}\n',
+        "research/postmortems.md": "# Source postmortem\n",
+        "research/brief.md": "# Source bounded-session context\n",
+        "research/evaluations/source/evidence.json": '{"success_rate":0.97}\n',
+        "research/checkpoints/candidates/source/t1/checkpoint-10/model.zip": (
+            "trained policy"
+        ),
+        "models/candidates/source/model.zip": "disposable trained policy",
+        "research/lab/source_diagnostic.py": "SOURCE_EVIDENCE = True\n",
+    }
+    for relative, content in source_memory.items():
+        target = root / relative
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text(content, encoding="utf-8")
+
+    (root / "robot_learning/scenario/source_only.py").unlink()
+    later = root / "robot_learning/scenario/later_extension.py"
+    later.write_text("LATER_EXTENSION = True\n", encoding="utf-8")
+    _bind_paths(monkeypatch, root)
+    plan = {
+        "parent": source,
+        "restore": list(recipe),
+        "remove_created": ["robot_learning/scenario/later_extension.py"],
+    }
+    backup = root / ".git" / "research-reset-backups" / "operation"
+    backup.mkdir(parents=True)
+    publications: list[tuple[str, tuple[str, ...]]] = []
+
+    monkeypatch.setattr(
+        reset_campaign,
+        "resolve_commit",
+        lambda reference, label: (
+            source
+            if (reference, label) == ("strong-baseline", "RecipeRef")
+            else pytest.fail("unexpected recipe resolution")
+        ),
+    )
+    monkeypatch.setattr(reset_campaign, "scientific_plan", lambda commit: plan)
+    monkeypatch.setattr(reset_campaign, "verify_recipe_source", lambda commit: None)
+    monkeypatch.setattr(
+        reset_campaign,
+        "new_operation",
+        lambda mode, commit, targets: {
+            "mode": mode,
+            "source_commit": commit,
+            "targets": targets,
+        },
+    )
+    monkeypatch.setattr(
+        reset_campaign, "create_backup", lambda targets, operation: backup
+    )
+    monkeypatch.setattr(reset_campaign, "update_operation", lambda *_args: None)
+    monkeypatch.setattr(reset_campaign, "validate_restored_recipe", lambda: None)
+    monkeypatch.setattr(
+        reset_campaign,
+        "publish_reset_changes",
+        lambda _backup, _operation, _message, scope, purpose: publications.append(
+            (purpose, tuple(scope))
+        ),
+    )
+    monkeypatch.setattr(reset_campaign, "git", lambda *_args, **_kwargs: "new-head\n")
+
+    def restore_paths(commit: str, restorable: list[str]) -> None:
+        assert commit == source
+        assert restorable == list(recipe)
+        for relative in restorable:
+            target = root / relative
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_text(recipe[relative], encoding="utf-8")
+
+    monkeypatch.setattr(repository, "restore_paths", restore_paths)
+
+    campaign_id, resolved_source, returned_backup = reset_campaign.reset_fresh(
+        "strong-baseline"
+    )
+
+    state = json.loads(
+        (root / "research/research_state.json").read_text(encoding="utf-8")
+    )
+    assert resolved_source == source
+    assert returned_backup == backup
+    assert campaign_id == state["campaign"]["id"]
+    assert state["schema_version"] == 6
+    assert set(state) == repository.STATE_FIELDS
+    assert state["campaign"]["id"] != source_state["campaign"]["id"]
+    assert state["campaign"]["recipe_source_commit"] == source
+    assert state["campaign"]["base_commit"] == "new-head"
+    assert state["scientific_model"] == {
+        "status": "pending",
+        "path": "research/scientific_model.md",
+        "commit": None,
+    }
+    assert state["active_inquiry"] is None
+    assert state["scientific_session"] is None
+    assert state["pi_checkpoint"] is None
+    assert state["pending_operation"] is None
+    assert state["operation_events"] == []
+    assert state["official_assessment"] is None
+    assert state["terminal_state"] is None
+    assert state["candidates"] == {}
+    assert state["model_roles"] == {
+        "working": None,
+        "best_known": None,
+        "retained": {},
+    }
+
+    for relative, content in recipe.items():
+        assert (root / relative).read_text(encoding="utf-8") == content
+    assert not later.exists()
+    assert (root / "research/results.jsonl").read_text(encoding="utf-8") == ""
+    assert (root / "research/EXPERIMENTS.md").read_text(
+        encoding="utf-8"
+    ) == repository.render_operation_log([])
+    for relative in (
+        "research/scientific_model.md",
+        "research/operation_request.json",
+        "research/postmortems.md",
+        "research/brief.md",
+        "research/evaluations",
+        "research/checkpoints",
+        "research/lab",
+        "models/candidates",
+    ):
+        assert not (root / relative).exists()
+    assert publications[0] == ("recipe", tuple(reset_campaign.plan_paths(plan)))
+    assert publications[1][0] == "campaign"
+    assert set(reset_campaign.CAMPAIGN_PATHS) <= set(publications[1][1])
 
 
 def test_baseline_import_builds_clean_schema6_state():
