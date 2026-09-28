@@ -3775,7 +3775,7 @@
     }
   },
   "counters": {
-    "event": 10,
+    "event": 11,
     "inquiry": 1,
     "measurement": 6,
     "session": 6,
@@ -3784,7 +3784,7 @@
   "human_goal": {
     "source": "research/scenario.md"
   },
-  "last_verdict": "restored",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": "T1:checkpoint-100352",
     "retained": {},
@@ -6470,24 +6470,198 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-09-28T23:47:20Z",
+      "error": null,
+      "id": "E11",
+      "inquiry_id": "I1",
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "T1:checkpoint-100352 remains the best-known candidate, assigned by E4, at 151/160 research successes. T6:checkpoint-100352 is rejected after M6 at 115/160 with zero candidate wins and is not assigned a role. No working candidate is assigned.",
+        "completed_operations": [
+          "E9",
+          "T6",
+          "M6",
+          "E10"
+        ],
+        "cumulative_resource_use": "T1 used one fresh 100352-step PPO training operation and M1 one 160-episode panel; E4 assigned the best-known role. T2 used one fresh 100352-step training operation and M2 one paired panel. E7 restored T1. T3 used one fresh 100352-step training operation and M3 one paired panel. T4 used one fresh 100352-step training operation and M4 one paired panel. T5 used one 50000-step transfer-training operation and M5 one paired panel. E9 restored T1. T6 used one fresh 100352-step training operation and M6 one paired panel. E10 restored T1. No official benchmark assessment was requested.",
+        "current_goal_gap": "T1:checkpoint-100352 remains 45 successes short of the projected 196/200 official target. T6:checkpoint-100352 achieved 115/160 (71.875%) with zero paired wins against T1, so no candidate has demonstrated the required research performance.",
+        "current_synthesis": "M1 and M5 establish that T1's residual failures are dominated by valid-posture acquisition and branch/joint-limit choice: six failures never entered tolerance and three held only 1-2 checks, concentrated at negative target angles on the open branch with negative minimum joint-limit margin. T2, T3, T4, and T5 reject dense limit reward, extra branch-margin observations, broad radius exposure, and targeted curriculum as usable interventions. M6 rejects T6's direct IK-posture action correction even more strongly: it caused 34 no-entry and 11 short-hold failures, including broad positive-angle degradation, and lost all 36 discordant paired episodes. Thus the branch/posture mechanism remains actionable, but forcing posture in the physical action path is not; approach must remain policy-controlled and the next branch-selection method must preserve the T1 reach dynamics while changing only how the policy commits to a feasible branch.",
+        "decision_frontier": "Keep T1:checkpoint-100352 as best-known and reject T6:checkpoint-100352. Do not use direct IK posture correction, dense reward penalties, appended branch-margin observations, broad radius changes, or targeted negative-angle curriculum. Before another training run, design one branch-selection intervention that reuses the existing 11-value observation and unchanged reward/distribution while preserving the learned approach and hold regulation; evaluate it against T1 on shared seeds with complete-hold, reach, first-entry, longest-hold, residual-motion, branch, joint-limit, conditioning, interruption, and geometry diagnostics.",
+        "evidence_references": [
+          "T1",
+          "M1",
+          "E4",
+          "T2",
+          "M2",
+          "E7",
+          "T3",
+          "M3",
+          "T4",
+          "M4",
+          "T5",
+          "M5",
+          "E9",
+          "T6",
+          "M6",
+          "E10"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 of 200 official episodes to complete an uninterrupted 2-second hold. T1 remains below that threshold at 151/160 research successes, and T6 provides no improvement toward official assessment.",
+        "next_direction_or_closure": "I1 remains open. Its dominant failure mechanism is sufficiently localized to valid-posture and branch/joint-limit selection, but the first action-level branch intervention failed by disrupting approach. The next session should implement and test a branch-selection mechanism that leaves approach torques learned and unconstrained until the policy has committed to a posture; do not request official assessment until paired research success reaches the goal threshold."
+      },
+      "result": {
+        "session_id": "S6",
+        "status": "checkpointed"
+      },
+      "session_id": "S6",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "e63fb781f524a41d78f44169b01e8960b909aed5",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "T1:checkpoint-100352 remains the best-known candidate, assigned by E4, at 151/160 research successes. T6:checkpoint-100352 is rejected after M6 at 115/160 with zero candidate wins and is not assigned a role. No working candidate is assigned.",
+        "completed_operations": [
+          "E9",
+          "T6",
+          "M6",
+          "E10"
+        ],
+        "cumulative_resource_use": "T1 used one fresh 100352-step PPO training operation and M1 one 160-episode panel; E4 assigned the best-known role. T2 used one fresh 100352-step training operation and M2 one paired panel. E7 restored T1. T3 used one fresh 100352-step training operation and M3 one paired panel. T4 used one fresh 100352-step training operation and M4 one paired panel. T5 used one 50000-step transfer-training operation and M5 one paired panel. E9 restored T1. T6 used one fresh 100352-step training operation and M6 one paired panel. E10 restored T1. No official benchmark assessment was requested.",
+        "current_goal_gap": "T1:checkpoint-100352 remains 45 successes short of the projected 196/200 official target. T6:checkpoint-100352 achieved 115/160 (71.875%) with zero paired wins against T1, so no candidate has demonstrated the required research performance.",
+        "current_synthesis": "M1 and M5 establish that T1's residual failures are dominated by valid-posture acquisition and branch/joint-limit choice: six failures never entered tolerance and three held only 1-2 checks, concentrated at negative target angles on the open branch with negative minimum joint-limit margin. T2, T3, T4, and T5 reject dense limit reward, extra branch-margin observations, broad radius exposure, and targeted curriculum as usable interventions. M6 rejects T6's direct IK-posture action correction even more strongly: it caused 34 no-entry and 11 short-hold failures, including broad positive-angle degradation, and lost all 36 discordant paired episodes. Thus the branch/posture mechanism remains actionable, but forcing posture in the physical action path is not; approach must remain policy-controlled and the next branch-selection method must preserve the T1 reach dynamics while changing only how the policy commits to a feasible branch.",
+        "decision_frontier": "Keep T1:checkpoint-100352 as best-known and reject T6:checkpoint-100352. Do not use direct IK posture correction, dense reward penalties, appended branch-margin observations, broad radius changes, or targeted negative-angle curriculum. Before another training run, design one branch-selection intervention that reuses the existing 11-value observation and unchanged reward/distribution while preserving the learned approach and hold regulation; evaluate it against T1 on shared seeds with complete-hold, reach, first-entry, longest-hold, residual-motion, branch, joint-limit, conditioning, interruption, and geometry diagnostics.",
+        "evidence_references": [
+          "T1",
+          "M1",
+          "E4",
+          "T2",
+          "M2",
+          "E7",
+          "T3",
+          "M3",
+          "T4",
+          "M4",
+          "T5",
+          "M5",
+          "E9",
+          "T6",
+          "M6",
+          "E10"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 of 200 official episodes to complete an uninterrupted 2-second hold. T1 remains below that threshold at 151/160 research successes, and T6 provides no improvement toward official assessment.",
+        "inquiry_id": "I1",
+        "next_direction_or_closure": "I1 remains open. Its dominant failure mechanism is sufficiently localized to valid-posture and branch/joint-limit selection, but the first action-level branch intervention failed by disrupting approach. The next session should implement and test a branch-selection mechanism that leaves approach torques learned and unconstrained until the policy has committed to a posture; do not request official assessment until paired research success reaches the goal threshold.",
+        "session_id": "S6"
+      },
+      "presentation": {
+        "backend_session_id": "f5a1c8e2-2f05-4768-b595-7943be694a26",
+        "campaign_id": "3b9f0c1b-33c6-451a-b321-744b012458e5",
+        "campaign_usage": "32m40s | 88.86 AIU | prompt 13.2m (83% cached) | output 94.3k",
+        "session_id": "S6",
+        "session_kind": "inquiry",
+        "session_usage": "6m11s | 17.12 AIU | prompt 2.6m (83% cached) | output 14.8k"
+      },
+      "result": {
+        "session_id": "S6",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "9c8324bdd467101eecbd5fbcaaec8f1dbbb20f8d",
+      "scientific_manifest": [
+        {
+          "exists": true,
+          "fingerprint": "61a062a86ebf730e906a0b9e4432b10427d89d61309592ba9204b6bb6abdbfdf",
+          "path": "robot_learning/scenario/policy_io.py"
+        }
+      ],
+      "scientific_paths": [
+        "robot_learning/scenario/policy_io.py"
+      ]
+    },
+    "failure": null,
+    "id": "E11",
+    "inquiry_id": "I1",
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "T1:checkpoint-100352 remains the best-known candidate, assigned by E4, at 151/160 research successes. T6:checkpoint-100352 is rejected after M6 at 115/160 with zero candidate wins and is not assigned a role. No working candidate is assigned.",
+        "completed_operations": [
+          "E9",
+          "T6",
+          "M6",
+          "E10"
+        ],
+        "cumulative_resource_use": "T1 used one fresh 100352-step PPO training operation and M1 one 160-episode panel; E4 assigned the best-known role. T2 used one fresh 100352-step training operation and M2 one paired panel. E7 restored T1. T3 used one fresh 100352-step training operation and M3 one paired panel. T4 used one fresh 100352-step training operation and M4 one paired panel. T5 used one 50000-step transfer-training operation and M5 one paired panel. E9 restored T1. T6 used one fresh 100352-step training operation and M6 one paired panel. E10 restored T1. No official benchmark assessment was requested.",
+        "current_goal_gap": "T1:checkpoint-100352 remains 45 successes short of the projected 196/200 official target. T6:checkpoint-100352 achieved 115/160 (71.875%) with zero paired wins against T1, so no candidate has demonstrated the required research performance.",
+        "current_synthesis": "M1 and M5 establish that T1's residual failures are dominated by valid-posture acquisition and branch/joint-limit choice: six failures never entered tolerance and three held only 1-2 checks, concentrated at negative target angles on the open branch with negative minimum joint-limit margin. T2, T3, T4, and T5 reject dense limit reward, extra branch-margin observations, broad radius exposure, and targeted curriculum as usable interventions. M6 rejects T6's direct IK-posture action correction even more strongly: it caused 34 no-entry and 11 short-hold failures, including broad positive-angle degradation, and lost all 36 discordant paired episodes. Thus the branch/posture mechanism remains actionable, but forcing posture in the physical action path is not; approach must remain policy-controlled and the next branch-selection method must preserve the T1 reach dynamics while changing only how the policy commits to a feasible branch.",
+        "decision_frontier": "Keep T1:checkpoint-100352 as best-known and reject T6:checkpoint-100352. Do not use direct IK posture correction, dense reward penalties, appended branch-margin observations, broad radius changes, or targeted negative-angle curriculum. Before another training run, design one branch-selection intervention that reuses the existing 11-value observation and unchanged reward/distribution while preserving the learned approach and hold regulation; evaluate it against T1 on shared seeds with complete-hold, reach, first-entry, longest-hold, residual-motion, branch, joint-limit, conditioning, interruption, and geometry diagnostics.",
+        "evidence_references": [
+          "T1",
+          "M1",
+          "E4",
+          "T2",
+          "M2",
+          "E7",
+          "T3",
+          "M3",
+          "T4",
+          "M4",
+          "T5",
+          "M5",
+          "E9",
+          "T6",
+          "M6",
+          "E10"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 of 200 official episodes to complete an uninterrupted 2-second hold. T1 remains below that threshold at 151/160 research successes, and T6 provides no improvement toward official assessment.",
+        "next_direction_or_closure": "I1 remains open. Its dominant failure mechanism is sufficiently localized to valid-posture and branch/joint-limit selection, but the first action-level branch intervention failed by disrupting approach. The next session should implement and test a branch-selection mechanism that leaves approach torques learned and unconstrained until the policy has committed to a posture; do not request official assessment until paired research success reaches the goal threshold."
+      }
+    },
+    "request_fingerprint": "d4bbd673b559f0c461061052607141d3af99a71e63dc1a5be36660c3ad430bb1",
+    "session_id": "S6",
+    "supersedes": null
+  },
   "pi_checkpoint": {
-    "candidates_and_roles": "T1:checkpoint-100352 remains the best-known candidate, assigned by E4, at 151/160 research successes. T5:checkpoint-5120 is rejected after M5 at 148/160 with zero candidate wins and is not assigned a role. T2, T3, and T4 are also rejected. No working candidate is assigned.",
+    "candidates_and_roles": "T1:checkpoint-100352 remains the best-known candidate, assigned by E4, at 151/160 research successes. T6:checkpoint-100352 is rejected after M6 at 115/160 with zero candidate wins and is not assigned a role. No working candidate is assigned.",
     "completed_operations": [
-      "E7",
-      "T3",
-      "M3",
-      "T4",
-      "M4",
-      "T5",
-      "M5"
+      "E9",
+      "T6",
+      "M6",
+      "E10"
     ],
-    "cumulative_resource_use": "T1 used one fresh 100352-step PPO training operation and M1 one 160-episode panel; E4 assigned the best-known role. T2 used one fresh 100352-step training operation and M2 one paired 160-episode panel. E7 restored T1. T3 used one fresh 100352-step training operation and M3 one paired 160-episode panel. T4 used one fresh 100352-step training operation and M4 one paired 160-episode panel. T5 used one 50000-step transfer-training operation and M5 one paired 160-episode panel. No official benchmark assessment was requested.",
-    "current_goal_gap": "T1:checkpoint-100352 is 45 successes short of the 196/200 official target when projected onto the 200-episode criterion, and no candidate has demonstrated the required research performance. T5:checkpoint-5120 scored 148/160 (92.5%), three successes below T1, with zero paired wins.",
-    "current_synthesis": "M1 and M5 provide the required behavioral decomposition: T1's nine failures are concentrated at negative target angles on the open IK branch, with six failures never entering tolerance and three holding for only one or two checks; all have negative minimum joint-limit margin. T5 preserved T1's reward, observation size, and broad radius distribution but its targeted negative-angle curriculum did not repair that mechanism: its 12 failures still center on negative angles, include the same limit-related cases, and add three inner-radius reach failures despite positive margin. T2's dense soft limit penalty, T3's added branch-margin observations, T4's full-radius exposure, and T5's targeted curriculum are therefore rejected as interventions. The remaining evidence supports a narrower branch/posture mechanism that changes the selected feasible posture without adding dense reward terms or broad observation/distribution shifts.",
-    "decision_frontier": "Keep T1:checkpoint-100352 as best-known and reject T5:checkpoint-5120 for that role. Before any new training, restore the T1 recipe so the failed curriculum cannot affect later evidence. The next experiment should isolate branch/posture selection itself, preserving T1's reward, 11-value observation, target distribution, and PPO learning settings; it must be judged by paired complete-hold success and the existing reach, hold, branch, joint-limit, and geometry diagnostics.",
+    "cumulative_resource_use": "T1 used one fresh 100352-step PPO training operation and M1 one 160-episode panel; E4 assigned the best-known role. T2 used one fresh 100352-step training operation and M2 one paired panel. E7 restored T1. T3 used one fresh 100352-step training operation and M3 one paired panel. T4 used one fresh 100352-step training operation and M4 one paired panel. T5 used one 50000-step transfer-training operation and M5 one paired panel. E9 restored T1. T6 used one fresh 100352-step training operation and M6 one paired panel. E10 restored T1. No official benchmark assessment was requested.",
+    "current_goal_gap": "T1:checkpoint-100352 remains 45 successes short of the projected 196/200 official target. T6:checkpoint-100352 achieved 115/160 (71.875%) with zero paired wins against T1, so no candidate has demonstrated the required research performance.",
+    "current_synthesis": "M1 and M5 establish that T1's residual failures are dominated by valid-posture acquisition and branch/joint-limit choice: six failures never entered tolerance and three held only 1-2 checks, concentrated at negative target angles on the open branch with negative minimum joint-limit margin. T2, T3, T4, and T5 reject dense limit reward, extra branch-margin observations, broad radius exposure, and targeted curriculum as usable interventions. M6 rejects T6's direct IK-posture action correction even more strongly: it caused 34 no-entry and 11 short-hold failures, including broad positive-angle degradation, and lost all 36 discordant paired episodes. Thus the branch/posture mechanism remains actionable, but forcing posture in the physical action path is not; approach must remain policy-controlled and the next branch-selection method must preserve the T1 reach dynamics while changing only how the policy commits to a feasible branch.",
+    "decision_frontier": "Keep T1:checkpoint-100352 as best-known and reject T6:checkpoint-100352. Do not use direct IK posture correction, dense reward penalties, appended branch-margin observations, broad radius changes, or targeted negative-angle curriculum. Before another training run, design one branch-selection intervention that reuses the existing 11-value observation and unchanged reward/distribution while preserving the learned approach and hold regulation; evaluate it against T1 on shared seeds with complete-hold, reach, first-entry, longest-hold, residual-motion, branch, joint-limit, conditioning, interruption, and geometry diagnostics.",
     "evidence_references": [
       "T1",
       "M1",
@@ -6500,13 +6674,17 @@
       "T4",
       "M4",
       "T5",
-      "M5"
+      "M5",
+      "E9",
+      "T6",
+      "M6",
+      "E10"
     ],
-    "human_goal_connection": "The human goal requires at least 196 of 200 official episodes to complete an uninterrupted 2-second hold. T1 remains the best measured policy at 151 of 160 research episodes (94.375%), leaving a 5.625 percentage-point research gap and no basis for official assessment.",
+    "human_goal_connection": "The human goal requires at least 196 of 200 official episodes to complete an uninterrupted 2-second hold. T1 remains below that threshold at 151/160 research successes, and T6 provides no improvement toward official assessment.",
     "inquiry_id": "I1",
-    "next_direction_or_closure": "I1 remains open. Restore the T1 recipe, then test one narrowly gated branch/posture-selection intervention that does not modify reward, broad observation structure, or the official evaluation semantics. Do not request official assessment unless a candidate first reaches the research success threshold with paired evidence.",
-    "scientific_commit": "5b133cd011a07302dbbc023e441431c0f15973e5",
-    "session_id": "S5"
+    "next_direction_or_closure": "I1 remains open. Its dominant failure mechanism is sufficiently localized to valid-posture and branch/joint-limit selection, but the first action-level branch intervention failed by disrupting approach. The next session should implement and test a branch-selection mechanism that leaves approach torques learned and unconstrained until the policy has committed to a posture; do not request official assessment until paired research success reaches the goal threshold.",
+    "scientific_commit": "9c8324bdd467101eecbd5fbcaaec8f1dbbb20f8d",
+    "session_id": "S6"
   },
   "schema_version": 6,
   "scientific_model": {
@@ -6514,24 +6692,6 @@
     "path": "research/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "f5a1c8e2-2f05-4768-b595-7943be694a26",
-    "id": "S6",
-    "inquiry_id": "I1",
-    "kind": "inquiry",
-    "objective": "Advance I1 toward its closure condition: Close the inquiry when a reproducible baseline candidate has behavioral evidence decomposed by reach, first entry, longest uninterrupted hold, residual motion, branch or posture, and target geometry, and that evidence supports one actionable next intervention or establishes that no credible route toward the goal remains.",
-    "operation_ids": [
-      "E9",
-      "T6",
-      "M6",
-      "E10"
-    ],
-    "scientific_parent_commit": "e63fb781f524a41d78f44169b01e8960b909aed5"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
