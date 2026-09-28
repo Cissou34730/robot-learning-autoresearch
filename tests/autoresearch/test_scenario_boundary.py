@@ -236,15 +236,6 @@ def test_research_evaluation_panel_is_a_single_orchestration_setting():
     ).read_text(encoding="utf-8")
 
 
-def test_the_brief_imposes_no_hypothesis_taxonomy():
-    import research.build_research_brief as brief_builder
-
-    assert not hasattr(brief_builder, "_legacy_family")
-    source = (ROOT / "research" / "build_research_brief.py").read_text(encoding="utf-8")
-    assert "Tested hypothesis families" not in source
-    assert "failure diagnostics" not in source.lower()
-
-
 def test_runner_reads_the_live_training_metric_only_through_the_boundary():
     sources = runner_sources()
 

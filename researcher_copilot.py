@@ -134,7 +134,6 @@ FILE_EDIT_DENIAL = (
 RESERVED_SCRIPT_NAMES = (
     "run_experiment.py",
     "runner_assessment.py",
-    "migrate_research_state.py",
     "final_benchmark.py",
     "migrate_policy_runtime.py",
     "reset_campaign.py",
@@ -1374,7 +1373,6 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--timeout", type=float, default=1800.0)
     # Accounting metadata only; these values never enter the model prompt.
     parser.add_argument("--campaign-id")
-    parser.add_argument("--experiment", type=int)
     parser.add_argument("--phase")
     parser.add_argument("--preliminary", action="store_true")
     parser.add_argument("--attempt", type=int, default=1)
@@ -1382,13 +1380,8 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
 
 
 def console_label(args) -> str:
-    """The experiment and phase a session belongs to, for the console only."""
-    parts = []
-    if args.experiment is not None:
-        parts.append(f"e{args.experiment}")
-    if args.phase:
-        parts.append(str(args.phase))
-    return "·".join(parts)
+    """The bounded phase a session belongs to, for the console only."""
+    return str(args.phase or "")
 
 
 def record_usage(args, console: Console, elapsed: float, exit_code: int) -> None:
@@ -1403,7 +1396,6 @@ def record_usage(args, console: Console, elapsed: float, exit_code: int) -> None
     directory.mkdir(parents=True, exist_ok=True)
     row = {
         "campaign_id": campaign_id,
-        "experiment": args.experiment,
         "phase": args.phase,
         "attempt": args.attempt,
         "session_id": args.session_id,

@@ -274,20 +274,6 @@ def scientific_strategy_section(text: str, campaign_id: str | None) -> str:
     return match.group(0) if match else ""
 
 
-def operation_description(record: dict) -> str:
-    """Return a factual description without classifying scientific meaning."""
-    for field in ("description", "change", "kind"):
-        value = record.get(field)
-        if isinstance(value, str) and value.strip():
-            return value.strip()
-    request = record.get("request")
-    if isinstance(request, dict):
-        value = request.get("description")
-        if isinstance(value, str) and value.strip():
-            return value.strip()
-    return ""
-
-
 def _nonempty(record: dict, field: str, description: str) -> str:
     value = record.get(field)
     if not isinstance(value, str) or not value.strip():

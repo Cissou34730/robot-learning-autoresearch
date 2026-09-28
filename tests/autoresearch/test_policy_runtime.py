@@ -305,7 +305,7 @@ def test_missing_runtime_or_stats_and_wrong_weights_fail_explicitly(
     with pytest.raises(ValueError, match="weights"):
         load_runtime(path)
     (tmp_path / "policy_runtime.pkl").unlink()
-    with pytest.raises(ValueError, match="Legacy"):
+    with pytest.raises(ValueError, match="Missing"):
         load_runtime(path)
 
 
@@ -325,14 +325,14 @@ def test_copy_and_identity_include_executable_contract(monkeypatch, tmp_path):
 def test_candidate_without_manifest_requires_its_runtime(tmp_path):
     from research.runner_execution import candidate_directories
 
-    legacy = tmp_path / "checkpoint-100"
-    legacy.mkdir()
-    (legacy / "model.zip").write_bytes(b"weights")
-    (legacy / "artifact.json").write_text('{"timesteps": 100}')
+    candidate = tmp_path / "checkpoint-100"
+    candidate.mkdir()
+    (candidate / "model.zip").write_bytes(b"weights")
+    (candidate / "artifact.json").write_text('{"timesteps": 100}')
     with pytest.raises(RuntimeError, match="policy_runtime.pkl"):
-        candidate_directories(legacy)
-    (legacy / "policy_runtime.pkl").write_bytes(b"runtime")
-    assert candidate_directories(legacy)[0]["path"] == legacy
+        candidate_directories(candidate)
+    (candidate / "policy_runtime.pkl").write_bytes(b"runtime")
+    assert candidate_directories(candidate)[0]["path"] == candidate
 
 
 def test_real_sb3_checkpoint_preserves_normalization_and_prediction(

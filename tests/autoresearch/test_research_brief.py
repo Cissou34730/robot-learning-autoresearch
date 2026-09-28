@@ -220,4 +220,4 @@ def test_brief_rejects_unknown_state_fields(monkeypatch, tmp_path: Path):
     except RuntimeError as error:
         assert "research state fields are invalid" in str(error)
     else:
-        raise AssertionError("legacy state was rendered")
+        raise AssertionError("incompatible state was rendered")

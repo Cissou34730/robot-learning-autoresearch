@@ -1188,7 +1188,7 @@ def test_checkpoint_and_model_role_requests_reject_noncompleted_evidence(
     with pytest.raises(ValueError, match="status == completed"):
         protocol.validate_operation_request(checkpoint, state)
 
-    evidence_file = tmp_path / "research" / "evaluations" / "legacy.json"
+    evidence_file = tmp_path / "research" / "evaluations" / "untracked.json"
     evidence_file.parent.mkdir(parents=True)
     evidence_file.write_text("{}", encoding="utf-8")
     checkpoint["checkpoint"]["evidence_references"] = [
@@ -1911,7 +1911,7 @@ def test_schema_six_rejects_unknown_nested_control_fields(monkeypatch, tmp_path)
     campaign_root = tmp_path / "campaign"
     campaign_root.mkdir()
     state = _configure(monkeypatch, campaign_root)
-    state["campaign"]["legacy"] = True
+    state["campaign"]["unexpected"] = True
     with pytest.raises(ValueError, match="campaign requires exactly"):
         repository.validate_research_state(state, allow_missing_artifact=True)
 
@@ -1931,18 +1931,18 @@ def test_schema_six_rejects_unknown_nested_control_fields(monkeypatch, tmp_path)
         },
         state,
     )
-    pending["data"]["legacy"] = True
+    pending["data"]["unexpected"] = True
     with pytest.raises(ValueError, match="pending inquiry data requires exactly"):
         repository.validate_research_state(state, allow_missing_artifact=True)
-    del pending["data"]["legacy"]
-    pending["progress"] = "legacy_progress"
+    del pending["data"]["unexpected"]
+    pending["progress"] = "unexpected_progress"
     with pytest.raises(ValueError, match="unsupported progress"):
         repository.validate_research_state(state, allow_missing_artifact=True)
     pending["progress"] = "accepted"
     repository.write_state(state)
     assert run_experiment.execute_pending_operation() == 0
     completed = repository.read_state()
-    completed["operation_events"][0]["result"]["legacy"] = True
+    completed["operation_events"][0]["result"]["unexpected"] = True
     with pytest.raises(ValueError, match="completed inquiry result requires exactly"):
         repository.validate_research_state(completed, allow_missing_artifact=True)
 
@@ -1964,7 +1964,7 @@ def test_schema_six_rejects_unknown_nested_control_fields(monkeypatch, tmp_path)
         "fingerprint": candidate["fingerprint"],
         "summary": "The protected goal was met.",
         "completed_at": "now",
-        "legacy": True,
+        "unexpected": True,
     }
     with pytest.raises(ValueError, match="official_assessment requires exactly"):
         repository.validate_research_state(state, allow_missing_artifact=True)

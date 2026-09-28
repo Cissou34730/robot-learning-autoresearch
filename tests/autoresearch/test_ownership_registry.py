@@ -13,12 +13,6 @@ import pytest
 from research import runner_protocol as protocol
 
 ROOT = Path(__file__).resolve().parents[2]
-RETIRED_SHIMS = (
-    "robot_learning/environments/reach_env.py",
-    "robot_learning/rewards/reach_reward.py",
-    "robot_learning/training/observations.py",
-    "research/benchmark_envs.py",
-)
 
 
 def test_every_declared_classification_exists_on_disk():
@@ -32,11 +26,6 @@ def test_a_missing_declared_path_is_reported(monkeypatch):
         {"research/does_not_exist.py"},
     )
     assert protocol.declared_paths_exist() == ["research/does_not_exist.py"]
-
-
-def test_retired_compatibility_shims_are_gone():
-    for relative in RETIRED_SHIMS:
-        assert not (ROOT / relative).exists(), relative
 
 
 def test_campaign_lab_is_owned_but_not_part_of_recipe_identity():
