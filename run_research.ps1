@@ -399,8 +399,8 @@ function Invoke-PISession {
         ($Phase -replace '_', ' ')
     }
     Write-ConsoleCard `
-        -Title "PI session | $displaySession | turn $script:PISessionInvocation" `
-        -Color White
+        -Title "PI | $displaySession" `
+        -Color Magenta
     $sessionArgs = @(
         "--session-id", $script:PISessionId
         "--model", $Model
@@ -495,7 +495,7 @@ function Get-LatestSessionResult {
     }
     $result = $event.result
     if ($event.kind -eq "measurement") {
-        $measurements = @($result.measurements | Select-Object -First 6 | ForEach-Object {
+        $measurements = @($result.measurements | ForEach-Object {
             $metrics = $_.metrics
             $artifact = if ($metrics.evaluation_artifact) {
                 [string]$metrics.evaluation_artifact
@@ -503,31 +503,26 @@ function Get-LatestSessionResult {
             else {
                 "none"
             }
-            $facts = @(
-                $metrics.PSObject.Properties |
-                    Where-Object {
-                        $_.Name -notin @(
-                            "episode_results",
-                            "evaluation_artifact",
-                            "evaluation_artifact_fingerprint",
-                            "model_fingerprint"
-                        ) -and
-                        ($null -eq $_.Value -or $_.Value -is [ValueType] -or $_.Value -is [string])
-                    } |
-                    Select-Object -First 8 |
-                    ForEach-Object { "$($_.Name)=$($_.Value)" }
-            )
-            "$($_.label): artifact=$artifact; metrics=$($facts -join ', ')"
+            $facts = [ordered]@{}
+            $metrics.PSObject.Properties |
+                Where-Object {
+                    $_.Name -notin @(
+                        "episode_results",
+                        "evaluation_artifact",
+                        "evaluation_artifact_fingerprint",
+                        "model_fingerprint"
+                    )
+                } |
+                ForEach-Object { $facts[$_.Name] = $_.Value }
+            $renderedFacts = $facts | ConvertTo-Json -Compress -Depth 100
+            "$($_.label): artifact=$artifact; metrics=$renderedFacts"
         })
         $comparisons = @($result.paired_comparisons)
         $comparisonFact = if ($comparisons.Count -gt 0) {
-            ($comparisons | ConvertTo-Json -Compress -Depth 5)
+            ($comparisons | ConvertTo-Json -Compress -Depth 100)
         }
         else {
             "none"
-        }
-        if ($comparisonFact.Length -gt 600) {
-            $comparisonFact = $comparisonFact.Substring(0, 599) + "…"
         }
         return (
             "Operation $identifier (measurement): $($measurements -join ' | '); " +
@@ -535,16 +530,16 @@ function Get-LatestSessionResult {
         )
     }
     if ($event.kind -eq "training") {
-        $dynamics = @($result.learning_dynamics | Select-Object -First 8 | ForEach-Object {
+        $dynamics = @($result.learning_dynamics | ForEach-Object {
             (
                 "$($_.candidate): steps=$($_.training_steps), " +
                 "success=$($_.training_success), reward=$($_.ep_rew_mean)"
             )
         })
-        $changed = @($result.mechanical_provenance.changed_files | Select-Object -First 12 | ForEach-Object {
+        $changed = @($result.mechanical_provenance.changed_files | ForEach-Object {
             [string]$_.path
         })
-        $candidates = @($result.candidates | Select-Object -First 12)
+        $candidates = @($result.candidates)
         return (
             "Operation $identifier (training): candidates=$($candidates -join ', '); " +
             "learning dynamics=$($dynamics -join ' | '); provenance parent=" +
@@ -578,6 +573,66 @@ function Get-CampaignResourceSummary {
         "sessions $([int]$State.counters.session) | measurements $measurements | " +
         "training $training | candidates $($State.candidates.PSObject.Properties.Count)"
     )
+}
+
+function Get-RequiredSessionSummaryTransition {
+    param([Parameter(Mandatory)]$State)
+
+    $session = $State.scientific_session
+    if (-not $session) {
+        return $null
+    }
+    if (
+        $session.kind -eq "goal_review" -and
+        $State.active_inquiry -and
+        $State.active_inquiry.opened_in_session -eq $session.id
+    ) {
+        return [pscustomobject]@{
+            Objective = (
+                "Save the goal-review session summary after opening " +
+                "$($State.active_inquiry.id)."
+            )
+            Inquiry = (
+                "$($State.active_inquiry.id) has been opened, but it is not " +
+                "actionable until this goal-review session ends and its fresh " +
+                "inquiry session starts."
+            )
+        }
+    }
+    if (
+        $session.kind -eq "inquiry" -and
+        $session.operation_ids -and
+        $session.operation_ids.Count -gt 0
+    ) {
+        $latestId = [string]$session.operation_ids[-1]
+        $latest = $State.operation_events |
+            Where-Object {
+                $_.id -eq $latestId -and
+                $_.status -eq "completed" -and
+                $_.kind -eq "inquiry"
+            } |
+            Select-Object -First 1
+        if ($latest -and $latest.result.action -in @("reframe", "close")) {
+            $action = [string]$latest.result.action
+            $inquiryId = if ($latest.inquiry_id) {
+                [string]$latest.inquiry_id
+            }
+            else {
+                "the inquiry"
+            }
+            return [pscustomobject]@{
+                Objective = (
+                    "Save the inquiry-session summary after the $action of " +
+                    "$inquiryId."
+                )
+                Inquiry = (
+                    "The $action decision is complete. Further scientific work " +
+                    "belongs to the fresh session created after this summary."
+                )
+            }
+        }
+    }
+    return $null
 }
 
 function New-ScientificSessionPrompt {
@@ -618,7 +673,11 @@ function New-ScientificSessionPrompt {
     else {
         "No durable PI synthesis has been recorded yet."
     }
-    $inquiry = if ($State.active_inquiry) {
+    $transition = Get-RequiredSessionSummaryTransition -State $State
+    $inquiry = if ($transition) {
+        [string]$transition.Inquiry
+    }
+    elseif ($State.active_inquiry) {
         (
             "$($State.active_inquiry.id): $($State.active_inquiry.question) " +
             "Goal relevance: $($State.active_inquiry.goal_connection) " +
@@ -641,6 +700,28 @@ function New-ScientificSessionPrompt {
     else {
         ""
     }
+    $objective = if ($transition) {
+        [string]$transition.Objective
+    }
+    else {
+        [string]$session.objective
+    }
+    $actionGuidance = if ($transition) {
+        @(
+            "The sole legal next action is the checkpoint operation that saves the current session summary."
+            "Do not request training, measurement, model-role changes, restoration, another inquiry change, or a campaign conclusion in this session."
+            "Use the checkpoint contract in research/instruments.md and preserve the transition decision, evidence, remaining goal gap, and next direction."
+        )
+    }
+    else {
+        @(
+            "Choose the operation whose result would most improve the next decision toward the human goal."
+            "Existing PI-owned implementations have no privileged status; inspect, modify, or replace them when that is the most credible scientific action before submitting an operation."
+            "When evidence resolves or redirects the active inquiry, record that decision explicitly rather than drifting to another question."
+            "When the current line of work reaches a stable decision, preserve the synthesis, supporting evidence, remaining gap, and next direction in a checkpoint."
+            "When ready to act, use the matching contract in research/instruments.md to submit one scientific action."
+        )
+    }
 
     $sections = @(
         "Human goal: $goal"
@@ -648,17 +729,13 @@ function New-ScientificSessionPrompt {
         "Current scientific understanding: $synthesis"
         "Current goal gap: $gap"
         "Active inquiry: $inquiry"
-        "Current objective: $($session.objective)"
+        "Current objective: $objective"
         $correction
         $piPersona
         $scientificModelUseGuidance
         "Direct every decision toward the human goal and distinguish evidence from conjecture."
-        "Choose the operation whose result would most improve the next decision toward the human goal."
-        "Existing PI-owned implementations have no privileged status; inspect, modify, or replace them when that is the most credible scientific action before submitting an operation."
-        "When evidence resolves or redirects the active inquiry, record that decision explicitly rather than drifting to another question."
-        "When the current line of work reaches a stable decision, preserve the synthesis, supporting evidence, remaining gap, and next direction in a checkpoint."
+        $actionGuidance
         "Begin with research/brief.md and the latest checkpoint. Consult research/scenario.md, research/scientific_model.md, and other evidence only as the scientific question requires."
-        "When ready to act, use the matching contract in research/instruments.md to submit one scientific action."
     ) | Where-Object { $_ }
     return ($sections -join "`n`n")
 }
@@ -904,11 +981,11 @@ try {
         $state = Get-Content "research\research_state.json" -Raw | ConvertFrom-Json
 
         if ($state.scientific_model.status -eq "pending") {
-            Write-Status "START | campaign preparation" -Color White -Label session
+            Write-Status "START | campaign preparation" -Color Magenta -Label session
             if ((Invoke-ScientificModelPhase -State $state) -eq 130) {
                 break
             }
-            Write-Status "END | campaign preparation" -Color White -Label session
+            Write-Status "END | campaign preparation" -Color Magenta -Label session
             Update-ResearchBrief
             continue
         }
@@ -942,6 +1019,18 @@ try {
         }
 
         if (-not $state.scientific_session) {
+            if (
+                -not $state.active_inquiry -and
+                [int]$state.counters.session -gt 0 -and
+                [int]$state.counters.inquiry -ge
+                    [int]$state.campaign.max_inquiries
+            ) {
+                Write-Status (
+                    "STOP | inquiry safety limit reached | " +
+                    (Get-CampaignResourceSummary -State $state)
+                ) -Color Yellow -Label campaign
+                break
+            }
             $kind = if ($state.active_inquiry) {
                 "inquiry"
             }

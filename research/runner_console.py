@@ -20,6 +20,7 @@ _GREEN = "\033[1;92m"
 _YELLOW = "\033[1;93m"
 _RED = "\033[1;91m"
 _WHITE = "\033[1;97m"
+_MAGENTA = "\033[1;95m"
 _ROOT = Path(__file__).resolve().parents[1]
 _UUID = re.compile(
     r"\b[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-"
@@ -27,14 +28,15 @@ _UUID = re.compile(
 )
 _SEMANTIC_COLORS = {
     "campaign": _WHITE,
-    "session": _WHITE,
-    "pi": _CYAN,
+    "session": _MAGENTA,
+    "pi": _MAGENTA,
     "inquiry": _YELLOW,
     "operation": _CYAN,
     "measurement": _CYAN,
     "training": _CYAN,
-    "checkpoint": _GREEN,
+    "checkpoint": _WHITE,
     "assessment": _GREEN,
+    "validation": _GREEN,
     "runner": _CYAN,
     "warning": _YELLOW,
     "error": _RED,
@@ -43,7 +45,6 @@ _CARD_SCOPES = frozenset(
     {
         "assessment",
         "campaign",
-        "checkpoint",
         "error",
         "inquiry",
         "measurement",
@@ -132,10 +133,7 @@ def _wrap_console_text(text: str, *, initial_prefix: str = "") -> list[str]:
 
 
 def compact_text(text: object) -> str:
-    value = str(text)
-    for root in (str(_ROOT), str(_ROOT).replace("\\", "/")):
-        value = value.replace(root, ".")
-    return _UUID.sub("<id>", value)
+    return _UUID.sub("<id>", str(text))
 
 
 def _style_card_sections(text: str) -> str:

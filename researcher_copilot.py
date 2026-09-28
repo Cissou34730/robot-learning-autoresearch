@@ -108,10 +108,6 @@ RESEARCH_TOOLS = [
     "list_powershell",
 ]
 
-# Routine tool starts remain in runtime logs and aggregate accounting. The live
-# console surfaces only their failures, denials and changed files.
-SILENT_TOOLS: frozenset[str] = frozenset(RESEARCH_TOOLS)
-
 READ_ONLY_GIT = frozenset(
     {
         "status",
@@ -353,6 +349,13 @@ def compact_console_path(target: str) -> str:
         return path.resolve().relative_to(ROOT.resolve()).as_posix()
     except (OSError, ValueError):
         return ".../" + "/".join(path.parts[-2:])
+
+
+def full_console_path(target: str) -> str:
+    path = Path(str(target).strip())
+    if not path.is_absolute():
+        path = ROOT / path
+    return str(path.resolve())
 
 
 def compact_console_text(text: object) -> str:
@@ -952,7 +955,7 @@ class Console:
         return f"[{self.label}] {text}" if self.label else text
 
     def turn_start(self, model: str | None = None) -> None:
-        """Mark the next PI turn and start its compact accounting."""
+        """Reset per-turn counters without narrating runtime turns."""
         self._turn += 1
         self._turn_started_at = time.monotonic()
         self._turn_model = model or ""
@@ -961,27 +964,12 @@ class Console:
         self._turn_prompt_at_start = self.prompt_tokens
         self._turn_cache_read_at_start = self.cache_read_tokens
         self._turn_output_at_start = self.output_tokens
-        print(flush=True)
-        model_note = f" | {self._turn_model}" if self._turn_model else ""
-        self.line(f"-- {self.tagged(f'PI turn {self._turn}')}{model_note}")
 
     def turn_end(self) -> None:
-        """Close the visible PI turn without reproducing token accounting."""
+        """Close per-turn accounting without narrating runtime turns."""
         if self._turn_started_at is None:
             return
-        elapsed = format_duration(time.monotonic() - self._turn_started_at)
         self._turn_started_at = None
-        tools = f"{self._turn_tools} tool" + ("" if self._turn_tools == 1 else "s")
-        files = (
-            f" | {self._turn_files} file{'' if self._turn_files == 1 else 's'}"
-            if self._turn_files
-            else ""
-        )
-        self.line(
-            f"-- {self.tagged(f'PI turn {self._turn} complete')} | "
-            f"{tools}{files} | {elapsed}"
-        )
-        print(flush=True)
 
     def line(self, text: str) -> None:
         self._close_message()
@@ -1096,35 +1084,62 @@ class Console:
         self._turn_tools += 1
         if tool_call_id:
             self.active_tools[tool_call_id] = (name, arguments)
-        if name in SILENT_TOOLS:
-            return
         detail = ""
         if isinstance(arguments, dict):
-            keys = (
-                ("query", "pattern", "path")
-                if name in {"rg", "glob"}
-                else (
-                    "command",
-                    "commandLine",
-                    "path",
-                    "filePath",
-                    "query",
-                    "pattern",
-                    "shellId",
-                    "shell_id",
-                    "session_id",
+            if name == "powershell":
+                description = arguments.get("description")
+                command = arguments.get("command")
+                detail = " | ".join(
+                    str(value)
+                    for value in (description, f"cwd {ROOT}", command)
+                    if isinstance(value, str) and value
                 )
-            )
-            raw = next(
-                (
-                    arguments[key]
-                    for key in keys
-                    if isinstance(arguments.get(key), (str, int))
-                    and arguments[key] != ""
-                ),
-                "",
-            )
-            detail = str(raw)
+            elif name in {"rg", "glob"}:
+                pattern = arguments.get("pattern") or arguments.get("query")
+                paths = arguments.get("paths") or arguments.get("path")
+                rendered_paths = []
+                if isinstance(paths, str):
+                    rendered_paths = [full_console_path(paths)]
+                elif isinstance(paths, list):
+                    rendered_paths = [
+                        full_console_path(str(path)) for path in paths
+                    ]
+                else:
+                    rendered_paths = [str(ROOT.resolve())]
+                parts = []
+                if pattern:
+                    parts.append(f"pattern {pattern}")
+                if rendered_paths:
+                    parts.append("paths " + ", ".join(rendered_paths))
+                detail = " | ".join(parts)
+            else:
+                raw = next(
+                    (
+                        arguments[key]
+                        for key in (
+                            "description",
+                            "path",
+                            "filePath",
+                            "file_path",
+                            "command",
+                            "commandLine",
+                            "query",
+                            "pattern",
+                            "shellId",
+                            "shell_id",
+                            "session_id",
+                        )
+                        if isinstance(arguments.get(key), (str, int))
+                        and arguments[key] != ""
+                    ),
+                    "",
+                )
+                detail = str(raw)
+                if isinstance(raw, str) and any(
+                    key in arguments and arguments.get(key) == raw
+                    for key in ("path", "filePath", "file_path")
+                ):
+                    detail = full_console_path(raw)
         if name == "apply_patch":
             patch = (
                 arguments.get("input") or arguments.get("patch")
@@ -1142,14 +1157,12 @@ class Console:
                 targets = []
                 for line in patch.splitlines():
                     if line.startswith(prefixes):
-                        targets.append(line.split(": ", 1)[1])
-                        if len(targets) == 3:
-                            break
+                        targets.append(
+                            full_console_path(line.split(": ", 1)[1])
+                        )
                 if targets:
                     detail = ", ".join(targets)
         detail = " ".join(detail.split())
-        if len(detail) > 110:
-            detail = detail[:107] + "..."
         self.line(f"  > {name}: {detail}" if detail else f"  > {name}")
 
     def tool_failed(
@@ -1161,17 +1174,13 @@ class Console:
                 raw = arguments.get(key)
                 if raw:
                     target = (
-                        compact_console_path(str(raw))
+                        full_console_path(str(raw))
                         if key in {"path", "filePath"}
-                        else compact_console_text(raw)
+                        else str(raw)
                     )
                     break
             target = " ".join(target.split())
-        if len(target) > 100:
-            target = target[:97] + "..."
         reason = " ".join(compact_console_text(error).split())
-        if len(reason) > 160:
-            reason = reason[:157] + "..."
         operation = f"{name} ({target})" if target else name
         self.line(f"  x {operation} failed: {reason}")
 
@@ -1182,14 +1191,17 @@ class Console:
         self.line(f"  x {reason.splitlines()[0]}")
 
     def file_changed(self, operation: str, path: str) -> None:
-        path = compact_console_path(path)
+        operation_request = (
+            Path(path).as_posix().endswith("research/operation_request.json")
+        )
+        path = full_console_path(path)
         marker = {"created": "+", "deleted": "-"}.get(str(operation), "~")
         if self.changed_files.get(path) != marker:
             self.changed_files[path] = marker
             self._turn_files += 1
             suffix = (
                 " | PI operation request updated"
-                if path == "research/operation_request.json"
+                if operation_request
                 else ""
             )
             self.line(f"  {marker} {path}{suffix}")
@@ -1208,7 +1220,7 @@ class Console:
         """Expose unannounced changes; lifecycle summaries come from the Runner."""
         del session_id, offloaded, elapsed_seconds
         for path in changed:
-            path = compact_console_path(path)
+            path = full_console_path(path)
             if path not in self.changed_files:
                 self.line(f"  ~ {path}")
 

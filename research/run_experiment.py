@@ -297,8 +297,9 @@ def _transaction_data(kind: str, request: dict, state: dict) -> dict:
             for path in changed
             if path.replace("\\", "/") not in protocol.PARAMETER_ONLY_PATHS
         ]
+        plan = protocol.plan_checkpoint(request["checkpoint"], state)
         return {
-            "plan": protocol.plan_checkpoint(request["checkpoint"], state),
+            "plan": plan,
             "code_parent_commit": parent_commit,
             "scientific_manifest": _scientific_manifest(source_changes),
             "scientific_paths": list(changed),
@@ -322,10 +323,9 @@ def _transaction_data(kind: str, request: dict, state: dict) -> dict:
             ),
             "result": None,
         }
+    plan = protocol.plan_campaign_conclusion(request["campaign_conclusion"], state)
     return {
-        "plan": protocol.plan_campaign_conclusion(
-            request["campaign_conclusion"], state
-        ),
+        "plan": plan,
         "presentation": _session_completion_presentation(state, session),
         "result": None,
     }
@@ -1437,7 +1437,7 @@ def _operation_subject(pending: dict) -> str:
         return f"{inquiry_id} inquiry" if inquiry_id else "inquiry"
     if kind == "checkpoint":
         session_id = plan.get("session_id") if isinstance(plan, dict) else None
-        return f"{session_id} checkpoint" if session_id else "checkpoint"
+        return f"{session_id} session summary" if session_id else "session summary"
     if kind == "campaign_conclusion":
         return "campaign decision"
     if kind == "model_role":
@@ -1447,12 +1447,30 @@ def _operation_subject(pending: dict) -> str:
     return f"{pending['id']} {kind.replace('_', ' ')}"
 
 
+def _scientific_delta_lines(pending: dict) -> list[str]:
+    data = pending.get("data") or {}
+    provenance = data.get("module_provenance")
+    if not isinstance(provenance, dict):
+        provenance = {}
+    paths_to_report = data.get("scientific_paths") or provenance.get(
+        "scientific_paths"
+    )
+    if not isinstance(paths_to_report, list) or not paths_to_report:
+        return []
+    return [
+        f"Scientific file changed: "
+        f"{repository.resolve_repo_path(str(relative_value))}"
+        for relative_value in paths_to_report
+    ]
+
+
 def _operation_request_detail(pending: dict) -> str:
     request = pending["request"][pending["kind"]]
     kind = pending["kind"]
     if kind == "training":
         return "\n".join(
             (
+                *_scientific_delta_lines(pending),
                 f"Why: {request['description']}",
                 f"Rationale: {request['rationale']}",
                 (
@@ -1483,6 +1501,7 @@ def _operation_request_detail(pending: dict) -> str:
             lines.append(
                 f"Compare: {comparison['candidate']} vs {comparison['reference']}"
             )
+        lines = [*_scientific_delta_lines(pending), *lines]
         return "\n".join(lines)
     if kind == "inquiry":
         return str(request["action"])
@@ -1492,6 +1511,8 @@ def _operation_request_detail(pending: dict) -> str:
         return str(request["candidate"])
     if kind == "campaign_conclusion":
         return str(request["action"])
+    if kind == "checkpoint":
+        return "\n".join(_scientific_delta_lines(pending))
     return ""
 
 
@@ -1516,14 +1537,13 @@ def _operation_completion_detail(pending: dict) -> str:
             parts.append(f"Paired comparisons: {comparisons}")
     elif kind == "training":
         parts.append(f"{int(result.get('completed_steps', 0)):,} steps")
-        parts.append(f"{len(result.get('candidates', []))} candidate(s)")
         dynamics = result.get("learning_dynamics") or []
-        if dynamics:
-            latest = dynamics[-1]
-            if latest.get("ep_rew_mean") is not None:
-                parts.append(f"reward {float(latest['ep_rew_mean']):g}")
-            if latest.get("training_success") is not None:
-                parts.append(f"success {float(latest['training_success']):g}")
+        for item in dynamics:
+            parts.append(
+                f"{item['candidate']} | steps {int(item['training_steps']):,} | "
+                f"reward {item.get('ep_rew_mean')} | "
+                f"success {item.get('training_success')}"
+            )
     elif kind == "model_role":
         parts.append(f"{result.get('action')} | {result.get('candidate')}")
     elif kind == "restore_recipe":
@@ -1559,21 +1579,46 @@ def _announce_consequential_completion(presentation: dict) -> None:
         console.boundary("inquiry", action, inquiry_id, detail)
     elif kind == "checkpoint":
         session_id = str(result.get("session_id", ""))
-        console.boundary("checkpoint", "COMPLETE", session_id)
+        plan = pending["data"].get("plan") or {}
+        console.announce(f"[session] SUMMARY SAVED | {session_id}")
         console.boundary(
             "session",
             "END",
             f"{presentation['session_id']} "
             f"{str(presentation['session_kind']).replace('_', ' ')}",
-            presentation["session_usage"],
+            "\n".join(
+                (
+                    f"Outcome: {plan.get('current_synthesis', 'Session summary saved.')}",
+                    "Next: "
+                    + str(
+                        plan.get(
+                            "next_direction_or_closure",
+                            "Continue from the durable session summary.",
+                        )
+                    ),
+                    f"Usage: {presentation['session_usage']}",
+                )
+            ),
         )
     elif kind == "campaign_conclusion":
+        plan = pending["data"].get("plan") or {}
+        next_transition = (
+            "Run the protected official assessment."
+            if result.get("status") == "official_assessment_requested"
+            else "End the campaign."
+        )
         console.boundary(
             "session",
             "END",
             f"{presentation['session_id']} "
             f"{str(presentation['session_kind']).replace('_', ' ')}",
-            presentation["session_usage"],
+            "\n".join(
+                (
+                    f"Outcome: {plan.get('reason', 'Campaign decision recorded.')}",
+                    f"Next: {next_transition}",
+                    f"Usage: {presentation['session_usage']}",
+                )
+            ),
         )
         status = str(result.get("status", "")).replace("_", " ")
         action = "END" if result.get("status") == "no_credible_route" else "DECISION"
@@ -1696,7 +1741,7 @@ def check_operation() -> int:
     return 0
 
 
-def check_scientific_model_deliverable() -> int:
+def check_scientific_model_deliverable(*, quiet: bool = False) -> int:
     try:
         if not paths.SCIENTIFIC_MODEL_PATH.is_file():
             raise FileNotFoundError("research/scientific_model.md is missing")
@@ -1705,7 +1750,8 @@ def check_scientific_model_deliverable() -> int:
     except (OSError, UnicodeError, ValueError) as error:
         print(f"SCIENTIFIC_MODEL_DELIVERABLE_INVALID: {error}")
         return 1
-    print("SCIENTIFIC_MODEL_DELIVERABLE_VALID")
+    if not quiet:
+        print("SCIENTIFIC_MODEL_DELIVERABLE_VALID")
     return 0
 
 
@@ -1900,7 +1946,7 @@ def main() -> int:
     if args.check_scientific_model_deliverable:
         return check_scientific_model_deliverable()
     if args.mark_scientific_model_ready:
-        if check_scientific_model_deliverable() != 0:
+        if check_scientific_model_deliverable(quiet=True) != 0:
             return 1
         state = repository.load_state(allow_missing_artifact=True)
         repository.require_scientific_model_publication_pending(state)
@@ -1914,6 +1960,7 @@ def main() -> int:
         repository.write_state(state)
         if not repository.commit_runner_memory("publish scientific model"):
             repository.push_head()
+        console.boundary("validation", "SCIENTIFIC MODEL VALIDATED")
         return 0
     if args.reaccept_pending:
         pending = reaccept_pending_operation()
@@ -1962,7 +2009,7 @@ def main() -> int:
             "session",
             "START",
             f"{session['id']} {session['kind'].replace('_', ' ')}",
-            str(session["objective"]),
+            f"Objective: {session['objective']}",
         )
         if session["kind"] == "goal_review":
             console.boundary(

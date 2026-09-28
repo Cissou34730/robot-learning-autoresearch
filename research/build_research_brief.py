@@ -13,11 +13,9 @@ RESEARCH_DIR = ROOT / "research"
 BRIEF_PATH = RESEARCH_DIR / "brief.md"
 
 
-def _compact(value: object, limit: int = 500) -> str:
+def _compact(value: object) -> str:
     text = re.sub(r"\s+", " ", str(value or "")).strip()
-    if len(text) <= limit:
-        return text or "-"
-    return text[: limit - 1].rstrip() + "…"
+    return text or "-"
 
 
 def _markdown_section(text: str, heading: str) -> str:
@@ -65,7 +63,7 @@ def _event_artifacts(event: dict) -> list[str]:
     if not isinstance(result, dict):
         return []
     artifacts: list[str] = []
-    for measurement in (result.get("measurements") or [])[:8]:
+    for measurement in result.get("measurements") or []:
         if not isinstance(measurement, dict):
             continue
         metrics = measurement.get("metrics")
@@ -84,17 +82,21 @@ def _event_artifacts(event: dict) -> list[str]:
     return list(dict.fromkeys(artifacts))
 
 
-def _scalar_facts(record: object, *, omitted: set[str] | None = None) -> str:
+def _measurement_facts(record: object, *, omitted: set[str] | None = None) -> str:
     if not isinstance(record, dict):
         return "none"
     excluded = omitted or set()
-    facts = [
-        f"{key}={_compact(value, 100)}"
-        for key, value in record.items()
-        if key not in excluded
-        and (value is None or isinstance(value, (bool, int, float, str)))
-    ]
-    return ", ".join(facts[:8]) or "none"
+    facts = []
+    for key, value in record.items():
+        if key in excluded:
+            continue
+        rendered = (
+            json.dumps(value, sort_keys=True)
+            if isinstance(value, (dict, list))
+            else _compact(value)
+        )
+        facts.append(f"{key}={rendered}")
+    return ", ".join(facts) or "none"
 
 
 def _event_detail_lines(event: dict) -> list[str]:
@@ -115,7 +117,7 @@ def _event_detail_lines(event: dict) -> list[str]:
             lines.append(
                 f"  - {measurement.get('label') or measurement.get('instrument')}: "
                 f"artifact {_artifact(artifact)}; metrics "
-                + _scalar_facts(
+                + _measurement_facts(
                     metrics,
                     omitted={
                         "episode_results",
@@ -130,7 +132,7 @@ def _event_detail_lines(event: dict) -> list[str]:
         if comparisons:
             lines.append(
                 "  - Paired comparisons: "
-                + _compact(json.dumps(comparisons, sort_keys=True), 500)
+                + _compact(json.dumps(comparisons, sort_keys=True))
             )
         return lines
     if event["kind"] == "training":
@@ -150,7 +152,7 @@ def _event_detail_lines(event: dict) -> list[str]:
             + ", ".join(f"`{item}`" for item in result.get("candidates") or [])
             + ".",
             "  - Learning dynamics: "
-            + _compact(json.dumps(dynamics, sort_keys=True), 500)
+            + _compact(json.dumps(dynamics, sort_keys=True))
             + ".",
             "  - Mechanical provenance: parent `"
             + str((provenance or {}).get("code_parent_commit") or "-")
@@ -285,17 +287,32 @@ def _candidate_lines(state: dict) -> list[str]:
     if not state["candidates"]:
         lines.append("- Available candidates: none")
         return lines
+    dynamics = {
+        item["candidate"]: item
+        for event in state["operation_events"]
+        if event.get("status") == "completed" and event.get("kind") == "training"
+        for item in (event.get("result") or {}).get("learning_dynamics", [])
+        if isinstance(item, dict) and isinstance(item.get("candidate"), str)
+    }
     lines.append("- Available candidates:")
-    candidates = list(state["candidates"].items())
-    if len(candidates) > 40:
-        lines.append(f"  - {len(candidates) - 40} earlier candidates omitted.")
-    for identifier, candidate in candidates[-40:]:
+    for identifier, candidate in state["candidates"].items():
         evidence = candidate["evaluation_artifacts"]
+        training = dynamics.get(identifier, {})
+        success = training.get("training_success")
+        reward = training.get("ep_rew_mean")
         lines.append(
             f"  - `{identifier}`: {_artifact(candidate['artifact'])}; "
             f"origin `{candidate['origin_operation']}`; "
             f"{candidate['training_steps']:,} training steps; "
-            f"{len(evidence)} evaluation artifact(s)."
+            f"training success {success if success is not None else 'not recorded'}; "
+            f"reward {reward if reward is not None else 'not recorded'}; "
+            "evaluation artifacts "
+            + (
+                ", ".join(_artifact(path) for path in evidence)
+                if evidence
+                else "none"
+            )
+            + "."
         )
     return lines
 
@@ -313,11 +330,7 @@ def _event_lines(state: dict) -> list[str]:
     if not events:
         return ["- No completed operations."]
     lines = []
-    if len(events) > 40:
-        lines.append(
-            f"- {len(events) - 40} earlier events remain in `research/results.jsonl`."
-        )
-    for event in events[-40:]:
+    for event in events:
         inquiry = f" in `{event['inquiry_id']}`" if event["inquiry_id"] else ""
         artifacts = _event_artifacts(event)
         artifact_note = (
@@ -338,12 +351,7 @@ def _execution_history_lines(state: dict) -> list[str]:
         event for event in state["operation_events"] if event.get("status") == "failed"
     ]
     lines: list[str] = []
-    if len(failed) > 40:
-        lines.append(
-            f"- {len(failed) - 40} earlier failed attempts remain in "
-            "`research/results.jsonl`."
-        )
-    for event in failed[-40:]:
+    for event in failed:
         retry = (
             f"; superseded by `{event['superseded_by']}`"
             if event.get("superseded_by")

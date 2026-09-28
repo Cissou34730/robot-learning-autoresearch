@@ -120,6 +120,13 @@ export function compactConsolePath(target: string): string {
   return value.replace(/\\/g, "/");
 }
 
+export function fullConsolePath(target: string): string {
+  const value = target.trim();
+  if (win32.isAbsolute(value)) return win32.normalize(value);
+  if (isAbsolute(value)) return resolve(value);
+  return resolve(ROOT, value);
+}
+
 export function compactText(text: string): string {
   return text
     .replace(UUID_PATTERN, "<id>")
@@ -185,7 +192,7 @@ export class Console {
     process.stdout.write(`${formatConsoleLine(text)}\n`);
   }
 
-  /** Mark the next PI turn and start its compact accounting. */
+  /** Reset per-turn counters without narrating runtime turns. */
   turnStart(model?: string | null): void {
     this.turn += 1;
     this.turnStartedAt = performance.now();
@@ -195,25 +202,12 @@ export class Console {
     this.turnPromptAtStart = this.promptTokens;
     this.turnCacheReadAtStart = this.cacheReadTokens;
     this.turnOutputAtStart = this.outputTokens;
-    process.stdout.write("\n");
-    const modelNote = this.turnModel ? ` | ${this.turnModel}` : "";
-    this.line(`-- ${this.tagged(`PI turn ${this.turn}`)}${modelNote}`);
   }
 
-  /** Close the visible PI turn without reproducing token accounting. */
+  /** Close per-turn accounting without narrating runtime turns. */
   turnEnd(): void {
     if (this.turnStartedAt === null) return;
-    const elapsed = formatDuration((performance.now() - this.turnStartedAt) / 1000);
     this.turnStartedAt = null;
-    const tools = `${this.turnTools} tool${this.turnTools === 1 ? "" : "s"}`;
-    const files =
-      this.turnFiles > 0
-        ? ` | ${this.turnFiles} file${this.turnFiles === 1 ? "" : "s"}`
-        : "";
-    this.line(
-      `-- ${this.tagged(`PI turn ${this.turn} complete`)} | ${tools}${files} | ${elapsed}`,
-    );
-    process.stdout.write("\n");
   }
 
   private closeMessage(): void {
@@ -328,6 +322,70 @@ export class Console {
     this.toolCounts.set(name, (this.toolCounts.get(name) ?? 0) + 1);
     this.turnTools += 1;
     if (callID) this.activeTools.set(callID, name);
+    let detail = "";
+    if (name === "apply_patch") {
+      const patch =
+        typeof input === "string"
+          ? input
+          : input && typeof input === "object"
+            ? ((input as Record<string, unknown>).input ??
+              (input as Record<string, unknown>).patch)
+            : "";
+      if (typeof patch === "string") {
+        const prefixes = [
+          "*** Update File: ",
+          "*** Add File: ",
+          "*** Delete File: ",
+          "*** Move to: ",
+        ];
+        detail = patch
+          .split(/\r?\n/)
+          .filter((line) => prefixes.some((prefix) => line.startsWith(prefix)))
+          .map((line) => fullConsolePath(line.split(": ", 2)[1] ?? ""))
+          .join(", ");
+      }
+    } else if (input && typeof input === "object") {
+      const record = input as Record<string, unknown>;
+      if (name === "powershell") {
+        detail = [record.description, `cwd ${ROOT}`, record.command]
+          .filter(
+            (value): value is string =>
+              typeof value === "string" && value.length > 0,
+          )
+          .join(" | ");
+      } else if (name === "rg" || name === "glob" || name === "grep") {
+        const pattern = record.pattern ?? record.query;
+        const paths = record.paths ?? record.path;
+        const renderedPaths =
+          typeof paths === "string"
+            ? [fullConsolePath(paths)]
+            : Array.isArray(paths)
+              ? paths.map((path) => fullConsolePath(String(path)))
+              : [resolve(ROOT)];
+        const parts = [];
+        if (typeof pattern === "string" && pattern) parts.push(`pattern ${pattern}`);
+        if (renderedPaths.length) parts.push(`paths ${renderedPaths.join(", ")}`);
+        detail = parts.join(" | ");
+      } else {
+        for (const key of [
+          "description",
+          "filePath",
+          "path",
+          "file_path",
+          "command",
+          "query",
+          "url",
+        ]) {
+          const value = record[key];
+          if (typeof value !== "string" || !value) continue;
+          detail = ["filePath", "path", "file_path"].includes(key)
+            ? fullConsolePath(value)
+            : value;
+          break;
+        }
+      }
+    }
+    this.line(detail ? `  > ${name}: ${detail}` : `  > ${name}`);
   }
 
   /** The most human-meaningful single argument for a tool call. */
@@ -351,18 +409,20 @@ export class Console {
           ];
     for (const key of keys) {
       const value = record[key];
-      if (typeof value === "string" && value.length > 0) return value;
+      if (typeof value === "string" && value.length > 0) {
+        return ["filePath", "path", "file_path"].includes(key)
+          ? fullConsolePath(value)
+          : value;
+      }
     }
     return "";
   }
 
   toolFailed(error: unknown, name = "tool", input?: unknown): void {
     const target = compactText(this.describe(name, input));
-    const shortTarget = target.length > 100 ? `${target.slice(0, 97)}...` : target;
     let reason = compactText(typeof error === "string" ? error : String(error ?? ""));
     reason = reason.split(/\s+/).filter(Boolean).join(" ");
-    if (reason.length > 160) reason = `${reason.slice(0, 157)}...`;
-    const operation = shortTarget ? `${name} (${shortTarget})` : name;
+    const operation = target ? `${name} (${target})` : name;
     this.line(`  x ${operation} failed: ${reason}`);
   }
 
@@ -374,14 +434,17 @@ export class Console {
   }
 
   fileChanged(operation: FileOperation, path: string): void {
-    path = compactConsolePath(path);
+    const operationRequest = path
+      .replace(/\\/g, "/")
+      .endsWith("research/operation_request.json");
+    path = fullConsolePath(path);
     const marker =
       operation === "created" ? "+" : operation === "deleted" ? "-" : "~";
     if (this.changedFiles.get(path) !== marker) {
       this.changedFiles.set(path, marker);
       this.turnFiles += 1;
       const suffix =
-        path === "research/operation_request.json"
+        operationRequest
           ? " | PI operation request updated"
           : "";
       this.line(`  ${marker} ${path}${suffix}`);
@@ -398,7 +461,7 @@ export class Console {
     void sessionID;
     void elapsedSeconds;
     for (const path of changed) {
-      const compact = compactConsolePath(path);
+      const compact = fullConsolePath(path);
       if (!this.changedFiles.has(compact)) this.line(`  ~ ${compact}`);
     }
   }

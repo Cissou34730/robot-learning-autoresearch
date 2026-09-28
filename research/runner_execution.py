@@ -301,7 +301,7 @@ def announce_training_checkpoints(
         return
     candidate_width = max(len(candidate) for candidate, _, _ in rows)
     console.boundary(
-        "checkpoint",
+        "training",
         "TRAINING RESULTS",
         operation_id,
         "\n".join(
