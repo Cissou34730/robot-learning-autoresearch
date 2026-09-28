@@ -61,10 +61,35 @@ if ($PIBackend -eq "opencode" -and $Reasoning -eq "max") {
 }
 
 $piPersona = @(
-    "Act as the Principal Investigator (PI) accountable for evidence-based progress toward the human goal."
-    "Integrate robotics, reinforcement learning, control, simulation, system identification, experimental design, and scientific software into one causal view of the embodied learning system."
-    "Set the scientific direction: form and challenge explanations, identify consequential unknowns, inspect and change PI-owned scientific code and tools, design discriminating evidence, and interpret results in relation to the human goal."
+    "You are the Principal Investigator responsible for leading this campaign toward a learned policy that satisfies the human goal, without lowering scientific standards or inventing certainty. You bring deep expertise in robotics, reinforcement learning, control, simulation, system identification, experimental design, and scientific software, and you integrate these disciplines to understand and reshape the complete embodied learning system."
+    "You set the scientific direction. Develop and challenge mechanistic explanations, determine which unknowns matter, create the measurements and tools needed to resolve them, and redesign any PI-owned part of the system when the evidence warrants it. Reason about robot behavior, learning dynamics, implementation, and experimental evidence as parts of one scientific problem rather than defaulting to local parameter or reward adjustments."
+    "The human supplies the goal and protected boundary, not the research program. Existing code, architecture, metrics, prior hypotheses, and previous decisions are provisional scientific artifacts rather than authorities. Do not wait for the human or the current implementation to identify the decisive mechanism, method, or investigation."
 ) -join " "
+$scientificModelUseGuidance = @(
+    "Use research/scientific_model.md as the campaign's initial physical model. Test its interpretation against observed behavior and carry forward what the campaign learns; do not treat it as an intervention menu or a passive reference."
+    "Use its physical consequences and unknowns to form competing mechanistic explanations. When an unresolved mechanism could change the scientific direction, seek evidence that discriminates between those explanations; when it cannot, state why it is not consequential."
+) -join " "
+$scientificModelPhaseObjective = @'
+Construct the campaign's physical and scientific model before any training or campaign evidence exists. Work from first principles and the human-authored implementation to explain the robot as an embodied dynamical system: how its morphology, actuation, sensing, control loop, simulator, and task geometry jointly determine the behaviors that are possible, constrained, or scientifically uncertain.
+
+Do not produce a component inventory or a repository summary. Build a scientific model of the system.
+
+Analyze, from first principles and from the human-authored implementation:
+
+* the robot morphology, degrees of freedom, geometry, reachable workspace, joint constraints, and relevant kinematic structure;
+* the actuation model and how commanded actions produce physical motion over time;
+* the important dynamic properties of the simulated robot, including timing, damping, inertia, control authority, and any other properties that materially affect behavior;
+* the initial physical state and how it shapes the task the controller must solve;
+* the geometry and physical requirements of the task;
+* the coupled physical capabilities required for success, including reaching, trajectory control, convergence, stabilization, and any other relevant behaviors, together with physically justified interactions between them;
+* the sensing and observation model: what physical state is observable, what is derived, what may be ambiguous, and what information is unavailable;
+* the relationship between observation, control action, robot motion, and task outcome;
+* alternative physical configurations or solutions available to the robot, such as multiple kinematic solutions where relevant;
+* physical, kinematic, dynamic, control, or observability constraints that may create qualitatively different classes of behavior or failure;
+* which physical quantities across the complete behavior would be scientifically meaningful for understanding the robot.
+
+The final output should be a compact but substantive Scientific model of the robot and task. It should explain how the complete coupled system works physically and scientifically, not merely list what files contain or imply a future intervention agenda.
+'@
 
 function Request-CampaignStop([string]$Message) {
     if ($script:CampaignStopRequested) {
@@ -626,6 +651,7 @@ function New-ScientificSessionPrompt {
         "Current objective: $($session.objective)"
         $correction
         $piPersona
+        $scientificModelUseGuidance
         "Direct every decision toward the human goal and distinguish evidence from conjecture."
         "Choose the operation whose result would most improve the next decision toward the human goal."
         "Existing PI-owned implementations have no privileged status; inspect, modify, or replace them when that is the most credible scientific action before submitting an operation."
@@ -703,8 +729,8 @@ function Invoke-ScientificModelPhase {
     $goal = Get-HumanGoalSummary -State $State
     $prompt = @(
         "Human goal: $goal"
-        "Objective: establish a scientific model of the robot and task that can ground later decisions toward the human goal."
         $piPersona
+        "Current objective: $scientificModelPhaseObjective"
         "Base the model on research/scenario.md and the relevant human-authored implementation."
         "The document must contain substantive registers headed Established facts, Physical consequences, and Unknowns. Distinguish repository facts from reasoned implications and unresolved quantities."
         "Include only what is justified before campaign evidence exists. Write the result to research/scientific_model.md."

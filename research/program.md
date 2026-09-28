@@ -37,12 +37,18 @@ A fresh campaign begins with a dedicated preliminary PI session. That session
 constructs `research/scientific_model.md` from the human-authored robot,
 physics, sensing, task, and assessment implementation. The model separates
 established facts, physical consequences, and unknowns, then remains fixed as
-the campaign's physical reference.
+the campaign's initial physical model. It is not passive background: later
+scientific sessions test its interpretation against observed behavior and
+carry forward what the campaign learns.
 
 The first scientific session establishes the most credible initial direction
-from the human goal and the scientific model. Evidence produced during that
-work can refine the direction before the session ends with a checkpoint and
-the campaign enters goal review.
+from the human goal and the scientific model. Its physical consequences and
+unknowns support competing mechanistic explanations. When an unresolved
+mechanism could change the scientific direction, the PI seeks evidence that
+discriminates between those explanations rather than merely citing the model
+or defaulting to a local adjustment. Evidence produced during that work can
+refine the direction before the session ends with a checkpoint and the
+campaign enters goal review.
 
 Working and best-known roles remain empty until the PI explicitly assigns
 candidates using completed evidence.
@@ -66,7 +72,12 @@ Goal review permits only inquiry opening, campaign conclusion, and checkpoint.
 An inquiry is a temporary question or obstacle whose resolution can change the
 route toward the human goal. Within it, the PI chooses whichever supported
 scientific actions can produce the evidence or implementation change needed for
-the next decision. No intervention category is privileged in advance.
+the next decision. The inquiry connects observed outcomes to the scientific
+model: it challenges consequential physical explanations, resolves or narrows
+their unknowns with discriminating evidence, and revises the campaign's
+understanding before choosing an intervention. An unknown that cannot affect
+the direction may be set aside explicitly. No intervention category is
+privileged in advance.
 
 Measurement and training are peer instruments. Either returns factual results
 to the same active bounded session without implying a required successor
