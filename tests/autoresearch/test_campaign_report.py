@@ -355,7 +355,19 @@ def _campaign_repository(tmp_path):
 def test_report_accounts_for_schema6_lifecycle_without_retired_shapes(tmp_path):
     _campaign_repository(tmp_path)
 
-    report = campaign_report.render_report([campaign_report.load_campaign(tmp_path)])
+    campaign = campaign_report.load_campaign(tmp_path)
+    campaign["state"]["pi_checkpoint"]["completed_operations"] = ["E5"]
+    campaign["state"]["pi_checkpoint"]["candidates_and_roles"] = (
+        "Current state changed after the historical checkpoint."
+    )
+    checkpoint_rows = campaign_report.checkpoint_history_rows(campaign)
+    assert checkpoint_rows[0][8] == "E1, T2, M2, E2"
+    assert (
+        checkpoint_rows[0][9]
+        == "T2:checkpoint-10 is best-known and retained for assessment."
+    )
+
+    report = campaign_report.render_report([campaign])
 
     assert "Completed operation evidence" in report
     assert "Failed and superseded execution history" in report
@@ -380,6 +392,9 @@ def test_report_accounts_for_schema6_lifecycle_without_retired_shapes(tmp_path):
     assert "The final protected assessment is still outstanding." in report
     assert "Training and development measurements support goal review." in report
     assert "T2, M2" in report
+    assert "| Completed operations | Candidates and roles |" in report
+    assert "E1, T2, M2, E2" in report
+    assert "T2:checkpoint-10 is best-known and retained for assessment." in report
     assert (
         "Choose whether the recorded evidence supports closing the inquiry." in report
     )
