@@ -29,6 +29,20 @@ UUID_PATTERN = re.compile(
     r"[0-9a-fA-F]{4}-[0-9a-fA-F]{12}\b"
 )
 WINDOWS_PATH_PATTERN = re.compile(r"[A-Za-z]:[\\/](?:[^ \r\n:]+[\\/])*[^ \r\n:]+")
+UUID_SUFFIX_PATTERN = re.compile(
+    r"(?<!\w)(?:"
+    r"[0-9a-fA-F]{1,8}|"
+    r"[0-9a-fA-F]{8}-[0-9a-fA-F]{0,4}|"
+    r"[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{0,4}|"
+    r"[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-"
+    r"[0-9a-fA-F]{0,4}|"
+    r"[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-"
+    r"[0-9a-fA-F]{4}-[0-9a-fA-F]{0,12}"
+    r")$"
+)
+WINDOWS_PATH_SUFFIX_PATTERN = re.compile(r"[A-Za-z]:[\\/][^ \r\n:]*$")
+WINDOWS_DRIVE_SUFFIX_PATTERN = re.compile(r"(?<!\w)[A-Za-z]:?$")
+MAX_UNRESOLVED_CONSOLE_TOKEN = 512
 
 EXIT_OK = 0
 EXIT_SESSION_ERROR = 2
@@ -384,6 +398,19 @@ def compact_console_text(text: object) -> str:
         lambda match: compact_console_path(match.group(0)),
         value,
     )
+
+
+def unresolved_console_suffix_start(text: str) -> int:
+    start = len(text)
+    for pattern in (
+        UUID_SUFFIX_PATTERN,
+        WINDOWS_PATH_SUFFIX_PATTERN,
+        WINDOWS_DRIVE_SUFFIX_PATTERN,
+    ):
+        match = pattern.search(text)
+        if match:
+            start = min(start, match.start())
+    return start
 
 
 def is_pi_writable_path(target: str, *, preliminary: bool = False) -> bool:
@@ -911,6 +938,7 @@ class Console:
         self._mid_stream = False
         self._at_line_start = True
         self._message_width = max((columns or _console_width()) - 4, 20)
+        self._compact_buffer = ""
         self._message_buffer = ""
         self._message_spacing = ""
         self._message_column = 0
@@ -966,6 +994,7 @@ class Console:
         """End the model's block, so the next fact starts at column zero."""
         if not self._mid_stream:
             return
+        self._buffer_console_text("", final=True)
         self._flush_message(final=True)
         if sys.stdout.isatty():
             sys.stdout.write(_RESET)
@@ -973,6 +1002,7 @@ class Console:
             print(flush=True)
         self._mid_stream = False
         self._at_line_start = True
+        self._compact_buffer = ""
         self._message_buffer = ""
         self._message_spacing = ""
         self._message_column = 0
@@ -1026,20 +1056,34 @@ class Console:
             self._message_column += len(self._message_spacing)
             self._message_spacing = ""
 
+    def _buffer_console_text(self, text: str, *, final: bool) -> None:
+        self._compact_buffer += text
+        if final:
+            split_at = len(self._compact_buffer)
+        else:
+            split_at = unresolved_console_suffix_start(self._compact_buffer)
+            if len(self._compact_buffer) - split_at > MAX_UNRESOLVED_CONSOLE_TOKEN:
+                split_at = len(self._compact_buffer)
+        if split_at == 0:
+            return
+        ready = self._compact_buffer[:split_at]
+        self._compact_buffer = self._compact_buffer[split_at:]
+        self._message_buffer += compact_console_text(ready)
+
     def delta(self, text: str) -> None:
         if not text:
             return
-        text = compact_console_text(text)
         if not self._mid_stream:
             self._mid_stream = True
             self._at_line_start = True
             if sys.stdout.isatty():
                 sys.stdout.write(_MESSAGE)
-        self._message_buffer += text
+        self._buffer_console_text(text, final=False)
         self._flush_message(final=False)
 
     def message(self, text: str) -> None:
         if self._mid_stream:
+            self._buffer_console_text("", final=True)
             self._flush_message(final=True)
             return
         if not text:

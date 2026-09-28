@@ -69,6 +69,23 @@ test("backend UUIDs and absolute Windows paths are compacted in PI messages", ()
   assert.doesNotMatch(output, /C:\\work\\repo/);
 });
 
+test("streamed compaction buffers split UUIDs and Windows paths", () => {
+  const message =
+    "Use 11111111-1111-1111-1111-111111111111 at " +
+    "C:\\work\\repo\\research\\brief.md";
+  const output = captureOutput(() => {
+    const console = new Console();
+    console.delta("Use 11111111-1111");
+    console.delta("-1111-1111-111111111111");
+    console.delta(" at C:\\work");
+    console.delta("\\repo\\research");
+    console.delta("\\brief.md");
+    console.message(message);
+  });
+
+  assert.equal(output, "  Use <id> at .../research/brief.md");
+});
+
 test("repository and external path compaction matches the Copilot console", () => {
   const repositoryPath = join(ROOT, "research", "brief.md");
   const externalPath = join(ROOT, "..", "private", "trace.log");

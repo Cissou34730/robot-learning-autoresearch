@@ -21,6 +21,19 @@ const GUTTER = `${DIM}${PLAIN_GUTTER}\u2502${RESET}${MESSAGE} `;
 const UUID_PATTERN =
   /\b[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}\b/g;
 const WINDOWS_PATH_PATTERN = /[A-Za-z]:[\\/](?:[^ \r\n:]+[\\/])*[^ \r\n:]+/g;
+const UUID_SUFFIX_PATTERN = new RegExp(
+  "(?<!\\w)(?:" +
+    "[0-9a-fA-F]{1,8}|" +
+    "[0-9a-fA-F]{8}-[0-9a-fA-F]{0,4}|" +
+    "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{0,4}|" +
+    "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{0,4}|" +
+    "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-" +
+    "[0-9a-fA-F]{4}-[0-9a-fA-F]{0,12}" +
+    ")$",
+);
+const WINDOWS_PATH_SUFFIX_PATTERN = /[A-Za-z]:[\\/][^ \r\n:]*$/;
+const WINDOWS_DRIVE_SUFFIX_PATTERN = /(?<!\w)[A-Za-z]:?$/;
+const MAX_UNRESOLVED_CONSOLE_TOKEN = 512;
 const ROOT = fileURLToPath(new URL("../..", import.meta.url));
 
 const MARKER_COLORS: Record<string, string> = {
@@ -110,6 +123,19 @@ export function compactText(text: string): string {
     .replace(WINDOWS_PATH_PATTERN, (path) => compactConsolePath(path));
 }
 
+function unresolvedConsoleSuffixStart(text: string): number {
+  let start = text.length;
+  for (const pattern of [
+    UUID_SUFFIX_PATTERN,
+    WINDOWS_PATH_SUFFIX_PATTERN,
+    WINDOWS_DRIVE_SUFFIX_PATTERN,
+  ]) {
+    const match = pattern.exec(text);
+    if (match?.index !== undefined) start = Math.min(start, match.index);
+  }
+  return start;
+}
+
 export class Console {
   label: string;
   changedFiles: Map<string, string> = new Map();
@@ -129,6 +155,7 @@ export class Console {
   private midStream = false;
   private atLineStart = true;
   private readonly messageWidth: number;
+  private compactBuffer = "";
   private messageBuffer = "";
   private messageSpacing = "";
   private messageColumn = 0;
@@ -175,11 +202,13 @@ export class Console {
 
   private closeMessage(): void {
     if (!this.midStream) return;
+    this.bufferConsoleText("", true);
     this.flushMessage(true);
     if (process.stdout.isTTY) process.stdout.write(RESET);
     if (!this.atLineStart) process.stdout.write("\n");
     this.midStream = false;
     this.atLineStart = true;
+    this.compactBuffer = "";
     this.messageBuffer = "";
     this.messageSpacing = "";
     this.messageColumn = 0;
@@ -239,20 +268,37 @@ export class Console {
     }
   }
 
+  private bufferConsoleText(text: string, final: boolean): void {
+    this.compactBuffer += text;
+    let splitAt = final
+      ? this.compactBuffer.length
+      : unresolvedConsoleSuffixStart(this.compactBuffer);
+    if (
+      !final &&
+      this.compactBuffer.length - splitAt > MAX_UNRESOLVED_CONSOLE_TOKEN
+    ) {
+      splitAt = this.compactBuffer.length;
+    }
+    if (splitAt === 0) return;
+    const ready = this.compactBuffer.slice(0, splitAt);
+    this.compactBuffer = this.compactBuffer.slice(splitAt);
+    this.messageBuffer += compactText(ready);
+  }
+
   delta(text: string): void {
     if (!text) return;
-    text = compactText(text);
     if (!this.midStream) {
       this.midStream = true;
       this.atLineStart = true;
       if (process.stdout.isTTY) process.stdout.write(MESSAGE);
     }
-    this.messageBuffer += text;
+    this.bufferConsoleText(text, false);
     this.flushMessage(false);
   }
 
   message(text: string): void {
     if (this.midStream) {
+      this.bufferConsoleText("", true);
       this.flushMessage(true);
       return;
     }

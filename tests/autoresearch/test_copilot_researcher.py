@@ -452,6 +452,26 @@ def test_streamed_text_is_not_repeated_by_the_final_message(capsys):
     assert capsys.readouterr().out == "  partial answer"
 
 
+def test_streamed_compaction_buffers_split_uuid_and_windows_path(capsys):
+    console = adapter.Console()
+    message = (
+        "Use 11111111-1111-1111-1111-111111111111 at C:\\work\\repo\\research\\brief.md"
+    )
+
+    console.delta("Use 11111111-1111")
+    console.delta("-1111-1111-111111111111")
+    assert capsys.readouterr().out == "  Use"
+
+    console.delta(" at C:\\work")
+    assert capsys.readouterr().out == " <id> at"
+
+    console.delta("\\repo\\research")
+    console.delta("\\brief.md")
+    console.message(message)
+
+    assert capsys.readouterr().out == " .../research/brief.md"
+
+
 def test_the_final_message_is_shown_when_nothing_streamed(capsys):
     console = adapter.Console()
 
