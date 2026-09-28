@@ -674,6 +674,13 @@ function New-ScientificSessionPrompt {
         "No durable PI synthesis has been recorded yet."
     }
     $transition = Get-RequiredSessionSummaryTransition -State $State
+    $terminalGoalReview = (
+        -not $transition -and
+        $State.scientific_session.kind -eq "goal_review" -and
+        -not $State.active_inquiry -and
+        [int]$State.counters.inquiry -ge
+            [int]$State.campaign.max_inquiries
+    )
     $inquiry = if ($transition) {
         [string]$transition.Inquiry
     }
@@ -689,6 +696,9 @@ function New-ScientificSessionPrompt {
     }
     elseif ($State.scientific_session.kind -eq "inquiry") {
         "The inquiry has closed. Preserve its outcome and the resulting campaign decision."
+    }
+    elseif ($terminalGoalReview) {
+        "None. Decide whether the evidence supports official assessment or a conclusion that no credible route remains."
     }
     else {
         "None. Decide whether the evidence supports official assessment, a bounded goal-linked inquiry, or a conclusion that no credible route remains."
@@ -711,6 +721,13 @@ function New-ScientificSessionPrompt {
             "The sole legal next action is the checkpoint operation that saves the current session summary."
             "Do not request training, measurement, model-role changes, restoration, another inquiry change, or a campaign conclusion in this session."
             "Use the checkpoint contract in research/instruments.md and preserve the transition decision, evidence, remaining goal gap, and next direction."
+        )
+    }
+    elseif ($terminalGoalReview) {
+        @(
+            "Make the terminal goal-level decision supported by the complete campaign evidence."
+            "Use the campaign-conclusion contract in research/instruments.md to request official assessment or conclude that no credible route remains."
+            "Do not request another inquiry."
         )
     }
     else {
@@ -1019,18 +1036,6 @@ try {
         }
 
         if (-not $state.scientific_session) {
-            if (
-                -not $state.active_inquiry -and
-                [int]$state.counters.session -gt 0 -and
-                [int]$state.counters.inquiry -ge
-                    [int]$state.campaign.max_inquiries
-            ) {
-                Write-Status (
-                    "STOP | inquiry safety limit reached | " +
-                    (Get-CampaignResourceSummary -State $state)
-                ) -Color Yellow -Label campaign
-                break
-            }
             $kind = if ($state.active_inquiry) {
                 "inquiry"
             }
@@ -1045,6 +1050,13 @@ try {
             }
             $objective = if ($kind -eq "startup") {
                 "Establish and checkpoint the most credible first scientific direction toward the human goal from the scientific model and evidence produced in this session; inquiry selection follows in goal review."
+            }
+            elseif (
+                $kind -eq "goal_review" -and
+                [int]$state.counters.inquiry -ge
+                    [int]$state.campaign.max_inquiries
+            ) {
+                "Decide whether to request official assessment or conclude that no credible route remains from the complete campaign evidence."
             }
             elseif ($kind -eq "goal_review") {
                 "Decide whether to request official assessment, open one bounded goal-linked inquiry, or conclude that no credible route remains."

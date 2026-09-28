@@ -1127,7 +1127,7 @@ def execute_measurement(state: dict, pending: dict) -> int:
         )
         return 130
     except Exception as error:
-        pending["failure"] = str(error)[:500]
+        pending["failure"] = str(error)
         repository.write_state(state)
         raise
 
@@ -1375,7 +1375,7 @@ def execute_training(state: dict, pending: dict) -> int:
         )
         return 130
     except Exception as error:
-        pending["failure"] = str(error)[:500]
+        pending["failure"] = str(error)
         repository.write_state(state)
         raise
 
@@ -1700,7 +1700,7 @@ def execute_pending_operation() -> int:
             raise RuntimeError(f"unsupported pending operation kind: {kind}")
     except Exception as error:
         if pending["progress"] not in {"result_ready", "completed"}:
-            pending["failure"] = str(error)[:500]
+            pending["failure"] = str(error)
             repository.write_state(state)
         console.boundary("error", "OPERATION FAILED", subject, str(error))
         raise

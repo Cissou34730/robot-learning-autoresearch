@@ -108,7 +108,7 @@ def run_module(module: str, *args: str, timeout: int | None = None) -> str:
     )
     if result.returncode != 0:
         raise RuntimeError(
-            f"{module} failed:\n{result.stdout[-2000:]}\n{result.stderr[-2000:]}"
+            f"{module} failed:\n{result.stdout}\n{result.stderr}"
         )
     return result.stdout
 
@@ -127,7 +127,7 @@ def run_command(*command: str, timeout: int | None = None) -> str:
     if result.returncode != 0:
         raise RuntimeError(
             f"{' '.join(command)} failed:\n"
-            f"{result.stdout[-2000:]}\n{result.stderr[-2000:]}"
+            f"{result.stdout}\n{result.stderr}"
         )
     return result.stdout
 
@@ -282,7 +282,7 @@ def announce_training_checkpoints(
         match = CANDIDATE_NAME_PATTERN.fullmatch(path.name)
         if match is not None:
             candidates.append((int(path.name.removeprefix("checkpoint-")), path))
-    rows: list[tuple[str, str, str]] = []
+    rows: list[tuple[str, str]] = []
     for _, path in sorted(candidates):
         if path.name in announced:
             continue
@@ -291,22 +291,19 @@ def announce_training_checkpoints(
             metrics = json.loads(metrics_path.read_text(encoding="utf-8"))
         except (FileNotFoundError, json.JSONDecodeError, OSError):
             continue
-        reward = metrics.get("ep_rew_mean")
-        success = metrics.get("success_rate")
-        reward_text = "n/a" if reward is None else f"{float(reward):g}"
-        success_text = "n/a" if success is None else f"{100 * float(success):g}%"
-        rows.append((f"{operation_id}:{path.name}", reward_text, success_text))
+        summary = console.training_progress_suffix(metrics).removeprefix(" | ")
+        rows.append((f"{operation_id}:{path.name}", summary or "metrics unavailable"))
         announced.add(path.name)
     if not rows:
         return
-    candidate_width = max(len(candidate) for candidate, _, _ in rows)
+    candidate_width = max(len(candidate) for candidate, _ in rows)
     console.boundary(
         "training",
         "TRAINING RESULTS",
         operation_id,
         "\n".join(
-            f"{candidate:<{candidate_width}} | reward {reward} | success {success}"
-            for candidate, reward, success in rows
+            f"{candidate:<{candidate_width}} | {summary}"
+            for candidate, summary in rows
         ),
     )
 
@@ -458,8 +455,8 @@ def train_candidate(
         announced_checkpoints,
     )
     if process.returncode != 0:
-        tail = train_log.read_text(encoding="utf-8").splitlines()[-15:]
-        raise RuntimeError("training failed:\n" + "\n".join(tail))
+        log = train_log.read_text(encoding="utf-8")
+        raise RuntimeError(f"training failed:\n{log}")
     for filename in repository.INFERENCE_ARTIFACT_FILES:
         if not (output_dir / filename).exists():
             raise RuntimeError(f"training output is incomplete: {filename}")
@@ -715,7 +712,7 @@ def evaluate_artifact(
     progress_path.unlink(missing_ok=True)
     stale_temporary_progress.unlink(missing_ok=True)
     if process.returncode != 0:
-        raise RuntimeError(f"{label} failed:\n{stdout[-2000:]}\n{stderr[-2000:]}")
+        raise RuntimeError(f"{label} failed:\n{stdout}\n{stderr}")
     metrics = json.loads(output_path.read_text(encoding="utf-8"))
     console.boundary(
         "measurement",

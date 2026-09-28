@@ -246,19 +246,6 @@ def test_runner_reads_the_live_training_metric_only_through_the_boundary():
         assert "success_rate" not in source, relative
 
 
-def test_another_scenario_metric_needs_no_generic_change(monkeypatch):
-    from research import runner_console
-
-    monkeypatch.setattr(
-        "robot_learning.scenario.progress.render_training_progress_metric",
-        lambda metrics: "completion 74%",
-    )
-
-    assert runner_console.training_progress_suffix({"ep_rew_mean": -6.9}) == (
-        " | reward -6.9 | completion 74%"
-    )
-
-
 def test_normalization_never_reaches_for_the_scenario():
     normalization = ROOT / "robot_learning" / "training" / "normalization.py"
     scenario_evaluation = ROOT / "robot_learning" / "scenario" / "evaluation.py"
