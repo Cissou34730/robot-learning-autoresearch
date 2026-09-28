@@ -84,44 +84,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "open",
-        "inquiry": {
-          "closure_condition": "Close when trajectory evidence from a trained candidate distinguishes the dominant mechanism with first-entry time, post-entry excursions, endpoint speed, longest uninterrupted in-band run, branch and joint-limit behavior, and target-geometry stratification, and supports a specific next intervention or shows that no credible route remains.",
-          "goal_connection": "Identifying the dominant failure mechanism directly determines whether the campaign should improve target-conditioned transport and branch selection or develop a braking and stabilization route toward at least 196 complete holds in the 200-episode official assessment.",
-          "id": "I1",
-          "opened_in_session": "S2",
-          "question": "Under the first credible learned-control route, is the dominant limit on complete-hold success failure to transport and select a viable inverse-kinematic branch, or failure after first entry caused by residual velocity, braking, boundary excursions, or stabilization, and how does that mechanism vary across target radius and angle?",
-          "rationale": "The physical model establishes nominal reachability but provides no candidate or trajectory evidence. Official assessment is unavailable without an explicit best-known candidate, and a no-route conclusion is unsupported. A bounded trajectory-level inquiry is therefore the most goal-relevant action.",
-          "reframes": []
-        }
-      },
-      "result": {
-        "action": "open",
-        "inquiry_id": "I1",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E2",
-    "inquiry_id": null,
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "open",
-        "closure_condition": "Close when trajectory evidence from a trained candidate distinguishes the dominant mechanism with first-entry time, post-entry excursions, endpoint speed, longest uninterrupted in-band run, branch and joint-limit behavior, and target-geometry stratification, and supports a specific next intervention or shows that no credible route remains.",
-        "goal_connection": "Identifying the dominant failure mechanism directly determines whether the campaign should improve target-conditioned transport and branch selection or develop a braking and stabilization route toward at least 196 complete holds in the 200-episode official assessment.",
-        "question": "Under the first credible learned-control route, is the dominant limit on complete-hold success failure to transport and select a viable inverse-kinematic branch, or failure after first entry caused by residual velocity, braking, boundary excursions, or stabilization, and how does that mechanism vary across target radius and angle?",
-        "rationale": "The physical model establishes nominal reachability but provides no candidate or trajectory evidence. Official assessment is unavailable without an explicit best-known candidate, and a no-route conclusion is unsupported. A bounded trajectory-level inquiry is therefore the most goal-relevant action."
-      }
-    },
-    "request_fingerprint": "57bd6098360129b563d08cb01b13104af24a5c5d07c6c6b5ebf2a6528a855aa2",
-    "session_id": "S2",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "No candidates exist; working, best-known, and retained roles are empty.",
     "completed_operations": [],
