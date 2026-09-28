@@ -1,364 +1,271 @@
-# Researcher instruments
+# Runner instruments
 
-This file defines the evidence sources and phase deliverables available to the
-Researcher. Path ownership is defined by `AGENTS.md`.
+This document specifies strict schema-6 invocation and artifact contracts.
+Ownership and command authority are defined in `AGENTS.md`.
 
-## Inspect evidence
+## Operation request envelope
 
-`research/brief.md` is a generic index of the current campaign, pending
-operation, inquiry, method lifecycle, model roles, a measurement / panel index
-and the campaign laboratory index, all with repository-relative artifact paths.
-It records identities and locations, not interpretations.
-`research/postmortems.md` contains Researcher-authored scientific memory.
-Detailed measurements are stored under `research/evaluations/`.
+Each Runner round trip reads `research/operation_request.json`. The file is one
+JSON object containing exactly one top-level operation kind:
 
-Use repository-relative paths directly. `jello` is available for JSON and JSONL
-artifacts and uses Python expressions. The official benchmark result, when one
-exists, is indexed by the brief and stored durably in
-`research/research_state.json`.
-
-## Model the robot and task
-
-**Phase:** Preliminary campaign start, before baseline training or evidence.
-
-Write `research/scientific_model.md` once per campaign, separating:
-
-- **Established facts:** repository facts and constraints with their sources.
-- **Physical consequences:** reasoned implications and stated assumptions.
-- **Unknowns:** quantities or outcomes not established by available facts.
-
-Treat approach, reaching, tolerance entry, settling and sustained completion as
-coupled parts of the control problem. The launcher validates only that the file
-exists and is non-empty. It becomes read-only before baseline training.
-
-## Query training logs
-
-```powershell
-uv run python research/query_training_log.py --experiment <id> --from-step <start> --to-step <end>
+```text
+inquiry | measurement | training | checkpoint | model_role |
+restore_recipe | campaign_conclusion
 ```
 
-The command prints preserved raw records for the inclusive timestep range.
+The Runner validates the request, assigns an operation identity, freezes its
+inputs in `research/research_state.json`, executes it, records the completed
+event in state and `research/results.jsonl`, updates `research/EXPERIMENTS.md`,
+and removes the consumed request. A failed transaction remains in
+`pending_operation`; reacceptance preserves the request and assigns a
+superseding operation identity after implementation repair.
 
-## Modify the scientific system
+Measurement identities are `M#`, training identities are `T#`, and other event
+identities are `E#`.
 
-The Researcher may modify only the surface listed in `AGENTS.md`. Saved policies
-carry their own inference contract through `scenario/policy_io.py` and
-`policy_runtime.pkl`. Preserve that export when changing training or checkpoint
-code. Durable diagnostic tools belong under `research/lab/`; the Runner
-publishes them separately from policy recipe identity.
+## Inquiry operations
 
-Tests are human-owned. The Runner rejects test changes in scientific proposals.
-
-## Baseline startup
-
-The Runner trains experiment 1 from the unchanged current recipe for 120,000
-steps. A Fresh reset may first import only the Researcher-owned recipe and
-configuration from `-RecipeRef`; it imports no policy or evidence. Baseline
-analysis may request measurements and then writes:
-
-```json
-{
-  "baseline_decision": {
-    "experiment": 1,
-    "candidate": "<measured baseline checkpoint>",
-    "reason": "<why this checkpoint establishes the baseline>"
-  }
-}
-```
-
-The selected baseline becomes both `working` and `best_known`. Before this
-selection, baseline measurement rounds and `baseline_decision` are the only
-legal operations. An inquiry starts only after `working` and `best_known` name
-the same selected baseline.
-
-## Open, reframe, or close an inquiry
-
-**Phase:** Inquiry operation.
-
-The Runner allocates a new inquiry identity and PI session. Open it with:
+Open:
 
 ```json
 {
   "inquiry": {
     "action": "open",
-    "question": "<bounded scientific question>",
-    "scope": "<evidence and system surface in scope>",
-    "closure_condition": "<condition that answers, redirects, or stops the inquiry>"
+    "question": "<non-empty string>",
+    "goal_connection": "<non-empty string>",
+    "closure_condition": "<non-empty string>",
+    "rationale": "<non-empty string>"
   }
 }
 ```
 
-All statements are required and non-empty. The inquiry's PI session owns it
-from allocation through measurements, method work, training, post-training
-analysis, method decisions and maturity, across launcher restarts.
-
-Reframe without changing inquiry or session identity:
+Reframe:
 
 ```json
 {
   "inquiry": {
     "action": "reframe",
-    "question": "<revised question>",
-    "scope": "<revised scope>",
-    "closure_condition": "<revised closure condition>",
-    "rationale": "<why evidence requires reframing>"
+    "question": "<non-empty string>",
+    "goal_connection": "<non-empty string>",
+    "closure_condition": "<non-empty string>",
+    "rationale": "<non-empty string>"
   }
 }
 ```
 
-Close only when the inquiry has no active method or its method is `promoted`,
-`retained` or `abandoned`:
+Close:
 
 ```json
 {
   "inquiry": {
     "action": "close",
-    "outcome": "<durable scientific outcome>"
+    "outcome": "<non-empty string>",
+    "reason": "<non-empty string>"
   }
 }
 ```
 
-Closing clears the inquiry session. A later inquiry receives a new identity and
-session while retaining current-campaign artifacts.
+Opening is accepted only in a goal-review session with no active inquiry and
+while the persisted `max_inquiries` guard permits another identity. Reframing
+and closing require the active inquiry's session. Inquiry operations allocate
+no training identity.
 
-## Start an active method
-
-**Phase:** Active inquiry, before the method's first training run.
-
-```json
-{
-  "method": {
-    "action": "start",
-    "id": "<stable file-name-safe identifier>",
-    "scientific_question": "<question developed by this method>",
-    "rationale": "<why the method is worth developing>",
-    "lifecycle": "<concept | development>"
-  }
-}
-```
-
-The method can exist without a candidate. It persists across iterations and
-records its `lifecycle`, the scientific parent it started from
-(`base_scientific_commit`), its current lineage when available, and its
-iteration history. A failed training run is recorded as evidence and does not
-discard the method.
-
-| Lifecycle | Meaning |
-| --- | --- |
-| `concept`, `development` | Declared or iterating. Training, measurement, `retain` (with a current lineage) and `abandon` are available. |
-| `mature` | A post-training `mature` decision ended the iteration. Measurement, training, `promote`, `retain` and `abandon` are available. |
-| `promoted`, `retained`, `abandoned` | Final for this inquiry. The inquiry may measure, reframe or close. |
-
-## Request measurements
-
-**Phase:** Active inquiry or post-training analysis, including baseline
-analysis.
-
-During analysis, candidates from the current experiment and saved lineages may
-be measured. Otherwise use saved `working`, `best_known`, `active_method`, or
-retained lineages and omit `experiment`.
+## Measurement operation
 
 ```json
 {
-  "experiment": "<current experiment integer; analysis only>",
-  "question": "<question this round addresses>",
-  "reason": "<why this evidence can change a decision>",
-  "measurements": [
-    {
-      "instrument": "<research_evaluation | task_reference>",
-      "candidate": "<available model>",
-      "selection": "<why this model is informative>",
-      "omitted_alternative": "<optional available model not measured>",
-      "episodes": "<positive integer; research_evaluation only>",
-      "seed": "<integer; research_evaluation only>",
-      "label": "<optional string>"
-    }
-  ],
-  "paired_comparisons": [
-    {"candidate": "<measured model>", "reference": "<other measured model>"}
-  ]
-}
-```
-
-At least one measurement is required and at most three distinct models may be
-named. `paired_comparisons` and `omitted_alternative` are optional. Each
-measurement requires a non-empty `selection`.
-
-`research_evaluation` uses the half-open panel `[seed, seed + episodes)`. A
-panel may be reused identically or be disjoint from all recorded research
-panels; partial overlap and overlap with protected benchmark episodes are
-rejected. Reuse is reported explicitly. A paired comparison pools shared
-episode identities only when evaluation semantics match, deduplicates repeated
-coverage, and rejects conflicting deterministic outcomes.
-
-`task_reference` is the fixed human-owned reference panel. Its seed and episodes
-are not configurable. It remains separate from the terminal official benchmark.
-
-Each completed round returns to the same inquiry session and requesting phase.
-Submit a new request if another round is useful.
-
-## Request method training
-
-**Phase:** Active inquiry with a declared active method.
-
-Configure researcher-owned code and `research/current_params.json`, then write:
-
-```json
-{
-  "kind": "<training | continuation | replication>",
-  "method_id": "<active_method.id>",
-  "family": "<optional grouping label>",
-  "initialization": "<fresh | transfer>",
-  "investigation_design": {
-    "evidence": [
-      {"source": "<existing repository-relative file>", "observation": "<what was observed>"}
+  "measurement": {
+    "description": "<non-empty string>",
+    "rationale": "<non-empty string>",
+    "measurements": [
+      {
+        "instrument": "research_evaluation",
+        "candidate": "<candidate ID or model role>",
+        "episodes": 100,
+        "seed": 1000,
+        "label": "<optional string>"
+      },
+      {
+        "instrument": "task_reference",
+        "candidate": "<candidate ID or model role>",
+        "label": "<optional string>"
+      },
+      {
+        "instrument": "python_module",
+        "module": "research.lab.example",
+        "args": ["--output", "research/evaluations/<campaign>/example.json"],
+        "artifact": "research/evaluations/<campaign>/example.json",
+        "label": "<optional string>"
+      }
     ],
-    "objective_link": "<connection to the campaign objective>",
-    "initialization_reason": "<why fresh or why this parent>",
-    "rationale": "<why this run informs the active method>",
-    "expected_observation": "<observation that would change the next decision>",
-    "predicted_behavioral_path": "<optional prediction>",
-    "open_question": "<optional unresolved behavior>"
-  },
-  "change": "<scientific intervention; training only>",
-  "training_parent": "<required for transfer>",
-  "extends_lineage": "<true only for adjusted transfer training>",
-  "training_seed": "<non-negative integer; required for replication>",
-  "replication_of": "<current-campaign experiment; replication only>",
-  "params": "<optional parameter overrides>"
-}
-```
-
-`investigation_design` requires non-empty `evidence`, `objective_link`,
-`initialization_reason`, `rationale`, and `expected_observation`, plus at least
-one of `predicted_behavioral_path` or `open_question`. Neither form is
-preferred. An optional `scientific_model` object may contain additional
-non-empty statements. Evidence sources must exist inside the repository.
-
-| Kind | Contract |
-| --- | --- |
-| `training` | A changed recipe. `change` and either a scientific code delta or non-empty `params` are required. Transfer also requires `training_parent`. |
-| adjusted `training` | With transfer and `extends_lineage: true`, trains the current changed recipe from parent weights. |
-| `continuation` | Requires transfer and `training_parent`; restores the parent's recipe, optionally adding `params`. Code changes and `change` are forbidden. |
-| `replication` | Requires fresh initialization, `replication_of`, and explicit `training_seed`. Code changes, `params`, and `change` are forbidden. |
-
-Eligible parents are `working`, `best_known`, `active_method`, and retained
-lineage IDs exposed by the brief. Raw disposable candidates are not parents.
-Experiment records distinguish requested `training_budget_steps` from actual
-`completed_training_steps`; lineage `training_steps` is accumulated.
-
-Runner recovery resumes an interrupted execution and does not create a
-continuation. A replication groups variance evidence but does not replay old
-code, configuration, or random trajectories.
-
-## Decide a method
-
-**Phase:** Post-training analysis after maintaining the postmortem, or an active
-inquiry with an unresolved active method. This is the only method-transition
-contract.
-
-```json
-{
-  "method_decision": {
-    "experiment": "<current experiment; post-training analysis only, omitted from the inquiry>",
-    "action": "<continue | refine | mature | promote | retain | abandon>",
-    "outcome": "<scientific interpretation of this decision>",
-    "reason": "<why the evidence supports this action>",
-    "candidate": "<continue, refine, mature: current candidate or available lineage>",
-    "code": {
-      "action": "<keep | revert | restore>",
-      "reason": "<why this recipe action is correct>",
-      "lineage": "<working | best_known | active_method | retained ID; restore only>"
-    },
-    "retained_id": "<retain only>",
-    "best_known": {
-      "candidate": "active_method",
-      "reason": "<optional evidence-backed designation; promote only>"
-    }
+    "paired_comparisons": [
+      {"candidate": "<measured candidate>", "reference": "<measured candidate>"}
+    ]
   }
 }
 ```
 
-`outcome`, `reason` and `code` are required.
+`measurements` is non-empty. `research_evaluation` accepts a positive episode
+count and non-negative seed. `task_reference` uses its protected fixed panel.
+`python_module` modules are limited to `research.lab` or
+`robot_learning.scenario`; their declared JSON artifact is campaign-scoped
+under `research/evaluations/`.
 
-| Action | Available when | Effect |
-| --- | --- | --- |
-| `continue`, `refine` | Pending post-training analysis. | `lifecycle` becomes `development`; the selected candidate or lineage becomes the method's current lineage (default `active_method` when one exists). |
-| `mature` | Pending post-training analysis. | `lifecycle` becomes `mature` with the selected lineage; the iteration ends and the inquiry continues. |
-| `promote` | The method is already `mature`, in either phase. | Requires compatible, fingerprint-bound paired evidence of the current method lineage against `working`, normally from a later inquiry measurement. `working` changes; `best_known` changes only when explicitly designated and measured. `lifecycle` becomes `promoted`. |
-| `retain` | The method has a current lineage, in either phase. | Publishes that lineage under a unique file-name-safe `retained_id` without changing `working`. `lifecycle` becomes `retained`. |
-| `abandon` | Any unresolved method, in either phase. | Requires code `revert` or `restore` and cannot restore `active_method`; the method lineage is released unless another role preserves it. `lifecycle` becomes `abandoned`. |
+Candidate artifacts, evaluator semantics, module sources, PI-owned scientific
+changes, and effective parameters are frozen at acceptance. Completed
+measurement artifacts are fingerprinted and recorded. Reused panels and paired
+comparisons retain their existing identity and integrity checks.
 
-`promote` and `retain` operate on the method's current lineage, not on a
-candidate of the pending experiment; select a new candidate first through
-`continue`, `refine` or `mature`. A decision from the inquiry allocates no
-experiment and writes no experiment-history row.
+## Training operation
 
-The code action controls the complete Researcher-owned recipe. `keep` keeps the
-current recipe, `revert` restores the scientific parent (the method's
-`base_scientific_commit` for `abandon` or an inquiry decision), and `restore`
-restores the named eligible lineage recipe. While a decision publishes, the
-state records it as `pending_method_decision`; the Runner publishes selected
-artifacts before candidate cleanup and resumes an interrupted publication
-idempotently.
+Fresh initialization:
 
-## Maintain scientific memory
-
-Maintain one revisable strategy section for the active campaign:
-
-```markdown
-## <Campaign ID> / Scientific strategy
-
-**Current synthesis:** <interpretation of campaign evidence>
-
-**Lessons and limits:** <findings, sources, scope and limits>
-
-**Competing explanations:** <live causal alternatives>
-
-**Decision frontier:** <unresolved distinction and discriminating evidence>
+```json
+{
+  "training": {
+    "initialization": "fresh",
+    "seed": 7,
+    "steps": 120000,
+    "description": "<non-empty string>",
+    "rationale": "<non-empty string>"
+  }
+}
 ```
 
-After each non-baseline training run, append or revise:
+Transfer initialization:
 
-```markdown
-## <Campaign ID> / Experiment <integer>
-
-**Result:** <concise result>
-
-**Observed behavior:** <factual observations>
-
-**Hypothesis assessment:** <supported, weakened, contradicted, or inconclusive, with limits>
-
-**Interpretation:** <scientific interpretation>
-
-**Evidence inspected:** <artifact paths>
+```json
+{
+  "training": {
+    "initialization": "transfer",
+    "parent": "<candidate ID or model role>",
+    "seed": 7,
+    "steps": 120000,
+    "description": "<non-empty string>",
+    "rationale": "<non-empty string>"
+  }
+}
 ```
 
-The postmortem informs the experiment's `method_decision`; training does not
-force immediate inquiry closure.
+The Runner validates PI-owned changed sources and active parameters, publishes
+the exact scientific recipe, records the parent identity when present,
+executes the requested seed and step count, archives all produced candidates,
+and records learning-dynamics facts and mechanical provenance. Completion does
+not assign working, best-known, or retained roles.
 
-## Conclude the campaign
+Interrupted execution resumes the accepted transaction and candidate location;
+it does not allocate a second training identity.
 
-**Phase:** Inquiry boundary, with no active inquiry or pending operation.
+## Durable checkpoint
+
+```json
+{
+  "checkpoint": {
+    "human_goal_connection": "<non-empty string>",
+    "current_goal_gap": "<non-empty string>",
+    "current_synthesis": "<non-empty string>",
+    "evidence_references": ["M1", "research/evaluations/<campaign>/detail.json"],
+    "decision_frontier": "<non-empty string>",
+    "completed_operations": ["M1", "T1"],
+    "candidates_and_roles": "<non-empty string>",
+    "next_direction_or_closure": "<non-empty string>",
+    "cumulative_resource_use": "<non-empty string>"
+  }
+}
+```
+
+`completed_operations` exactly matches the active session's completed operation
+IDs. Each evidence reference is either a completed operation ID or an existing
+repository-relative file. The Runner publishes the session's PI-owned
+scientific surface, stores the checkpoint with its commit and session/inquiry
+identity, and clears the active scientific session.
+
+## Model-role operation
+
+Working:
+
+```json
+{
+  "model_role": {
+    "action": "set_working",
+    "candidate": "<candidate ID or model role>",
+    "reason": "<non-empty string>",
+    "evidence": ["<completed operation ID>"]
+  }
+}
+```
+
+Best-known uses the same shape with `"action": "set_best_known"`.
+
+Retention adds a label:
+
+```json
+{
+  "model_role": {
+    "action": "retain",
+    "candidate": "<candidate ID or model role>",
+    "label": "<unique non-empty label>",
+    "reason": "<non-empty string>",
+    "evidence": ["<completed operation ID>"]
+  }
+}
+```
+
+Evidence entries name completed operation IDs. The Runner publishes the
+candidate under the campaign retained archive and updates only the requested
+role.
+
+## Recipe restoration
+
+```json
+{
+  "restore_recipe": {
+    "candidate": "<candidate ID or model role>",
+    "reason": "<non-empty string>"
+  }
+}
+```
+
+The Runner resolves the candidate's recorded scientific commit, restores the
+PI-owned scientific files and parameters represented by that recipe, removes
+PI-owned files absent from it, verifies the result, and updates the active
+session's scientific parent commit. It does not assign a model role.
+
+## Campaign conclusion
+
+Official assessment request:
 
 ```json
 {
   "campaign_conclusion": {
-    "action": "<request_final_benchmark | no_further_experiment>",
-    "reason": "<terminal rationale>"
+    "action": "request_official_assessment",
+    "reason": "<non-empty string>"
   }
 }
 ```
 
-`request_final_benchmark` requires `best_known` and irreversibly submits that
-frozen lineage to the human-owned benchmark. `no_further_experiment` ends
-without assessment. Neither action creates an experiment. A conclusion cannot
-resolve scientific changes, so the Researcher surface must match the operation
-anchor.
+No-route conclusion:
 
-## Official benchmark
+```json
+{
+  "campaign_conclusion": {
+    "action": "no_credible_route",
+    "reason": "<non-empty string>"
+  }
+}
+```
 
-The official benchmark is human-owned, separate from development and
-`task_reference`, runs once, and is never exposed as evidence for a later
-inquiry. Its verdict ends the campaign. Do not invoke benchmark modules
-directly.
+Both forms require a goal-review session and no active inquiry. The assessment
+request also requires an explicit best-known candidate. The Runner records the
+terminal request, clears the scientific session, executes the protected
+official assessment as a separate Runner-owned transition, and records its
+passed or failed result. `no_credible_route` records the terminal state without
+running an assessment.
+
+## Scientific-model publication
+
+Before any scientific session exists, the launcher validates
+`research/scientific_model.md` for the `Established facts`, `Physical
+consequences`, and `Unknowns` registers. The Runner commits the exact file,
+records its commit in schema-6 state, and permits scientific sessions only
+after publication.

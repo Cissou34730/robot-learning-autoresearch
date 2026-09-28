@@ -955,9 +955,7 @@ def execute_measurement(state: dict, pending: dict) -> int:
             if index < len(partials):
                 continue
             if spec["instrument"] == "python_module":
-                archived_path = _python_module_archive_path(
-                    state, pending, spec, index
-                )
+                archived_path = _python_module_archive_path(state, pending, spec, index)
                 if archived_path.is_file():
                     _json_object_artifact(
                         archived_path,
@@ -1420,6 +1418,71 @@ def check_scientific_model_deliverable() -> int:
     return 0
 
 
+def official_assessment_progress(completed: int, total: int) -> None:
+    percent = 100 * completed // total if total else 0
+    console.progress(f"[assessment] {completed:>4} / {total} | {percent:>3}%")
+
+
+def run_official_assessment() -> int:
+    from robot_learning.scenario.final_benchmark import evaluate_final_model
+
+    state = repository.load_state(allow_missing_artifact=True)
+    terminal = state["terminal_state"]
+    if (
+        not isinstance(terminal, dict)
+        or terminal["status"] != "official_assessment_requested"
+    ):
+        raise ValueError("there is no requested official assessment")
+    candidate = state["candidates"].get(terminal["model"])
+    if not isinstance(candidate, dict):
+        raise TypeError("the requested official-assessment model is unavailable")
+    existing = state["official_assessment"]
+    if isinstance(existing, dict):
+        if existing["model"] != candidate["id"]:
+            raise ValueError("the recorded official assessment names another model")
+        if existing["status"] == "passed" and not paths.GOAL_PATH.is_file():
+            paths.GOAL_PATH.write_text(
+                f"Goal reached with {candidate['id']}.\n", encoding="utf-8"
+            )
+        if not repository.commit_runner_memory("record official assessment"):
+            repository.push_head()
+        return 0
+    artifact = repository.resolve_repo_path(candidate["artifact"])
+    repository.require_complete_inference_artifact(
+        artifact, "official-assessment model"
+    )
+    if repository.artifact_fingerprint(artifact) != candidate["fingerprint"]:
+        raise ValueError("official-assessment model fingerprint changed")
+
+    metrics = evaluate_final_model(
+        artifact / "model.zip",
+        progress_callback=official_assessment_progress,
+    )
+    passed = bool(metrics["goal_reached"])
+    facts = ["goal reached" if passed else "goal not reached"]
+    if metrics.get("success_percent") is not None:
+        facts.append(f"success {float(metrics['success_percent']):.1f}%")
+    if metrics.get("episodes") is not None:
+        facts.append(f"{int(metrics['episodes'])} episodes")
+    summary = "; ".join(facts)
+    state["official_assessment"] = {
+        "status": "passed" if passed else "failed",
+        "model": candidate["id"],
+        "summary": summary,
+        "completed_at": _now(),
+    }
+    state["last_verdict"] = f"official assessment {summary}"
+    repository.write_state(state)
+    if passed:
+        paths.GOAL_PATH.write_text(
+            f"Goal reached with {candidate['id']}.\n", encoding="utf-8"
+        )
+    if not repository.commit_runner_memory("record official assessment"):
+        repository.push_head()
+    console.announce(f"[assessment] {summary}")
+    return 0
+
+
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
     parser.add_argument("--check-operation", action="store_true")
@@ -1428,9 +1491,11 @@ def parse_args() -> argparse.Namespace:
         "--start-session", choices=("goal_review", "inquiry"), default=None
     )
     parser.add_argument("--session-objective")
+    parser.add_argument("--max-inquiries", type=int)
     parser.add_argument("--check-scientific-model-deliverable", action="store_true")
     parser.add_argument("--mark-scientific-model-ready", action="store_true")
     parser.add_argument("--reaccept-pending", action="store_true")
+    parser.add_argument("--run-official-assessment", action="store_true")
     return parser.parse_args()
 
 
@@ -1460,11 +1525,18 @@ def main() -> int:
             f"OPERATION_REACCEPTED: {pending['id']} supersedes {pending['supersedes']}"
         )
         return 0
+    if args.run_official_assessment:
+        return run_official_assessment()
     if args.start_session:
         if not args.session_objective:
             print("ERROR: --start-session requires --session-objective")
             return 1
         state = repository.load_state(allow_missing_artifact=True)
+        if args.max_inquiries is not None:
+            if args.max_inquiries < 1:
+                print("ERROR: --max-inquiries must be at least 1")
+                return 1
+            state["campaign"]["max_inquiries"] = args.max_inquiries
         session = repository.start_scientific_session(
             state, kind=args.start_session, objective=args.session_objective
         )

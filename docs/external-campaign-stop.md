@@ -30,7 +30,7 @@ For every launcher invocation, Hermes must:
        -StopTimeoutSeconds 180
    ```
 
-The request path is inherited only by the supervised runner or researcher
+The request path is inherited only by the supervised Runner or PI-adapter
 process as `ROBOT_RESEARCH_STOP_REQUEST`. It is not a repository or campaign
 state file.
 
@@ -87,7 +87,7 @@ child also polls the external request:
 - `researcher_opencode/src/adapter.ts` resolves its existing interrupt outcome,
   calls `session.abort()`, and drains its runtime handles.
 
-After an interrupted researcher exits, the launcher checks the request before
+After an interrupted PI session exits, the launcher checks the request before
 deliverable validation or retry. It then leaves the campaign loop, stops the
 OpenCode campaign server in `finally`, and releases the worktree mutex.
 

@@ -8,37 +8,38 @@ evaluation episodes. The authoritative values and execution live in
 redefine an official result. The training environment may evolve through research
 without changing the human-owned final benchmark.
 
-The researcher owns the scientific decisions: learning method, checkpoints to
-measure, post-training analysis, retained model lineages, and model/code lineage.
-Training leads to analysis, which can request one or more development-measurement
-rounds or close directly from logs and existing evidence. A closure chooses a
-working lineage and may independently designate an evidence-backed best-known
-model; continuing a promising working lineage does not make it best known. The
-runner only executes and records those decisions. It does not automatically rank
-candidates, run a tournament, promote a model, or apply a statistical gate.
-Preparation may continue an unchanged lineage, train an intervention from fresh
-or transferred initialization, or replicate an earlier operation. Code and
-configuration edits are needed only when the chosen operation calls for them.
-Repeated use of one development panel remains evidence from that panel, not
-independent held-out confirmation.
+The Principal Investigator (PI) owns scientific direction, bounded inquiries,
+scientific implementation, instrument design, evidence interpretation, and
+goal-progress decisions. A scientific session may make several coherent Runner
+round trips and ends at a durable PI checkpoint or terminal goal-level decision.
+Measurement and training are peer instruments; neither creates a mandatory
+follow-up phase. Working, best-known, and retained model roles change only
+through explicit evidence-backed operations. The Runner validates, executes,
+records, publishes, and recovers those requests without judging scientific
+adequacy.
 
-Start the autonomous loop from PowerShell:
+Start the research loop from PowerShell:
 
 ```powershell
 .\run_research.ps1
+.\run_research.ps1 -MaxInquiries 15
 ```
+
+`MaxInquiries` is only an unattended guard on opening another inquiry. It does
+not limit training, trigger a campaign conclusion, or supply scientific
+evidence.
 
 External controllers must use the run-scoped cooperative request plus a
 kill-on-close Windows Job Object described in
 [the external stop contract](docs/external-campaign-stop.md).
 
-The first run after an infrastructure change is an automatic unchanged baseline.
-Training saves neutral checkpoints; the researcher then analyzes logs and
-artifacts before deciding whether any development measurements are useful.
+A fresh campaign first runs the dedicated preliminary PI session that creates
+and publishes `research/scientific_model.md`. It then starts campaign-level goal
+review; there is no mandatory baseline, training, or evaluation.
 
-### Researcher runtime
+### PI runtime
 
-The researcher runs on the GitHub Copilot SDK through `researcher_copilot.py`,
+The PI runs on the GitHub Copilot SDK through `researcher_copilot.py`,
 using your own GitHub Copilot entitlement. Prepare it once:
 
 ```powershell
@@ -54,7 +55,7 @@ those credentials. Model and reasoning effort stay launch-time choices:
 ```
 
 An unavailable model is reported with the list of available ones rather than
-silently replaced. The adapter streams the researcher's answer, prints one line
+silently replaced. The adapter streams the PI's answer, prints one line
 per changed file and per shell command, and stays quiet about reads and
 searches. It reports what a session did; whether a phase is complete remains a
 property of the deliverable and its protected validator.
@@ -72,12 +73,12 @@ The report exposes checkpoint selection and unmeasured proxy peaks,
 initialization and parent rationales, repeated hypothesis families, cited prior
 evidence, lineage/recipe decisions, development-panel reuse and final requests.
 These are facts for reviewing bias evolution, not an automatic quality score.
-It does not inspect live processes or run a model, Git or a Researcher session.
+It does not inspect live processes or run a model, Git or a PI session.
 Use `--repo <path>` or `--campaign-id <id>` to select other existing records.
-Detailed scientific judgments remain the Researcher's recorded assessments.
+Detailed scientific judgments remain the PI's recorded assessments.
 
 Each launcher invocation records only aggregate tokens (input/cache/output),
-AIU, tool counts by name and duration, with campaign/experiment/phase metadata,
+AIU, tool counts by name and duration, with campaign/session/operation metadata,
 in `reports/session_usage/<campaign-id>.jsonl`. No messages, tool arguments or
 file contents are saved. Failed and interrupted invocations record available
 usage; missing SDK values are unavailable, not zero. Accounting failure warns
@@ -86,7 +87,7 @@ deltas even when they resume the same session. Input includes cache reads, so
 the report never adds cache reads twice. Historical sessions cannot be recovered
 from console summaries; their consumption is explicitly missing.
 
-`reports/` is ignored by Git and never injected into Researcher context. Reset
+`reports/` is ignored by Git and never injected into PI context. Reset
 leaves these campaign-scoped human records intact; copy this directory alongside
 the campaign records if reports must be portable to another worktree or machine.
 Generated reports contain only persisted common fields and recorded scientific
@@ -103,18 +104,18 @@ Stop the campaign, then choose a reset mode explicitly in the current branch:
 ```
 
 `Fresh` clears campaign history and models, preserving the current code and
-parameters; baseline training starts on the next launch. With `-RecipeRef`, it
-first restores the complete researcher-owned scientific code, tests and
+parameters; the preliminary scientific-model session starts on the next launch.
+With `-RecipeRef`, it first restores the complete PI-owned scientific code and
 configuration from the resolved commit, including deleting later scientific
-files. It does not import a model, score, evidence, strategy, campaign identity
-or experiment counter. `Baseline` restores the prepared baseline's scientific
-code, tests, configuration, saved policy and evidence, preserving the current
-harness; research resumes at experiment 2 without retraining the baseline.
+files. It does not import a model, score, evidence, campaign identity or
+operation counter. `Baseline` restores a prepared schema-6 candidate, its
+scientific recipe, configuration, saved policy, evidence, and explicit working
+and best-known roles while preserving the current harness.
 Neither mode creates a branch or worktree.
 With `-Clean`, reset first discards staged and unstaged changes to campaign
 paths and deletes all non-ignored untracked files in this worktree. This
 cleanup is irreversible and happens before the reset backup. With
-`Fresh -RecipeRef -Clean`, it also discards dirty researcher-owned scientific
+`Fresh -RecipeRef -Clean`, it also discards dirty PI-owned scientific
 code and parameters, after verifying the recipe source, because that complete
 recipe will be restored. Human-owned and otherwise unrelated tracked changes
 still stop the reset. Without `-Clean`, any dirty worktree stops the reset as
@@ -142,34 +143,31 @@ Tests are organized by repository domain:
 | Directory | Covers | Owner |
 | --- | --- | --- |
 | `tests/benchmark/` | official task, official robot, benchmark contract, final goal verdict | human |
-| `tests/autoresearch/` | the generic AutoResearch harness: proposals, execution lifecycle, persistence, lineage, protected paths, presentation, training-artifact contract | human |
+| `tests/autoresearch/` | the generic AutoResearch harness: schema-6 requests, bounded sessions, execution, persistence, protected paths, presentation, and artifact contracts | human |
 
 `tests/benchmark/` and `tests/autoresearch/` are immutable for the duration of a
-campaign: a proposal that creates, modifies, renames or deletes a file under
+campaign: an operation that creates, modifies, renames or deletes a file under
 either prefix is rejected before training. They also stay method-neutral, so
 replacing the learning algorithm never requires touching them.
 
-Scientific experiments do not carry researcher-maintained pytest suites. The
+Scientific operations do not carry PI-maintained pytest suites. The
 Runner validates their changed Python and JSON directly and retains protected
 human-owned boundary checks.
 
-Selected version-4 working and best-known policies are published under
-`research/checkpoints/retained/<campaign-id>/` before disposable challengers are
-cleaned up. Their model, metadata and saved preprocessing runtime are versioned
-with the campaign memory, so a clean clone can load every lineage named by
-state. Working and best-known remain independent Researcher decisions; the
-runner does not infer either role from a score.
+Selected schema-6 model roles are published under
+`research/checkpoints/retained/<campaign-id>/`. Their model, metadata and saved
+preprocessing runtime are versioned with campaign memory. Working, best-known,
+and retained remain independent PI decisions; the Runner does not infer a role
+from a score.
 
 Validation runs before compute is spent:
 
-* a fresh campaign baseline is fully validated even when the worktree carries no
-  uncommitted change, so an inconsistent starting point cannot consume training;
-* an experiment with code changes receives source validation and protected
-  boundary checks before training;
-* a parameter-only experiment validates the proposal and the effective
-  configuration only;
-* a continuation, evaluation or lineage decision without code changes reruns
-  nothing.
+* a training operation with code changes receives source validation and
+  protected boundary checks before training;
+* a parameter-only training operation validates the request and effective
+  configuration;
+* a measurement freezes evaluator or diagnostic-tool provenance;
+* a checkpoint validates and publishes the bounded session's PI-owned changes.
 
 Complete validation checks the syntax of changed Python files and runs
 `ruff check` on them, parses changed JSON documents, verifies dependency

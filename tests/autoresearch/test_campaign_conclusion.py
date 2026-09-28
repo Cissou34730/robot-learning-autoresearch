@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import sys
 from pathlib import Path
 
 import pytest
@@ -21,6 +22,7 @@ def _configure(monkeypatch, tmp_path: Path) -> dict:
         "RESULTS_PATH": research / "results.jsonl",
         "LOG_PATH": research / "EXPERIMENTS.md",
         "OPERATION_REQUEST_PATH": research / "operation_request.json",
+        "GOAL_PATH": research / "GOAL_REACHED",
     }.items():
         monkeypatch.setattr(paths, name, value)
     monkeypatch.setattr(repository, "git", lambda *args: "a" * 40 + "\n")
@@ -128,3 +130,93 @@ def test_campaign_conclusion_requires_goal_review_after_inquiry_closure(
     }
     with pytest.raises(ValueError, match="opened inquiry"):
         protocol.validate_operation_request(request, state)
+
+
+@pytest.mark.parametrize(
+    ("goal_reached", "expected_status", "goal_marker"),
+    [(True, "passed", True), (False, "failed", False)],
+)
+def test_requested_official_assessment_is_runner_owned_and_recorded(
+    monkeypatch, tmp_path, goal_reached, expected_status, goal_marker
+):
+    state = _configure(monkeypatch, tmp_path)
+    artifact = tmp_path / "archive" / "candidate"
+    artifact.mkdir(parents=True)
+    (artifact / "model.zip").write_bytes(b"model")
+    (artifact / "artifact.json").write_text("{}", encoding="utf-8")
+    (artifact / "policy_runtime.pkl").write_bytes(b"runtime")
+    candidate = {
+        "id": "T1:checkpoint-10",
+        "artifact": repository.repo_relative_path(artifact),
+        "fingerprint": repository.artifact_fingerprint(artifact),
+        "origin_operation": "T1",
+        "name": "checkpoint-10",
+        "parameters": {},
+        "scientific_commit": "b" * 40,
+        "training_steps": 10,
+        "evaluation_artifacts": [],
+    }
+    state["candidates"][candidate["id"]] = candidate
+    state["model_roles"]["best_known"] = candidate["id"]
+    repository.write_state(state)
+    request = {
+        "campaign_conclusion": {
+            "action": "request_official_assessment",
+            "reason": "The explicit best-known model is ready for assessment.",
+        }
+    }
+    run_experiment.accept_operation(request, state)
+    assert run_experiment.execute_pending_operation() == 0
+
+    observed = {}
+
+    def evaluate(model_path, *, progress_callback):
+        observed["model"] = model_path
+        observed["calls"] = observed.get("calls", 0) + 1
+        progress_callback(2, 2)
+        return {
+            "goal_reached": goal_reached,
+            "success_percent": 99.0 if goal_reached else 75.0,
+            "episodes": 200,
+        }
+
+    monkeypatch.setattr(
+        "robot_learning.scenario.final_benchmark.evaluate_final_model", evaluate
+    )
+    monkeypatch.setattr(repository, "commit_runner_memory", lambda _message: True)
+    monkeypatch.setattr(sys, "argv", ["run_experiment.py", "--run-official-assessment"])
+
+    assert run_experiment.main() == 0
+    persisted = repository.read_state()
+    assert persisted["terminal_state"]["status"] == "official_assessment_requested"
+    assert persisted["official_assessment"]["status"] == expected_status
+    assert persisted["official_assessment"]["model"] == candidate["id"]
+    assert "200 episodes" in persisted["official_assessment"]["summary"]
+    assert observed["model"] == artifact / "model.zip"
+    assert paths.GOAL_PATH.exists() is goal_marker
+    assert run_experiment.main() == 0
+    assert observed["calls"] == 1
+
+
+def test_session_start_records_launcher_max_inquiries(monkeypatch, tmp_path):
+    state = _configure(monkeypatch, tmp_path)
+    state["scientific_session"] = None
+    repository.write_state(state)
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        [
+            "run_experiment.py",
+            "--start-session",
+            "goal_review",
+            "--session-objective",
+            "Make a bounded goal decision.",
+            "--max-inquiries",
+            "7",
+        ],
+    )
+
+    assert run_experiment.main() == 0
+    persisted = repository.read_state()
+    assert persisted["campaign"]["max_inquiries"] == 7
+    assert persisted["scientific_session"]["kind"] == "goal_review"

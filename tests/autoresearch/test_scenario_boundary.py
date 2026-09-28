@@ -309,11 +309,9 @@ def test_scenario_owns_the_evaluation_summary():
         ROOT / "robot_learning" / "scenario" / "evaluation.py"
     ).read_text(encoding="utf-8")
 
-    assert any(
-        "summarize_research_evaluations" in source for source in sources.values()
-    )
     assert "def summarize_research_evaluations" in scenario_source
     for relative, source in sources.items():
+        assert "summarize_research_evaluations" not in source, relative
         assert "def summarize_evaluations" not in source, relative
 
 
@@ -363,12 +361,16 @@ def test_ordinary_research_evaluation_ignores_the_final_threshold():
     assert summary["worst_seed_success_percent"] == 97.9
 
 
-def test_compact_context_states_no_final_threshold(monkeypatch, tmp_path):
+def test_compact_context_leads_with_protected_human_goal(monkeypatch, tmp_path):
     (tmp_path / "current_params.json").write_text("{}", encoding="utf-8")
     (tmp_path / "postmortems.md").write_text("", encoding="utf-8")
     (tmp_path / "results.jsonl").write_text("", encoding="utf-8")
     state = runner_repository.empty_campaign_state(
         campaign={"id": "campaign", "started_at": "now", "base_commit": "base"},
+        human_goal={
+            "source": "research/scenario.md",
+            "summary": "The campaign objective is a learned policy with at least 98% official success.",
+        },
         last_verdict="baseline selected",
     )
     (tmp_path / "research_state.json").write_text(json.dumps(state), encoding="utf-8")
@@ -376,7 +378,10 @@ def test_compact_context_states_no_final_threshold(monkeypatch, tmp_path):
 
     brief = render_research_brief()
 
-    assert "Lifecycle operation: inquiry choice" in brief
+    assert "## Human goal" in brief
+    assert "campaign objective is a learned policy" in brief
+    assert "## Best evidence relative to the goal" in brief
+    assert "## Current goal gap" in brief
     assert "seeds passing" not in brief.lower()
     assert "failed episodes" not in brief.lower()
 
@@ -420,22 +425,22 @@ def test_every_runner_module_is_human_owned():
 def test_scenario_files_participate_in_normal_code_lineage(monkeypatch):
     from research import runner_protocol
 
-    monkeypatch.setattr("research.runner_paths.ROOT", ROOT)
     monkeypatch.setattr(
-        "research.runner_repository.git",
-        lambda *args: "robot_learning/scenario/reward.py\n",
+        "research.runner_repository.require_resolvable_commit", lambda _commit: None
+    )
+    monkeypatch.setattr(
+        "research.runner_repository.scientific_delta",
+        lambda _commit: [
+            "robot_learning/scenario/reward.py",
+            "robot_learning/scenario/observations.py",
+        ],
+    )
+    monkeypatch.setattr(
+        "research.runner_repository.tracked_at_commit",
+        lambda _commit, _path: True,
     )
 
-    plan = runner_protocol.plan_code_lineage_decision(
-        {
-            "code_parent_commit": "abc123",
-            "research_change_paths": [
-                "robot_learning/scenario/reward.py",
-                "robot_learning/scenario/observations.py",
-            ],
-        },
-        "revert",
-    )
+    plan = runner_protocol.plan_recipe_paths("abc123")
 
     assert plan["restore"] == [
         "robot_learning/scenario/reward.py",

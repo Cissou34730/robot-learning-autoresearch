@@ -29,6 +29,7 @@ RUNNER_MEMORY_PATHS = {
     "research/results.jsonl",
     "research/EXPERIMENTS.md",
     "research/scientific_model.md",
+    "research/GOAL_REACHED",
 }
 RUNNER_MEMORY_PREFIXES = (
     "research/evaluations/",

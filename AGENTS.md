@@ -3,22 +3,22 @@
 Repository operational contract: environment, commands, layout, ownership,
 validation and Git conventions.
 
-The Researcher protocol is defined in `research/program.md`, the current task in
+The PI lifecycle is described in `research/program.md`, the current task in
 `research/scenario.md`, and the available capability surface in
 `research/instruments.md`.
 
 ## Environment
 
 This repository uses a fixed Python stack built around MuJoCo, Gymnasium and
-Stable-Baselines3. Dependencies are human-owned: the Researcher may use the
+Stable-Baselines3. Dependencies are human-owned: the PI may use the
 installed stack but may not install packages or modify `pyproject.toml` or
 `uv.lock`.
 
 The locked runtime APIs are native `mujoco==3.12.0` (not legacy `mujoco-py`),
-`gymnasium==1.3.0` and `stable-baselines3==2.9.0`. Researcher-owned integrations
+`gymnasium==1.3.0` and `stable-baselines3==2.9.0`. PI-owned integrations
 must target those packages and versions.
 
-`jello` is available through the researcher environment for JSON and JSONL artifacts.
+`jello` is available through the PI environment for JSON and JSONL artifacts.
 
 All project Python execution goes through `uv run`. Never invoke system
 `python`, `python3`, `pytest` or `ruff`, or the interpreter inside `.venv`.
@@ -40,10 +40,11 @@ uv run pytest                            # Runner: complete test suite
 uv run pytest tests/e2e                  # Human: slow end-to-end lifecycle suite
 uv run python tools/campaign_report.py   # Human: factual campaign / bias report
 .\reset_research.ps1 -Mode Fresh -Force  # Human: reset campaign, preserve science
+.\run_research.ps1 -MaxInquiries 15      # Human: launch bounded PI sessions
 ```
 
 The human may add `-RecipeRef <git-ref>` to `Fresh` to restore the complete
-researcher-owned scientific surface from one resolved commit before creating an
+PI-owned scientific surface from one resolved commit before creating an
 empty campaign in the current schema. This imports no trained policy or
 evidence. `Baseline` is the
 separate operation for restoring a prepared experiment-1 policy and its evidence.
@@ -53,7 +54,7 @@ administrative path and support linked worktrees.
 Failed resets are restored with the human-only `-Recover <operation.json>
 -Force` operation, which validates the recorded manifest before writing.
 
-The Researcher session may inspect files and, when the current phase
+The PI session may inspect files and, when the current bounded objective
 requires understanding code state or a code delta, use read-only Git. It may
 edit its owned surface, run lightweight analysis, and run targeted tests. It may
 not execute training, the generic evaluator, the viewer, the Runner, the final
@@ -62,7 +63,7 @@ commands. The exact available operations are cataloged in
 `research/instruments.md`.
 
 Legacy policy migration through `research/migrate_policy_runtime.py` is a
-human-only maintenance operation, never a Researcher experiment command.
+human-only maintenance operation, never a PI operation.
 
 ## Layout
 
@@ -71,7 +72,7 @@ human-only maintenance operation, never a Researcher experiment command.
 - `robot_learning/scenario/` - current scenario implementation and scientific
   measurement code, with protected adapters to the human-owned panels. The
   protected `scenario/__init__.py` is a minimal package initializer, not a
-  scientific extension point; researcher-owned scenario modules import each
+  scientific extension point; PI-owned scenario modules import each
   other directly.
 - `robot_learning/training/` - learning-method implementation and artifact
   support.
@@ -81,23 +82,20 @@ human-only maintenance operation, never a Researcher experiment command.
 - `research/runner_*.py` - Runner protocol, execution, persistence, paths and
   console implementation.
 - `research/current_params.json` - active runtime configuration overrides.
-- `research/results.jsonl` - authoritative experiment and inquiry history.
+- `research/results.jsonl` - authoritative schema-6 operation-event history.
 - `research/EXPERIMENTS.md` - generated human-readable history.
-- `research/brief.md` - generated current Researcher context.
-- `research/scientific_model.md` - campaign-start Researcher model of the robot
+- `research/brief.md` - generated current PI context.
+- `research/scientific_model.md` - campaign-start PI model of the robot
   and task, frozen after the preliminary phase and regenerated on fresh reset.
-- `research/lab/` - campaign-scoped Researcher laboratory tools and analyses,
+- `research/lab/` - campaign-scoped PI laboratory tools and analyses,
   published independently from policy/training recipes and removed by reset.
 - `research/evaluations/` - durable detailed development measurements.
-- `research/checkpoints/accepted/` and `research/checkpoints/retained/` - durable
-  reusable policy lineages. Campaign state names independent
-  `working_lineage`, `best_known_lineage`, active-method lineage, and retained
-  IDs; selected candidates are published under the campaign-scoped retained
-  archive before cleanup.
+- `research/checkpoints/candidates/` and `research/checkpoints/retained/` -
+  archived training candidates and durable explicitly assigned model roles.
 - `models/candidates/` - disposable training candidates.
 - `tools/campaign_report.py` - human-only campaign decision and usage report.
 - `reports/` - ignored human reports and campaign-scoped aggregate session usage;
-  never injected into Researcher context. Usage survives reset under its original
+  never injected into PI context. Usage survives reset under its original
   campaign ID and is not scientific history in `research/results.jsonl`.
 - `tests/benchmark/`, `tests/autoresearch/` - human-owned task and harness tests.
 - `tests/e2e/` - human-owned end-to-end lifecycle checks that drive real Git
@@ -107,11 +105,11 @@ human-only maintenance operation, never a Researcher experiment command.
 
 ## Human-owned paths
 
-The Researcher may read but not modify these paths through an experiment:
+The PI may read but not modify these paths during a scientific session:
 
 - `AGENTS.md`, `research/program.md`, `research/scenario.md`,
   `research/instruments.md`, `research/scientific_model.md` (after its
-  campaign-start Researcher session);
+  campaign-start PI session);
 - `run_research.ps1`, `researcher_mutex.ps1`, `researcher_session.ps1`,
   `researcher_copilot.py`;
 - `tools/campaign_report.py`;
@@ -126,13 +124,13 @@ The Researcher may read but not modify these paths through an experiment:
   `robot_learning/scenario/__init__.py` (minimal protected package initializer);
 - `robot_learning/scenario/final_benchmark.py` and
   `robot_learning/scenario/task_reference.py`;
-- `tests/` - every test path; the Researcher does not create, modify or maintain
+- `tests/` - every test path; the PI does not create, modify or maintain
   test files.
 
 Protection is enforced centrally by `research/runner_protocol.py`. A protected
-path takes precedence over any researcher-owned prefix.
+path takes precedence over any PI-owned prefix.
 
-## Researcher-owned paths
+## PI-owned paths
 
 - `robot_learning/scenario/`, except the protected files above;
 - `robot_learning/training/`;
@@ -140,22 +138,20 @@ path takes precedence over any researcher-owned prefix.
   `robot_learning/play.py`;
 - `research/current_params.json`;
 - `research/lab/`;
-- the preliminary phase deliverable `research/scientific_model.md` (only before
-  baseline training); the later phase deliverables `research/proposal.json`,
-  `research/evaluation_request.json` and `research/postmortems.md`. During
-  post-training analysis, exactly one actionable request is submitted: a
-  measurement request, a `baseline_decision` for the baseline, or one
-  `method_decision` with its postmortem.
+- the preliminary deliverable `research/scientific_model.md` (only while its
+  schema-6 state is `pending`);
+- `research/operation_request.json`, containing exactly one schema-6 Runner
+  operation request while a bounded scientific session is active.
 
-Within this surface, the Researcher has unrestricted scientific authority.
+Within this surface, the PI has unrestricted scientific authority.
 Nothing is sacred, preferred, required to remain recognizable, or exempt from
-replacement. It may create, rewrite, combine, or remove researcher-owned
+replacement. It may create, rewrite, combine, or remove PI-owned
 implementations and tools; the existing architecture carries no authority.
 
-Tests are not part of the Researcher-owned surface. The Researcher does not
+Tests are not part of the PI-owned surface. The PI does not
 create, modify or maintain test files, and any path under `tests/` in its delta
 is rejected as a path it does not own: it must drop those paths from the
-proposal rather than edit or restore them.
+operation rather than edit or restore them.
 
 Durable campaign analysis and diagnostic tooling belongs under `research/lab/`.
 The Runner publishes it with a separate manifest, fingerprint and commit. It is
@@ -168,11 +164,10 @@ in the scenario/training surface and travel with policy recipe lineage.
 Do not run repository-wide lint or format passes. Format only touched files.
 
 The Runner validates changed Python syntax with `ruff check`, parses changed JSON
-files, and runs selected human-owned pytest suites. A fresh baseline runs the
-benchmark and targeted AutoResearch boundary checks. Researcher-owned code
-changes run only the targeted AutoResearch boundary checks; parameter-only
-proposals and decisions without code changes run no suites. The Researcher never
-authors, modifies or maintains test files; tests are not part of its surface.
+files, and runs selected human-owned pytest suites. PI-owned code changes run
+only the targeted AutoResearch boundary checks; parameter-only operations run no
+suites. The PI never authors, modifies or maintains test files; tests are not
+part of its surface.
 
 Tests assert the behavior owned by their domain. Human-owned benchmark and
 AutoResearch tests remain method-neutral. Architecture guards derive the
@@ -182,52 +177,43 @@ complete runner run belongs in `tests/e2e/`, never in a campaign-time domain.
 
 ## Persistence and Git
 
-The campaign artifacts, especially `research/brief.md`, are the authoritative
-sources of scientific evidence. The Researcher must not use Git history as
+The campaign artifacts, especially `research/brief.md` and the durable PI
+checkpoint, are the authoritative sources of scientific evidence. The PI must
+not use Git history as
 scientific evidence or as a routine workspace-discovery mechanism.
 
-The Runner owns mutating Git operations, experiment code anchoring,
+The Runner owns mutating Git operations, scientific-recipe publication,
 restoration, Git-based provenance, commits and repository history management.
-The Researcher has read-only Git access solely for code provenance and code
+The PI has read-only Git access solely for code provenance and code
 inspection when the current task specifically requires understanding the
-experiment's current code state or delta. It requests restoration through the
-existing keep / revert lineage contract; it does not reconstruct ancestry or
-select restoration commits.
+current code state or delta. It requests restoration through the schema-6
+`restore_recipe` operation naming a saved candidate; it does not reconstruct
+ancestry or select restoration commits.
 
 Automated campaign commits use the `camp: ` subject prefix. Ordinary code,
 harness and documentation commits must not use that prefix.
 
 `research/results.jsonl` is written before `research/EXPERIMENTS.md` is
-regenerated atomically. It contains both experiment records and measurement-only
-inquiry outcomes. Validation-only commands do not reconcile or mutate the
-derived view. Researcher-owned scientific code travels in the experiment's
-`code_changes` and Git lineage; tests never do, because the Researcher does not
-own them.
+regenerated atomically. It contains completed schema-6 operation events.
+Validation-only commands do not reconcile or mutate the derived view. PI-owned
+scientific code is published with training, PI-authored measurement tools, or a
+session checkpoint; tests never travel with it.
 
-An accepted training operation and each completed candidate remain recoverable
-until candidate archival, the experiment result, and `pending_analysis` are
-durable. Restart reuses completed or archived candidates instead of allocating
-another experiment or training them again.
+One `pending_operation` transaction freezes each accepted
+`research/operation_request.json`. Measurement and training results return to
+the same active bounded scientific session. A checkpoint publishes the current
+PI-owned scientific surface, records the session's synthesis and evidence
+references, and ends the session. Later work starts a fresh backend session from
+durable state; no campaign-long conversation identity is persisted.
 
-Each inquiry owns one principal-investigator session from allocation through
-its measurements, training, post-training analysis, method decisions and
-maturity; closing the inquiry clears that session. An active method has one
-`lifecycle` field (`concept`, `development`, `mature`, `promoted`, `retained`
-or `abandoned`) and every transition is one `method_decision`, published
-restart-safely through `pending_method_decision`.
+Training, measurement, inquiry, checkpoint, model-role, recipe-restoration and
+campaign-conclusion operations are peers. Training never creates a privileged
+analysis phase, forces evaluation, or changes model roles. Working,
+best-known and retained roles are independent explicit PI designations backed
+by completed operation evidence.
 
-Method-decision publication preserves every selected active, working or
-best-known candidate in
-`research/checkpoints/retained/<campaign-id>/` before candidate cleanup and
-commits the artifact with the state that references it. A retained inference
-artifact consists of `model.zip`, `artifact.json` and `policy_runtime.pkl`;
-preprocessing state and its per-episode reset behavior are part of that saved
-runtime contract. Active-method, working, best-known and retained lineages are
-independent Researcher designations, not Runner rankings.
-
-An unchanged continuation restores the selected parent's complete scientific
-recipe and configuration before validation and training. An ordinary transfer
-experiment may instead combine a selected policy with the intentionally changed
-current science. Historical development evidence may be reused only when policy
-identity and evaluation settings match; whether it supports a comparison remains
-the Researcher's decision.
+`MaxInquiries` defaults to 15 and limits only creation of another inquiry. It is
+not a training cap, scientific stopping rule or automatic campaign judgment.
+The official assessment is a Runner-owned transition after an explicit PI
+request and records a terminal passed or failed result. A PI may instead record
+the terminal conclusion that no credible route remains.

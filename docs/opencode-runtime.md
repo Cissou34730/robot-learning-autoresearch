@@ -1,6 +1,6 @@
-# The OpenCode Researcher runtime
+# The OpenCode PI runtime
 
-An optional second runtime for a bounded Researcher session.
+An optional second runtime for a bounded PI session.
 
 `researcher_copilot.py` is unchanged and remains the default. The OpenCode
 runtime lives beside it and is selected explicitly, so an existing command
@@ -12,8 +12,8 @@ chooses between them.
 
 ```powershell
 .\run_research.ps1                                   # Copilot (default)
-.\run_research.ps1 -ResearcherBackend opencode       # OpenCode, its default model
-.\run_research.ps1 -ResearcherBackend opencode -Model opencode-go/kimi-k3
+.\run_research.ps1 -PIBackend opencode       # OpenCode, its default model
+.\run_research.ps1 -PIBackend opencode -Model opencode-go/kimi-k3
 ```
 
 Each runtime carries its own default model, because a model identifier is only
@@ -91,13 +91,14 @@ derived from the adapter's source location.
 
 The PowerShell launcher starts one loopback server on a dynamically assigned
 port before entering the campaign loop and stops it in the launcher's outer
-`finally` block. Every phase adapter receives that server URL, so server startup
-and model initialization happen once per campaign rather than once per phase.
+`finally` block. Every PI-session invocation receives that server URL, so server
+startup and model initialization happen once per launcher invocation rather
+than once per scientific operation.
 The worktree-scoped launcher mutex gives each active worktree its own server,
 and persisted OpenCode history is left intact.
 
-Each phase still owns its SDK event subscription and streams events directly to
-the console. Phase shutdown explicitly aborts and drains that subscription but
+Each PI-session invocation still owns its SDK event subscription and streams
+events directly to the console. Invocation shutdown explicitly aborts and drains that subscription but
 does not close the campaign server. This prevents a completed SSE read from
 retaining Node handles after the session summary and blocking deliverable
 validation.
@@ -141,15 +142,19 @@ value.
 
 ## Session identity and resume
 
-The launcher owns the phase identity and creates one UUID per phase, reusing it on
-retry. OpenCode assigns its own session ids, so the mapping is recorded in
+The launcher creates one backend UUID per active bounded scientific session and
+reuses it across that session's Runner round trips and validation corrections.
+It does not persist the UUID in campaign state. OpenCode assigns its own session
+ids, so the adapter mapping is recorded in
 `reports/opencode-sessions.json` (ignored, never committed, never injected into
-Researcher context). The mapping is written before the first prompt.
+PI context). The mapping is written before the first prompt.
 
-A resume requires that mapping and validates the recorded worktree, model and
-reasoning effort. A missing, mismatched or cross-worktree mapping is an explicit
-failure: the runtime never falls back to the most recent session, and it never
-resumes a Copilot session.
+A same-launcher resume requires that mapping and validates the recorded
+worktree, model and reasoning effort. A missing, mismatched or cross-worktree
+mapping is an explicit failure: the runtime never falls back to the most recent
+session, and it never resumes a Copilot session. A later launcher invocation
+starts a fresh backend session from the durable PI checkpoint and schema-6
+state.
 
 ## Console
 
@@ -183,7 +188,7 @@ Accounting failure never changes the exit code or invalidates a deliverable.
 ## Guardrails
 
 The command policy is a faithful port of the Copilot adapter's, with the same
-denial messages: no experiment execution, no mutating Git, no repository-wide
+denial messages: no Runner operation execution, no mutating Git, no repository-wide
 pytest, no dependency management. Reading or grepping a protected path remains
 ordinary research.
 
