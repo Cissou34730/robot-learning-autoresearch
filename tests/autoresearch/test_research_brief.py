@@ -169,6 +169,44 @@ def test_operation_feedback_is_factual_and_operation_specific():
     assert "robot_learning/training/algorithm.py" in training_lines
 
 
+def test_failed_and_superseded_attempts_are_history_not_evidence(
+    monkeypatch, tmp_path: Path
+):
+    research = tmp_path / "research"
+    research.mkdir()
+    state = _state()
+    completed = state["operation_events"][0]
+    completed["supersedes"] = "E0"
+    failed = {
+        **completed,
+        "id": "E0",
+        "result": {"status": "failed", "error": "injected failure"},
+        "status": "failed",
+        "error": "injected failure",
+        "supersedes": None,
+        "superseded_by": "E1",
+    }
+    state["operation_events"] = [failed, completed]
+    state["counters"]["event"] = 2
+    (research / "research_state.json").write_text(json.dumps(state), encoding="utf-8")
+    monkeypatch.setattr(brief, "RESEARCH_DIR", research)
+
+    text = brief.render_research_brief()
+    evidence = text.split("### Completed operation evidence", 1)[1].split(
+        "### Execution history", 1
+    )[0]
+    history = text.split("### Execution history (not evidence)", 1)[1].split(
+        "## Strategic resource use", 1
+    )[0]
+
+    assert "`E1` `inquiry`" in evidence
+    assert "`E0`" not in evidence
+    assert "`E0` `inquiry` failed: injected failure; superseded by `E1`." in history
+    assert "- Completed other lifecycle operations: 1." in text
+    assert "- Failed operation attempts: 1; superseded attempts: 1." in text
+    assert "completed or allocated" not in text
+
+
 def test_brief_rejects_non_schema6_state(monkeypatch, tmp_path: Path):
     research = tmp_path / "research"
     research.mkdir()

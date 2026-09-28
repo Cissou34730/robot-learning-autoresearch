@@ -306,8 +306,16 @@ def _candidate_lines(state: dict) -> list[str]:
     return lines
 
 
+def _completed_events(state: dict) -> list[dict]:
+    return [
+        event
+        for event in state["operation_events"]
+        if event.get("status") == "completed"
+    ]
+
+
 def _event_lines(state: dict) -> list[str]:
-    events = state["operation_events"]
+    events = _completed_events(state)
     if not events:
         return ["- No completed operations."]
     lines = []
@@ -331,6 +339,35 @@ def _event_lines(state: dict) -> list[str]:
     return lines
 
 
+def _execution_history_lines(state: dict) -> list[str]:
+    failed = [
+        event for event in state["operation_events"] if event.get("status") == "failed"
+    ]
+    lines: list[str] = []
+    if len(failed) > 40:
+        lines.append(
+            f"- {len(failed) - 40} earlier failed attempts remain in "
+            "`research/results.jsonl`."
+        )
+    for event in failed[-40:]:
+        retry = (
+            f"; superseded by `{event['superseded_by']}`"
+            if event.get("superseded_by")
+            else "; not yet superseded"
+        )
+        lines.append(
+            f"- `{event['id']}` `{event['kind']}` failed: "
+            f"{_compact(event.get('error'))}{retry}."
+        )
+    pending = state["pending_operation"]
+    if isinstance(pending, dict) and pending.get("failure"):
+        lines.append(
+            f"- Pending `{pending['id']}` `{pending['kind']}` failed and awaits "
+            f"repair: {_compact(pending['failure'])}."
+        )
+    return lines or ["- No failed attempts."]
+
+
 def render_research_brief() -> str:
     state_path = RESEARCH_DIR / "research_state.json"
     if not state_path.is_file():
@@ -341,6 +378,20 @@ def render_research_brief() -> str:
     pending = state["pending_operation"]
     terminal = state["terminal_state"]
     campaign = state["campaign"]
+    completed_events = _completed_events(state)
+    completed_measurements = sum(
+        event["kind"] == "measurement" for event in completed_events
+    )
+    completed_training = sum(event["kind"] == "training" for event in completed_events)
+    completed_other = (
+        len(completed_events) - completed_measurements - completed_training
+    )
+    failed_events = [
+        event for event in state["operation_events"] if event.get("status") == "failed"
+    ]
+    superseded_attempts = sum(
+        event.get("superseded_by") is not None for event in failed_events
+    )
     lines = [
         "# Research brief",
         "",
@@ -378,6 +429,10 @@ def render_research_brief() -> str:
         "",
         *_event_lines(state),
         "",
+        "### Execution history (not evidence)",
+        "",
+        *_execution_history_lines(state),
+        "",
         "## Strategic resource use",
         "",
         (
@@ -385,14 +440,12 @@ def render_research_brief() -> str:
             f"{campaign['max_inquiries']} unattended maximum."
         ),
         f"- Scientific sessions started: {state['counters']['session']}.",
+        f"- Completed measurement operations: {completed_measurements}.",
+        f"- Completed training operations: {completed_training}.",
+        f"- Completed other lifecycle operations: {completed_other}.",
         (
-            f"- Measurement operations completed or allocated: "
-            f"{state['counters']['measurement']}."
-        ),
-        f"- Training operations completed or allocated: {state['counters']['training']}.",
-        (
-            f"- Other lifecycle operations completed or allocated: "
-            f"{state['counters']['event']}."
+            f"- Failed operation attempts: {len(failed_events)}; "
+            f"superseded attempts: {superseded_attempts}."
         ),
         f"- Candidate artifacts available: {len(state['candidates'])}.",
         "",

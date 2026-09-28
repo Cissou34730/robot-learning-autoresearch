@@ -194,7 +194,9 @@ Automated campaign commits use the `camp: ` subject prefix. Ordinary code,
 harness and documentation commits must not use that prefix.
 
 `research/results.jsonl` is written before `research/EXPERIMENTS.md` is
-regenerated atomically. It contains completed schema-6 operation events.
+regenerated atomically. It contains schema-6 operation execution history;
+only events whose status is `completed` are scientific evidence. Failed and
+superseded attempts remain visible as execution history, never evidence.
 Validation-only commands do not reconcile or mutate the derived view. PI-owned
 scientific code is published with training, PI-authored measurement tools, or a
 session checkpoint; tests never travel with it.

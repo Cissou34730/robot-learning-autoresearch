@@ -126,6 +126,11 @@ DEPENDENCY_DENIAL = (
     "installed environment without installing, removing, syncing or locking packages."
 )
 
+FILE_EDIT_DENIAL = (
+    "Denied by the harness: direct edits are limited to the PI-owned scientific "
+    "surface declared in AGENTS.md."
+)
+
 RESERVED_SCRIPT_NAMES = (
     "run_experiment.py",
     "runner_assessment.py",
@@ -296,6 +301,10 @@ instead of retrying the same command.
     restore_recipe operation to restore a saved candidate recipe.
 - Tests are human-owned. Never create, modify, delete, or restore files under
     tests/.
+- File-write permissions with an explicit target are rejected outside the
+    PI-owned scientific surface. If a runtime permission does not identify its
+    target safely, the launcher verifies the complete tracked/untracked delta
+    before loading Runner or adapter code.
 - Repository-wide pytest execution belongs to the runner. Targeted tests and
   focused checks on PI-owned code remain permitted instruments.
 - During an active schema-6 scientific session, write exactly one operation to
@@ -330,6 +339,52 @@ def policy_for_context(preliminary: bool) -> str:
 def normalize_model(model: str) -> str:
     """OpenCode named the provider inside the model; the SDK names only the model."""
     return model.split("/", 1)[1] if "/" in model else model
+
+
+def _repository_relative_target(target: str) -> str | None:
+    if not isinstance(target, str) or not target.strip():
+        return None
+    path = Path(target.strip())
+    if not path.is_absolute():
+        path = ROOT / path
+    try:
+        return path.resolve().relative_to(ROOT.resolve()).as_posix().casefold()
+    except ValueError:
+        return None
+
+
+def is_pi_writable_path(target: str, *, preliminary: bool = False) -> bool:
+    relative = _repository_relative_target(target)
+    if relative is None:
+        return False
+    protected_scenario = {
+        "robot_learning/scenario/__init__.py",
+        "robot_learning/scenario/final_benchmark.py",
+        "robot_learning/scenario/task_reference.py",
+    }
+    if relative in protected_scenario:
+        return False
+    if preliminary:
+        return relative == "research/scientific_model.md"
+    return relative in {
+        "robot_learning/train.py",
+        "robot_learning/evaluate.py",
+        "robot_learning/play.py",
+        "research/current_params.json",
+        "research/operation_request.json",
+    } or relative.startswith(
+        (
+            "robot_learning/scenario/",
+            "robot_learning/training/",
+            "research/lab/",
+        )
+    )
+
+
+def file_edit_denial(target: str, *, preliminary: bool = False) -> str | None:
+    if is_pi_writable_path(target, preliminary=preliminary):
+        return None
+    return FILE_EDIT_DENIAL
 
 
 def thousands(count: int) -> str:
@@ -374,9 +429,7 @@ def _uv_option_span(token: str, flag_options: frozenset[str]) -> int:
 
 def _command_name(token: str) -> str:
     return (
-        Path(clean_command_token(token).strip("&."))
-        .name.lower()
-        .removesuffix(".exe")
+        Path(clean_command_token(token).strip("&.")).name.lower().removesuffix(".exe")
     )
 
 
@@ -711,10 +764,7 @@ def is_dependency_management(tokens: list[str]) -> bool:
             return True
         if operation == "run":
             run_arguments = lowered[subcommand_index + 1 :]
-            if any(
-                token.startswith(("--with", "-w"))
-                for token in run_arguments
-            ):
+            if any(token.startswith(("--with", "-w")) for token in run_arguments):
                 return True
             return is_dependency_management(strip_launcher_prefix(tokens))
     if executable in {"pip", "pip3", "pipx"}:
@@ -1080,7 +1130,9 @@ class Console:
         )
 
 
-def build_handlers(console: Console, finished: asyncio.Event):
+def build_handlers(
+    console: Console, finished: asyncio.Event, *, preliminary: bool = False
+):
     from copilot.rpc import PermissionDecisionApproveOnce, PermissionDecisionReject
     from copilot.session_events import (
         AssistantMessageData,
@@ -1089,6 +1141,7 @@ def build_handlers(console: Console, finished: asyncio.Event):
         AssistantTurnStartData,
         AssistantUsageData,
         PermissionRequestShell,
+        PermissionRequestWrite,
         SessionErrorData,
         SessionIdleData,
         SessionWorkspaceFileChangedData,
@@ -1153,7 +1206,15 @@ def build_handlers(console: Console, finished: asyncio.Event):
 
     def on_permission_request(request, invocation):
         del invocation
-        if isinstance(request, PermissionRequestShell):
+        if isinstance(request, PermissionRequestWrite):
+            reason = file_edit_denial(
+                request.file_name,
+                preliminary=preliminary,
+            )
+            if reason:
+                console.denied(reason, getattr(request, "tool_call_id", None))
+                return PermissionDecisionReject(feedback=reason)
+        elif isinstance(request, PermissionRequestShell):
             reason = command_denial(shell_command_text(request))
             if reason:
                 console.denied(reason, getattr(request, "tool_call_id", None))
@@ -1166,7 +1227,9 @@ def build_handlers(console: Console, finished: asyncio.Event):
 def session_options(args, console: Console, finished: asyncio.Event) -> dict:
     from copilot import ToolSet
 
-    on_event, on_permission_request = build_handlers(console, finished)
+    on_event, on_permission_request = build_handlers(
+        console, finished, preliminary=args.preliminary
+    )
     return {
         "model": normalize_model(args.model),
         "reasoning_effort": args.reasoning,

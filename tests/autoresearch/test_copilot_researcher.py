@@ -178,8 +178,7 @@ def test_a_repository_wide_test_run_is_refused():
 )
 def test_uv_run_value_less_flags_do_not_hide_denied_commands(flag):
     assert (
-        adapter.command_denial(f"uv run {flag} git commit -m x")
-        == adapter.GIT_DENIAL
+        adapter.command_denial(f"uv run {flag} git commit -m x") == adapter.GIT_DENIAL
     )
     assert adapter.command_denial(f"uv run {flag} pytest") == adapter.SUITE_DENIAL
 
@@ -934,6 +933,49 @@ def test_a_refused_shell_call_answers_with_a_rejection(capsys):
     assert "restore_recipe" in decision.feedback
     assert "call-3" in console.denied_calls
     capsys.readouterr()
+
+
+def test_write_permissions_enforce_the_pi_owned_surface(capsys):
+    pytest.importorskip("copilot")
+    from copilot.rpc import PermissionDecisionApproveOnce, PermissionDecisionReject
+    from copilot.session_events import PermissionRequestWrite
+
+    console = adapter.Console()
+    _, on_permission = adapter.build_handlers(console, asyncio.Event())
+
+    allowed = PermissionRequestWrite(
+        can_offer_session_approval=False,
+        diff="",
+        file_name="robot_learning/training/algorithms.py",
+        intention="scientific edit",
+        tool_call_id="write-allowed",
+    )
+    denied = PermissionRequestWrite(
+        can_offer_session_approval=False,
+        diff="",
+        file_name="research/run_experiment.py",
+        intention="runner edit",
+        tool_call_id="write-denied",
+    )
+
+    assert isinstance(on_permission(allowed, {}), PermissionDecisionApproveOnce)
+    decision = on_permission(denied, {})
+    assert isinstance(decision, PermissionDecisionReject)
+    assert decision.feedback == adapter.FILE_EDIT_DENIAL
+    assert "write-denied" in console.denied_calls
+    capsys.readouterr()
+
+
+def test_preliminary_write_permission_only_allows_the_scientific_model():
+    assert (
+        adapter.file_edit_denial("research/scientific_model.md", preliminary=True)
+        is None
+    )
+    assert (
+        adapter.file_edit_denial("research/operation_request.json", preliminary=True)
+        == adapter.FILE_EDIT_DENIAL
+    )
+    assert adapter.file_edit_denial("research/operation_request.json") is None
 
 
 # --- the session profile ----------------------------------------------------

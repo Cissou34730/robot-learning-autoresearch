@@ -31,7 +31,7 @@ import {
 import { REASONING_EFFORTS, splitModel, type AdapterArgs } from "./args.ts";
 import type { Console, FileOperation } from "./console.ts";
 import { changedSince, worktreeStatus } from "./git.ts";
-import { commandDenial, permissionCommandText } from "./policy.ts";
+import { permissionDenial } from "./policy.ts";
 import {
   getEntry,
   mappingRejection,
@@ -98,6 +98,10 @@ ${CAMPAIGN_CONTEXT_GUIDANCE}
   restore_recipe operation to restore a saved candidate recipe.
 - Tests are human-owned. Never create, modify, delete, or restore files under
   tests/.
+- File-write permissions with an explicit target are rejected outside the
+  PI-owned scientific surface. If a runtime permission does not identify its
+  target safely, the launcher verifies the complete tracked/untracked delta
+  before loading Runner or adapter code.
 - Repository-wide pytest execution belongs to the runner. Targeted tests and
   focused checks on PI-owned code remain permitted instruments.
 - During an active schema-6 scientific session, write exactly one operation to
@@ -475,9 +479,9 @@ async function answerPermission(
     metadata?: Record<string, unknown>;
     callID?: string;
   },
+  preliminary: boolean,
 ): Promise<void> {
-  const commandText = permissionCommandText(permission);
-  const reason = commandText ? commandDenial(commandText) : null;
+  const reason = permissionDenial(permission, preliminary);
   if (reason) {
     console.denied(reason, permission.callID ?? null);
   }
@@ -707,19 +711,25 @@ export async function run(args: AdapterArgs, console: Console): Promise<RunResul
         case "permission.updated": {
           const permission = event.properties;
           if (permission.sessionID !== sessionID) return;
-          void answerPermission(client, sessionID, console, permission);
+          void answerPermission(client, sessionID, console, permission, args.preliminary);
           return;
         }
         case "permission.asked": {
           const permission = event.properties;
           if (permission.sessionID !== sessionID) return;
-          void answerPermission(client, sessionID, console, {
-            id: permission.id,
-            type: permission.permission,
-            pattern: permission.patterns,
-            metadata: permission.metadata,
-            callID: permission.tool?.callID,
-          });
+          void answerPermission(
+            client,
+            sessionID,
+            console,
+            {
+              id: permission.id,
+              type: permission.permission,
+              pattern: permission.patterns,
+              metadata: permission.metadata,
+              callID: permission.tool?.callID,
+            },
+            args.preliminary,
+          );
           return;
         }
         case "file.watcher.updated": {

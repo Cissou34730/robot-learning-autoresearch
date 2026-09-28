@@ -175,7 +175,7 @@ it does not allocate a second training identity.
     "human_goal_connection": "<non-empty string>",
     "current_goal_gap": "<non-empty string>",
     "current_synthesis": "<non-empty string>",
-    "evidence_references": ["M1", "research/evaluations/<campaign>/detail.json"],
+    "evidence_references": ["M1"],
     "decision_frontier": "<non-empty string>",
     "completed_operations": ["M1", "T1"],
     "candidates_and_roles": "<non-empty string>",
@@ -186,8 +186,9 @@ it does not allocate a second training identity.
 ```
 
 `completed_operations` exactly matches the active session's completed operation
-IDs. Each evidence reference is either a completed operation ID or an existing
-repository-relative file. The Runner publishes the session's PI-owned
+IDs. Every evidence reference is the ID of an operation event whose status is
+`completed`. Artifact paths are outputs of those operations, not independent
+evidence references. The Runner publishes the session's PI-owned
 scientific surface, stores the checkpoint with its commit and session/inquiry
 identity, and clears the active scientific session.
 

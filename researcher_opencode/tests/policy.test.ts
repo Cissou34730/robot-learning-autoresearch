@@ -5,8 +5,12 @@ import {
   commandDenial,
   DEPENDENCY_DENIAL,
   EXECUTION_DENIAL,
+  FILE_EDIT_DENIAL,
   GIT_DENIAL,
+  permissionDenial,
   permissionCommandText,
+  permissionEditDenial,
+  permissionEditTargets,
   SUITE_DENIAL,
 } from "../src/policy.ts";
 
@@ -151,12 +155,56 @@ test("every segment is judged, not just the first", () => {
 });
 
 test("a non-shell permission is never judged as a command", () => {
-  // An edit of a researcher-owned file merely names a reserved script name.
+  // Edit permissions are handled by the path policy, not command parsing.
   assert.equal(permissionCommandText({ type: "edit", title: "robot_learning/train.py" }), "");
   assert.equal(
     permissionCommandText({ type: "external_directory", pattern: "C:/elsewhere" }),
     "",
   );
+});
+
+test("explicit edit targets enforce the PI-owned surface", () => {
+  assert.deepEqual(
+    permissionEditTargets({
+      type: "edit",
+      pattern: ["robot_learning/training/algorithms.py"],
+    }),
+    ["robot_learning/training/algorithms.py"],
+  );
+  assert.equal(
+    permissionEditDenial({
+      type: "edit",
+      pattern: ["robot_learning/training/algorithms.py"],
+    }),
+    null,
+  );
+  assert.equal(
+    permissionEditDenial({
+      type: "edit",
+      metadata: { filePath: "research/run_experiment.py" },
+    }),
+    FILE_EDIT_DENIAL,
+  );
+  assert.equal(
+    permissionEditDenial(
+      { type: "write", pattern: ["research/scientific_model.md"] },
+      true,
+    ),
+    null,
+  );
+  assert.equal(
+    permissionEditDenial(
+      { type: "write", pattern: ["research/operation_request.json"] },
+      true,
+    ),
+    FILE_EDIT_DENIAL,
+  );
+});
+
+test("opaque edit permissions defer to the launcher gate", () => {
+  const permission = { type: "edit", title: "modify a file" };
+  assert.deepEqual(permissionEditTargets(permission), []);
+  assert.equal(permissionDenial(permission), null);
 });
 
 test("a shell permission yields the command it will run", () => {

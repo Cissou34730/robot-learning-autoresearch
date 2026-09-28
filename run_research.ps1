@@ -35,6 +35,9 @@ $script:PISessionId = $null
 $script:PISessionStateId = $null
 $script:PISessionInvocation = 0
 $script:PIExitCode = $null
+$script:PITrustBaseline = $null
+$script:PITrustPreliminary = $false
+$script:PIWorkPendingTrust = $false
 
 if ($script:StopRequestPath) {
     $stopParent = Split-Path -Parent $script:StopRequestPath
@@ -136,9 +139,147 @@ function Invoke-CooperativeProcess {
     }
 }
 
+function Test-PIWritablePath {
+    param(
+        [Parameter(Mandatory)][string]$Path,
+        [switch]$Preliminary
+    )
+
+    $relative = ($Path -replace '\\', '/').TrimStart([char[]]"./").ToLowerInvariant()
+    if ($relative -in @(
+        "robot_learning/scenario/__init__.py",
+        "robot_learning/scenario/final_benchmark.py",
+        "robot_learning/scenario/task_reference.py"
+    )) {
+        return $false
+    }
+    if ($Preliminary) {
+        return $relative -eq "research/scientific_model.md"
+    }
+    return (
+        $relative -in @(
+            "robot_learning/train.py",
+            "robot_learning/evaluate.py",
+            "robot_learning/play.py",
+            "research/current_params.json",
+            "research/operation_request.json"
+        ) -or
+        $relative.StartsWith("robot_learning/scenario/") -or
+        $relative.StartsWith("robot_learning/training/") -or
+        $relative.StartsWith("research/lab/")
+    )
+}
+
+function Get-WorktreeDeltaPaths {
+    param([string]$Root = $PSScriptRoot)
+
+    $tracked = @(& git -C $Root diff --name-only --no-renames HEAD --)
+    if ($LASTEXITCODE -ne 0) {
+        throw "Could not inspect tracked worktree changes before trusted execution."
+    }
+    $untracked = @(& git -C $Root ls-files --others --exclude-standard --)
+    if ($LASTEXITCODE -ne 0) {
+        throw "Could not inspect untracked worktree changes before trusted execution."
+    }
+    return @(
+        $tracked + $untracked |
+            ForEach-Object { ($_ -replace '\\', '/').Trim() } |
+            Where-Object { $_ } |
+            Sort-Object -Unique
+    )
+}
+
+function Get-WorktreePathFingerprint {
+    param(
+        [Parameter(Mandatory)][string]$Path,
+        [string]$Root = $PSScriptRoot
+    )
+
+    $fullPath = Join-Path $Root ($Path -replace '/', '\')
+    $status = @(
+        & git -C $Root status --porcelain=v1 --untracked-files=all -- $Path
+    ) -join "`n"
+    if ($LASTEXITCODE -ne 0) {
+        throw "Could not inspect worktree state for $Path."
+    }
+    if (Test-Path -LiteralPath $fullPath -PathType Leaf) {
+        $content = (Get-FileHash -LiteralPath $fullPath -Algorithm SHA256).Hash
+        return "file|$status|$content"
+    }
+    if (Test-Path -LiteralPath $fullPath -PathType Container) {
+        return "directory|$status"
+    }
+    return "missing|$status"
+}
+
+function New-PITrustBaseline {
+    param(
+        [switch]$Preliminary,
+        [string]$Root = $PSScriptRoot
+    )
+
+    $baseline = @{}
+    foreach ($relative in Get-WorktreeDeltaPaths -Root $Root) {
+        if (-not (Test-PIWritablePath -Path $relative -Preliminary:$Preliminary)) {
+            $baseline[$relative] = Get-WorktreePathFingerprint `
+                -Path $relative -Root $Root
+        }
+    }
+    return $baseline
+}
+
+function Assert-PIWorktreeTrust {
+    param(
+        [Parameter(Mandatory)][hashtable]$Baseline,
+        [switch]$Preliminary,
+        [string]$Root = $PSScriptRoot
+    )
+
+    $violations = [System.Collections.Generic.List[string]]::new()
+    $current = @(
+        Get-WorktreeDeltaPaths -Root $Root |
+            Where-Object {
+                -not (Test-PIWritablePath -Path $_ -Preliminary:$Preliminary)
+            }
+    )
+    foreach ($relative in $current) {
+        if (-not $Baseline.ContainsKey($relative)) {
+            $violations.Add($relative)
+            continue
+        }
+        $fingerprint = Get-WorktreePathFingerprint -Path $relative -Root $Root
+        if ($fingerprint -ne $Baseline[$relative]) {
+            $violations.Add($relative)
+        }
+    }
+    foreach ($relative in $Baseline.Keys) {
+        if ($relative -notin $current) {
+            $violations.Add([string]$relative)
+        }
+    }
+    if ($violations.Count -gt 0) {
+        $paths = @($violations | Sort-Object -Unique)
+        throw (
+            "PI work changed paths outside the AGENTS.md scientific surface: " +
+            "$($paths -join ', '). Refusing to load mutable Runner or adapter code."
+        )
+    }
+}
+
+function Enter-TrustedMutableInvocation {
+    if (-not $script:PIWorkPendingTrust) {
+        return
+    }
+    Assert-PIWorktreeTrust -Baseline $script:PITrustBaseline `
+        -Preliminary:$script:PITrustPreliminary
+    $script:PIWorkPendingTrust = $false
+    $script:PITrustBaseline = $null
+}
+
 function Invoke-Runner {
     param([string[]]$Arguments = @())
 
+    Enter-TrustedMutableInvocation
     $uv = Get-Command uv -CommandType Application -ErrorAction Stop |
         Select-Object -First 1
     $runnerArguments = @("run", "python", "research/run_experiment.py")
@@ -328,6 +469,10 @@ function Invoke-PISession {
         [switch]$Preliminary
     )
 
+    Enter-TrustedMutableInvocation
+    $script:PITrustPreliminary = [bool]$Preliminary
+    $script:PITrustBaseline = New-PITrustBaseline -Preliminary:$Preliminary
+
     if ($Preliminary) {
         if ($Continue -and -not $script:PISessionId) {
             throw "There is no active preliminary PI backend session to continue."
@@ -369,36 +514,41 @@ function Invoke-PISession {
         $sessionArgs += "--preliminary"
     }
 
-    if ($PIBackend -eq "opencode") {
-        $entry = "researcher_opencode/src/main.ts"
-        if (-not (Test-Path -LiteralPath $entry)) {
-            throw "The OpenCode runtime entry point is missing: $entry"
+    try {
+        if ($PIBackend -eq "opencode") {
+            $entry = "researcher_opencode/src/main.ts"
+            if (-not (Test-Path -LiteralPath $entry)) {
+                throw "The OpenCode runtime entry point is missing: $entry"
+            }
+            $node = Get-OpenCodeNode
+            if (-not $script:OpenCodeServerUrl) {
+                throw "The OpenCode campaign server is not running."
+            }
+            $sessionArgs += @("--server-url", $script:OpenCodeServerUrl)
+            $nodeArgs = @()
+            $nodeArgs += $node.Strip
+            $nodeArgs += $entry
+            $nodeArgs += $sessionArgs
+            $nodeArgs += $Prompt
+            $script:PIExitCode = Invoke-CooperativeProcess `
+                -FilePath $node.Path -ArgumentList $nodeArgs `
+                -Operation "OpenCode PI"
         }
-        $node = Get-OpenCodeNode
-        if (-not $script:OpenCodeServerUrl) {
-            throw "The OpenCode campaign server is not running."
+        else {
+            $uv = Get-Command uv -CommandType Application -ErrorAction Stop |
+                Select-Object -First 1
+            $copilotArgs = @(
+                "run", "--group", "researcher", "python", "researcher_copilot.py"
+            )
+            $copilotArgs += $sessionArgs
+            $copilotArgs += $Prompt
+            $script:PIExitCode = Invoke-CooperativeProcess `
+                -FilePath $uv.Source -ArgumentList $copilotArgs `
+                -Operation "Copilot PI"
         }
-        $sessionArgs += @("--server-url", $script:OpenCodeServerUrl)
-        $nodeArgs = @()
-        $nodeArgs += $node.Strip
-        $nodeArgs += $entry
-        $nodeArgs += $sessionArgs
-        $nodeArgs += $Prompt
-        $script:PIExitCode = Invoke-CooperativeProcess `
-            -FilePath $node.Path -ArgumentList $nodeArgs `
-            -Operation "OpenCode PI"
     }
-    else {
-        $uv = Get-Command uv -CommandType Application -ErrorAction Stop |
-            Select-Object -First 1
-        $copilotArgs = @(
-            "run", "--group", "researcher", "python", "researcher_copilot.py"
-        )
-        $copilotArgs += $sessionArgs
-        $copilotArgs += $Prompt
-        $script:PIExitCode = Invoke-CooperativeProcess `
-            -FilePath $uv.Source -ArgumentList $copilotArgs `
-            -Operation "Copilot PI"
+    finally {
+        $script:PIWorkPendingTrust = $true
     }
 }
 
@@ -435,10 +585,10 @@ function Get-LatestSessionResult {
     }
     $identifier = [string]$session.operation_ids[-1]
     $event = $State.operation_events |
-        Where-Object { $_.id -eq $identifier } |
+        Where-Object { $_.id -eq $identifier -and $_.status -eq "completed" } |
         Select-Object -First 1
     if (-not $event) {
-        return "The session records operation $identifier; consult research/brief.md for its durable record."
+        return "The session has no completed result for $identifier; failed attempts are execution history, not evidence."
     }
     $result = $event.result
     if ($event.kind -eq "measurement") {
@@ -592,6 +742,12 @@ function New-ScientificSessionPrompt {
 
     $goal = Get-HumanGoalSummary -State $State
     $checkpoint = $State.pi_checkpoint
+    $completedEvents = @(
+        $State.operation_events | Where-Object { $_.status -eq "completed" }
+    )
+    $failedEvents = @(
+        $State.operation_events | Where-Object { $_.status -eq "failed" }
+    )
     $bestEvidence = if ($State.official_assessment) {
         [string]$State.official_assessment.summary
     }
@@ -601,7 +757,7 @@ function New-ScientificSessionPrompt {
     elseif ($State.model_roles.best_known) {
         "The explicit best-known model is $($State.model_roles.best_known); inspect its referenced measurements in research/brief.md."
     }
-    elseif ($State.operation_events.Count -gt 0) {
+    elseif ($completedEvents.Count -gt 0) {
         "Completed operation evidence exists in research/brief.md, but no best-known model has been assigned."
     }
     else {
@@ -637,13 +793,41 @@ function New-ScientificSessionPrompt {
         "None; this is campaign-level goal review."
     }
     $session = $State.scientific_session
+    $completedTraining = @(
+        $completedEvents | Where-Object { $_.kind -eq "training" }
+    ).Count
+    $completedMeasurement = @(
+        $completedEvents | Where-Object { $_.kind -eq "measurement" }
+    ).Count
     $resourceSummary = (
         "$($State.counters.inquiry) of $InquiryLimit inquiry identities created; " +
-        "$($State.counters.training) training operations; " +
-        "$($State.counters.measurement) measurement operations; " +
-        "$($State.operation_events.Count) completed operations; " +
+        "$completedTraining completed training operations; " +
+        "$completedMeasurement completed measurement operations; " +
+        "$($completedEvents.Count) completed operations; " +
         "$($State.candidates.PSObject.Properties.Count) candidates."
     )
+    $executionHistoryParts = @()
+    if ($failedEvents.Count -gt 0) {
+        $superseded = @(
+            $failedEvents | Where-Object { $null -ne $_.superseded_by }
+        ).Count
+        $executionHistoryParts += (
+            "Execution history (not evidence): $($failedEvents.Count) failed " +
+            "attempts, including $superseded superseded attempts."
+        )
+    }
+    if ($State.pending_operation -and $State.pending_operation.failure) {
+        $executionHistoryParts += (
+            "Pending operation " +
+            "$($State.pending_operation.id) failed and awaits repair."
+        )
+    }
+    $executionHistory = if ($executionHistoryParts.Count -gt 0) {
+        ($executionHistoryParts -join " ") + " Inspect research/brief.md for factual errors."
+    }
+    else {
+        "Execution history (not evidence): no failed attempts."
+    }
     $operations = (Get-AvailableOperations -State $State -InquiryLimit $InquiryLimit) |
         ForEach-Object { "- $_" }
     $limitNote = if (
@@ -674,6 +858,7 @@ function New-ScientificSessionPrompt {
         "Active inquiry and relevance: $inquiry"
         "Bounded session objective: $($session.objective)"
         "Strategic resource summary: $resourceSummary"
+        $executionHistory
         "Available operations:`n$($operations -join "`n")"
         $limitNote
         $correction
@@ -691,6 +876,7 @@ function New-ScientificSessionPrompt {
 }
 
 function Test-OperationRequest {
+    Enter-TrustedMutableInvocation
     $validationOutput = @(
         uv run python research/run_experiment.py --check-operation 2>&1
     )
@@ -731,6 +917,7 @@ function Test-ScientificModelRegisters {
 }
 
 function Test-ScientificModelDeliverable {
+    Enter-TrustedMutableInvocation
     $validationOutput = @(
         uv run python research/run_experiment.py --check-scientific-model-deliverable 2>&1
     )

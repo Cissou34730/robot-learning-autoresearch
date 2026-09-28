@@ -151,6 +151,90 @@ if (Test-ScientificModelRegisters -Content $content) {{ exit 0 }} else {{ exit 1
     return completed.returncode == 0
 
 
+def _run_launcher_trust_script(
+    tmp_path: Path, body: str
+) -> subprocess.CompletedProcess:
+    names = (
+        "Test-PIWritablePath",
+        "Get-WorktreeDeltaPaths",
+        "Get-WorktreePathFingerprint",
+        "New-PITrustBaseline",
+        "Assert-PIWorktreeTrust",
+    )
+    quoted_names = ", ".join(f"'{name}'" for name in names)
+    script = tmp_path / "trust-gate.ps1"
+    script.write_text(
+        f"""
+$ast = [System.Management.Automation.Language.Parser]::ParseFile(
+    '{SCRIPT_PATH}', [ref]$null, [ref]$null)
+$names = @({quoted_names})
+$definitions = $ast.FindAll({{
+    param($node)
+    $node -is [System.Management.Automation.Language.FunctionDefinitionAst] -and
+        $node.Name -in $names
+}}, $true)
+foreach ($definition in $definitions) {{
+    . ([scriptblock]::Create($definition.Extent.Text))
+}}
+{body}
+""",
+        encoding="utf-8",
+    )
+    return subprocess.run(
+        [
+            POWERSHELL,
+            "-NoProfile",
+            "-NonInteractive",
+            "-ExecutionPolicy",
+            "Bypass",
+            "-File",
+            str(script),
+        ],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+
+def _trust_test_repository(path: Path) -> None:
+    (path / "research" / "evaluations" / "campaign").mkdir(parents=True)
+    (path / "robot_learning" / "training").mkdir(parents=True)
+    (path / "docs").mkdir()
+    (path / "run_research.ps1").write_text("# trusted launcher\n", encoding="utf-8")
+    (path / "research" / "research_state.json").write_text(
+        '{"status":"initial"}\n', encoding="utf-8"
+    )
+    (path / "robot_learning" / "training" / "algorithm.py").write_text(
+        "VALUE = 1\n", encoding="utf-8"
+    )
+    subprocess.run(["git", "init", "-q", str(path)], check=True)
+    subprocess.run(["git", "-C", str(path), "add", "."], check=True)
+    subprocess.run(
+        [
+            "git",
+            "-C",
+            str(path),
+            "-c",
+            "user.name=Tests",
+            "-c",
+            "user.email=tests@example.invalid",
+            "commit",
+            "-qm",
+            "baseline",
+        ],
+        check=True,
+    )
+    (path / "docs" / "untracked-plan.md").write_text(
+        "preserve this plan\n", encoding="utf-8"
+    )
+    (path / "research" / "research_state.json").write_text(
+        '{"status":"stopped"}\n', encoding="utf-8"
+    )
+    (path / "research" / "evaluations" / "campaign" / "interrupted.json").write_text(
+        '{"completed":false}\n', encoding="utf-8"
+    )
+
+
 def _state(kind: str, *, inquiry: bool) -> dict:
     active = (
         {
@@ -379,6 +463,41 @@ def test_inquiry_session_offers_peer_operations_and_checkpoint(tmp_path):
 
 
 @powershell_only
+def test_launcher_summary_separates_completed_evidence_from_failed_history(tmp_path):
+    state = _state("inquiry", inquiry=True)
+    state["scientific_session"]["operation_ids"] = ["M2"]
+    state["operation_events"] = [
+        {
+            "id": "M1",
+            "kind": "measurement",
+            "status": "failed",
+            "error": "instrument failed",
+            "superseded_by": "M2",
+            "result": {"status": "failed", "error": "instrument failed"},
+        },
+        {
+            "id": "M2",
+            "kind": "measurement",
+            "status": "completed",
+            "error": None,
+            "superseded_by": None,
+            "result": {"status": "completed", "measurements": []},
+        },
+    ]
+    state["counters"]["measurement"] = 2
+
+    prompt = _launcher_prompt(tmp_path, state)
+
+    assert "1 completed measurement operations" in prompt
+    assert "1 completed operations" in prompt
+    assert "2 measurement operations" not in prompt
+    assert "Execution history (not evidence): 1 failed attempts" in prompt
+    assert "including 1 superseded attempts" in prompt
+    assert "Operation M2 (measurement)" in prompt
+    assert "Operation M1 (measurement)" not in prompt
+
+
+@powershell_only
 def test_reframed_inquiry_offers_only_checkpoint(tmp_path):
     state = _state("inquiry", inquiry=True)
     state["scientific_session"]["operation_ids"] = ["E1"]
@@ -398,6 +517,107 @@ def test_launcher_persists_and_reuses_bounded_backend_session_identity():
     assert "--backend-reasoning" in SCRIPT
     assert '$sessionArgs += "--resume-or-create"' in SCRIPT
     assert "--synchronize-max-inquiries" in SCRIPT
+
+
+@powershell_only
+def test_launcher_trust_gate_allows_only_the_documented_pi_surface(tmp_path):
+    root = tmp_path / "repo"
+    root.mkdir()
+    _trust_test_repository(root)
+    quoted_root = str(root).replace("'", "''")
+    completed = _run_launcher_trust_script(
+        tmp_path,
+        f"""
+$root = '{quoted_root}'
+$baseline = New-PITrustBaseline -Root $root
+Set-Content -LiteralPath (Join-Path $root 'robot_learning\\training\\algorithm.py') `
+    -Value 'VALUE = 2'
+Set-Content -LiteralPath (Join-Path $root 'research\\operation_request.json') `
+    -Value '{{"checkpoint": {{}}}}'
+Assert-PIWorktreeTrust -Baseline $baseline -Root $root
+""",
+    )
+    assert completed.returncode == 0, completed.stderr
+    assert (root / "docs" / "untracked-plan.md").read_text(
+        encoding="utf-8"
+    ) == "preserve this plan\n"
+    assert (root / "research" / "research_state.json").read_text(
+        encoding="utf-8"
+    ) == '{"status":"stopped"}\n'
+    assert (
+        root / "research" / "evaluations" / "campaign" / "interrupted.json"
+    ).read_text(encoding="utf-8") == '{"completed":false}\n'
+
+
+@powershell_only
+@pytest.mark.parametrize(
+    "relative",
+    [
+        "run_research.ps1",
+        "research/run_experiment.py",
+        "research/research_state.json",
+        "robot_learning/scenario/final_benchmark.py",
+        "tests/autoresearch/test_guard.py",
+        "docs/untracked-plan.md",
+    ],
+)
+def test_launcher_trust_gate_rejects_human_owned_or_unclassified_edits(
+    tmp_path, relative
+):
+    root = tmp_path / "repo"
+    root.mkdir()
+    _trust_test_repository(root)
+    target = root / relative
+    target.parent.mkdir(parents=True, exist_ok=True)
+    if not target.exists():
+        target.write_text("trusted\n", encoding="utf-8")
+        subprocess.run(["git", "-C", str(root), "add", relative], check=True)
+        subprocess.run(
+            [
+                "git",
+                "-C",
+                str(root),
+                "-c",
+                "user.name=Tests",
+                "-c",
+                "user.email=tests@example.invalid",
+                "commit",
+                "-qm",
+                "add protected target",
+            ],
+            check=True,
+        )
+    quoted_root = str(root).replace("'", "''")
+    quoted_target = str(target).replace("'", "''")
+    completed = _run_launcher_trust_script(
+        tmp_path,
+        f"""
+$root = '{quoted_root}'
+$baseline = New-PITrustBaseline -Root $root
+Add-Content -LiteralPath '{quoted_target}' -Value 'PI mutation'
+Assert-PIWorktreeTrust -Baseline $baseline -Root $root
+""",
+    )
+    assert completed.returncode != 0
+    assert "outside the AGENTS.md scientific surface" in completed.stderr
+
+
+def test_every_post_pi_mutable_entry_point_uses_the_launcher_gate():
+    runner = SCRIPT.split("function Invoke-Runner", 1)[1].split(
+        "function Test-StopAfterOperation", 1
+    )[0]
+    pi = SCRIPT.split("function Invoke-PISession", 1)[1].split(
+        "function Update-ResearchBrief", 1
+    )[0]
+    operation_check = SCRIPT.split("function Test-OperationRequest", 1)[1].split(
+        "function Test-ScientificModelRegisters", 1
+    )[0]
+    model_check = SCRIPT.split("function Test-ScientificModelDeliverable", 1)[1].split(
+        "function Invoke-ScientificModelPhase", 1
+    )[0]
+
+    for entry_point in (runner, pi, operation_check, model_check):
+        assert "Enter-TrustedMutableInvocation" in entry_point
 
 
 @powershell_only
@@ -444,3 +664,8 @@ def test_program_is_informative_and_instruments_are_mechanical():
     assert '"checkpoint"' in INSTRUMENTS
     assert '"restore_recipe"' in INSTRUMENTS
     assert '"request_official_assessment"' in INSTRUMENTS
+    assert (
+        "Every evidence reference is the ID of an operation event whose status is"
+        in INSTRUMENTS
+    )
+    assert '"research/evaluations/<campaign>/detail.json"' not in INSTRUMENTS

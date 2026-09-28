@@ -32,6 +32,10 @@ export const DEPENDENCY_DENIAL =
   "Denied by the harness: the project dependency set is human-owned. Use the " +
   "installed environment without installing, removing, syncing or locking packages.";
 
+export const FILE_EDIT_DENIAL =
+  "Denied by the harness: direct edits are limited to the PI-owned scientific " +
+  "surface declared in AGENTS.md.";
+
 const RESERVED_SCRIPT_NAMES = new Set([
   "run_experiment.py",
   "runner_assessment.py",
@@ -175,6 +179,48 @@ const UV_RUN_FLAG_OPTIONS = new Set([
 const ROOT = fileURLToPath(new URL("../..", import.meta.url));
 
 const SEPARATORS = [";", "&&", "||", "|", "\n", "\r"];
+
+function repositoryRelativeTarget(target: string): string | null {
+  if (!target.trim()) return null;
+  const path = isAbsolute(target) ? resolve(target) : resolve(ROOT, target);
+  const withinRoot = relative(ROOT, path).replace(/\\/g, "/").toLowerCase();
+  if (
+    withinRoot === "" ||
+    withinRoot.startsWith("../") ||
+    withinRoot === ".." ||
+    isAbsolute(withinRoot)
+  ) {
+    return null;
+  }
+  return withinRoot;
+}
+
+export function isPIWritablePath(target: string, preliminary = false): boolean {
+  const path = repositoryRelativeTarget(target);
+  if (path === null) return false;
+  if (
+    new Set([
+      "robot_learning/scenario/__init__.py",
+      "robot_learning/scenario/final_benchmark.py",
+      "robot_learning/scenario/task_reference.py",
+    ]).has(path)
+  ) {
+    return false;
+  }
+  if (preliminary) return path === "research/scientific_model.md";
+  return (
+    new Set([
+      "robot_learning/train.py",
+      "robot_learning/evaluate.py",
+      "robot_learning/play.py",
+      "research/current_params.json",
+      "research/operation_request.json",
+    ]).has(path) ||
+    path.startsWith("robot_learning/scenario/") ||
+    path.startsWith("robot_learning/training/") ||
+    path.startsWith("research/lab/")
+  );
+}
 
 function splitWhitespace(text: string): string[] {
   const tokens: string[] = [];
@@ -532,6 +578,7 @@ export type PermissionLike = {
 };
 
 const SHELL_PERMISSION_TYPES = /bash|shell|command|exec|terminal|process/i;
+const EDIT_PERMISSION_TYPES = /edit|write|patch/i;
 
 function collectStrings(value: unknown, into: string[]): void {
   if (typeof value === "string") {
@@ -572,4 +619,46 @@ export function permissionCommandText(permission: PermissionLike): string {
   collectStrings(permission.pattern, fallback);
   collectStrings(permission.title, fallback);
   return fallback.join("\n");
+}
+
+function isExactPath(value: string): boolean {
+  return value.length > 0 && !/[*?[\]{}]/.test(value);
+}
+
+export function permissionEditTargets(permission: PermissionLike): string[] {
+  const metadata = permission.metadata ?? {};
+  const looksLikeEdit =
+    EDIT_PERMISSION_TYPES.test(permission.type ?? "") ||
+    EDIT_PERMISSION_TYPES.test(String(metadata["tool"] ?? ""));
+  if (!looksLikeEdit) return [];
+
+  const targets: string[] = [];
+  for (const key of ["file", "path", "filePath", "filename", "file_name"]) {
+    collectStrings(metadata[key], targets);
+  }
+  collectStrings(permission.pattern, targets);
+  return [...new Set(targets.filter(isExactPath))];
+}
+
+export function permissionEditDenial(
+  permission: PermissionLike,
+  preliminary = false,
+): string | null {
+  const targets = permissionEditTargets(permission);
+  if (targets.length === 0) return null;
+  return targets.every((target) => isPIWritablePath(target, preliminary))
+    ? null
+    : FILE_EDIT_DENIAL;
+}
+
+export function permissionDenial(
+  permission: PermissionLike,
+  preliminary = false,
+): string | null {
+  const command = permissionCommandText(permission);
+  if (command) {
+    const reason = commandDenial(command);
+    if (reason) return reason;
+  }
+  return permissionEditDenial(permission, preliminary);
 }
