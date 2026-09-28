@@ -80,6 +80,74 @@ def _candidate(identifier: str, artifact: Path) -> dict:
     }
 
 
+def _superseded_inquiry_events() -> list[dict]:
+    request = {
+        "action": "open",
+        "question": "Which behavior blocks the goal?",
+        "goal_connection": "The behavior determines the next useful operation.",
+        "closure_condition": "Resolve or reject the proposed distinction.",
+        "rationale": "The inquiry focuses the bounded session.",
+    }
+    return [
+        {
+            "id": "E1",
+            "kind": "inquiry",
+            "session_id": "S0",
+            "inquiry_id": None,
+            "request": request,
+            "result": {"status": "failed", "error": "injected failure"},
+            "status": "failed",
+            "error": "injected failure",
+            "supersedes": None,
+            "superseded_by": "E2",
+            "completed_at": "now",
+        },
+        {
+            "id": "E2",
+            "kind": "inquiry",
+            "session_id": "S0",
+            "inquiry_id": "I0",
+            "request": request,
+            "result": {
+                "status": "completed",
+                "action": "open",
+                "inquiry_id": "I0",
+            },
+            "status": "completed",
+            "error": None,
+            "supersedes": "E1",
+            "superseded_by": None,
+            "completed_at": "now",
+        },
+    ]
+
+
+def _model_role_event(candidate_id: str, evidence: list[str]) -> dict:
+    return {
+        "id": "E3",
+        "kind": "model_role",
+        "session_id": "S0",
+        "inquiry_id": None,
+        "request": {
+            "action": "set_best_known",
+            "candidate": candidate_id,
+            "reason": "Assign the candidate from recorded evidence.",
+            "evidence": evidence,
+        },
+        "result": {
+            "status": "assigned",
+            "action": "set_best_known",
+            "candidate": candidate_id,
+            "evidence": evidence,
+        },
+        "status": "completed",
+        "error": None,
+        "supersedes": None,
+        "superseded_by": None,
+        "completed_at": "now",
+    }
+
+
 def _start_session(state: dict, kind: str, objective: str) -> dict:
     session = repository.start_scientific_session(
         state,
@@ -1111,6 +1179,109 @@ def test_model_roles_change_only_through_explicit_evidence_backed_operation(
     monkeypatch.setattr(repository, "publish_artifact", lambda _publication: None)
     assert run_experiment.execute_pending_operation() == 0
     assert repository.read_state()["model_roles"]["working"] == candidate["id"]
+
+
+def test_checkpoint_and_model_role_requests_reject_noncompleted_evidence(
+    monkeypatch, tmp_path
+):
+    state = _configure(monkeypatch, tmp_path)
+    _start_session(state, "startup", "Use only completed evidence.")
+    state["operation_events"] = _superseded_inquiry_events()
+    artifact = _artifact(tmp_path / "archive" / "candidate")
+    candidate = _candidate("T1:checkpoint-10", artifact)
+    state["candidates"][candidate["id"]] = candidate
+
+    checkpoint = _checkpoint(state)
+    checkpoint["checkpoint"]["evidence_references"] = ["E1"]
+    with pytest.raises(ValueError, match="status == completed"):
+        protocol.validate_operation_request(checkpoint, state)
+
+    evidence_file = tmp_path / "research" / "evaluations" / "legacy.json"
+    evidence_file.parent.mkdir(parents=True)
+    evidence_file.write_text("{}", encoding="utf-8")
+    checkpoint["checkpoint"]["evidence_references"] = [
+        repository.repo_relative_path(evidence_file)
+    ]
+    with pytest.raises(ValueError, match="status == completed"):
+        protocol.validate_operation_request(checkpoint, state)
+
+    checkpoint["checkpoint"]["evidence_references"] = ["E2"]
+    assert protocol.validate_operation_request(checkpoint, state) == "checkpoint"
+
+    role = {
+        "model_role": {
+            "action": "set_best_known",
+            "candidate": candidate["id"],
+            "reason": "Assign the candidate from recorded evidence.",
+            "evidence": ["E1"],
+        }
+    }
+    with pytest.raises(ValueError, match="status == completed"):
+        protocol.validate_operation_request(role, state)
+
+    role["model_role"]["evidence"] = ["E2"]
+    assert protocol.validate_operation_request(role, state) == "model_role"
+
+
+def test_strict_state_rejects_noncompleted_checkpoint_and_model_role_evidence(
+    monkeypatch, tmp_path
+):
+    state = _configure(monkeypatch, tmp_path)
+    state["operation_events"] = _superseded_inquiry_events()
+    state["pi_checkpoint"] = {
+        "session_id": "S0",
+        "inquiry_id": None,
+        "human_goal_connection": "The evidence bears on the human goal.",
+        "current_goal_gap": "The remaining gap is unresolved.",
+        "current_synthesis": "One operation failed and its retry completed.",
+        "evidence_references": ["E1"],
+        "decision_frontier": "Choose the next bounded operation.",
+        "completed_operations": ["E2"],
+        "candidates_and_roles": "No role is assigned.",
+        "next_direction_or_closure": "Continue from completed evidence.",
+        "cumulative_resource_use": "One completed operation.",
+        "scientific_commit": "a" * 40,
+    }
+    with pytest.raises(ValueError, match="status == completed"):
+        repository.validate_research_state(state, allow_missing_artifact=True)
+
+    state["pi_checkpoint"]["evidence_references"] = ["E2"]
+    artifact = _artifact(tmp_path / "archive" / "candidate")
+    candidate = _candidate("T1:checkpoint-10", artifact)
+    state["candidates"][candidate["id"]] = candidate
+    state["model_roles"]["best_known"] = candidate["id"]
+    state["operation_events"].append(_model_role_event(candidate["id"], ["E1"]))
+    with pytest.raises(ValueError, match="status == completed"):
+        repository.validate_research_state(state, allow_missing_artifact=True)
+
+
+def test_official_assessment_rejects_role_backed_only_by_failed_evidence(
+    monkeypatch, tmp_path
+):
+    state = _configure(monkeypatch, tmp_path)
+    artifact = _artifact(tmp_path / "archive" / "candidate")
+    candidate = _candidate("T1:checkpoint-10", artifact)
+    state["candidates"][candidate["id"]] = candidate
+    state["model_roles"]["best_known"] = candidate["id"]
+    state["operation_events"] = [
+        *_superseded_inquiry_events(),
+        _model_role_event(candidate["id"], ["E1"]),
+    ]
+    state["scientific_session"] = None
+    state["terminal_state"] = {
+        "status": "official_assessment_requested",
+        "reason": "Assess the selected model.",
+        "model": candidate["id"],
+    }
+    paths.STATE_PATH.write_text(json.dumps(state), encoding="utf-8")
+    monkeypatch.setattr(
+        run_experiment.assessment,
+        "evaluate_official_model",
+        lambda *_args, **_kwargs: pytest.fail("assessment must not run"),
+    )
+
+    with pytest.raises(ValueError, match="status == completed"):
+        run_experiment.run_official_assessment()
 
 
 def test_recipe_restoration_is_mechanical_and_does_not_change_roles(

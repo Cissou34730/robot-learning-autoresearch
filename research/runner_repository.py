@@ -574,7 +574,28 @@ def canonicalize_candidate(candidate: dict) -> None:
     ]
 
 
-def _validate_checkpoint(checkpoint: object, event_ids: set[str]) -> None:
+def _validate_completed_event_references(
+    value: object,
+    completed_event_ids: set[str],
+    description: str,
+    *,
+    allow_empty: bool = True,
+) -> list[str]:
+    if not isinstance(value, list) or not all(
+        isinstance(item, str) and item.strip() for item in value
+    ):
+        raise ValueError(f"{description} must be a list of strings")
+    if not allow_empty and not value:
+        raise ValueError(f"{description} must not be empty")
+    invalid = [item for item in value if item not in completed_event_ids]
+    if invalid:
+        raise ValueError(
+            f"{description} must name operation events with status == completed"
+        )
+    return value
+
+
+def _validate_checkpoint(checkpoint: object, completed_event_ids: set[str]) -> None:
     if checkpoint is None:
         return
     if not isinstance(checkpoint, dict) or set(checkpoint) != CHECKPOINT_FIELDS:
@@ -596,16 +617,16 @@ def _validate_checkpoint(checkpoint: object, event_ids: set[str]) -> None:
         _nonempty(checkpoint, field, f"pi_checkpoint {field}")
     evidence = checkpoint["evidence_references"]
     completed = checkpoint["completed_operations"]
-    if not isinstance(evidence, list) or not all(
-        isinstance(item, str) and item.strip() for item in evidence
-    ):
-        raise ValueError("pi_checkpoint evidence_references must be a list of strings")
-    if not isinstance(completed, list) or not all(
-        isinstance(item, str) and item in event_ids for item in completed
-    ):
-        raise ValueError(
-            "pi_checkpoint completed_operations must reference completed events"
-        )
+    _validate_completed_event_references(
+        evidence,
+        completed_event_ids,
+        "pi_checkpoint evidence_references",
+    )
+    _validate_completed_event_references(
+        completed,
+        completed_event_ids,
+        "pi_checkpoint completed_operations",
+    )
 
 
 def _validate_active_inquiry(active: object) -> None:
@@ -1629,14 +1650,69 @@ def validate_research_state(state: dict, *, allow_missing_artifact: bool) -> Non
         if identifier in event_ids:
             raise ValueError("operation event IDs must be unique")
         event_ids.add(identifier)
+    completed_event_ids = {
+        event["id"] for event in events if event["status"] == "completed"
+    }
+    for event in events:
+        request = event["request"]
+        if event["kind"] == "checkpoint":
+            _validate_completed_event_references(
+                request["evidence_references"],
+                completed_event_ids,
+                "checkpoint event evidence_references",
+            )
+            _validate_completed_event_references(
+                request["completed_operations"],
+                completed_event_ids,
+                "checkpoint event completed_operations",
+            )
+        elif event["kind"] == "model_role":
+            _validate_completed_event_references(
+                request["evidence"],
+                completed_event_ids,
+                "model_role event evidence",
+                allow_empty=False,
+            )
+            if event["status"] == "completed":
+                _validate_completed_event_references(
+                    event["result"]["evidence"],
+                    completed_event_ids,
+                    "completed model_role result evidence",
+                    allow_empty=False,
+                )
 
     _validate_active_inquiry(state["active_inquiry"])
     _validate_session(state["scientific_session"], state["active_inquiry"])
-    _validate_checkpoint(state["pi_checkpoint"], event_ids)
+    _validate_checkpoint(state["pi_checkpoint"], completed_event_ids)
 
     pending = state["pending_operation"]
     if pending is not None:
         _validate_pending_operation(pending)
+        request = pending["request"][pending["kind"]]
+        plan = pending["data"].get("plan")
+        if pending["kind"] == "checkpoint":
+            for value, description in (
+                (request["evidence_references"], "pending checkpoint evidence"),
+                (request["completed_operations"], "pending checkpoint operations"),
+                (plan["evidence_references"], "pending checkpoint plan evidence"),
+                (plan["completed_operations"], "pending checkpoint plan operations"),
+            ):
+                _validate_completed_event_references(
+                    value, completed_event_ids, description
+                )
+        elif pending["kind"] == "model_role":
+            _validate_completed_event_references(
+                request["evidence"],
+                completed_event_ids,
+                "pending model_role evidence",
+                allow_empty=False,
+            )
+            _validate_completed_event_references(
+                plan["evidence"],
+                completed_event_ids,
+                "pending model_role plan evidence",
+                allow_empty=False,
+            )
     _validate_supersession_graph(events, pending)
 
     candidates = state["candidates"]
