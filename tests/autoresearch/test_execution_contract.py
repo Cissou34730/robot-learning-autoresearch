@@ -26,6 +26,7 @@ def _configure(monkeypatch, tmp_path: Path, *, session_kind: str = "startup") ->
         "OPERATION_REQUEST_PATH": research / "operation_request.json",
         "TRAINING_LOG_DIR": research / "training_logs",
         "CANDIDATE_ROOT": tmp_path / "models" / "candidates",
+        "EVALUATION_DIR": research / "evaluations",
     }.items():
         monkeypatch.setattr(paths, name, value)
     monkeypatch.setattr(repository, "git", lambda *args: "a" * 40 + "\n")
@@ -63,6 +64,10 @@ def _training() -> dict:
     }
 
 
+def _write_request(request: dict) -> None:
+    paths.OPERATION_REQUEST_PATH.write_text(json.dumps(request), encoding="utf-8")
+
+
 def test_protected_files_are_rejected_from_training_delta(monkeypatch, tmp_path):
     state = _configure(monkeypatch, tmp_path)
     monkeypatch.setattr(
@@ -70,6 +75,119 @@ def test_protected_files_are_rejected_from_training_delta(monkeypatch, tmp_path)
     )
     with pytest.raises(ValueError, match="human-owned"):
         run_experiment.accept_operation(_training(), state)
+
+
+def test_check_operation_rejects_scientific_ownership_without_state_mutation(
+    monkeypatch, tmp_path, capsys
+):
+    _configure(monkeypatch, tmp_path)
+    monkeypatch.setattr(
+        repository, "scientific_delta", lambda _parent: ["research/run_experiment.py"]
+    )
+    _write_request(_training())
+    before = repository.read_state()
+
+    assert run_experiment.check_operation() == 1
+
+    assert "human-owned" in capsys.readouterr().out
+    assert repository.read_state() == before
+
+
+def test_check_operation_rejects_protected_panel_overlap_without_acceptance(
+    monkeypatch, tmp_path, capsys
+):
+    state = _configure(monkeypatch, tmp_path)
+    artifact = tmp_path / "archive" / "candidate"
+    artifact.mkdir(parents=True)
+    (artifact / "model.zip").write_bytes(b"model")
+    (artifact / "artifact.json").write_text(
+        '{"timesteps": 10, "completed": true}',
+        encoding="utf-8",
+    )
+    (artifact / "policy_runtime.pkl").write_bytes(b"runtime")
+    candidate = {
+        "id": "T1:checkpoint-10",
+        "artifact": repository.repo_relative_path(artifact),
+        "fingerprint": repository.artifact_fingerprint(artifact),
+        "origin_operation": "T1",
+        "name": "checkpoint-10",
+        "parameters": {},
+        "scientific_commit": "b" * 40,
+        "training_steps": 10,
+        "evaluation_artifacts": [],
+    }
+    state["candidates"][candidate["id"]] = candidate
+    repository.write_state(state)
+    monkeypatch.setattr(run_experiment, "_protected_panel_overlap", lambda *_args: True)
+    _write_request(
+        {
+            "measurement": {
+                "description": "Measure a development panel.",
+                "rationale": "The result informs the next decision.",
+                "measurements": [
+                    {
+                        "instrument": "research_evaluation",
+                        "candidate": candidate["id"],
+                        "episodes": 2,
+                        "seed": 1,
+                    }
+                ],
+            }
+        }
+    )
+    before = repository.read_state()
+
+    assert run_experiment.check_operation() == 1
+
+    assert "overlap" in capsys.readouterr().out.lower()
+    assert repository.read_state() == before
+
+
+def test_check_operation_rejects_missing_python_module_without_acceptance(
+    monkeypatch, tmp_path, capsys
+):
+    _configure(monkeypatch, tmp_path)
+    artifact = paths.campaign_evaluation_dir("campaign") / "diagnostic.json"
+    _write_request(
+        {
+            "measurement": {
+                "description": "Run the requested diagnostic.",
+                "rationale": "The result informs the next decision.",
+                "measurements": [
+                    {
+                        "instrument": "python_module",
+                        "module": "research.lab.missing_diagnostic",
+                        "args": ["--output", str(artifact)],
+                        "artifact": repository.repo_relative_path(artifact),
+                    }
+                ],
+            }
+        }
+    )
+    before = repository.read_state()
+
+    assert run_experiment.check_operation() == 1
+
+    assert "python_module source does not exist" in capsys.readouterr().out
+    assert repository.read_state() == before
+
+
+def test_check_operation_rejects_invalid_current_params_without_acceptance(
+    monkeypatch, tmp_path, capsys
+):
+    _configure(monkeypatch, tmp_path)
+    monkeypatch.setattr(
+        run_experiment.research_config,
+        "load_experiment_config",
+        lambda: (_ for _ in ()).throw(ValueError("current_params.json is invalid")),
+    )
+    _write_request(_training())
+    before = repository.read_state()
+
+    assert run_experiment.check_operation() == 1
+
+    assert "current_params.json is invalid" in capsys.readouterr().out
+    assert repository.read_state() == before
 
 
 def test_frozen_training_surface_rejects_tampering(monkeypatch, tmp_path):

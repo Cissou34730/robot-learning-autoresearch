@@ -24,6 +24,7 @@ Set-Location $PSScriptRoot
 $script:CampaignExitCode = 0
 $script:CampaignStopRequested = $false
 $script:StopDeadlineExceeded = $false
+$script:MaxInquiriesExplicit = $PSBoundParameters.ContainsKey("MaxInquiries")
 $script:StopDeadline = $null
 $script:StopRequestPath = if ($StopRequestPath) {
     [System.IO.Path]::GetFullPath($StopRequestPath)
@@ -155,10 +156,8 @@ function Invoke-Runner {
     $runnerArguments += $Arguments
     $exitCode = Invoke-CooperativeProcess -FilePath $uv.Source `
         -ArgumentList $runnerArguments -Operation "research runner"
-    if ($exitCode -eq 0) {
-        $script:PITrustSnapshot = New-PITrustSnapshot `
-            -Preliminary:$script:PITrustPreliminary
-    }
+    $script:PITrustSnapshot = New-PITrustSnapshot `
+        -Preliminary:$script:PITrustPreliminary
     return $exitCode
 }
 
@@ -585,7 +584,6 @@ function Get-AvailableOperations {
         $operations += @(
             "campaign_conclusion request_official_assessment: submit the explicit best-known model to the official assessment"
             "campaign_conclusion no_credible_route: conclude that no credible route remains"
-            "checkpoint: preserve the goal review without making a terminal decision"
         )
         return $operations
     }
@@ -898,16 +896,50 @@ function Invoke-PendingOperation {
                     -InquiryLimit ([int]$State.campaign.max_inquiries)
             )
             "The accepted Runner operation $($pending.id) failed factually: $($pending.failure)"
-            "Inspect the failure and correct only its PI-owned implementation cause when one exists. The accepted scientific request remains unchanged; do not replace research/operation_request.json."
+            "Correct its PI-owned implementation cause while keeping the accepted request, or replace research/operation_request.json with a different valid operation when the scientific correction requires a different action."
         ) -join "`n`n"
         Invoke-PISession -Prompt $repairPrompt -Phase $State.scientific_session.kind `
             -Continue:$([bool]$script:PISessionId)
         if (Test-StopAfterOperation $script:PIExitCode "PI session") {
             return 130
         }
-        $exitCode = Invoke-Runner -Arguments @("--reaccept-pending")
-        if ($exitCode -ne 0) {
-            throw "The Runner could not reaccept the corrected operation."
+
+        $request = Get-Content "research\operation_request.json" -Raw |
+            ConvertFrom-Json
+        $replacementRequested = -not $request._runner_accepted_operation
+        if ($replacementRequested -and -not (Test-OperationRequest)) {
+            $retryPrompt = @(
+                (
+                    New-ScientificSessionPrompt -State $State `
+                        -InquiryLimit ([int]$State.campaign.max_inquiries) `
+                        -ValidationError $script:OperationValidationFeedback
+                )
+                "Correct or replace the failed operation request while preserving valid PI-owned work."
+            ) -join "`n`n"
+            Invoke-PISession -Prompt $retryPrompt -Phase $State.scientific_session.kind `
+                -Continue
+            if (Test-StopAfterOperation $script:PIExitCode "PI session") {
+                return 130
+            }
+            $request = Get-Content "research\operation_request.json" -Raw |
+                ConvertFrom-Json
+            $replacementRequested = -not $request._runner_accepted_operation
+            if ($replacementRequested -and -not (Test-OperationRequest)) {
+                throw "PI ended twice without a valid replacement operation request: $script:OperationValidationFeedback"
+            }
+        }
+        if ($replacementRequested) {
+            $exitCode = Invoke-Runner
+            if ($exitCode -ne 0) {
+                return $exitCode
+            }
+            return 0
+        }
+        else {
+            $exitCode = Invoke-Runner -Arguments @("--reaccept-pending")
+            if ($exitCode -ne 0) {
+                throw "The Runner could not reaccept the corrected operation."
+            }
         }
     }
     $exitCode = Invoke-Runner -Arguments @("--execute-pending")
@@ -925,17 +957,28 @@ function Invoke-PendingOperation {
 }
 
 try {
-    $maxInquiryExitCode = Invoke-Runner -Arguments @(
-        "--synchronize-max-inquiries", "$MaxInquiries",
+    $backendExitCode = Invoke-Runner -Arguments @(
+        "--validate-session-backend",
         "--backend-adapter", $PIBackend,
         "--backend-model", $Model,
         "--backend-reasoning", $Reasoning
     )
-    if ($maxInquiryExitCode -ne 0) {
+    if ($backendExitCode -ne 0) {
         throw (
-            "Launcher MaxInquiries must match the persisted campaign setting " +
-            "after fresh/startup initialization."
+            "Launcher backend descriptor must match the active bounded " +
+            "scientific session until checkpoint."
         )
+    }
+    if ($script:MaxInquiriesExplicit) {
+        $maxInquiryExitCode = Invoke-Runner -Arguments @(
+            "--synchronize-max-inquiries", "$MaxInquiries"
+        )
+        if ($maxInquiryExitCode -ne 0) {
+            throw (
+                "Explicit launcher MaxInquiries must match the persisted campaign " +
+                "setting after fresh/startup initialization."
+            )
+        }
     }
 
     $launchState = Get-Content "research\research_state.json" -Raw | ConvertFrom-Json
@@ -1022,7 +1065,7 @@ try {
                 "Design the initial scientific tools, observations, reward, training recipe, and measurements needed for the human goal, choose useful scientific operations, then checkpoint into campaign-level goal review."
             }
             elseif ($kind -eq "goal_review") {
-                "Decide whether to request official assessment, open one bounded goal-linked inquiry, conclude that no credible route remains, or preserve a durable goal-review checkpoint."
+                "Decide whether to request official assessment, open one bounded goal-linked inquiry, or conclude that no credible route remains."
             }
             else {
                 (
@@ -1030,15 +1073,18 @@ try {
                     "$($state.active_inquiry.closure_condition)"
                 )
             }
-            $exitCode = Invoke-Runner -Arguments @(
+            $startArguments = @(
                 "--start-session", $kind,
                 "--session-objective", $objective,
                 "--backend-session-id", ([guid]::NewGuid().ToString()),
                 "--backend-adapter", $PIBackend,
                 "--backend-model", $Model,
-                "--backend-reasoning", $Reasoning,
-                "--max-inquiries", "$MaxInquiries"
+                "--backend-reasoning", $Reasoning
             )
+            if ($script:MaxInquiriesExplicit) {
+                $startArguments += @("--max-inquiries", "$MaxInquiries")
+            }
+            $exitCode = Invoke-Runner -Arguments $startArguments
             if (Test-StopAfterOperation $exitCode "research runner") {
                 break
             }

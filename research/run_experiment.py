@@ -353,19 +353,13 @@ def _validate_new_operation_scientific_delta(state: dict) -> None:
     )
 
 
-def accept_operation(request: dict, state: dict | None = None) -> dict:
-    state = state or repository.load_state(allow_missing_artifact=True)
+def _new_pending_operation(
+    request: dict,
+    state: dict,
+    *,
+    supersedes: str | None = None,
+) -> dict:
     kind = protocol.validate_operation_request(request, state)
-    existing = state["pending_operation"]
-    fingerprint = _canonical_fingerprint(request)
-    if isinstance(existing, dict):
-        if (
-            existing["request_fingerprint"] != fingerprint
-            or existing["request"] != request
-        ):
-            raise FrozenOperationMismatch("operation request changed after acceptance")
-        _write_accepted_request_handoff(existing)
-        return existing
     _validate_new_operation_scientific_delta(state)
     identifier = protocol.allocate_operation_id(kind, state)
     session = protocol.require_active_session(state)
@@ -375,16 +369,86 @@ def accept_operation(request: dict, state: dict | None = None) -> dict:
         "session_id": session["id"],
         "inquiry_id": session["inquiry_id"],
         "request": copy.deepcopy(request),
-        "request_fingerprint": fingerprint,
+        "request_fingerprint": _canonical_fingerprint(request),
         "progress": "accepted",
         "failure": None,
-        "supersedes": None,
+        "supersedes": supersedes,
         "data": _transaction_data(kind, request, state),
     }
     state["pending_operation"] = pending
-    repository.write_state(state)
-    _write_accepted_request_handoff(pending)
     return pending
+
+
+def _prepare_failed_replacement(request: dict, state: dict) -> tuple[dict, dict]:
+    previous = state["pending_operation"]
+    if not isinstance(previous, dict):
+        raise TypeError("there is no pending Runner operation to replace")
+    if not str(previous.get("failure") or "").strip():
+        raise ValueError("only a failed Runner operation can be superseded")
+    state["pending_operation"] = None
+    pending = _new_pending_operation(
+        request,
+        state,
+        supersedes=str(previous["id"]),
+    )
+    failed_event = _event_for(
+        state,
+        previous,
+        {"status": "failed", "error": previous["failure"]},
+        status="failed",
+        superseded_by=pending["id"],
+    )
+    state["operation_events"].append(
+        {key: value for key, value in failed_event.items() if key != "campaign_id"}
+    )
+    repository.validate_research_state(state, allow_missing_artifact=True)
+    return pending, failed_event
+
+
+def replace_failed_operation(
+    request: dict,
+    state: dict | None = None,
+) -> dict:
+    original = state or repository.load_state(allow_missing_artifact=True)
+    working = copy.deepcopy(original)
+    _pending, failed_event = _prepare_failed_replacement(request, working)
+    repository.upsert_operation_event(failed_event)
+    repository.write_state(working)
+    original.clear()
+    original.update(copy.deepcopy(working))
+    accepted = original["pending_operation"]
+    _write_accepted_request_handoff(accepted)
+    if not repository.commit_runner_memory(
+        f"supersede {accepted['supersedes']} with {accepted['id']}"
+    ):
+        repository.push_head()
+    return accepted
+
+
+def accept_operation(request: dict, state: dict | None = None) -> dict:
+    state = state or repository.load_state(allow_missing_artifact=True)
+    existing = state["pending_operation"]
+    fingerprint = _canonical_fingerprint(request)
+    if isinstance(existing, dict):
+        if (
+            existing["request_fingerprint"] == fingerprint
+            and existing["request"] == request
+        ):
+            _write_accepted_request_handoff(existing)
+            return existing
+        if not str(existing.get("failure") or "").strip():
+            raise FrozenOperationMismatch(
+                "a different Runner operation is already pending"
+            )
+        return replace_failed_operation(request, state)
+    working = copy.deepcopy(state)
+    _new_pending_operation(request, working)
+    repository.write_state(working)
+    state.clear()
+    state.update(copy.deepcopy(working))
+    accepted = state["pending_operation"]
+    _write_accepted_request_handoff(accepted)
+    return accepted
 
 
 def reaccept_pending_operation(state: dict | None = None) -> dict:
@@ -394,44 +458,7 @@ def reaccept_pending_operation(state: dict | None = None) -> dict:
         raise TypeError("there is no pending Runner operation to reaccept")
     if not str(previous.get("failure") or "").strip():
         raise ValueError("only a failed Runner operation can be reaccepted")
-    request = copy.deepcopy(previous["request"])
-    state["pending_operation"] = None
-    kind = protocol.validate_operation_request(request, state)
-    _validate_new_operation_scientific_delta(state)
-    identifier = protocol.allocate_operation_id(kind, state)
-    session = protocol.require_active_session(state)
-    data = _transaction_data(kind, request, state)
-    pending = {
-        "id": identifier,
-        "kind": kind,
-        "session_id": session["id"],
-        "inquiry_id": session["inquiry_id"],
-        "request": request,
-        "request_fingerprint": _canonical_fingerprint(request),
-        "progress": "accepted",
-        "failure": None,
-        "supersedes": previous["id"],
-        "data": data,
-    }
-    failed_event = _event_for(
-        state,
-        previous,
-        {"status": "failed", "error": previous["failure"]},
-        status="failed",
-        superseded_by=identifier,
-    )
-    repository.upsert_operation_event(failed_event)
-    state["operation_events"].append(
-        {key: value for key, value in failed_event.items() if key != "campaign_id"}
-    )
-    state["pending_operation"] = pending
-    repository.write_state(state)
-    _write_accepted_request_handoff(pending)
-    if not repository.commit_runner_memory(
-        f"supersede {previous['id']} with {identifier}"
-    ):
-        repository.push_head()
-    return pending
+    return replace_failed_operation(copy.deepcopy(previous["request"]), state)
 
 
 def _event_for(
@@ -1606,7 +1633,25 @@ def check_operation() -> int:
     try:
         request = json.loads(paths.OPERATION_REQUEST_PATH.read_text(encoding="utf-8"))
         state = repository.load_state(allow_missing_artifact=True)
-        kind = protocol.validate_operation_request(request, state)
+        working = copy.deepcopy(state)
+        existing = working["pending_operation"]
+        if isinstance(existing, dict):
+            if (
+                existing["request_fingerprint"] == _canonical_fingerprint(request)
+                and existing["request"] == request
+            ):
+                kind = str(existing["kind"])
+            elif str(existing.get("failure") or "").strip():
+                pending, _failed_event = _prepare_failed_replacement(request, working)
+                kind = str(pending["kind"])
+            else:
+                raise FrozenOperationMismatch(
+                    "a different Runner operation is already pending"
+                )
+        else:
+            pending = _new_pending_operation(request, working)
+            repository.validate_research_state(working, allow_missing_artifact=True)
+            kind = str(pending["kind"])
     except PROPOSAL_ERRORS as error:
         print(f"OPERATION_INVALID: {error}")
         return 1
@@ -1776,6 +1821,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--backend-adapter")
     parser.add_argument("--backend-model")
     parser.add_argument("--backend-reasoning")
+    parser.add_argument("--validate-session-backend", action="store_true")
     parser.add_argument("--max-inquiries", type=int)
     parser.add_argument("--synchronize-max-inquiries", type=int)
     parser.add_argument("--check-scientific-model-deliverable", action="store_true")
@@ -1787,26 +1833,27 @@ def parse_args() -> argparse.Namespace:
 
 def main() -> int:
     args = parse_args()
+    if args.validate_session_backend:
+        if not all(
+            (
+                args.backend_adapter,
+                args.backend_model,
+                args.backend_reasoning,
+            )
+        ):
+            raise ValueError(
+                "session backend validation requires adapter, model, and reasoning"
+            )
+        state = repository.load_state(allow_missing_artifact=True)
+        repository.require_scientific_session_backend(
+            state,
+            adapter=args.backend_adapter,
+            model=args.backend_model,
+            reasoning=args.backend_reasoning,
+        )
+        return 0
     if args.synchronize_max_inquiries is not None:
         state = repository.load_state(allow_missing_artifact=True)
-        if state["scientific_session"] is not None:
-            if not all(
-                (
-                    args.backend_adapter,
-                    args.backend_model,
-                    args.backend_reasoning,
-                )
-            ):
-                raise ValueError(
-                    "active session validation requires backend adapter, model, "
-                    "and reasoning"
-                )
-            repository.require_scientific_session_backend(
-                state,
-                adapter=args.backend_adapter,
-                model=args.backend_model,
-                reasoning=args.backend_reasoning,
-            )
         changed = repository.synchronize_max_inquiries(
             state, args.synchronize_max_inquiries
         )
@@ -1903,11 +1950,30 @@ def main() -> int:
         state = repository.load_state(allow_missing_artifact=True)
     if isinstance(state["pending_operation"], dict):
         if state["pending_operation"]["failure"] is not None:
-            print(
-                f"ERROR: pending operation {state['pending_operation']['id']} failed; "
-                "run --reaccept-pending before execution"
-            )
-            return 1
+            if not paths.OPERATION_REQUEST_PATH.is_file():
+                print(
+                    f"ERROR: pending operation {state['pending_operation']['id']} "
+                    "failed; repair it with --reaccept-pending or write a valid "
+                    "replacement operation request"
+                )
+                return 1
+            try:
+                request = json.loads(
+                    paths.OPERATION_REQUEST_PATH.read_text(encoding="utf-8")
+                )
+                if _accepted_request_id(request) == state["pending_operation"]["id"]:
+                    print(
+                        f"ERROR: pending operation "
+                        f"{state['pending_operation']['id']} failed; run "
+                        "--reaccept-pending after implementation repair or replace "
+                        "research/operation_request.json"
+                    )
+                    return 1
+                accept_operation(request, state)
+                return execute_pending_operation()
+            except PROPOSAL_ERRORS as error:
+                print(f"ERROR: invalid replacement operation: {error}")
+                return 1
         return execute_pending_operation()
     if args.execute_pending:
         print("ERROR: there is no pending Runner operation")

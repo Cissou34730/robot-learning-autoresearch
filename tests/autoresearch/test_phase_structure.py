@@ -474,7 +474,7 @@ def test_goal_review_offers_only_goal_choices_and_checkpoint(tmp_path):
     assert any(item.startswith("inquiry open:") for item in operations)
     assert any("request_official_assessment" in item for item in operations)
     assert any("no_credible_route" in item for item in operations)
-    assert any(item.startswith("checkpoint:") for item in operations)
+    assert not any(item.startswith("checkpoint:") for item in operations)
     assert not any(item.startswith("training:") for item in operations)
 
 
@@ -498,7 +498,7 @@ def test_max_inquiries_only_removes_inquiry_creation(tmp_path):
     assert not any(item.startswith("inquiry open:") for item in operations)
     assert any("request_official_assessment" in item for item in operations)
     assert any("no_credible_route" in item for item in operations)
-    assert any(item.startswith("checkpoint:") for item in operations)
+    assert not any(item.startswith("checkpoint:") for item in operations)
 
 
 @powershell_only
@@ -803,6 +803,66 @@ Assert-PITrustSnapshot -Snapshot $snapshot -Root $root
     assert completed.returncode == 0, completed.stderr
 
 
+@powershell_only
+def test_failed_runner_exit_refreshes_snapshot_after_trusted_publication(tmp_path):
+    root = tmp_path / "repo"
+    root.mkdir()
+    _trust_test_repository(root)
+    quoted_root = str(root).replace("'", "''")
+    completed = _run_launcher_trust_script(
+        tmp_path,
+        f"""
+$root = '{quoted_root}'
+$ast = [System.Management.Automation.Language.Parser]::ParseFile(
+    '{SCRIPT_PATH}', [ref]$null, [ref]$null)
+$names = @('Enter-TrustedMutableInvocation', 'Invoke-Runner')
+$definitions = $ast.FindAll({{
+    param($node)
+    $node -is [System.Management.Automation.Language.FunctionDefinitionAst] -and
+        $node.Name -in $names
+}}, $true)
+foreach ($definition in $definitions) {{
+    . ([scriptblock]::Create($definition.Extent.Text))
+}}
+$script:PITrustPreliminary = $false
+$script:PublishedBeforeFailure = $false
+Remove-Item Function:\\New-PITrustSnapshot
+function New-PITrustSnapshot {{
+    param([switch]$Preliminary)
+    [pscustomobject]@{{
+        PublishedBeforeFailure = $script:PublishedBeforeFailure
+        Preliminary = [bool]$Preliminary
+    }}
+}}
+$script:PITrustSnapshot = New-PITrustSnapshot
+function Get-Command {{
+    [pscustomobject]@{{ Source = 'uv.exe' }}
+}}
+function Invoke-CooperativeProcess {{
+    Set-Content -LiteralPath (Join-Path $root 'research\\research_state.json') `
+        -Value '{{"status":"published-before-failure"}}'
+    & git -C $root add research/research_state.json
+    & git -C $root -c user.name=Tests -c user.email=tests@example.invalid `
+        commit -qm 'trusted publication before failure'
+    $script:PublishedBeforeFailure = $true
+    return 1
+}}
+Push-Location $root
+try {{
+    $exitCode = Invoke-Runner
+    if ($exitCode -ne 1) {{ throw "Runner exit status was not preserved." }}
+    if (-not $script:PITrustSnapshot.PublishedBeforeFailure) {{
+        throw "Runner trust snapshot was not refreshed after the failed exit."
+    }}
+}}
+finally {{
+    Pop-Location
+}}
+""",
+    )
+    assert completed.returncode == 0, completed.stderr
+
+
 def test_every_post_pi_mutable_entry_point_uses_the_launcher_gate():
     runner = SCRIPT.split("function Invoke-Runner", 1)[1].split(
         "function Test-StopAfterOperation", 1
@@ -822,11 +882,38 @@ def test_every_post_pi_mutable_entry_point_uses_the_launcher_gate():
 
     for entry_point in (runner, pi, brief_update, operation_check, model_check):
         assert "Enter-TrustedMutableInvocation" in entry_point
-    assert "$exitCode -eq 0" in runner
     assert "New-PITrustSnapshot" in runner
     assert "git status" not in TRUST_SCRIPT
     assert "git diff" not in TRUST_SCRIPT
     assert "git ls-files" not in TRUST_SCRIPT
+
+
+def test_launcher_only_applies_max_inquiries_when_explicitly_bound():
+    assert (
+        '$script:MaxInquiriesExplicit = $PSBoundParameters.ContainsKey("MaxInquiries")'
+        in SCRIPT
+    )
+    synchronization = SCRIPT.split("if ($script:MaxInquiriesExplicit) {", 1)[1].split(
+        "$launchState =", 1
+    )[0]
+    assert '"--synchronize-max-inquiries", "$MaxInquiries"' in synchronization
+    session_start = SCRIPT.split("$startArguments = @(", 1)[1].split(
+        "$exitCode = Invoke-Runner -Arguments $startArguments", 1
+    )[0]
+    assert "if ($script:MaxInquiriesExplicit)" in session_start
+    assert '"--max-inquiries", "$MaxInquiries"' in session_start
+    assert "--validate-session-backend" in SCRIPT
+    assert "Launcher backend descriptor must match" in SCRIPT
+    assert "Explicit launcher MaxInquiries must match" in SCRIPT
+
+
+def test_failed_operation_prompt_allows_correction_or_replacement():
+    repair = SCRIPT.split("$repairPrompt = @(", 1)[1].split(
+        "Invoke-PISession -Prompt $repairPrompt", 1
+    )[0]
+    assert "keeping the accepted request" in repair
+    assert "replace research/operation_request.json" in repair
+    assert "do not replace research/operation_request.json" not in repair
 
 
 @powershell_only

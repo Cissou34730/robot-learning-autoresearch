@@ -528,6 +528,25 @@ def strip_launcher_prefix(tokens: list[str]) -> list[str]:
     return tokens[index:]
 
 
+def uv_run_options(tokens: list[str]) -> list[str]:
+    """Return only uv run's options, stopping before the launched command."""
+    subcommand_index = _uv_subcommand_index(tokens)
+    if (
+        subcommand_index is None
+        or clean_command_token(tokens[subcommand_index]).lower() != "run"
+    ):
+        return []
+    options: list[str] = []
+    index = subcommand_index + 1
+    while index < len(tokens) and tokens[index].startswith("-"):
+        if tokens[index] == "--":
+            break
+        span = _uv_option_span(tokens[index], UV_RUN_FLAG_OPTIONS)
+        options.append(tokens[index])
+        index += span
+    return options
+
+
 def execution_target(tokens: list[str]) -> str | None:
     """What this segment would actually run, ignoring anything it merely names."""
     while tokens and tokens[0] == "&":
@@ -823,8 +842,8 @@ def is_dependency_management(tokens: list[str]) -> bool:
         if operation in {"add", "remove", "sync", "lock", "pip", "tool"}:
             return True
         if operation == "run":
-            run_arguments = lowered[subcommand_index + 1 :]
-            if any(token.startswith(("--with", "-w")) for token in run_arguments):
+            run_options = [token.lower() for token in uv_run_options(tokens)]
+            if any(token.startswith(("--with", "-w")) for token in run_options):
                 return True
             return is_dependency_management(strip_launcher_prefix(tokens))
     if executable in {"pip", "pip3", "pipx"}:

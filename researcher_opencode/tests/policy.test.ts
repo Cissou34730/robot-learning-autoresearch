@@ -139,6 +139,8 @@ test("uv global options cannot hide dependency management", () => {
 test("uv global options preserve fixed-environment project execution", () => {
   for (const command of [
     "uv run python analysis.py",
+    "uv run pytest -W error tests/autoresearch/test_copilot_researcher.py",
+    "uv run python analysis.py -w 5",
     "uv --offline run python analysis.py",
     "uv -n run python analysis.py",
     "uv --project . run python analysis.py",

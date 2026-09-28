@@ -99,6 +99,10 @@ At campaign level the PI chooses one of:
 - open a bounded inquiry addressing a credible obstacle to the goal;
 - conclude that no credible route remains.
 
+A goal-review session cannot checkpoint without making one of those decisions.
+When it opens an inquiry, it checkpoints that decision and transitions to a
+fresh inquiry session.
+
 Opening an inquiry requires:
 
 - a bounded question;

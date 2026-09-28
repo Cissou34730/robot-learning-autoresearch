@@ -338,10 +338,24 @@ def committed_change_paths(parent: str) -> list[str]:
 
 
 def scientific_delta(parent: str) -> list[str]:
-    committed = committed_change_paths(parent) if parent else []
-    return scientific_change_paths(
-        list(dict.fromkeys([*committed, *status_paths((".",))]))
+    from research import runner_protocol as protocol
+
+    committed = scientific_change_paths(
+        committed_change_paths(parent) if parent else []
     )
+    committed_science = [
+        path
+        for path in committed
+        if protocol.is_researcher_owned(path)
+        or path.replace("\\", "/") in protocol.PARAMETER_ONLY_PATHS
+    ]
+    uncommitted = [
+        path
+        for path in status_paths((".",))
+        if not protocol.is_campaign_lab(path)
+        and (not is_runner_owned(path) or protocol.is_human_owned(path))
+    ]
+    return list(dict.fromkeys([*committed_science, *uncommitted]))
 
 
 def require_resolvable_commit(commit: str) -> None:
@@ -1599,12 +1613,6 @@ def _validate_supersession_graph(events: list[dict], pending: dict | None) -> No
             raise ValueError("only a failed operation can be superseded")
         if predecessor.get("superseded_by") != identifier:
             raise ValueError("operation supersession links are not reciprocal")
-        if predecessor["kind"] != node["kind"] or _node_request(
-            predecessor
-        ) != _node_request(node):
-            raise ValueError(
-                "superseding operation must preserve operation kind and request"
-            )
 
     for event in events:
         successor_id = event["superseded_by"]

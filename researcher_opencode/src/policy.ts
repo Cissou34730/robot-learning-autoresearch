@@ -316,6 +316,23 @@ export function stripLauncherPrefix(tokens: string[]): string[] {
   return tokens.slice(index);
 }
 
+/** Return only uv run's options, stopping before the launched command. */
+export function uvRunOptions(tokens: string[]): string[] {
+  const subcommandIndex = uvSubcommandIndex(tokens);
+  if (subcommandIndex === null || tokens[subcommandIndex]!.toLowerCase() !== "run") {
+    return [];
+  }
+  const options: string[] = [];
+  let index = subcommandIndex + 1;
+  while (index < tokens.length && tokens[index]!.startsWith("-")) {
+    if (tokens[index] === "--") break;
+    const span = uvOptionSpan(tokens[index]!, UV_RUN_FLAG_OPTIONS);
+    options.push(tokens[index]!);
+    index += span;
+  }
+  return options;
+}
+
 /** What this segment would actually run, ignoring anything it merely names. */
 export function executionTarget(tokens: string[]): string | null {
   while (tokens[0] === "&") tokens = tokens.slice(1);
@@ -531,9 +548,9 @@ export function isDependencyManagement(tokens: string[]): boolean {
       return true;
     }
     if (operation === "run") {
-      const runArguments = lowered.slice(subcommandIndex + 1);
+      const runOptions = uvRunOptions(tokens).map((token) => token.toLowerCase());
       if (
-        runArguments.some(
+        runOptions.some(
           (token) => token.startsWith("--with") || token.startsWith("-w"),
         )
       ) {

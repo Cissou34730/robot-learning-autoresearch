@@ -135,6 +135,69 @@ def test_every_new_operation_rejects_a_human_owned_scientific_delta(monkeypatch,
         run_experiment.accept_operation({kind: {}}, state)
 
 
+def test_committed_human_harness_delta_does_not_block_scientific_operation(
+    monkeypatch,
+):
+    state = _ready_state(monkeypatch)
+    monkeypatch.setattr(repository, "write_state", lambda _state: None)
+    monkeypatch.setattr(
+        run_experiment, "_write_accepted_request_handoff", lambda _pending: None
+    )
+    monkeypatch.setattr(
+        repository,
+        "committed_change_paths",
+        lambda _parent: ["run_research.ps1"],
+    )
+    monkeypatch.setattr(repository, "status_paths", lambda _scope: [])
+    monkeypatch.setattr(run_experiment.research_config, "load_experiment_config", dict)
+
+    pending = run_experiment.accept_operation(
+        {
+            "training": {
+                "initialization": "fresh",
+                "seed": 1,
+                "steps": 10,
+                "description": "Train after a legitimate harness update.",
+                "rationale": "The result informs the next goal decision.",
+            }
+        },
+        state,
+    )
+
+    assert pending["data"]["scientific_paths"] == []
+
+
+def test_uncommitted_human_harness_delta_still_blocks_scientific_operation(
+    monkeypatch,
+):
+    state = _ready_state(monkeypatch)
+    monkeypatch.setattr(repository, "write_state", lambda _state: None)
+    monkeypatch.setattr(
+        run_experiment, "_write_accepted_request_handoff", lambda _pending: None
+    )
+    monkeypatch.setattr(repository, "committed_change_paths", lambda _parent: [])
+    monkeypatch.setattr(
+        repository,
+        "status_paths",
+        lambda _scope: ["run_research.ps1"],
+    )
+    monkeypatch.setattr(run_experiment.research_config, "load_experiment_config", dict)
+
+    with pytest.raises(ValueError, match="human-owned"):
+        run_experiment.accept_operation(
+            {
+                "training": {
+                    "initialization": "fresh",
+                    "seed": 1,
+                    "steps": 10,
+                    "description": "Do not accept dirty harness code.",
+                    "rationale": "Ownership must be corrected first.",
+                }
+            },
+            state,
+        )
+
+
 def test_protected_assessment_requires_clean_committed_runtime(monkeypatch):
     monkeypatch.setattr(
         repository,
@@ -286,14 +349,12 @@ def test_launcher_restart_validation_rejects_backend_descriptor_change(
 ):
     state = _ready_state(monkeypatch)
     monkeypatch.setattr(repository, "load_state", lambda **_kwargs: state)
-    monkeypatch.setattr(repository, "synchronize_max_inquiries", lambda *_args: False)
     monkeypatch.setattr(
         sys,
         "argv",
         [
             "run_experiment.py",
-            "--synchronize-max-inquiries",
-            "15",
+            "--validate-session-backend",
             "--backend-adapter",
             "opencode",
             "--backend-model",
@@ -306,6 +367,35 @@ def test_launcher_restart_validation_rejects_backend_descriptor_change(
     with pytest.raises(ValueError, match="same adapter, model, and reasoning"):
         run_experiment.main()
 
-    sys.argv[4] = "copilot"
+    sys.argv[3] = "copilot"
     assert run_experiment.main() == 0
+    assert capsys.readouterr().out == ""
+
+
+def test_relaunch_without_max_inquiries_uses_persisted_value(monkeypatch, capsys):
+    state = _ready_state(monkeypatch)
+    state["campaign"]["max_inquiries"] = 7
+    monkeypatch.setattr(repository, "load_state", lambda **_kwargs: state)
+    monkeypatch.setattr(
+        repository,
+        "synchronize_max_inquiries",
+        lambda *_args: pytest.fail("MaxInquiries was synchronized implicitly"),
+    )
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        [
+            "run_experiment.py",
+            "--validate-session-backend",
+            "--backend-adapter",
+            "copilot",
+            "--backend-model",
+            "gpt-5.6-luna",
+            "--backend-reasoning",
+            "high",
+        ],
+    )
+
+    assert run_experiment.main() == 0
+    assert state["campaign"]["max_inquiries"] == 7
     assert capsys.readouterr().out == ""

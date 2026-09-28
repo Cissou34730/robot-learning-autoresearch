@@ -640,6 +640,15 @@ def plan_inquiry_operation(request: dict, state: dict) -> dict:
 
 def plan_checkpoint(request: dict, state: dict) -> dict:
     session = require_active_session(state)
+    if session["kind"] == "goal_review":
+        active = state["active_inquiry"]
+        if (
+            not isinstance(active, dict)
+            or active.get("opened_in_session") != session["id"]
+        ):
+            raise ValueError(
+                "goal-review checkpoint requires an inquiry opened in this session"
+            )
     expected = repository.CHECKPOINT_FIELDS - {
         "session_id",
         "inquiry_id",

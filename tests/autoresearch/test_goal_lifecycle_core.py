@@ -1075,6 +1075,75 @@ def test_failed_operation_can_be_reaccepted_with_repaired_provenance(
     assert events[1]["supersedes"] == "T1"
 
 
+def test_failed_operation_can_be_replaced_by_a_different_valid_request(
+    monkeypatch, tmp_path, capsys
+):
+    state = _configure(monkeypatch, tmp_path)
+    _start_session(state, "startup", "Correct a failed operation.")
+    monkeypatch.setattr(run_experiment.research_config, "load_experiment_config", dict)
+    first = run_experiment.accept_operation(
+        {
+            "training": {
+                "initialization": "fresh",
+                "seed": 7,
+                "steps": 10,
+                "description": "Try the original operation.",
+                "rationale": "Its result would inform the next decision.",
+            }
+        },
+        state,
+    )
+    first["failure"] = "published recipe then runtime failed"
+    repository.write_state(state)
+    replacement = _checkpoint(state)
+    paths.OPERATION_REQUEST_PATH.write_text(
+        json.dumps(replacement),
+        encoding="utf-8",
+    )
+
+    assert run_experiment.check_operation() == 0
+    assert "OPERATION_VALID: checkpoint" in capsys.readouterr().out
+
+    second = run_experiment.accept_operation(
+        replacement,
+        repository.read_state(),
+    )
+    persisted = repository.read_state()
+    failed_event = persisted["operation_events"][0]
+
+    assert second["kind"] == "checkpoint"
+    assert second["supersedes"] == first["id"]
+    assert failed_event["id"] == first["id"]
+    assert failed_event["status"] == "failed"
+    assert failed_event["superseded_by"] == second["id"]
+    assert failed_event["request"] != second["request"]["checkpoint"]
+    assert persisted["scientific_session"]["id"] == first["session_id"]
+
+
+def test_active_nonfailed_operation_cannot_be_replaced(monkeypatch, tmp_path):
+    state = _configure(monkeypatch, tmp_path)
+    _start_session(state, "startup", "Keep one active operation frozen.")
+    monkeypatch.setattr(run_experiment.research_config, "load_experiment_config", dict)
+    run_experiment.accept_operation(
+        {
+            "training": {
+                "initialization": "fresh",
+                "seed": 7,
+                "steps": 10,
+                "description": "Keep this operation active.",
+                "rationale": "Its result informs the next decision.",
+            }
+        },
+        state,
+    )
+
+    with pytest.raises(ValueError, match="different Runner operation"):
+        run_experiment.accept_operation(
+            _checkpoint(state),
+            repository.read_state(),
+        )
+
+
 def test_transfer_parent_is_explicit_and_frozen(monkeypatch, tmp_path):
     state = _configure(monkeypatch, tmp_path)
     _start_session(state, "startup", "Train from a selected candidate.")
@@ -1279,6 +1348,7 @@ def test_official_assessment_rejects_role_backed_only_by_failed_evidence(
 def test_recipe_restoration_is_mechanical_and_does_not_change_roles(
     monkeypatch, tmp_path
 ):
+    scientific_delta = repository.scientific_delta
     state = _configure(monkeypatch, tmp_path)
     session = _start_session(state, "startup", "Restore a selected recipe.")
     artifact = _artifact(tmp_path / "archive" / "candidate")
@@ -1292,7 +1362,13 @@ def test_recipe_restoration_is_mechanical_and_does_not_change_roles(
         }
     }
     monkeypatch.setattr(repository, "require_resolvable_commit", lambda _commit: None)
-    monkeypatch.setattr(repository, "scientific_delta", lambda _commit: [])
+    monkeypatch.setattr(repository, "scientific_delta", scientific_delta)
+    monkeypatch.setattr(
+        repository,
+        "committed_change_paths",
+        lambda _commit: ["run_research.ps1"],
+    )
+    monkeypatch.setattr(repository, "status_paths", lambda _scope: [])
     run_experiment.accept_operation(request, state)
     monkeypatch.setattr(repository, "apply_recipe_restore", lambda _plan: None)
     monkeypatch.setattr(repository, "recipe_paths_match_commit", lambda _plan: True)
@@ -1309,6 +1385,9 @@ def test_recipe_restoration_is_mechanical_and_does_not_change_roles(
     )
     assert persisted["scientific_session"]["id"] == session["id"]
     assert persisted["model_roles"]["working"] is None
+    checkpoint = run_experiment.accept_operation(_checkpoint(persisted), persisted)
+    assert checkpoint["kind"] == "checkpoint"
+    assert checkpoint["data"]["scientific_paths"] == []
 
 
 def test_recipe_restoration_rejects_worktree_changes_after_acceptance(
@@ -1613,7 +1692,28 @@ def test_max_inquiries_is_not_a_training_or_campaign_stopping_rule(
         protocol.validate_operation_request(opening, state)
 
 
-def test_supersession_graph_requires_one_reciprocal_same_request_successor(
+def test_goal_review_checkpoint_requires_opened_inquiry(monkeypatch, tmp_path):
+    state = _configure(monkeypatch, tmp_path)
+    session = _start_session(state, "goal_review", "Make a goal-level decision.")
+    request = _checkpoint(state)["checkpoint"]
+
+    with pytest.raises(ValueError, match="requires an inquiry opened"):
+        protocol.plan_checkpoint(request, state)
+
+    state["active_inquiry"] = {
+        "id": "I1",
+        "question": "Which obstacle matters?",
+        "goal_connection": "It determines the next route toward the goal.",
+        "closure_condition": "Resolve the obstacle.",
+        "rationale": "The answer changes the next decision.",
+        "opened_in_session": session["id"],
+        "reframes": [],
+    }
+    planned = protocol.plan_checkpoint(request, state)
+    assert planned["session_id"] == session["id"]
+
+
+def test_supersession_graph_requires_one_reciprocal_failed_successor(
     monkeypatch, tmp_path
 ):
     state = _configure(monkeypatch, tmp_path)
@@ -1644,12 +1744,6 @@ def test_supersession_graph_requires_one_reciprocal_same_request_successor(
     nonreciprocal = json.loads(json.dumps(valid))
     nonreciprocal["operation_events"][0]["superseded_by"] = "T3"
     cases.append((nonreciprocal, "not reciprocal"))
-
-    changed_request = json.loads(json.dumps(valid))
-    changed_request["pending_operation"]["request"]["training"]["description"] = (
-        "Different request"
-    )
-    cases.append((changed_request, "preserve operation kind and request"))
 
     cyclic = json.loads(json.dumps(valid))
     cyclic["operation_events"][0]["supersedes"] = second["id"]

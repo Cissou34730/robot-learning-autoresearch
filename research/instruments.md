@@ -17,8 +17,10 @@ The Runner validates the request, assigns an operation identity, freezes its
 inputs in `research/research_state.json`, executes it, records the completed
 event in state and `research/results.jsonl`, updates `research/EXPERIMENTS.md`,
 and removes the consumed request. A failed transaction remains in
-`pending_operation`; reacceptance preserves the request and assigns a
-superseding operation identity after implementation repair.
+`pending_operation`. After implementation repair, reacceptance preserves the
+request and assigns a superseding operation identity. The PI may instead write
+a different valid request; the Runner records the failed attempt, accepts the
+replacement under a new identity, and links the two attempts reciprocally.
 
 Measurement identities are `M#`, training identities are `T#`, and other event
 identities are `E#`.
@@ -26,7 +28,8 @@ identities are `E#`.
 Operation availability is strict:
 
 - `startup`: measurement, training, model role, recipe restoration, checkpoint;
-- `goal_review`: inquiry open, campaign conclusion, checkpoint;
+- `goal_review`: inquiry open or campaign conclusion; checkpoint becomes
+  available only after that session opens the inquiry;
 - `inquiry`: measurement, training, model role, recipe restoration, inquiry
   reframe or close, checkpoint.
 

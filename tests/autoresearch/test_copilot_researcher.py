@@ -271,6 +271,8 @@ def test_uv_global_options_cannot_hide_dependency_management(command):
 def test_uv_run_uses_the_fixed_environment_without_being_obstructed():
     for command in (
         "uv run python analysis.py",
+        "uv run pytest -W error tests/autoresearch/test_copilot_researcher.py",
+        "uv run python analysis.py -w 5",
         "uv --offline run python analysis.py",
         "uv -n run python analysis.py",
         "uv --project . run python analysis.py",
