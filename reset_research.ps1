@@ -21,7 +21,6 @@ param(
     [Parameter(Mandatory, ParameterSetName = "Recover")][string]$Recover,
     [string]$RecipeRef,
     [string]$BaselineRef,
-    [string]$TrainingLogSource = $PSScriptRoot,
     [switch]$Clean,
     [switch]$Force
 )
@@ -32,11 +31,11 @@ Set-Location $PSScriptRoot
 if (-not $Force) {
     throw "Stop the campaign first and pass -Force to confirm the reset or recovery."
 }
-if ($Recover -and ($RecipeRef -or $BaselineRef -or $Clean -or $PSBoundParameters.ContainsKey("TrainingLogSource"))) {
+if ($Recover -and ($RecipeRef -or $BaselineRef -or $Clean)) {
     throw "Recovery accepts -Recover and -Force only."
 }
-if (-not $Recover -and $Mode -eq "Fresh" -and ($BaselineRef -or $PSBoundParameters.ContainsKey("TrainingLogSource"))) {
-    throw "Fresh accepts optional -RecipeRef only; -BaselineRef and -TrainingLogSource are Baseline-only."
+if (-not $Recover -and $Mode -eq "Fresh" -and $BaselineRef) {
+    throw "Fresh accepts optional -RecipeRef only; -BaselineRef is Baseline-only."
 }
 if ($Mode -eq "Baseline" -and (-not $BaselineRef -or $RecipeRef)) {
     throw "Baseline requires -BaselineRef and does not accept -RecipeRef."
@@ -65,9 +64,6 @@ try {
         $arguments = @("--mode", $Mode.ToLowerInvariant())
         if ($RecipeRef) { $arguments += @("--recipe-ref", $RecipeRef) }
         if ($BaselineRef) { $arguments += @("--baseline-ref", $BaselineRef) }
-        if ($Mode -eq "Baseline" -and $TrainingLogSource) {
-            $arguments += @("--training-log-source", $TrainingLogSource)
-        }
         if ($Clean) { $arguments += "--clean" }
     }
     uv run python research/reset_campaign.py @arguments

@@ -61,6 +61,11 @@ TASK_COMPATIBILITY_PATHS = (
     "robot_learning/robots/two_joint_arm.xml",
 )
 RESET_OPERATION_VERSION = 1
+BASELINE_ARTIFACT_ROOTS = (
+    "research/checkpoints/candidates",
+    "research/checkpoints/retained",
+)
+BASELINE_EVALUATION_ROOT = "research/evaluations"
 
 
 def git(*arguments: str, text: bool = True) -> str | bytes:
@@ -148,11 +153,80 @@ def path_fingerprint(path: Path) -> str:
     return digest.hexdigest()
 
 
-def normalize_targets(relative_paths: list[str]) -> list[str]:
+def canonical_import_path(relative: str, description: str) -> str:
+    try:
+        normalized = repository.canonical_repo_path(relative)
+    except ValueError as error:
+        raise ValueError(f"{description} is invalid: {relative}") from error
+    safe_path(normalized)
+    return normalized
+
+
+def path_is_below(relative: str, root: str) -> bool:
+    return relative.startswith(f"{root}/") and relative != root
+
+
+def validate_scientific_restore_path(relative: str) -> str:
+    normalized = canonical_import_path(relative, "scientific recipe path")
+    if protocol.is_campaign_lab(normalized) or not (
+        protocol.is_researcher_owned(normalized)
+        or normalized in protocol.PARAMETER_ONLY_PATHS
+    ):
+        raise ValueError(
+            f"scientific recipe path is outside the permitted surface: {normalized}"
+        )
+    return normalized
+
+
+def validate_artifact_directory(relative: str) -> str:
+    normalized = canonical_import_path(relative, "baseline artifact path")
+    if not any(path_is_below(normalized, root) for root in BASELINE_ARTIFACT_ROOTS):
+        raise ValueError(
+            "baseline artifact path must be below an approved checkpoint archive "
+            f"root: {normalized}"
+        )
+    return normalized
+
+
+def validate_evaluation_artifact_path(relative: str) -> str:
+    normalized = canonical_import_path(relative, "baseline evaluation artifact path")
+    if not path_is_below(normalized, BASELINE_EVALUATION_ROOT):
+        raise ValueError(
+            "baseline evaluation artifact must be below research/evaluations: "
+            f"{normalized}"
+        )
+    return normalized
+
+
+def is_baseline_artifact_file(relative: str) -> bool:
+    names = {
+        *repository.ARTIFACT_FILES,
+        *repository.INFERENCE_ARTIFACT_FILES,
+        *repository.OPTIONAL_ARTIFACT_FILES,
+    }
+    return Path(relative).name in names and any(
+        path_is_below(str(Path(relative).parent).replace("\\", "/"), root)
+        for root in BASELINE_ARTIFACT_ROOTS
+    )
+
+
+def validate_reset_targets(mode: str, relative_paths: list[str]) -> list[str]:
     normalized: list[str] = []
     for relative in dict.fromkeys(relative_paths):
-        target = safe_path(relative)
-        normalized.append(target.relative_to(paths.ROOT.resolve()).as_posix())
+        target = canonical_import_path(relative, "reset target")
+        allowed = target in CAMPAIGN_PATHS
+        if not allowed:
+            try:
+                allowed = validate_scientific_restore_path(target) == target
+            except ValueError:
+                allowed = False
+        if mode == "baseline" and not allowed:
+            allowed = is_baseline_artifact_file(target) or path_is_below(
+                target, BASELINE_EVALUATION_ROOT
+            )
+        if not allowed:
+            raise ValueError(f"reset target is outside the permitted scope: {target}")
+        normalized.append(target)
     return normalized
 
 
@@ -163,7 +237,7 @@ def new_operation(mode: str, source: str | None, targets: list[str]) -> dict:
         "source_commit": source,
         "original_head": str(git("rev-parse", "HEAD")).strip(),
         "repository": repository_identity(),
-        "targeted_paths": normalize_targets(targets),
+        "targeted_paths": validate_reset_targets(mode, targets),
         "pre_reset": [],
         "commits": [],
         "progress": "planned",
@@ -328,14 +402,12 @@ def scientific_plan(commit: str) -> dict:
         for relative in plan[field]:
             if protocol.is_campaign_lab(relative):
                 continue
-            if not (
-                protocol.is_researcher_owned(relative)
-                or relative in protocol.PARAMETER_ONLY_PATHS
-            ):
+            try:
+                destination.append(validate_scientific_restore_path(relative))
+            except ValueError as error:
                 raise RuntimeError(
                     f"recipe plan contains a non-scientific path: {relative}"
-                )
-            destination.append(relative)
+                ) from error
     return {
         "parent": plan["parent"],
         "restore": restore,
@@ -367,6 +439,7 @@ def verify_recipe_source(commit: str) -> None:
 
 
 def artifact_fingerprint_at_commit(commit: str, artifact: str) -> str:
+    artifact = validate_artifact_directory(artifact)
     digest = hashlib.sha256()
     for name in (*repository.ARTIFACT_FILES, *repository.OPTIONAL_ARTIFACT_FILES):
         relative = f"{artifact.rstrip('/')}/{name}"
@@ -383,11 +456,19 @@ def artifact_fingerprint_at_commit(commit: str, artifact: str) -> str:
 
 
 def baseline_restore_paths(commit: str, candidate: dict) -> list[str]:
+    artifact = validate_artifact_directory(str(candidate["artifact"]).rstrip("/"))
+    evaluation_artifacts = [
+        validate_evaluation_artifact_path(relative)
+        for relative in candidate["evaluation_artifacts"]
+    ]
+    if not evaluation_artifacts:
+        raise ValueError(
+            "BaselineRef candidate requires at least one committed evaluation artifact"
+        )
     source = commit_files(commit)
-    artifact = str(candidate["artifact"]).rstrip("/")
     required = {
         *(f"{artifact}/{name}" for name in repository.INFERENCE_ARTIFACT_FILES),
-        *candidate["evaluation_artifacts"],
+        *evaluation_artifacts,
         "research/scientific_model.md",
     }
     missing = sorted(required - source)
@@ -568,16 +649,13 @@ def validate_recovery_operation(operation_path: str) -> tuple[Path, dict]:
         )
     ):
         raise ValueError("reset recovery operation has an invalid target manifest")
-    for relative in targets:
-        safe_path(relative)
-        if not (
-            path_is_covered(relative, list(CAMPAIGN_PATHS))
-            or protocol.is_researcher_owned(relative)
-            or relative in protocol.PARAMETER_ONLY_PATHS
-        ):
-            raise ValueError(
-                f"reset recovery operation contains an unsafe target: {relative}"
-            )
+    try:
+        if validate_reset_targets(operation["mode"], targets) != targets:
+            raise ValueError
+    except ValueError as error:
+        raise ValueError(
+            "reset recovery operation contains an unsafe target"
+        ) from error
     backup_files = candidate.parent / "files"
     for entry in entries:
         backup_path = backup_files / entry["path"]
@@ -764,6 +842,10 @@ def baseline_state(
     base_commit: str,
     recipe_source: str,
 ) -> dict:
+    if not candidate["evaluation_artifacts"]:
+        raise ValueError(
+            "imported candidate requires at least one committed evaluation artifact"
+        )
     state = empty_state(base_commit, recipe_source)
     candidate_id = str(candidate["id"])
     state["scientific_model"] = copy.deepcopy(source_state["scientific_model"])
@@ -817,10 +899,7 @@ def reset_fresh(recipe_ref: str | None) -> tuple[str, str | None, Path]:
     return str(state["campaign"]["id"]), source, backup
 
 
-def reset_baseline(
-    reference: str, training_log_source: str | None
-) -> tuple[str, str, Path]:
-    del training_log_source
+def reset_baseline(reference: str) -> tuple[str, str, Path]:
     source = resolve_commit(reference, "BaselineRef")
     source_state, candidate, restore, recipe_plan = verify_baseline_source(source)
     targets = sorted({*CAMPAIGN_PATHS, *restore, *plan_paths(recipe_plan)})
@@ -874,7 +953,6 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--clean", action="store_true")
     parser.add_argument("--recipe-ref")
     parser.add_argument("--baseline-ref")
-    parser.add_argument("--training-log-source")
     return parser.parse_args()
 
 
@@ -882,12 +960,7 @@ def main() -> int:
     args = parse_args()
     try:
         if args.recover:
-            if (
-                args.recipe_ref
-                or args.baseline_ref
-                or args.training_log_source
-                or args.clean
-            ):
+            if args.recipe_ref or args.baseline_ref or args.clean:
                 raise ValueError("recovery accepts --recover only, without --clean")
             backup, commit, _ = recover_reset(args.recover)
             print("=== Research reset recovered ===")
@@ -895,12 +968,16 @@ def main() -> int:
             print(f"Recovery commit: {commit or 'none required'}")
             return 0
         if args.mode == "fresh":
-            if args.baseline_ref or args.training_log_source:
+            if args.baseline_ref:
                 raise ValueError("fresh accepts --recipe-ref only")
         elif not args.baseline_ref or args.recipe_ref:
             raise ValueError(
                 "baseline requires --baseline-ref and rejects --recipe-ref"
             )
+        baseline_source = None
+        if args.mode == "baseline":
+            baseline_source = resolve_commit(args.baseline_ref, "BaselineRef")
+            verify_baseline_source(baseline_source)
         ensure_clean_repository(
             clean=args.clean,
             recipe_ref=args.recipe_ref if args.mode == "fresh" else None,
@@ -917,9 +994,7 @@ def main() -> int:
                 "No trained model, score, evidence, or prior designation was imported."
             )
         else:
-            campaign_id, source, backup = reset_baseline(
-                args.baseline_ref, args.training_log_source
-            )
+            campaign_id, source, backup = reset_baseline(str(baseline_source))
             print("=== Research state reset ===")
             print(f"Prepared model restored from {source}.")
             print(f"New campaign ID: {campaign_id}.")

@@ -13,8 +13,8 @@ branch or worktree, starts training, or changes the research loop.
 Preserves the current code, parameters, tests, task and protocol decision log.
 Removes campaign checkpoints, disposable candidates, evaluation artifacts,
 training logs, stale requests and generated summaries. Initializes empty
-research history with a new campaign identity and `BASELINE_PENDING`.
-The next normal launch trains the baseline. This is not a restore from main
+schema-6 research history with a new campaign identity, a pending scientific
+model, and no working or best-known candidate. This is not a restore from main
 or from historical scientific code.
 
 ## Baseline
@@ -23,45 +23,32 @@ or from historical scientific code.
 .\reset_research.ps1 -Mode Baseline -BaselineRef <commit-or-tag> -Force
 ```
 
-The Git reference must contain a completed, measured, closed experiment 1,
-before experiment 2, with no pending operations, retained alternatives or final
-benchmark result. Keep a reference to that prepared state to repeat comparisons.
+The Git reference must contain one prepared schema-6 candidate designated as
+both working and best-known, with a ready scientific model and at least one
+committed evaluation artifact. Keep a reference to that prepared state to
+repeat comparisons.
 
 Restores:
 
-- researcher-owned scenario and training files, application entry points and
-  their scientific tests, including removal of files absent from the baseline;
-- scenario description and parameters;
-- the accepted policy and all its associated files, including `policy_runtime.pkl`;
-- baseline research state, history, postmortem, detailed evaluations and raw
-  experiment-1 training logs.
+- the candidate's scientific recipe, limited to the researcher-owned scientific
+  surface and `research/current_params.json`;
+- the candidate inference artifact, including `policy_runtime.pkl`, from
+  `research/checkpoints/candidates/` or `research/checkpoints/retained/`;
+- committed candidate evaluation evidence under `research/evaluations/`;
+- the scientific model used by the prepared source.
 
 Preserves the current harness, protocol, instrument catalog, protected runtime,
 protected evaluators/adapters, and human-owned tests. The robot assets and task
 constants must match the baseline; a mismatch is refused before any cleanup.
-The mode does not restore the entire `robot_learning` directory.
-
-The baseline campaign identity and its evidence stay together. Later campaign
-data and pending controls are removed. The next launch starts experiment 2,
-not another baseline training. Generated briefs are rebuilt by the launcher.
+The mode does not restore the entire `robot_learning` directory. Every source
+artifact and restore target is validated before backup creation or cleanup;
+protected, out-of-scope, misplaced checkpoint, and misplaced evaluation paths
+are refused.
 
 Legacy checkpoints without the executable runtime are refused. Prepare a
 compatible baseline explicitly; see [policy migration](policy-runtime.md).
 The reset checks baseline structure and required files, not policy performance;
 normal runtime integrity checks still apply when a saved policy is loaded.
-
-If the baseline's logs are not versioned, they must still exist under
-`research/training_logs/<baseline-campaign-id>/`. By default they are read from
-the current worktree **before** cleanup. To read them from an existing backup:
-
-```powershell
-.\reset_research.ps1 -Mode Baseline -BaselineRef <commit-or-tag> `
-  -TrainingLogSource C:\path\to\saved-repository -Force
-```
-
-The logs are copied to temporary storage before cleanup and then versioned in
-the reset commit. That resulting commit can serve as a self-contained prepared
-baseline reference for subsequent resets. No new worktree is created.
 
 ## Recovery
 

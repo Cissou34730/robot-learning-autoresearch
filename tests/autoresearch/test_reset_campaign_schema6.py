@@ -5,6 +5,7 @@ from __future__ import annotations
 import copy
 import hashlib
 import json
+import sys
 from pathlib import Path
 
 import pytest
@@ -205,6 +206,20 @@ def test_baseline_import_builds_clean_schema6_state():
     assert state["official_assessment"] is None
 
 
+def test_baseline_import_requires_evaluation_before_assigning_roles():
+    candidate = _candidate("f" * 64)
+    candidate["evaluation_artifacts"] = []
+    source_state = _prepared_source_state(candidate)
+
+    with pytest.raises(ValueError, match="committed evaluation artifact"):
+        reset_campaign.baseline_state(
+            source_state,
+            candidate,
+            base_commit="base",
+            recipe_source=candidate["scientific_commit"],
+        )
+
+
 def test_baseline_source_requires_one_schema6_prepared_candidate(monkeypatch):
     contents = {
         "model.zip": b"model",
@@ -262,6 +277,113 @@ def test_baseline_source_requires_one_schema6_prepared_candidate(monkeypatch):
     monkeypatch.setattr(reset_campaign, "git_json", lambda *_args: legacy)
     with pytest.raises(ValueError, match="schema 6"):
         reset_campaign.verify_baseline_source("source")
+
+
+@pytest.mark.parametrize(
+    ("field", "value", "message"),
+    [
+        (
+            "artifact",
+            "robot_learning/benchmark/reference",
+            "approved checkpoint archive root",
+        ),
+        (
+            "evaluation_artifacts",
+            ["research/program.md"],
+            "below research/evaluations",
+        ),
+        (
+            "evaluation_artifacts",
+            [],
+            "committed evaluation artifact",
+        ),
+    ],
+)
+def test_baseline_source_rejects_out_of_scope_restore_paths(
+    monkeypatch, field, value, message
+):
+    candidate = _candidate("f" * 64)
+    candidate[field] = value
+    state = _prepared_source_state(candidate)
+    monkeypatch.setattr(reset_campaign, "git_json", lambda *_args: state)
+    monkeypatch.setattr(reset_campaign, "resolve_commit", lambda value, _label: value)
+    monkeypatch.setattr(reset_campaign, "git_bytes", lambda *_args: b"scientific model")
+    monkeypatch.setattr(
+        reset_campaign, "verify_task_compatibility", lambda _commit: None
+    )
+
+    with pytest.raises(ValueError, match=message):
+        reset_campaign.verify_baseline_source("source")
+
+
+def test_invalid_baseline_target_is_rejected_before_backup(monkeypatch):
+    candidate = _candidate("f" * 64)
+    state = _prepared_source_state(candidate)
+    monkeypatch.setattr(reset_campaign, "resolve_commit", lambda value, _label: value)
+    monkeypatch.setattr(
+        reset_campaign,
+        "verify_baseline_source",
+        lambda _commit: (
+            state,
+            candidate,
+            ["research/program.md"],
+            {"parent": "source", "restore": [], "remove_created": []},
+        ),
+    )
+    monkeypatch.setattr(
+        reset_campaign,
+        "create_backup",
+        lambda *_args: pytest.fail("backup must not be created"),
+    )
+
+    with pytest.raises(ValueError, match="outside the permitted scope"):
+        reset_campaign.reset_baseline("source")
+
+
+def test_baseline_cli_validates_source_before_cleaning(monkeypatch):
+    monkeypatch.setattr(
+        reset_campaign,
+        "parse_args",
+        lambda: reset_campaign.argparse.Namespace(
+            mode="baseline",
+            recover=None,
+            clean=True,
+            recipe_ref=None,
+            baseline_ref="source",
+        ),
+    )
+    monkeypatch.setattr(reset_campaign, "resolve_commit", lambda *_args: "source")
+    monkeypatch.setattr(
+        reset_campaign,
+        "verify_baseline_source",
+        lambda _commit: (_ for _ in ()).throw(ValueError("invalid source path")),
+    )
+    monkeypatch.setattr(
+        reset_campaign,
+        "ensure_clean_repository",
+        lambda **_kwargs: pytest.fail("cleaning must not start"),
+    )
+
+    assert reset_campaign.main() == 1
+
+
+def test_retired_training_log_source_argument_is_rejected(monkeypatch):
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        [
+            "reset_campaign.py",
+            "--mode",
+            "baseline",
+            "--baseline-ref",
+            "source",
+            "--training-log-source",
+            "archive",
+        ],
+    )
+
+    with pytest.raises(SystemExit):
+        reset_campaign.parse_args()
 
 
 def test_clean_reset_refuses_and_preserves_unrelated_untracked_files(monkeypatch):
