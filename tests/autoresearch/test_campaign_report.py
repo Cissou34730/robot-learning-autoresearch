@@ -214,8 +214,37 @@ def _campaign_repository(tmp_path):
             "evidence": ["T2", "M2"],
         },
     )
-    inquiry_close = _event(
+    checkpoint_request = {
+        "human_goal_connection": (
+            "The measured candidate is the current route toward the human goal."
+        ),
+        "current_goal_gap": "The final protected assessment is still outstanding.",
+        "current_synthesis": (
+            "Training and development measurements support goal review."
+        ),
+        "evidence_references": ["T2", "M2"],
+        "decision_frontier": (
+            "Choose whether the recorded evidence supports closing the inquiry."
+        ),
+        "completed_operations": ["E1", "T2", "M2", "E2"],
+        "candidates_and_roles": (
+            "T2:checkpoint-10 is best-known and retained for assessment."
+        ),
+        "next_direction_or_closure": (
+            "Close the inquiry and request official assessment."
+        ),
+        "cumulative_resource_use": (
+            "Two training attempts, two measurement attempts, one inquiry."
+        ),
+    }
+    checkpoint_event = _event(
         "E3",
+        "checkpoint",
+        checkpoint_request,
+        {"status": "completed", "session_id": "S1"},
+    )
+    inquiry_close = _event(
+        "E4",
         "inquiry",
         {
             "action": "close",
@@ -231,7 +260,7 @@ def _campaign_repository(tmp_path):
         },
     )
     conclusion = _event(
-        "E4",
+        "E5",
         "campaign_conclusion",
         {
             "action": "request_official_assessment",
@@ -248,6 +277,7 @@ def _campaign_repository(tmp_path):
         failed_measurement,
         completed_measurement,
         role_event,
+        checkpoint_event,
         inquiry_close,
         conclusion,
     ]
@@ -256,7 +286,13 @@ def _campaign_repository(tmp_path):
         "session": 2,
         "measurement": 2,
         "training": 2,
-        "event": 4,
+        "event": 5,
+    }
+    state["pi_checkpoint"] = {
+        "session_id": "S1",
+        "inquiry_id": "I1",
+        **checkpoint_request,
+        "scientific_commit": candidate["scientific_commit"],
     }
     state["candidates"] = {candidate_id: candidate}
     state["model_roles"] = {
@@ -333,6 +369,22 @@ def test_report_accounts_for_schema6_lifecycle_without_retired_shapes(tmp_path):
     assert "2 | 1 | M2, M2 | yes" in report
     assert "Model-role assignment history" in report
     assert "set_best_known" in report
+    assert "Operation decisions" in report
+    assert "Train the current recipe." in report
+    assert "Learning dynamics inform the route." in report
+    assert "The explicitly selected model is ready." in report
+    assert "Checkpoint history" in report
+    assert (
+        "The measured candidate is the current route toward the human goal." in report
+    )
+    assert "The final protected assessment is still outstanding." in report
+    assert "Training and development measurements support goal review." in report
+    assert "T2, M2" in report
+    assert (
+        "Choose whether the recorded evidence supports closing the inquiry." in report
+    )
+    assert "Close the inquiry and request official assessment." in report
+    assert "Two training attempts, two measurement attempts, one inquiry." in report
     assert "Does the selected route close the goal gap?" in report
     assert "official_assessment_passed" in report
     assert "success 98.0%; 200 episodes" in report
@@ -349,7 +401,7 @@ def test_report_requires_exact_current_schema6_state(tmp_path):
         json.dumps(state), encoding="utf-8"
     )
 
-    with pytest.raises(RuntimeError, match="schema 6 only"):
+    with pytest.raises(RuntimeError, match="unsupported research state schema"):
         campaign_report.load_campaign(tmp_path)
 
     state["schema_version"] = 6
@@ -357,5 +409,61 @@ def test_report_requires_exact_current_schema6_state(tmp_path):
     (tmp_path / "research" / "research_state.json").write_text(
         json.dumps(state), encoding="utf-8"
     )
-    with pytest.raises(ValueError, match="pending_analysis"):
+    with pytest.raises(RuntimeError, match="pending_analysis"):
+        campaign_report.load_campaign(tmp_path)
+
+
+@pytest.mark.parametrize("defect", ["duplicate", "reordered", "content", "foreign"])
+def test_report_rejects_non_exact_results_history(tmp_path, defect):
+    state = _campaign_repository(tmp_path)
+    path = tmp_path / "research" / "results.jsonl"
+    rows = [
+        {"campaign_id": state["campaign"]["id"], **event}
+        for event in state["operation_events"]
+    ]
+    if defect == "duplicate":
+        rows.append(copy.deepcopy(rows[-1]))
+        message = "duplicate results operation event id"
+    elif defect == "reordered":
+        rows[0], rows[1] = rows[1], rows[0]
+        message = "in order and content"
+    elif defect == "content":
+        rows[0]["completed_at"] = "2026-01-02T00:00:00Z"
+        message = "in order and content"
+    else:
+        rows[0]["campaign_id"] = "22222222-2222-2222-2222-222222222222"
+        message = "foreign campaign"
+    path.write_text(
+        "".join(json.dumps(row) + "\n" for row in rows),
+        encoding="utf-8",
+    )
+
+    with pytest.raises(ValueError, match=message):
+        campaign_report.load_campaign(tmp_path)
+
+
+def test_report_rejects_dangling_supersession(tmp_path):
+    state = _campaign_repository(tmp_path)
+    failed = next(event for event in state["operation_events"] if event["id"] == "T1")
+    successor = next(
+        event for event in state["operation_events"] if event["id"] == "T2"
+    )
+    failed["superseded_by"] = "T999"
+    successor["supersedes"] = None
+    (tmp_path / "research" / "research_state.json").write_text(
+        json.dumps(state), encoding="utf-8"
+    )
+
+    with pytest.raises(ValueError, match="superseded_by link is dangling"):
+        campaign_report.load_campaign(tmp_path)
+
+
+def test_report_rejects_unknown_role_candidate(tmp_path):
+    state = _campaign_repository(tmp_path)
+    state["model_roles"]["working"] = "T999:missing"
+    (tmp_path / "research" / "research_state.json").write_text(
+        json.dumps(state), encoding="utf-8"
+    )
+
+    with pytest.raises(ValueError, match="working names an unknown candidate"):
         campaign_report.load_campaign(tmp_path)

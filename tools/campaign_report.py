@@ -7,55 +7,10 @@ import json
 from collections import Counter, defaultdict
 from pathlib import Path
 
+from research import runner_repository
+
 ROOT = Path(__file__).resolve().parents[1]
 NA = "unavailable"
-STATE_FIELDS = {
-    "schema_version",
-    "campaign",
-    "human_goal",
-    "scientific_model",
-    "active_inquiry",
-    "pi_checkpoint",
-    "scientific_session",
-    "counters",
-    "operation_events",
-    "pending_operation",
-    "model_roles",
-    "candidates",
-    "terminal_state",
-    "official_assessment",
-    "last_verdict",
-}
-CAMPAIGN_FIELDS = {
-    "id",
-    "started_at",
-    "base_commit",
-    "recipe_source_commit",
-    "max_inquiries",
-}
-COUNTER_FIELDS = {"inquiry", "session", "measurement", "training", "event"}
-EVENT_FIELDS = {
-    "id",
-    "kind",
-    "session_id",
-    "inquiry_id",
-    "request",
-    "result",
-    "status",
-    "error",
-    "supersedes",
-    "superseded_by",
-    "completed_at",
-}
-OPERATION_KINDS = {
-    "measurement",
-    "training",
-    "inquiry",
-    "checkpoint",
-    "model_role",
-    "restore_recipe",
-    "campaign_conclusion",
-}
 
 
 def read_json(path: Path) -> dict:
@@ -95,40 +50,6 @@ def require_fields(value: object, fields: set[str], description: str) -> dict:
             f"missing={sorted(missing)}, extra={sorted(extra)}"
         )
     return value
-
-
-def validate_event(event: object, description: str) -> dict:
-    event = require_fields(event, EVENT_FIELDS, description)
-    if event["kind"] not in OPERATION_KINDS:
-        raise ValueError(f"{description} has an unsupported operation kind")
-    if event["status"] not in {"completed", "failed"}:
-        raise ValueError(f"{description} status must be completed or failed")
-    if not isinstance(event["request"], dict) or not isinstance(event["result"], dict):
-        raise TypeError(f"{description} request and result must be objects")
-    if event["status"] == "completed":
-        if event["error"] is not None or event["superseded_by"] is not None:
-            raise ValueError(f"{description} completed provenance is invalid")
-    elif not event["error"] or not event["superseded_by"]:
-        raise ValueError(f"{description} failed provenance is incomplete")
-    return event
-
-
-def validate_state(state: dict) -> None:
-    if state.get("schema_version") != 6:
-        raise RuntimeError("campaign report supports schema 6 only")
-    require_fields(state, STATE_FIELDS, "research state")
-    campaign = require_fields(state["campaign"], CAMPAIGN_FIELDS, "campaign")
-    if not campaign["id"]:
-        raise ValueError("campaign id is required")
-    require_fields(state["counters"], COUNTER_FIELDS, "counters")
-    if not isinstance(state["operation_events"], list):
-        raise TypeError("operation_events must be a list")
-    identifiers: set[str] = set()
-    for index, event in enumerate(state["operation_events"], 1):
-        event = validate_event(event, f"operation event {index}")
-        if event["id"] in identifiers:
-            raise ValueError(f"duplicate operation event id: {event['id']}")
-        identifiers.add(event["id"])
 
 
 def cell(value: object) -> str:
@@ -179,7 +100,7 @@ def usage_total(rows: list[dict], field: str) -> str:
 
 def load_campaign(repo: Path, campaign_id: str | None = None) -> dict:
     state = read_json(repo / "research" / "research_state.json")
-    validate_state(state)
+    runner_repository.validate_research_state(state, allow_missing_artifact=True)
     current_id = str(state["campaign"]["id"])
     if campaign_id is not None and campaign_id != current_id:
         raise ValueError(
@@ -188,21 +109,25 @@ def load_campaign(repo: Path, campaign_id: str | None = None) -> dict:
         )
 
     history = read_rows(repo / "research" / "results.jsonl")
-    history_by_id: dict[str, dict] = {}
+    history_events: list[dict] = []
+    history_ids: set[str] = set()
     for index, row in enumerate(history, 1):
-        fields = EVENT_FIELDS | {"campaign_id"}
+        fields = set(runner_repository.EVENT_FIELDS) | {"campaign_id"}
         row = require_fields(row, fields, f"results row {index}")
         if row["campaign_id"] != current_id:
-            continue
-        event = validate_event(
-            {key: value for key, value in row.items() if key != "campaign_id"},
-            f"results row {index}",
+            raise ValueError(
+                f"results row {index} belongs to foreign campaign "
+                f"{row['campaign_id']!r}"
+            )
+        if row["id"] in history_ids:
+            raise ValueError(f"duplicate results operation event id: {row['id']}")
+        history_ids.add(row["id"])
+        history_events.append(
+            {field: row[field] for field in runner_repository.EVENT_FIELDS}
         )
-        history_by_id[event["id"]] = event
-    state_by_id = {event["id"]: event for event in state["operation_events"]}
-    if history_by_id != state_by_id:
+    if history_events != state["operation_events"]:
         raise ValueError(
-            "current campaign results.jsonl does not exactly match operation_events"
+            "results.jsonl does not exactly match operation_events in order and content"
         )
 
     usage = [
@@ -352,6 +277,42 @@ def operation_summary(event: dict) -> str:
     if kind == "restore_recipe":
         return f"restored {result['candidate']} from {short_commit(result['scientific_commit'])}"
     return f"{result['status']}; model {result['model'] or 'none'}; {request['reason']}"
+
+
+def operation_decision_rows(campaign: dict) -> list[list[object]]:
+    return [
+        [
+            event["id"],
+            event["kind"],
+            event["status"],
+            event["request"].get("description"),
+            event["request"].get("rationale"),
+            event["request"].get("reason"),
+        ]
+        for event in campaign["events"]
+    ]
+
+
+def checkpoint_history_rows(campaign: dict) -> list[list[object]]:
+    rows: list[list[object]] = []
+    for event in completed_events(campaign, "checkpoint"):
+        checkpoint = event["request"]
+        rows.append(
+            [
+                event["id"],
+                event["session_id"],
+                event["inquiry_id"],
+                event["completed_at"],
+                checkpoint["human_goal_connection"],
+                checkpoint["current_goal_gap"],
+                checkpoint["current_synthesis"],
+                ", ".join(checkpoint["evidence_references"]),
+                checkpoint["decision_frontier"],
+                checkpoint["next_direction_or_closure"],
+                checkpoint["cumulative_resource_use"],
+            ]
+        )
+    return rows
 
 
 def measurement_rows(campaign: dict) -> list[list[object]]:
@@ -672,6 +633,38 @@ def campaign_sections(campaign: dict) -> list[str]:
             ]
             for item in session_records(campaign)
         ],
+    )
+
+    lines += [
+        "### Operation decisions",
+        "",
+        (
+            "Persisted operation descriptions, rationales, and reasons are shown "
+            "verbatim; unavailable fields were not part of that operation request."
+        ),
+        "",
+    ]
+    lines += table(
+        ["Operation", "Kind", "Status", "Description", "Rationale", "Reason"],
+        operation_decision_rows(campaign),
+    )
+
+    lines += ["### Checkpoint history", ""]
+    lines += table(
+        [
+            "Operation",
+            "Session",
+            "Inquiry",
+            "Completed at",
+            "Human-goal connection",
+            "Current goal gap",
+            "Current synthesis",
+            "Evidence references",
+            "Decision frontier",
+            "Next direction or closure",
+            "Cumulative resource use",
+        ],
+        checkpoint_history_rows(campaign),
     )
 
     lines += [

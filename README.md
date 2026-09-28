@@ -76,11 +76,14 @@ uv run python tools/campaign_report.py
 uv run python tools/campaign_report.py --compare ..\robot-learning-reference-campaing-1 --output reports\comparison.md
 ```
 
-The report exposes checkpoint selection and unmeasured proxy peaks,
-initialization and parent rationales, repeated hypothesis families, cited prior
-evidence, lineage/recipe decisions, development-panel reuse and final requests.
-These are facts for reviewing bias evolution, not an automatic quality score.
-It does not inspect live processes or run a model, Git or a PI session.
+The report exposes the exact schema-6 operation history, persisted operation
+descriptions/rationales/reasons, checkpoint goal connections, goal gaps,
+syntheses, evidence references, decision frontiers, next directions or closures,
+cumulative resource records, model-role decisions, development-panel reuse and
+terminal requests. These are facts for reviewing bias and decision evolution,
+not an automatic quality score. It rejects history that differs from the
+authoritative state in campaign, identity, order or content. It does not inspect
+live processes or run a model, Git or a PI session.
 Use `--repo <path>` or `--campaign-id <id>` to select other existing records.
 Detailed scientific judgments remain the PI's recorded assessments.
 
