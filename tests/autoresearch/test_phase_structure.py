@@ -177,6 +177,7 @@ def _state(kind: str, *, inquiry: bool) -> dict:
             "kind": kind,
             "objective": "Make one bounded decision.",
             "inquiry_id": "I1" if kind == "inquiry" else None,
+            "backend_session_id": "backend-S1",
             "scientific_parent_commit": "a" * 40,
             "operation_ids": [],
         },
@@ -304,6 +305,18 @@ def test_goal_review_offers_only_goal_choices_and_checkpoint(tmp_path):
 
 
 @powershell_only
+def test_startup_offers_only_initial_scientific_operations_and_checkpoint(tmp_path):
+    operations = _launcher_operations(tmp_path, _state("startup", inquiry=False))
+    assert any(item.startswith("measurement:") for item in operations)
+    assert any(item.startswith("training:") for item in operations)
+    assert any(item.startswith("model_role:") for item in operations)
+    assert any(item.startswith("restore_recipe:") for item in operations)
+    assert any(item.startswith("checkpoint:") for item in operations)
+    assert not any(item.startswith("inquiry ") for item in operations)
+    assert not any(item.startswith("campaign_conclusion") for item in operations)
+
+
+@powershell_only
 def test_max_inquiries_only_removes_inquiry_creation(tmp_path):
     state = _state("goal_review", inquiry=False)
     state["counters"]["inquiry"] = 15
@@ -322,6 +335,25 @@ def test_inquiry_session_offers_peer_operations_and_checkpoint(tmp_path):
     assert any(item.startswith("inquiry close:") for item in operations)
     assert any(item.startswith("checkpoint:") for item in operations)
     assert not any("post-training" in item for item in operations)
+
+
+@powershell_only
+def test_reframed_inquiry_offers_only_checkpoint(tmp_path):
+    state = _state("inquiry", inquiry=True)
+    state["scientific_session"]["operation_ids"] = ["E1"]
+    state["operation_events"] = [
+        {"id": "E1", "kind": "inquiry", "result": {"action": "reframe"}}
+    ]
+    assert _launcher_operations(tmp_path, state) == [
+        "checkpoint: preserve the goal-level or inquiry decision and end this bounded session"
+    ]
+
+
+def test_launcher_persists_and_reuses_bounded_backend_session_identity():
+    assert '"--backend-session-id", ([guid]::NewGuid().ToString())' in SCRIPT
+    assert "$state.scientific_session.backend_session_id" in SCRIPT
+    assert '$sessionArgs += "--resume-or-create"' in SCRIPT
+    assert "--synchronize-max-inquiries" in SCRIPT
 
 
 @powershell_only

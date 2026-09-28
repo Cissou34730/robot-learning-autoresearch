@@ -328,14 +328,22 @@ function Invoke-PISession {
         [switch]$Preliminary
     )
 
-    if ($Continue -and -not $script:PISessionId) {
-        throw "There is no active PI backend session to continue."
-    }
-    if (-not $Continue) {
-        $script:PISessionId = [guid]::NewGuid().ToString()
-        $script:PISessionInvocation = 1
+    if ($Preliminary) {
+        if ($Continue -and -not $script:PISessionId) {
+            throw "There is no active preliminary PI backend session to continue."
+        }
+        if (-not $Continue) {
+            $script:PISessionId = [guid]::NewGuid().ToString()
+            $script:PISessionInvocation = 1
+        }
+        else {
+            $script:PISessionInvocation += 1
+        }
     }
     else {
+        if (-not $script:PISessionId) {
+            throw "The active scientific session has no persisted backend session ID."
+        }
         $script:PISessionInvocation += 1
     }
     Write-Status "=== PI session: $Phase ===" -Color Magenta -Label pi
@@ -351,8 +359,11 @@ function Invoke-PISession {
     if ($state.campaign.id) {
         $sessionArgs += @("--campaign-id", $state.campaign.id)
     }
-    if ($Continue) {
+    if ($Preliminary -and $Continue) {
         $sessionArgs += "--resume"
+    }
+    elseif (-not $Preliminary) {
+        $sessionArgs += "--resume-or-create"
     }
     if ($Preliminary) {
         $sessionArgs += "--preliminary"
@@ -430,6 +441,64 @@ function Get-LatestSessionResult {
         return "The session records operation $identifier; consult research/brief.md for its durable record."
     }
     $result = $event.result
+    if ($event.kind -eq "measurement") {
+        $measurements = @($result.measurements | Select-Object -First 6 | ForEach-Object {
+            $metrics = $_.metrics
+            $artifact = if ($metrics.evaluation_artifact) {
+                [string]$metrics.evaluation_artifact
+            }
+            else {
+                "none"
+            }
+            $facts = @(
+                $metrics.PSObject.Properties |
+                    Where-Object {
+                        $_.Name -notin @(
+                            "episode_results",
+                            "evaluation_artifact",
+                            "evaluation_artifact_fingerprint",
+                            "model_fingerprint"
+                        ) -and
+                        ($null -eq $_.Value -or $_.Value -is [ValueType] -or $_.Value -is [string])
+                    } |
+                    Select-Object -First 8 |
+                    ForEach-Object { "$($_.Name)=$($_.Value)" }
+            )
+            "$($_.label): artifact=$artifact; metrics=$($facts -join ', ')"
+        })
+        $comparisons = @($result.paired_comparisons)
+        $comparisonFact = if ($comparisons.Count -gt 0) {
+            ($comparisons | ConvertTo-Json -Compress -Depth 5)
+        }
+        else {
+            "none"
+        }
+        if ($comparisonFact.Length -gt 600) {
+            $comparisonFact = $comparisonFact.Substring(0, 599) + "…"
+        }
+        return (
+            "Operation $identifier (measurement): $($measurements -join ' | '); " +
+            "comparisons=$comparisonFact."
+        )
+    }
+    if ($event.kind -eq "training") {
+        $dynamics = @($result.learning_dynamics | Select-Object -First 8 | ForEach-Object {
+            (
+                "$($_.candidate): steps=$($_.training_steps), " +
+                "success=$($_.training_success), reward=$($_.ep_rew_mean)"
+            )
+        })
+        $changed = @($result.mechanical_provenance.changed_files | Select-Object -First 12 | ForEach-Object {
+            [string]$_.path
+        })
+        $candidates = @($result.candidates | Select-Object -First 12)
+        return (
+            "Operation $identifier (training): candidates=$($candidates -join ', '); " +
+            "learning dynamics=$($dynamics -join ' | '); provenance parent=" +
+            "$($result.mechanical_provenance.code_parent_commit), changed=" +
+            "$($changed -join ', ')."
+        )
+    }
     $fact = if ($result.summary) {
         [string]$result.summary
     }
@@ -457,10 +526,28 @@ function Get-AvailableOperations {
     }
     if (
         ($session.kind -eq "goal_review" -and $null -ne $State.active_inquiry) -or
-        ($session.kind -eq "inquiry" -and $null -eq $State.active_inquiry)
+        ($session.kind -eq "inquiry" -and $null -eq $State.active_inquiry) -or
+        (
+            $session.kind -eq "inquiry" -and
+            $session.operation_ids.Count -gt 0 -and
+            (
+                $State.operation_events |
+                    Where-Object { $_.id -eq $session.operation_ids[-1] } |
+                    Select-Object -First 1
+            ).result.action -eq "reframe"
+        )
     ) {
         return @(
             "checkpoint: preserve the goal-level or inquiry decision and end this bounded session"
+        )
+    }
+    if ($session.kind -eq "startup") {
+        return @(
+            "measurement: execute a configured development evaluator or PI-owned Python diagnostic"
+            "training: train from fresh initialization or an explicit saved parent"
+            "model_role: explicitly set working, set best_known, or retain a candidate using completed-operation evidence"
+            "restore_recipe: restore the PI-owned scientific surface from a named candidate"
+            "checkpoint: preserve startup design and evidence, then enter campaign-level goal review"
         )
     }
     if ($session.kind -eq "goal_review") {
@@ -707,7 +794,7 @@ function Invoke-PendingOperation {
         }
         if ($script:PISessionStateId -ne $State.scientific_session.id) {
             $script:PISessionStateId = $State.scientific_session.id
-            $script:PISessionId = $null
+            $script:PISessionId = [string]$State.scientific_session.backend_session_id
             $script:PISessionInvocation = 0
         }
         $repairPrompt = @(
@@ -743,6 +830,16 @@ function Invoke-PendingOperation {
 }
 
 try {
+    $maxInquiryExitCode = Invoke-Runner -Arguments @(
+        "--synchronize-max-inquiries", "$MaxInquiries"
+    )
+    if ($maxInquiryExitCode -ne 0) {
+        throw (
+            "Launcher MaxInquiries must match the persisted campaign setting " +
+            "after fresh/startup initialization."
+        )
+    }
+
     if ($PIBackend -eq "opencode") {
         $openCodeServer = Start-OpenCodeCampaignServer
         $script:OpenCodeServerProcess = $openCodeServer.Process
@@ -778,7 +875,7 @@ try {
         }
 
         if ($state.terminal_state) {
-            if ($state.terminal_state.status -eq "official_assessment_requested") {
+            if ($state.terminal_state.status -like "official_assessment_*") {
                 $assessmentAction = if ($state.official_assessment) {
                     "publishing recorded official assessment"
                 }
@@ -807,8 +904,22 @@ try {
         }
 
         if (-not $state.scientific_session) {
-            $kind = if ($state.active_inquiry) { "inquiry" } else { "goal_review" }
-            $objective = if ($kind -eq "goal_review") {
+            $kind = if ($state.active_inquiry) {
+                "inquiry"
+            }
+            elseif (
+                [int]$state.counters.session -eq 0 -and
+                $null -eq $state.pi_checkpoint
+            ) {
+                "startup"
+            }
+            else {
+                "goal_review"
+            }
+            $objective = if ($kind -eq "startup") {
+                "Design the initial scientific tools, observations, reward, training recipe, and measurements needed for the human goal, choose useful scientific operations, then checkpoint into campaign-level goal review."
+            }
+            elseif ($kind -eq "goal_review") {
                 "Decide whether to request official assessment, open one bounded goal-linked inquiry, conclude that no credible route remains, or preserve a durable goal-review checkpoint."
             }
             else {
@@ -821,6 +932,7 @@ try {
             $exitCode = Invoke-Runner -Arguments @(
                 "--start-session", $kind,
                 "--session-objective", $objective,
+                "--backend-session-id", ([guid]::NewGuid().ToString()),
                 "--max-inquiries", "$MaxInquiries"
             )
             if (Test-StopAfterOperation $exitCode "research runner") {
@@ -836,9 +948,12 @@ try {
             continue
         }
 
-        if ($script:PISessionStateId -ne $state.scientific_session.id) {
+        if (
+            $script:PISessionStateId -ne $state.scientific_session.id -or
+            $script:PISessionId -ne $state.scientific_session.backend_session_id
+        ) {
             $script:PISessionStateId = $state.scientific_session.id
-            $script:PISessionId = $null
+            $script:PISessionId = [string]$state.scientific_session.backend_session_id
             $script:PISessionInvocation = 0
         }
         Update-ResearchBrief

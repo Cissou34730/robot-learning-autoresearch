@@ -26,6 +26,10 @@ def _configure(monkeypatch, tmp_path: Path) -> dict:
     }.items():
         monkeypatch.setattr(paths, name, value)
     monkeypatch.setattr(repository, "git", lambda *args: "a" * 40 + "\n")
+    monkeypatch.setattr(repository, "scientific_delta", lambda _parent: [])
+    monkeypatch.setattr(
+        protocol, "require_trusted_assessment_runtime", lambda _path: None
+    )
     state = repository.empty_campaign_state(
         campaign={"id": "campaign", "started_at": "now", "base_commit": "base"},
         last_verdict="fresh",
@@ -188,17 +192,25 @@ def test_requested_official_assessment_is_runner_owned_and_recorded(
 
     assert run_experiment.main() == 0
     persisted = repository.read_state()
-    assert persisted["terminal_state"]["status"] == "official_assessment_requested"
+    assert (
+        persisted["terminal_state"]["status"]
+        == f"official_assessment_{expected_status}"
+    )
     assert persisted["official_assessment"]["status"] == expected_status
     assert persisted["official_assessment"]["model"] == candidate["id"]
     assert "200 episodes" in persisted["official_assessment"]["summary"]
     assert observed["model"] == artifact / "model.zip"
     assert paths.GOAL_PATH.exists() is goal_marker
+    history = repository.history_records()
+    assert history[-1]["kind"] == "campaign_conclusion"
+    assert history[-1]["result"]["status"] == f"official_assessment_{expected_status}"
     assert run_experiment.main() == 0
     assert observed["calls"] == 1
 
 
-def test_session_start_records_launcher_max_inquiries(monkeypatch, tmp_path):
+def test_session_start_rejects_max_inquiries_mismatch_after_initialization(
+    monkeypatch, tmp_path
+):
     state = _configure(monkeypatch, tmp_path)
     state["scientific_session"] = None
     repository.write_state(state)
@@ -211,12 +223,89 @@ def test_session_start_records_launcher_max_inquiries(monkeypatch, tmp_path):
             "goal_review",
             "--session-objective",
             "Make a bounded goal decision.",
+            "--backend-session-id",
+            "backend-session",
             "--max-inquiries",
             "7",
         ],
     )
 
+    with pytest.raises(ValueError, match="does not match persisted"):
+        run_experiment.main()
+
+
+def test_fresh_campaign_initialization_sets_max_inquiries(monkeypatch, tmp_path):
+    state = _configure(monkeypatch, tmp_path)
+    state["scientific_session"] = None
+    state["counters"]["session"] = 0
+    repository.write_state(state)
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        ["run_experiment.py", "--synchronize-max-inquiries", "7"],
+    )
+
     assert run_experiment.main() == 0
-    persisted = repository.read_state()
-    assert persisted["campaign"]["max_inquiries"] == 7
-    assert persisted["scientific_session"]["kind"] == "goal_review"
+    assert repository.read_state()["campaign"]["max_inquiries"] == 7
+
+
+def test_official_assessment_restart_reconciles_state_and_history(
+    monkeypatch, tmp_path
+):
+    state = _configure(monkeypatch, tmp_path)
+    artifact = tmp_path / "archive" / "candidate"
+    artifact.mkdir(parents=True)
+    (artifact / "model.zip").write_bytes(b"model")
+    (artifact / "artifact.json").write_text("{}", encoding="utf-8")
+    (artifact / "policy_runtime.pkl").write_bytes(b"runtime")
+    candidate = {
+        "id": "T1:checkpoint-10",
+        "artifact": repository.repo_relative_path(artifact),
+        "fingerprint": repository.artifact_fingerprint(artifact),
+        "origin_operation": "T1",
+        "name": "checkpoint-10",
+        "parameters": {},
+        "scientific_commit": "b" * 40,
+        "training_steps": 10,
+        "evaluation_artifacts": [],
+    }
+    state["candidates"][candidate["id"]] = candidate
+    state["model_roles"]["best_known"] = candidate["id"]
+    repository.write_state(state)
+    request = {
+        "campaign_conclusion": {
+            "action": "request_official_assessment",
+            "reason": "The selected model is ready.",
+        }
+    }
+    run_experiment.accept_operation(request, state)
+    assert run_experiment.execute_pending_operation() == 0
+    monkeypatch.setattr(
+        "robot_learning.scenario.final_benchmark.evaluate_final_model",
+        lambda *_args, **_kwargs: {
+            "goal_reached": False,
+            "success_percent": 75.0,
+            "episodes": 200,
+        },
+    )
+    original_upsert = repository.upsert_operation_event
+    calls = {"count": 0}
+
+    def fail_once(event):
+        calls["count"] += 1
+        if calls["count"] == 1:
+            raise OSError("interrupted history write")
+        original_upsert(event)
+
+    monkeypatch.setattr(repository, "upsert_operation_event", fail_once)
+    monkeypatch.setattr(repository, "commit_runner_memory", lambda _message: True)
+    with pytest.raises(OSError, match="interrupted history write"):
+        run_experiment.run_official_assessment()
+
+    interrupted = repository.read_state()
+    assert interrupted["terminal_state"]["status"] == "official_assessment_failed"
+    assert interrupted["official_assessment"]["status"] == "failed"
+
+    assert run_experiment.run_official_assessment() == 0
+    history = repository.history_records()
+    assert history[-1]["result"]["status"] == "official_assessment_failed"

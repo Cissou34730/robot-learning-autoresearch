@@ -66,7 +66,7 @@ def _event_artifacts(event: dict) -> list[str]:
     if not isinstance(result, dict):
         return []
     artifacts: list[str] = []
-    for measurement in result.get("measurements") or []:
+    for measurement in (result.get("measurements") or [])[:8]:
         if not isinstance(measurement, dict):
             continue
         metrics = measurement.get("metrics")
@@ -83,6 +83,83 @@ def _event_artifacts(event: dict) -> list[str]:
             if isinstance(entry, dict) and entry.get("path"):
                 artifacts.append(str(entry["path"]))
     return list(dict.fromkeys(artifacts))
+
+
+def _scalar_facts(record: object, *, omitted: set[str] | None = None) -> str:
+    if not isinstance(record, dict):
+        return "none"
+    excluded = omitted or set()
+    facts = [
+        f"{key}={_compact(value, 100)}"
+        for key, value in record.items()
+        if key not in excluded
+        and (value is None or isinstance(value, (bool, int, float, str)))
+    ]
+    return ", ".join(facts[:8]) or "none"
+
+
+def _event_detail_lines(event: dict) -> list[str]:
+    result = event.get("result")
+    if not isinstance(result, dict):
+        return []
+    if event["kind"] == "measurement":
+        lines: list[str] = []
+        for measurement in result.get("measurements") or []:
+            if not isinstance(measurement, dict):
+                continue
+            metrics = measurement.get("metrics")
+            artifact = (
+                metrics.get("evaluation_artifact")
+                if isinstance(metrics, dict)
+                else None
+            )
+            lines.append(
+                f"  - {measurement.get('label') or measurement.get('instrument')}: "
+                f"artifact {_artifact(artifact)}; metrics "
+                + _scalar_facts(
+                    metrics,
+                    omitted={
+                        "episode_results",
+                        "evaluation_artifact",
+                        "evaluation_artifact_fingerprint",
+                        "model_fingerprint",
+                    },
+                )
+                + "."
+            )
+        comparisons = result.get("paired_comparisons") or []
+        if comparisons:
+            lines.append(
+                "  - Paired comparisons: "
+                + _compact(json.dumps(comparisons, sort_keys=True), 500)
+            )
+        return lines
+    if event["kind"] == "training":
+        dynamics = result.get("learning_dynamics") or []
+        provenance = result.get("mechanical_provenance")
+        changed = (
+            [
+                entry.get("path")
+                for entry in provenance.get("changed_files") or []
+                if isinstance(entry, dict) and entry.get("path")
+            ]
+            if isinstance(provenance, dict)
+            else []
+        )
+        return [
+            "  - Training candidates: "
+            + ", ".join(f"`{item}`" for item in result.get("candidates") or [])
+            + ".",
+            "  - Learning dynamics: "
+            + _compact(json.dumps(dynamics, sort_keys=True), 500)
+            + ".",
+            "  - Mechanical provenance: parent `"
+            + str((provenance or {}).get("code_parent_commit") or "-")
+            + "`; changed "
+            + (", ".join(f"`{item}`" for item in changed) or "none")
+            + ".",
+        ]
+    return []
 
 
 def _best_evidence(state: dict) -> list[str]:
@@ -250,6 +327,7 @@ def _event_lines(state: dict) -> list[str]:
             f"- `{event['id']}` `{event['kind']}`{inquiry}: "
             f"{_event_summary(event)}{artifact_note}"
         )
+        lines.extend(_event_detail_lines(event))
     return lines
 
 

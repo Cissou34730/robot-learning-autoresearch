@@ -74,11 +74,11 @@ def test_preliminary_policy_excludes_campaign_evidence_without_changing_later_ph
         "git switcheroo",
     ],
 )
-def test_mutating_git_is_refused_and_names_the_lineage_decision(command):
+def test_mutating_git_is_refused_and_names_recipe_restoration(command):
     reason = adapter.command_denial(command)
 
     assert reason == adapter.GIT_DENIAL
-    assert "revert" in reason
+    assert "restore_recipe" in reason
     assert "code provenance and code inspection" in reason
     assert "when the current task requires it" in reason
     for read_command in ("status", "diff", "log", "show", "rev-parse", "ls-files"):
@@ -856,7 +856,7 @@ def test_a_refused_shell_call_answers_with_a_rejection(capsys):
     decision = on_permission(request, {})
 
     assert isinstance(decision, PermissionDecisionReject)
-    assert "revert" in decision.feedback
+    assert "restore_recipe" in decision.feedback
     assert "call-3" in console.denied_calls
     capsys.readouterr()
 
@@ -913,11 +913,17 @@ def test_the_policy_separates_enforced_boundaries_from_non_binding_advice():
     content = " ".join(adapter.POLICY.split())
 
     assert "<harness_boundary>" in content
-    assert "<researcher_guidance>" in content
+    assert "<pi_guidance>" in content
     # The note is explicitly advice the tool layer does not enforce.
     assert "This note is advice, not a harness rule" in content
     assert "no call is rejected for departing from it" in content
-    assert "Researcher-authored tests are not part" in content
+    assert "Tests are human-owned" in content
+    assert "Never create, modify, delete, or restore files under tests/" in content
+    assert "write exactly one operation to research/operation_request.json" in content
+    assert (
+        "session ends only through checkpoint or a terminal campaign_conclusion"
+        in content
+    )
     assert "Use targeted linting, parsing or lightweight analysis" in content
     assert "when they resolve uncertainty introduced by the work" in content
     assert "Runner owns final contract and execution validation" in content
@@ -925,7 +931,7 @@ def test_the_policy_separates_enforced_boundaries_from_non_binding_advice():
     # The pytest clause claims exactly what the command layer enforces: only
     # repository-wide runs are refused, targeted runs stay permitted.
     assert "Repository-wide pytest execution belongs to the runner" in content
-    assert "Targeted tests and focused checks on researcher-owned code" in content
+    assert "Targeted tests and focused checks on PI-owned code" in content
     assert "Pytest execution belongs to the runner." not in content
     assert adapter.command_denial("uv run pytest") == adapter.SUITE_DENIAL
     assert adapter.command_denial("uv run pytest tests") == adapter.SUITE_DENIAL
@@ -982,7 +988,7 @@ def test_the_repository_policy_is_stated_to_the_model_as_well_as_enforced():
     assert "research/brief.md and the campaign artifacts" in content
     assert "authoritative scientific context" in content
     assert "Do not use Git history as scientific evidence" in content
-    assert "current code state or delta" in content
+    assert "current scientific code state or delta" in content
     assert "routine workspace-discovery step" in content
 
 

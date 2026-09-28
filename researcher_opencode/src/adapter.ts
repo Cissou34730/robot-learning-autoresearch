@@ -1,5 +1,5 @@
 /**
- * One bounded Researcher session, executed through the official OpenCode
+ * One bounded Principal Investigator session through the official OpenCode
  * TypeScript SDK.
  *
  * The launcher owns the research protocol and decides whether a phase is
@@ -65,7 +65,7 @@ export function watchStopRequest(
   return () => clearInterval(timer);
 }
 
-/** Tools that would exceed the Researcher profile: delegation, the wider
+/** Tools that would exceed the PI profile: delegation, the wider
  * network, and the session todo list. Disabling a name the server does not have
  * is harmless. */
 const DISABLED_TOOLS: Record<string, boolean> = {
@@ -88,27 +88,31 @@ harness enforces the rules below at the tool boundary, so a rejected call fails
 rather than succeeding silently. A rejection names the sanctioned alternative;
 follow it instead of retrying the same command.
 
-- The launcher executes experiments. Never invoke research/run_experiment.py,
-  training, the viewer, or the final benchmark.
+- The Runner executes schema-6 operations. Never invoke
+  research/run_experiment.py, training, measurement evaluators, the viewer, or
+  the final benchmark directly.
 ${CAMPAIGN_CONTEXT_GUIDANCE}
 - The runner owns mutating Git operations, provenance and restoration.
   Read-only Git is available only when the current task specifically requires
-  inspecting the experiment's current code state or delta. To revert this
-  experiment's code, use the lineage proposal's "code" decision.
-- Pytest execution belongs to the runner. Researcher-authored tests are not part
-  of the scientific recipe and are not required for phase completion.
+  inspecting the current scientific code state or delta. Request the schema-6
+  restore_recipe operation to restore a saved candidate recipe.
+- Tests are human-owned. Never create, modify, delete, or restore files under
+  tests/.
+- Repository-wide pytest execution belongs to the runner. Targeted tests and
+  focused checks on PI-owned code remain permitted instruments.
+- During an active schema-6 scientific session, write exactly one operation to
+  research/operation_request.json. The session ends only through checkpoint or
+  a terminal campaign_conclusion; measurement, training, inquiry, model_role,
+  and restore_recipe results return to the same bounded session.
 - Every tool call resends the whole conversation, so prefer one aggregation over
   the same command repeated per file, and read what you need rather than whole
   artifacts. Separate calls remain appropriate when the scientific question
   differs between artifacts or aggregation would make the analysis less clear.
   Context efficiency does not determine which scientific evidence is worth
   examining.
-- Use targeted linting, parsing or lightweight analysis while developing the
-  phase deliverable when they resolve uncertainty introduced by the work. Once
-  the deliverable is complete, do not perform a separate final validation pass
-  solely to reconfirm the deliverable or repository state; the Runner owns final
-  contract and execution validation. The phase ends when its deliverable has
-  been written.
+- Use targeted linting, parsing or lightweight analysis while developing
+  PI-owned scientific implementation when they resolve uncertainty introduced
+  by the work. The Runner owns final contract and execution validation.
 </harness_policy>`;
 
 export function policyForContext(preliminary: boolean): string {

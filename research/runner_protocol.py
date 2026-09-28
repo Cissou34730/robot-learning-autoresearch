@@ -117,6 +117,27 @@ OPERATION_KEYS = {
     "restore_recipe",
     "campaign_conclusion",
 }
+SCIENTIFIC_OPERATION_KINDS = {
+    "measurement",
+    "training",
+    "model_role",
+    "restore_recipe",
+}
+SESSION_OPERATION_MATRIX = {
+    "startup": {*SCIENTIFIC_OPERATION_KINDS, "checkpoint"},
+    "goal_review": {"inquiry", "campaign_conclusion", "checkpoint"},
+    "inquiry": {*SCIENTIFIC_OPERATION_KINDS, "inquiry", "checkpoint"},
+}
+TRUSTED_RUNTIME_PATHS = {
+    "robot_learning/__init__.py",
+    "robot_learning/policy_runtime.py",
+    "robot_learning/robots/__init__.py",
+    "robot_learning/robots/two_joint_arm.py",
+    "robot_learning/robots/two_joint_arm.xml",
+    "robot_learning/scenario/__init__.py",
+}
+TASK_REFERENCE_ADAPTER_PATH = "robot_learning/scenario/task_reference.py"
+OFFICIAL_ASSESSMENT_ADAPTER_PATH = "robot_learning/scenario/final_benchmark.py"
 
 
 def is_protected_source(path: str) -> bool:
@@ -219,6 +240,26 @@ def validate_research_delta_ownership(code_changes: list[str]) -> None:
             "scientific changes include human-owned or unclassified paths: "
             f"{rejected}; {NOT_OWNED_PATHS_REMEDY}"
         )
+
+
+def validate_clean_human_owned_worktree() -> None:
+    changed = repository.status_paths((".",))
+    rejected = sorted(path for path in changed if is_human_owned(path))
+    if rejected:
+        raise ValueError(
+            "protected or human-owned files have uncommitted changes: "
+            f"{rejected}; restore them before protected assessment"
+        )
+
+
+def require_trusted_assessment_runtime(adapter_path: str) -> None:
+    validate_clean_human_owned_worktree()
+    trusted = [
+        *TRUSTED_RUNTIME_PATHS,
+        adapter_path,
+        *repository.tracked_paths("robot_learning/benchmark"),
+    ]
+    repository.require_paths_at_head(trusted)
 
 
 def scientific_strategy_section(text: str, campaign_id: str | None) -> str:
@@ -753,6 +794,57 @@ def plan_campaign_conclusion(request: dict, state: dict) -> dict:
     return {"status": status, "reason": reason, "model": model}
 
 
+def _latest_session_event(state: dict, session: dict) -> dict | None:
+    operation_ids = session["operation_ids"]
+    if not operation_ids:
+        return None
+    latest_id = operation_ids[-1]
+    return next(
+        (
+            event
+            for event in reversed(state["operation_events"])
+            if event["id"] == latest_id
+        ),
+        None,
+    )
+
+
+def _validate_session_operation(
+    kind: str,
+    request: dict,
+    state: dict,
+    session: dict,
+) -> None:
+    session_kind = session["kind"]
+    allowed = SESSION_OPERATION_MATRIX[session_kind]
+    if kind not in allowed:
+        raise ValueError(
+            f"{kind} is not available in a {session_kind} scientific session"
+        )
+    if (
+        session_kind == "goal_review"
+        and kind == "inquiry"
+        and request.get("action") != "open"
+    ):
+        raise ValueError("goal-review sessions may only open an inquiry")
+    if (
+        session_kind == "inquiry"
+        and kind == "inquiry"
+        and request.get("action") not in {"reframe", "close"}
+    ):
+        raise ValueError("inquiry sessions may only reframe or close their inquiry")
+    latest = _latest_session_event(state, session)
+    if (
+        isinstance(latest, dict)
+        and latest["kind"] == "inquiry"
+        and latest["result"].get("action") == "reframe"
+        and kind != "checkpoint"
+    ):
+        raise ValueError(
+            "a reframed inquiry requires a checkpoint before further operation"
+        )
+
+
 def validate_operation_request(operation: dict, state: dict) -> str:
     if not isinstance(operation, dict):
         raise TypeError("operation request must be an object")
@@ -773,6 +865,7 @@ def validate_operation_request(operation: dict, state: dict) -> str:
     if not isinstance(request, dict):
         raise TypeError(f"{kind} operation must be an object")
     session = require_active_session(state)
+    _validate_session_operation(kind, request, state, session)
     if (
         state["active_inquiry"] is None
         and session["kind"] == "inquiry"

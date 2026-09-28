@@ -12,6 +12,7 @@ import shutil
 import signal
 import subprocess
 import time
+import uuid
 from pathlib import Path, PureWindowsPath
 
 from research import runner_paths as paths
@@ -425,6 +426,21 @@ def require_path_at_commit(commit: str, relative: str) -> None:
         raise ValueError(f"commit {commit} does not contain the current {path}")
 
 
+def tracked_paths(scope: str) -> list[str]:
+    return [
+        line.strip()
+        for line in git("ls-files", "--", scope).splitlines()
+        if line.strip()
+    ]
+
+
+def require_paths_at_head(relative_paths: list[str]) -> None:
+    head = git("rev-parse", "HEAD").strip()
+    require_resolvable_commit(head)
+    for relative in sorted(set(relative_paths)):
+        require_path_at_commit(head, relative)
+
+
 def publish_scientific_recipe(operation_id: str, scope: list[str]) -> str:
     if not commit_paths(
         campaign_commit_message(f"{operation_id} scientific recipe"), scope
@@ -634,6 +650,7 @@ def _validate_session(session: object, active_inquiry: object) -> None:
         "kind",
         "objective",
         "inquiry_id",
+        "backend_session_id",
         "scientific_parent_commit",
         "operation_ids",
     }
@@ -641,9 +658,16 @@ def _validate_session(session: object, active_inquiry: object) -> None:
         raise ValueError(f"scientific_session requires exactly {sorted(required)}")
     if not str(session["id"]).startswith("S"):
         raise ValueError("scientific_session id must use an S# identity")
-    if session["kind"] not in {"goal_review", "inquiry"}:
-        raise ValueError("scientific_session kind must be goal_review or inquiry")
+    if session["kind"] not in {"startup", "goal_review", "inquiry"}:
+        raise ValueError(
+            "scientific_session kind must be startup, goal_review, or inquiry"
+        )
     _nonempty(session, "objective", "scientific_session objective")
+    _nonempty(
+        session,
+        "backend_session_id",
+        "scientific_session backend_session_id",
+    )
     _nonempty(
         session,
         "scientific_parent_commit",
@@ -654,9 +678,9 @@ def _validate_session(session: object, active_inquiry: object) -> None:
         isinstance(item, str) and item.strip() for item in operation_ids
     ):
         raise ValueError("scientific_session operation_ids must be a list of strings")
-    if session["kind"] == "goal_review":
+    if session["kind"] in {"startup", "goal_review"}:
         if session["inquiry_id"] is not None:
-            raise ValueError("goal_review session cannot carry an inquiry_id")
+            raise ValueError(f"{session['kind']} session cannot carry an inquiry_id")
     else:
         if (
             isinstance(active_inquiry, dict)
@@ -1634,11 +1658,13 @@ def validate_research_state(state: dict, *, allow_missing_artifact: bool) -> Non
             raise ValueError("terminal_state requires status, reason, and model")
         if terminal["status"] not in {
             "official_assessment_requested",
+            "official_assessment_passed",
+            "official_assessment_failed",
             "no_credible_route",
         }:
             raise ValueError("terminal_state status is unsupported")
         _nonempty(terminal, "reason", "terminal_state reason")
-        if terminal["status"] == "official_assessment_requested":
+        if terminal["status"].startswith("official_assessment_"):
             if terminal["model"] not in candidates:
                 raise ValueError("terminal assessment names an unknown candidate")
         elif terminal["model"] is not None:
@@ -1648,16 +1674,30 @@ def validate_research_state(state: dict, *, allow_missing_artifact: bool) -> Non
         assessment = _require_exact_fields(
             assessment, OFFICIAL_ASSESSMENT_FIELDS, "official_assessment"
         )
-        if terminal is None or terminal["status"] != "official_assessment_requested":
+        if terminal is None or terminal["status"] not in {
+            "official_assessment_requested",
+            "official_assessment_passed",
+            "official_assessment_failed",
+        }:
             raise ValueError(
-                "official_assessment requires an assessment-requested terminal state"
+                "official_assessment requires an official-assessment terminal state"
             )
         if assessment["status"] not in {"passed", "failed"}:
             raise ValueError("official_assessment status must be passed or failed")
         if assessment["model"] != terminal["model"]:
             raise ValueError("official_assessment model must match terminal state")
+        expected_terminal = f"official_assessment_{assessment['status']}"
+        if terminal["status"] != expected_terminal:
+            raise ValueError("official_assessment result must match the terminal state")
         _nonempty(assessment, "summary", "official_assessment summary")
         _nonempty(assessment, "completed_at", "official_assessment completed_at")
+    elif isinstance(terminal, dict) and terminal["status"] in {
+        "official_assessment_passed",
+        "official_assessment_failed",
+    }:
+        raise ValueError(
+            "completed official-assessment terminal state requires its result"
+        )
 
 
 def write_state(state: dict) -> None:
@@ -1734,33 +1774,76 @@ def current_campaign_id(state: dict) -> str:
     return str(state["campaign"]["id"])
 
 
-def start_scientific_session(state: dict, *, kind: str, objective: str) -> dict:
+def start_scientific_session(
+    state: dict,
+    *,
+    kind: str,
+    objective: str,
+    backend_session_id: str | None = None,
+) -> dict:
     if state["terminal_state"] is not None:
         raise ValueError("a terminal campaign cannot start a scientific session")
     if state["scientific_model"]["status"] != "ready":
         raise ValueError("the scientific model must be ready before a PI session")
     if state["scientific_session"] is not None:
         raise ValueError("a scientific session is already active")
-    if kind not in {"goal_review", "inquiry"}:
-        raise ValueError("session kind must be goal_review or inquiry")
+    if kind not in {"startup", "goal_review", "inquiry"}:
+        raise ValueError("session kind must be startup, goal_review, or inquiry")
     active = state["active_inquiry"]
-    if kind == "goal_review" and active is not None:
+    if kind == "startup":
+        if (
+            active is not None
+            or state["pi_checkpoint"] is not None
+            or int(state["counters"]["session"]) != 0
+        ):
+            raise ValueError(
+                "startup is available only for the first scientific session"
+            )
+    elif kind == "goal_review" and active is not None:
         raise ValueError("goal review requires no active inquiry")
-    if kind == "inquiry" and active is None:
+    elif kind == "inquiry" and active is None:
         raise ValueError("an inquiry session requires an active inquiry")
     if not isinstance(objective, str) or not objective.strip():
         raise ValueError("scientific session objective must be non-empty")
+    backend_id = backend_session_id or str(uuid.uuid4())
+    if not isinstance(backend_id, str) or not backend_id.strip():
+        raise ValueError("scientific session backend ID must be non-empty")
     state["counters"]["session"] += 1
     session = {
         "id": f"S{state['counters']['session']}",
         "kind": kind,
         "objective": objective.strip(),
         "inquiry_id": active["id"] if isinstance(active, dict) else None,
+        "backend_session_id": backend_id.strip(),
         "scientific_parent_commit": git("rev-parse", "HEAD").strip(),
         "operation_ids": [],
     }
     state["scientific_session"] = session
     return session
+
+
+def synchronize_max_inquiries(state: dict, requested: int) -> bool:
+    if isinstance(requested, bool) or not isinstance(requested, int) or requested < 1:
+        raise ValueError("MaxInquiries must be at least 1")
+    current = int(state["campaign"]["max_inquiries"])
+    if current == requested:
+        return False
+    startup_initialization = (
+        state["scientific_session"] is None
+        and state["active_inquiry"] is None
+        and state["pi_checkpoint"] is None
+        and int(state["counters"]["session"]) == 0
+        and not state["operation_events"]
+        and state["pending_operation"] is None
+        and state["terminal_state"] is None
+    )
+    if not startup_initialization:
+        raise ValueError(
+            f"launcher MaxInquiries {requested} does not match persisted campaign "
+            f"setting {current}"
+        )
+    state["campaign"]["max_inquiries"] = requested
+    return True
 
 
 def require_scientific_model_publication_pending(state: dict) -> None:

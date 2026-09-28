@@ -139,6 +139,7 @@ def _protected_panel_overlap():
 
 
 def _task_reference_contract() -> dict:
+    protocol.require_trusted_assessment_runtime(protocol.TASK_REFERENCE_ADAPTER_PATH)
     from robot_learning.scenario.task_reference import task_reference_panel
 
     return task_reference_panel()
@@ -314,6 +315,15 @@ def _transaction_data(kind: str, request: dict, state: dict) -> dict:
     }
 
 
+def _validate_new_operation_scientific_delta(state: dict) -> None:
+    session = protocol.require_active_session(state)
+    parent_commit = str(session["scientific_parent_commit"])
+    repository.require_resolvable_commit(parent_commit)
+    protocol.validate_research_delta_ownership(
+        repository.scientific_delta(parent_commit)
+    )
+
+
 def accept_operation(request: dict, state: dict | None = None) -> dict:
     state = state or repository.load_state(allow_missing_artifact=True)
     kind = protocol.validate_operation_request(request, state)
@@ -327,6 +337,7 @@ def accept_operation(request: dict, state: dict | None = None) -> dict:
             raise FrozenOperationMismatch("operation request changed after acceptance")
         _write_accepted_request_handoff(existing)
         return existing
+    _validate_new_operation_scientific_delta(state)
     identifier = protocol.allocate_operation_id(kind, state)
     session = protocol.require_active_session(state)
     pending = {
@@ -357,6 +368,7 @@ def reaccept_pending_operation(state: dict | None = None) -> dict:
     request = copy.deepcopy(previous["request"])
     state["pending_operation"] = None
     kind = protocol.validate_operation_request(request, state)
+    _validate_new_operation_scientific_delta(state)
     identifier = protocol.allocate_operation_id(kind, state)
     session = protocol.require_active_session(state)
     data = _transaction_data(kind, request, state)
@@ -1423,16 +1435,48 @@ def official_assessment_progress(completed: int, total: int) -> None:
     console.progress(f"[assessment] {completed:>4} / {total} | {percent:>3}%")
 
 
-def run_official_assessment() -> int:
-    from robot_learning.scenario.final_benchmark import evaluate_final_model
+def _official_assessment_event(state: dict) -> dict:
+    for event in reversed(state["operation_events"]):
+        if (
+            event["kind"] == "campaign_conclusion"
+            and event["request"].get("action") == "request_official_assessment"
+        ):
+            return event
+    raise RuntimeError("the official assessment request event is missing")
 
+
+def _persist_official_assessment_transition(state: dict) -> None:
+    assessment = state["official_assessment"]
+    if not isinstance(assessment, dict):
+        raise TypeError("the official assessment result is missing")
+    terminal = state["terminal_state"]
+    terminal["status"] = f"official_assessment_{assessment['status']}"
+    event = _official_assessment_event(state)
+    event["result"] = {
+        "status": terminal["status"],
+        "model": assessment["model"],
+    }
+    event["completed_at"] = assessment["completed_at"]
+    state["last_verdict"] = f"official assessment {assessment['summary']}"
+    repository.write_state(state)
+    repository.upsert_operation_event(
+        {
+            "campaign_id": repository.current_campaign_id(state),
+            **copy.deepcopy(event),
+        }
+    )
+
+
+def run_official_assessment() -> int:
     state = repository.load_state(allow_missing_artifact=True)
     terminal = state["terminal_state"]
-    if (
-        not isinstance(terminal, dict)
-        or terminal["status"] != "official_assessment_requested"
+    if not isinstance(terminal, dict) or not terminal["status"].startswith(
+        "official_assessment_"
     ):
         raise ValueError("there is no requested official assessment")
+    protocol.require_trusted_assessment_runtime(
+        protocol.OFFICIAL_ASSESSMENT_ADAPTER_PATH
+    )
     candidate = state["candidates"].get(terminal["model"])
     if not isinstance(candidate, dict):
         raise TypeError("the requested official-assessment model is unavailable")
@@ -1440,6 +1484,7 @@ def run_official_assessment() -> int:
     if isinstance(existing, dict):
         if existing["model"] != candidate["id"]:
             raise ValueError("the recorded official assessment names another model")
+        _persist_official_assessment_transition(state)
         if existing["status"] == "passed" and not paths.GOAL_PATH.is_file():
             paths.GOAL_PATH.write_text(
                 f"Goal reached with {candidate['id']}.\n", encoding="utf-8"
@@ -1453,6 +1498,8 @@ def run_official_assessment() -> int:
     )
     if repository.artifact_fingerprint(artifact) != candidate["fingerprint"]:
         raise ValueError("official-assessment model fingerprint changed")
+
+    from robot_learning.scenario.final_benchmark import evaluate_final_model
 
     metrics = evaluate_final_model(
         artifact / "model.zip",
@@ -1471,8 +1518,7 @@ def run_official_assessment() -> int:
         "summary": summary,
         "completed_at": _now(),
     }
-    state["last_verdict"] = f"official assessment {summary}"
-    repository.write_state(state)
+    _persist_official_assessment_transition(state)
     if passed:
         paths.GOAL_PATH.write_text(
             f"Goal reached with {candidate['id']}.\n", encoding="utf-8"
@@ -1488,10 +1534,12 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--check-operation", action="store_true")
     parser.add_argument("--execute-pending", action="store_true")
     parser.add_argument(
-        "--start-session", choices=("goal_review", "inquiry"), default=None
+        "--start-session", choices=("startup", "goal_review", "inquiry"), default=None
     )
     parser.add_argument("--session-objective")
+    parser.add_argument("--backend-session-id")
     parser.add_argument("--max-inquiries", type=int)
+    parser.add_argument("--synchronize-max-inquiries", type=int)
     parser.add_argument("--check-scientific-model-deliverable", action="store_true")
     parser.add_argument("--mark-scientific-model-ready", action="store_true")
     parser.add_argument("--reaccept-pending", action="store_true")
@@ -1501,6 +1549,15 @@ def parse_args() -> argparse.Namespace:
 
 def main() -> int:
     args = parse_args()
+    if args.synchronize_max_inquiries is not None:
+        state = repository.load_state(allow_missing_artifact=True)
+        changed = repository.synchronize_max_inquiries(
+            state, args.synchronize_max_inquiries
+        )
+        if changed:
+            repository.write_state(state)
+        print(f"MAX_INQUIRIES_SYNCHRONIZED: {state['campaign']['max_inquiries']}")
+        return 0
     if args.check_scientific_model_deliverable:
         return check_scientific_model_deliverable()
     if args.mark_scientific_model_ready:
@@ -1531,14 +1588,17 @@ def main() -> int:
         if not args.session_objective:
             print("ERROR: --start-session requires --session-objective")
             return 1
+        if not args.backend_session_id:
+            print("ERROR: --start-session requires --backend-session-id")
+            return 1
         state = repository.load_state(allow_missing_artifact=True)
         if args.max_inquiries is not None:
-            if args.max_inquiries < 1:
-                print("ERROR: --max-inquiries must be at least 1")
-                return 1
-            state["campaign"]["max_inquiries"] = args.max_inquiries
+            repository.synchronize_max_inquiries(state, args.max_inquiries)
         session = repository.start_scientific_session(
-            state, kind=args.start_session, objective=args.session_objective
+            state,
+            kind=args.start_session,
+            objective=args.session_objective,
+            backend_session_id=args.backend_session_id,
         )
         repository.write_state(state)
         print(f"SCIENTIFIC_SESSION_STARTED: {session['id']}")

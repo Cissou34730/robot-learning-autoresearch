@@ -1,7 +1,7 @@
 /**
  * Which shell invocations this harness refuses.
  *
- * A faithful port of the policy in `researcher_copilot.py`, so both Researcher
+ * A faithful port of the policy in `researcher_copilot.py`, so both PI
  * backends enforce the same rules with the same wording. Only what a segment
  * actually executes is judged, never what it merely names: reading or grepping a
  * protected path is ordinary research.
@@ -13,14 +13,12 @@
 export const GIT_DENIAL =
   "Denied by the harness: the runner owns mutating Git operations and " +
   "restoration. Read-only git is available for code provenance and code " +
-  "inspection when the current task requires it. To " +
-  'revert this experiment\'s code, set "code": {"action": "revert", ' +
-  '"reason": "..."} in the lineage proposal and the runner restores it.';
+  "inspection when the current task requires it. Request schema-6 " +
+  "restore_recipe when a saved candidate recipe must be restored.";
 
 export const EXECUTION_DENIAL =
-  "Denied by the harness: the launcher executes experiments, not the " +
-  "researcher. Write this phase's deliverable and the launcher will validate " +
-  "and run it.";
+  "Denied by the harness: the Runner executes schema-6 operations, not the PI. " +
+  "Write one operation to research/operation_request.json for the Runner.";
 
 export const SUITE_DENIAL =
   "Denied by the harness: a repository-wide pytest run belongs to the runner. " +

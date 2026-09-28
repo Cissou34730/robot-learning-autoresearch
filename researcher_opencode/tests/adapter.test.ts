@@ -29,6 +29,18 @@ test("preliminary policy excludes campaign evidence without changing later phase
   assert.match(later, /Use research\/brief\.md and the campaign artifacts/);
 });
 
+test("PI policy uses schema-6 operations and protects tests", () => {
+  const policy = policyForContext(false);
+  assert.match(policy, /schema-6/);
+  assert.match(policy, /research\/operation_request\.json/);
+  assert.match(policy, /restore_recipe/);
+  assert.match(policy, /Tests are human-owned/);
+  assert.match(policy, /session ends only through checkpoint/);
+  assert.doesNotMatch(policy, /Researcher-authored tests/);
+  assert.doesNotMatch(policy, /lineage proposal/);
+  assert.doesNotMatch(policy, /phase deliverable/);
+});
+
 /** A client that answers only the two reads liveness reconciliation performs. */
 function fakeClient(parts: {
   status?: unknown;

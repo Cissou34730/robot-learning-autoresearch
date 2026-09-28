@@ -37,6 +37,7 @@ def _state() -> dict:
         "kind": "inquiry",
         "objective": "Resolve the stabilization question.",
         "inquiry_id": "I1",
+        "backend_session_id": "backend-S2",
         "scientific_parent_commit": "b" * 40,
         "operation_ids": ["E1"],
     }
@@ -111,6 +112,56 @@ def test_brief_leads_with_goal_evidence_gap_inquiry_and_checkpoint(
     assert "Hold reliability remains below the goal." in text
     assert "Unstable holds prevent the human goal." in text
     assert "`E1` `inquiry` in `I1`: completed" in text
+
+
+def test_operation_feedback_is_factual_and_operation_specific():
+    measurement = {
+        "kind": "measurement",
+        "result": {
+            "measurements": [
+                {
+                    "instrument": "research_evaluation",
+                    "label": "candidate panel",
+                    "metrics": {
+                        "evaluation_artifact": "research/evaluations/panel.json",
+                        "success_percent": 97.5,
+                        "episodes": 200,
+                        "episode_results": [{"success": True}],
+                    },
+                }
+            ],
+            "paired_comparisons": [{"candidate": "T2:c", "reference": "T1:c"}],
+        },
+    }
+    training = {
+        "kind": "training",
+        "result": {
+            "candidates": ["T2:checkpoint-10"],
+            "learning_dynamics": [
+                {
+                    "candidate": "T2:checkpoint-10",
+                    "training_steps": 10,
+                    "training_success": 0.8,
+                    "ep_rew_mean": 12.0,
+                }
+            ],
+            "mechanical_provenance": {
+                "code_parent_commit": "a" * 40,
+                "changed_files": [{"path": "robot_learning/training/algorithm.py"}],
+            },
+        },
+    }
+
+    measurement_lines = "\n".join(brief._event_detail_lines(measurement))
+    assert "research/evaluations/panel.json" in measurement_lines
+    assert "success_percent=97.5" in measurement_lines
+    assert "Paired comparisons" in measurement_lines
+    assert "episode_results" not in measurement_lines
+
+    training_lines = "\n".join(brief._event_detail_lines(training))
+    assert "T2:checkpoint-10" in training_lines
+    assert "training_success" in training_lines
+    assert "robot_learning/training/algorithm.py" in training_lines
 
 
 def test_brief_rejects_non_schema6_state(monkeypatch, tmp_path: Path):

@@ -1,4 +1,4 @@
-"""One bounded Researcher session, executed through the GitHub Copilot SDK.
+"""One bounded Principal Investigator session through the GitHub Copilot SDK.
 
 The launcher owns the research protocol and decides whether a phase is complete;
 this adapter owns only the Copilot runtime: session identity, the tool profile,
@@ -106,15 +106,13 @@ READ_ONLY_GIT = frozenset(
 GIT_DENIAL = (
     "Denied by the harness: the runner owns mutating Git operations and "
     "restoration. Read-only git is available for code provenance and code "
-    "inspection when the current task requires it. To "
-    'revert this experiment\'s code, set "code": {"action": "revert", '
-    '"reason": "..."} in the lineage proposal and the runner restores it.'
+    "inspection when the current task requires it. Request schema-6 "
+    "restore_recipe when a saved candidate recipe must be restored."
 )
 
 EXECUTION_DENIAL = (
-    "Denied by the harness: the launcher executes experiments, not the "
-    "researcher. Write this phase's deliverable and the launcher will validate "
-    "and run it."
+    "Denied by the harness: the Runner executes schema-6 operations, not the PI. "
+    "Write one operation to research/operation_request.json for the Runner."
 )
 
 SUITE_DENIAL = (
@@ -177,7 +175,7 @@ INTERPRETERS = frozenset({"python", "python.exe", "python3", "py", "py.exe"})
 SEPARATORS = (";", "&&", "||", "|", "\n", "\r")
 
 # Oversized tool results are written here instead of occupying the context for
-# the rest of the session. The researcher still opens them on demand. The
+# the rest of the session. The PI still opens them on demand. The
 # threshold is held above the campaign artifacts (the brief, postmortems and
 # evaluation panels), so primary scientific evidence is never offloaded out of
 # the session by default.
@@ -199,33 +197,37 @@ the rules below at the tool boundary, so a rejected call fails rather than
 succeeding silently. A rejection names the sanctioned alternative; follow it
 instead of retrying the same command.
 
-- The launcher executes experiments. Never invoke research/run_experiment.py,
-  training, the viewer, or the final benchmark.
+- The Runner executes schema-6 operations. Never invoke
+  research/run_experiment.py, training, measurement evaluators, the viewer, or
+  the final benchmark directly.
 {CAMPAIGN_CONTEXT_GUIDANCE}
 - The runner owns mutating Git operations, provenance and restoration.
     Read-only Git is available only when the current task specifically requires
-    inspecting the experiment's current code state or delta. To revert this
-    experiment's code, use the lineage proposal's "code" decision.
+    inspecting the current scientific code state or delta. Request the schema-6
+    restore_recipe operation to restore a saved candidate recipe.
+- Tests are human-owned. Never create, modify, delete, or restore files under
+    tests/.
 - Repository-wide pytest execution belongs to the runner. Targeted tests and
-  focused checks on researcher-owned code remain permitted instruments.
+  focused checks on PI-owned code remain permitted instruments.
+- During an active schema-6 scientific session, write exactly one operation to
+    research/operation_request.json. The session ends only through checkpoint
+    or a terminal campaign_conclusion; measurement, training, inquiry, model_role,
+    and restore_recipe results return to the same bounded session.
 </harness_boundary>
 
-<researcher_guidance>
+<pi_guidance>
 This note is advice, not a harness rule: no call is rejected for departing from
 it. Read whatever evidence the scientific question requires; context size is
 never a reason to leave evidence unread.
 
-Researcher-authored tests are not part of the scientific recipe, are not
-required for phase completion, and remain available only as an optional
-instrument when they resolve a specific uncertainty.
-
 Use targeted linting, parsing or lightweight analysis while developing the
-phase deliverable when they resolve uncertainty introduced by the work. The
+PI-owned scientific implementation when they resolve uncertainty introduced by
+the work. The
 Runner owns final contract and execution validation, so do not re-run lint,
 parsing or schema checks purely to reconfirm what the Runner will check.
 Reviewing your own scientific reasoning against the evidence before submitting
-is part of the phase, not a redundant pass.
-</researcher_guidance>
+is part of the bounded session, not a redundant pass.
+</pi_guidance>
 </harness_policy>
 """.strip()
 

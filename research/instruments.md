@@ -23,6 +23,17 @@ superseding operation identity after implementation repair.
 Measurement identities are `M#`, training identities are `T#`, and other event
 identities are `E#`.
 
+Operation availability is strict:
+
+- `startup`: measurement, training, model role, recipe restoration, checkpoint;
+- `goal_review`: inquiry open, campaign conclusion, checkpoint;
+- `inquiry`: measurement, training, model role, recipe restoration, inquiry
+  reframe or close, checkpoint.
+
+Opening, reframing, and closing an inquiry require a checkpoint before another
+operation. A checkpoint or terminal campaign conclusion clears the active
+scientific session and its bounded backend-session identity.
+
 ## Inquiry operations
 
 Open:

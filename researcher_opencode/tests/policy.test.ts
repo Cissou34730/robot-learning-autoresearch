@@ -32,6 +32,8 @@ test("only read-only git subcommands are permitted", () => {
   assert.equal(commandDenial("git commit -m wip"), GIT_DENIAL);
   assert.equal(commandDenial("git push origin HEAD"), GIT_DENIAL);
   assert.equal(commandDenial("git"), GIT_DENIAL);
+  assert.match(GIT_DENIAL, /restore_recipe/);
+  assert.doesNotMatch(GIT_DENIAL, /lineage proposal/);
 });
 
 test("a repository-wide pytest run belongs to the runner", () => {

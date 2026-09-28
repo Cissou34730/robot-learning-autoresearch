@@ -34,8 +34,10 @@ kill-on-close Windows Job Object described in
 [the external stop contract](docs/external-campaign-stop.md).
 
 A fresh campaign first runs the dedicated preliminary PI session that creates
-and publishes `research/scientific_model.md`. It then starts campaign-level goal
-review; there is no mandatory baseline, training, or evaluation.
+and publishes `research/scientific_model.md`. It then starts one bounded
+`startup` scientific session for initial tool, observation, reward, recipe, and
+measurement design. That session checkpoints into campaign-level goal review;
+there is no mandatory baseline, training, or evaluation.
 
 ### PI runtime
 

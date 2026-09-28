@@ -36,7 +36,13 @@ A fresh schema-6 campaign begins with a dedicated preliminary PI session. That
 session constructs `research/scientific_model.md` from the human-authored robot,
 physics, sensing, task, and assessment implementation. The model separates
 established facts, physical consequences, and unknowns. The Runner publishes
-the exact validated document before any scientific session or operation begins.
+the exact validated document before the first scientific session begins.
+
+The first scientific session has kind `startup`. It may use measurement,
+training, model-role, and recipe-restoration operations while the PI designs or
+revises the tools, observations, reward, training recipe, and measurements
+needed for the human goal. It ends with a checkpoint, after which the campaign
+enters goal review.
 
 There is no mandatory baseline phase. Working and best-known roles remain empty
 until the PI explicitly assigns candidates using completed evidence.
@@ -53,6 +59,7 @@ campaign-level decisions:
 Opening an inquiry records its question, connection to the human goal, closure
 condition, and rationale. The opening goal-review session then ends at a
 durable checkpoint, and a fresh inquiry session continues from that state.
+Goal review permits only inquiry opening, campaign conclusion, and checkpoint.
 
 `MaxInquiries` defaults to 15. It is an unattended guard on creation of another
 inquiry only. It is not a training limit, scientific stopping rule, target, or
@@ -72,6 +79,10 @@ forced evaluation, experiment-bound decision, or Runner-owned method
 lifecycle. A PI-authored method label may organize related work in a
 checkpoint, but it creates no lifecycle gate.
 
+An inquiry reframe is a scientific-session boundary: after recording the
+reframe, the PI checkpoints before any further operation and resumes the
+reframed inquiry in a fresh bounded session.
+
 An inquiry closes when its closure condition is met, evidence redirects the
 campaign, the question is no longer a credible route, or it has produced the
 actionable result for which it was opened. Closure is independent of method
@@ -82,7 +93,9 @@ to goal review.
 
 A scientific session is bounded by one coherent objective rather than by an
 operation count. It can span several Runner round trips under the same backend
-session identity while active. The session ends only when the PI submits a
+session identity while active. That backend identity is persisted only inside
+the active scientific session, so launcher restart resumes the same bounded
+conversation without creating campaign-long identity. The session ends only when the PI submits a
 durable checkpoint or makes a terminal goal-level decision.
 
 The checkpoint carries the human-goal connection, current gap and synthesis,
