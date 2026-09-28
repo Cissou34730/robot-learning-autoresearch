@@ -1,1048 +1,963 @@
-"""Human-only, read-only campaign report. No training, SDK, Git or scenario imports."""
+"""Human-only factual report for strict schema-6 campaigns."""
 
 from __future__ import annotations
 
 import argparse
-import hashlib
 import json
-import re
 from collections import Counter, defaultdict
-from itertools import pairwise
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 NA = "unavailable"
+STATE_FIELDS = {
+    "schema_version",
+    "campaign",
+    "human_goal",
+    "scientific_model",
+    "active_inquiry",
+    "pi_checkpoint",
+    "scientific_session",
+    "counters",
+    "operation_events",
+    "pending_operation",
+    "model_roles",
+    "candidates",
+    "terminal_state",
+    "official_assessment",
+    "last_verdict",
+}
+CAMPAIGN_FIELDS = {
+    "id",
+    "started_at",
+    "base_commit",
+    "recipe_source_commit",
+    "max_inquiries",
+}
+COUNTER_FIELDS = {"inquiry", "session", "measurement", "training", "event"}
+EVENT_FIELDS = {
+    "id",
+    "kind",
+    "session_id",
+    "inquiry_id",
+    "request",
+    "result",
+    "status",
+    "error",
+    "supersedes",
+    "superseded_by",
+    "completed_at",
+}
+OPERATION_KINDS = {
+    "measurement",
+    "training",
+    "inquiry",
+    "checkpoint",
+    "model_role",
+    "restore_recipe",
+    "campaign_conclusion",
+}
 
 
 def read_json(path: Path) -> dict:
-    return json.loads(path.read_text(encoding="utf-8-sig")) if path.exists() else {}
+    if not path.is_file():
+        raise ValueError(f"{path}: required schema-6 state is missing")
+    value = json.loads(path.read_text(encoding="utf-8-sig"))
+    if not isinstance(value, dict):
+        raise TypeError(f"{path}: expected a JSON object")
+    return value
 
 
 def read_rows(path: Path) -> list[dict]:
     if not path.exists():
         return []
-    rows = []
+    rows: list[dict] = []
     for number, line in enumerate(path.read_text(encoding="utf-8-sig").splitlines(), 1):
         if not line.strip():
             continue
         try:
-            rows.append(json.loads(line))
+            value = json.loads(line)
         except json.JSONDecodeError as error:
             raise ValueError(f"{path}:{number}: invalid JSON: {error.msg}") from error
+        if not isinstance(value, dict):
+            raise TypeError(f"{path}:{number}: expected a JSON object")
+        rows.append(value)
     return rows
 
 
+def require_fields(value: object, fields: set[str], description: str) -> dict:
+    if not isinstance(value, dict):
+        raise TypeError(f"{description} must be an object")
+    missing = fields - set(value)
+    extra = set(value) - fields
+    if missing or extra:
+        raise ValueError(
+            f"{description} fields are invalid: "
+            f"missing={sorted(missing)}, extra={sorted(extra)}"
+        )
+    return value
+
+
+def validate_event(event: object, description: str) -> dict:
+    event = require_fields(event, EVENT_FIELDS, description)
+    if event["kind"] not in OPERATION_KINDS:
+        raise ValueError(f"{description} has an unsupported operation kind")
+    if event["status"] not in {"completed", "failed"}:
+        raise ValueError(f"{description} status must be completed or failed")
+    if not isinstance(event["request"], dict) or not isinstance(event["result"], dict):
+        raise TypeError(f"{description} request and result must be objects")
+    if event["status"] == "completed":
+        if event["error"] is not None or event["superseded_by"] is not None:
+            raise ValueError(f"{description} completed provenance is invalid")
+    elif not event["error"] or not event["superseded_by"]:
+        raise ValueError(f"{description} failed provenance is incomplete")
+    return event
+
+
+def validate_state(state: dict) -> None:
+    if state.get("schema_version") != 6:
+        raise RuntimeError("campaign report supports schema 6 only")
+    require_fields(state, STATE_FIELDS, "research state")
+    campaign = require_fields(state["campaign"], CAMPAIGN_FIELDS, "campaign")
+    if not campaign["id"]:
+        raise ValueError("campaign id is required")
+    require_fields(state["counters"], COUNTER_FIELDS, "counters")
+    if not isinstance(state["operation_events"], list):
+        raise TypeError("operation_events must be a list")
+    identifiers: set[str] = set()
+    for index, event in enumerate(state["operation_events"], 1):
+        event = validate_event(event, f"operation event {index}")
+        if event["id"] in identifiers:
+            raise ValueError(f"duplicate operation event id: {event['id']}")
+        identifiers.add(event["id"])
+
+
 def cell(value: object) -> str:
-    return " ".join(str(value if value is not None else NA).split()).replace("|", "\\|")
+    if value is None or value == "":
+        value = NA
+    if isinstance(value, (dict, list)):
+        value = json.dumps(value, sort_keys=True, separators=(",", ":"))
+    return " ".join(str(value).split()).replace("|", "\\|")
 
 
-def table(headers: list[str], rows: list[list]) -> list[str]:
-    return [
+def table(headers: list[str], rows: list[list[object]]) -> list[str]:
+    rendered = [
         "| " + " | ".join(headers) + " |",
         "| " + " | ".join("---" for _ in headers) + " |",
-        *("| " + " | ".join(cell(v) for v in row) + " |" for row in rows),
-        "",
     ]
+    rendered.extend(
+        "| " + " | ".join(cell(value) for value in row) + " |" for row in rows
+    )
+    if not rows:
+        rendered.append("| " + " | ".join("none" for _ in headers) + " |")
+    return [*rendered, ""]
 
 
 def number(value: object, suffix: str = "") -> str:
-    return f"{value:,.2f}{suffix}" if isinstance(value, (int, float)) else NA
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
+        return NA
+    return f"{value:,.2f}{suffix}"
 
 
-def link(repo: Path, relative: str) -> str:
-    return f"[{cell(relative)}](<{(repo / relative).resolve().as_posix()}>)"
+def short_commit(value: object) -> str:
+    return str(value)[:12] if value else NA
 
 
-def measurements(row: dict) -> list[dict]:
-    """Normalize existing record shapes and count an artifact only once.
-
-    Every ledger a record can carry is read, not only the requested ones. A
-    preparation or partial round executes the same episodes on the same
-    instrument, so reading the requested ledgers alone understated the work a
-    campaign performed and the panels it consumed.
-    """
-    found = {}
-    for source in (
-        *row.get("requested_evaluations", []),
-        *row.get("partial_evaluations", []),
-        *row.get("preparation_evaluations", []),
-        *row.get("task_reference_evaluations", []),
-        *row.get("partial_task_reference_evaluations", []),
-        *row.get("preparation_task_reference_evaluations", []),
-    ):
-        metrics = source.get("metrics") or source
-        item = {**source, **metrics}
-        item.setdefault("instrument", "research_evaluation")
-        path = item.get("evaluation_artifact")
-        key = path or (
-            item.get("candidate"),
-            item["instrument"],
-            item.get("seed"),
-            item.get("episodes"),
-            item.get("evaluation_semantics"),
-        )
-        found[key] = item
-    return list(found.values())
-
-
-def _candidate_identity(candidate: dict) -> str:
-    for key in ("fingerprint", "model_fingerprint", "artifact", "name"):
-        value = candidate.get(key)
-        if value:
-            return str(value)
-    return json.dumps(candidate, sort_keys=True, separators=(",", ":"))
-
-
-def display_order(
-    candidates: list[dict],
-    campaign_id: str | None = None,
-    experiment: object = None,
-) -> list[dict]:
-    """Mirror build_research_brief.candidate_display_order.
-
-    The order is a metric-independent stable permutation of artifact identity
-    salted by campaign/experiment scope, so it never ranks candidates by
-    training proxy, timestep or input position, and does not collapse to one
-    fixed permutation across experiments.
-    """
-    scope = f"{campaign_id or ''}|{experiment if experiment is not None else ''}"
-    return sorted(
-        candidates,
-        key=lambda candidate: (
-            hashlib.sha256(
-                f"{scope}|{_candidate_identity(candidate)}".encode()
-            ).hexdigest(),
-            _candidate_identity(candidate),
-        ),
-    )
-
-
-def selection_diagnostics(rows: list[dict]) -> list[list]:
-    """Factual selection ranks for each measured checkpoint candidate.
-
-    Exposes how measured candidates sit in the rendered (metric-independent)
-    order and in the previous proxy-ranked order, whether they were the endpoint,
-    and their timestep rank. It is an audit of presentation and selection, not a
-    recommendation.
-    """
-    diagnostics = []
-    for row in rows:
-        candidates = [
-            candidate
-            for candidate in (row.get("candidates") or [])
-            if isinstance(candidate, dict)
-        ]
-        if not candidates:
-            continue
-        names = {candidate.get("name") for candidate in candidates}
-        displayed = {
-            candidate.get("name"): position + 1
-            for position, candidate in enumerate(
-                display_order(candidates, row.get("campaign_id"), row.get("index"))
-            )
-        }
-        proxy_sorted = sorted(
-            candidates,
-            key=lambda candidate: (
-                candidate.get("training_success") is None,
-                -float(candidate.get("training_success") or 0.0),
-                int(candidate.get("timesteps") or 0),
-            ),
-        )
-        proxy_rank = {
-            candidate.get("name"): position + 1
-            for position, candidate in enumerate(proxy_sorted)
-        }
-        timestep_sorted = sorted(
-            candidates, key=lambda candidate: int(candidate.get("timesteps") or 0)
-        )
-        timestep_rank = {
-            candidate.get("name"): position + 1
-            for position, candidate in enumerate(timestep_sorted)
-        }
-        latest = max(int(candidate.get("timesteps") or 0) for candidate in candidates)
-        endpoints = {
-            candidate.get("name")
-            for candidate in candidates
-            if int(candidate.get("timesteps") or 0) == latest
-        }
-        selected = sorted(
-            {
-                measurement.get("candidate")
-                for measurement in measurements(row)
-                if measurement.get("candidate") in names
-            }
-        )
-        for candidate in selected:
-            diagnostics.append(
-                [
-                    row.get("index"),
-                    candidate,
-                    displayed.get(candidate),
-                    proxy_rank.get(candidate),
-                    f"{timestep_rank.get(candidate)}/{len(candidates)}",
-                    "yes" if candidate in endpoints else "no",
-                ]
-            )
-    return diagnostics
+def usage_total(rows: list[dict], field: str) -> str:
+    values = [
+        row[field]
+        for row in rows
+        if isinstance(row.get(field), (int, float))
+        and not isinstance(row.get(field), bool)
+    ]
+    if not values:
+        return NA
+    rendered = number(sum(values))
+    if len(values) != len(rows):
+        return f"{rendered} (partial: {len(values)}/{len(rows)} invocations)"
+    return rendered
 
 
 def load_campaign(repo: Path, campaign_id: str | None = None) -> dict:
-    state = read_json(repo / "research/research_state.json")
-    history = read_rows(repo / "research/results.jsonl")
-    campaign_id = campaign_id or state.get("campaign", {}).get("id")
-    if not campaign_id and history:
-        campaign_id = history[-1].get("campaign_id")
-    latest = {}
-    inquiries = []
-    for row in history:
-        if row.get("campaign_id") != campaign_id:
+    state = read_json(repo / "research" / "research_state.json")
+    validate_state(state)
+    current_id = str(state["campaign"]["id"])
+    if campaign_id is not None and campaign_id != current_id:
+        raise ValueError(
+            f"requested campaign {campaign_id!r} is not the current schema-6 "
+            f"campaign {current_id!r} in {repo}"
+        )
+
+    history = read_rows(repo / "research" / "results.jsonl")
+    history_by_id: dict[str, dict] = {}
+    for index, row in enumerate(history, 1):
+        fields = EVENT_FIELDS | {"campaign_id"}
+        row = require_fields(row, fields, f"results row {index}")
+        if row["campaign_id"] != current_id:
             continue
-        if row.get("record_type") == "inquiry":
-            inquiries.append(row)
-        else:
-            latest[row["index"]] = row
-    rows = [latest[n] for n in sorted(latest)]
-    current_state = state if state.get("campaign", {}).get("id") == campaign_id else {}
-    usage = read_rows(repo / "reports/session_usage" / f"{campaign_id}.jsonl")
-    usage = [row for row in usage if row.get("campaign_id") == campaign_id]
+        event = validate_event(
+            {key: value for key, value in row.items() if key != "campaign_id"},
+            f"results row {index}",
+        )
+        history_by_id[event["id"]] = event
+    state_by_id = {event["id"]: event for event in state["operation_events"]}
+    if history_by_id != state_by_id:
+        raise ValueError(
+            "current campaign results.jsonl does not exactly match operation_events"
+        )
+
+    usage = [
+        row
+        for row in read_rows(repo / "reports" / "session_usage" / f"{current_id}.jsonl")
+        if row.get("campaign_id") == current_id
+    ]
     return {
         "repo": repo,
-        "id": campaign_id or "legacy",
-        "state": current_state,
-        "rows": rows,
-        "inquiries": inquiries,
+        "id": current_id,
+        "state": state,
+        "events": list(state["operation_events"]),
         "usage": usage,
     }
 
 
-def usage_total(rows: list[dict], field: str) -> str:
-    available = [row[field] for row in rows if isinstance(row.get(field), (int, float))]
-    if not available:
-        return NA
-    total = number(sum(available))
-    return (
-        total
-        if len(available) == len(rows)
-        else f"{total} (partial: {len(available)}/{len(rows)} invocations)"
-    )
-
-
-def runtime_label(row: dict) -> str:
-    """Rows written before the OpenCode runtime existed carry no runtime field."""
-    runtime = row.get("runtime")
-    return str(runtime) if runtime else "copilot (legacy)"
-
-
-def proposal_reasoning(row: dict) -> dict:
-    proposal = row.get("proposal_snapshot") or {}
-    return proposal.get("reasoning") or row.get("reasoning") or {}
-
-
-def prior_experiment_references(row: dict) -> list[int]:
-    """Return only explicit references recorded in the proposal evidence."""
-    references = set()
-    for evidence in proposal_reasoning(row).get("evidence", []):
-        text = f"{evidence.get('source', '')} {evidence.get('observation', '')}"
-        references.update(
-            int(number)
-            for number in re.findall(r"experiment[-_ ](\d+)", text, re.IGNORECASE)
-            if int(number) < row["index"]
-        )
-    return sorted(references)
-
-
-def family_area(value: object) -> str:
-    family = str(value or NA)
-    return re.split(r"[.]", family, maxsplit=1)[0]
-
-
-def lineage_identity(lineage: dict | None) -> tuple:
-    lineage = lineage or {}
-    return (
-        lineage.get("origin_experiment"),
-        lineage.get("candidate"),
-        lineage.get("fingerprint"),
-    )
-
-
-def changed_from(previous: dict | None, current: dict | None) -> str:
-    if not current:
-        return NA
-    if not previous:
-        return "initial"
-    return "yes" if lineage_identity(previous) != lineage_identity(current) else "no"
-
-
-def changed_paths(row: dict) -> str:
-    paths = row.get("code_changes") or []
-    if isinstance(paths, str):
-        paths = [paths]
-    return ", ".join(paths) or "none"
-
-
-def parameter_change_summary(row: dict) -> str:
-    changes = row.get("parameter_changes") or []
-    if isinstance(changes, dict):
-        changes = [changes]
-    rendered = []
-    for change in changes:
-        if not isinstance(change, dict):
-            rendered.append(str(change))
-            continue
-        path = change.get("path", NA)
-        before = change.get("before", NA)
-        after = change.get("after", NA)
-        rendered.append(f"{path}: {before} -> {after}")
-    return "; ".join(rendered) or "none"
-
-
-def proxy_rank(candidate: dict, proxies: list[dict]) -> str:
-    value = candidate.get("training_success")
-    if not isinstance(value, (int, float)):
-        return NA
-    values = sorted({item["training_success"] for item in proxies}, reverse=True)
-    return f"{values.index(value) + 1}/{len(values)} distinct values"
-
-
-def higher_proxy_summary(
-    candidate: dict, proxies: list[dict], selected: set[str]
-) -> str:
-    value = candidate.get("training_success")
-    if not isinstance(value, (int, float)):
-        return "none / unavailable"
-    higher = [
-        item
-        for item in proxies
-        if item["training_success"] > value and item.get("name") not in selected
+def completed_events(campaign: dict, kind: str | None = None) -> list[dict]:
+    return [
+        event
+        for event in campaign["events"]
+        if event["status"] == "completed" and (kind is None or event["kind"] == kind)
     ]
-    if not higher:
-        return "none"
-    best = max(higher, key=lambda item: item["training_success"])
-    return (
-        f"{len(higher)}; best {best.get('name', NA)} "
-        f"({number(best.get('training_success'))})"
-    )
 
 
-def preparation_row(state: dict, rows: list[dict]) -> dict | None:
-    """The live preparation ledger as a row, when no record carries it yet.
-
-    A preparation round measures saved lineages before its experiment exists.
-    When the campaign concludes from preparation, that experiment never runs and
-    the ledger is never persisted into a record, so reading only the recorded
-    rows hid the very measurements the conclusion was taken on.
-    """
-    ledger = state.get("preparation_measurement")
-    if not isinstance(ledger, dict):
-        return None
-    index = ledger.get("experiment")
-    if index in {row.get("index") for row in rows}:
-        return None
-    row = {
-        "index": index,
-        "partial_evaluations": ledger.get("partial_evaluations") or [],
-        "partial_task_reference_evaluations": (
-            ledger.get("partial_task_reference_evaluations") or []
-        ),
-    }
-    return row if measurements(row) else None
+def failed_events(campaign: dict) -> list[dict]:
+    return [event for event in campaign["events"] if event["status"] == "failed"]
 
 
-def comparison_metrics(campaign: dict) -> dict:
-    rows, usage = campaign["rows"], campaign["usage"]
-    inquiries = campaign.get("inquiries") or []
-    state = campaign.get("state") or {}
-    initializations = Counter(
-        f"{r.get('kind', NA)}/{r.get('initialization', NA)}" for r in rows
-    )
-    selections = Counter(
-        candidate
-        for r in rows
-        for candidate in {m.get("candidate", "") for m in measurements(r)}
-        if candidate.startswith(("checkpoint-", "candidate-"))
-    )
-    evidence = [m for r in rows for m in measurements(r)]
-    evidence += [m for inquiry in inquiries for m in measurements(inquiry)]
-    preparation = preparation_row(state, rows)
-    if preparation is not None:
-        evidence += measurements(preparation)
-    final = [
-        f"closure of experiment {r['index']}"
-        for r in rows
-        if (r.get("closure_decision") or {}).get("request_final_benchmark")
-    ]
-    conclusion = state.get("campaign_conclusion")
-    if isinstance(conclusion, dict) and (
-        conclusion.get("action") == "request_final_benchmark"
-    ):
-        final.append(
-            f"preparation after experiment {rows[-1]['index'] if rows else NA} "
-            "(no experiment recorded for the request)"
+def inquiry_records(campaign: dict) -> list[dict]:
+    inquiries: dict[str, dict] = {}
+    for event in completed_events(campaign, "inquiry"):
+        request = event["request"]
+        result = event["result"]
+        inquiry_id = result["inquiry_id"]
+        action = result["action"]
+        if action == "open":
+            inquiries[inquiry_id] = {
+                "id": inquiry_id,
+                "status": "open",
+                "question": request["question"],
+                "goal_connection": request["goal_connection"],
+                "closure_condition": request["closure_condition"],
+                "opened_session": event["session_id"],
+                "reframes": 0,
+                "outcome": None,
+                "reason": None,
+            }
+        elif action == "reframe":
+            record = inquiries.setdefault(inquiry_id, {"id": inquiry_id})
+            record.update(
+                question=request["question"],
+                goal_connection=request["goal_connection"],
+                closure_condition=request["closure_condition"],
+            )
+            record["reframes"] = int(record.get("reframes", 0)) + 1
+        else:
+            record = inquiries.setdefault(inquiry_id, {"id": inquiry_id})
+            record.update(
+                status="closed",
+                outcome=result["outcome"],
+                reason=result["reason"],
+            )
+    active = campaign["state"]["active_inquiry"]
+    if isinstance(active, dict):
+        record = inquiries.setdefault(active["id"], {"id": active["id"]})
+        record.update(
+            status="active",
+            question=active["question"],
+            goal_connection=active["goal_connection"],
+            closure_condition=active["closure_condition"],
+            opened_session=active["opened_in_session"],
+            reframes=len(active["reframes"]),
         )
-    fresh_restarts = [
-        r["index"]
-        for r in rows
-        if r.get("initialization") == "fresh" and int(r.get("index", 0)) > 1
-    ]
-    derived_usage = []
-    for u in usage:
-        values = dict(u)
-        input_tokens, output_tokens, cached = (
-            u.get(k) for k in ("input_tokens", "output_tokens", "cache_read_tokens")
+    return sorted(inquiries.values(), key=lambda item: item["id"])
+
+
+def session_records(campaign: dict) -> list[dict]:
+    sessions: dict[str, dict] = {}
+    for event in campaign["events"]:
+        record = sessions.setdefault(
+            event["session_id"],
+            {
+                "id": event["session_id"],
+                "inquiry_id": event["inquiry_id"],
+                "operations": [],
+                "completed": 0,
+                "failed": 0,
+                "checkpoint": None,
+                "active": False,
+                "kind": None,
+                "objective": None,
+                "backend": None,
+            },
         )
-        values["total_tokens"] = (
-            input_tokens + output_tokens
-            if input_tokens is not None and output_tokens is not None
+        record["operations"].append(event["id"])
+        record[event["status"]] += 1
+        if event["kind"] == "checkpoint" and event["status"] == "completed":
+            record["checkpoint"] = event["id"]
+    active = campaign["state"]["scientific_session"]
+    if isinstance(active, dict):
+        record = sessions.setdefault(
+            active["id"],
+            {
+                "id": active["id"],
+                "inquiry_id": active["inquiry_id"],
+                "operations": list(active["operation_ids"]),
+                "completed": 0,
+                "failed": 0,
+                "checkpoint": None,
+                "active": True,
+                "kind": active["kind"],
+                "objective": active["objective"],
+                "backend": active["backend_descriptor"],
+            },
+        )
+        record.update(
+            active=True,
+            kind=active["kind"],
+            objective=active["objective"],
+            backend=active["backend_descriptor"],
+        )
+    return sorted(sessions.values(), key=lambda item: item["id"])
+
+
+def operation_summary(event: dict) -> str:
+    request = event["request"]
+    result = event["result"]
+    kind = event["kind"]
+    if event["status"] == "failed":
+        return str(event["error"])
+    if kind == "measurement":
+        return (
+            f"{len(result['measurements'])} measurements; "
+            f"{len(result['paired_comparisons'])} paired comparisons"
+        )
+    if kind == "training":
+        return (
+            f"{result['initialization']}; {result['completed_steps']}/"
+            f"{result['requested_steps']} steps; {len(result['candidates'])} candidates"
+        )
+    if kind == "inquiry":
+        return f"{result['action']} {result['inquiry_id']}"
+    if kind == "checkpoint":
+        return f"checkpointed {result['session_id']}"
+    if kind == "model_role":
+        return f"{result['action']} {result['candidate']}"
+    if kind == "restore_recipe":
+        return f"restored {result['candidate']} from {short_commit(result['scientific_commit'])}"
+    return f"{result['status']}; model {result['model'] or 'none'}; {request['reason']}"
+
+
+def measurement_rows(campaign: dict) -> list[list[object]]:
+    rows: list[list[object]] = []
+    for event in completed_events(campaign, "measurement"):
+        for measurement in event["result"]["measurements"]:
+            metrics = measurement["metrics"]
+            subject = measurement.get("candidate") or measurement.get("module")
+            panel = (
+                f"{metrics.get('panel', 'seed')}={metrics.get('seed', NA)}; "
+                f"episodes={metrics.get('episodes', NA)}; "
+                f"version={metrics.get('panel_version', NA)}; "
+                f"semantics={metrics.get('evaluation_semantics', NA)}"
+            )
+            rows.append(
+                [
+                    event["id"],
+                    event["session_id"],
+                    event["inquiry_id"],
+                    measurement["instrument"],
+                    subject,
+                    measurement["label"],
+                    panel,
+                    number(metrics.get("success_percent"), "%"),
+                    metrics.get("evaluation_artifact"),
+                ]
+            )
+    return rows
+
+
+def panel_reuse_rows(campaign: dict) -> list[list[object]]:
+    groups: dict[tuple[object, ...], list[tuple[str, str, str]]] = defaultdict(list)
+    for event in completed_events(campaign, "measurement"):
+        for measurement in event["result"]["measurements"]:
+            if measurement["instrument"] not in {
+                "research_evaluation",
+                "task_reference",
+            }:
+                continue
+            metrics = measurement["metrics"]
+            key = (
+                measurement["instrument"],
+                metrics.get("panel"),
+                metrics.get("panel_version"),
+                metrics.get("seed"),
+                metrics.get("episodes"),
+                metrics.get("evaluation_semantics"),
+            )
+            groups[key].append(
+                (
+                    event["id"],
+                    measurement["candidate"],
+                    metrics["evaluation_artifact"],
+                )
+            )
+    return [
+        [
+            *key,
+            len(executions),
+            len({candidate for _, candidate, _ in executions}),
+            ", ".join(operation for operation, _, _ in executions),
+            "yes" if len(executions) > 1 else "no",
+        ]
+        for key, executions in groups.items()
+    ]
+
+
+def training_rows(campaign: dict) -> list[list[object]]:
+    rows = []
+    for event in completed_events(campaign, "training"):
+        result = event["result"]
+        dynamics = "; ".join(
+            (
+                f"{item['candidate']}: steps={item['training_steps']}, "
+                f"success={number(item['training_success'])}, "
+                f"reward={number(item['ep_rew_mean'])}"
+            )
+            for item in result["learning_dynamics"]
+        )
+        rows.append(
+            [
+                event["id"],
+                event["session_id"],
+                event["inquiry_id"],
+                result["initialization"],
+                result["parent"],
+                result["seed"],
+                result["requested_steps"],
+                result["completed_steps"],
+                short_commit(result["scientific_commit"]),
+                dynamics,
+            ]
+        )
+    return rows
+
+
+def candidate_rows(campaign: dict) -> list[list[object]]:
+    state = campaign["state"]
+    roles = state["model_roles"]
+    labels: dict[str, list[str]] = defaultdict(list)
+    for role in ("working", "best_known"):
+        if roles[role]:
+            labels[roles[role]].append(role)
+    for label, candidate_id in roles["retained"].items():
+        labels[candidate_id].append(f"retained:{label}")
+    return [
+        [
+            candidate_id,
+            candidate["origin_operation"],
+            candidate["name"],
+            candidate["training_steps"],
+            ", ".join(labels[candidate_id]) or "available",
+            candidate["artifact"],
+            candidate["fingerprint"],
+            short_commit(candidate["scientific_commit"]),
+            len(candidate["evaluation_artifacts"]),
+        ]
+        for candidate_id, candidate in sorted(state["candidates"].items())
+    ]
+
+
+def resource_metrics(campaign: dict) -> dict[str, str]:
+    usage = campaign["usage"]
+    derived = []
+    for row in usage:
+        item = dict(row)
+        inputs = row.get("input_tokens")
+        outputs = row.get("output_tokens")
+        cached = row.get("cache_read_tokens")
+        item["total_tokens"] = (
+            inputs + outputs
+            if isinstance(inputs, (int, float)) and isinstance(outputs, (int, float))
             else None
         )
-        values["new_input_tokens"] = (
-            input_tokens - cached
-            if input_tokens is not None and cached is not None
+        item["new_input_tokens"] = (
+            inputs - cached
+            if isinstance(inputs, (int, float)) and isinstance(cached, (int, float))
             else None
         )
-        derived_usage.append(values)
+        derived.append(item)
     return {
-        "Recorded experiments": str(len(rows)),
-        "Closed inquiries": str(len(inquiries)),
-        # The baseline is automatic and always fresh, so it is excluded. This
-        # counts the discretionary restarts from zero, which is the quantity
-        # that separated the converging campaigns from the stalled ones.
-        "Fresh restarts after the baseline": (
-            "; ".join(f"experiment {index}" for index in fresh_restarts) or "none"
-        )
-        + f" ({len(fresh_restarts)} of {len(rows)})",
-        "Operations / initialization": "; ".join(
-            f"{k}: {v}" for k, v in sorted(initializations.items())
-        )
-        or NA,
-        "Experiments selecting each checkpoint position": "; ".join(
-            f"{k}: {v}" for k, v in selections.most_common()
-        )
-        or NA,
-        "Measurement executions": str(len(evidence)),
-        "Experiments with / without recorded measurements": f"{sum(bool(measurements(r)) for r in rows)} / {sum(not measurements(r) for r in rows)}",
-        "Episode executions (not unique coverage)": number(
-            sum(m.get("episodes", 0) for m in evidence)
-        ),
-        "Instruments": "; ".join(
-            f"{k}: {v}" for k, v in Counter(m["instrument"] for m in evidence).items()
-        )
-        or NA,
-        "Final benchmark requested from": "; ".join(final) or "none recorded",
-        "Recorded Researcher invocations": str(len(usage)),
-        "Researcher runtime": "; ".join(
-            f"{k}: {v}" for k, v in Counter(runtime_label(u) for u in usage).items()
-        )
-        or NA,
+        "Recorded PI invocations": str(len(usage)),
+        "Backend sessions": str(len({row.get("session_id") for row in usage})),
         "Models / reasoning": "; ".join(
-            f"{k[0]} / {k[1]}: {v}"
-            for k, v in Counter(
-                (u.get("model"), u.get("reasoning")) for u in usage
+            f"{model} / {reasoning}: {count}"
+            for (model, reasoning), count in Counter(
+                (row.get("model", NA), row.get("reasoning", NA)) for row in usage
             ).items()
         )
         or NA,
-        "Total tokens (input + output)": usage_total(derived_usage, "total_tokens"),
+        "Total tokens (input + output)": usage_total(derived, "total_tokens"),
         "Input tokens (includes cache reads)": usage_total(usage, "input_tokens"),
         "Cache-read tokens (subset of input)": usage_total(usage, "cache_read_tokens"),
         "New input tokens (input minus cache reads)": usage_total(
-            derived_usage, "new_input_tokens"
+            derived, "new_input_tokens"
         ),
         "Output tokens": usage_total(usage, "output_tokens"),
-        # Copilot bills in AIU. Only Copilot rows carry it, so an OpenCode row's
-        # null leaves this visibly partial rather than counting as zero.
         "AIU": usage_total(usage, "aiu"),
-        "Cache-write tokens (OpenCode runtime only)": usage_total(
-            usage, "cache_write_tokens"
-        ),
-        "Reasoning tokens (OpenCode runtime only)": usage_total(
-            usage, "reasoning_tokens"
-        ),
-        "Estimated cost, USD (OpenCode runtime only)": usage_total(
-            usage, "reported_cost_usd"
-        ),
         "Tool calls": usage_total(usage, "tool_calls"),
-        "Researcher duration, seconds": usage_total(usage, "duration_seconds"),
+        "PI duration, seconds": usage_total(usage, "duration_seconds"),
+        "Nonzero exits": str(sum(row.get("exit_code", 0) != 0 for row in usage)),
+    }
+
+
+def comparison_metrics(campaign: dict) -> dict[str, str]:
+    completed = completed_events(campaign)
+    failed = failed_events(campaign)
+    state = campaign["state"]
+    return {
+        "Campaign started": cell(state["campaign"]["started_at"]),
+        "Completed evidence events": str(len(completed)),
+        "Failed execution attempts": str(len(failed)),
+        "Superseded failed attempts": str(
+            sum(event["superseded_by"] is not None for event in failed)
+        ),
+        "Completed measurements": str(
+            sum(
+                len(event["result"]["measurements"])
+                for event in completed_events(campaign, "measurement")
+            )
+        ),
+        "Completed training operations": str(
+            len(completed_events(campaign, "training"))
+        ),
+        "Candidates": str(len(state["candidates"])),
+        "Inquiries opened": str(
+            sum(
+                event["result"].get("action") == "open"
+                for event in completed_events(campaign, "inquiry")
+            )
+        ),
+        "Scientific sessions observed": str(len(session_records(campaign))),
+        "Terminal state": cell(
+            state["terminal_state"]["status"] if state["terminal_state"] else None
+        ),
+        "PI invocations": str(len(campaign["usage"])),
+        "PI duration, seconds": usage_total(campaign["usage"], "duration_seconds"),
     }
 
 
 def campaign_sections(campaign: dict) -> list[str]:
-    repo, rows, state = campaign["repo"], campaign["rows"], campaign["state"]
-    lines = [f"## Campaign `{campaign['id']}`", "", f"Repository: `{repo}`", ""]
-    status = state.get("terminal_campaign_status") or "no terminal status recorded"
-    pending = next(
-        (
-            f"{key}, experiment {state[key].get('experiment', NA)}"
-            for key in (
-                "pending_training_operation",
-                "pending_analysis",
-                "pending_researcher_decision",
-                "pending_evaluation_request",
-                "pending_final_benchmark",
-            )
-            if isinstance(state.get(key), dict)
-        ),
-        "none recorded",
-    )
-    lines += [
-        f"State: {status}. Pending operation: {pending}.",
-        "This is persisted state, not a check of live processes.",
+    state = campaign["state"]
+    campaign_state = state["campaign"]
+    terminal = state["terminal_state"]
+    assessment = state["official_assessment"]
+    lines = [
+        f"## Campaign `{campaign['id']}`",
+        "",
+        f"Repository: `{campaign['repo']}`",
+        "",
+        "### Campaign state",
         "",
     ]
-    if status == "no terminal status recorded" and pending == "none recorded":
-        lines += [
-            "Campaign stop or interruption reason: unavailable in persisted data.",
-            "",
-        ]
-    for name in ("working_lineage", "best_known_lineage"):
-        lineage = state.get(name) or (rows[-1].get(name) if rows else None) or {}
-        lines.append(
-            f"- {name}: experiment {lineage.get('origin_experiment', NA)}, "
-            f"{lineage.get('candidate', NA)}, {lineage.get('training_steps', NA)} accumulated steps."
-        )
-    lines += ["", "### Experiment progression", ""]
-    progression = []
-    previous_best_known = None
-    for row in rows:
-        evidence = measurements(row)
-        best = {}
-        for m in evidence:
-            score = m.get("success_percent")
-            if isinstance(score, (int, float)) and score > best.get(
-                m["instrument"], {}
-            ).get("success_percent", -1):
-                best[m["instrument"]] = m
-        outcome = (
-            "; ".join(
-                f"{instrument}: {m.get('candidate', NA)} {number(m['success_percent'], '%')}"
-                for instrument, m in best.items()
-            )
-            or "no recorded measurements"
-        )
-        decision = row.get("closure_decision") or {}
-        best_known = row.get("best_known_lineage") or {}
-        references = prior_experiment_references(row)
-        progression.append(
+    lines += table(
+        ["Fact", "Persisted value"],
+        [
+            ["Started", campaign_state["started_at"]],
+            ["Base commit", campaign_state["base_commit"]],
+            ["Recipe source commit", campaign_state["recipe_source_commit"]],
+            ["Max inquiries", campaign_state["max_inquiries"]],
+            ["Human goal source", state["human_goal"]["source"]],
+            ["Scientific model status", state["scientific_model"]["status"]],
+            ["Scientific model commit", state["scientific_model"]["commit"]],
+            ["Last verdict", state["last_verdict"]],
             [
-                row["index"],
-                row.get("family", NA),
-                f"{row.get('kind', NA)} / {row.get('initialization', NA)}",
-                row.get("training_parent", NA),
-                row.get("status", NA),
-                outcome,
-                ", ".join(map(str, references)) or "none recorded",
-                decision.get("continue_from", NA),
-                (decision.get("code") or {}).get("action", NA),
-                changed_from(previous_best_known, best_known),
-                f"exp {best_known.get('origin_experiment', NA)} / {best_known.get('candidate', NA)}",
-            ]
-        )
-        previous_best_known = best_known or previous_best_known
-    lines += table(
-        [
-            "Exp",
-            "Family",
-            "Operation / init",
-            "Parent",
-            "Status",
-            "Best measured by instrument",
-            "Prior experiments cited",
-            "Working choice",
-            "Recipe action",
-            "Best-known changed",
-            "Best-known snapshot",
+                "Counters",
+                "; ".join(f"{key}={value}" for key, value in state["counters"].items()),
+            ],
         ],
-        progression,
     )
-    lines += ["", "### Selection diagnostics", ""]
-    lines += [
-        (
-            "Ranks audit how measured checkpoints sit in the rendered brief. "
-            "Displayed position uses the current metric-independent order; proxy "
-            "rank is the order a training-proxy-ranked inventory would have shown. "
-            "These ranks are factual and do not rank models for the Researcher."
-        ),
-        "",
-    ]
+    lines += ["### Current inquiry, session, and operation", ""]
+    active_inquiry = state["active_inquiry"]
+    active_session = state["scientific_session"]
+    pending = state["pending_operation"]
     lines += table(
-        [
-            "Exp",
-            "Selected candidate",
-            "Displayed position",
-            "Proxy rank",
-            "Timestep rank",
-            "Endpoint",
-        ],
-        selection_diagnostics(rows),
-    )
-    postmortem = repo / "research/postmortems.md"
-    if postmortem.exists():
-        strategy = re.search(
-            rf"^## {re.escape(campaign['id'])} / Scientific strategy\s*\n(.*?)(?=^## |\Z)",
-            postmortem.read_text(encoding="utf-8-sig"),
-            re.MULTILINE | re.DOTALL,
-        )
-        if strategy:
-            lines += [
-                "### Current recorded scientific strategy",
-                "",
-                "Researcher-authored synthesis, not an assessment by this report.",
-                "",
-                strategy.group(1).strip(),
-                "",
-            ]
-    areas = defaultdict(list)
-    for row in rows:
-        areas[family_area(row.get("family"))].append(row)
-    lines += [
-        "### Scientific search coverage",
-        "",
-        (
-            "This groups recorded experiment families by their top-level scientific surface. "
-            "It describes coverage; it does not rank surfaces or judge whether repetition was justified."
-        ),
-        "",
-    ]
-    lines += table(
-        [
-            "Surface",
-            "Experiments",
-            "Families",
-            "Operations / initialization",
-            "Experiments closed with code action=keep",
-        ],
+        ["Object", "Identity", "State", "Details"],
         [
             [
-                area,
-                ", ".join(str(row["index"]) for row in area_rows),
-                "; ".join(sorted({str(row.get("family", NA)) for row in area_rows})),
-                "; ".join(
-                    f"{row['index']}: {row.get('kind', NA)}/{row.get('initialization', NA)}"
-                    for row in area_rows
+                "Inquiry",
+                active_inquiry.get("id") if active_inquiry else None,
+                "active" if active_inquiry else "none",
+                active_inquiry.get("question") if active_inquiry else None,
+            ],
+            [
+                "Scientific session",
+                active_session.get("id") if active_session else None,
+                active_session.get("kind") if active_session else "none",
+                active_session.get("objective") if active_session else None,
+            ],
+            [
+                "Runner operation",
+                pending.get("id") if pending else None,
+                pending.get("progress") if pending else "none",
+                (
+                    f"{pending['kind']}; failure={pending['failure'] or 'none'}"
+                    if pending
+                    else None
                 ),
-                ", ".join(
-                    str(row["index"])
-                    for row in area_rows
-                    if ((row.get("closure_decision") or {}).get("code") or {}).get(
-                        "action"
-                    )
-                    == "keep"
-                )
-                or "none",
-            ]
-            for area, area_rows in sorted(areas.items())
+            ],
         ],
     )
-    if len(rows) > 1:
-        lines += [
-            "### Cross-experiment decision chain",
-            "",
-            (
-                "Explicit citations come only from the next proposal's recorded evidence. "
-                "No continuity is inferred from similar wording or family names."
-            ),
-            "",
-        ]
-        lines += table(
-            [
-                "Closed experiment",
-                "Next experiment",
-                "Next family",
-                "Next operation / initialization",
-                "Earlier experiments explicitly cited by next proposal",
-            ],
-            [
-                [
-                    current["index"],
-                    following["index"],
-                    following.get("family", NA),
-                    f"{following.get('kind', NA)} / {following.get('initialization', NA)}",
-                    ", ".join(map(str, prior_experiment_references(following)))
-                    or "none recorded",
-                ]
-                for current, following in pairwise(rows)
-            ],
-        )
-    lines += [
-        "### Checkpoint selection and trajectory coverage",
-        "",
-        (
-            "Training proxies can justify measurement selection, but do not establish policy quality. "
-            "A higher unmeasured proxy is a coverage question, not proof of a better model. "
-            "Steps below are checkpoint positions within each run; they are not automatically comparable across fresh and transfer runs."
-        ),
-        "",
-    ]
-    for row in rows:
-        candidates = row.get("candidates") or []
-        selected = {m.get("candidate") for m in measurements(row)}
-        proxies = [
-            c for c in candidates if isinstance(c.get("training_success"), (int, float))
-        ]
-        peak = max((c["training_success"] for c in proxies), default=None)
-        peak_steps = sorted(
-            c.get("timesteps", 0) for c in proxies if c["training_success"] == peak
-        )
-        near = sorted(
-            c.get("timesteps", 0)
-            for c in proxies
-            if peak is not None and c["training_success"] >= peak - 0.01
-        )
-        lines += [
-            f"#### Experiment {row['index']}",
-            "",
-            f"Saved checkpoints: {len(candidates)}; measured current checkpoints: {len(selected & {c.get('name') for c in candidates})}.",
-            f"Peak training-success proxy: {number(peak)}; exact peak positions: {', '.join(map(str, peak_steps)) or NA}.",
-            (
-                f"Within 1 percentage point of peak: {', '.join(map(str, near)) or NA}. "
-                "Listed positions may be disjoint; this does not assert a continuous plateau."
-            ),
-            "",
-        ]
-        selections = []
-        by_name = {c.get("name"): c for c in candidates}
-        for m in measurements(row):
-            c = by_name.get(m.get("candidate"), {})
-            proxy = c.get("training_success")
-            selections.append(
-                [
-                    m.get("candidate", NA),
-                    m["instrument"],
-                    c.get("timesteps", "saved lineage"),
-                    number(proxy),
-                    number(c.get("ep_rew_mean")),
-                    proxy_rank(c, proxies),
-                    higher_proxy_summary(c, proxies, selected),
-                    m.get("selection", NA),
-                ]
-            )
-        lines += table(
-            [
-                "Model",
-                "Instrument",
-                "Steps",
-                "Training success",
-                "Training reward",
-                "Proxy rank",
-                "Unmeasured higher proxies",
-                "Recorded selection rationale",
-            ],
-            selections,
-        )
-    lines += [
-        "### Initialization, hypothesis memory and lineage decisions",
-        "",
-        (
-            "Questions, assessments and rationales are Researcher-authored records; "
-            "they do not prove that a causal claim is correct. Detailed observations remain in the linked sources."
-        ),
-        f"Campaign postmortems: {link(repo, 'research/postmortems.md')}",
-        "",
-    ]
-    families = defaultdict(list)
-    for row in rows:
-        families[row.get("family", NA)].append(str(row["index"]))
-        proposal = row.get("proposal_snapshot") or {}
-        reasoning = proposal.get("reasoning") or {}
-        decision = row.get("closure_decision") or {}
-        lines += [
-            f"#### Experiment {row['index']}",
-            "",
-            f"Question: {cell(proposal.get('scientific_question') or proposal.get('hypothesis') or row.get('hypothesis'))}",
-            "",
-            f"Intervention: {cell(proposal.get('change') or row.get('change'))}",
-            "",
-            f"Initialization basis: {cell(reasoning.get('initialization_reason'))}",
-            "",
-            f"Expected / sought observation: {cell(reasoning.get('expected_observation') or reasoning.get('observations_sought'))}",
-            "",
-            f"Contradicting observation / exploratory uncertainty: {cell(reasoning.get('contradicting_observation') or reasoning.get('uncertainty'))}",
-            "",
-            f"Assessment: {cell(row.get('hypothesis_assessment'))}",
-            "",
-            f"Lineage rationale: {cell(decision.get('reason'))}",
-            "",
-        ]
-        sources = list(
-            dict.fromkeys(
-                evidence.get("source")
-                for evidence in reasoning.get("evidence", [])
-                if evidence.get("source")
-            )
-        )
-        references = prior_experiment_references(row)
-        lines += [
-            "Evidence sources: "
-            + (", ".join(f"`{cell(source)}`" for source in sources) or NA),
-            "",
-            "Explicit prior experiment references: "
-            + (", ".join(map(str, references)) or "none recorded"),
-            "",
-        ]
-    lines += ["Repeated families (not automatically unjustified repetition):", ""]
-    lines += [
-        f"- `{family}`: experiments {', '.join(ids)}"
-        for family, ids in families.items()
-        if len(ids) > 1
-    ] or ["- None recorded."]
-    lines += [
-        "",
-        "### Recipe and lineage state",
-        "",
-        (
-            "This table exposes the tested surface and the persisted state after closure. "
-            "A commit is a recorded scientific provenance identifier, not a harness version."
-        ),
-        "",
-    ]
-    recipe_rows = []
-    previous_working = None
-    previous_best_known = None
-    for row in rows:
-        decision = row.get("closure_decision") or {}
-        working = row.get("working_lineage") or {}
-        best_known = row.get("best_known_lineage") or {}
-        scientific_commit = working.get("scientific_commit") or row.get(
-            "scientific_commit"
-        )
-        recipe_rows.append(
-            [
-                row["index"],
-                changed_paths(row),
-                parameter_change_summary(row),
-                (decision.get("code") or {}).get("action", NA),
-                changed_from(previous_working, working),
-                f"exp {working.get('origin_experiment', NA)} / {working.get('candidate', NA)}",
-                changed_from(previous_best_known, best_known),
-                f"exp {best_known.get('origin_experiment', NA)} / {best_known.get('candidate', NA)}",
-                str(scientific_commit)[:12] if scientific_commit else NA,
-            ]
-        )
-        previous_working = working or previous_working
-        previous_best_known = best_known or previous_best_known
+
+    lines += ["### Inquiries", ""]
     lines += table(
         [
-            "Exp",
-            "Tested code paths",
-            "Tested parameter changes",
-            "Recipe action",
-            "Working changed",
-            "Working after closure",
-            "Best-known changed",
-            "Best-known after closure",
-            "Scientific commit",
+            "Inquiry",
+            "Status",
+            "Question",
+            "Goal connection",
+            "Closure condition",
+            "Opened session",
+            "Reframes",
+            "Outcome",
+            "Closure reason",
         ],
-        recipe_rows,
+        [
+            [
+                item.get("id"),
+                item.get("status"),
+                item.get("question"),
+                item.get("goal_connection"),
+                item.get("closure_condition"),
+                item.get("opened_session"),
+                item.get("reframes", 0),
+                item.get("outcome"),
+                item.get("reason"),
+            ]
+            for item in inquiry_records(campaign)
+        ],
+    )
+
+    lines += ["### Scientific sessions", ""]
+    lines += table(
+        [
+            "Session",
+            "Active",
+            "Kind",
+            "Inquiry",
+            "Completed",
+            "Failed",
+            "Operations",
+            "Checkpoint",
+            "Objective",
+            "Backend descriptor",
+        ],
+        [
+            [
+                item["id"],
+                "yes" if item["active"] else "no",
+                item["kind"],
+                item["inquiry_id"],
+                item["completed"],
+                item["failed"],
+                ", ".join(item["operations"]),
+                item["checkpoint"],
+                item["objective"],
+                item["backend"],
+            ]
+            for item in session_records(campaign)
+        ],
+    )
+
+    lines += [
+        "### Completed operation evidence",
+        "",
+        "Only events persisted with `status=completed` are listed in this evidence table.",
+        "",
+    ]
+    lines += table(
+        [
+            "Operation",
+            "Kind",
+            "Session",
+            "Inquiry",
+            "Supersedes",
+            "Completed at",
+            "Factual result",
+        ],
+        [
+            [
+                event["id"],
+                event["kind"],
+                event["session_id"],
+                event["inquiry_id"],
+                event["supersedes"],
+                event["completed_at"],
+                operation_summary(event),
+            ]
+            for event in completed_events(campaign)
+        ],
     )
     lines += [
-        "### Evaluation exposure and terminal requests",
+        "### Failed and superseded execution history",
+        "",
+        "These attempts are execution history and are not counted as completed evidence.",
+        "",
+    ]
+    lines += table(
+        [
+            "Operation",
+            "Kind",
+            "Session",
+            "Inquiry",
+            "Error",
+            "Superseded by",
+            "Completed at",
+        ],
+        [
+            [
+                event["id"],
+                event["kind"],
+                event["session_id"],
+                event["inquiry_id"],
+                event["error"],
+                event["superseded_by"],
+                event["completed_at"],
+            ]
+            for event in failed_events(campaign)
+        ],
+    )
+
+    lines += ["### Completed measurements", ""]
+    lines += table(
+        [
+            "Operation",
+            "Session",
+            "Inquiry",
+            "Instrument",
+            "Candidate / module",
+            "Label",
+            "Panel identity",
+            "Success",
+            "Artifact",
+        ],
+        measurement_rows(campaign),
+    )
+    lines += [
+        "#### Development-panel reuse accounting",
         "",
         (
-            "Equal panel settings describe reused development coverage, not independent confirmation. "
-            "Different settings alone do not prove statistical independence. Round counts are not reconstructed from measurement counts."
+            "Rows group identical recorded panel identities. Reuse is a factual "
+            "execution count; this report makes no independence or quality judgment."
         ),
         "",
     ]
-    panels = defaultdict(list)
-    for row in rows:
-        for m in measurements(row):
-            key = (
-                m["instrument"],
-                m.get("panel", m.get("seed", NA)),
-                m.get("episodes", NA),
-                m.get("evaluation_semantics", "fixed panel"),
-            )
-            panels[key].append(row["index"])
     lines += table(
         [
             "Instrument",
-            "Panel / seed",
+            "Panel",
+            "Panel version",
+            "Seed",
             "Episodes",
-            "Evaluation identity",
+            "Evaluation semantics",
             "Executions",
-            "Experiments",
+            "Candidates",
+            "Operations",
+            "Repeated",
         ],
-        [
-            [*key, len(ids), ", ".join(map(str, sorted(set(ids))))]
-            for key, ids in panels.items()
-        ],
+        panel_reuse_rows(campaign),
     )
-    usage_by_experiment = defaultdict(list)
-    for invocation in campaign["usage"]:
-        usage_by_experiment[invocation.get("experiment")].append(invocation)
-    lines += [
-        "#### Analysis and measurement flow",
-        "",
-        (
-            "Researcher invocations are recorded runtime sessions, not reconstructed evaluation rounds. "
-            "The persisted data does not identify rejected deliverables whose process exited successfully."
-        ),
-        "",
+    comparisons = [
+        [
+            event["id"],
+            comparison["candidate"],
+            comparison["reference"],
+            comparison["episodes"],
+            comparison["candidate_wins"],
+            comparison["reference_wins"],
+            comparison["discordant_episodes"],
+            comparison["net_wins"],
+            comparison["success_delta_percent"],
+            comparison["candidate_model_fingerprint"],
+            comparison["reference_model_fingerprint"],
+            comparison["shared_episode_seeds"],
+            comparison["source_artifacts"],
+        ]
+        for event in completed_events(campaign, "measurement")
+        for comparison in event["result"]["paired_comparisons"]
     ]
-    flow_rows = []
-    for row in rows:
-        evidence = measurements(row)
-        invocations = usage_by_experiment.get(row["index"], [])
-        post_training = [
-            invocation
-            for invocation in invocations
-            if invocation.get("phase") == "post-training analysis"
-        ]
-        attempts = [
-            invocation.get("attempt")
-            for invocation in invocations
-            if isinstance(invocation.get("attempt"), int)
-        ]
-        flow_rows.append(
-            [
-                row["index"],
-                sum(m["instrument"] == "research_evaluation" for m in evidence),
-                sum(m["instrument"] == "task_reference" for m in evidence),
-                len(row.get("paired_comparisons") or []),
-                len(post_training) if invocations else NA,
-                max(attempts) if attempts else NA,
-                sum(invocation.get("exit_code", 0) != 0 for invocation in invocations)
-                if invocations
-                else NA,
-            ]
-        )
+    lines += ["#### Paired comparisons", ""]
     lines += table(
         [
-            "Exp",
-            "Research evaluations",
-            "Task-reference evaluations",
-            "Paired comparisons",
-            "Post-training invocations",
-            "Highest recorded attempt",
-            "Nonzero process exits",
+            "Operation",
+            "Candidate",
+            "Reference",
+            "Episodes",
+            "Candidate wins",
+            "Reference wins",
+            "Discordant",
+            "Net wins",
+            "Success delta %",
+            "Candidate fingerprint",
+            "Reference fingerprint",
+            "Shared seeds",
+            "Source artifacts",
         ],
-        flow_rows,
+        comparisons,
     )
-    for row in rows:
-        decision = row.get("closure_decision") or {}
-        if decision.get("request_final_benchmark"):
-            lines += [
-                f"- Final requested after experiment {row['index']}: {cell(decision.get('reason'))}"
-            ]
-    conclusion = state.get("campaign_conclusion")
-    if isinstance(conclusion, dict) and (
-        conclusion.get("action") == "request_final_benchmark"
-    ):
-        lines += [
-            (
-                "- Final requested from preparation after experiment "
-                f"{rows[-1]['index'] if rows else NA}, with no experiment "
-                f"recorded for the request: {cell(conclusion.get('reason'))}"
-            ),
-        ]
-    lines += [
-        f"- Official verdict: {cell(state.get('official_benchmark_verdict'))}",
-        "",
-        "### Researcher usage and tool activity",
-        "",
-    ]
-    usage = campaign["usage"]
-    if not usage:
-        lines += [
-            "No session accounting is recorded. Historical consumption is unavailable, not zero.",
-            "",
-        ]
-    else:
-        lines += [
-            (
-                "Accounting covers only recorded invocations. Resumed attempts are separate invocation deltas, not cumulative session totals. "
-                "Input tokens include cache reads; do not add cache reads to input tokens. Missing SDK usage remains unavailable. "
-                "SDK output tokens are reported as supplied, with no inferred reasoning-token split."
-            ),
-            "",
-        ]
-        covered = {u.get("experiment") for u in usage}
-        missing = [str(r["index"]) for r in rows if r["index"] not in covered]
-        if missing:
-            lines += [
-                f"No accounting for recorded experiments: {', '.join(missing)}. Campaign totals are incomplete.",
-                "",
-            ]
-        groups = defaultdict(list)
-        for u in usage:
-            groups[(u.get("experiment", NA), u.get("phase", NA))].append(u)
-        lines += table(
+
+    lines += ["### Completed training operations", ""]
+    lines += table(
+        [
+            "Operation",
+            "Session",
+            "Inquiry",
+            "Initialization",
+            "Parent",
+            "Seed",
+            "Requested steps",
+            "Completed steps",
+            "Scientific commit",
+            "Learning dynamics",
+        ],
+        training_rows(campaign),
+    )
+
+    lines += ["### Candidates and current model roles", ""]
+    lines += table(
+        [
+            "Candidate",
+            "Origin",
+            "Name",
+            "Training steps",
+            "Current roles",
+            "Artifact",
+            "Fingerprint",
+            "Scientific commit",
+            "Evaluation artifacts",
+        ],
+        candidate_rows(campaign),
+    )
+    lines += ["#### Model-role assignment history", ""]
+    lines += table(
+        ["Operation", "Action", "Candidate", "Evidence", "Reason"],
+        [
             [
-                "Exp",
-                "Phase",
-                "Runtime",
-                "Invocations",
-                "Input",
-                "Cache read",
-                "Output",
-                "AIU",
-                "Cost USD",
-                "Tools",
-                "Seconds",
-                "Nonzero exits",
-            ],
+                event["id"],
+                event["result"]["action"],
+                event["result"]["candidate"],
+                ", ".join(event["result"]["evidence"]),
+                event["request"]["reason"],
+            ]
+            for event in completed_events(campaign, "model_role")
+        ],
+    )
+
+    lines += ["### Assessment and terminal state", ""]
+    lines += table(
+        ["Fact", "Value"],
+        [
+            ["Terminal status", terminal.get("status") if terminal else None],
+            ["Terminal reason", terminal.get("reason") if terminal else None],
+            ["Terminal model", terminal.get("model") if terminal else None],
+            ["Assessment status", assessment.get("status") if assessment else None],
+            ["Assessment model", assessment.get("model") if assessment else None],
+            ["Assessment artifact", assessment.get("artifact") if assessment else None],
             [
-                [
-                    *key,
-                    ", ".join(sorted({runtime_label(u) for u in group})),
-                    len(group),
-                    *(
-                        usage_total(group, f)
-                        for f in (
-                            "input_tokens",
-                            "cache_read_tokens",
-                            "output_tokens",
-                            "aiu",
-                            "reported_cost_usd",
-                            "tool_calls",
-                            "duration_seconds",
-                        )
-                    ),
-                    sum(u.get("exit_code", 0) != 0 for u in group),
-                ]
-                for key, group in sorted(groups.items(), key=lambda item: str(item[0]))
+                "Assessment fingerprint",
+                assessment.get("fingerprint") if assessment else None,
             ],
-        )
-        tools = Counter()
-        for u in usage:
-            tools.update(u.get("tools_by_name") or {})
-        lines += table(
-            ["Tool name", "Calls"],
-            [[name, count] for name, count in tools.most_common()],
-        )
+            ["Assessment summary", assessment.get("summary") if assessment else None],
+            [
+                "Assessment completed",
+                assessment.get("completed_at") if assessment else None,
+            ],
+        ],
+    )
+
+    lines += ["### PI resource accounting", ""]
+    metrics = resource_metrics(campaign)
+    lines += table(["Resource fact", "Recorded value"], list(metrics.items()))
+    lines += table(
+        [
+            "Phase",
+            "Session",
+            "Attempt",
+            "Model",
+            "Reasoning",
+            "Input",
+            "Cache read",
+            "Output",
+            "AIU",
+            "Tools",
+            "Seconds",
+            "Exit",
+        ],
+        [
+            [
+                row.get("phase"),
+                row.get("session_id"),
+                row.get("attempt"),
+                row.get("model"),
+                row.get("reasoning"),
+                row.get("input_tokens"),
+                row.get("cache_read_tokens"),
+                row.get("output_tokens"),
+                row.get("aiu"),
+                row.get("tool_calls"),
+                row.get("duration_seconds"),
+                row.get("exit_code"),
+            ]
+            for row in campaign["usage"]
+        ],
+    )
+    tools = Counter()
+    for row in campaign["usage"]:
+        tools.update(row.get("tools_by_name") or {})
+    lines += table(
+        ["Tool name", "Calls"],
+        [[name, count] for name, count in tools.most_common()],
+    )
     return lines
 
 
 def render_report(campaigns: list[dict]) -> str:
+    if not campaigns:
+        raise ValueError("at least one schema-6 campaign is required")
     lines = [
-        "# Campaign decision and bias review",
+        "# Schema-6 campaign factual report",
         "",
         (
-            "Read-only factual report. It exposes recurring decisions, their recorded bases and evidence coverage; "
-            "it does not score scientific quality or declare a bias corrected. "
-            "Compare campaigns at similar progress: more transfer, fewer evaluations or lower cost is not inherently better."
+            "Read-only accounting of persisted campaign state, completed evidence, "
+            "failed execution history, model roles, assessment, and resource use. "
+            "It does not make scientific judgments."
         ),
         "",
         "## Overview / comparison",
         "",
     ]
-    metrics = [comparison_metrics(c) for c in campaigns]
+    metrics = [comparison_metrics(campaign) for campaign in campaigns]
     lines += table(
-        ["Recorded indicator", *(c["id"] for c in campaigns)],
-        [[key, *(m[key] for m in metrics)] for key in metrics[0]],
+        ["Recorded fact", *(campaign["id"] for campaign in campaigns)],
+        [[key, *(metric[key] for metric in metrics)] for key in metrics[0]],
     )
-    for c in campaigns:
-        lines += campaign_sections(c)
+    for campaign in campaigns:
+        lines += campaign_sections(campaign)
     return "\n".join(lines).rstrip() + "\n"
 
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--repo", type=Path, default=ROOT)
-    parser.add_argument("--campaign-id", help="Default: current persisted campaign")
     parser.add_argument(
-        "--compare", type=Path, help="Another worktree or copied campaign repository"
+        "--campaign-id", help="Must match the current schema-6 campaign"
     )
+    parser.add_argument("--compare", type=Path)
     parser.add_argument("--compare-campaign-id")
     parser.add_argument("--output", type=Path)
     args = parser.parse_args(argv)
@@ -1057,7 +972,14 @@ def main(argv: list[str] | None = None) -> int:
         )
         output.parent.mkdir(parents=True, exist_ok=True)
         output.write_text(render_report(campaigns), encoding="utf-8")
-    except (OSError, ValueError, KeyError, TypeError) as error:
+    except (
+        OSError,
+        RuntimeError,
+        ValueError,
+        KeyError,
+        TypeError,
+        json.JSONDecodeError,
+    ) as error:
         parser.exit(1, f"Report could not be generated: {error}\n")
     print(f"Wrote {output.resolve()}")
     return 0

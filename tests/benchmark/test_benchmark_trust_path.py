@@ -12,6 +12,7 @@ from research import runner_assessment as assessment
 from research import runner_paths as paths
 from research import runner_protocol as protocol
 from research import runner_repository as repository
+from robot_learning.scenario import final_benchmark as scenario_final_benchmark
 
 OFFICIAL_TASK_PATHS = (
     "robot_learning/policy_runtime.py",
@@ -99,6 +100,49 @@ def test_runner_assessment_is_the_trusted_official_entry(monkeypatch, tmp_path):
         "model": tmp_path / "model.zip",
         "algorithm": "ppo",
         "progress": callback,
+    }
+
+
+@pytest.mark.parametrize(
+    ("success_percent", "goal_reached"),
+    [(97.9, False), (98.0, True)],
+)
+def test_protected_scenario_adapter_applies_the_official_threshold(
+    monkeypatch, tmp_path, success_percent, goal_reached
+):
+    observed: dict[str, object] = {}
+    callback = lambda _completed, _total: None
+
+    def protected(model_path, algorithm=None, progress_callback=None):
+        observed.update(
+            model=model_path,
+            algorithm=algorithm,
+            progress_callback=progress_callback,
+        )
+        return {
+            "episodes": 200,
+            "seed": 10_000,
+            "success_percent": success_percent,
+        }
+
+    monkeypatch.setattr(
+        scenario_final_benchmark,
+        "_protected_evaluate_final_model",
+        protected,
+    )
+
+    result = scenario_final_benchmark.evaluate_final_model(
+        tmp_path / "model.zip",
+        algorithm="ppo",
+        progress_callback=callback,
+    )
+
+    assert result["success_percent"] == success_percent
+    assert result["goal_reached"] is goal_reached
+    assert observed == {
+        "model": tmp_path / "model.zip",
+        "algorithm": "ppo",
+        "progress_callback": callback,
     }
 
 

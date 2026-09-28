@@ -1,8 +1,12 @@
 """Focused tests for the external cooperative-stop bridge."""
 
 import asyncio
+import shutil
+import subprocess
 import threading
 from pathlib import Path
+
+import pytest
 
 from research import run_experiment
 from research import runner_execution as execution
@@ -119,30 +123,75 @@ def test_runner_preserves_an_early_training_interrupt_for_resume(monkeypatch, tm
     assert pending["failure"] is None
 
 
-def test_launcher_supervises_children_and_stops_before_phase_validation():
-    source = (Path(__file__).resolve().parents[2] / "run_research.ps1").read_text(
-        encoding="utf-8"
+def test_launcher_stop_helper_executes_the_cooperative_exit_contract(tmp_path):
+    powershell = shutil.which("pwsh") or shutil.which("powershell")
+    if powershell is None:
+        pytest.skip("no PowerShell host to run launcher helper")
+    launcher = Path(__file__).resolve().parents[2] / "run_research.ps1"
+    request = tmp_path / "stop.request"
+    exercise = tmp_path / "exercise-stop-helper.ps1"
+    exercise.write_text(
+        f"""
+$ast = [System.Management.Automation.Language.Parser]::ParseFile(
+    '{launcher}', [ref]$null, [ref]$null)
+$names = @(
+    'Request-CampaignStop',
+    'Test-CampaignStopRequested',
+    'Test-StopAfterOperation'
+)
+$definitions = $ast.FindAll({{
+    param($node)
+    $node -is [System.Management.Automation.Language.FunctionDefinitionAst] -and
+        $node.Name -in $names
+}}, $true)
+foreach ($definition in $definitions) {{
+    . ([scriptblock]::Create($definition.Extent.Text))
+}}
+function Write-Status {{ param([string]$Message) }}
+$StopTimeoutSeconds = 180
+$script:StopRequestPath = '{request}'
+$script:CampaignStopRequested = $false
+$script:CampaignExitCode = 0
+if (Test-StopAfterOperation 0 'PI session') {{
+    throw 'stop was reported before the request existed'
+}}
+New-Item -ItemType File -Path $script:StopRequestPath | Out-Null
+if (-not (Test-StopAfterOperation 0 'PI session')) {{
+    throw 'cooperative exit was not accepted'
+}}
+if ($script:CampaignExitCode -ne 130) {{
+    throw 'cooperative exit did not set campaign exit code 130'
+}}
+$script:CampaignStopRequested = $false
+try {{
+    [void](Test-StopAfterOperation 1 'PI session')
+    throw 'non-cooperative exit was accepted'
+}}
+catch {{
+    if ($_.Exception.Message -notlike '*instead of completing cooperatively*') {{
+        throw
+    }}
+}}
+""",
+        encoding="utf-8",
     )
 
-    assert "[string]$StopRequestPath" in source
-    assert 'Environment["ROBOT_RESEARCH_STOP_REQUEST"]' in source
-    assert "WaitForExit(100)" in source
-    assert "StopTimeoutSeconds = 180" in source
-    invocations = [
-        index
-        for index in range(len(source))
-        if source.startswith("Invoke-PISession -Prompt", index)
-    ]
-    stop_checks = [
-        index
-        for index in range(len(source))
-        if source.startswith(
-            'Test-StopAfterOperation $script:PIExitCode "PI session"', index
-        )
-    ]
-    assert invocations
-    assert len(invocations) == len(stop_checks)
-    assert all(invocation < stop for invocation, stop in zip(invocations, stop_checks))
+    completed = subprocess.run(
+        [
+            powershell,
+            "-NoProfile",
+            "-NonInteractive",
+            "-ExecutionPolicy",
+            "Bypass",
+            "-File",
+            str(exercise),
+        ],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert completed.returncode == 0, completed.stderr
 
 
 def test_launcher_does_not_consume_native_console_interrupts():

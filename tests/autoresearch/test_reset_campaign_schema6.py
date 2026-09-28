@@ -207,6 +207,13 @@ def test_fresh_recipe_ref_restores_recipe_into_empty_schema6_campaign(
     source_state["operation_events"] = [
         {"id": "M9", "kind": "measurement", "status": "completed"}
     ]
+    source_state["counters"] = {
+        "inquiry": 7,
+        "session": 8,
+        "measurement": 9,
+        "training": 6,
+        "event": 5,
+    }
     source_state["official_assessment"] = {"candidate": candidate["id"]}
     source_state["terminal_state"] = {"status": "goal_reached"}
     source_memory = {
@@ -223,6 +230,10 @@ def test_fresh_recipe_ref_restores_recipe_into_empty_schema6_campaign(
         ),
         "models/candidates/source/model.zip": "disposable trained policy",
         "research/lab/source_diagnostic.py": "SOURCE_EVIDENCE = True\n",
+        "research/GOAL_REACHED": "stale goal marker\n",
+        "research/RECOVERY_PENDING": "stale recovery marker\n",
+        "research/RESTART_PENDING": "stale restart marker\n",
+        "research/BASELINE_PENDING": "stale baseline marker\n",
     }
     for relative, content in source_memory.items():
         target = root / relative
@@ -311,6 +322,13 @@ def test_fresh_recipe_ref_restores_recipe_into_empty_schema6_campaign(
     assert state["pi_checkpoint"] is None
     assert state["pending_operation"] is None
     assert state["operation_events"] == []
+    assert state["counters"] == {
+        "inquiry": 0,
+        "session": 0,
+        "measurement": 0,
+        "training": 0,
+        "event": 0,
+    }
     assert state["official_assessment"] is None
     assert state["terminal_state"] is None
     assert state["candidates"] == {}
@@ -335,6 +353,10 @@ def test_fresh_recipe_ref_restores_recipe_into_empty_schema6_campaign(
         "research/evaluations",
         "research/checkpoints",
         "research/lab",
+        "research/GOAL_REACHED",
+        "research/RECOVERY_PENDING",
+        "research/RESTART_PENDING",
+        "research/BASELINE_PENDING",
         "models/candidates",
     ):
         assert not (root / relative).exists()
