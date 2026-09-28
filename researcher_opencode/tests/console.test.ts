@@ -56,6 +56,19 @@ test("separate PI messages each start with their own gutter", () => {
   assert.equal(output, "  first answer\n  second answer\n");
 });
 
+test("PI turns are visible without token narration", () => {
+  const output = captureOutput(() => {
+    const console = new Console("S3 inquiry");
+    console.turnStart("model");
+    console.tool("view", { path: "research/brief.md" }, "call-1");
+    console.turnEnd();
+  });
+
+  assert.match(output, /PI turn 1 \| model/);
+  assert.match(output, /PI turn 1 complete \| 1 tool/);
+  assert.doesNotMatch(output, /prompt|cache|token/);
+});
+
 test("backend UUIDs and absolute Windows paths are compacted in PI messages", () => {
   const output = captureOutput(() => {
     new Console().message(

@@ -373,7 +373,9 @@ function Invoke-PISession {
     else {
         ($Phase -replace '_', ' ')
     }
-    Write-Status "MESSAGE | $displaySession" -Color Magenta -Label pi
+    Write-ConsoleCard `
+        -Title "PI session | $displaySession | turn $script:PISessionInvocation" `
+        -Color Magenta
     $sessionArgs = @(
         "--session-id", $script:PISessionId
         "--model", $Model
@@ -645,7 +647,11 @@ function Test-OperationRequest {
         $validationOutput | ForEach-Object { $_.ToString().Trim() }
     ) -join " "
     if ($exitCode -ne 0) {
-        Write-Host $script:OperationValidationFeedback
+        $validationReason = (
+            $script:OperationValidationFeedback -replace '^OPERATION_INVALID:\s*', ''
+        )
+        Write-ConsoleCard -Title "OPERATION INVALID" `
+            -Lines @($validationReason) -Color Red -BodyColor Red
         return $false
     }
     return $true

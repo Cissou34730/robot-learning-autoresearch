@@ -13,11 +13,11 @@ import { fileURLToPath } from "node:url";
 
 const RESET = "\u001b[0m";
 const DIM = "\u001b[90m";
-/** The model's own words: one block behind a gutter, so a line it writes is
- * never mistaken for something the harness reported. */
-const MESSAGE = "\u001b[1;97m";
+/** The model's own words: one bright block behind a matching gutter, so a line
+ * it writes is never mistaken for muted Runner output. */
+const MESSAGE = "\u001b[1;95m";
 const PLAIN_GUTTER = "  ";
-const GUTTER = `${DIM}${PLAIN_GUTTER}\u2502${RESET}${MESSAGE} `;
+const GUTTER = `${MESSAGE}${PLAIN_GUTTER}\u2502${RESET}${MESSAGE} `;
 const UUID_PATTERN =
   /\b[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}\b/g;
 const WINDOWS_PATH_PATTERN = /[A-Za-z]:[\\/](?:[^ \r\n:]+[\\/])*[^ \r\n:]+/g;
@@ -38,12 +38,12 @@ const ROOT = fileURLToPath(new URL("../..", import.meta.url));
 
 const MARKER_COLORS: Record<string, string> = {
   ">": "\u001b[36m",
-  x: "\u001b[31m",
+  x: "\u001b[1;91m",
   "+": "\u001b[32m",
   "-": "\u001b[31m",
   "~": "\u001b[36m",
-  "!": "\u001b[33m",
-  "--": "\u001b[36m",
+  "!": "\u001b[1;91m",
+  "--": "\u001b[1;95m",
   "[session]": "\u001b[95m",
 };
 
@@ -78,6 +78,9 @@ export function formatConsoleLine(text: string): string {
   const separator = spaceIndex === -1 ? "" : " ";
   const remainder = spaceIndex === -1 ? "" : stripped.slice(spaceIndex + 1);
   const color = MARKER_COLORS[marker] ?? "\u001b[36m";
+  if (marker === "x" || marker === "!" || marker === "--") {
+    return `${DIM}[${timestamp()}]${RESET} ${indent}${color}${stripped}${RESET}`;
+  }
   return `${DIM}[${timestamp()}]${RESET} ${indent}${color}${marker}${RESET}${separator}${remainder}`;
 }
 
@@ -182,7 +185,7 @@ export class Console {
     process.stdout.write(`${formatConsoleLine(text)}\n`);
   }
 
-  /** Start per-turn accounting without narrating routine runtime churn. */
+  /** Mark the next PI turn and start its compact accounting. */
   turnStart(model?: string | null): void {
     this.turn += 1;
     this.turnStartedAt = performance.now();
@@ -192,12 +195,25 @@ export class Console {
     this.turnPromptAtStart = this.promptTokens;
     this.turnCacheReadAtStart = this.cacheReadTokens;
     this.turnOutputAtStart = this.outputTokens;
+    process.stdout.write("\n");
+    const modelNote = this.turnModel ? ` | ${this.turnModel}` : "";
+    this.line(`-- ${this.tagged(`PI turn ${this.turn}`)}${modelNote}`);
   }
 
-  /** Close per-turn accounting; strategic usage is reported at checkpoints. */
+  /** Close the visible PI turn without reproducing token accounting. */
   turnEnd(): void {
     if (this.turnStartedAt === null) return;
+    const elapsed = formatDuration((performance.now() - this.turnStartedAt) / 1000);
     this.turnStartedAt = null;
+    const tools = `${this.turnTools} tool${this.turnTools === 1 ? "" : "s"}`;
+    const files =
+      this.turnFiles > 0
+        ? ` | ${this.turnFiles} file${this.turnFiles === 1 ? "" : "s"}`
+        : "";
+    this.line(
+      `-- ${this.tagged(`PI turn ${this.turn} complete`)} | ${tools}${files} | ${elapsed}`,
+    );
+    process.stdout.write("\n");
   }
 
   private closeMessage(): void {

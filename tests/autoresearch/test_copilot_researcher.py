@@ -760,7 +760,9 @@ def test_a_turn_hides_runtime_chatter_but_keeps_consequential_changes(capsys):
     emit(events.AssistantTurnEndData(turn_id="t1"))
 
     out = capsys.readouterr().out
-    assert "turn 1" not in out
+    assert "PI turn 1" in out
+    assert "PI turn 1 complete" in out
+    assert "2 tools" in out
     assert "prompt" not in out
     assert "reward.py" in out
 
@@ -797,10 +799,14 @@ def test_a_turn_does_not_print_token_or_cache_narration(capsys):
     )
     emit(events.AssistantTurnEndData(turn_id="t1"))
 
-    assert capsys.readouterr().out == ""
+    out = capsys.readouterr().out
+    assert "PI turn 1" in out
+    assert "1 tool" in out
+    assert "prompt" not in out
+    assert "cache" not in out
 
 
-def test_a_turn_never_closed_by_the_runtime_stays_quiet(capsys):
+def test_session_idle_closes_the_visible_turn_once(capsys):
     events = pytest.importorskip("copilot.session_events")
     console = adapter.Console("S2·inquiry")
     on_event, _ = adapter.build_handlers(console, asyncio.Event())
@@ -808,10 +814,12 @@ def test_a_turn_never_closed_by_the_runtime_stays_quiet(capsys):
     on_event(SimpleNamespace(data=events.AssistantTurnStartData(turn_id="t1")))
     on_event(SimpleNamespace(data=events.SessionIdleData()))
 
-    assert capsys.readouterr().out == ""
+    out = capsys.readouterr().out
+    assert out.count("PI turn 1") == 2
+    assert "PI turn 1 complete" in out
 
 
-def test_a_turn_ending_twice_stays_quiet(capsys):
+def test_a_turn_ending_twice_prints_one_completion(capsys):
     events = pytest.importorskip("copilot.session_events")
     console = adapter.Console("S2·inquiry")
     on_event, _ = adapter.build_handlers(console, asyncio.Event())
@@ -820,16 +828,19 @@ def test_a_turn_ending_twice_stays_quiet(capsys):
     on_event(SimpleNamespace(data=events.AssistantTurnEndData(turn_id="t1")))
     on_event(SimpleNamespace(data=events.AssistantTurnEndData(turn_id="t1")))
 
-    assert capsys.readouterr().out == ""
+    out = capsys.readouterr().out
+    assert out.count("PI turn 1 complete") == 1
 
 
-def test_a_standalone_session_adds_no_runtime_banner(capsys):
+def test_a_standalone_session_still_names_its_turn(capsys):
     console = adapter.Console()
 
     console.turn_start()
     console.turn_end()
 
-    assert capsys.readouterr().out == ""
+    out = capsys.readouterr().out
+    assert "PI turn 1" in out
+    assert "PI turn 1 complete" in out
 
 
 def test_the_console_label_names_the_bounded_phase():

@@ -40,6 +40,19 @@ _SEMANTIC_COLORS = {
     "warning": _YELLOW,
     "error": _RED,
 }
+_CARD_SCOPES = frozenset(
+    {
+        "assessment",
+        "campaign",
+        "checkpoint",
+        "error",
+        "inquiry",
+        "measurement",
+        "operation",
+        "session",
+        "warning",
+    }
+)
 _SECTION_HEADINGS = frozenset(
     {
         "Hypothesis",
@@ -230,10 +243,44 @@ def announce(message: str) -> None:
     print(leading_break + "\n".join(wrapped), flush=True)
 
 
+def card(scope: str, title: str, lines: list[str] | tuple[str, ...] = ()) -> None:
+    """Print one spaced console card for a meaningful lifecycle boundary."""
+    _progress.clear()
+    _progress.archived()
+    scope = scope.casefold()
+    color = _SEMANTIC_COLORS.get(scope, _CYAN)
+    body_color = color if scope in {"error", "warning"} else _WHITE
+    timestamp = f"[{datetime.now():%H:%M:%S}]"  # noqa: DTZ005 - local console time
+    title = compact_text(title)
+    body = [compact_text(line) for line in lines]
+    print(flush=True)
+    if not sys.stdout.isatty():
+        print(f"{timestamp} === {title} ===", flush=True)
+        for line in body:
+            print(f"  {' '.join(line.split())}", flush=True)
+        print(flush=True)
+        return
+    print(f"{timestamp} {color}=== {title} ==={_RESET}", flush=True)
+    for line in body:
+        wrapped = _wrap_console_text(line, initial_prefix="  ")
+        print(
+            "\n".join(f"{body_color}{part}{_RESET}" for part in wrapped),
+            flush=True,
+        )
+    print(flush=True)
+
+
 def boundary(scope: str, action: str, subject: str = "", detail: str = "") -> None:
     """Print one durable lifecycle boundary with a stable visual hierarchy."""
+    normalized_scope = scope.casefold()
+    if normalized_scope in _CARD_SCOPES:
+        title = " | ".join(
+            part for part in (normalized_scope.upper(), action.upper(), subject) if part
+        )
+        card(normalized_scope, title, tuple(detail.splitlines()) if detail else ())
+        return
     body = " | ".join(part for part in (action.upper(), subject, detail) if part)
-    announce(f"[{scope.casefold()}] {body}")
+    announce(f"[{normalized_scope}] {body}")
 
 
 def format_duration(seconds: float) -> str:

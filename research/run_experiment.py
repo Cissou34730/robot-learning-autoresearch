@@ -1451,12 +1451,39 @@ def _operation_request_detail(pending: dict) -> str:
     request = pending["request"][pending["kind"]]
     kind = pending["kind"]
     if kind == "training":
-        return (
-            f"{int(request['steps']):,} steps | seed {int(request['seed'])} | "
-            f"{request['initialization']}"
+        return "\n".join(
+            (
+                f"Why: {request['description']}",
+                f"Rationale: {request['rationale']}",
+                (
+                    f"Plan: {int(request['steps']):,} steps | "
+                    f"seed {int(request['seed'])} | {request['initialization']}"
+                ),
+            )
         )
     if kind == "measurement":
-        return f"{len(request['measurements'])} measurement panel(s)"
+        lines = [
+            f"Why: {request['description']}",
+            f"Rationale: {request['rationale']}",
+        ]
+        for index, measurement in enumerate(request["measurements"], start=1):
+            instrument = str(measurement["instrument"]).replace("_", " ")
+            parts = [
+                f"Panel {index}: {instrument}",
+                str(measurement.get("candidate") or measurement.get("module") or ""),
+            ]
+            if measurement.get("episodes") is not None:
+                parts.append(f"{int(measurement['episodes'])} episodes")
+            if measurement.get("seed") is not None:
+                parts.append(f"seed {int(measurement['seed'])}")
+            if measurement.get("label"):
+                parts.append(str(measurement["label"]))
+            lines.append(" | ".join(part for part in parts if part))
+        for comparison in request.get("paired_comparisons", []):
+            lines.append(
+                f"Compare: {comparison['candidate']} vs {comparison['reference']}"
+            )
+        return "\n".join(lines)
     if kind == "inquiry":
         return str(request["action"])
     if kind == "model_role":
@@ -1473,10 +1500,20 @@ def _operation_completion_detail(pending: dict) -> str:
     kind = pending["kind"]
     parts: list[str] = []
     if kind == "measurement":
-        parts.append(f"{len(result.get('measurements', []))} result(s)")
+        for index, measurement in enumerate(result.get("measurements", []), start=1):
+            metrics = measurement.get("metrics") or {}
+            row = [
+                f"Result {index}: {measurement.get('candidate', '')}",
+                str(measurement.get("instrument", "")).replace("_", " "),
+            ]
+            if metrics.get("success_percent") is not None:
+                row.append(f"success {float(metrics['success_percent']):.1f}%")
+            if metrics.get("episodes") is not None:
+                row.append(f"{int(metrics['episodes'])} episodes")
+            parts.append(" | ".join(part for part in row if part))
         comparisons = len(result.get("paired_comparisons", []))
         if comparisons:
-            parts.append(f"{comparisons} comparison(s)")
+            parts.append(f"Paired comparisons: {comparisons}")
     elif kind == "training":
         parts.append(f"{int(result.get('completed_steps', 0)):,} steps")
         parts.append(f"{len(result.get('candidates', []))} candidate(s)")
@@ -1491,7 +1528,7 @@ def _operation_completion_detail(pending: dict) -> str:
         parts.append(f"{result.get('action')} | {result.get('candidate')}")
     elif kind == "restore_recipe":
         parts.append(str(result.get("candidate", "")))
-    return " | ".join(part for part in parts if part)
+    return "\n".join(part for part in parts if part)
 
 
 def _completion_presentation(state: dict, pending: dict) -> dict:

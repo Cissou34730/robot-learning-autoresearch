@@ -275,13 +275,14 @@ def announce_training_checkpoints(
     operation_id: str,
     announced: set[str],
 ) -> None:
-    """Print each newly saved candidate with its training reward and success."""
+    """Print saved candidate metrics together, after the live heartbeat."""
     pool_dir = output_dir / "candidate_pool"
     candidates: list[tuple[int, Path]] = []
     for path in pool_dir.glob("checkpoint-*"):
         match = CANDIDATE_NAME_PATTERN.fullmatch(path.name)
         if match is not None:
             candidates.append((int(path.name.removeprefix("checkpoint-")), path))
+    rows: list[tuple[str, str, str]] = []
     for _, path in sorted(candidates):
         if path.name in announced:
             continue
@@ -294,13 +295,20 @@ def announce_training_checkpoints(
         success = metrics.get("success_rate")
         reward_text = "n/a" if reward is None else f"{float(reward):g}"
         success_text = "n/a" if success is None else f"{100 * float(success):g}%"
-        console.boundary(
-            "training",
-            "CHECKPOINT",
-            f"{operation_id}:{path.name}",
-            f"reward {reward_text} | success {success_text}",
-        )
+        rows.append((f"{operation_id}:{path.name}", reward_text, success_text))
         announced.add(path.name)
+    if not rows:
+        return
+    candidate_width = max(len(candidate) for candidate, _, _ in rows)
+    console.boundary(
+        "checkpoint",
+        "TRAINING RESULTS",
+        operation_id,
+        "\n".join(
+            f"{candidate:<{candidate_width}} | reward {reward} | success {success}"
+            for candidate, reward, success in rows
+        ),
+    )
 
 
 def train_candidate(
@@ -401,13 +409,13 @@ def train_candidate(
                             record,
                         )
                     )
-                announce_training_checkpoints(
-                    output_dir,
-                    operation_id,
-                    announced_checkpoints,
-                )
                 stalled_for = time.monotonic() - last_progress_at
                 if stalled_for > TRAIN_STALL_SECONDS:
+                    announce_training_checkpoints(
+                        output_dir,
+                        operation_id,
+                        announced_checkpoints,
+                    )
                     console.boundary(
                         "error",
                         "TRAINING FAILED",
@@ -417,6 +425,11 @@ def train_candidate(
                     stop_process(process, graceful=False)
                     raise TimeoutError("training made no progress for 30 minutes")
                 if elapsed > TRAIN_TIMEOUT_SECONDS:
+                    announce_training_checkpoints(
+                        output_dir,
+                        operation_id,
+                        announced_checkpoints,
+                    )
                     console.boundary(
                         "error",
                         "TRAINING FAILED",
@@ -426,6 +439,11 @@ def train_candidate(
                     stop_process(process, graceful=False)
                     raise TimeoutError("training exceeded the 12 hour safety limit")
         except KeyboardInterrupt:
+            announce_training_checkpoints(
+                output_dir,
+                operation_id,
+                announced_checkpoints,
+            )
             console.boundary(
                 "warning",
                 "TRAINING STOPPING",

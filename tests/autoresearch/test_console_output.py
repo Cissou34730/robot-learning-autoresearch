@@ -110,20 +110,17 @@ def test_training_checkpoints_show_reward_and_success_once(tmp_path, monkeypatch
     runner_execution.announce_training_checkpoints(tmp_path, "T3", announced)
     runner_execution.announce_training_checkpoints(tmp_path, "T3", announced)
 
-    assert boundaries == [
-        (
-            "training",
-            "CHECKPOINT",
-            "T3:checkpoint-5120",
-            "reward -18.35 | success 0%",
-        ),
-        (
-            "training",
-            "CHECKPOINT",
-            "T3:checkpoint-10240",
-            "reward -16.18 | success 25%",
-        ),
-    ]
+    assert len(boundaries) == 1
+    scope, action, subject, detail = boundaries[0]
+    assert (scope, action, subject) == ("checkpoint", "TRAINING RESULTS", "T3")
+    rows = detail.splitlines()
+    assert len(rows) == 2
+    assert "T3:checkpoint-5120" in rows[0]
+    assert "reward -18.35" in rows[0]
+    assert "success 0%" in rows[0]
+    assert "T3:checkpoint-10240" in rows[1]
+    assert "reward -16.18" in rows[1]
+    assert "success 25%" in rows[1]
 
 
 def test_progress_clips_one_line_without_exposing_a_tail(monkeypatch):
@@ -143,7 +140,7 @@ def test_progress_clips_one_line_without_exposing_a_tail(monkeypatch):
     assert "x" * 60 not in rendered
 
 
-def test_redirected_boundary_collapses_whitespace_without_wrapping():
+def test_redirected_phase_boundary_is_a_spaced_card():
     detail = "strategic usage\n  prompt 12k   output 800 " + "x" * 160
     completed = subprocess.run(
         [
@@ -163,14 +160,58 @@ def test_redirected_boundary_collapses_whitespace_without_wrapping():
 
     assert completed.returncode == 0, completed.stderr
     rendered = completed.stdout.splitlines()
-    assert len(rendered) == 1
-    assert (
-        "[session] END | S4 goal review | strategic usage prompt 12k output 800"
-        in (rendered[0])
-    )
-    assert rendered[0].endswith("x" * 160)
-    assert "  " not in rendered[0]
-    assert "\x1b[" not in rendered[0]
+    assert rendered[0] == ""
+    assert "=== SESSION | END | S4 goal review ===" in rendered[1]
+    assert rendered[2] == "  strategic usage"
+    assert "prompt 12k output 800" in rendered[3]
+    assert rendered[3].endswith("x" * 160)
+    assert rendered[-1] == ""
+    assert "\x1b[" not in completed.stdout
+
+
+def test_measurement_request_detail_names_reason_panels_and_comparison():
+    pending = {
+        "kind": "measurement",
+        "request": {
+            "measurement": {
+                "description": "Check held-out complete-hold performance.",
+                "rationale": "Training telemetry is not independent evidence.",
+                "measurements": [
+                    {
+                        "instrument": "research_evaluation",
+                        "candidate": "T1:checkpoint-120832",
+                        "episodes": 100,
+                        "seed": 1200,
+                        "label": "independent hold diagnostics",
+                    },
+                    {
+                        "instrument": "task_reference",
+                        "candidate": "T1:checkpoint-120832",
+                        "label": "task reference",
+                    },
+                ],
+                "paired_comparisons": [
+                    {
+                        "candidate": "T1:checkpoint-120832",
+                        "reference": "T1:checkpoint-115712",
+                    }
+                ],
+            }
+        },
+    }
+
+    detail = run_experiment._operation_request_detail(pending)
+
+    for fact in (
+        "Check held-out complete-hold performance.",
+        "Training telemetry is not independent evidence.",
+        "T1:checkpoint-120832",
+        "100 episodes",
+        "seed 1200",
+        "task reference",
+        "T1:checkpoint-115712",
+    ):
+        assert fact in detail
 
 
 def test_usage_summary_aggregates_existing_durable_accounting(tmp_path, monkeypatch):
@@ -259,7 +300,13 @@ def test_operation_execution_has_request_start_and_completion_boundaries(monkeyp
         "kind": "measurement",
         "session_id": "S3",
         "inquiry_id": "I1",
-        "request": {"measurement": {"measurements": []}},
+        "request": {
+            "measurement": {
+                "description": "Measure the selected candidate.",
+                "rationale": "Independent evidence informs the next decision.",
+                "measurements": [],
+            }
+        },
         "request_fingerprint": "fingerprint",
         "progress": "accepted",
         "failure": None,

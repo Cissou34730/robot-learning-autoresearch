@@ -72,6 +72,23 @@ function Write-Status {
     }
 }
 
+function Write-ConsoleCard {
+    param(
+        [Parameter(Mandatory)][string]$Title,
+        [string[]]$Lines = @(),
+        [ConsoleColor]$Color = [ConsoleColor]::Cyan,
+        [ConsoleColor]$BodyColor = [ConsoleColor]::White
+    )
+    Write-Host ""
+    Write-Host "[$(Get-Date -Format 'HH:mm:ss')] " `
+        -ForegroundColor DarkGray -NoNewline
+    Write-Host "=== $Title ===" -ForegroundColor $Color
+    foreach ($line in $Lines) {
+        Write-Host "  $line" -ForegroundColor $BodyColor
+    }
+    Write-Host ""
+}
+
 function New-ResearcherSessionStatus {
     param(
         [Parameter(Mandatory)][string]$Phase,

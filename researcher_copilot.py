@@ -54,19 +54,19 @@ EXIT_INTERRUPTED = 130
 
 _RESET = "\033[0m"
 _DIM = "\033[90m"
-# The model's own words: one block behind a gutter, so a line it writes is never
-# mistaken for something the harness reported.
-_MESSAGE = "\033[1;97m"
+# The model's own words: one bright block behind a matching gutter, so a line it
+# writes is never mistaken for muted Runner output.
+_MESSAGE = "\033[1;95m"
 _PLAIN_GUTTER = "  "
-_GUTTER = f"{_DIM}{_PLAIN_GUTTER}│{_RESET}{_MESSAGE} "
+_GUTTER = f"{_MESSAGE}{_PLAIN_GUTTER}│{_RESET}{_MESSAGE} "
 _MARKER_COLORS = {
     ">": "\033[36m",
-    "x": "\033[31m",
+    "x": "\033[1;91m",
     "+": "\033[32m",
     "-": "\033[31m",
     "~": "\033[36m",
-    "!": "\033[33m",
-    "--": "\033[36m",
+    "!": "\033[1;91m",
+    "--": "\033[1;95m",
     "[session]": "\033[95m",
 }
 
@@ -90,6 +90,8 @@ def format_console_line(text: str) -> str:
     marker, separator, remainder = stripped.partition(" ")
     color = _MARKER_COLORS.get(marker, "\033[36m")
     timestamp = f"{_DIM}[{datetime.now(UTC).astimezone():%H:%M:%S}]{_RESET}"
+    if marker in {"x", "!", "--"}:
+        return f"{timestamp} {indent}{color}{stripped}{_RESET}"
     return f"{timestamp} {indent}{color}{marker}{_RESET}{separator}{remainder}"
 
 
@@ -950,7 +952,7 @@ class Console:
         return f"[{self.label}] {text}" if self.label else text
 
     def turn_start(self, model: str | None = None) -> None:
-        """Start per-turn accounting without narrating routine runtime churn."""
+        """Mark the next PI turn and start its compact accounting."""
         self._turn += 1
         self._turn_started_at = time.monotonic()
         self._turn_model = model or ""
@@ -959,12 +961,27 @@ class Console:
         self._turn_prompt_at_start = self.prompt_tokens
         self._turn_cache_read_at_start = self.cache_read_tokens
         self._turn_output_at_start = self.output_tokens
+        print(flush=True)
+        model_note = f" | {self._turn_model}" if self._turn_model else ""
+        self.line(f"-- {self.tagged(f'PI turn {self._turn}')}{model_note}")
 
     def turn_end(self) -> None:
-        """Close per-turn accounting; strategic usage is reported at checkpoints."""
+        """Close the visible PI turn without reproducing token accounting."""
         if self._turn_started_at is None:
             return
+        elapsed = format_duration(time.monotonic() - self._turn_started_at)
         self._turn_started_at = None
+        tools = f"{self._turn_tools} tool" + ("" if self._turn_tools == 1 else "s")
+        files = (
+            f" | {self._turn_files} file{'' if self._turn_files == 1 else 's'}"
+            if self._turn_files
+            else ""
+        )
+        self.line(
+            f"-- {self.tagged(f'PI turn {self._turn} complete')} | "
+            f"{tools}{files} | {elapsed}"
+        )
+        print(flush=True)
 
     def line(self, text: str) -> None:
         self._close_message()
