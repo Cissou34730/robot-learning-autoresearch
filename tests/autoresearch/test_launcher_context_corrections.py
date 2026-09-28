@@ -308,4 +308,6 @@ def test_launcher_restart_validation_rejects_backend_descriptor_change(
 
     sys.argv[4] = "copilot"
     assert run_experiment.main() == 0
-    assert "MAX_INQUIRIES_SYNCHRONIZED" in capsys.readouterr().out
+    output = capsys.readouterr().out
+    assert "[campaign] GUARD" in output
+    assert "MaxInquiries 15" in output

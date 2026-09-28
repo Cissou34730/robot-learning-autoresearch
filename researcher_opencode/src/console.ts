@@ -2,10 +2,10 @@
  * Everything the human sees, and nothing the protocol reads back.
  *
  * A port of the console in `researcher_copilot.py`. The layout, gutter, markers,
- * turn banners and summary line are intentionally identical so an OpenCode
- * session reads the same as a Copilot one. The one deliberate difference is
- * accounting: OpenCode reports a monetary cost estimate and token components
- * rather than Copilot AIU, so cost is labelled as a runtime estimate.
+ * PI messages, failures, denials and changed files are intentionally identical
+ * so an OpenCode session reads the same as a Copilot one. Detailed accounting
+ * remains in the durable usage log and is summarized by the Runner at strategic
+ * lifecycle boundaries.
  */
 
 const RESET = "\u001b[0m";
@@ -15,6 +15,9 @@ const DIM = "\u001b[90m";
 const MESSAGE = "\u001b[1;97m";
 const PLAIN_GUTTER = "  ";
 const GUTTER = `${DIM}${PLAIN_GUTTER}\u2502${RESET}${MESSAGE} `;
+const UUID_PATTERN =
+  /\b[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}\b/g;
+const WINDOWS_PATH_PATTERN = /[A-Za-z]:[\\/](?:[^ \r\n:]+[\\/])*[^ \r\n:]+/g;
 
 const MARKER_COLORS: Record<string, string> = {
   ">": "\u001b[36m",
@@ -65,6 +68,15 @@ export function thousands(count: number): string {
   return count >= 1000 ? `${Math.round(count / 1000)}k` : String(count);
 }
 
+function compactText(text: string): string {
+  return text
+    .replace(UUID_PATTERN, "<id>")
+    .replace(WINDOWS_PATH_PATTERN, (path) => {
+      const parts = path.split(/[\\/]/);
+      return `.../${parts.slice(-2).join("/")}`;
+    });
+}
+
 export class Console {
   label: string;
   changedFiles: Map<string, string> = new Map();
@@ -91,8 +103,6 @@ export class Console {
   private turnPromptAtStart = 0;
   private turnCacheReadAtStart = 0;
   private turnOutputAtStart = 0;
-  private silentTools: Set<string> = new Set();
-
   constructor(label = "") {
     this.label = label;
   }
@@ -106,7 +116,7 @@ export class Console {
     process.stdout.write(`${formatConsoleLine(text)}\n`);
   }
 
-  /** Mark where the model's next stretch of work begins. */
+  /** Start per-turn accounting without narrating routine runtime churn. */
   turnStart(model?: string | null): void {
     this.turn += 1;
     this.turnStartedAt = performance.now();
@@ -116,30 +126,12 @@ export class Console {
     this.turnPromptAtStart = this.promptTokens;
     this.turnCacheReadAtStart = this.cacheReadTokens;
     this.turnOutputAtStart = this.outputTokens;
-    const modelNote = this.turnModel ? ` \u00b7 ${this.turnModel}` : "";
-    this.line(`-- ${this.tagged(`turn ${this.turn}`)}${modelNote}`);
   }
 
-  /** Report what one turn cost, rather than leaving it to the summary. */
+  /** Close per-turn accounting; strategic usage is reported at checkpoints. */
   turnEnd(): void {
     if (this.turnStartedAt === null) return;
-    const elapsed = Math.floor((performance.now() - this.turnStartedAt) / 1000);
     this.turnStartedAt = null;
-    const parts: string[] = [];
-    parts.push(`${this.turnTools} tool${this.turnTools === 1 ? "" : "s"}`);
-    if (this.turnFiles > 0) {
-      parts.push(`${this.turnFiles} file${this.turnFiles === 1 ? "" : "s"}`);
-    }
-    parts.push(formatDuration(elapsed));
-    const output = this.outputTokens - this.turnOutputAtStart;
-    if (output > 0) parts.push(`out ${thousands(output)}`);
-    const prompt = this.promptTokens - this.turnPromptAtStart;
-    if (prompt > 0) {
-      const cached = this.cacheReadTokens - this.turnCacheReadAtStart;
-      const share = cached > 0 ? ` (${Math.round((100 * cached) / prompt)}% cached)` : "";
-      parts.push(`prompt ${thousands(prompt)}${share}`);
-    }
-    this.line(`-- ${this.tagged(`turn ${this.turn}`)} \u00b7 ${parts.join(" \u00b7 ")}`);
   }
 
   private closeMessage(): void {
@@ -152,6 +144,7 @@ export class Console {
 
   delta(text: string): void {
     if (!text) return;
+    text = compactText(text);
     if (!this.midStream) {
       this.midStream = true;
       this.atLineStart = true;
@@ -186,11 +179,6 @@ export class Console {
     this.toolCounts.set(name, (this.toolCounts.get(name) ?? 0) + 1);
     this.turnTools += 1;
     if (callID) this.activeTools.set(callID, name);
-    if (this.silentTools.has(name)) return;
-    let detail = this.describe(name, input);
-    detail = detail.split(/\s+/).filter(Boolean).join(" ");
-    if (detail.length > 110) detail = `${detail.slice(0, 107)}...`;
-    this.line(detail ? `  > ${name}: ${detail}` : `  > ${name}`);
   }
 
   /** The most human-meaningful single argument for a tool call. */
@@ -220,9 +208,9 @@ export class Console {
   }
 
   toolFailed(error: unknown, name = "tool", input?: unknown): void {
-    const target = this.describe(name, input);
+    const target = compactText(this.describe(name, input));
     const shortTarget = target.length > 100 ? `${target.slice(0, 97)}...` : target;
-    let reason = typeof error === "string" ? error : String(error ?? "");
+    let reason = compactText(typeof error === "string" ? error : String(error ?? ""));
     reason = reason.split(/\s+/).filter(Boolean).join(" ");
     if (reason.length > 160) reason = `${reason.slice(0, 157)}...`;
     const operation = shortTarget ? `${name} (${shortTarget})` : name;
@@ -242,7 +230,11 @@ export class Console {
     if (this.changedFiles.get(path) !== marker) {
       this.changedFiles.set(path, marker);
       this.turnFiles += 1;
-      this.line(`  ${marker} ${path}`);
+      const suffix =
+        path === "research/operation_request.json"
+          ? " | PI operation request updated"
+          : "";
+      this.line(`  ${marker} ${path}${suffix}`);
     }
   }
 
@@ -251,17 +243,13 @@ export class Console {
     this.line(`  ! session error: ${message}`);
   }
 
-  /** The session's own end, labelled so a phase boundary is visible. */
+  /** Expose unannounced changes; lifecycle summaries come from the Runner. */
   summary(sessionID: string, changed: string[], elapsedSeconds: number): void {
+    void sessionID;
+    void elapsedSeconds;
     for (const path of changed) {
       if (!this.changedFiles.has(path)) this.line(`  ~ ${path}`);
     }
-    const files = `${changed.length} file(s) changed`;
-    const denials = this.denials > 0 ? `, ${this.denials} denied` : "";
-    this.line(
-      `[session] ${sessionID.slice(0, 8)} \u00b7 ${formatDuration(elapsedSeconds)} \u00b7 ` +
-        `${files}, ${this.usage()}, ${this.work()}${denials}`,
-    );
   }
 
   work(): string {

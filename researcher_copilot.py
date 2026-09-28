@@ -11,6 +11,7 @@ from __future__ import annotations
 import argparse
 import asyncio
 import json
+import re
 import shlex
 import subprocess
 import sys
@@ -21,6 +22,10 @@ from pathlib import Path
 from research.stop_control import stop_requested, wait_for_stop_request
 
 ROOT = Path(__file__).resolve().parent
+UUID_PATTERN = re.compile(
+    r"\b[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-"
+    r"[0-9a-fA-F]{4}-[0-9a-fA-F]{12}\b"
+)
 
 EXIT_OK = 0
 EXIT_SESSION_ERROR = 2
@@ -84,9 +89,9 @@ RESEARCH_TOOLS = [
     "list_powershell",
 ]
 
-# Temporary diagnostic visibility for issue #20. Repopulate this set after the
-# diagnostic campaigns to quiet selected tool starts again; outputs stay hidden.
-SILENT_TOOLS: frozenset[str] = frozenset()
+# Routine tool starts remain in runtime logs and aggregate accounting. The live
+# console surfaces only their failures, denials and changed files.
+SILENT_TOOLS: frozenset[str] = frozenset(RESEARCH_TOOLS)
 
 READ_ONLY_GIT = frozenset(
     {
@@ -350,6 +355,23 @@ def _repository_relative_target(target: str) -> str | None:
         return path.resolve().relative_to(ROOT.resolve()).as_posix().casefold()
     except ValueError:
         return None
+
+
+def compact_console_path(target: str) -> str:
+    path = Path(target)
+    if not path.is_absolute():
+        return path.as_posix()
+    try:
+        return path.resolve().relative_to(ROOT.resolve()).as_posix()
+    except (OSError, ValueError):
+        return ".../" + "/".join(path.parts[-2:])
+
+
+def compact_console_text(text: object) -> str:
+    value = str(text or "")
+    for root in (str(ROOT), str(ROOT).replace("\\", "/")):
+        value = value.replace(root, ".")
+    return UUID_PATTERN.sub("<id>", value)
 
 
 def is_pi_writable_path(target: str, *, preliminary: bool = False) -> bool:
@@ -899,11 +921,7 @@ class Console:
         return f"[{self.label}] {text}" if self.label else text
 
     def turn_start(self, model: str | None = None) -> None:
-        """Mark where the model's next stretch of work begins.
-
-        Streamed prose carries no marker of its own, so without this a long
-        session reads as one undivided wall between tool lines.
-        """
+        """Start per-turn accounting without narrating routine runtime churn."""
         self._turn += 1
         self._turn_started_at = time.monotonic()
         self._turn_model = model or ""
@@ -912,31 +930,12 @@ class Console:
         self._turn_prompt_at_start = self.prompt_tokens
         self._turn_cache_read_at_start = self.cache_read_tokens
         self._turn_output_at_start = self.output_tokens
-        model_note = f" · {self._turn_model}" if self._turn_model else ""
-        self.line(f"-- {self.tagged(f'turn {self._turn}')}{model_note}")
 
     def turn_end(self) -> None:
-        """Report what one turn cost, rather than leaving it to the summary."""
+        """Close per-turn accounting; strategic usage is reported at checkpoints."""
         if self._turn_started_at is None:
             return
-        elapsed = int(time.monotonic() - self._turn_started_at)
         self._turn_started_at = None
-        duration = format_duration(elapsed)
-        tools = f"{self._turn_tools} tool" + ("" if self._turn_tools == 1 else "s")
-        parts = [tools]
-        if self._turn_files:
-            files = f"{self._turn_files} file" + ("" if self._turn_files == 1 else "s")
-            parts.append(files)
-        parts.append(duration)
-        output = self.output_tokens - self._turn_output_at_start
-        if output:
-            parts.append(f"out {thousands(output)}")
-        prompt = self.prompt_tokens - self._turn_prompt_at_start
-        if prompt:
-            cached = self.cache_read_tokens - self._turn_cache_read_at_start
-            share = f" ({round(100 * cached / prompt)}% cached)" if cached else ""
-            parts.append(f"prompt {thousands(prompt)}{share}")
-        self.line(f"-- {self.tagged(f'turn {self._turn}')} · " + " · ".join(parts))
 
     def line(self, text: str) -> None:
         self._close_message()
@@ -956,6 +955,7 @@ class Console:
     def delta(self, text: str) -> None:
         if not text:
             return
+        text = compact_console_text(text)
         if not self._mid_stream:
             self._mid_stream = True
             self._at_line_start = True
@@ -1049,18 +1049,19 @@ class Console:
     ) -> None:
         target = ""
         if isinstance(arguments, dict):
-            raw = next(
-                (
-                    arguments[key]
-                    for key in ("path", "filePath", "query", "command", "commandLine")
-                    if arguments.get(key)
-                ),
-                "",
-            )
-            target = " ".join(str(raw).split())
+            for key in ("path", "filePath", "query", "command", "commandLine"):
+                raw = arguments.get(key)
+                if raw:
+                    target = (
+                        compact_console_path(str(raw))
+                        if key in {"path", "filePath"}
+                        else compact_console_text(raw)
+                    )
+                    break
+            target = " ".join(target.split())
         if len(target) > 100:
             target = target[:97] + "..."
-        reason = " ".join(str(error or "").split())
+        reason = " ".join(compact_console_text(error).split())
         if len(reason) > 160:
             reason = reason[:157] + "..."
         operation = f"{name} ({target})" if target else name
@@ -1073,11 +1074,17 @@ class Console:
         self.line(f"  x {reason.splitlines()[0]}")
 
     def file_changed(self, operation: str, path: str) -> None:
+        path = compact_console_path(path)
         marker = {"created": "+", "deleted": "-"}.get(str(operation), "~")
         if self.changed_files.get(path) != marker:
             self.changed_files[path] = marker
             self._turn_files += 1
-            self.line(f"  {marker} {path}")
+            suffix = (
+                " | PI operation request updated"
+                if path == "research/operation_request.json"
+                else ""
+            )
+            self.line(f"  {marker} {path}{suffix}")
 
     def error(self, message: str) -> None:
         self.session_error = message
@@ -1090,16 +1097,12 @@ class Console:
         offloaded: tuple[int, int] = (0, 0),
         elapsed_seconds: float = 0.0,
     ) -> None:
-        """The session's own end, labelled so a phase boundary is visible."""
+        """Expose unannounced changes; lifecycle summaries come from the Runner."""
+        del session_id, offloaded, elapsed_seconds
         for path in changed:
+            path = compact_console_path(path)
             if path not in self.changed_files:
                 self.line(f"  ~ {path}")
-        files = f"{len(changed)} file(s) changed"
-        denials = f", {self.denials} denied" if self.denials else ""
-        self.line(
-            f"[session] {session_id[:8]} · {format_duration(elapsed_seconds)} · "
-            f"{files}, {self.usage()}, {self.work(offloaded)}{denials}"
-        )
 
     def work(self, offloaded: tuple[int, int]) -> str:
         count, size = offloaded

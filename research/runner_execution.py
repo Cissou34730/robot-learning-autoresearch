@@ -241,7 +241,8 @@ def training_attempt(
     if recoverable_continuation:
         if not attempts:
             raise RuntimeError(
-                f"no training log exists for recoverable experiment {experiment}"
+                "no training log exists for recoverable training operation "
+                f"{experiment}"
             )
         return attempts[-1]
     return attempts[-1] + 1 if attempts else 1
@@ -275,6 +276,7 @@ def train_candidate(
     seed: int,
     resume: Path | None,
     training_log: Path,
+    operation_id: str,
     label: str = "candidate training",
     continue_timesteps: bool = False,
     target_timesteps: int | None = None,
@@ -300,7 +302,6 @@ def train_candidate(
         command.extend(["--target-timesteps", str(target_timesteps)])
     train_log = training_log
     started = time.monotonic()
-    console.announce(f"[train] {label} | seed {seed} | {timesteps:,} steps")
     train_log.parent.mkdir(parents=True, exist_ok=True)
     with train_log.open(
         "a" if continue_timesteps else "w", encoding="utf-8"
@@ -330,14 +331,14 @@ def train_candidate(
                 steps = latest_step_count(log_text)
                 if steps is None:
                     console.progress(
-                        f"[train] starting ({console.format_duration(elapsed)} elapsed)"
+                        f"TRAIN {operation_id} | starting | "
+                        f"{console.format_duration(elapsed)} elapsed"
                     )
                 else:
                     if steps != last_steps:
                         last_steps = steps
                         last_progress_at = time.monotonic()
                     progress_target = target_timesteps or timesteps
-                    progress = min(100.0, 100 * steps / progress_target)
                     completed_this_run = (
                         steps
                         if not continue_timesteps
@@ -348,24 +349,49 @@ def train_candidate(
                         if completed_this_run
                         else 0
                     )
+                    fps = (
+                        float(record["fps"])
+                        if record and record.get("fps") is not None
+                        else completed_this_run / elapsed
+                        if elapsed
+                        else 0.0
+                    )
                     console.progress(
-                        f"[train] {steps:,} / {progress_target:,} "
-                        f"({progress:.0f}%) | {console.format_duration(elapsed)} | "
-                        f"~{console.format_duration(eta)}"
-                        + console.training_progress_suffix(record)
+                        console.training_heartbeat(
+                            operation_id,
+                            steps,
+                            progress_target,
+                            elapsed,
+                            eta,
+                            fps,
+                            record,
+                        )
                     )
                 stalled_for = time.monotonic() - last_progress_at
                 if stalled_for > TRAIN_STALL_SECONDS:
-                    console.announce("[train] no progress for 30 minutes; stopping.")
+                    console.boundary(
+                        "error",
+                        "TRAINING FAILED",
+                        operation_id,
+                        "no progress for 30 minutes; stopping",
+                    )
                     stop_process(process, graceful=False)
                     raise TimeoutError("training made no progress for 30 minutes")
                 if elapsed > TRAIN_TIMEOUT_SECONDS:
-                    console.announce("[train] 12 hour safety limit reached; stopping.")
+                    console.boundary(
+                        "error",
+                        "TRAINING FAILED",
+                        operation_id,
+                        "12 hour safety limit reached; stopping",
+                    )
                     stop_process(process, graceful=False)
                     raise TimeoutError("training exceeded the 12 hour safety limit")
         except KeyboardInterrupt:
-            console.announce(
-                "\n[runner] Stopping training and waiting for it to close..."
+            console.boundary(
+                "warning",
+                "TRAINING STOPPING",
+                operation_id,
+                "waiting for the process to close",
             )
             stop_process(process, graceful=True)
             raise
@@ -485,7 +511,7 @@ def validate_reusable_candidate(
     mismatches = [name for name, matches in checks.items() if not matches]
     if mismatches:
         raise ValueError(
-            "reusable candidate does not match this experiment: "
+            "reusable candidate does not match this training operation: "
             + ", ".join(mismatches)
         )
 
@@ -496,6 +522,7 @@ def validate_reusable_candidate(
 def evaluate_artifact(
     artifact_dir: Path,
     seed: int | None = None,
+    operation_id: str = "M?",
     label: str = "official evaluation",
     episodes: int | None = None,
     output_path: Path | None = None,
@@ -547,10 +574,11 @@ def evaluate_artifact(
         command.append("--task-reference")
     progress_label = evaluation_label(artifact_dir.name)
     started = time.monotonic()
-    # Training announces the phase it starts; an evaluation announces the panel
-    # it will run, so its heartbeats and its elapsed time share one origin.
-    console.announce(
-        f"[eval] {progress_label}| {episodes} episodes | seed {seed} | {label}"
+    console.boundary(
+        "measurement",
+        "PANEL",
+        f"{operation_id} {progress_label}",
+        f"{episodes} episodes | seed {seed} | {label}",
     )
     last_progress_at = started
     completed_episodes = 0
@@ -590,9 +618,10 @@ def evaluate_artifact(
                         completed_episodes = current_completed
                         last_progress_at = time.monotonic()
                     console.progress(
-                        f"[eval] {progress_label}| {completed_episodes:>4} / {episodes} "
-                        f"| {100 * completed_episodes // episodes:>3}% "
-                        f"| {console.format_duration(time.monotonic() - started)}"
+                        f"MEASURE {operation_id} | {progress_label} | "
+                        f"{completed_episodes}/{episodes} | "
+                        f"{100 * completed_episodes // episodes}% | "
+                        f"{console.format_duration(time.monotonic() - started)}"
                     )
                     if time.monotonic() - last_progress_at > EVALUATION_STALL_SECONDS:
                         stop_process(process, graceful=False)
@@ -609,7 +638,12 @@ def evaluate_artifact(
                             f"({completed_episodes}/{episodes} complete)"
                         )
         except KeyboardInterrupt:
-            console.announce(f"\n[runner] Stopping {label}...")
+            console.boundary(
+                "warning",
+                "MEASUREMENT STOPPING",
+                operation_id,
+                label,
+            )
             stop_process(process, graceful=True)
             raise
         stdout_file.seek(0)
@@ -621,10 +655,13 @@ def evaluate_artifact(
     if process.returncode != 0:
         raise RuntimeError(f"{label} failed:\n{stdout[-2000:]}\n{stderr[-2000:]}")
     metrics = json.loads(output_path.read_text(encoding="utf-8"))
-    console.announce(
-        f"[eval] {progress_label}| {int(metrics['episodes']):>4} / {episodes} | 100% "
-        f"| {console.format_duration(time.monotonic() - started)} "
-        f"| success {metrics['success_percent']:.1f}%"
+    console.boundary(
+        "measurement",
+        "PANEL COMPLETE",
+        f"{operation_id} {progress_label}",
+        f"{int(metrics['episodes'])}/{episodes} | "
+        f"{console.format_duration(time.monotonic() - started)} | "
+        f"success {metrics['success_percent']:.1f}%",
     )
     return metrics
 

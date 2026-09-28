@@ -369,18 +369,18 @@ def test_the_shell_request_is_read_from_every_segment_it_reports():
         ("list_powershell", {}, ""),
     ],
 )
-def test_diagnostic_tool_starts_show_a_compact_target(capsys, tool, arguments, target):
+def test_routine_tool_starts_are_hidden_but_counted(capsys, tool, arguments, target):
+    del target
     console = adapter.Console()
 
     console.tool(tool, arguments)
 
-    suffix = f": {target}" if target else ""
-    assert capsys.readouterr().out == f"  > {tool}{suffix}\n"
+    assert capsys.readouterr().out == ""
     assert console.tool_calls == 1
 
 
 @pytest.mark.parametrize("argument_key", ["input", "patch", None])
-def test_patch_starts_show_file_targets_without_patch_contents(capsys, argument_key):
+def test_patch_starts_do_not_dump_patch_contents(capsys, argument_key):
     patch = (
         "*** Begin Patch\n*** Update File: reward.py\n@@\n"
         "+large payload that must remain hidden\n"
@@ -390,31 +390,31 @@ def test_patch_starts_show_file_targets_without_patch_contents(capsys, argument_
 
     adapter.Console().tool("apply_patch", arguments)
 
-    assert capsys.readouterr().out == "  > apply_patch: reward.py, diagnostic.py\n"
+    assert capsys.readouterr().out == ""
 
 
 @pytest.mark.parametrize("arguments", [None, {"path": {"content": "hidden"}}])
-def test_missing_or_structured_targets_do_not_dump_arguments(capsys, arguments):
+def test_missing_or_structured_targets_stay_hidden(capsys, arguments):
     adapter.Console().tool("view", arguments)
 
-    assert capsys.readouterr().out == "  > view\n"
+    assert capsys.readouterr().out == ""
 
 
 @pytest.mark.parametrize(
     "tool,key", [("powershell", "command"), ("view", "path"), ("rg", "pattern")]
 )
-def test_long_tool_targets_stay_on_one_truncated_line(capsys, tool, key):
+def test_long_tool_targets_stay_hidden(capsys, tool, key):
     adapter.Console().tool(tool, {key: "x" * 200 + "\nhidden tail"})
 
-    assert capsys.readouterr().out == f"  > {tool}: {'x' * 107}...\n"
+    assert capsys.readouterr().out == ""
 
 
-def test_a_shell_command_is_one_trimmed_line(capsys):
+def test_a_shell_command_is_not_narrated(capsys):
     console = adapter.Console()
 
     console.tool("powershell", {"command": "uv run ruff check  reward.py"})
 
-    assert capsys.readouterr().out == "  > powershell: uv run ruff check reward.py\n"
+    assert capsys.readouterr().out == ""
 
 
 def test_changed_files_are_reported_once_each(capsys):
@@ -426,7 +426,8 @@ def test_changed_files_are_reported_once_each(capsys):
 
     out = capsys.readouterr().out
     assert out == (
-        "  ~ research/operation_request.json\n  + research/lab/diagnostic.py\n"
+        "  ~ research/operation_request.json | PI operation request updated\n"
+        "  + research/lab/diagnostic.py\n"
     )
     assert len(console.changed_files) == 2
 
@@ -483,7 +484,7 @@ def test_a_streamed_message_is_gutter_per_line_not_per_chunk(capsys):
     )
 
 
-def test_the_summary_reports_work_not_a_verdict(capsys):
+def test_invocation_end_does_not_narrate_per_turn_usage(capsys):
     console = adapter.Console()
     console.prompt_tokens, console.output_tokens = 9000, 120
     console.nano_aiu = 356_660_000
@@ -494,13 +495,10 @@ def test_the_summary_reports_work_not_a_verdict(capsys):
     )
 
     out = capsys.readouterr().out
-    assert "1 file(s) changed" in out
-    assert "0.36 AIU" in out
-    for verdict in ("success", "complete", "valid", "failed"):
-        assert verdict not in out.lower()
+    assert out == "  ~ research/operation_request.json\n"
 
 
-def test_the_session_end_is_a_labelled_line_with_its_own_duration(capsys):
+def test_backend_session_uuid_is_not_printed_at_invocation_end(capsys):
     console = adapter.Console("S3·inquiry")
 
     console.summary(
@@ -510,23 +508,8 @@ def test_the_session_end_is_a_labelled_line_with_its_own_duration(capsys):
     )
 
     out = capsys.readouterr().out
-    # A phase boundary the reader can find without reading the whole session.
-    line = out.splitlines()[-1]
-    assert line.startswith("[session] fdb8162a · 7m02s · 1 file(s) changed")
-    assert "tools 0" in line
-
-
-def test_the_session_label_is_coloured_apart_from_tool_lines(monkeypatch):
-    stream = FakeTty()
-    monkeypatch.setattr(sys, "stdout", stream)
-    console = adapter.Console("S3·inquiry")
-
-    console.summary("fdb8162a-19eb-45ee-9835-9b22f70f4a80", [])
-
-    text = "".join(stream.written)
-    colour = adapter._MARKER_COLORS["[session]"]
-    assert f"{colour}[session]{adapter._RESET}" in text
-    assert colour != adapter._MARKER_COLORS[">"]
+    assert "fdb8162a" not in out
+    assert "research/operation_request.json" in out
 
 
 def test_the_models_own_words_are_coloured_apart_from_harness_output(monkeypatch):
@@ -539,13 +522,9 @@ def test_the_models_own_words_are_coloured_apart_from_harness_output(monkeypatch
     console.tool("view", {"path": "a.py"})
 
     text = "".join(stream.written)
-    # One block: the colour opens, the gutter re-opens it on the line, and the
-    # reset closes it before the harness reports its own line.
-    assert text.count(adapter._MESSAGE) == 2
     assert adapter._GUTTER in text
     assert text.split("The parent used N=8.")[0].endswith(f"{adapter._MESSAGE} ")
-    assert "view: a.py" in text
-    assert text.index("view: a.py") > text.index("The parent used N=8.")
+    assert "view: a.py" not in text
 
 
 def test_a_complete_message_is_coloured_only_where_it_is_shown(monkeypatch):
@@ -592,27 +571,24 @@ def test_the_cost_split_is_absent_until_the_runtime_prices_a_turn():
     assert adapter.Console().cost_split() == ""
 
 
-def test_the_session_reports_the_work_that_drove_its_cost(capsys):
+def test_tool_work_remains_available_to_durable_accounting(capsys):
     console = adapter.Console()
     for _ in range(12):
         console.tool("view", {})
 
     console.summary("session-id", [], offloaded=(3, 174_080))
 
-    out = capsys.readouterr().out
-    # Each invocation counts once, regardless of its display detail.
-    assert "tools 12" in out
-    assert "offloaded 3 (170 KB)" in out
+    assert capsys.readouterr().out == ""
+    assert console.work((3, 174_080)) == "tools 12, offloaded 3 (170 KB)"
 
 
-def test_an_unused_offload_is_not_reported_as_work(capsys):
+def test_an_unused_offload_remains_absent_from_durable_work(capsys):
     console = adapter.Console()
 
     console.summary("session-id", [])
 
-    out = capsys.readouterr().out
-    assert "tools 0" in out
-    assert "offloaded" not in out
+    assert capsys.readouterr().out == ""
+    assert console.work((0, 0)) == "tools 0"
 
 
 def test_offloaded_output_is_counted_only_for_this_session(tmp_path, monkeypatch):
@@ -648,7 +624,6 @@ def test_a_file_written_outside_the_edit_tools_is_still_reported(capsys):
     out = capsys.readouterr().out
     assert "  ~ research/lab/diagnostic.py" in out
     assert "  ~ research/operation_request.json" in out
-    assert "2 file(s) changed" in out
 
 
 def test_a_file_already_announced_is_not_listed_twice(capsys):
@@ -702,7 +677,7 @@ def test_only_meaningful_events_reach_the_console(capsys):
     assert finished.is_set()
 
 
-def test_a_turn_reports_the_work_it_contained(capsys):
+def test_a_turn_hides_runtime_chatter_but_keeps_consequential_changes(capsys):
     events = pytest.importorskip("copilot.session_events")
     console = adapter.Console("S3·inquiry")
     on_event, _ = adapter.build_handlers(console, asyncio.Event())
@@ -732,15 +707,12 @@ def test_a_turn_reports_the_work_it_contained(capsys):
     emit(events.AssistantTurnEndData(turn_id="t1"))
 
     out = capsys.readouterr().out
-    assert "-- [S3·inquiry] turn 1 · gpt-5.6-luna" in out
-    digest = out.splitlines()[-1]
-    assert digest.startswith("-- [S3·inquiry] turn 1 · ")
-    assert "2 tools" in digest
-    assert "1 file" in digest
-    assert "out 400" in digest
+    assert "turn 1" not in out
+    assert "prompt" not in out
+    assert "reward.py" in out
 
 
-def test_a_turn_reports_only_what_happened_during_it(capsys):
+def test_a_turn_does_not_print_token_or_cache_narration(capsys):
     events = pytest.importorskip("copilot.session_events")
     console = adapter.Console("S1·startup")
     on_event, _ = adapter.build_handlers(console, asyncio.Event())
@@ -772,16 +744,10 @@ def test_a_turn_reports_only_what_happened_during_it(capsys):
     )
     emit(events.AssistantTurnEndData(turn_id="t1"))
 
-    digest = capsys.readouterr().out.splitlines()[-1]
-    assert "1 tool ·" in digest
-    # Only the work done after the turn opened belongs to it.
-    assert "out 150" in digest
-    assert "out 250" not in digest
-    assert "prompt 2k" in digest
-    assert "prompt 3k" not in digest
+    assert capsys.readouterr().out == ""
 
 
-def test_a_turn_never_closed_by_the_runtime_still_reports(capsys):
+def test_a_turn_never_closed_by_the_runtime_stays_quiet(capsys):
     events = pytest.importorskip("copilot.session_events")
     console = adapter.Console("S2·inquiry")
     on_event, _ = adapter.build_handlers(console, asyncio.Event())
@@ -789,10 +755,10 @@ def test_a_turn_never_closed_by_the_runtime_still_reports(capsys):
     on_event(SimpleNamespace(data=events.AssistantTurnStartData(turn_id="t1")))
     on_event(SimpleNamespace(data=events.SessionIdleData()))
 
-    assert capsys.readouterr().out.count("-- [S2·inquiry] turn 1") == 2
+    assert capsys.readouterr().out == ""
 
 
-def test_a_turn_is_reported_once_even_when_it_ends_twice(capsys):
+def test_a_turn_ending_twice_stays_quiet(capsys):
     events = pytest.importorskip("copilot.session_events")
     console = adapter.Console("S2·inquiry")
     on_event, _ = adapter.build_handlers(console, asyncio.Event())
@@ -801,18 +767,16 @@ def test_a_turn_is_reported_once_even_when_it_ends_twice(capsys):
     on_event(SimpleNamespace(data=events.AssistantTurnEndData(turn_id="t1")))
     on_event(SimpleNamespace(data=events.AssistantTurnEndData(turn_id="t1")))
 
-    assert capsys.readouterr().out.count("-- [S2·inquiry] turn 1") == 2
+    assert capsys.readouterr().out == ""
 
 
-def test_a_standalone_session_carries_no_launcher_label(capsys):
+def test_a_standalone_session_adds_no_runtime_banner(capsys):
     console = adapter.Console()
 
     console.turn_start()
     console.turn_end()
 
-    out = capsys.readouterr().out
-    assert out.splitlines()[0].startswith("-- turn 1")
-    assert "[" not in out
+    assert capsys.readouterr().out == ""
 
 
 def test_the_console_label_names_the_bounded_phase():

@@ -17,9 +17,48 @@ function Write-Status {
         }
     }
     $text = $Message -replace '^===\s*|\s*===$', ''
-    Write-Host "[$(Get-Date -Format 'HH:mm:ss')] " -ForegroundColor DarkGray -NoNewline
-    Write-Host "[$Label]" -ForegroundColor $Color -NoNewline
-    Write-Host " $text"
+    $timestamp = "[$(Get-Date -Format 'HH:mm:ss')]"
+    $marker = "[$Label]"
+    $prefixLength = $timestamp.Length + $marker.Length + 2
+    $width = try {
+        [Math]::Max([Console]::WindowWidth, 40)
+    }
+    catch {
+        100
+    }
+    $lineWidth = [Math]::Max($width - $prefixLength, 30)
+    $words = @($text -split '\s+')
+    $lines = [System.Collections.Generic.List[string]]::new()
+    $current = ""
+    foreach ($word in $words) {
+        if (-not $current) {
+            $current = $word
+        }
+        elseif (($current.Length + 1 + $word.Length) -le $lineWidth) {
+            $current += " $word"
+        }
+        else {
+            $lines.Add($current)
+            $current = $word
+        }
+    }
+    if ($current) {
+        $lines.Add($current)
+    }
+    if ($lines.Count -eq 0) {
+        $lines.Add("")
+    }
+    for ($index = 0; $index -lt $lines.Count; $index += 1) {
+        if ($index -eq 0) {
+            Write-Host "$timestamp " -ForegroundColor DarkGray -NoNewline
+            Write-Host $marker -ForegroundColor $Color -NoNewline
+            Write-Host " $($lines[$index])"
+        }
+        else {
+            Write-Host (" " * $prefixLength) -NoNewline
+            Write-Host $lines[$index]
+        }
+    }
 }
 
 function New-ResearcherSessionStatus {

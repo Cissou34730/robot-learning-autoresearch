@@ -6,7 +6,6 @@ import json
 import re
 from pathlib import Path
 
-from research import runner_console as console
 from research import runner_repository
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -482,8 +481,7 @@ def write_research_brief() -> Path:
 
 
 def main() -> None:
-    brief = write_research_brief()
-    console.announce(f"[brief] wrote {brief.relative_to(ROOT).as_posix()}")
+    write_research_brief()
 
 
 if __name__ == "__main__":

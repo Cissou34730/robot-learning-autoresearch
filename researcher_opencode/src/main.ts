@@ -21,12 +21,9 @@ import {
 import { Console } from "./console.ts";
 import { parseArgs, UsageError, type AdapterArgs } from "./args.ts";
 
-/** The experiment and phase a session belongs to, for the console only. */
+/** The bounded scientific phase a session belongs to, for the console only. */
 export function consoleLabel(args: AdapterArgs): string {
-  const parts: string[] = [];
-  if (args.experiment !== null) parts.push(`e${args.experiment}`);
-  if (args.phase) parts.push(args.phase);
-  return parts.join("\u00b7");
+  return args.phase ?? "";
 }
 
 function recordUsage(

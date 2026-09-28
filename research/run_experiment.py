@@ -1041,6 +1041,7 @@ def execute_measurement(state: dict, pending: dict) -> int:
                 metrics = execution.evaluate_artifact(
                     artifact,
                     int(spec["seed"]),
+                    operation_id=str(pending["id"]),
                     label=spec["label"],
                     episodes=int(spec["episodes"]),
                     output_path=output_path,
@@ -1062,6 +1063,7 @@ def execute_measurement(state: dict, pending: dict) -> int:
                 metrics = execution.evaluate_artifact(
                     artifact,
                     int(task_reference_contract["seed"]),
+                    operation_id=str(pending["id"]),
                     label=spec["label"],
                     episodes=int(task_reference_contract["episodes"]),
                     output_path=output_path,
@@ -1308,6 +1310,7 @@ def execute_training(state: dict, pending: dict) -> int:
                     paths.training_log_path(
                         operation_id, attempt, campaign_id=campaign_id
                     ),
+                    operation_id,
                     label=f"training {operation_id}",
                 )
             pending["progress"] = "training_completed"
@@ -1378,6 +1381,134 @@ def execute_training(state: dict, pending: dict) -> int:
     return 0
 
 
+def _operation_subject(pending: dict) -> str:
+    kind = str(pending["kind"])
+    plan = pending["data"].get("plan")
+    if kind == "inquiry" and isinstance(plan, dict):
+        inquiry_id = (
+            plan.get("inquiry", {}).get("id")
+            if plan.get("action") == "open"
+            else plan.get("inquiry_id")
+        )
+        return f"{inquiry_id} inquiry" if inquiry_id else "inquiry"
+    if kind == "checkpoint":
+        session_id = plan.get("session_id") if isinstance(plan, dict) else None
+        return f"{session_id} checkpoint" if session_id else "checkpoint"
+    if kind == "campaign_conclusion":
+        return "campaign decision"
+    if kind == "model_role":
+        return "model role"
+    if kind == "restore_recipe":
+        return "recipe restore"
+    return f"{pending['id']} {kind.replace('_', ' ')}"
+
+
+def _operation_request_detail(pending: dict) -> str:
+    request = pending["request"][pending["kind"]]
+    kind = pending["kind"]
+    if kind == "training":
+        return (
+            f"{int(request['steps']):,} steps | seed {int(request['seed'])} | "
+            f"{request['initialization']}"
+        )
+    if kind == "measurement":
+        return f"{len(request['measurements'])} measurement panel(s)"
+    if kind == "inquiry":
+        return str(request["action"])
+    if kind == "model_role":
+        return f"{request['action']} | {request['candidate']}"
+    if kind == "restore_recipe":
+        return str(request["candidate"])
+    if kind == "campaign_conclusion":
+        return str(request["action"])
+    return ""
+
+
+def _operation_completion_detail(pending: dict, elapsed: float) -> str:
+    result = pending["data"].get("result") or {}
+    kind = pending["kind"]
+    parts = [console.format_duration(elapsed)]
+    if kind == "measurement":
+        parts.append(f"{len(result.get('measurements', []))} result(s)")
+        comparisons = len(result.get("paired_comparisons", []))
+        if comparisons:
+            parts.append(f"{comparisons} comparison(s)")
+    elif kind == "training":
+        parts.append(f"{int(result.get('completed_steps', 0)):,} steps")
+        parts.append(f"{len(result.get('candidates', []))} candidate(s)")
+        dynamics = result.get("learning_dynamics") or []
+        if dynamics:
+            latest = dynamics[-1]
+            if latest.get("ep_rew_mean") is not None:
+                parts.append(f"reward {float(latest['ep_rew_mean']):g}")
+            if latest.get("training_success") is not None:
+                parts.append(f"success {float(latest['training_success']):g}")
+    elif kind == "model_role":
+        parts.append(f"{result.get('action')} | {result.get('candidate')}")
+    elif kind == "restore_recipe":
+        parts.append(str(result.get("candidate", "")))
+    return " | ".join(part for part in parts if part)
+
+
+def _announce_consequential_completion(
+    state_before: dict,
+    pending: dict,
+    session_usage: str | None,
+) -> None:
+    result = pending["data"].get("result") or {}
+    kind = pending["kind"]
+    if kind == "inquiry":
+        action = str(result.get("action", "")).upper()
+        inquiry_id = str(result.get("inquiry_id", ""))
+        detail = (
+            str(result.get("outcome") or result.get("reason") or "")
+            if action == "CLOSE"
+            else ""
+        )
+        console.boundary("inquiry", action, inquiry_id, detail)
+    elif kind == "checkpoint":
+        session_id = str(result.get("session_id", ""))
+        console.boundary("checkpoint", "COMPLETE", session_id)
+        console.boundary(
+            "session",
+            "END",
+            session_id,
+            session_usage or "usage unavailable",
+        )
+    elif kind == "campaign_conclusion":
+        session = state_before.get("scientific_session")
+        if isinstance(session, dict):
+            console.boundary(
+                "session",
+                "END",
+                str(session["id"]),
+                session_usage or "usage unavailable",
+            )
+        status = str(result.get("status", "")).replace("_", " ")
+        action = "END" if result.get("status") == "no_credible_route" else "DECISION"
+        console.boundary(
+            "campaign",
+            action,
+            status,
+            console.usage_summary(repository.current_campaign_id(state_before)),
+        )
+
+
+def _campaign_resource_summary(state: dict) -> str:
+    completed = [
+        event for event in state["operation_events"] if event["status"] == "completed"
+    ]
+    measurements = sum(event["kind"] == "measurement" for event in completed)
+    training = sum(event["kind"] == "training" for event in completed)
+    return (
+        f"inquiries {int(state['counters']['inquiry'])}/"
+        f"{int(state['campaign']['max_inquiries'])} | "
+        f"sessions {int(state['counters']['session'])} | "
+        f"measurements {measurements} | training {training} | "
+        f"candidates {len(state['candidates'])}"
+    )
+
+
 def execute_pending_operation() -> int:
     state = repository.load_state(allow_missing_artifact=True)
     pending = state["pending_operation"]
@@ -1392,31 +1523,60 @@ def execute_pending_operation() -> int:
     if _canonical_fingerprint(request) != pending["request_fingerprint"]:
         raise FrozenOperationMismatch("accepted operation request changed")
     _write_accepted_request_handoff(pending)
+    subject = _operation_subject(pending)
+    detail = _operation_request_detail(pending)
+    action = "REQUEST" if pending["progress"] == "accepted" else "RESUME"
+    console.boundary("operation", action, subject, detail)
     if pending["progress"] == "completed":
         _finalize_operation(state, pending)
+        console.boundary("operation", "COMPLETE", subject, "finalized")
         return 0
     kind = pending["kind"]
+    session_usage = None
+    if kind in {"checkpoint", "campaign_conclusion"}:
+        session = state.get("scientific_session")
+        if isinstance(session, dict):
+            session_usage = console.usage_summary(
+                repository.current_campaign_id(state),
+                str(session["backend_session_id"]),
+            )
+    started = time.monotonic()
+    console.boundary("operation", "START", subject)
     try:
         if kind == "measurement":
-            return execute_measurement(state, pending)
-        if kind == "training":
-            return execute_training(state, pending)
-        if kind == "inquiry":
-            return _execute_inquiry(state, pending)
-        if kind == "checkpoint":
-            return _execute_checkpoint(state, pending)
-        if kind == "model_role":
-            return _execute_model_role(state, pending)
-        if kind == "restore_recipe":
-            return _execute_recipe_restore(state, pending)
-        if kind == "campaign_conclusion":
-            return _execute_campaign_conclusion(state, pending)
-        raise RuntimeError(f"unsupported pending operation kind: {kind}")
+            exit_code = execute_measurement(state, pending)
+        elif kind == "training":
+            exit_code = execute_training(state, pending)
+        elif kind == "inquiry":
+            exit_code = _execute_inquiry(state, pending)
+        elif kind == "checkpoint":
+            exit_code = _execute_checkpoint(state, pending)
+        elif kind == "model_role":
+            exit_code = _execute_model_role(state, pending)
+        elif kind == "restore_recipe":
+            exit_code = _execute_recipe_restore(state, pending)
+        elif kind == "campaign_conclusion":
+            exit_code = _execute_campaign_conclusion(state, pending)
+        else:
+            raise RuntimeError(f"unsupported pending operation kind: {kind}")
     except Exception as error:
         if pending["progress"] not in {"result_ready", "completed"}:
             pending["failure"] = str(error)[:500]
             repository.write_state(state)
+        console.boundary("error", "OPERATION FAILED", subject, str(error))
         raise
+    elapsed = time.monotonic() - started
+    if exit_code == 130:
+        console.boundary("warning", "OPERATION PAUSED", subject)
+        return exit_code
+    console.boundary(
+        "operation",
+        "COMPLETE",
+        subject,
+        _operation_completion_detail(pending, elapsed),
+    )
+    _announce_consequential_completion(state, pending, session_usage)
+    return exit_code
 
 
 def check_operation() -> int:
@@ -1446,7 +1606,7 @@ def check_scientific_model_deliverable() -> int:
 
 def official_assessment_progress(completed: int, total: int) -> None:
     percent = 100 * completed // total if total else 0
-    console.progress(f"[assessment] {completed:>4} / {total} | {percent:>3}%")
+    console.progress(f"ASSESS | {completed}/{total} | {percent}%")
 
 
 def _official_assessment_event(state: dict) -> dict:
@@ -1511,6 +1671,7 @@ def run_official_assessment() -> int:
     candidate = state["candidates"].get(terminal["model"])
     if not isinstance(candidate, dict):
         raise TypeError("the requested official-assessment model is unavailable")
+    console.boundary("assessment", "START", "official", str(candidate["id"]))
     existing = state["official_assessment"]
     if isinstance(existing, dict):
         if existing["model"] != candidate["id"]:
@@ -1523,6 +1684,18 @@ def run_official_assessment() -> int:
             )
         if not repository.commit_runner_memory("record official assessment"):
             repository.push_head()
+        console.boundary(
+            "assessment",
+            "COMPLETE",
+            str(existing["status"]).upper(),
+            str(existing["summary"]),
+        )
+        console.boundary(
+            "campaign",
+            "END",
+            f"official assessment {existing['status']}",
+            console.usage_summary(repository.current_campaign_id(state)),
+        )
         return 0
     artifact = _validate_official_assessment_artifact(candidate)
 
@@ -1553,7 +1726,18 @@ def run_official_assessment() -> int:
         )
     if not repository.commit_runner_memory("record official assessment"):
         repository.push_head()
-    console.announce(f"[assessment] {summary}")
+    console.boundary(
+        "assessment",
+        "COMPLETE",
+        "PASSED" if passed else "FAILED",
+        summary,
+    )
+    console.boundary(
+        "campaign",
+        "END",
+        f"official assessment {'passed' if passed else 'failed'}",
+        console.usage_summary(repository.current_campaign_id(state)),
+    )
     return 0
 
 
@@ -1605,7 +1789,11 @@ def main() -> int:
         )
         if changed:
             repository.write_state(state)
-        print(f"MAX_INQUIRIES_SYNCHRONIZED: {state['campaign']['max_inquiries']}")
+        console.boundary(
+            "campaign",
+            "GUARD",
+            f"MaxInquiries {state['campaign']['max_inquiries']}",
+        )
         return 0
     if args.check_scientific_model_deliverable:
         return check_scientific_model_deliverable()
@@ -1627,8 +1815,11 @@ def main() -> int:
         return 0
     if args.reaccept_pending:
         pending = reaccept_pending_operation()
-        print(
-            f"OPERATION_REACCEPTED: {pending['id']} supersedes {pending['supersedes']}"
+        console.boundary(
+            "operation",
+            "REACCEPTED",
+            _operation_subject(pending),
+            f"supersedes {pending['supersedes']}",
         )
         return 0
     if args.run_official_assessment:
@@ -1665,7 +1856,19 @@ def main() -> int:
             backend_reasoning=args.backend_reasoning,
         )
         repository.write_state(state)
-        print(f"SCIENTIFIC_SESSION_STARTED: {session['id']}")
+        console.boundary(
+            "session",
+            "START",
+            f"{session['id']} {session['kind'].replace('_', ' ')}",
+            str(session["objective"]),
+        )
+        if session["kind"] == "goal_review":
+            console.boundary(
+                "campaign",
+                "GOAL REVIEW",
+                _campaign_resource_summary(state),
+                console.usage_summary(repository.current_campaign_id(state)),
+            )
         return 0
     if args.check_operation:
         return check_operation()

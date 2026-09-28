@@ -314,7 +314,8 @@ Closed-loop settling behavior is not established.
 
 def test_launcher_uses_one_schema6_operation_request():
     assert "research/operation_request.json" in SCRIPT
-    assert "Runner resuming the existing PI operation request" in SCRIPT
+    assert 'Test-Path "research\\operation_request.json" -PathType Leaf' in SCRIPT
+    assert "if ($state.pending_operation)" in SCRIPT
     assert "--check-operation" in SCRIPT
     assert "--execute-pending" in SCRIPT
 

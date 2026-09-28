@@ -255,7 +255,7 @@ def test_another_scenario_metric_needs_no_generic_change(monkeypatch):
     )
 
     assert runner_console.training_progress_suffix({"ep_rew_mean": -6.9}) == (
-        " | -6.9 | 74%"
+        " | reward -6.9 | completion 74%"
     )
 
 

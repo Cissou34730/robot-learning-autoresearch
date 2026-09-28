@@ -287,7 +287,6 @@ function Start-OpenCodeCampaignServer {
         if (-not $ready) {
             throw "The OpenCode campaign server did not become ready at $url."
         }
-        Write-Status "OpenCode campaign server ready at $url" -Color DarkGray -Label pi
         return @{ Process = $process; Url = $url }
     }
     catch {
@@ -365,8 +364,17 @@ function Invoke-PISession {
         }
         $script:PISessionInvocation += 1
     }
-    Write-Status "=== PI session: $Phase ===" -Color Magenta -Label pi
-    Write-Status "Model: $Model, reasoning: $Reasoning" -Color Magenta -Label pi
+    $state = Get-Content "research\research_state.json" -Raw | ConvertFrom-Json
+    $displaySession = if ($Preliminary) {
+        "campaign preparation"
+    }
+    elseif ($state.scientific_session.id) {
+        "$($state.scientific_session.id) $($Phase -replace '_', ' ')"
+    }
+    else {
+        ($Phase -replace '_', ' ')
+    }
+    Write-Status "MESSAGE | $displaySession" -Color Magenta -Label pi
     $sessionArgs = @(
         "--session-id", $script:PISessionId
         "--model", $Model
@@ -374,7 +382,6 @@ function Invoke-PISession {
         "--phase", $Phase
         "--attempt", "$script:PISessionInvocation"
     )
-    $state = Get-Content "research\research_state.json" -Raw | ConvertFrom-Json
     if ($state.campaign.id) {
         $sessionArgs += @("--campaign-id", $state.campaign.id)
     }
@@ -601,6 +608,19 @@ function Get-ScientificSessionPhase {
         return "closed inquiry awaiting checkpoint"
     }
     return [string]$session.kind
+}
+
+function Get-CampaignResourceSummary {
+    param([Parameter(Mandatory)]$State)
+
+    $completed = @($State.operation_events | Where-Object { $_.status -eq "completed" })
+    $measurements = @($completed | Where-Object { $_.kind -eq "measurement" }).Count
+    $training = @($completed | Where-Object { $_.kind -eq "training" }).Count
+    return (
+        "inquiries $([int]$State.counters.inquiry)/$([int]$State.campaign.max_inquiries) | " +
+        "sessions $([int]$State.counters.session) | measurements $measurements | " +
+        "training $training | candidates $($State.candidates.PSObject.Properties.Count)"
+    )
 }
 
 function New-ScientificSessionPrompt {
@@ -918,6 +938,21 @@ try {
         )
     }
 
+    $launchState = Get-Content "research\research_state.json" -Raw | ConvertFrom-Json
+    $campaignAction = if (
+        [int]$launchState.counters.session -eq 0 -and
+        @($launchState.operation_events).Count -eq 0
+    ) {
+        "START"
+    }
+    else {
+        "RESUME"
+    }
+    Write-Status (
+        "$campaignAction | goal-centered research | " +
+        (Get-CampaignResourceSummary -State $launchState)
+    ) -Color White -Label campaign
+
     if ($PIBackend -eq "opencode") {
         $openCodeServer = Start-OpenCodeCampaignServer
         $script:OpenCodeServerProcess = $openCodeServer.Process
@@ -933,7 +968,7 @@ try {
         $state = Get-Content "research\research_state.json" -Raw | ConvertFrom-Json
 
         if ($state.scientific_model.status -eq "pending") {
-            Write-Status "=== Preliminary PI scientific-model session ===" -Color Magenta -Label pi
+            Write-Status "START | campaign preparation" -Color Magenta -Label session
             if ((Invoke-ScientificModelPhase -State $state) -eq 130) {
                 break
             }
@@ -954,13 +989,6 @@ try {
 
         if ($state.terminal_state) {
             if ($state.terminal_state.status -like "official_assessment_*") {
-                $assessmentAction = if ($state.official_assessment) {
-                    "publishing recorded official assessment"
-                }
-                else {
-                    "executing requested official assessment"
-                }
-                Write-Status "=== Runner $assessmentAction ===" -Color Cyan -Label runner
                 $exitCode = Invoke-Runner -Arguments @("--run-official-assessment")
                 if (Test-StopAfterOperation $exitCode "research runner") {
                     break
@@ -971,13 +999,12 @@ try {
                 Update-ResearchBrief
                 $state = Get-Content "research\research_state.json" -Raw |
                     ConvertFrom-Json
-                Write-Status (
-                    "Official assessment recorded: $($state.official_assessment.status). " +
-                    "Research loop finished."
-                ) -Color Green -Label runner
                 break
             }
-            Write-Status "PI concluded that no credible route remains. Research loop finished." -Color Green -Label pi
+            Write-Status (
+                "END | no credible route remains | " +
+                (Get-CampaignResourceSummary -State $state)
+            ) -Color Green -Label campaign
             break
         }
 
@@ -1006,7 +1033,6 @@ try {
                     "$($state.active_inquiry.closure_condition)"
                 )
             }
-            Write-Status "=== Starting bounded PI $kind session ===" -Color Magenta -Label pi
             $exitCode = Invoke-Runner -Arguments @(
                 "--start-session", $kind,
                 "--session-objective", $objective,
@@ -1041,7 +1067,6 @@ try {
 
         $existingRequestProblem = ""
         if (Test-Path "research\operation_request.json" -PathType Leaf) {
-            Write-Status "=== Runner resuming the existing PI operation request ===" -Color Cyan -Label runner
             $exitCode = Invoke-Runner
             if (Test-StopAfterOperation $exitCode "research runner") {
                 break
@@ -1053,7 +1078,6 @@ try {
             $failed = Get-Content "research\research_state.json" -Raw |
                 ConvertFrom-Json
             if ($failed.pending_operation.failure) {
-                Write-Status "=== Runner operation failed; returning the factual error to the same PI session ===" -Color Yellow -Label runner
                 continue
             }
             [void](Test-OperationRequest)
@@ -1083,13 +1107,11 @@ try {
             }
         }
 
-        Write-Status "=== Runner executing PI-requested operation ===" -Color Cyan -Label runner
         $exitCode = Invoke-Runner
         if (Test-StopAfterOperation $exitCode "research runner") {
             break
         }
         if ($exitCode -eq 130) {
-            Write-Status "=== Runner operation paused; transaction remains durable ===" -Color Yellow -Label runner
             break
         }
         if ($exitCode -ne 0) {
@@ -1097,7 +1119,6 @@ try {
             if (-not $failed.pending_operation.failure) {
                 throw "The Runner operation failed without recoverable pending state."
             }
-            Write-Status "=== Runner operation failed; returning the factual error to the same PI session ===" -Color Yellow -Label runner
             continue
         }
         Update-ResearchBrief
