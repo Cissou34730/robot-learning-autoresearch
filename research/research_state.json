@@ -17,7 +17,7 @@
   },
   "candidates": {},
   "counters": {
-    "event": 2,
+    "event": 3,
     "inquiry": 1,
     "measurement": 0,
     "session": 2,
@@ -26,7 +26,7 @@
   "human_goal": {
     "source": "research/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -82,22 +82,141 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-09-28T19:33:57Z",
+      "error": null,
+      "id": "E3",
+      "inquiry_id": null,
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "No candidates exist; working, best-known, and retained roles are empty.",
+        "completed_operations": [
+          "E2"
+        ],
+        "cumulative_resource_use": "One inquiry-opening operation completed; no training, measurement, candidate, or evaluation resources have been consumed.",
+        "current_goal_gap": "No trained candidate or trajectory evidence exists, so it remains unknown whether failures would be dominated by transport and branch selection or by post-entry braking and stabilization.",
+        "current_synthesis": "The initial physical model establishes nominal static reachability but predicts coupled transient risk from branch choice, actuator saturation, Jacobian sensitivity, residual velocity, and the run-length hold rule. Inquiry I1 is correctly opened to discriminate these mechanisms; no mechanism is yet supported as dominant.",
+        "decision_frontier": "Obtain the first fresh trained candidate, then measure target-conditioned trajectories for first-entry time, post-entry excursions, endpoint speed, longest uninterrupted in-band run, branch and joint-limit behavior, and radius/angle stratification.",
+        "evidence_references": [
+          "E2"
+        ],
+        "human_goal_connection": "The campaign must reach at least 196 complete uninterrupted 100-step holds in the 200-episode official assessment. Resolving the active transport-versus-stabilization failure mechanism is necessary to select an intervention that advances that goal.",
+        "next_direction_or_closure": "Continue inquiry I1 with a fresh baseline training operation in the next inquiry session. Use its trajectory evidence to identify the dominant failure mechanism and choose the next intervention; do not request official assessment or conclude no route remains."
+      },
+      "result": {
+        "session_id": "S2",
+        "status": "checkpointed"
+      },
+      "session_id": "S2",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "61471d7886967888d5144f90ce6ee974c5462643",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "No candidates exist; working, best-known, and retained roles are empty.",
+        "completed_operations": [
+          "E2"
+        ],
+        "cumulative_resource_use": "One inquiry-opening operation completed; no training, measurement, candidate, or evaluation resources have been consumed.",
+        "current_goal_gap": "No trained candidate or trajectory evidence exists, so it remains unknown whether failures would be dominated by transport and branch selection or by post-entry braking and stabilization.",
+        "current_synthesis": "The initial physical model establishes nominal static reachability but predicts coupled transient risk from branch choice, actuator saturation, Jacobian sensitivity, residual velocity, and the run-length hold rule. Inquiry I1 is correctly opened to discriminate these mechanisms; no mechanism is yet supported as dominant.",
+        "decision_frontier": "Obtain the first fresh trained candidate, then measure target-conditioned trajectories for first-entry time, post-entry excursions, endpoint speed, longest uninterrupted in-band run, branch and joint-limit behavior, and radius/angle stratification.",
+        "evidence_references": [
+          "E2"
+        ],
+        "human_goal_connection": "The campaign must reach at least 196 complete uninterrupted 100-step holds in the 200-episode official assessment. Resolving the active transport-versus-stabilization failure mechanism is necessary to select an intervention that advances that goal.",
+        "inquiry_id": null,
+        "next_direction_or_closure": "Continue inquiry I1 with a fresh baseline training operation in the next inquiry session. Use its trajectory evidence to identify the dominant failure mechanism and choose the next intervention; do not request official assessment or conclude no route remains.",
+        "session_id": "S2"
+      },
+      "presentation": {
+        "backend_session_id": "8ec22b32-dba7-4bcf-a6ad-e642dfdb3193",
+        "campaign_id": "bc629002-7e8c-4044-81b3-c2a6db99d7fa",
+        "campaign_usage": "8m07s | 7.52 AIU | prompt 974.6k (84% cached) | output 17.3k",
+        "session_id": "S2",
+        "session_kind": "goal_review",
+        "session_usage": "2m21s | 2.33 AIU | prompt 346.2k (85% cached) | output 3.4k"
+      },
+      "result": {
+        "session_id": "S2",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "6ba859ce9c7df4ce51272431a195cebcf987d796",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E3",
+    "inquiry_id": null,
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "No candidates exist; working, best-known, and retained roles are empty.",
+        "completed_operations": [
+          "E2"
+        ],
+        "cumulative_resource_use": "One inquiry-opening operation completed; no training, measurement, candidate, or evaluation resources have been consumed.",
+        "current_goal_gap": "No trained candidate or trajectory evidence exists, so it remains unknown whether failures would be dominated by transport and branch selection or by post-entry braking and stabilization.",
+        "current_synthesis": "The initial physical model establishes nominal static reachability but predicts coupled transient risk from branch choice, actuator saturation, Jacobian sensitivity, residual velocity, and the run-length hold rule. Inquiry I1 is correctly opened to discriminate these mechanisms; no mechanism is yet supported as dominant.",
+        "decision_frontier": "Obtain the first fresh trained candidate, then measure target-conditioned trajectories for first-entry time, post-entry excursions, endpoint speed, longest uninterrupted in-band run, branch and joint-limit behavior, and radius/angle stratification.",
+        "evidence_references": [
+          "E2"
+        ],
+        "human_goal_connection": "The campaign must reach at least 196 complete uninterrupted 100-step holds in the 200-episode official assessment. Resolving the active transport-versus-stabilization failure mechanism is necessary to select an intervention that advances that goal.",
+        "next_direction_or_closure": "Continue inquiry I1 with a fresh baseline training operation in the next inquiry session. Use its trajectory evidence to identify the dominant failure mechanism and choose the next intervention; do not request official assessment or conclude no route remains."
+      }
+    },
+    "request_fingerprint": "50a581786ce57ad6031d1c4a877f6e614e6af386c0f283841642aa90ca94c19f",
+    "session_id": "S2",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No candidates exist; working, best-known, and retained roles are empty.",
-    "completed_operations": [],
-    "cumulative_resource_use": "No training, measurement, candidate, or evaluation resources have been consumed. This startup checkpoint records only the initial model-derived direction.",
-    "current_goal_gap": "There is no trained candidate or trajectory evidence, so the gap is unresolved between transport/reachability failure and post-entry braking or stabilization failure. Either mechanism could prevent the required uninterrupted hold, and neither can yet be treated as dominant.",
-    "current_synthesis": "The scientific model establishes nominal static reachability but predicts coupled transient risk: branch choice, actuator saturation, configuration-dependent Jacobian sensitivity, residual velocity, and the run-length hold rule can cause failure even when the target posture is reachable. The credible initial direction is trajectory-level diagnosis rather than an unsupported local reward or network change.",
-    "decision_frontier": "In the next goal-review session, choose whether to open an inquiry that discriminates reach/branch failures from braking/stabilization failures. The decision should be based on first-entry time, post-entry excursions, endpoint speed, longest uninterrupted in-band run, branch and joint-limit behavior, and variation by target radius and angle.",
-    "evidence_references": [],
-    "human_goal_connection": "The campaign must reach at least 98% complete, uninterrupted 100-step holds over the full official target distribution. The first scientific direction therefore prioritizes identifying the physical failure mechanism that most directly prevents complete holds.",
+    "completed_operations": [
+      "E2"
+    ],
+    "cumulative_resource_use": "One inquiry-opening operation completed; no training, measurement, candidate, or evaluation resources have been consumed.",
+    "current_goal_gap": "No trained candidate or trajectory evidence exists, so it remains unknown whether failures would be dominated by transport and branch selection or by post-entry braking and stabilization.",
+    "current_synthesis": "The initial physical model establishes nominal static reachability but predicts coupled transient risk from branch choice, actuator saturation, Jacobian sensitivity, residual velocity, and the run-length hold rule. Inquiry I1 is correctly opened to discriminate these mechanisms; no mechanism is yet supported as dominant.",
+    "decision_frontier": "Obtain the first fresh trained candidate, then measure target-conditioned trajectories for first-entry time, post-entry excursions, endpoint speed, longest uninterrupted in-band run, branch and joint-limit behavior, and radius/angle stratification.",
+    "evidence_references": [
+      "E2"
+    ],
+    "human_goal_connection": "The campaign must reach at least 196 complete uninterrupted 100-step holds in the 200-episode official assessment. Resolving the active transport-versus-stabilization failure mechanism is necessary to select an intervention that advances that goal.",
     "inquiry_id": null,
-    "next_direction_or_closure": "Open the bounded diagnostic inquiry in goal review: determine which mechanism limits complete-hold success under the first learned-control route and how it varies over target geometry. Close it only after trajectory evidence supports the next intervention or shows that no credible route remains.",
-    "scientific_commit": "fdefec86c6b063848ff87a70a7a1577b2b5f3884",
-    "session_id": "S1"
+    "next_direction_or_closure": "Continue inquiry I1 with a fresh baseline training operation in the next inquiry session. Use its trajectory evidence to identify the dominant failure mechanism and choose the next intervention; do not request official assessment or conclude no route remains.",
+    "scientific_commit": "6ba859ce9c7df4ce51272431a195cebcf987d796",
+    "session_id": "S2"
   },
   "schema_version": 6,
   "scientific_model": {
@@ -105,21 +224,6 @@
     "path": "research/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "8ec22b32-dba7-4bcf-a6ad-e642dfdb3193",
-    "id": "S2",
-    "inquiry_id": null,
-    "kind": "goal_review",
-    "objective": "Decide whether to request official assessment, open one bounded goal-linked inquiry, or conclude that no credible route remains.",
-    "operation_ids": [
-      "E2"
-    ],
-    "scientific_parent_commit": "61471d7886967888d5144f90ce6ee974c5462643"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
