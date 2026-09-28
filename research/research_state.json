@@ -17,7 +17,7 @@
   },
   "candidates": {
     "T1:checkpoint-100352": {
-      "artifact": "research/checkpoints/candidates/3b9f0c1b-33c6-451a-b321-744b012458e5/t1/checkpoint-100352",
+      "artifact": "research/checkpoints/retained/3b9f0c1b-33c6-451a-b321-744b012458e5/t1-cada55eb5-1a8952087047d381047c519598a2bb57437cf04cb2e7ace9515fbfd89db2b2e9",
       "evaluation_artifacts": [
         "research/evaluations/3b9f0c1b-33c6-451a-b321-744b012458e5/evaluation-3b9f0c1b-33c6-451a-b321-744b012458e5-m1-T1-checkpoint-100352-160ep-seed4200-7623f5b89fc1.json"
       ],
@@ -700,7 +700,7 @@
     }
   },
   "counters": {
-    "event": 3,
+    "event": 4,
     "inquiry": 1,
     "measurement": 1,
     "session": 3,
@@ -709,9 +709,9 @@
   "human_goal": {
     "source": "research/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "assigned",
   "model_roles": {
-    "best_known": null,
+    "best_known": "T1:checkpoint-100352",
     "retained": {},
     "working": null
   },
@@ -1024,9 +1024,83 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-09-28T22:30:52Z",
+      "error": null,
+      "id": "E4",
+      "inquiry_id": "I1",
+      "kind": "model_role",
+      "request": {
+        "action": "set_best_known",
+        "candidate": "T1:checkpoint-100352",
+        "evidence": [
+          "T1",
+          "M1"
+        ],
+        "reason": "M1 measured this reproducible baseline at 151 of 160 complete-hold successes (94.375%) on the held-out research panel, making it the strongest evidence-backed candidate currently available while remaining below the human goal."
+      },
+      "result": {
+        "action": "set_best_known",
+        "candidate": "T1:checkpoint-100352",
+        "evidence": [
+          "T1",
+          "M1"
+        ],
+        "status": "assigned"
+      },
+      "session_id": "S3",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "set_best_known",
+        "candidate_id": "T1:checkpoint-100352",
+        "evidence": [
+          "T1",
+          "M1"
+        ],
+        "reason": "M1 measured this reproducible baseline at 151 of 160 complete-hold successes (94.375%) on the held-out research panel, making it the strongest evidence-backed candidate currently available while remaining below the human goal."
+      },
+      "publication": {
+        "destination": "research/checkpoints/retained/3b9f0c1b-33c6-451a-b321-744b012458e5/t1-cada55eb5-1a8952087047d381047c519598a2bb57437cf04cb2e7ace9515fbfd89db2b2e9",
+        "fingerprint": "1a8952087047d381047c519598a2bb57437cf04cb2e7ace9515fbfd89db2b2e9",
+        "source": "research/checkpoints/candidates/3b9f0c1b-33c6-451a-b321-744b012458e5/t1/checkpoint-100352"
+      },
+      "result": {
+        "action": "set_best_known",
+        "candidate": "T1:checkpoint-100352",
+        "evidence": [
+          "T1",
+          "M1"
+        ],
+        "status": "assigned"
+      }
+    },
+    "failure": null,
+    "id": "E4",
+    "inquiry_id": "I1",
+    "kind": "model_role",
+    "progress": "completed",
+    "request": {
+      "model_role": {
+        "action": "set_best_known",
+        "candidate": "T1:checkpoint-100352",
+        "evidence": [
+          "T1",
+          "M1"
+        ],
+        "reason": "M1 measured this reproducible baseline at 151 of 160 complete-hold successes (94.375%) on the held-out research panel, making it the strongest evidence-backed candidate currently available while remaining below the human goal."
+      }
+    },
+    "request_fingerprint": "f9ec35333f7b762385a26611431f20d6865dfdaff788b9cfb1dd28e67aa2c90c",
+    "session_id": "S3",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No candidates exist. Working, best-known, and retained model roles are all empty.",
     "completed_operations": [
@@ -1064,7 +1138,8 @@
     "objective": "Advance I1 toward its closure condition: Close the inquiry when a reproducible baseline candidate has behavioral evidence decomposed by reach, first entry, longest uninterrupted hold, residual motion, branch or posture, and target geometry, and that evidence supports one actionable next intervention or establishes that no credible route toward the goal remains.",
     "operation_ids": [
       "T1",
-      "M1"
+      "M1",
+      "E4"
     ],
     "scientific_parent_commit": "e63fb781f524a41d78f44169b01e8960b909aed5"
   },

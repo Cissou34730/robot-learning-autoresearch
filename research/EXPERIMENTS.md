@@ -7,3 +7,4 @@
 | E3 | checkpoint | - | checkpointed |
 | T1 | training | I1 | completed |
 | M1 | measurement | I1 | completed |
+| E4 | model_role | I1 | assigned |
