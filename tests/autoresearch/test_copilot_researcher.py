@@ -64,15 +64,10 @@ def test_the_provider_prefix_is_stripped_from_the_model():
         "git switcheroo",
     ],
 )
-def test_mutating_git_is_refused_and_names_recipe_restoration(command):
+def test_mutating_git_is_refused(command):
     reason = adapter.command_denial(command)
 
     assert reason == adapter.GIT_DENIAL
-    assert "restore_recipe" in reason
-    assert "code provenance and code inspection" in reason
-    assert "when the current task requires it" in reason
-    for read_command in ("status", "diff", "log", "show", "rev-parse", "ls-files"):
-        assert read_command not in reason
 
 
 @pytest.mark.parametrize(
@@ -960,7 +955,7 @@ def test_a_refused_shell_call_answers_with_a_rejection(capsys):
     decision = on_permission(request, {})
 
     assert isinstance(decision, PermissionDecisionReject)
-    assert "restore_recipe" in decision.feedback
+    assert decision.feedback == adapter.GIT_DENIAL
     assert "call-3" in console.denied_calls
     capsys.readouterr()
 

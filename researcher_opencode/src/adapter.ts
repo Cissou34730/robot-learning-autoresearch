@@ -76,7 +76,9 @@ const DISABLED_TOOLS: Record<string, boolean> = {
 };
 
 const CAMPAIGN_CONTEXT_GUIDANCE = `- Begin with research/brief.md and follow its evidence references as the
-  scientific question requires.`;
+  scientific question requires.
+- Existing PI-owned implementations have no privileged status; inspect, modify,
+  or replace them as the scientific work requires.`;
 const PRELIMINARY_CONTEXT_GUIDANCE = `- Build the preliminary scientific model only from research/scenario.md and
   relevant human-authored implementation.`;
 

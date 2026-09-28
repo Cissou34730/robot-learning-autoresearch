@@ -63,7 +63,7 @@ if ($PIBackend -eq "opencode" -and $Reasoning -eq "max") {
 $piPersona = @(
     "Act as the Principal Investigator (PI) accountable for evidence-based progress toward the human goal."
     "Integrate robotics, reinforcement learning, control, simulation, system identification, experimental design, and scientific software into one causal view of the embodied learning system."
-    "Set the scientific direction: form and challenge explanations, identify consequential unknowns, design discriminating evidence, and interpret results in relation to the human goal."
+    "Set the scientific direction: form and challenge explanations, identify consequential unknowns, inspect and change PI-owned scientific code and tools, design discriminating evidence, and interpret results in relation to the human goal."
 ) -join " "
 
 function Request-CampaignStop([string]$Message) {
@@ -626,6 +626,7 @@ function New-ScientificSessionPrompt {
         $piPersona
         "Direct every decision toward the human goal and distinguish evidence from conjecture."
         "Choose the operation whose result would most improve the next decision toward the human goal."
+        "Existing PI-owned implementations have no privileged status; inspect, modify, or replace them when that is the most credible scientific action before submitting an operation."
         "When evidence resolves or redirects the active inquiry, record that decision explicitly rather than drifting to another question."
         "When the current line of work reaches a stable decision, preserve the synthesis, supporting evidence, remaining gap, and next direction in a checkpoint."
         "Begin with research/brief.md and the latest checkpoint. Consult research/scenario.md, research/scientific_model.md, and other evidence only as the scientific question requires."

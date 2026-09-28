@@ -6,7 +6,7 @@ from io import StringIO
 
 import pytest
 
-from research import run_experiment, runner_console
+from research import run_experiment, runner_console, runner_execution
 
 
 def test_training_heartbeat_keeps_every_live_field(monkeypatch):
@@ -83,6 +83,47 @@ def test_training_heartbeat_render_preserves_fields_at_common_widths(
         "success 54%",
     ):
         assert fact in line
+
+
+def test_training_checkpoints_show_reward_and_success_once(tmp_path, monkeypatch):
+    pool = tmp_path / "candidate_pool"
+    for steps, reward, success in (
+        (10_240, -16.18, 0.25),
+        (5_120, -18.35, 0.0),
+    ):
+        checkpoint = pool / f"checkpoint-{steps}"
+        checkpoint.mkdir(parents=True)
+        (checkpoint / "training_metrics.json").write_text(
+            json.dumps({"ep_rew_mean": reward, "success_rate": success}),
+            encoding="utf-8",
+        )
+    boundaries = []
+    monkeypatch.setattr(
+        runner_execution.console,
+        "boundary",
+        lambda scope, action, subject="", detail="": boundaries.append(
+            (scope, action, subject, detail)
+        ),
+    )
+    announced: set[str] = set()
+
+    runner_execution.announce_training_checkpoints(tmp_path, "T3", announced)
+    runner_execution.announce_training_checkpoints(tmp_path, "T3", announced)
+
+    assert boundaries == [
+        (
+            "training",
+            "CHECKPOINT",
+            "T3:checkpoint-5120",
+            "reward -18.35 | success 0%",
+        ),
+        (
+            "training",
+            "CHECKPOINT",
+            "T3:checkpoint-10240",
+            "reward -16.18 | success 25%",
+        ),
+    ]
 
 
 def test_progress_clips_one_line_without_exposing_a_tail(monkeypatch):

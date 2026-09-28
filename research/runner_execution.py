@@ -270,6 +270,39 @@ def training_budget(
     return standard_timesteps
 
 
+def announce_training_checkpoints(
+    output_dir: Path,
+    operation_id: str,
+    announced: set[str],
+) -> None:
+    """Print each newly saved candidate with its training reward and success."""
+    pool_dir = output_dir / "candidate_pool"
+    candidates: list[tuple[int, Path]] = []
+    for path in pool_dir.glob("checkpoint-*"):
+        match = CANDIDATE_NAME_PATTERN.fullmatch(path.name)
+        if match is not None:
+            candidates.append((int(path.name.removeprefix("checkpoint-")), path))
+    for _, path in sorted(candidates):
+        if path.name in announced:
+            continue
+        metrics_path = path / "training_metrics.json"
+        try:
+            metrics = json.loads(metrics_path.read_text(encoding="utf-8"))
+        except (FileNotFoundError, json.JSONDecodeError, OSError):
+            continue
+        reward = metrics.get("ep_rew_mean")
+        success = metrics.get("success_rate")
+        reward_text = "n/a" if reward is None else f"{float(reward):g}"
+        success_text = "n/a" if success is None else f"{100 * float(success):g}%"
+        console.boundary(
+            "training",
+            "CHECKPOINT",
+            f"{operation_id}:{path.name}",
+            f"reward {reward_text} | success {success_text}",
+        )
+        announced.add(path.name)
+
+
 def train_candidate(
     output_dir: Path,
     timesteps: int,
@@ -319,6 +352,7 @@ def train_candidate(
         )
         last_steps: int | None = None
         last_progress_at = started
+        announced_checkpoints: set[str] = set()
         try:
             while process.poll() is None:
                 try:
@@ -367,6 +401,11 @@ def train_candidate(
                             record,
                         )
                     )
+                announce_training_checkpoints(
+                    output_dir,
+                    operation_id,
+                    announced_checkpoints,
+                )
                 stalled_for = time.monotonic() - last_progress_at
                 if stalled_for > TRAIN_STALL_SECONDS:
                     console.boundary(
@@ -395,6 +434,11 @@ def train_candidate(
             )
             stop_process(process, graceful=True)
             raise
+    announce_training_checkpoints(
+        output_dir,
+        operation_id,
+        announced_checkpoints,
+    )
     if process.returncode != 0:
         tail = train_log.read_text(encoding="utf-8").splitlines()[-15:]
         raise RuntimeError("training failed:\n" + "\n".join(tail))
