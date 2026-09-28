@@ -487,16 +487,103 @@ def test_identical_raw_measurement_after_completion_allocates_next_operation(
     paths.OPERATION_REQUEST_PATH.write_text(json.dumps(request), encoding="utf-8")
     assert run_experiment.main() == 0
     assert not paths.OPERATION_REQUEST_PATH.exists()
+    first_event = repository.read_state()["operation_events"][0]
+    first_metrics = first_event["result"]["measurements"][0]["metrics"]
+    first_path = repository.resolve_repo_path(first_metrics["evaluation_artifact"])
+    first_fingerprint = first_metrics["evaluation_artifact_fingerprint"]
+    assert "M1" in first_path.name
+    assert repository.measurement_evidence(first_metrics)["observation"] == 1
 
     paths.OPERATION_REQUEST_PATH.write_text(json.dumps(request), encoding="utf-8")
     assert run_experiment.main() == 0
 
     persisted = repository.read_state()
+    second_metrics = persisted["operation_events"][1]["result"]["measurements"][0][
+        "metrics"
+    ]
+    second_path = repository.resolve_repo_path(second_metrics["evaluation_artifact"])
     assert executions == [1, 2]
     assert [event["id"] for event in persisted["operation_events"]] == ["M1", "M2"]
+    assert first_path != second_path
+    assert first_path.is_file()
+    assert second_path.is_file()
+    assert "M2" in second_path.name
+    assert repository.file_fingerprint(first_path) == first_fingerprint
+    assert repository.measurement_evidence(first_metrics)["observation"] == 1
+    assert repository.measurement_evidence(second_metrics)["observation"] == 2
     assert persisted["scientific_session"]["operation_ids"] == ["M1", "M2"]
     assert persisted["counters"]["measurement"] == 2
     assert not paths.OPERATION_REQUEST_PATH.exists()
+
+
+def test_completed_python_module_recovery_rejects_mutated_archived_evidence(
+    monkeypatch, tmp_path
+):
+    state = _configure(monkeypatch, tmp_path)
+    _start_session(state, "goal_review", "Recover one completed diagnostic.")
+    module = tmp_path / "research" / "lab" / "diagnostic.py"
+    module.parent.mkdir(parents=True)
+    module.write_text("def main():\n    return None\n", encoding="utf-8")
+    artifact = paths.campaign_evaluation_dir("campaign") / "diagnostic.json"
+    request = {
+        "measurement": {
+            "description": "Run one diagnostic.",
+            "rationale": "Its durable result informs the next decision.",
+            "measurements": [
+                {
+                    "instrument": "python_module",
+                    "module": "research.lab.diagnostic",
+                    "args": ["--output", str(artifact)],
+                    "artifact": repository.repo_relative_path(artifact),
+                }
+            ],
+        }
+    }
+    run_experiment.accept_operation(request, state)
+
+    def run_module(_module, *_args):
+        artifact.parent.mkdir(parents=True, exist_ok=True)
+        artifact.write_text('{"observation": 1}', encoding="utf-8")
+
+    class SimulatedCrash(BaseException):
+        pass
+
+    def interrupt_finalization(_state, _pending):
+        raise SimulatedCrash
+
+    monkeypatch.setattr(execution, "run_module", run_module)
+    monkeypatch.setattr(
+        repository,
+        "publish_campaign_laboratory",
+        lambda _operation_id: {
+            "commit": "c" * 40,
+            "manifest": [],
+            "fingerprint": "f",
+        },
+    )
+    monkeypatch.setattr(repository, "commit_runner_memory", lambda _message: True)
+    original_finalize = run_experiment._finalize_operation
+    monkeypatch.setattr(
+        run_experiment,
+        "_finalize_operation",
+        interrupt_finalization,
+    )
+    with pytest.raises(SimulatedCrash):
+        run_experiment.execute_pending_operation()
+
+    interrupted = repository.read_state()
+    assert interrupted["pending_operation"]["progress"] == "completed"
+    metrics = interrupted["pending_operation"]["data"]["result"]["measurements"][0][
+        "metrics"
+    ]
+    archived = repository.resolve_repo_path(metrics["evaluation_artifact"])
+    archived.write_text('{"observation": 2}', encoding="utf-8")
+    monkeypatch.setattr(run_experiment, "_finalize_operation", original_finalize)
+
+    with pytest.raises(
+        run_experiment.FrozenOperationMismatch, match="content changed"
+    ):
+        run_experiment.execute_pending_operation()
 
 
 def test_python_module_publishes_changed_non_lab_science_before_execution(

@@ -7,6 +7,7 @@ import copy
 import hashlib
 import json
 import re
+import shutil
 import time
 from collections.abc import Callable
 from pathlib import Path
@@ -461,6 +462,8 @@ def _complete_operation(
 
 
 def _finalize_operation(state: dict, pending: dict) -> None:
+    if pending["kind"] == "measurement":
+        _verify_completed_measurement_result(state, pending)
     state["pending_operation"] = None
     repository.write_state(state)
     try:
@@ -519,6 +522,8 @@ def _recover_interrupted_finalization(state: dict) -> str | None:
         f"finalize {pending['id']}"
     ):
         return None
+    if pending["kind"] == "measurement":
+        _verify_completed_measurement_result(previous, pending)
     repository.push_head()
     if _consume_accepted_request_handoff(operation_id):
         return "published"
@@ -712,16 +717,55 @@ def _measurement_result(
     }
 
 
+def _python_module_archive_path(
+    state: dict,
+    pending: dict,
+    spec: dict,
+    index: int,
+) -> Path:
+    requested = Path(spec["artifact"])
+    label = re.sub(r"[^A-Za-z0-9._-]+", "-", requested.stem).strip("-")
+    return paths.campaign_evaluation_dir(repository.current_campaign_id(state)) / (
+        f"python-module-{pending['id']}-{index + 1}-{label or 'artifact'}.json"
+    )
+
+
+def _json_object_artifact(path: Path, description: str) -> dict:
+    try:
+        value = json.loads(path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError as error:
+        raise ValueError(f"{description} must contain JSON") from error
+    if not isinstance(value, dict):
+        raise TypeError(f"{description} must contain a JSON object")
+    return value
+
+
+def _seal_python_module_artifact(source: Path, destination: Path) -> None:
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    temporary = destination.with_name(f".{destination.name}.pending")
+    temporary.unlink(missing_ok=True)
+    shutil.copyfile(source, temporary)
+    if repository.file_fingerprint(temporary) != repository.file_fingerprint(source):
+        temporary.unlink(missing_ok=True)
+        raise RuntimeError(
+            "sealed python_module measurement artifact changed while copying"
+        )
+    temporary.replace(destination)
+
+
 def _expected_measurement_artifact(
     state: dict,
     pending: dict,
     spec: dict,
+    index: int,
     *,
     semantics: str | None,
     task_reference_contract: dict | None,
 ) -> str:
     if spec["instrument"] == "python_module":
-        return spec["artifact"]
+        return repository.repo_relative_path(
+            _python_module_archive_path(state, pending, spec, index)
+        )
     campaign_id = repository.current_campaign_id(state)
     if spec["instrument"] == "research_evaluation":
         return repository.repo_relative_path(
@@ -753,6 +797,7 @@ def _validate_partial_measurement(
     pending: dict,
     spec: dict,
     partial: dict,
+    index: int,
     *,
     semantics: str | None,
     task_reference_contract: dict | None,
@@ -768,6 +813,7 @@ def _validate_partial_measurement(
         state,
         pending,
         spec,
+        index,
         semantics=semantics,
         task_reference_contract=task_reference_contract,
     )
@@ -813,6 +859,31 @@ def _validate_partial_measurement(
                 f"partial measurement {field} differs from its accepted contract"
             )
     return evidence
+
+
+def _verify_completed_measurement_result(state: dict, pending: dict) -> None:
+    data = pending["data"]
+    result = data.get("result")
+    if not isinstance(result, dict):
+        raise FrozenOperationMismatch("completed measurement result is missing")
+    measurements = result.get("measurements")
+    if not isinstance(measurements, list) or measurements != data["partial_results"]:
+        raise FrozenOperationMismatch("completed measurement results changed")
+    planned = data["measurements"]
+    if len(measurements) != len(planned):
+        raise FrozenOperationMismatch("completed measurement count changed")
+    for index, (spec, measurement) in enumerate(
+        zip(planned, measurements, strict=True)
+    ):
+        _validate_partial_measurement(
+            state,
+            pending,
+            spec,
+            measurement,
+            index,
+            semantics=data["evaluation_semantics"],
+            task_reference_contract=data["task_reference_contract"],
+        )
 
 
 def execute_measurement(state: dict, pending: dict) -> int:
@@ -875,6 +946,7 @@ def execute_measurement(state: dict, pending: dict) -> int:
             pending,
             planned[index],
             partial,
+            index,
             semantics=semantics,
             task_reference_contract=task_reference_contract,
         )
@@ -883,23 +955,31 @@ def execute_measurement(state: dict, pending: dict) -> int:
             if index < len(partials):
                 continue
             if spec["instrument"] == "python_module":
-                output_path = repository.resolve_repo_path(spec["artifact"])
-                output_path.parent.mkdir(parents=True, exist_ok=True)
-                output_path.unlink(missing_ok=True)
-                execution.run_module(spec["module"], *spec["args"])
-                if not output_path.is_file():
-                    raise RuntimeError(
-                        "python_module measurement produced no declared artifact"
+                archived_path = _python_module_archive_path(
+                    state, pending, spec, index
+                )
+                if archived_path.is_file():
+                    _json_object_artifact(
+                        archived_path,
+                        "sealed python_module measurement artifact",
                     )
-                try:
-                    metrics = json.loads(output_path.read_text(encoding="utf-8"))
-                except json.JSONDecodeError as error:
-                    raise ValueError(
-                        "python_module measurement artifact must contain JSON"
-                    ) from error
-                if not isinstance(metrics, dict):
-                    raise TypeError(
-                        "python_module measurement artifact must contain a JSON object"
+                else:
+                    output_path = repository.resolve_repo_path(spec["artifact"])
+                    output_path.parent.mkdir(parents=True, exist_ok=True)
+                    output_path.unlink(missing_ok=True)
+                    execution.run_module(spec["module"], *spec["args"])
+                    if not output_path.is_file():
+                        raise RuntimeError(
+                            "python_module measurement produced no declared artifact"
+                        )
+                    _json_object_artifact(
+                        output_path,
+                        "python_module measurement artifact",
+                    )
+                    _seal_python_module_artifact(output_path, archived_path)
+                    _json_object_artifact(
+                        archived_path,
+                        "sealed python_module measurement artifact",
                     )
                 partials.append(
                     {
@@ -908,9 +988,11 @@ def execute_measurement(state: dict, pending: dict) -> int:
                         "args": list(spec["args"]),
                         "label": spec["label"],
                         "metrics": {
-                            "evaluation_artifact": spec["artifact"],
+                            "evaluation_artifact": repository.repo_relative_path(
+                                archived_path
+                            ),
                             "evaluation_artifact_fingerprint": (
-                                repository.file_fingerprint(output_path)
+                                repository.file_fingerprint(archived_path)
                             ),
                         },
                     }
@@ -979,17 +1061,19 @@ def execute_measurement(state: dict, pending: dict) -> int:
         repository.write_state(state)
         raise
 
-    verified_evidence = [
-        _validate_partial_measurement(
-            state,
-            pending,
-            spec,
-            partial,
-            semantics=semantics,
-            task_reference_contract=task_reference_contract,
+    verified_evidence = []
+    for index, (spec, partial) in enumerate(zip(planned, partials, strict=True)):
+        verified_evidence.append(
+            _validate_partial_measurement(
+                state,
+                pending,
+                spec,
+                partial,
+                index,
+                semantics=semantics,
+                task_reference_contract=task_reference_contract,
+            )
         )
-        for spec, partial in zip(planned, partials, strict=True)
-    ]
     by_candidate: dict[str, list[dict]] = {}
     for item, evidence in zip(partials, verified_evidence, strict=True):
         if item["instrument"] != "research_evaluation":
