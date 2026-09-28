@@ -3092,16 +3092,16 @@
     }
   },
   "counters": {
-    "event": 8,
+    "event": 9,
     "inquiry": 1,
     "measurement": 5,
-    "session": 5,
+    "session": 6,
     "training": 5
   },
   "human_goal": {
     "source": "research/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "restored",
   "model_roles": {
     "best_known": "T1:checkpoint-100352",
     "retained": {},
@@ -5296,9 +5296,97 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-09-28T23:29:58Z",
+      "error": null,
+      "id": "E9",
+      "inquiry_id": "I1",
+      "kind": "restore_recipe",
+      "request": {
+        "candidate": "T1:checkpoint-100352",
+        "reason": "Restore the recorded T1 baseline recipe before the next branch/posture-selection experiment so the rejected T5 targeted curriculum cannot contaminate subsequent training evidence. T1 remains the best-known reproducible candidate, and the next intervention must preserve its reward, observation structure, target distribution, and PPO settings."
+      },
+      "result": {
+        "candidate": "T1:checkpoint-100352",
+        "restored_paths": [
+          "robot_learning/scenario/training_environment.py"
+        ],
+        "scientific_commit": "e63fb781f524a41d78f44169b01e8960b909aed5",
+        "status": "restored"
+      },
+      "session_id": "S6",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "candidate_id": "T1:checkpoint-100352",
+        "parameters": {
+          "algorithm": {
+            "name": "ppo"
+          },
+          "policy": {
+            "activation": "tanh",
+            "net_arch": [
+              64,
+              64
+            ]
+          },
+          "ppo": {
+            "batch_size": 64,
+            "ent_coef": 0.01,
+            "gae_lambda": 0.95,
+            "gamma": 0.99,
+            "learning_rate": 0.0003,
+            "n_steps": 1024
+          },
+          "training": {
+            "checkpoint_every_steps": 5000,
+            "n_envs": 1
+          }
+        },
+        "parent": "e63fb781f524a41d78f44169b01e8960b909aed5",
+        "remove_created": [],
+        "restore": [
+          "robot_learning/scenario/training_environment.py"
+        ],
+        "session_id": "S6"
+      },
+      "pre_restore_manifest": [
+        {
+          "exists": true,
+          "fingerprint": "109b862e5af58252a8c10c0695a17e4643ee06e7874dcf8fed275ae9fdd2d37a",
+          "path": "robot_learning/scenario/training_environment.py"
+        }
+      ],
+      "result": {
+        "candidate": "T1:checkpoint-100352",
+        "restored_paths": [
+          "robot_learning/scenario/training_environment.py"
+        ],
+        "scientific_commit": "e63fb781f524a41d78f44169b01e8960b909aed5",
+        "status": "restored"
+      }
+    },
+    "failure": null,
+    "id": "E9",
+    "inquiry_id": "I1",
+    "kind": "restore_recipe",
+    "progress": "completed",
+    "request": {
+      "restore_recipe": {
+        "candidate": "T1:checkpoint-100352",
+        "reason": "Restore the recorded T1 baseline recipe before the next branch/posture-selection experiment so the rejected T5 targeted curriculum cannot contaminate subsequent training evidence. T1 remains the best-known reproducible candidate, and the next intervention must preserve its reward, observation structure, target distribution, and PPO settings."
+      }
+    },
+    "request_fingerprint": "d7b3416e8773f2b8fa9964a0ea62fac32cfbeff26b9f4735ee1301ecd439e350",
+    "session_id": "S6",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T1:checkpoint-100352 remains the best-known candidate, assigned by E4, at 151/160 research successes. T5:checkpoint-5120 is rejected after M5 at 148/160 with zero candidate wins and is not assigned a role. T2, T3, and T4 are also rejected. No working candidate is assigned.",
     "completed_operations": [
@@ -5340,6 +5428,21 @@
     "path": "research/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "f5a1c8e2-2f05-4768-b595-7943be694a26",
+    "id": "S6",
+    "inquiry_id": "I1",
+    "kind": "inquiry",
+    "objective": "Advance I1 toward its closure condition: Close the inquiry when a reproducible baseline candidate has behavioral evidence decomposed by reach, first entry, longest uninterrupted hold, residual motion, branch or posture, and target geometry, and that evidence supports one actionable next intervention or establishes that no credible route toward the goal remains.",
+    "operation_ids": [
+      "E9"
+    ],
+    "scientific_parent_commit": "e63fb781f524a41d78f44169b01e8960b909aed5"
+  },
   "terminal_state": null
 }
