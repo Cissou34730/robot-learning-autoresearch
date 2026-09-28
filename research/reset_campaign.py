@@ -12,6 +12,7 @@ import copy
 import hashlib
 import json
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -848,7 +849,17 @@ def baseline_state(
         )
     state = empty_state(base_commit, recipe_source)
     candidate_id = str(candidate["id"])
+    origin = re.fullmatch(r"T([1-9]\d*)", str(candidate["origin_operation"]))
+    if origin is None:
+        raise ValueError(
+            "imported candidate origin_operation must be a strict training operation ID"
+        )
     state["scientific_model"] = copy.deepcopy(source_state["scientific_model"])
+    state["counters"]["measurement"] = source_state["counters"]["measurement"]
+    state["counters"]["training"] = max(
+        source_state["counters"]["training"],
+        int(origin.group(1)),
+    )
     state["candidates"] = {candidate_id: copy.deepcopy(candidate)}
     state["model_roles"] = {
         "working": candidate_id,

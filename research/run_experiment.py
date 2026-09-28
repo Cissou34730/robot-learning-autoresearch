@@ -1197,6 +1197,21 @@ def _candidate_records(
     ]
 
 
+def _ensure_candidate_keys_available(state: dict, candidates: list[dict]) -> None:
+    seen: set[str] = set()
+    duplicate_ids: set[str] = set()
+    for candidate in candidates:
+        identifier = candidate["id"]
+        if identifier in state["candidates"] or identifier in seen:
+            duplicate_ids.add(identifier)
+        seen.add(identifier)
+    if duplicate_ids:
+        raise ValueError(
+            "completed training candidate key collision: "
+            + ", ".join(sorted(duplicate_ids))
+        )
+
+
 def execute_training(state: dict, pending: dict) -> int:
     data = pending["data"]
     request = pending["request"]["training"]
@@ -1299,6 +1314,7 @@ def execute_training(state: dict, pending: dict) -> int:
         config,
         str(data["scientific_commit"]),
     )
+    _ensure_candidate_keys_available(state, records)
     completed_steps = max(
         (candidate["training_steps"] for candidate in records), default=0
     )

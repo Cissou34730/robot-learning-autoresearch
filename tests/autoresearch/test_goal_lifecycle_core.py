@@ -265,6 +265,65 @@ def test_training_returns_facts_to_same_session_without_assigning_roles(
     assert "T1:checkpoint-10" in persisted["candidates"]
 
 
+def test_completed_training_rejects_existing_candidate_key(monkeypatch, tmp_path):
+    state = _configure(monkeypatch, tmp_path)
+    _start_session(state, "goal_review", "Train without replacing prior evidence.")
+    existing_artifact = _artifact(tmp_path / "archive" / "existing", b"existing")
+    existing = _candidate("T1:checkpoint-10", existing_artifact)
+    state["candidates"][existing["id"]] = existing
+    repository.write_state(state)
+    request = {
+        "training": {
+            "initialization": "fresh",
+            "seed": 7,
+            "steps": 10,
+            "description": "Train the current scientific recipe.",
+            "rationale": "The result must not replace an existing candidate.",
+        }
+    }
+    monkeypatch.setattr(
+        run_experiment.research_config,
+        "load_experiment_config",
+        lambda: {"training": {"n_envs": 1}},
+    )
+    run_experiment.accept_operation(request, state)
+    archived_artifact = _artifact(tmp_path / "archive" / "new", b"new")
+    archived = [
+        {
+            "name": "checkpoint-10",
+            "artifact": repository.repo_relative_path(archived_artifact),
+            "fingerprint": repository.artifact_fingerprint(archived_artifact),
+            "timesteps": 10,
+            "training_success": 0.5,
+            "ep_rew_mean": 12.0,
+        }
+    ]
+    monkeypatch.setattr(execution, "validate_active_configuration", dict)
+    monkeypatch.setattr(execution, "train_candidate", lambda *args, **kwargs: 1.0)
+    monkeypatch.setattr(
+        execution,
+        "candidate_directories",
+        lambda _path: [
+            {
+                "name": "checkpoint-10",
+                "path": archived_artifact,
+                "timesteps": 10,
+            }
+        ],
+    )
+    monkeypatch.setattr(
+        repository, "archive_candidates", lambda *args, **kwargs: archived
+    )
+
+    with pytest.raises(ValueError, match="candidate key collision.*T1:checkpoint-10"):
+        run_experiment.execute_pending_operation()
+
+    persisted = repository.read_state()
+    assert persisted["candidates"][existing["id"]] == existing
+    assert persisted["operation_events"] == []
+    assert persisted["pending_operation"]["progress"] == "candidates_archived"
+
+
 def test_measurement_has_independent_identity_and_returns_to_same_session(
     monkeypatch, tmp_path
 ):

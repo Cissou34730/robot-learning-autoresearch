@@ -12,6 +12,7 @@ import pytest
 
 from research import reset_campaign
 from research import runner_paths as paths
+from research import runner_protocol as protocol
 from research import runner_repository as repository
 
 
@@ -204,6 +205,24 @@ def test_baseline_import_builds_clean_schema6_state():
     assert state["pending_operation"] is None
     assert state["terminal_state"] is None
     assert state["official_assessment"] is None
+
+
+def test_baseline_import_seeds_operation_counters_before_first_training():
+    candidate = _candidate("f" * 64)
+    source_state = _prepared_source_state(candidate)
+    source_state["counters"]["measurement"] = 4
+
+    state = reset_campaign.baseline_state(
+        source_state,
+        candidate,
+        base_commit="base",
+        recipe_source=candidate["scientific_commit"],
+    )
+
+    assert state["counters"]["measurement"] == 4
+    assert state["counters"]["training"] == 1
+    assert protocol.allocate_operation_id("training", state) == "T2"
+    assert state["candidates"] == {candidate["id"]: candidate}
 
 
 def test_baseline_import_requires_evaluation_before_assigning_roles():
