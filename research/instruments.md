@@ -86,8 +86,8 @@ allocate no training identity.
       {
         "instrument": "research_evaluation",
         "candidate": "<candidate ID or model role>",
-        "episodes": 100,
-        "seed": 1000,
+        "episodes": 160,
+        "seed": 4200,
         "label": "<optional string>"
       },
       {
@@ -111,10 +111,12 @@ allocate no training identity.
 ```
 
 `measurements` is non-empty. `research_evaluation` accepts a positive episode
-count and non-negative seed. `task_reference` uses its protected fixed panel.
-`python_module` modules are limited to `research.lab` or
-`robot_learning.scenario`; their declared JSON artifact is campaign-scoped
-under `research/evaluations/`.
+count and non-negative seed. Its episode panel is the half-open interval
+`[seed, seed + episodes)`; the Runner rejects a panel that overlaps protected
+benchmark evidence. The example above is the standard development panel.
+`task_reference` uses its protected fixed panel. `python_module` modules are
+limited to `research.lab` or `robot_learning.scenario`; their declared JSON
+artifact is campaign-scoped under `research/evaluations/`.
 
 The accepted candidate artifacts, evaluator semantics, module sources,
 PI-owned scientific changes, and effective parameters remain attached to the
