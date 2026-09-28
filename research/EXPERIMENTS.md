@@ -8,3 +8,4 @@
 | E3 | checkpoint | - | checkpointed |
 | M1 | measurement | I1 | completed |
 | E4 | model_role | I1 | assigned |
+| E5 | checkpoint | I1 | checkpointed |
