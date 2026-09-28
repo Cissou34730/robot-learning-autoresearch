@@ -6472,72 +6472,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "candidate_id": "T1:checkpoint-100352",
-        "parameters": {
-          "algorithm": {
-            "name": "ppo"
-          },
-          "policy": {
-            "activation": "tanh",
-            "net_arch": [
-              64,
-              64
-            ]
-          },
-          "ppo": {
-            "batch_size": 64,
-            "ent_coef": 0.01,
-            "gae_lambda": 0.95,
-            "gamma": 0.99,
-            "learning_rate": 0.0003,
-            "n_steps": 1024
-          },
-          "training": {
-            "checkpoint_every_steps": 5000,
-            "n_envs": 1
-          }
-        },
-        "parent": "e63fb781f524a41d78f44169b01e8960b909aed5",
-        "remove_created": [],
-        "restore": [
-          "robot_learning/scenario/policy_io.py"
-        ],
-        "session_id": "S6"
-      },
-      "pre_restore_manifest": [
-        {
-          "exists": true,
-          "fingerprint": "cf8c33c2fa89c1902ecf01f6fc88d70472546b7288d60750e32d90ffd26e43be",
-          "path": "robot_learning/scenario/policy_io.py"
-        }
-      ],
-      "result": {
-        "candidate": "T1:checkpoint-100352",
-        "restored_paths": [
-          "robot_learning/scenario/policy_io.py"
-        ],
-        "scientific_commit": "e63fb781f524a41d78f44169b01e8960b909aed5",
-        "status": "restored"
-      }
-    },
-    "failure": null,
-    "id": "E10",
-    "inquiry_id": "I1",
-    "kind": "restore_recipe",
-    "progress": "completed",
-    "request": {
-      "restore_recipe": {
-        "candidate": "T1:checkpoint-100352",
-        "reason": "M6 rejects the T6 action-level branch/posture assist: it achieved 115/160 complete-hold successes versus T1's 151/160, with zero paired wins and broad degradation including 34 no-entry failures and 11 short holds. Restore the T1 recipe before the next experiment so the rejected action intervention cannot contaminate subsequent evidence. The next direction is hold regulation and residual-motion control, not forced IK posture selection."
-      }
-    },
-    "request_fingerprint": "b3f53e66a68b2b9ed5fd2d3115fc4fd0748b33d61564ccfdd9662544b5431672",
-    "session_id": "S6",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T1:checkpoint-100352 remains the best-known candidate, assigned by E4, at 151/160 research successes. T5:checkpoint-5120 is rejected after M5 at 148/160 with zero candidate wins and is not assigned a role. T2, T3, and T4 are also rejected. No working candidate is assigned.",
     "completed_operations": [
