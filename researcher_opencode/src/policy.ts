@@ -106,6 +106,25 @@ const GIT_GLOBAL_VALUE_OPTIONS = new Set([
   "--super-prefix",
   "--work-tree",
 ]);
+const UV_GLOBAL_FLAG_OPTIONS = new Set([
+  "-V",
+  "-h",
+  "-n",
+  "-q",
+  "-v",
+  "--help",
+  "--managed-python",
+  "--no-cache",
+  "--no-config",
+  "--no-managed-python",
+  "--no-progress",
+  "--no-python-downloads",
+  "--offline",
+  "--quiet",
+  "--system-certs",
+  "--verbose",
+  "--version",
+]);
 const UV_RUN_FLAG_OPTIONS = new Set([
   "-U",
   "-h",
@@ -205,35 +224,48 @@ function stripEdgePunctuation(value: string): string {
   return value.replace(/^[&.]+/, "").replace(/[&.]+$/, "");
 }
 
-function uvOptionSpan(token: string): number {
+function uvOptionSpan(token: string, flagOptions: Set<string>): number {
   const option = token.split("=", 1)[0]!;
-  if (token.includes("=") || UV_RUN_FLAG_OPTIONS.has(option)) return 1;
+  if (token.includes("=") || flagOptions.has(option)) return 1;
   if (token.startsWith("--")) return 2;
   for (let position = 1; position < token.length; position += 1) {
-    if (UV_RUN_FLAG_OPTIONS.has(`-${token[position]}`)) continue;
+    if (flagOptions.has(`-${token[position]}`)) continue;
     return position + 1 < token.length ? 1 : 2;
   }
   return 1;
 }
 
+function commandName(token: string): string {
+  return baseName(stripEdgePunctuation(token)).toLowerCase().replace(/\.exe$/, "");
+}
+
+function uvSubcommandIndex(tokens: string[]): number | null {
+  let index = 0;
+  while (tokens[index] === "&") index += 1;
+  if (index >= tokens.length || commandName(tokens[index]!) !== "uv") return null;
+  index += 1;
+  while (index < tokens.length) {
+    const token = tokens[index]!;
+    if (!token.startsWith("-") || token === "-") return index;
+    if (token === "--") return null;
+    index += uvOptionSpan(token, UV_GLOBAL_FLAG_OPTIONS);
+  }
+  return null;
+}
+
 /** Drop a leading `uv [global flags] run [run flags]` by option arity. */
 export function stripLauncherPrefix(tokens: string[]): string[] {
-  if (tokens.length === 0) return tokens;
-  const head = tokens[0]!.toLowerCase();
-  if (head !== "uv") return tokens;
-  let index = 1;
-  while (index < tokens.length && tokens[index]!.toLowerCase() !== "run") {
-    if (!tokens[index]!.startsWith("-") || tokens[index] === "--") return tokens;
-    index += uvOptionSpan(tokens[index]!);
+  const subcommandIndex = uvSubcommandIndex(tokens);
+  if (subcommandIndex === null || tokens[subcommandIndex]!.toLowerCase() !== "run") {
+    return tokens;
   }
-  if (index >= tokens.length) return tokens;
-  index += 1;
+  let index = subcommandIndex + 1;
   while (index < tokens.length && tokens[index]!.startsWith("-")) {
     if (tokens[index] === "--") {
       index += 1;
       break;
     }
-    index += uvOptionSpan(tokens[index]!);
+    index += uvOptionSpan(tokens[index]!, UV_RUN_FLAG_OPTIONS);
   }
   return tokens.slice(index);
 }
@@ -439,19 +471,29 @@ function isRepositoryWidePytest(tokens: string[]): boolean {
 /** Whether a command changes or extends the fixed project dependency set. */
 export function isDependencyManagement(tokens: string[]): boolean {
   if (tokens.length === 0) return false;
+  let executableIndex = 0;
+  while (tokens[executableIndex] === "&") executableIndex += 1;
+  if (executableIndex >= tokens.length) return false;
   const lowered = tokens.map((token) => token.toLowerCase());
-  const executable = baseName(stripEdgePunctuation(lowered[0]!))
-    .toLowerCase()
-    .replace(/\.exe$/, "");
+  const executable = commandName(tokens[executableIndex]!);
   if (executable === "uvx") return true;
   if (executable === "uv") {
-    if (lowered.length < 2) return false;
-    const operation = lowered[1]!;
+    const subcommandIndex = uvSubcommandIndex(tokens);
+    if (subcommandIndex === null) return false;
+    const operation = lowered[subcommandIndex]!;
     if (["add", "remove", "sync", "lock", "pip", "tool"].includes(operation)) {
       return true;
     }
     if (operation === "run") {
-      if (lowered.slice(2).some((token) => token.startsWith("--with"))) return true;
+      const runArguments = lowered.slice(subcommandIndex + 1);
+      if (
+        runArguments.some(
+          (token) =>
+            token.startsWith("--with") || token === "-w" || token.startsWith("-w="),
+        )
+      ) {
+        return true;
+      }
       return isDependencyManagement(stripLauncherPrefix(tokens));
     }
   }

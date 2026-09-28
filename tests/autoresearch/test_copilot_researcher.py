@@ -247,8 +247,36 @@ def test_dependency_management_is_refused(command):
     assert adapter.command_denial(command) == adapter.DEPENDENCY_DENIAL
 
 
+@pytest.mark.parametrize(
+    "command",
+    [
+        "uv --offline add numpy",
+        "uv -n add numpy",
+        "uv --project . sync",
+        "uv --project=. lock",
+        "uv --offline run --with requests python -c pass",
+        "uv --offline run --with=requests python -c pass",
+        "uv --offline run -w requests python -c pass",
+        "uv --offline run -w=requests python -c pass",
+        r"C:\Tools\uv.exe --offline add numpy",
+        r'"C:\Program Files\uv\uv.exe" --project=. sync',
+        r'& "C:\Program Files\uv\uv.exe" --offline add numpy',
+    ],
+)
+def test_uv_global_options_cannot_hide_dependency_management(command):
+    assert adapter.command_denial(command) == adapter.DEPENDENCY_DENIAL
+
+
 def test_uv_run_uses_the_fixed_environment_without_being_obstructed():
-    assert adapter.command_denial("uv run python analysis.py") is None
+    for command in (
+        "uv run python analysis.py",
+        "uv --offline run python analysis.py",
+        "uv -n run python analysis.py",
+        "uv --project . run python analysis.py",
+        "uv --project=. run ruff check robot_learning/scenario/reward.py",
+        r"C:\Tools\uv.exe --offline run python analysis.py",
+    ):
+        assert adapter.command_denial(command) is None
 
 
 def test_ordinary_research_commands_are_not_obstructed():

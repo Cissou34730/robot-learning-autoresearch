@@ -112,6 +112,37 @@ test("dependency management is refused", () => {
   assert.equal(commandDenial("uv run --with rich python -c 'pass'"), DEPENDENCY_DENIAL);
 });
 
+test("uv global options cannot hide dependency management", () => {
+  for (const command of [
+    "uv --offline add numpy",
+    "uv -n add numpy",
+    "uv --project . sync",
+    "uv --project=. lock",
+    "uv --offline run --with requests python -c pass",
+    "uv --offline run --with=requests python -c pass",
+    "uv --offline run -w requests python -c pass",
+    "uv --offline run -w=requests python -c pass",
+    "C:\\Tools\\uv.exe --offline add numpy",
+    '"C:\\Program Files\\uv\\uv.exe" --project=. sync',
+    '& "C:\\Program Files\\uv\\uv.exe" --offline add numpy',
+  ]) {
+    assert.equal(commandDenial(command), DEPENDENCY_DENIAL);
+  }
+});
+
+test("uv global options preserve fixed-environment project execution", () => {
+  for (const command of [
+    "uv run python analysis.py",
+    "uv --offline run python analysis.py",
+    "uv -n run python analysis.py",
+    "uv --project . run python analysis.py",
+    "uv --project=. run ruff check robot_learning/scenario/reward.py",
+    "C:\\Tools\\uv.exe --offline run python analysis.py",
+  ]) {
+    assert.equal(commandDenial(command), null);
+  }
+});
+
 test("every segment is judged, not just the first", () => {
   assert.equal(commandDenial("git status; git commit -m x"), GIT_DENIAL);
   assert.equal(commandDenial("rg foo && uv sync"), DEPENDENCY_DENIAL);

@@ -190,6 +190,27 @@ GIT_GLOBAL_VALUE_OPTIONS = frozenset(
         "--work-tree",
     }
 )
+UV_GLOBAL_FLAG_OPTIONS = frozenset(
+    {
+        "-V",
+        "-h",
+        "-n",
+        "-q",
+        "-v",
+        "--help",
+        "--managed-python",
+        "--no-cache",
+        "--no-config",
+        "--no-managed-python",
+        "--no-progress",
+        "--no-python-downloads",
+        "--offline",
+        "--quiet",
+        "--system-certs",
+        "--verbose",
+        "--version",
+    }
+)
 UV_RUN_FLAG_OPTIONS = frozenset(
     {
         "-U",
@@ -337,37 +358,60 @@ def clean_command_token(token: str) -> str:
     return value
 
 
-def _uv_option_span(token: str) -> int:
+def _uv_option_span(token: str, flag_options: frozenset[str]) -> int:
     """How many tokens a uv option consumes, including any separate value."""
     option = token.split("=", 1)[0]
-    if "=" in token or option in UV_RUN_FLAG_OPTIONS:
+    if "=" in token or option in flag_options:
         return 1
     if token.startswith("--"):
         return 2
     for position, character in enumerate(token[1:], start=1):
-        if f"-{character}" in UV_RUN_FLAG_OPTIONS:
+        if f"-{character}" in flag_options:
             continue
         return 1 if position + 1 < len(token) else 2
     return 1
 
 
+def _command_name(token: str) -> str:
+    return (
+        Path(clean_command_token(token).strip("&."))
+        .name.lower()
+        .removesuffix(".exe")
+    )
+
+
+def _uv_subcommand_index(tokens: list[str]) -> int | None:
+    """Locate uv's subcommand after its global options."""
+    index = 0
+    while index < len(tokens) and tokens[index] == "&":
+        index += 1
+    if index >= len(tokens) or _command_name(tokens[index]) != "uv":
+        return None
+    index += 1
+    while index < len(tokens):
+        token = clean_command_token(tokens[index])
+        if not token.startswith("-") or token == "-":
+            return index
+        if token == "--":
+            return None
+        index += _uv_option_span(token, UV_GLOBAL_FLAG_OPTIONS)
+    return None
+
+
 def strip_launcher_prefix(tokens: list[str]) -> list[str]:
     """Drop a leading `uv [global flags] run [run flags]` by option arity."""
-    if not tokens or tokens[0].lower() != "uv":
+    subcommand_index = _uv_subcommand_index(tokens)
+    if (
+        subcommand_index is None
+        or clean_command_token(tokens[subcommand_index]).lower() != "run"
+    ):
         return tokens
-    index = 1
-    while index < len(tokens) and tokens[index].lower() != "run":
-        if not tokens[index].startswith("-") or tokens[index] == "--":
-            return tokens
-        index += _uv_option_span(tokens[index])
-    if index >= len(tokens):
-        return tokens
-    index += 1
+    index = subcommand_index + 1
     while index < len(tokens) and tokens[index].startswith("-"):
         if tokens[index] == "--":
             index += 1
             break
-        index += _uv_option_span(tokens[index])
+        index += _uv_option_span(tokens[index], UV_RUN_FLAG_OPTIONS)
     return tokens[index:]
 
 
@@ -649,18 +693,28 @@ def is_dependency_management(tokens: list[str]) -> bool:
     """Whether a command changes or extends the fixed project dependency set."""
     if not tokens:
         return False
+    executable_index = 0
+    while executable_index < len(tokens) and tokens[executable_index] == "&":
+        executable_index += 1
+    if executable_index >= len(tokens):
+        return False
     lowered = [token.lower() for token in tokens]
-    executable = Path(lowered[0].strip("&.")).name.removesuffix(".exe")
+    executable = _command_name(tokens[executable_index])
     if executable == "uvx":
         return True
     if executable == "uv":
-        if len(lowered) < 2:
+        subcommand_index = _uv_subcommand_index(tokens)
+        if subcommand_index is None:
             return False
-        operation = lowered[1]
+        operation = clean_command_token(tokens[subcommand_index]).lower()
         if operation in {"add", "remove", "sync", "lock", "pip", "tool"}:
             return True
         if operation == "run":
-            if any(token.startswith("--with") for token in lowered[2:]):
+            run_arguments = lowered[subcommand_index + 1 :]
+            if any(
+                token.startswith(("--with", "-w=")) or token == "-w"
+                for token in run_arguments
+            ):
                 return True
             return is_dependency_management(strip_launcher_prefix(tokens))
     if executable in {"pip", "pip3", "pipx"}:
