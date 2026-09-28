@@ -216,14 +216,26 @@ def test_later_inquiry_allocation_allows_working_and_best_known_to_diverge():
     assert session["inquiry_id"] == 2
 
 
-def test_fresh_reset_clears_inquiry_method_and_lab_state():
+def test_fresh_reset_initializes_only_strict_schema6_state():
     assert "research/lab" in reset_campaign.CAMPAIGN_PATHS
+    assert "research/operation_request.json" in reset_campaign.CAMPAIGN_PATHS
+    assert "research/checkpoints" in reset_campaign.CAMPAIGN_PATHS
     state = repository.empty_campaign_state(campaign=_campaign(), last_verdict="fresh")
     assert state["schema_version"] == repository.STATE_SCHEMA_VERSION
-    assert state["inquiry_session"] is None
+    assert set(state) == repository.STATE_FIELDS
+    assert state["scientific_model"]["status"] == "pending"
     assert state["active_inquiry"] is None
-    assert state["active_method"] is None
-    assert state["campaign_lab"] is None
+    assert state["pi_checkpoint"] is None
+    assert state["scientific_session"] is None
+    assert state["pending_operation"] is None
+    assert state["operation_events"] == []
+    assert state["candidates"] == {}
+    assert state["model_roles"] == {
+        "working": None,
+        "best_known": None,
+        "retained": {},
+    }
+    assert not {"inquiry_session", "active_method", "pending_analysis"} & set(state)
 
 
 @pytest.mark.parametrize(

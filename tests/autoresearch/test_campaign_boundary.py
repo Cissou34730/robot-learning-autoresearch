@@ -81,53 +81,37 @@ class TestCampaignIdentifierAccess:
         assert state["last_allocated_experiment"] == 7
 
 
-@pytest.mark.parametrize(
-    "pending_field",
-    (
-        "pending_baseline_decision",
-        "pending_method_decision",
-        "pending_campaign_conclusion",
-        "campaign_conclusion",
-    ),
-)
-def test_baseline_reference_rejects_unfinished_current_lifecycle_operations(
-    monkeypatch, pending_field
-):
+def test_baseline_reference_requires_one_prepared_schema6_candidate(monkeypatch):
     state = runner_repository.empty_campaign_state(
         campaign={
             "id": str(uuid.uuid4()),
             "started_at": "now",
             "base_commit": "base",
         },
-        last_verdict="baseline selected",
+        last_verdict="prepared model",
     )
-    lineage = {
-        "candidate": "checkpoint-1",
-        "artifact": "research/checkpoints/accepted/campaign/experiment-1",
+    candidate = {
+        "id": "T1:checkpoint-1",
+        "artifact": "research/checkpoints/candidates/campaign/t1/checkpoint-1",
         "fingerprint": "f" * 64,
-        "scientific_commit": "a" * 40,
+        "origin_operation": "T1",
+        "name": "checkpoint-1",
         "parameters": {},
+        "scientific_commit": "a" * 40,
         "training_steps": 1,
-        "origin_experiment": 1,
-        "reason": "baseline",
         "evaluation_artifacts": ["research/evaluations/campaign/panel.json"],
-        "designation_ordinal": 1,
     }
-    state["working_lineage"] = dict(lineage)
-    state["best_known_lineage"] = dict(lineage)
-    state["last_experiment"] = 1
-    state["last_allocated_experiment"] = 1
-    state["campaign_experiment_counters"][state["campaign"]["id"]] = 1
-    state[pending_field] = {"action": "unfinished"}
+    state["scientific_model"] = {
+        "status": "ready",
+        "path": "research/scientific_model.md",
+        "commit": "b" * 40,
+    }
+    state["candidates"] = {candidate["id"]: candidate}
+    state["model_roles"]["working"] = candidate["id"]
 
     monkeypatch.setattr(reset_campaign, "git_json", lambda *_args: state)
-    monkeypatch.setattr(
-        runner_repository,
-        "validate_research_state",
-        lambda *_args, **_kwargs: None,
-    )
 
-    with pytest.raises(ValueError, match="closed measured experiment 1"):
+    with pytest.raises(ValueError, match="both working and best-known"):
         reset_campaign.verify_baseline_source("baseline-ref")
 
 

@@ -8,6 +8,7 @@ branch.
 from __future__ import annotations
 
 import argparse
+import copy
 import hashlib
 import json
 import os
@@ -27,6 +28,7 @@ from research import runner_protocol as protocol
 from research import runner_repository as repository
 
 EPHEMERAL_PATHS = (
+    "research/operation_request.json",
     "research/GOAL_REACHED",
     "research/RECOVERY_PENDING",
     "research/RESTART_PENDING",
@@ -43,12 +45,12 @@ CAMPAIGN_PATHS = (
     "research/lab",
     "research/EXPERIMENTS.md",
     "research/results.jsonl",
-    "research/postmortems.md",
-    "research/archive.md",
     "research/research_state.json",
-    "research/BASELINE_PENDING",
     "research/scientific_model.md",
     "research/checkpoints",
+    "research/postmortems.md",
+    "research/archive.md",
+    "research/BASELINE_PENDING",
     *EPHEMERAL_PATHS,
 )
 TASK_COMPATIBILITY_PATHS = (
@@ -205,29 +207,35 @@ def clean_campaign_changes(*, recipe_ref: str | None = None) -> None:
         ("diff", "--cached", "--name-only", "--no-renames", "-z"),
     ):
         changed.update(path for path in str(git(*arguments)).split("\0") if path)
-    unrelated = sorted(
+    untracked = {
         path
-        for path in changed
-        if not path_is_covered(path, list(CAMPAIGN_PATHS))
-        and not (
+        for path in str(git("ls-files", "--others", "--exclude-standard", "-z")).split(
+            "\0"
+        )
+        if path
+    }
+
+    def permitted(path: str) -> bool:
+        return path_is_covered(path, list(CAMPAIGN_PATHS)) or bool(
             recipe_ref
             and (
                 protocol.is_researcher_owned(path)
                 or path in protocol.PARAMETER_ONLY_PATHS
             )
         )
-    )
+
+    unrelated = sorted(path for path in changed | untracked if not permitted(path))
     if unrelated:
         raise RuntimeError(
-            "clean reset refuses tracked changes outside campaign paths: "
+            "clean reset refuses changes outside campaign paths: "
             + ", ".join(unrelated)
         )
     if changed:
         git(
             "restore", "--source=HEAD", "--staged", "--worktree", "--", *sorted(changed)
         )
-    if str(git("ls-files", "--others", "--exclude-standard", "-z")):
-        git("clean", "-fd", "--")
+    if untracked:
+        git("clean", "-fd", "--", *sorted(untracked))
 
 
 def ensure_clean_repository(
@@ -310,7 +318,29 @@ def preflight_targets(relative_paths: list[str]) -> None:
 
 
 def scientific_plan(commit: str) -> dict:
-    return protocol.plan_recipe_paths(commit)
+    plan = protocol.plan_recipe_paths(commit)
+    restore: list[str] = []
+    remove_created: list[str] = []
+    for field, destination in (
+        ("restore", restore),
+        ("remove_created", remove_created),
+    ):
+        for relative in plan[field]:
+            if protocol.is_campaign_lab(relative):
+                continue
+            if not (
+                protocol.is_researcher_owned(relative)
+                or relative in protocol.PARAMETER_ONLY_PATHS
+            ):
+                raise RuntimeError(
+                    f"recipe plan contains a non-scientific path: {relative}"
+                )
+            destination.append(relative)
+    return {
+        "parent": plan["parent"],
+        "restore": restore,
+        "remove_created": remove_created,
+    }
 
 
 def plan_paths(plan: dict) -> list[str]:
@@ -352,152 +382,61 @@ def artifact_fingerprint_at_commit(commit: str, artifact: str) -> str:
     return digest.hexdigest()
 
 
-def baseline_restore_paths(commit: str, state: dict) -> list[str]:
+def baseline_restore_paths(commit: str, candidate: dict) -> list[str]:
     source = commit_files(commit)
-    current = commit_files("HEAD")
-    campaign_id = str(state["campaign"]["id"])
-    prefixes = (
-        "research/checkpoints/",
-        f"research/evaluations/{campaign_id}/",
-        f"research/training_logs/{campaign_id}/",
-    )
-    fixed = {
-        "research/research_state.json",
-        "research/results.jsonl",
-        "research/postmortems.md",
-        "research/archive.md",
+    artifact = str(candidate["artifact"]).rstrip("/")
+    required = {
+        *(f"{artifact}/{name}" for name in repository.INFERENCE_ARTIFACT_FILES),
+        *candidate["evaluation_artifacts"],
         "research/scientific_model.md",
     }
-    return sorted(
-        path for path in source | current if path in fixed or path.startswith(prefixes)
-    )
-
-
-def verify_baseline_source(commit: str) -> tuple[dict, list[dict], list[str]]:
-    state = git_json(commit, "research/research_state.json")
-    if state.get("schema_version") != repository.STATE_SCHEMA_VERSION:
-        raise ValueError(
-            "BaselineRef must use the current inquiry-centered state schema"
-        )
-    repository.validate_research_state(state, allow_missing_artifact=True)
-    working = state.get("working_lineage")
-    best = state.get("best_known_lineage")
-    pending_fields = (
-        "active_inquiry",
-        "active_method",
-        "inquiry_session",
-        "pending_inquiry_operation",
-        "preparation_measurement",
-        "pending_analysis",
-        "pending_training_operation",
-        "pending_evaluation_request",
-        "pending_baseline_decision",
-        "pending_method_decision",
-        "pending_campaign_conclusion",
-        "campaign_conclusion",
-        "pending_scientific_parent",
-        "pending_final_benchmark",
-        "terminal_campaign_status",
-        "official_metrics",
-    )
-    if (
-        not isinstance(working, dict)
-        or not isinstance(best, dict)
-        or working.get("fingerprint") != best.get("fingerprint")
-        or int(state.get("last_experiment", -1)) != 1
-        or int(state.get("last_allocated_experiment", -1)) != 1
-        or state.get("retained_lineages")
-        or any(state.get(field) is not None for field in pending_fields)
-    ):
-        raise ValueError(
-            "BaselineRef must be a closed measured experiment 1 with matching working and best-known roles"
-        )
-    scientific_commit = str(working.get("scientific_commit") or "")
-    resolve_commit(scientific_commit, "BaselineRef scientific_commit")
-    verify_task_compatibility(scientific_commit)
-    campaign_id = str(state["campaign"]["id"])
-    uuid.UUID(campaign_id)
-    evaluations = working.get("evaluation_artifacts") or []
-    if not evaluations:
-        raise ValueError("BaselineRef has no completed development evidence")
-    files = commit_files(commit)
-    artifact = str(working["artifact"])
-    required = {
-        f"{artifact}/model.zip",
-        f"{artifact}/artifact.json",
-        f"{artifact}/policy_runtime.pkl",
-        f"{artifact}/vecnormalize.pkl",
-        *evaluations,
-        "research/results.jsonl",
-        "research/postmortems.md",
-    }
-    missing = sorted(required - files)
+    missing = sorted(required - source)
     if missing:
         raise ValueError(f"BaselineRef is missing required artifacts: {missing}")
-    actual_fingerprint = artifact_fingerprint_at_commit(commit, artifact)
-    if actual_fingerprint != working["fingerprint"]:
-        raise ValueError("BaselineRef model fingerprint does not match its role record")
-    metadata = git_json(commit, f"{artifact}/artifact.json")
-    actual_steps = metadata.get("timesteps", metadata.get("training_steps"))
-    if actual_steps is None or int(actual_steps) != int(working["training_steps"]):
-        raise ValueError(
-            "BaselineRef role training steps do not match artifact metadata"
-        )
-    raw_results = str(git("show", f"{commit}:research/results.jsonl"))
-    try:
-        records = [
-            json.loads(line) for line in raw_results.splitlines() if line.strip()
-        ]
-    except json.JSONDecodeError as error:
-        raise ValueError("BaselineRef results.jsonl is invalid") from error
-    matching = [
-        record
-        for record in records
-        if record.get("campaign_id") == campaign_id and record.get("index") == 1
-    ]
-    if len(matching) != 1:
-        raise ValueError("BaselineRef history must contain exactly its experiment 1")
-    record = matching[0]
-    candidates = [
-        candidate
-        for candidate in record.get("candidates") or []
-        if isinstance(candidate, dict) and candidate.get("name") == working["candidate"]
-    ]
-    if len(candidates) != 1 or int(candidates[0].get("timesteps", -1)) != int(
-        working["training_steps"]
-    ):
-        raise ValueError(
-            "BaselineRef history does not identify the selected checkpoint"
-        )
-    measurements = {
-        item.get("evaluation_artifact"): item
-        for item in candidates[0].get("evaluations") or []
-        if isinstance(item, dict)
+    optional = {
+        f"{artifact}/{name}"
+        for name in repository.OPTIONAL_ARTIFACT_FILES
+        if f"{artifact}/{name}" in source
     }
-    postmortem = str(git("show", f"{commit}:research/postmortems.md"))
-    for evidence in evaluations:
-        measurement = measurements.get(evidence)
-        if (
-            measurement is None
-            or measurement.get("model_fingerprint") != working["fingerprint"]
-            or measurement.get("evaluation_artifact_fingerprint")
-            != hashlib.sha256(git_bytes(commit, evidence)).hexdigest()
-            or evidence not in postmortem
-        ):
-            raise ValueError(
-                f"BaselineRef cannot bind model identity to evidence {evidence}"
-            )
-    decision = record.get("baseline_decision") or {}
-    if (
-        record.get("status") != "analyzed"
-        or decision.get("candidate") != working["candidate"]
-        or working["fingerprint"] != best["fingerprint"]
+    return sorted(required | optional)
+
+
+def verify_baseline_source(commit: str) -> tuple[dict, dict, list[str], dict]:
+    state = git_json(commit, "research/research_state.json")
+    if state.get("schema_version") != repository.STATE_SCHEMA_VERSION:
+        raise ValueError("BaselineRef must use schema 6")
+    repository.validate_research_state(state, allow_missing_artifact=True)
+    roles = state["model_roles"]
+    candidate_id = roles["working"]
+    if candidate_id is None or candidate_id != roles["best_known"]:
+        raise ValueError(
+            "BaselineRef must designate one prepared candidate as both working "
+            "and best-known"
+        )
+    candidate = state["candidates"].get(candidate_id)
+    if not isinstance(candidate, dict):
+        raise TypeError("BaselineRef model roles name an unknown candidate")
+    if state["scientific_model"]["status"] != "ready":
+        raise ValueError("BaselineRef must contain a ready scientific model")
+    model_commit = str(state["scientific_model"]["commit"])
+    resolve_commit(model_commit, "BaselineRef scientific model commit")
+    if git_bytes(model_commit, "research/scientific_model.md") != git_bytes(
+        commit, "research/scientific_model.md"
     ):
         raise ValueError(
-            "BaselineRef history does not contain the recorded baseline designation"
+            "BaselineRef scientific model differs from its recorded commit"
         )
+    scientific_commit = str(candidate["scientific_commit"])
+    resolve_commit(scientific_commit, "BaselineRef scientific_commit")
+    verify_task_compatibility(scientific_commit)
+    restore = baseline_restore_paths(commit, candidate)
+    actual_fingerprint = artifact_fingerprint_at_commit(
+        commit, str(candidate["artifact"])
+    )
+    if actual_fingerprint != candidate["fingerprint"]:
+        raise ValueError("BaselineRef model fingerprint does not match its role record")
     verify_task_compatibility(commit)
-    return state, matching, baseline_restore_paths(commit, state)
+    return state, copy.deepcopy(candidate), restore, scientific_plan(scientific_commit)
 
 
 def create_backup(relative_paths: list[str], operation: dict) -> Path:
@@ -798,8 +737,14 @@ def empty_state(base_commit: str, recipe_source: str | None) -> dict:
             "base_commit": base_commit,
             "recipe_source_commit": recipe_source,
         },
-        last_verdict="fresh baseline pending after research reset",
+        last_verdict="fresh campaign initialized; scientific model pending",
     )
+
+
+def write_campaign_memory(state: dict) -> None:
+    repository.write_state(state)
+    repository.atomic_write_text(paths.RESULTS_PATH, "")
+    repository.atomic_write_text(paths.LOG_PATH, repository.render_operation_log([]))
 
 
 def write_fresh_campaign(recipe_source: str | None) -> dict:
@@ -808,54 +753,29 @@ def write_fresh_campaign(recipe_source: str | None) -> dict:
     base_commit = str(git("rev-parse", "HEAD")).strip()
     state = empty_state(base_commit, recipe_source)
     paths.RESEARCH_DIR.mkdir(parents=True, exist_ok=True)
-    repository.write_state(state)
-    repository.atomic_write_text(paths.RESULTS_PATH, "")
-    repository.atomic_write_text(paths.LOG_PATH, repository.render_experiment_log([]))
-    repository.atomic_write_text(
-        paths.POSTMORTEM_PATH, "# Research postmortems\n\nNo experiments recorded.\n"
-    )
-    repository.atomic_write_text(
-        paths.RESEARCH_DIR / "archive.md",
-        "# Research archive\n\nNo archived experiments.\n",
-    )
-    paths.BASELINE_PENDING_PATH.write_text(
-        "Fresh baseline pending after explicit research reset.\n", encoding="utf-8"
-    )
+    write_campaign_memory(state)
     return state
 
 
-def copy_external_logs(source_root: Path, campaign_id: str) -> list[str]:
-    source = source_root / "research" / "training_logs" / campaign_id
-    if not source.is_dir():
-        raise ValueError(f"baseline training logs are missing from {source}")
-    target = paths.TRAINING_LOG_DIR / campaign_id
-    target.mkdir(parents=True, exist_ok=True)
-    copied: list[str] = []
-    for log in source.glob("experiment-1-attempt-*.log"):
-        destination = target / log.name
-        shutil.copy2(log, destination)
-        if repository.file_fingerprint(log) != repository.file_fingerprint(destination):
-            raise RuntimeError(f"baseline training log changed while copying: {log}")
-        copied.append(repository.repo_relative_path(destination))
-    if not copied:
-        raise ValueError(f"baseline training logs are missing from {source}")
-    return copied
-
-
-def baseline_log_source(commit: str, state: dict, requested: str | None) -> Path | None:
-    campaign_id = str(state["campaign"]["id"])
-    prefix = f"research/training_logs/{campaign_id}/"
-    if any(path.startswith(prefix) for path in commit_files(commit)):
-        return None
-    if not requested:
-        raise ValueError(
-            "BaselineRef has no durable training log and no TrainingLogSource was supplied"
-        )
-    source = Path(requested).resolve()
-    logs = source / "research" / "training_logs" / campaign_id
-    if not logs.is_dir() or not any(logs.glob("experiment-1-attempt-*.log")):
-        raise ValueError(f"baseline training logs are missing from {logs}")
-    return source
+def baseline_state(
+    source_state: dict,
+    candidate: dict,
+    *,
+    base_commit: str,
+    recipe_source: str,
+) -> dict:
+    state = empty_state(base_commit, recipe_source)
+    candidate_id = str(candidate["id"])
+    state["scientific_model"] = copy.deepcopy(source_state["scientific_model"])
+    state["candidates"] = {candidate_id: copy.deepcopy(candidate)}
+    state["model_roles"] = {
+        "working": candidate_id,
+        "best_known": candidate_id,
+        "retained": {},
+    }
+    state["last_verdict"] = "prepared model restored by human maintenance operation"
+    repository.validate_research_state(state, allow_missing_artifact=True)
+    return state
 
 
 def reset_fresh(recipe_ref: str | None) -> tuple[str, str | None, Path]:
@@ -884,7 +804,7 @@ def reset_fresh(recipe_ref: str | None) -> tuple[str, str | None, Path]:
         publish_reset_changes(
             backup,
             operation,
-            "reset research experiment state: fresh",
+            "reset research campaign state: fresh",
             list(CAMPAIGN_PATHS),
             "campaign",
         )
@@ -900,18 +820,9 @@ def reset_fresh(recipe_ref: str | None) -> tuple[str, str | None, Path]:
 def reset_baseline(
     reference: str, training_log_source: str | None
 ) -> tuple[str, str, Path]:
+    del training_log_source
     source = resolve_commit(reference, "BaselineRef")
-    state, records, restore = verify_baseline_source(source)
-    state["inquiry_session"] = None
-    state["active_inquiry"] = None
-    state["active_method"] = None
-    state["pending_inquiry_operation"] = None
-    state["campaign_lab"] = None
-    state["campaign_inquiry_counters"] = {str(state["campaign"]["id"]): 0}
-    state["last_allocated_inquiry"] = 0
-    state["last_inquiry"] = 0
-    recipe_plan = scientific_plan(str(state["working_lineage"]["scientific_commit"]))
-    external_logs = baseline_log_source(source, state, training_log_source)
+    source_state, candidate, restore, recipe_plan = verify_baseline_source(source)
     targets = sorted({*CAMPAIGN_PATHS, *restore, *plan_paths(recipe_plan)})
     preflight_targets(targets)
     operation = new_operation("baseline", source, targets)
@@ -921,44 +832,31 @@ def reset_baseline(
             remove_path(relative)
         repository.apply_recipe_restore(recipe_plan)
         validate_restored_recipe()
+        update_operation(backup, operation, "recipe_restored")
+        publish_reset_changes(
+            backup,
+            operation,
+            f"restore scientific recipe from {candidate['scientific_commit']}",
+            plan_paths(recipe_plan),
+            "recipe",
+        )
         apply_restore(source, restore)
-        repository.write_state(state)
-        repository.atomic_write_text(
-            paths.RESULTS_PATH,
-            "".join(json.dumps(record, sort_keys=True) + "\n" for record in records),
+        state = baseline_state(
+            source_state,
+            candidate,
+            base_commit=str(git("rev-parse", "HEAD")).strip(),
+            recipe_source=str(candidate["scientific_commit"]),
         )
-        campaign_id = str(state["campaign"]["id"])
-        tracked_logs = [
-            path
-            for path in commit_files(source)
-            if path.startswith(f"research/training_logs/{campaign_id}/")
-        ]
-        if not tracked_logs:
-            if external_logs is None:
-                raise RuntimeError("baseline training-log preflight was inconsistent")
-            log_source = external_logs
-            if log_source == paths.ROOT.resolve():
-                log_source = backup / "files"
-            tracked_logs = copy_external_logs(log_source, campaign_id)
+        write_campaign_memory(state)
         repository.validate_research_state(state, allow_missing_artifact=False)
-        repository.atomic_write_text(
-            paths.LOG_PATH, repository.render_experiment_log(records)
-        )
         update_operation(backup, operation, "baseline_restored")
-        publication_scope = list(
-            dict.fromkeys([*repository.status_paths((".",)), *tracked_logs])
+        publish_reset_changes(
+            backup,
+            operation,
+            f"reset research campaign state: prepared model {source}",
+            list(dict.fromkeys([*CAMPAIGN_PATHS, *restore])),
+            "campaign",
         )
-        if str(git("status", "--porcelain", "--untracked-files=all")).strip():
-            publish_reset_changes(
-                backup,
-                operation,
-                f"reset research experiment state: baseline {source}",
-                publication_scope,
-                "campaign",
-                force_add=tracked_logs,
-            )
-        else:
-            repository.push_head()
         update_operation(backup, operation, "complete")
     except Exception as error:
         operation["error"] = str(error)
@@ -1014,9 +912,7 @@ def main() -> int:
                 f"Source recipe revision: {source or 'current HEAD (science preserved)'}"
             )
             print(f"New campaign ID: {campaign_id}")
-            print(
-                "Fresh baseline pending; the next normal launch allocates experiment 1."
-            )
+            print("Scientific model pending; the launcher publishes it before PI work.")
             print(
                 "No trained model, score, evidence, or prior designation was imported."
             )
@@ -1025,8 +921,8 @@ def main() -> int:
                 args.baseline_ref, args.training_log_source
             )
             print("=== Research state reset ===")
-            print(f"Prepared baseline restored from {source}.")
-            print(f"Campaign ID: {campaign_id}; next experiment: 2.")
+            print(f"Prepared model restored from {source}.")
+            print(f"New campaign ID: {campaign_id}.")
         if str(git("status", "--porcelain", "--untracked-files=all")).strip():
             raise RuntimeError(
                 "reset completed with an unexpectedly dirty working tree"
