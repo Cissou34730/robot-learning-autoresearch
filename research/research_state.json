@@ -84,44 +84,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "open",
-        "inquiry": {
-          "closure_condition": "Close the inquiry when a reproducible baseline candidate has behavioral evidence decomposed by reach, first entry, longest uninterrupted hold, residual motion, branch or posture, and target geometry, and that evidence supports one actionable next intervention or establishes that no credible route toward the goal remains.",
-          "goal_connection": "Identifying the dominant failure mechanism is necessary to choose an intervention that can raise uninterrupted 2-second hold success toward at least 196 of 200 official episodes; reach-only or shaped-reward progress is not sufficient evidence.",
-          "id": "I1",
-          "opened_in_session": "S2",
-          "question": "For a reproducible baseline learned policy, which mechanism most limits official complete-hold success: failure to reach a valid posture, settling and residual motion, active endpoint hold regulation, inverse-kinematic branch or joint-limit choice, or target geometry and conditioning?",
-          "rationale": "The campaign has no candidate, model role, or behavioral evidence, so official assessment is impossible and no-credible-route closure is unsupported. The physical model predicts coupled reach-to-hold dynamics but does not determine which failure phase dominates. A baseline behavioral decomposition will discriminate those explanations and direct the next scientific action.",
-          "reframes": []
-        }
-      },
-      "result": {
-        "action": "open",
-        "inquiry_id": "I1",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E2",
-    "inquiry_id": null,
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "open",
-        "closure_condition": "Close the inquiry when a reproducible baseline candidate has behavioral evidence decomposed by reach, first entry, longest uninterrupted hold, residual motion, branch or posture, and target geometry, and that evidence supports one actionable next intervention or establishes that no credible route toward the goal remains.",
-        "goal_connection": "Identifying the dominant failure mechanism is necessary to choose an intervention that can raise uninterrupted 2-second hold success toward at least 196 of 200 official episodes; reach-only or shaped-reward progress is not sufficient evidence.",
-        "question": "For a reproducible baseline learned policy, which mechanism most limits official complete-hold success: failure to reach a valid posture, settling and residual motion, active endpoint hold regulation, inverse-kinematic branch or joint-limit choice, or target geometry and conditioning?",
-        "rationale": "The campaign has no candidate, model role, or behavioral evidence, so official assessment is impossible and no-credible-route closure is unsupported. The physical model predicts coupled reach-to-hold dynamics but does not determine which failure phase dominates. A baseline behavioral decomposition will discriminate those explanations and direct the next scientific action."
-      }
-    },
-    "request_fingerprint": "b3dbeea162bb2194cf600912294d45114271f157eb4763bd69a79b6bf1c7e46f",
-    "session_id": "S2",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "No candidates exist. Working, best-known, and retained model roles are all empty.",
     "completed_operations": [],
