@@ -19,6 +19,17 @@ function Write-Status {
     $text = $Message -replace '^===\s*|\s*===$', ''
     $timestamp = "[$(Get-Date -Format 'HH:mm:ss')]"
     $marker = "[$Label]"
+    $redirected = try {
+        [Console]::IsOutputRedirected
+    }
+    catch {
+        $true
+    }
+    if ($redirected) {
+        $text = ($text -replace '\s+', ' ').Trim()
+        Write-Host "$timestamp $marker $text"
+        return
+    }
     $prefixLength = $timestamp.Length + $marker.Length + 2
     $width = try {
         [Math]::Max([Console]::WindowWidth, 40)
@@ -48,23 +59,7 @@ function Write-Status {
     if ($lines.Count -eq 0) {
         $lines.Add("")
     }
-    $redirected = try {
-        [Console]::IsOutputRedirected
-    }
-    catch {
-        $true
-    }
     for ($index = 0; $index -lt $lines.Count; $index += 1) {
-        if ($redirected) {
-            $prefix = if ($index -eq 0) {
-                "$timestamp $marker "
-            }
-            else {
-                " " * $prefixLength
-            }
-            Write-Host "$prefix$($lines[$index])"
-            continue
-        }
         if ($index -eq 0) {
             Write-Host "$timestamp " -ForegroundColor DarkGray -NoNewline
             Write-Host $marker -ForegroundColor $Color -NoNewline

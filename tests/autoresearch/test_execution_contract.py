@@ -272,6 +272,14 @@ def test_completed_result_retries_memory_publication_without_reacceptance(
     paths.OPERATION_REQUEST_PATH.write_text(json.dumps(request), encoding="utf-8")
     run_experiment.accept_operation(request, state)
     calls: list[str] = []
+    boundaries: list[tuple[str, str, str, str]] = []
+    monkeypatch.setattr(
+        run_experiment.console,
+        "boundary",
+        lambda scope, action, subject="", detail="": boundaries.append(
+            (scope, action, subject, detail)
+        ),
+    )
 
     def fail_complete_once(message):
         calls.append(message)
@@ -297,6 +305,8 @@ def test_completed_result_retries_memory_publication_without_reacceptance(
     assert [event["id"] for event in repository.history_records()] == ["E1"]
     assert not paths.OPERATION_REQUEST_PATH.exists()
     assert calls == ["complete E1 inquiry", "finalize E1"]
+    assert sum(entry[0:2] == ("operation", "COMPLETE") for entry in boundaries) == 1
+    assert sum(entry[0:2] == ("inquiry", "OPEN") for entry in boundaries) == 1
 
 
 def test_finalization_commit_crash_restarts_without_reexecuting_or_duplicate_event(
@@ -316,6 +326,7 @@ def test_finalization_commit_crash_restarts_without_reexecuting_or_duplicate_eve
     committed: dict[str, dict] = {}
     calls: list[str] = []
     executions = {"count": 0}
+    boundaries: list[tuple[str, str, str, str]] = []
 
     class SimulatedCrash(BaseException):
         pass
@@ -337,6 +348,13 @@ def test_finalization_commit_crash_restarts_without_reexecuting_or_duplicate_eve
         return True
 
     monkeypatch.setattr(run_experiment, "_execute_inquiry", execute)
+    monkeypatch.setattr(
+        run_experiment.console,
+        "boundary",
+        lambda scope, action, subject="", detail="": boundaries.append(
+            (scope, action, subject, detail)
+        ),
+    )
     monkeypatch.setattr(repository, "commit_runner_memory", commit)
     monkeypatch.setattr(
         repository,
@@ -367,6 +385,8 @@ def test_finalization_commit_crash_restarts_without_reexecuting_or_duplicate_eve
     assert [event["id"] for event in completed["operation_events"]] == ["E1"]
     assert [event["id"] for event in repository.history_records()] == ["E1"]
     assert calls == ["complete E1 inquiry", "finalize E1", "finalize E1"]
+    assert sum(entry[0:2] == ("operation", "COMPLETE") for entry in boundaries) == 1
+    assert sum(entry[0:2] == ("inquiry", "OPEN") for entry in boundaries) == 1
 
 
 def test_finalization_push_crash_retries_only_publication_without_duplicate_event(
@@ -387,6 +407,7 @@ def test_finalization_push_crash_retries_only_publication_without_duplicate_even
     calls: list[str] = []
     executions = {"count": 0}
     pushes = {"count": 0}
+    boundaries: list[tuple[str, str, str, str]] = []
 
     class SimulatedCrash(BaseException):
         pass
@@ -412,6 +433,13 @@ def test_finalization_push_crash_retries_only_publication_without_duplicate_even
         return "a" * 40 + "\n"
 
     monkeypatch.setattr(run_experiment, "_execute_inquiry", execute)
+    monkeypatch.setattr(
+        run_experiment.console,
+        "boundary",
+        lambda scope, action, subject="", detail="": boundaries.append(
+            (scope, action, subject, detail)
+        ),
+    )
     monkeypatch.setattr(repository, "commit_runner_memory", commit)
     monkeypatch.setattr(repository, "git", git)
     monkeypatch.setattr(
@@ -449,6 +477,8 @@ def test_finalization_push_crash_retries_only_publication_without_duplicate_even
     assert [event["id"] for event in repository.history_records()] == ["E1"]
     assert calls == ["complete E1 inquiry", "finalize E1"]
     assert pushes["count"] == 1
+    assert sum(entry[0:2] == ("operation", "COMPLETE") for entry in boundaries) == 1
+    assert sum(entry[0:2] == ("inquiry", "OPEN") for entry in boundaries) == 1
 
 
 def test_completion_publishes_memory_and_consumes_the_request(monkeypatch, tmp_path):

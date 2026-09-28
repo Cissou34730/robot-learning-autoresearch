@@ -195,6 +195,7 @@ def test_operation_execution_has_request_start_and_completion_boundaries(monkeyp
     state = {
         "pending_operation": pending,
         "scientific_session": {"backend_session_id": "backend-session"},
+        "campaign": {"id": "campaign"},
     }
     boundaries = []
 
@@ -248,24 +249,83 @@ def test_compact_path_hides_machine_specific_repository_prefix():
     assert str(runner_console._ROOT) not in rendered
 
 
-def test_no_credible_route_has_one_runner_owned_campaign_end(monkeypatch):
+@pytest.mark.parametrize(
+    ("status", "model", "campaign_action", "campaign_subject"),
+    [
+        ("no_credible_route", None, "END", "no credible route"),
+        (
+            "official_assessment_requested",
+            "T1:checkpoint-10",
+            "DECISION",
+            "official assessment requested",
+        ),
+    ],
+)
+def test_campaign_conclusion_pairs_session_end_with_campaign_boundary(
+    monkeypatch,
+    status,
+    model,
+    campaign_action,
+    campaign_subject,
+):
     boundaries = []
+    request = {
+        "campaign_conclusion": {
+            "action": (
+                "no_credible_route"
+                if status == "no_credible_route"
+                else "request_official_assessment"
+            ),
+            "reason": "The durable evidence supports this terminal decision.",
+        }
+    }
+    pending = {
+        "id": "E4",
+        "kind": "campaign_conclusion",
+        "session_id": "S4",
+        "inquiry_id": None,
+        "request": request,
+        "request_fingerprint": run_experiment._canonical_fingerprint(request),
+        "progress": "accepted",
+        "failure": None,
+        "supersedes": None,
+        "data": {
+            "plan": {
+                "status": status,
+                "reason": request["campaign_conclusion"]["reason"],
+                "model": model,
+            },
+            "result": None,
+        },
+    }
     state = {
+        "pending_operation": pending,
         "scientific_session": {
             "id": "S4",
+            "kind": "goal_review",
+            "backend_session_id": "backend-session",
         },
+        "operation_events": [],
+        "last_verdict": "goal review",
+        "terminal_state": None,
         "campaign": {
             "id": "11111111-1111-1111-1111-111111111111",
         },
     }
-    pending = {
-        "kind": "campaign_conclusion",
-        "data": {
-            "result": {
-                "status": "no_credible_route",
-            }
-        },
-    }
+    monkeypatch.setattr(run_experiment.repository, "load_state", lambda **_kwargs: state)
+    monkeypatch.setattr(run_experiment.repository, "write_state", lambda _state: None)
+    monkeypatch.setattr(
+        run_experiment.repository, "upsert_operation_event", lambda _event: None
+    )
+    monkeypatch.setattr(
+        run_experiment.repository, "commit_runner_memory", lambda _message: True
+    )
+    monkeypatch.setattr(
+        run_experiment, "_write_accepted_request_handoff", lambda _pending: None
+    )
+    monkeypatch.setattr(
+        run_experiment, "_consume_accepted_request_handoff", lambda _operation_id: True
+    )
     monkeypatch.setattr(
         run_experiment.console,
         "boundary",
@@ -276,7 +336,9 @@ def test_no_credible_route_has_one_runner_owned_campaign_end(monkeypatch):
     monkeypatch.setattr(
         run_experiment.console,
         "usage_summary",
-        lambda *_args: "usage",
+        lambda _campaign_id, session_id=None: (
+            "session usage" if session_id is not None else "usage"
+        ),
     )
     monkeypatch.setattr(
         run_experiment.repository,
@@ -284,9 +346,157 @@ def test_no_credible_route_has_one_runner_owned_campaign_end(monkeypatch):
         lambda _state: state["campaign"]["id"],
     )
 
-    run_experiment._announce_consequential_completion(state, pending, "session usage")
+    assert run_experiment.execute_pending_operation() == 0
 
-    assert boundaries == [
+    assert boundaries[-2:] == [
         ("session", "END", "S4", "session usage"),
-        ("campaign", "END", "no credible route", "usage"),
+        ("campaign", campaign_action, campaign_subject, "usage"),
     ]
+    assert sum(entry[0:2] == ("session", "END") for entry in boundaries) == 1
+    assert sum(entry[0:2] == ("campaign", campaign_action) for entry in boundaries) == 1
+
+
+@pytest.mark.parametrize(
+    ("pending", "expected"),
+    [
+        (
+            {
+                "id": "E2",
+                "kind": "inquiry",
+                "session_id": "S2",
+                "inquiry_id": None,
+                "request": {"inquiry": {"action": "open"}},
+                "request_fingerprint": "fingerprint",
+                "progress": "completed",
+                "failure": None,
+                "supersedes": None,
+                "data": {
+                    "plan": {},
+                    "result": {
+                        "status": "completed",
+                        "action": "open",
+                        "inquiry_id": "I2",
+                    },
+                },
+            },
+            [("inquiry", "OPEN", "I2", "")],
+        ),
+        (
+            {
+                "id": "E3",
+                "kind": "checkpoint",
+                "session_id": "S3",
+                "inquiry_id": "I1",
+                "request": {"checkpoint": {}},
+                "request_fingerprint": "fingerprint",
+                "progress": "completed",
+                "failure": None,
+                "supersedes": None,
+                "data": {
+                    "plan": {"session_id": "S3"},
+                    "result": {"status": "checkpointed", "session_id": "S3"},
+                },
+            },
+            [
+                ("checkpoint", "COMPLETE", "S3", ""),
+                ("session", "END", "S3", "usage unavailable"),
+            ],
+        ),
+        (
+            {
+                "id": "E4",
+                "kind": "campaign_conclusion",
+                "session_id": "S4",
+                "inquiry_id": None,
+                "request": {"campaign_conclusion": {"action": "no_credible_route"}},
+                "request_fingerprint": "fingerprint",
+                "progress": "completed",
+                "failure": None,
+                "supersedes": None,
+                "data": {
+                    "plan": {},
+                    "result": {"status": "no_credible_route", "model": None},
+                },
+            },
+            [
+                ("session", "END", "S4", "usage unavailable"),
+                ("campaign", "END", "no credible route", "campaign usage"),
+            ],
+        ),
+        (
+            {
+                "id": "E5",
+                "kind": "campaign_conclusion",
+                "session_id": "S5",
+                "inquiry_id": None,
+                "request": {
+                    "campaign_conclusion": {
+                        "action": "request_official_assessment"
+                    }
+                },
+                "request_fingerprint": "fingerprint",
+                "progress": "completed",
+                "failure": None,
+                "supersedes": None,
+                "data": {
+                    "plan": {},
+                    "result": {
+                        "status": "official_assessment_requested",
+                        "model": "T1:checkpoint-10",
+                    },
+                },
+            },
+            [
+                ("session", "END", "S5", "usage unavailable"),
+                (
+                    "campaign",
+                    "DECISION",
+                    "official assessment requested",
+                    "campaign usage",
+                ),
+            ],
+        ),
+    ],
+)
+def test_completed_pending_recovery_uses_the_shared_completion_presenter(
+    monkeypatch, pending, expected
+):
+    pending["request_fingerprint"] = run_experiment._canonical_fingerprint(
+        pending["request"]
+    )
+    state = {
+        "pending_operation": pending,
+        "scientific_session": None,
+        "campaign": {"id": "campaign"},
+    }
+    boundaries = []
+    monkeypatch.setattr(run_experiment.repository, "load_state", lambda **_kwargs: state)
+    monkeypatch.setattr(run_experiment.repository, "write_state", lambda _state: None)
+    monkeypatch.setattr(
+        run_experiment.repository, "commit_runner_memory", lambda _message: True
+    )
+    monkeypatch.setattr(
+        run_experiment, "_write_accepted_request_handoff", lambda _pending: None
+    )
+    monkeypatch.setattr(
+        run_experiment, "_consume_accepted_request_handoff", lambda _operation_id: True
+    )
+    monkeypatch.setattr(
+        run_experiment.console,
+        "boundary",
+        lambda scope, action, subject="", detail="": boundaries.append(
+            (scope, action, subject, detail)
+        ),
+    )
+    monkeypatch.setattr(
+        run_experiment.console,
+        "usage_summary",
+        lambda _campaign_id, session_id=None: (
+            "session usage" if session_id is not None else "campaign usage"
+        ),
+    )
+
+    assert run_experiment.execute_pending_operation() == 0
+
+    assert sum(entry[0:2] == ("operation", "COMPLETE") for entry in boundaries) == 1
+    assert boundaries[-len(expected) :] == expected

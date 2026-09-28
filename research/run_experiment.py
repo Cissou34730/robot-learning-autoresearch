@@ -513,7 +513,9 @@ def _matching_completed_pending(state: dict, operation_id: str) -> dict | None:
     return None
 
 
-def _recover_interrupted_finalization(state: dict) -> str | None:
+def _recover_interrupted_finalization(
+    state: dict,
+) -> tuple[str, dict | None] | None:
     if (
         state["pending_operation"] is not None
         or not paths.OPERATION_REQUEST_PATH.is_file()
@@ -534,7 +536,7 @@ def _recover_interrupted_finalization(state: dict) -> str | None:
     if pending is not None:
         state["pending_operation"] = copy.deepcopy(pending)
         repository.write_state(state)
-        return "retry"
+        return "retry", None
     subject = repository.git("log", "-1", "--format=%s", "HEAD").strip()
     prefix = repository.campaign_commit_message("finalize ")
     if not subject.startswith(prefix):
@@ -552,7 +554,7 @@ def _recover_interrupted_finalization(state: dict) -> str | None:
         _verify_completed_measurement_result(previous, pending)
     repository.push_head()
     if _consume_accepted_request_handoff(operation_id):
-        return "published"
+        return "published", _completion_presentation(previous, pending)
     return None
 
 
@@ -1450,13 +1452,28 @@ def _operation_completion_detail(pending: dict, elapsed: float) -> str:
     return " | ".join(part for part in parts if part)
 
 
-def _announce_consequential_completion(
-    state_before: dict,
-    pending: dict,
-    session_usage: str | None,
-) -> None:
+def _completion_presentation(state: dict, pending: dict) -> dict:
+    session_usage = None
+    if pending["kind"] in {"checkpoint", "campaign_conclusion"}:
+        session = state.get("scientific_session")
+        if isinstance(session, dict):
+            session_usage = console.usage_summary(
+                repository.current_campaign_id(state),
+                str(session["backend_session_id"]),
+            )
+    return {
+        "campaign_id": repository.current_campaign_id(state),
+        "kind": str(pending["kind"]),
+        "pending": pending,
+        "session_id": str(pending["session_id"]),
+        "session_usage": session_usage,
+    }
+
+
+def _announce_consequential_completion(presentation: dict) -> None:
+    pending = copy.deepcopy(presentation["pending"])
     result = pending["data"].get("result") or {}
-    kind = pending["kind"]
+    kind = presentation["kind"]
     if kind == "inquiry":
         action = str(result.get("action", "")).upper()
         inquiry_id = str(result.get("inquiry_id", ""))
@@ -1473,25 +1490,34 @@ def _announce_consequential_completion(
             "session",
             "END",
             session_id,
-            session_usage or "usage unavailable",
+            presentation["session_usage"] or "usage unavailable",
         )
     elif kind == "campaign_conclusion":
-        session = state_before.get("scientific_session")
-        if isinstance(session, dict):
-            console.boundary(
-                "session",
-                "END",
-                str(session["id"]),
-                session_usage or "usage unavailable",
-            )
+        console.boundary(
+            "session",
+            "END",
+            presentation["session_id"],
+            presentation["session_usage"] or "usage unavailable",
+        )
         status = str(result.get("status", "")).replace("_", " ")
         action = "END" if result.get("status") == "no_credible_route" else "DECISION"
         console.boundary(
             "campaign",
             action,
             status,
-            console.usage_summary(repository.current_campaign_id(state_before)),
+            console.usage_summary(presentation["campaign_id"]),
         )
+
+
+def _announce_completed_operation(presentation: dict, detail: str) -> None:
+    pending = copy.deepcopy(presentation["pending"])
+    console.boundary(
+        "operation",
+        "COMPLETE",
+        _operation_subject(pending),
+        detail,
+    )
+    _announce_consequential_completion(presentation)
 
 
 def _campaign_resource_summary(state: dict) -> str:
@@ -1525,21 +1551,14 @@ def execute_pending_operation() -> int:
     _write_accepted_request_handoff(pending)
     subject = _operation_subject(pending)
     detail = _operation_request_detail(pending)
+    presentation = _completion_presentation(state, pending)
     action = "REQUEST" if pending["progress"] == "accepted" else "RESUME"
     console.boundary("operation", action, subject, detail)
     if pending["progress"] == "completed":
         _finalize_operation(state, pending)
-        console.boundary("operation", "COMPLETE", subject, "finalized")
+        _announce_completed_operation(presentation, "finalized")
         return 0
     kind = pending["kind"]
-    session_usage = None
-    if kind in {"checkpoint", "campaign_conclusion"}:
-        session = state.get("scientific_session")
-        if isinstance(session, dict):
-            session_usage = console.usage_summary(
-                repository.current_campaign_id(state),
-                str(session["backend_session_id"]),
-            )
     started = time.monotonic()
     console.boundary("operation", "START", subject)
     try:
@@ -1569,13 +1588,10 @@ def execute_pending_operation() -> int:
     if exit_code == 130:
         console.boundary("warning", "OPERATION PAUSED", subject)
         return exit_code
-    console.boundary(
-        "operation",
-        "COMPLETE",
-        subject,
+    _announce_completed_operation(
+        presentation,
         _operation_completion_detail(pending, elapsed),
     )
-    _announce_consequential_completion(state, pending, session_usage)
     return exit_code
 
 
@@ -1870,9 +1886,13 @@ def main() -> int:
     repository.synchronize_operation_log()
     state = repository.load_state(allow_missing_artifact=True)
     finalization = _recover_interrupted_finalization(state)
-    if finalization == "published":
+    if finalization is not None and finalization[0] == "published":
+        presentation = finalization[1]
+        if not isinstance(presentation, dict):
+            raise TypeError("published finalization is missing completion presentation")
+        _announce_completed_operation(presentation, "finalized")
         return 0
-    if finalization == "retry":
+    if finalization is not None and finalization[0] == "retry":
         state = repository.load_state(allow_missing_artifact=True)
     if isinstance(state["pending_operation"], dict):
         if state["pending_operation"]["failure"] is not None:

@@ -230,11 +230,13 @@ $script:writes | ConvertTo-Json -Compress
     writes = json.loads(completed.stdout)
     if isinstance(writes, dict):
         writes = [writes]
-    assert len(writes) > 1
-    assert all(not write["no_newline"] for write in writes)
+    assert len(writes) == 1
+    assert not writes[0]["no_newline"]
     assert writes[0]["text"].startswith("[")
     assert "[session]" in writes[0]["text"]
-    assert all("[session]" not in write["text"] for write in writes[1:])
+    assert "\r" not in writes[0]["text"]
+    assert "\n" not in writes[0]["text"]
+    assert "  " not in writes[0]["text"]
 
 
 def test_launcher_balances_preparation_and_leaves_terminal_end_to_runner():
