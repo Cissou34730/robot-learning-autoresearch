@@ -93,10 +93,12 @@ to goal review.
 
 A scientific session is bounded by one coherent objective rather than by an
 operation count. It can span several Runner round trips under the same backend
-session identity while active. That backend identity is persisted only inside
-the active scientific session, so launcher restart resumes the same bounded
-conversation without creating campaign-long identity. The session ends only when the PI submits a
-durable checkpoint or makes a terminal goal-level decision.
+session identity while active. That identity and its exact adapter, model and
+reasoning descriptor are persisted only inside the active scientific session,
+so launcher restart resumes the same bounded conversation only with an exact
+configuration match and never creates campaign-long identity. The session ends
+only when the PI submits a durable checkpoint or makes a terminal goal-level
+decision.
 
 The checkpoint carries the human-goal connection, current gap and synthesis,
 evidence references, decision frontier, completed operations, candidate and

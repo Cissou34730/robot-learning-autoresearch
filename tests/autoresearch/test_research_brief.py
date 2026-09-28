@@ -38,6 +38,11 @@ def _state() -> dict:
         "objective": "Resolve the stabilization question.",
         "inquiry_id": "I1",
         "backend_session_id": "backend-S2",
+        "backend_descriptor": {
+            "adapter": "copilot",
+            "model": "gpt-5.6-luna",
+            "reasoning": "high",
+        },
         "scientific_parent_commit": "b" * 40,
         "operation_ids": ["E1"],
     }

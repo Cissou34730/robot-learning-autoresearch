@@ -70,6 +70,9 @@ def test_preliminary_policy_excludes_campaign_evidence_without_changing_later_ph
         "git stash",
         "git rebase main",
         "git clean -fd",
+        "git.exe commit -m x",
+        r'"C:\Program Files\Git\cmd\git.exe" push origin HEAD',
+        r'"C:\Program Files\Git\cmd\git.exe" -C . reset --hard',
         # An unfamiliar verb is refused rather than assumed harmless.
         "git switcheroo",
     ],
@@ -94,6 +97,8 @@ def test_mutating_git_is_refused_and_names_recipe_restoration(command):
         "git show HEAD:robot_learning/scenario/reward.py",
         "git rev-parse HEAD",
         "git ls-files",
+        "git.exe status --short",
+        r'"C:\Program Files\Git\cmd\git.exe" -C . log -1',
     ],
 )
 def test_read_only_git_stays_available(command):
@@ -104,6 +109,7 @@ def test_read_only_git_stays_available(command):
     "command",
     [
         "uv run python research/run_experiment.py",
+        "uv run python -m research.run_experiment --check-operation",
         "uv run python research/run_experiment.py --evaluate-pending",
         "uv run python research/run_experiment.py --migrate-research-state",
         "uv run python research/migrate_policy_runtime.py --help",
@@ -114,6 +120,11 @@ def test_read_only_git_stays_available(command):
         "uv run python -m robot_learning.evaluate --official-benchmark --model x.zip",
         "uv run python robot_learning/evaluate.py --task-reference --model x.zip",
         "uv run python robot_learning/play.py",
+        r".\run_research.ps1",
+        r"& .\run_research.ps1",
+        r".\reset_research.ps1 -Mode Fresh",
+        "pwsh -File run_research.ps1",
+        "powershell.exe -File reset_research.ps1 -Mode Fresh",
     ],
 )
 def test_execution_belongs_to_the_launcher(command):
@@ -124,6 +135,8 @@ def test_a_repository_wide_test_run_is_refused():
     existing = "tests/autoresearch/test_copilot_researcher.py"
     assert adapter.command_denial("uv run pytest") == adapter.SUITE_DENIAL
     assert adapter.command_denial("uv run pytest -q") == adapter.SUITE_DENIAL
+    assert adapter.command_denial("uv run pytest -k foo") == adapter.SUITE_DENIAL
+    assert adapter.command_denial("pytest.exe -k foo") == adapter.SUITE_DENIAL
     # A flag-only option alone still selects nothing.
     assert adapter.command_denial("uv run pytest --strict") == adapter.SUITE_DENIAL
     # A directory runs the whole tree, not a targeted selection.

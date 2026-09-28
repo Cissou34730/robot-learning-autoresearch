@@ -71,6 +71,7 @@ def _launcher_prompt(tmp_path: Path, state: dict) -> str:
         "Get-HumanGoalSummary",
         "Get-LatestSessionResult",
         "Get-AvailableOperations",
+        "Get-ScientificSessionPhase",
         "New-ScientificSessionPrompt",
     )
     quoted_names = ", ".join(f"'{name}'" for name in names)
@@ -178,6 +179,11 @@ def _state(kind: str, *, inquiry: bool) -> dict:
             "objective": "Make one bounded decision.",
             "inquiry_id": "I1" if kind == "inquiry" else None,
             "backend_session_id": "backend-S1",
+            "backend_descriptor": {
+                "adapter": "copilot",
+                "model": "gpt-5.6-luna",
+                "reasoning": "high",
+            },
             "scientific_parent_commit": "a" * 40,
             "operation_ids": [],
         },
@@ -259,6 +265,7 @@ def test_prompt_contains_goal_directed_imperatives_and_source_router():
         "Human goal:",
         "Factual evidence relative to the goal:",
         "PI-interpreted gap:",
+        "Session phase:",
         "Active inquiry and relevance:",
         "Bounded session objective:",
         "Strategic resource summary:",
@@ -280,6 +287,7 @@ def test_generated_prompt_starts_with_required_decision_context(tmp_path):
         "Human goal:",
         "Factual evidence relative to the goal:",
         "PI-interpreted gap:",
+        "Session phase:",
         "Active inquiry and relevance:",
         "Bounded session objective:",
         "Strategic resource summary:",
@@ -292,6 +300,39 @@ def test_generated_prompt_starts_with_required_decision_context(tmp_path):
         "Choose the operation whose result would most improve the next decision "
         "toward the human goal."
     ) in prompt
+
+
+@powershell_only
+@pytest.mark.parametrize(
+    ("kind", "inquiry", "expected_phase", "expected_inquiry"),
+    [
+        (
+            "startup",
+            False,
+            "startup",
+            "None; this is the startup scientific-design session.",
+        ),
+        (
+            "goal_review",
+            False,
+            "goal_review",
+            "None; this is campaign-level goal review.",
+        ),
+        ("inquiry", True, "inquiry", "I1: What blocks reliable hold?"),
+        (
+            "inquiry",
+            False,
+            "closed inquiry awaiting checkpoint",
+            "The inquiry is closed; preserve its outcome",
+        ),
+    ],
+)
+def test_prompt_phase_matches_session_kind_and_state(
+    tmp_path, kind, inquiry, expected_phase, expected_inquiry
+):
+    prompt = _launcher_prompt(tmp_path, _state(kind, inquiry=inquiry))
+    assert f"Session phase: {expected_phase}" in prompt
+    assert f"Active inquiry and relevance: {expected_inquiry}" in prompt
 
 
 @powershell_only
@@ -352,6 +393,9 @@ def test_reframed_inquiry_offers_only_checkpoint(tmp_path):
 def test_launcher_persists_and_reuses_bounded_backend_session_identity():
     assert '"--backend-session-id", ([guid]::NewGuid().ToString())' in SCRIPT
     assert "$state.scientific_session.backend_session_id" in SCRIPT
+    assert "--backend-adapter" in SCRIPT
+    assert "--backend-model" in SCRIPT
+    assert "--backend-reasoning" in SCRIPT
     assert '$sessionArgs += "--resume-or-create"' in SCRIPT
     assert "--synchronize-max-inquiries" in SCRIPT
 

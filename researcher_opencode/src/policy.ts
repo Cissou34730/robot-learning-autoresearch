@@ -1,3 +1,7 @@
+import { existsSync, statSync } from "node:fs";
+import { isAbsolute, relative, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
+
 /**
  * Which shell invocations this harness refuses.
  *
@@ -30,10 +34,13 @@ export const DEPENDENCY_DENIAL =
 
 const RESERVED_SCRIPT_NAMES = new Set([
   "run_experiment.py",
+  "runner_assessment.py",
   "migrate_research_state.py",
   "final_benchmark.py",
   "migrate_policy_runtime.py",
   "reset_campaign.py",
+  "run_research.ps1",
+  "reset_research.ps1",
 ]);
 
 const RESERVED_SCRIPT_PATHS = [
@@ -43,6 +50,8 @@ const RESERVED_SCRIPT_PATHS = [
 ];
 
 const RESERVED_MODULES = new Set([
+  "research.run_experiment",
+  "research.runner_assessment",
   "research.migrate_policy_runtime",
   "research.reset_campaign",
   "robot_learning.evaluate",
@@ -86,11 +95,44 @@ const READER_COMMANDS = new Set([
 ]);
 
 const INTERPRETERS = new Set(["python", "python.exe", "python3", "py", "py.exe"]);
+const POWERSHELL_HOSTS = new Set(["powershell", "powershell.exe", "pwsh", "pwsh.exe"]);
+const GIT_GLOBAL_VALUE_OPTIONS = new Set([
+  "-c",
+  "-C",
+  "--config-env",
+  "--exec-path",
+  "--git-dir",
+  "--namespace",
+  "--super-prefix",
+  "--work-tree",
+]);
+const ROOT = fileURLToPath(new URL("../..", import.meta.url));
 
 const SEPARATORS = [";", "&&", "||", "|", "\n", "\r"];
 
 function splitWhitespace(text: string): string[] {
-  return text.split(/\s+/).filter((token) => token.length > 0);
+  const tokens: string[] = [];
+  let token = "";
+  let quote = "";
+  for (const character of text) {
+    if (quote) {
+      if (character === quote) quote = "";
+      else token += character;
+      continue;
+    }
+    if (character === '"' || character === "'") {
+      quote = character;
+    } else if (/\s/.test(character)) {
+      if (token) {
+        tokens.push(token);
+        token = "";
+      }
+    } else {
+      token += character;
+    }
+  }
+  if (token) tokens.push(token);
+  return tokens;
 }
 
 /** Split a command line on shell separators, so each segment can be judged. */
@@ -136,6 +178,7 @@ export function stripLauncherPrefix(tokens: string[]): string[] {
 
 /** What this segment would actually run, ignoring anything it merely names. */
 export function executionTarget(tokens: string[]): string | null {
+  while (tokens[0] === "&") tokens = tokens.slice(1);
   if (tokens.length === 0) return null;
   if (READER_COMMANDS.has(stripEdgePunctuation(tokens[0]!.toLowerCase()))) {
     return null;
@@ -143,7 +186,19 @@ export function executionTarget(tokens: string[]): string | null {
   const stripped = stripLauncherPrefix(tokens);
   if (stripped.length === 0) return null;
   const first = stripped[0]!;
-  if (!INTERPRETERS.has(baseName(first).toLowerCase())) return first;
+  const executable = baseName(first).toLowerCase();
+  if (POWERSHELL_HOSTS.has(executable)) {
+    const args = stripped.slice(1);
+    for (let index = 0; index < args.length; index += 1) {
+      const argument = args[index]!.toLowerCase();
+      if ((argument === "-file" || argument === "-f") && index + 1 < args.length) {
+        return args[index + 1]!;
+      }
+      if (argument === "-command" || argument === "-c") return null;
+    }
+    return first;
+  }
+  if (!INTERPRETERS.has(executable)) return first;
   const args = stripped.slice(1);
   for (let index = 0; index < args.length; index += 1) {
     const argument = args[index]!;
@@ -171,19 +226,133 @@ export function isReservedExecution(target: string | null): boolean {
 
 /** The subcommand when it is not a read-only one, so unknown verbs deny. */
 export function deniedGitSubcommand(tokens: string[]): string | null {
-  const index = tokens.indexOf("git");
-  if (index === -1) return null;
-  for (const token of tokens.slice(index + 1)) {
-    if (token.startsWith("-")) continue;
-    return READ_ONLY_GIT.has(token) ? null : token;
+  const executableIndex = tokens.findIndex(
+    (token) => baseName(stripEdgePunctuation(token)).toLowerCase().replace(/\.exe$/, "") === "git",
+  );
+  if (executableIndex === -1) return null;
+  let index = executableIndex + 1;
+  while (index < tokens.length) {
+    const token = tokens[index]!;
+    const option = token.split("=", 1)[0]!;
+    if (GIT_GLOBAL_VALUE_OPTIONS.has(option)) {
+      index += token.includes("=") ? 1 : 2;
+      continue;
+    }
+    if (token.startsWith("-")) {
+      index += 1;
+      continue;
+    }
+    const subcommand = baseName(token).toLowerCase().replace(/\.exe$/, "");
+    return READ_ONLY_GIT.has(subcommand) ? null : subcommand;
   }
   return "git";
 }
 
+function namesTargetedTestFile(token: string): boolean {
+  const selector = token.split("::", 1)[0]!;
+  const path = isAbsolute(selector) ? resolve(selector) : resolve(ROOT, selector);
+  const withinRoot = relative(ROOT, path);
+  return (
+    withinRoot !== "" &&
+    !withinRoot.startsWith("..") &&
+    !isAbsolute(withinRoot) &&
+    existsSync(path) &&
+    statSync(path).isFile()
+  );
+}
+
+const PYTEST_FLAG_OPTIONS = new Set([
+  "-q",
+  "--quiet",
+  "-v",
+  "--verbose",
+  "-x",
+  "--exitfirst",
+  "-s",
+  "-l",
+  "--showlocals",
+  "--lf",
+  "--last-failed",
+  "--ff",
+  "--failed-first",
+  "--nf",
+  "--new-first",
+  "--sw",
+  "--stepwise",
+  "--stepwise-skip",
+  "--stepwise-ignore",
+  "--co",
+  "--collect-only",
+  "--pyargs",
+  "--noconftest",
+  "--keep-duplicates",
+  "--collect-in-virtualenv",
+  "--doctest-modules",
+  "--doctest-continue-on-failure",
+  "--fixtures",
+  "--fixtures-per-test",
+  "--pdb",
+  "--trace",
+  "--runxfail",
+  "--cache-clear",
+  "--no-header",
+  "--no-summary",
+  "--no-fold",
+  "--full-trace",
+  "--setup-only",
+  "--setup-plan",
+  "--setup-show",
+  "--disable-warnings",
+  "--disable-plugin-autoload",
+  "--trace-config",
+  "--strict",
+  "--strict-markers",
+  "--strict-config",
+  "--continue-on-collection-errors",
+  "--help",
+  "--version",
+]);
+
+function shortOptionSpan(token: string): number {
+  for (let position = 1; position < token.length; position += 1) {
+    if (PYTEST_FLAG_OPTIONS.has(`-${token[position]}`)) continue;
+    return position + 1 < token.length ? 1 : 2;
+  }
+  return 1;
+}
+
 function isRepositoryWidePytest(tokens: string[]): boolean {
-  const index = tokens.indexOf("pytest");
+  const index = tokens.findIndex(
+    (token) => baseName(token).toLowerCase().replace(/\.exe$/, "") === "pytest",
+  );
   if (index === -1) return false;
-  return !tokens.slice(index + 1).some((token) => !token.startsWith("-"));
+  const rest = tokens.slice(index + 1);
+  let position = 0;
+  let positionalOnly = false;
+  while (position < rest.length) {
+    const token = rest[position]!;
+    if (positionalOnly) {
+      if (namesTargetedTestFile(token)) return false;
+      position += 1;
+      continue;
+    }
+    if (token === "--") {
+      positionalOnly = true;
+      position += 1;
+      continue;
+    }
+    if (token.startsWith("--")) {
+      position += token.includes("=") || PYTEST_FLAG_OPTIONS.has(token) ? 1 : 2;
+      continue;
+    }
+    if (token.startsWith("-") && token.length > 1) {
+      position += shortOptionSpan(token);
+      continue;
+    }
+    if (namesTargetedTestFile(token)) return false;
+    position += 1;
+  }
+  return true;
 }
 
 /** Whether a command changes or extends the fixed project dependency set. */

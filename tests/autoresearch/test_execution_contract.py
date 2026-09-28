@@ -15,7 +15,7 @@ from research import runner_paths as paths
 from research import runner_repository as repository
 
 
-def _configure(monkeypatch, tmp_path: Path) -> dict:
+def _configure(monkeypatch, tmp_path: Path, *, session_kind: str = "startup") -> dict:
     research = tmp_path / "research"
     research.mkdir()
     for name, value in {
@@ -40,7 +40,12 @@ def _configure(monkeypatch, tmp_path: Path) -> dict:
         "commit": "a" * 40,
     }
     repository.start_scientific_session(
-        state, kind="goal_review", objective="Run one bounded operation."
+        state,
+        kind=session_kind,
+        objective="Run one bounded operation.",
+        backend_adapter="copilot",
+        backend_model="gpt-5.6-luna",
+        backend_reasoning="high",
     )
     repository.write_state(state)
     return state
@@ -254,7 +259,7 @@ def test_completed_training_transaction_retries_publication_without_retraining(
 def test_completed_result_retries_memory_publication_without_reacceptance(
     monkeypatch, tmp_path
 ):
-    state = _configure(monkeypatch, tmp_path)
+    state = _configure(monkeypatch, tmp_path, session_kind="goal_review")
     request = {
         "inquiry": {
             "action": "open",
@@ -297,7 +302,7 @@ def test_completed_result_retries_memory_publication_without_reacceptance(
 def test_finalization_commit_crash_restarts_without_reexecuting_or_duplicate_event(
     monkeypatch, tmp_path
 ):
-    state = _configure(monkeypatch, tmp_path)
+    state = _configure(monkeypatch, tmp_path, session_kind="goal_review")
     request = {
         "inquiry": {
             "action": "open",
@@ -367,7 +372,7 @@ def test_finalization_commit_crash_restarts_without_reexecuting_or_duplicate_eve
 def test_finalization_push_crash_retries_only_publication_without_duplicate_event(
     monkeypatch, tmp_path
 ):
-    state = _configure(monkeypatch, tmp_path)
+    state = _configure(monkeypatch, tmp_path, session_kind="goal_review")
     request = {
         "inquiry": {
             "action": "open",
@@ -447,7 +452,7 @@ def test_finalization_push_crash_retries_only_publication_without_duplicate_even
 
 
 def test_completion_publishes_memory_and_consumes_the_request(monkeypatch, tmp_path):
-    state = _configure(monkeypatch, tmp_path)
+    state = _configure(monkeypatch, tmp_path, session_kind="goal_review")
     request = {
         "inquiry": {
             "action": "open",

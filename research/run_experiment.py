@@ -13,13 +13,13 @@ from collections.abc import Callable
 from pathlib import Path
 from typing import Any
 
+from research import runner_assessment as assessment
 from research import runner_console as console
 from research import runner_execution as execution
 from research import runner_paths as paths
 from research import runner_protocol as protocol
 from research import runner_repository as repository
 from research.stop_control import interrupt_on_stop_request
-from robot_learning.training import research_config
 
 PROPOSAL_ERRORS = (
     json.JSONDecodeError,
@@ -35,6 +35,16 @@ ACCEPTED_REQUEST_VERSION = 1
 
 class FrozenOperationMismatch(ValueError):
     """The live request or scientific surface differs from accepted state."""
+
+
+class _LazyResearchConfig:
+    def load_experiment_config(self) -> dict:
+        from robot_learning.training import research_config
+
+        return research_config.load_experiment_config()
+
+
+research_config = _LazyResearchConfig()
 
 
 def _now() -> str:
@@ -130,19 +140,23 @@ def _require_matching_manifest(
         )
 
 
-def _protected_panel_overlap():
+def _protected_panel_overlap(seed: int, episodes: int) -> bool:
+    protocol.require_trusted_assessment_runtime(
+        protocol.OFFICIAL_ASSESSMENT_ADAPTER_PATH
+    )
     from robot_learning.scenario.final_benchmark import (
         research_panel_overlaps_protected,
     )
 
-    return research_panel_overlaps_protected
+    return research_panel_overlaps_protected(seed, episodes)
 
 
 def _task_reference_contract() -> dict:
-    protocol.require_trusted_assessment_runtime(protocol.TASK_REFERENCE_ADAPTER_PATH)
-    from robot_learning.scenario.task_reference import task_reference_panel
+    return assessment.task_reference_contract()
 
-    return task_reference_panel()
+
+def _load_experiment_config() -> dict:
+    return research_config.load_experiment_config()
 
 
 def _python_module_paths(measurements: list[dict]) -> list[str]:
@@ -174,7 +188,7 @@ def _revalidate_frozen_science(data: dict, description: str) -> None:
         _current_scientific_manifest(data["code_parent_commit"]),
         description,
     )
-    if research_config.load_experiment_config() != data["effective_parameters"]:
+    if _load_experiment_config() != data["effective_parameters"]:
         raise FrozenOperationMismatch(
             f"{description} configuration changed after the operation was accepted"
         )
@@ -215,7 +229,7 @@ def _transaction_data(kind: str, request: dict, state: dict) -> dict:
             "scientific_manifest": _scientific_manifest(source_changes),
             "scientific_paths": list(changed),
             "scientific_commit": None,
-            "effective_parameters": research_config.load_experiment_config(),
+            "effective_parameters": _load_experiment_config(),
             "candidate_dir": None,
             "archived_candidates": None,
             "result": None,
@@ -225,7 +239,7 @@ def _transaction_data(kind: str, request: dict, state: dict) -> dict:
         planned = protocol.planned_measurements(measurement, state)
         protocol.validate_panel_independence(
             measurement,
-            protected_overlap=_protected_panel_overlap(),
+            protected_overlap=_protected_panel_overlap,
         )
         module_paths = _python_module_paths(planned)
         module_provenance = None
@@ -239,7 +253,7 @@ def _transaction_data(kind: str, request: dict, state: dict) -> dict:
                 "scientific_manifest": _current_scientific_manifest(parent_commit),
                 "scientific_paths": list(changed),
                 "scientific_commit": None,
-                "effective_parameters": research_config.load_experiment_config(),
+                "effective_parameters": _load_experiment_config(),
                 "module_paths": module_paths,
                 "module_manifest": _scientific_manifest(module_paths),
                 "campaign_lab_manifest": repository.campaign_lab_manifest(),
@@ -288,7 +302,7 @@ def _transaction_data(kind: str, request: dict, state: dict) -> dict:
             "code_parent_commit": parent_commit,
             "scientific_manifest": _scientific_manifest(source_changes),
             "scientific_paths": list(changed),
-            "effective_parameters": research_config.load_experiment_config(),
+            "effective_parameters": _load_experiment_config(),
             "scientific_commit": None,
             "result": None,
         }
@@ -1467,6 +1481,26 @@ def _persist_official_assessment_transition(state: dict) -> None:
     )
 
 
+def _validate_official_assessment_artifact(
+    candidate: dict, existing: dict | None = None
+) -> Path:
+    if isinstance(existing, dict):
+        if existing["artifact"] != candidate["artifact"]:
+            raise ValueError("the assessed artifact identity changed")
+        if existing["fingerprint"] != candidate["fingerprint"]:
+            raise ValueError("the assessed artifact fingerprint changed")
+        expected_fingerprint = existing["fingerprint"]
+    else:
+        expected_fingerprint = candidate["fingerprint"]
+    artifact = repository.resolve_repo_path(candidate["artifact"])
+    repository.require_complete_inference_artifact(
+        artifact, "official-assessment model"
+    )
+    if repository.artifact_fingerprint(artifact) != expected_fingerprint:
+        raise ValueError("official-assessment model fingerprint changed")
+    return artifact
+
+
 def run_official_assessment() -> int:
     state = repository.load_state(allow_missing_artifact=True)
     terminal = state["terminal_state"]
@@ -1474,9 +1508,6 @@ def run_official_assessment() -> int:
         "official_assessment_"
     ):
         raise ValueError("there is no requested official assessment")
-    protocol.require_trusted_assessment_runtime(
-        protocol.OFFICIAL_ASSESSMENT_ADAPTER_PATH
-    )
     candidate = state["candidates"].get(terminal["model"])
     if not isinstance(candidate, dict):
         raise TypeError("the requested official-assessment model is unavailable")
@@ -1484,6 +1515,7 @@ def run_official_assessment() -> int:
     if isinstance(existing, dict):
         if existing["model"] != candidate["id"]:
             raise ValueError("the recorded official assessment names another model")
+        _validate_official_assessment_artifact(candidate, existing)
         _persist_official_assessment_transition(state)
         if existing["status"] == "passed" and not paths.GOAL_PATH.is_file():
             paths.GOAL_PATH.write_text(
@@ -1492,19 +1524,13 @@ def run_official_assessment() -> int:
         if not repository.commit_runner_memory("record official assessment"):
             repository.push_head()
         return 0
-    artifact = repository.resolve_repo_path(candidate["artifact"])
-    repository.require_complete_inference_artifact(
-        artifact, "official-assessment model"
-    )
-    if repository.artifact_fingerprint(artifact) != candidate["fingerprint"]:
-        raise ValueError("official-assessment model fingerprint changed")
+    artifact = _validate_official_assessment_artifact(candidate)
 
-    from robot_learning.scenario.final_benchmark import evaluate_final_model
-
-    metrics = evaluate_final_model(
+    metrics = assessment.evaluate_official_model(
         artifact / "model.zip",
         progress_callback=official_assessment_progress,
     )
+    _validate_official_assessment_artifact(candidate)
     passed = bool(metrics["goal_reached"])
     facts = ["goal reached" if passed else "goal not reached"]
     if metrics.get("success_percent") is not None:
@@ -1515,6 +1541,8 @@ def run_official_assessment() -> int:
     state["official_assessment"] = {
         "status": "passed" if passed else "failed",
         "model": candidate["id"],
+        "artifact": candidate["artifact"],
+        "fingerprint": candidate["fingerprint"],
         "summary": summary,
         "completed_at": _now(),
     }
@@ -1538,6 +1566,9 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument("--session-objective")
     parser.add_argument("--backend-session-id")
+    parser.add_argument("--backend-adapter")
+    parser.add_argument("--backend-model")
+    parser.add_argument("--backend-reasoning")
     parser.add_argument("--max-inquiries", type=int)
     parser.add_argument("--synchronize-max-inquiries", type=int)
     parser.add_argument("--check-scientific-model-deliverable", action="store_true")
@@ -1551,6 +1582,24 @@ def main() -> int:
     args = parse_args()
     if args.synchronize_max_inquiries is not None:
         state = repository.load_state(allow_missing_artifact=True)
+        if state["scientific_session"] is not None:
+            if not all(
+                (
+                    args.backend_adapter,
+                    args.backend_model,
+                    args.backend_reasoning,
+                )
+            ):
+                raise ValueError(
+                    "active session validation requires backend adapter, model, "
+                    "and reasoning"
+                )
+            repository.require_scientific_session_backend(
+                state,
+                adapter=args.backend_adapter,
+                model=args.backend_model,
+                reasoning=args.backend_reasoning,
+            )
         changed = repository.synchronize_max_inquiries(
             state, args.synchronize_max_inquiries
         )
@@ -1591,6 +1640,18 @@ def main() -> int:
         if not args.backend_session_id:
             print("ERROR: --start-session requires --backend-session-id")
             return 1
+        if not all(
+            (
+                args.backend_adapter,
+                args.backend_model,
+                args.backend_reasoning,
+            )
+        ):
+            print(
+                "ERROR: --start-session requires --backend-adapter, "
+                "--backend-model, and --backend-reasoning"
+            )
+            return 1
         state = repository.load_state(allow_missing_artifact=True)
         if args.max_inquiries is not None:
             repository.synchronize_max_inquiries(state, args.max_inquiries)
@@ -1599,6 +1660,9 @@ def main() -> int:
             kind=args.start_session,
             objective=args.session_objective,
             backend_session_id=args.backend_session_id,
+            backend_adapter=args.backend_adapter,
+            backend_model=args.backend_model,
+            backend_reasoning=args.backend_reasoning,
         )
         repository.write_state(state)
         print(f"SCIENTIFIC_SESSION_STARTED: {session['id']}")

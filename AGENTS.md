@@ -205,9 +205,10 @@ the same active bounded scientific session. A checkpoint publishes the current
 PI-owned scientific surface, records the session's synthesis and evidence
 references, and ends the session. Later work starts a fresh backend session from
 durable state; no campaign-long conversation identity is persisted.
-The active scientific session persists its backend session ID so launcher
-restart resumes that bounded conversation; clearing the scientific session at
-checkpoint or terminal conclusion clears the ID.
+The active scientific session persists its backend session ID and exact adapter,
+model and reasoning descriptor. Launcher restart must match that descriptor to
+resume the bounded conversation; checkpoint or terminal conclusion clears the
+session identity and descriptor.
 
 Training, measurement, inquiry, checkpoint, model-role, recipe-restoration and
 campaign-conclusion operations are peers. Training never creates a privileged

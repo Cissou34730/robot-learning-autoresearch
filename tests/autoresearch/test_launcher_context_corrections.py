@@ -2,11 +2,20 @@
 
 from __future__ import annotations
 
+import builtins
+import subprocess
+import sys
+import types
+from pathlib import Path
+
 import pytest
 
 from research import run_experiment
+from research import runner_assessment as assessment
 from research import runner_protocol as protocol
 from research import runner_repository as repository
+
+ROOT = Path(__file__).resolve().parents[2]
 
 
 def _ready_state(monkeypatch, *, session_kind: str = "startup") -> dict:
@@ -35,6 +44,9 @@ def _ready_state(monkeypatch, *, session_kind: str = "startup") -> dict:
         kind=session_kind,
         objective="Make one bounded decision.",
         backend_session_id="backend-session",
+        backend_adapter="copilot",
+        backend_model="gpt-5.6-luna",
+        backend_reasoning="high",
     )
     return state
 
@@ -45,9 +57,18 @@ def test_startup_session_persists_backend_identity_and_has_strict_shape(monkeypa
 
     assert session["kind"] == "startup"
     assert session["backend_session_id"] == "backend-session"
+    assert session["backend_descriptor"] == {
+        "adapter": "copilot",
+        "model": "gpt-5.6-luna",
+        "reasoning": "high",
+    }
     repository.validate_research_state(state, allow_missing_artifact=True)
     missing = {**state, "scientific_session": dict(session)}
     del missing["scientific_session"]["backend_session_id"]
+    with pytest.raises(ValueError, match="scientific_session requires exactly"):
+        repository.validate_research_state(missing, allow_missing_artifact=True)
+    missing = {**state, "scientific_session": dict(session)}
+    del missing["scientific_session"]["backend_descriptor"]
     with pytest.raises(ValueError, match="scientific_session requires exactly"):
         repository.validate_research_state(missing, allow_missing_artifact=True)
     session["unexpected"] = True
@@ -145,6 +166,76 @@ def test_protected_assessment_requires_clean_committed_runtime(monkeypatch):
     assert "robot_learning/benchmark/final_contract.py" in observed[0]
 
 
+@pytest.mark.parametrize(
+    ("adapter_path", "module_name", "attribute", "invoke"),
+    [
+        (
+            protocol.TASK_REFERENCE_ADAPTER_PATH,
+            "robot_learning.scenario.task_reference",
+            "task_reference_panel",
+            assessment.task_reference_contract,
+        ),
+        (
+            protocol.OFFICIAL_ASSESSMENT_ADAPTER_PATH,
+            "robot_learning.scenario.final_benchmark",
+            "evaluate_final_model",
+            lambda: assessment.evaluate_official_model(Path("model.zip")),
+        ),
+    ],
+)
+def test_protected_assessment_establishes_trust_before_scenario_import(
+    monkeypatch, adapter_path, module_name, attribute, invoke
+):
+    events = []
+    fake = types.ModuleType(module_name)
+    setattr(
+        fake,
+        attribute,
+        (lambda *_args, **_kwargs: {"panel": "trusted"})
+        if attribute == "task_reference_panel"
+        else (lambda *_args, **_kwargs: {"goal_reached": False}),
+    )
+    monkeypatch.setitem(sys.modules, module_name, fake)
+    monkeypatch.setattr(
+        protocol,
+        "require_trusted_assessment_runtime",
+        lambda path: events.append(("trust", path)),
+    )
+    original_import = builtins.__import__
+
+    def observed_import(name, *args, **kwargs):
+        if name == module_name:
+            events.append(("import", name))
+        return original_import(name, *args, **kwargs)
+
+    monkeypatch.setattr(builtins, "__import__", observed_import)
+    invoke()
+
+    assert events[:2] == [("trust", adapter_path), ("import", module_name)]
+
+
+def test_runner_import_does_not_load_pi_owned_training_or_scenario_code():
+    completed = subprocess.run(
+        [
+            str(ROOT / ".venv" / "Scripts" / "python.exe"),
+            "-c",
+            (
+                "import sys; import research.run_experiment; "
+                "blocked=sorted(name for name in sys.modules "
+                "if name.startswith(('robot_learning.training', "
+                "'robot_learning.scenario'))); "
+                "print('\\n'.join(blocked))"
+            ),
+        ],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert completed.returncode == 0, completed.stderr
+    assert completed.stdout.strip() == ""
+
+
 def test_max_inquiries_changes_only_during_fresh_or_startup_initialization(monkeypatch):
     state = _ready_state(monkeypatch)
     state["scientific_session"] = None
@@ -157,7 +248,64 @@ def test_max_inquiries_changes_only_during_fresh_or_startup_initialization(monke
         kind="startup",
         objective="Initial scientific design.",
         backend_session_id="backend-session",
+        backend_adapter="copilot",
+        backend_model="gpt-5.6-luna",
+        backend_reasoning="high",
     )
     with pytest.raises(ValueError, match="does not match persisted"):
         repository.synchronize_max_inquiries(state, 8)
     assert not repository.synchronize_max_inquiries(state, 7)
+
+
+def test_active_session_backend_descriptor_must_match_until_checkpoint(monkeypatch):
+    state = _ready_state(monkeypatch)
+    repository.require_scientific_session_backend(
+        state,
+        adapter="copilot",
+        model="gpt-5.6-luna",
+        reasoning="high",
+    )
+    with pytest.raises(ValueError, match="same adapter, model, and reasoning"):
+        repository.require_scientific_session_backend(
+            state,
+            adapter="opencode",
+            model="gpt-5.6-luna",
+            reasoning="high",
+        )
+    state["scientific_session"] = None
+    repository.require_scientific_session_backend(
+        state,
+        adapter="opencode",
+        model="another-model",
+        reasoning="xhigh",
+    )
+
+
+def test_launcher_restart_validation_rejects_backend_descriptor_change(
+    monkeypatch, capsys
+):
+    state = _ready_state(monkeypatch)
+    monkeypatch.setattr(repository, "load_state", lambda **_kwargs: state)
+    monkeypatch.setattr(repository, "synchronize_max_inquiries", lambda *_args: False)
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        [
+            "run_experiment.py",
+            "--synchronize-max-inquiries",
+            "15",
+            "--backend-adapter",
+            "opencode",
+            "--backend-model",
+            "gpt-5.6-luna",
+            "--backend-reasoning",
+            "high",
+        ],
+    )
+
+    with pytest.raises(ValueError, match="same adapter, model, and reasoning"):
+        run_experiment.main()
+
+    sys.argv[4] = "copilot"
+    assert run_experiment.main() == 0
+    assert "MAX_INQUIRIES_SYNCHRONIZED" in capsys.readouterr().out

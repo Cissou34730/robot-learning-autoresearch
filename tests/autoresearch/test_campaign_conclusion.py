@@ -40,7 +40,12 @@ def _configure(monkeypatch, tmp_path: Path) -> dict:
         "commit": "a" * 40,
     }
     repository.start_scientific_session(
-        state, kind="goal_review", objective="Decide the campaign outcome."
+        state,
+        kind="goal_review",
+        objective="Decide the campaign outcome.",
+        backend_adapter="copilot",
+        backend_model="gpt-5.6-luna",
+        backend_reasoning="high",
     )
     repository.write_state(state)
     return state
@@ -198,6 +203,8 @@ def test_requested_official_assessment_is_runner_owned_and_recorded(
     )
     assert persisted["official_assessment"]["status"] == expected_status
     assert persisted["official_assessment"]["model"] == candidate["id"]
+    assert persisted["official_assessment"]["artifact"] == candidate["artifact"]
+    assert persisted["official_assessment"]["fingerprint"] == candidate["fingerprint"]
     assert "200 episodes" in persisted["official_assessment"]["summary"]
     assert observed["model"] == artifact / "model.zip"
     assert paths.GOAL_PATH.exists() is goal_marker
@@ -225,6 +232,12 @@ def test_session_start_rejects_max_inquiries_mismatch_after_initialization(
             "Make a bounded goal decision.",
             "--backend-session-id",
             "backend-session",
+            "--backend-adapter",
+            "copilot",
+            "--backend-model",
+            "gpt-5.6-luna",
+            "--backend-reasoning",
+            "high",
             "--max-inquiries",
             "7",
         ],
@@ -309,3 +322,66 @@ def test_official_assessment_restart_reconciles_state_and_history(
     assert run_experiment.run_official_assessment() == 0
     history = repository.history_records()
     assert history[-1]["result"]["status"] == "official_assessment_failed"
+
+
+@pytest.mark.parametrize(
+    ("damage", "message"),
+    [("change", "fingerprint changed"), ("remove", "is incomplete")],
+)
+def test_official_assessment_recovery_revalidates_the_assessed_artifact(
+    monkeypatch, tmp_path, damage, message
+):
+    state = _configure(monkeypatch, tmp_path)
+    artifact = tmp_path / "archive" / "candidate"
+    artifact.mkdir(parents=True)
+    (artifact / "model.zip").write_bytes(b"model")
+    (artifact / "artifact.json").write_text("{}", encoding="utf-8")
+    (artifact / "policy_runtime.pkl").write_bytes(b"runtime")
+    candidate = {
+        "id": "T1:checkpoint-10",
+        "artifact": repository.repo_relative_path(artifact),
+        "fingerprint": repository.artifact_fingerprint(artifact),
+        "origin_operation": "T1",
+        "name": "checkpoint-10",
+        "parameters": {},
+        "scientific_commit": "b" * 40,
+        "training_steps": 10,
+        "evaluation_artifacts": [],
+    }
+    state["candidates"][candidate["id"]] = candidate
+    state["model_roles"]["best_known"] = candidate["id"]
+    repository.write_state(state)
+    run_experiment.accept_operation(
+        {
+            "campaign_conclusion": {
+                "action": "request_official_assessment",
+                "reason": "The selected model is ready.",
+            }
+        },
+        state,
+    )
+    assert run_experiment.execute_pending_operation() == 0
+    monkeypatch.setattr(
+        "robot_learning.scenario.final_benchmark.evaluate_final_model",
+        lambda *_args, **_kwargs: {
+            "goal_reached": True,
+            "success_percent": 100.0,
+            "episodes": 200,
+        },
+    )
+    monkeypatch.setattr(
+        repository,
+        "upsert_operation_event",
+        lambda _event: (_ for _ in ()).throw(OSError("interrupted history write")),
+    )
+    with pytest.raises(OSError, match="interrupted history write"):
+        run_experiment.run_official_assessment()
+
+    if damage == "change":
+        (artifact / "model.zip").write_bytes(b"changed")
+    else:
+        (artifact / "model.zip").unlink()
+    monkeypatch.setattr(repository, "upsert_operation_event", lambda _event: None)
+    with pytest.raises(ValueError, match=message):
+        run_experiment.run_official_assessment()
+    assert not paths.GOAL_PATH.exists()

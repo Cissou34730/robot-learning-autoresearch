@@ -11,6 +11,7 @@ from __future__ import annotations
 import argparse
 import asyncio
 import json
+import shlex
 import subprocess
 import sys
 import time
@@ -127,10 +128,13 @@ DEPENDENCY_DENIAL = (
 
 RESERVED_SCRIPT_NAMES = (
     "run_experiment.py",
+    "runner_assessment.py",
     "migrate_research_state.py",
     "final_benchmark.py",
     "migrate_policy_runtime.py",
     "reset_campaign.py",
+    "run_research.ps1",
+    "reset_research.ps1",
 )
 
 RESERVED_SCRIPT_PATHS = (
@@ -140,6 +144,8 @@ RESERVED_SCRIPT_PATHS = (
 )
 
 RESERVED_MODULES = (
+    "research.run_experiment",
+    "research.runner_assessment",
     "research.migrate_policy_runtime",
     "research.reset_campaign",
     "robot_learning.evaluate",
@@ -171,6 +177,19 @@ READER_COMMANDS = frozenset(
 )
 
 INTERPRETERS = frozenset({"python", "python.exe", "python3", "py", "py.exe"})
+POWERSHELL_HOSTS = frozenset({"powershell", "powershell.exe", "pwsh", "pwsh.exe"})
+GIT_GLOBAL_VALUE_OPTIONS = frozenset(
+    {
+        "-c",
+        "-C",
+        "--config-env",
+        "--exec-path",
+        "--git-dir",
+        "--namespace",
+        "--super-prefix",
+        "--work-tree",
+    }
+)
 
 SEPARATORS = (";", "&&", "||", "|", "\n", "\r")
 
@@ -251,7 +270,22 @@ def command_segments(command: str) -> list[list[str]]:
     text = command
     for separator in SEPARATORS:
         text = text.replace(separator, "\x00")
-    return [segment.split() for segment in text.split("\x00") if segment.split()]
+    segments = []
+    for segment in text.split("\x00"):
+        try:
+            tokens = shlex.split(segment, posix=False)
+        except ValueError:
+            tokens = segment.split()
+        if tokens:
+            segments.append(tokens)
+    return segments
+
+
+def clean_command_token(token: str) -> str:
+    value = token.strip()
+    if len(value) >= 2 and value[0] == value[-1] and value[0] in {"'", '"'}:
+        value = value[1:-1]
+    return value
 
 
 def strip_launcher_prefix(tokens: list[str]) -> list[str]:
@@ -270,6 +304,8 @@ def strip_launcher_prefix(tokens: list[str]) -> list[str]:
 
 def execution_target(tokens: list[str]) -> str | None:
     """What this segment would actually run, ignoring anything it merely names."""
+    while tokens and tokens[0] == "&":
+        tokens = tokens[1:]
     if not tokens:
         return None
     if tokens[0].lower().strip("&.") in READER_COMMANDS:
@@ -277,21 +313,30 @@ def execution_target(tokens: list[str]) -> str | None:
     tokens = strip_launcher_prefix(tokens)
     if not tokens:
         return None
-    if Path(tokens[0]).name.lower() not in INTERPRETERS:
-        return tokens[0]
+    executable = Path(clean_command_token(tokens[0])).name.lower()
+    if executable in POWERSHELL_HOSTS:
+        arguments = tokens[1:]
+        for index, argument in enumerate(arguments):
+            if argument.lower() in {"-file", "-f"} and index + 1 < len(arguments):
+                return clean_command_token(arguments[index + 1])
+            if argument.lower() in {"-command", "-c"}:
+                return None
+        return clean_command_token(tokens[0])
+    if executable not in INTERPRETERS:
+        return clean_command_token(tokens[0])
     arguments = tokens[1:]
     index = 0
     while index < len(arguments):
         argument = arguments[index]
         if argument == "-m" and index + 1 < len(arguments):
-            return arguments[index + 1]
+            return clean_command_token(arguments[index + 1])
         if argument in {"-c", "--command"}:
             # Inline code names no target; the guardrail stops here by design.
             return None
         if argument.startswith("-"):
             index += 1
             continue
-        return argument
+        return clean_command_token(argument)
     return None
 
 
@@ -308,12 +353,31 @@ def is_reserved_execution(target: str | None) -> bool:
 
 def denied_git_subcommand(tokens: list[str]) -> str | None:
     """The subcommand when it is not a read-only one, so unknown verbs deny."""
-    if "git" not in tokens:
+    executable_index = next(
+        (
+            index
+            for index, token in enumerate(tokens)
+            if Path(clean_command_token(token).strip("&."))
+            .name.lower()
+            .removesuffix(".exe")
+            == "git"
+        ),
+        None,
+    )
+    if executable_index is None:
         return None
-    for token in tokens[tokens.index("git") + 1 :]:
-        if token.startswith("-"):
+    index = executable_index + 1
+    while index < len(tokens):
+        token = clean_command_token(tokens[index])
+        option = token.split("=", 1)[0]
+        if option in GIT_GLOBAL_VALUE_OPTIONS:
+            index += 1 if "=" in token else 2
             continue
-        return None if token in READ_ONLY_GIT else token
+        if token.startswith("-"):
+            index += 1
+            continue
+        subcommand = Path(token).name.lower().removesuffix(".exe")
+        return None if subcommand in READ_ONLY_GIT else subcommand
     return "git"
 
 
@@ -446,10 +510,19 @@ def _short_option_span(token: str, flag_options: frozenset[str]) -> int:
 
 
 def is_repository_wide_pytest(tokens: list[str]) -> bool:
-    if "pytest" not in tokens:
+    executable_index = next(
+        (
+            index
+            for index, token in enumerate(tokens)
+            if Path(clean_command_token(token)).name.lower().removesuffix(".exe")
+            == "pytest"
+        ),
+        None,
+    )
+    if executable_index is None:
         return False
     flag_options = pytest_flag_options()
-    rest = tokens[tokens.index("pytest") + 1 :]
+    rest = tokens[executable_index + 1 :]
     index = 0
     positional_only = False
     while index < len(rest):

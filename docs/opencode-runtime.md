@@ -144,10 +144,11 @@ value.
 
 The launcher creates one backend UUID per active bounded scientific session and
 reuses it across that session's Runner round trips and validation corrections.
-The UUID is persisted only inside the active schema-6 `scientific_session`, so a
-launcher restart resumes the same bounded session. Checkpoint or terminal
-campaign conclusion clears it with that session. OpenCode assigns its own
-session ids, so the adapter mapping is recorded in
+The UUID and exact adapter, model and reasoning descriptor are persisted only
+inside the active schema-6 `scientific_session`. A launcher restart must match
+that descriptor before it can resume the bounded session. Checkpoint or terminal
+campaign conclusion clears both. OpenCode assigns its own session ids, so the
+adapter mapping is recorded in
 `reports/opencode-sessions.json` (ignored, never committed, never injected into
 PI context). The mapping is written before the first prompt.
 

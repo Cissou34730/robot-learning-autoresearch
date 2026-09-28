@@ -120,7 +120,15 @@ CAMPAIGN_FIELDS = {
     "recipe_source_commit",
     "max_inquiries",
 }
-OFFICIAL_ASSESSMENT_FIELDS = {"status", "model", "summary", "completed_at"}
+OFFICIAL_ASSESSMENT_FIELDS = {
+    "status",
+    "model",
+    "artifact",
+    "fingerprint",
+    "summary",
+    "completed_at",
+}
+BACKEND_DESCRIPTOR_FIELDS = {"adapter", "model", "reasoning"}
 OPERATION_KINDS = {
     "measurement",
     "training",
@@ -651,6 +659,7 @@ def _validate_session(session: object, active_inquiry: object) -> None:
         "objective",
         "inquiry_id",
         "backend_session_id",
+        "backend_descriptor",
         "scientific_parent_commit",
         "operation_ids",
     }
@@ -668,6 +677,21 @@ def _validate_session(session: object, active_inquiry: object) -> None:
         "backend_session_id",
         "scientific_session backend_session_id",
     )
+    backend = _require_exact_fields(
+        session["backend_descriptor"],
+        BACKEND_DESCRIPTOR_FIELDS,
+        "scientific_session backend_descriptor",
+    )
+    if backend["adapter"] not in {"copilot", "opencode"}:
+        raise ValueError(
+            "scientific_session backend adapter must be copilot or opencode"
+        )
+    for field in ("model", "reasoning"):
+        _nonempty(
+            backend,
+            field,
+            f"scientific_session backend_descriptor {field}",
+        )
     _nonempty(
         session,
         "scientific_parent_commit",
@@ -1686,6 +1710,17 @@ def validate_research_state(state: dict, *, allow_missing_artifact: bool) -> Non
             raise ValueError("official_assessment status must be passed or failed")
         if assessment["model"] != terminal["model"]:
             raise ValueError("official_assessment model must match terminal state")
+        candidate = candidates[assessment["model"]]
+        if assessment["artifact"] != candidate["artifact"]:
+            raise ValueError(
+                "official_assessment artifact must match the assessed candidate"
+            )
+        if assessment["fingerprint"] != candidate["fingerprint"]:
+            raise ValueError(
+                "official_assessment fingerprint must match the assessed candidate"
+            )
+        _nonempty(assessment, "artifact", "official_assessment artifact")
+        _nonempty(assessment, "fingerprint", "official_assessment fingerprint")
         expected_terminal = f"official_assessment_{assessment['status']}"
         if terminal["status"] != expected_terminal:
             raise ValueError("official_assessment result must match the terminal state")
@@ -1780,6 +1815,9 @@ def start_scientific_session(
     kind: str,
     objective: str,
     backend_session_id: str | None = None,
+    backend_adapter: str | None = None,
+    backend_model: str | None = None,
+    backend_reasoning: str | None = None,
 ) -> dict:
     if state["terminal_state"] is not None:
         raise ValueError("a terminal campaign cannot start a scientific session")
@@ -1808,6 +1846,19 @@ def start_scientific_session(
     backend_id = backend_session_id or str(uuid.uuid4())
     if not isinstance(backend_id, str) or not backend_id.strip():
         raise ValueError("scientific session backend ID must be non-empty")
+    descriptor = {
+        "adapter": backend_adapter,
+        "model": backend_model,
+        "reasoning": backend_reasoning,
+    }
+    if descriptor["adapter"] not in {"copilot", "opencode"}:
+        raise ValueError(
+            "scientific session backend adapter must be copilot or opencode"
+        )
+    for field, value in descriptor.items():
+        if not isinstance(value, str) or not value.strip():
+            raise ValueError(f"scientific session backend {field} must be non-empty")
+        descriptor[field] = value.strip()
     state["counters"]["session"] += 1
     session = {
         "id": f"S{state['counters']['session']}",
@@ -1815,11 +1866,35 @@ def start_scientific_session(
         "objective": objective.strip(),
         "inquiry_id": active["id"] if isinstance(active, dict) else None,
         "backend_session_id": backend_id.strip(),
+        "backend_descriptor": descriptor,
         "scientific_parent_commit": git("rev-parse", "HEAD").strip(),
         "operation_ids": [],
     }
     state["scientific_session"] = session
     return session
+
+
+def require_scientific_session_backend(
+    state: dict,
+    *,
+    adapter: str,
+    model: str,
+    reasoning: str,
+) -> None:
+    session = state["scientific_session"]
+    if not isinstance(session, dict):
+        return
+    requested = {
+        "adapter": adapter,
+        "model": model,
+        "reasoning": reasoning,
+    }
+    if session["backend_descriptor"] != requested:
+        raise ValueError(
+            "active scientific session backend descriptor does not match the "
+            "launcher; resume with the same adapter, model, and reasoning until "
+            "checkpoint"
+        )
 
 
 def synchronize_max_inquiries(state: dict, requested: int) -> bool:

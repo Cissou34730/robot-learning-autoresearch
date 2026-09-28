@@ -21,10 +21,6 @@ from pathlib import Path
 from research import runner_console as console
 from research import runner_paths as paths
 from research import runner_repository as repository
-from robot_learning.training.research_config import (
-    RESEARCH_EVALUATION_EPISODES,
-    RESEARCH_EVALUATION_SEED,
-)
 
 TRAIN_TIMEOUT_SECONDS = 12 * 60 * 60
 TRAIN_STALL_SECONDS = 30 * 60
@@ -499,23 +495,41 @@ def validate_reusable_candidate(
 
 def evaluate_artifact(
     artifact_dir: Path,
-    seed: int = RESEARCH_EVALUATION_SEED,
+    seed: int | None = None,
     label: str = "official evaluation",
-    episodes: int = RESEARCH_EVALUATION_EPISODES,
+    episodes: int | None = None,
     output_path: Path | None = None,
     official_benchmark: bool = False,
     task_reference: bool = False,
 ) -> dict:
+    if task_reference and (seed is None or episodes is None):
+        from research import runner_assessment as assessment
+
+        contract = assessment.task_reference_contract()
+        seed = int(contract["seed"]) if seed is None else seed
+        episodes = int(contract["episodes"]) if episodes is None else episodes
+    elif seed is None or episodes is None:
+        from robot_learning.training import research_config
+
+        seed = research_config.RESEARCH_EVALUATION_SEED if seed is None else seed
+        episodes = (
+            research_config.RESEARCH_EVALUATION_EPISODES
+            if episodes is None
+            else episodes
+        )
     output_path = output_path or paths.RESEARCH_DIR / "last_evaluation.json"
     output_path.unlink(missing_ok=True)
     progress_path = output_path.with_suffix(output_path.suffix + ".progress")
     stale_temporary_progress = progress_path.with_suffix(progress_path.suffix + ".tmp")
     progress_path.unlink(missing_ok=True)
     stale_temporary_progress.unlink(missing_ok=True)
+    module = (
+        "research.runner_assessment" if task_reference else "robot_learning.evaluate"
+    )
     command = [
         sys.executable,
         "-m",
-        "robot_learning.evaluate",
+        module,
         "--model",
         str(artifact_dir / "model.zip"),
         "--episodes",

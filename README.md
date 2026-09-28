@@ -62,6 +62,11 @@ per changed file and per shell command, and stays quiet about reads and
 searches. It reports what a session did; whether a phase is complete remains a
 property of the deliverable and its protected validator.
 
+While a bounded scientific session is active, its adapter, model and reasoning
+effort are fixed with its backend session ID. Restart the launcher with the same
+settings until the PI checkpoints; the next bounded session may choose a new
+backend configuration.
+
 ### Human campaign report
 
 Generate a read-only Markdown report, optionally comparing another worktree:

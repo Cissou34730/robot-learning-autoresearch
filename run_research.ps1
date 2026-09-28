@@ -573,6 +573,16 @@ function Get-AvailableOperations {
     )
 }
 
+function Get-ScientificSessionPhase {
+    param([Parameter(Mandatory)]$State)
+
+    $session = $State.scientific_session
+    if ($session.kind -eq "inquiry" -and $null -eq $State.active_inquiry) {
+        return "closed inquiry awaiting checkpoint"
+    }
+    return [string]$session.kind
+}
+
 function New-ScientificSessionPrompt {
     param(
         [Parameter(Mandatory)]$State,
@@ -609,12 +619,19 @@ function New-ScientificSessionPrompt {
     else {
         "No durable PI synthesis has been recorded yet."
     }
+    $phase = Get-ScientificSessionPhase -State $State
     $inquiry = if ($State.active_inquiry) {
         (
             "$($State.active_inquiry.id): $($State.active_inquiry.question) " +
             "Goal relevance: $($State.active_inquiry.goal_connection) " +
             "Closure condition: $($State.active_inquiry.closure_condition)"
         )
+    }
+    elseif ($phase -eq "startup") {
+        "None; this is the startup scientific-design session."
+    }
+    elseif ($phase -eq "closed inquiry awaiting checkpoint") {
+        "The inquiry is closed; preserve its outcome in the required checkpoint."
     }
     else {
         "None; this is campaign-level goal review."
@@ -653,6 +670,7 @@ function New-ScientificSessionPrompt {
         "Factual evidence relative to the goal: $bestEvidence $(Get-LatestSessionResult -State $State)"
         "PI-interpreted gap: $gap"
         "PI checkpoint synthesis: $synthesis"
+        "Session phase: $phase"
         "Active inquiry and relevance: $inquiry"
         "Bounded session objective: $($session.objective)"
         "Strategic resource summary: $resourceSummary"
@@ -831,7 +849,10 @@ function Invoke-PendingOperation {
 
 try {
     $maxInquiryExitCode = Invoke-Runner -Arguments @(
-        "--synchronize-max-inquiries", "$MaxInquiries"
+        "--synchronize-max-inquiries", "$MaxInquiries",
+        "--backend-adapter", $PIBackend,
+        "--backend-model", $Model,
+        "--backend-reasoning", $Reasoning
     )
     if ($maxInquiryExitCode -ne 0) {
         throw (
@@ -933,6 +954,9 @@ try {
                 "--start-session", $kind,
                 "--session-objective", $objective,
                 "--backend-session-id", ([guid]::NewGuid().ToString()),
+                "--backend-adapter", $PIBackend,
+                "--backend-model", $Model,
+                "--backend-reasoning", $Reasoning,
                 "--max-inquiries", "$MaxInquiries"
             )
             if (Test-StopAfterOperation $exitCode "research runner") {

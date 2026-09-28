@@ -81,7 +81,14 @@ def _candidate(identifier: str, artifact: Path) -> dict:
 
 
 def _start_session(state: dict, kind: str, objective: str) -> dict:
-    session = repository.start_scientific_session(state, kind=kind, objective=objective)
+    session = repository.start_scientific_session(
+        state,
+        kind=kind,
+        objective=objective,
+        backend_adapter="copilot",
+        backend_model="gpt-5.6-luna",
+        backend_reasoning="high",
+    )
     repository.write_state(state)
     return session
 
@@ -639,9 +646,7 @@ def test_completed_python_module_recovery_rejects_mutated_archived_evidence(
     archived.write_text('{"observation": 2}', encoding="utf-8")
     monkeypatch.setattr(run_experiment, "_finalize_operation", original_finalize)
 
-    with pytest.raises(
-        run_experiment.FrozenOperationMismatch, match="content changed"
-    ):
+    with pytest.raises(run_experiment.FrozenOperationMismatch, match="content changed"):
         run_experiment.execute_pending_operation()
 
 
@@ -1321,7 +1326,7 @@ def test_recipe_restore_removes_additions_and_restores_edits_and_deletions(
 
 def test_task_reference_uses_frozen_protected_contract(monkeypatch, tmp_path):
     state = _configure(monkeypatch, tmp_path)
-    _start_session(state, "goal_review", "Measure the protected task reference.")
+    _start_session(state, "startup", "Measure the protected task reference.")
     artifact = _artifact(tmp_path / "archive" / "candidate")
     candidate = _candidate("T1:checkpoint-10", artifact)
     state["candidates"][candidate["id"]] = candidate
@@ -1788,6 +1793,8 @@ def test_schema_six_rejects_unknown_nested_control_fields(monkeypatch, tmp_path)
     state["official_assessment"] = {
         "status": "passed",
         "model": candidate["id"],
+        "artifact": candidate["artifact"],
+        "fingerprint": candidate["fingerprint"],
         "summary": "The protected goal was met.",
         "completed_at": "now",
         "legacy": True,

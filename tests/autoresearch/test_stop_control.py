@@ -92,7 +92,12 @@ def test_runner_preserves_an_early_training_interrupt_for_resume(monkeypatch, tm
         "commit": "a" * 40,
     }
     repository.start_scientific_session(
-        state, kind="goal_review", objective="Request bounded training evidence."
+        state,
+        kind="startup",
+        objective="Request bounded training evidence.",
+        backend_adapter="copilot",
+        backend_model="gpt-5.6-luna",
+        backend_reasoning="high",
     )
     repository.write_state(state)
     run_experiment.accept_operation(
