@@ -61,9 +61,9 @@ if ($PIBackend -eq "opencode" -and $Reasoning -eq "max") {
 }
 
 $piPersona = @(
-    "Act as the Principal Investigator (PI) responsible for reaching the human goal without lowering scientific standards or inventing certainty."
+    "Act as the Principal Investigator (PI) accountable for evidence-based progress toward the human goal."
     "Integrate robotics, reinforcement learning, control, simulation, system identification, experimental design, and scientific software into one causal view of the embodied learning system."
-    "Set the scientific direction: challenge explanations, identify consequential unknowns, build or revise PI-owned tools and code, and interpret evidence in relation to the human goal."
+    "Set the scientific direction: form and challenge explanations, identify consequential unknowns, design discriminating evidence, and interpret results in relation to the human goal."
 ) -join " "
 
 function Request-CampaignStop([string]$Message) {
@@ -457,14 +457,14 @@ function Get-LatestSessionResult {
 
     $session = $State.scientific_session
     if (-not $session -or -not $session.operation_ids -or $session.operation_ids.Count -eq 0) {
-        return "No Runner operation has completed in this bounded session."
+        return "No operation has completed in the current line of work."
     }
     $identifier = [string]$session.operation_ids[-1]
     $event = $State.operation_events |
         Where-Object { $_.id -eq $identifier -and $_.status -eq "completed" } |
         Select-Object -First 1
     if (-not $event) {
-        return "The session has no completed result for $identifier; failed attempts are execution history, not evidence."
+        return "There is no completed result for $identifier; the failed attempt is not evidence."
     }
     $result = $event.result
     if ($event.kind -eq "measurement") {
@@ -540,74 +540,6 @@ function Get-LatestSessionResult {
     return "Operation $identifier ($($event.kind)) recorded factual result: $fact."
 }
 
-function Get-AvailableOperations {
-    param(
-        [Parameter(Mandatory)]$State,
-        [Parameter(Mandatory)][int]$InquiryLimit
-    )
-
-    $session = $State.scientific_session
-    if (-not $session) {
-        return @()
-    }
-    if (
-        ($session.kind -eq "goal_review" -and $null -ne $State.active_inquiry) -or
-        ($session.kind -eq "inquiry" -and $null -eq $State.active_inquiry) -or
-        (
-            $session.kind -eq "inquiry" -and
-            $session.operation_ids.Count -gt 0 -and
-            (
-                $State.operation_events |
-                    Where-Object { $_.id -eq $session.operation_ids[-1] } |
-                    Select-Object -First 1
-            ).result.action -eq "reframe"
-        )
-    ) {
-        return @(
-            "checkpoint: preserve the goal-level or inquiry decision and end this bounded session"
-        )
-    }
-    if ($session.kind -eq "startup") {
-        return @(
-            "measurement: execute a configured development evaluator or PI-owned Python diagnostic"
-            "training: train from fresh initialization or an explicit saved parent"
-            "model_role: explicitly set working, set best_known, or retain a candidate using completed-operation evidence"
-            "restore_recipe: restore the PI-owned scientific surface from a named candidate"
-            "checkpoint: preserve startup design and evidence, then enter campaign-level goal review"
-        )
-    }
-    if ($session.kind -eq "goal_review") {
-        $operations = @()
-        if ([int]$State.counters.inquiry -lt $InquiryLimit) {
-            $operations += "inquiry open: open one bounded, goal-linked inquiry"
-        }
-        $operations += @(
-            "campaign_conclusion request_official_assessment: submit the explicit best-known model to the official assessment"
-            "campaign_conclusion no_credible_route: conclude that no credible route remains"
-        )
-        return $operations
-    }
-    return @(
-        "measurement: execute a configured development evaluator or PI-owned Python diagnostic"
-        "training: train from fresh initialization or an explicit saved parent"
-        "inquiry reframe: materially revise the bounded question and closure condition"
-        "inquiry close: record the durable outcome and return the campaign to goal review"
-        "model_role: explicitly set working, set best_known, or retain a candidate using completed-operation evidence"
-        "restore_recipe: restore the PI-owned scientific surface from a named candidate"
-        "checkpoint: preserve the current synthesis and end this bounded session"
-    )
-}
-
-function Get-ScientificSessionPhase {
-    param([Parameter(Mandatory)]$State)
-
-    $session = $State.scientific_session
-    if ($session.kind -eq "inquiry" -and $null -eq $State.active_inquiry) {
-        return "closed inquiry awaiting checkpoint"
-    }
-    return [string]$session.kind
-}
-
 function Get-CampaignResourceSummary {
     param([Parameter(Mandatory)]$State)
 
@@ -624,7 +556,6 @@ function Get-CampaignResourceSummary {
 function New-ScientificSessionPrompt {
     param(
         [Parameter(Mandatory)]$State,
-        [Parameter(Mandatory)][int]$InquiryLimit,
         [string]$ValidationError
     )
 
@@ -632,9 +563,6 @@ function New-ScientificSessionPrompt {
     $checkpoint = $State.pi_checkpoint
     $completedEvents = @(
         $State.operation_events | Where-Object { $_.status -eq "completed" }
-    )
-    $failedEvents = @(
-        $State.operation_events | Where-Object { $_.status -eq "failed" }
     )
     $bestEvidence = if ($State.official_assessment) {
         [string]$State.official_assessment.summary
@@ -663,7 +591,6 @@ function New-ScientificSessionPrompt {
     else {
         "No durable PI synthesis has been recorded yet."
     }
-    $phase = Get-ScientificSessionPhase -State $State
     $inquiry = if ($State.active_inquiry) {
         (
             "$($State.active_inquiry.id): $($State.active_inquiry.question) " +
@@ -671,67 +598,18 @@ function New-ScientificSessionPrompt {
             "Closure condition: $($State.active_inquiry.closure_condition)"
         )
     }
-    elseif ($phase -eq "startup") {
-        "None; this is the startup scientific-design session."
+    elseif ($State.scientific_session.kind -eq "startup") {
+        "None. Establish the most credible initial scientific direction from the goal and current evidence."
     }
-    elseif ($phase -eq "closed inquiry awaiting checkpoint") {
-        "The inquiry is closed; preserve its outcome in the required checkpoint."
+    elseif ($State.scientific_session.kind -eq "inquiry") {
+        "The inquiry has closed. Preserve its outcome and the resulting campaign decision."
     }
     else {
-        "None; this is campaign-level goal review."
+        "None. Decide whether the evidence supports official assessment, a bounded goal-linked inquiry, or a conclusion that no credible route remains."
     }
     $session = $State.scientific_session
-    $completedTraining = @(
-        $completedEvents | Where-Object { $_.kind -eq "training" }
-    ).Count
-    $completedMeasurement = @(
-        $completedEvents | Where-Object { $_.kind -eq "measurement" }
-    ).Count
-    $resourceSummary = (
-        "$($State.counters.inquiry) of $InquiryLimit inquiry identities created; " +
-        "$completedTraining completed training operations; " +
-        "$completedMeasurement completed measurement operations; " +
-        "$($completedEvents.Count) completed operations; " +
-        "$($State.candidates.PSObject.Properties.Count) candidates."
-    )
-    $executionHistoryParts = @()
-    if ($failedEvents.Count -gt 0) {
-        $superseded = @(
-            $failedEvents | Where-Object { $null -ne $_.superseded_by }
-        ).Count
-        $executionHistoryParts += (
-            "Execution history (not evidence): $($failedEvents.Count) failed " +
-            "attempts, including $superseded superseded attempts."
-        )
-    }
-    if ($State.pending_operation -and $State.pending_operation.failure) {
-        $executionHistoryParts += (
-            "Pending operation " +
-            "$($State.pending_operation.id) failed and awaits repair."
-        )
-    }
-    $executionHistory = if ($executionHistoryParts.Count -gt 0) {
-        ($executionHistoryParts -join " ") + " Inspect research/brief.md for factual errors."
-    }
-    else {
-        "Execution history (not evidence): no failed attempts."
-    }
-    $operations = (Get-AvailableOperations -State $State -InquiryLimit $InquiryLimit) |
-        ForEach-Object { "- $_" }
-    $limitNote = if (
-        $session.kind -eq "goal_review" -and
-        [int]$State.counters.inquiry -ge $InquiryLimit
-    ) {
-        (
-            "The unattended MaxInquiries guard is reached. It blocks only creation " +
-            "of another inquiry; it is not evidence, a training cap, or a scientific judgment."
-        )
-    }
-    else {
-        ""
-    }
     $correction = if ($ValidationError) {
-        "Validation correction: $ValidationError Correct the request without discarding valid PI-owned work."
+        "The proposed action could not be accepted: $ValidationError Correct it without discarding valid scientific work."
     }
     else {
         ""
@@ -739,26 +617,19 @@ function New-ScientificSessionPrompt {
 
     $sections = @(
         "Human goal: $goal"
-        "Factual evidence relative to the goal: $bestEvidence $(Get-LatestSessionResult -State $State)"
-        "PI-interpreted gap: $gap"
-        "PI checkpoint synthesis: $synthesis"
-        "Session phase: $phase"
-        "Active inquiry and relevance: $inquiry"
-        "Bounded session objective: $($session.objective)"
-        "Strategic resource summary: $resourceSummary"
-        $executionHistory
-        "Available operations:`n$($operations -join "`n")"
-        $limitNote
+        "Current evidence relative to the goal: $bestEvidence $(Get-LatestSessionResult -State $State)"
+        "Current scientific understanding: $synthesis"
+        "Current goal gap: $gap"
+        "Active inquiry: $inquiry"
+        "Current objective: $($session.objective)"
         $correction
         $piPersona
-        "The human goal is the only campaign objective. Science, novelty, and understanding do not justify continuation by themselves."
+        "Direct every decision toward the human goal and distinguish evidence from conjecture."
         "Choose the operation whose result would most improve the next decision toward the human goal."
-        "Close or reframe the inquiry when its closure condition is met, evidence redirects it, or it is no longer a credible route. Do not silently drift."
-        "Before ending this scientific session, write a durable checkpoint that records goal progress, the remaining obstacle, evidence references, completed operations, model roles, resource use, and the next inquiry or campaign decision."
-        "A session may make multiple coherent Runner round trips. After measurement or training, interpret the factual result in this same backend session and choose the next operation or checkpoint."
-        "You may inspect and modify the PI-owned scientific surface and build or revise PI-owned diagnostic tools before requesting their execution. The Runner invokes, validates, records, and recovers operations; it does not judge scientific adequacy."
-        "Write exactly one request to research/operation_request.json using one strict schema-6 operation kind from research/instruments.md. Do not execute training, measurement, the Runner, the viewer, or the official assessment yourself."
-        "Read research/brief.md and the latest checkpoint first. Open other sources only when needed: research/scenario.md for the protected goal, research/scientific_model.md for the physical reference, research/instruments.md for request schemas, research/program.md for lifecycle rationale, and AGENTS.md for ownership and command boundaries."
+        "When evidence resolves or redirects the active inquiry, record that decision explicitly rather than drifting to another question."
+        "When the current line of work reaches a stable decision, preserve the synthesis, supporting evidence, remaining gap, and next direction in a checkpoint."
+        "Begin with research/brief.md and the latest checkpoint. Consult research/scenario.md, research/scientific_model.md, and other evidence only as the scientific question requires."
+        "When ready to act, use the matching contract in research/instruments.md to submit one scientific action."
     ) | Where-Object { $_ }
     return ($sections -join "`n`n")
 }
@@ -825,19 +696,11 @@ function Invoke-ScientificModelPhase {
     $goal = Get-HumanGoalSummary -State $State
     $prompt = @(
         "Human goal: $goal"
-        "Factual evidence relative to the goal: no campaign operation has run; use only the human-authored system definition."
-        "PI-interpreted gap: the campaign lacks a physical and scientific model of the robot and task."
-        "Active inquiry and relevance: none; this is the dedicated preliminary PI session."
-        "Bounded session objective: produce the campaign-start scientific model."
-        "Strategic resource summary: zero inquiries, measurements, and training operations."
-        "Available operation: write research/scientific_model.md; the launcher validates and publishes it."
+        "Objective: establish a scientific model of the robot and task that can ground later decisions toward the human goal."
         $piPersona
-        "Construct the model from first principles and the human-authored robot, simulator, environment, observation, control, task, and benchmark implementation."
-        "Do not use campaign-generated policies, measurements, checkpoints, prior PI decisions, or training outcomes."
+        "Base the model on research/scenario.md and the relevant human-authored implementation."
         "The document must contain substantive registers headed Established facts, Physical consequences, and Unknowns. Distinguish repository facts from reasoned implications and unresolved quantities."
-        "Treat approach, reaching, tolerance entry, settling, and sustained completion as one coupled embodied-control problem."
-        "Read research/scenario.md first. Consult AGENTS.md for boundaries and inspect only relevant human-authored implementation; do not read research/program.md or research/instruments.md during this preliminary session."
-        "Do not run training, measurements, the Runner, the viewer, Git mutations, or the official assessment."
+        "Include only what is justified before campaign evidence exists. Write the result to research/scientific_model.md."
     ) -join "`n`n"
 
     $script:PISessionId = $null
@@ -849,9 +712,8 @@ function Invoke-ScientificModelPhase {
     if (-not (Test-ScientificModelDeliverable)) {
         $retry = @(
             "Human goal: $goal"
-            "The preliminary deliverable failed structural validation: $script:ScientificModelValidationFeedback"
-            "Continue the same PI session and correct research/scientific_model.md. Preserve valid content and ensure all three required registers are substantive."
-            "Do not run training, measurements, the Runner, the viewer, Git mutations, or the official assessment."
+            "The scientific model could not be accepted: $script:ScientificModelValidationFeedback"
+            "Correct research/scientific_model.md while preserving valid content and ensuring all three required registers are substantive."
         ) -join "`n`n"
         Invoke-PISession -Prompt $retry -Phase "scientific model" -Continue -Preliminary
         if (Test-StopAfterOperation $script:PIExitCode "PI session") {
@@ -892,11 +754,10 @@ function Invoke-PendingOperation {
         }
         $repairPrompt = @(
             (
-                New-ScientificSessionPrompt -State $State `
-                    -InquiryLimit ([int]$State.campaign.max_inquiries)
+                New-ScientificSessionPrompt -State $State
             )
-            "The accepted Runner operation $($pending.id) failed factually: $($pending.failure)"
-            "Correct its PI-owned implementation cause while keeping the accepted request, or replace research/operation_request.json with a different valid operation when the scientific correction requires a different action."
+            "The requested action $($pending.id) failed: $($pending.failure)"
+            "Diagnose and correct the scientific implementation, or choose a different action if the failure changes the scientific decision."
         ) -join "`n`n"
         Invoke-PISession -Prompt $repairPrompt -Phase $State.scientific_session.kind `
             -Continue:$([bool]$script:PISessionId)
@@ -911,10 +772,9 @@ function Invoke-PendingOperation {
             $retryPrompt = @(
                 (
                     New-ScientificSessionPrompt -State $State `
-                        -InquiryLimit ([int]$State.campaign.max_inquiries) `
                         -ValidationError $script:OperationValidationFeedback
                 )
-                "Correct or replace the failed operation request while preserving valid PI-owned work."
+                "Correct or replace the proposed action while preserving valid scientific work."
             ) -join "`n`n"
             Invoke-PISession -Prompt $retryPrompt -Phase $State.scientific_session.kind `
                 -Continue
@@ -1062,7 +922,7 @@ try {
                 "goal_review"
             }
             $objective = if ($kind -eq "startup") {
-                "Design the initial scientific tools, observations, reward, training recipe, and measurements needed for the human goal, choose useful scientific operations, then checkpoint into campaign-level goal review."
+                "Determine the most credible first scientific direction toward the human goal from the scientific model and current evidence."
             }
             elseif ($kind -eq "goal_review") {
                 "Decide whether to request official assessment, open one bounded goal-linked inquiry, or conclude that no credible route remains."
@@ -1128,7 +988,6 @@ try {
         }
 
         $prompt = New-ScientificSessionPrompt -State $state `
-            -InquiryLimit ([int]$state.campaign.max_inquiries) `
             -ValidationError $existingRequestProblem
         Invoke-PISession -Prompt $prompt -Phase $state.scientific_session.kind `
             -Continue:$([bool]$script:PISessionId)
@@ -1138,7 +997,6 @@ try {
 
         if (-not (Test-OperationRequest)) {
             $retryPrompt = New-ScientificSessionPrompt -State $state `
-                -InquiryLimit ([int]$state.campaign.max_inquiries) `
                 -ValidationError $script:OperationValidationFeedback
             Invoke-PISession -Prompt $retryPrompt -Phase $state.scientific_session.kind `
                 -Continue

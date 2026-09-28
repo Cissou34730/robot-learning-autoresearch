@@ -82,9 +82,9 @@ documentation.
 
 1. Produce the scientific model of the robot and task.
 2. Start an initial scientific session.
-3. Let the PI design or revise the scientific tools, observations, reward,
-   training recipe, and measurements needed for the human goal.
-4. Let that session choose the first useful instrument operation.
+3. Let the PI establish the most credible initial direction from the human
+   goal, the scientific model, and available evidence.
+4. Let that session choose the first useful scientific action.
 
 A baseline is not an architectural phase. A campaign may choose to train and
 measure an initial reference policy, but `working` and `best_known` remain empty
@@ -221,8 +221,6 @@ creation. It is not:
 The active PI prompt contains imperative rules:
 
 - The human goal is the only campaign objective.
-- Science, novelty, and understanding do not justify continuation by
-  themselves.
 - Choose the operation whose result would most improve the next decision toward
   the human goal.
 - If no credible path remains, close the inquiry or conclude the campaign.
@@ -395,12 +393,15 @@ Every scientific-session prompt begins with:
 2. current best evidence relative to the goal;
 3. current gap;
 4. active inquiry and its goal relevance, when one exists;
-5. bounded session objective;
-6. current resource use;
-7. available operations.
+5. bounded session objective.
 
 The prompt preserves the strong multidisciplinary PI persona and contains the
 goal-directed continuation and stopping imperatives.
+
+Control-plane limits, counters, schema versions, backend/session mechanics,
+ownership enforcement, retry machinery, and operation catalogs are not
+scientific context and are not injected into the active PI prompt. Instrument
+formats remain available on demand in `research/instruments.md`.
 
 It also acts as a source router:
 
@@ -456,8 +457,7 @@ Lead with:
 3. current goal gap;
 4. active inquiry and why it matters;
 5. current scientific-session checkpoint;
-6. available evidence and artifacts;
-7. strategic resource consumption.
+6. available evidence and artifacts.
 
 Training history is one evidence section, not the document's organizing
 structure.

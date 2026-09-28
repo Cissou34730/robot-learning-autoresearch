@@ -45,19 +45,6 @@ def test_the_provider_prefix_is_stripped_from_the_model():
 # --- the command policy -----------------------------------------------------
 
 
-def test_preliminary_policy_excludes_campaign_evidence_without_changing_later_phases():
-    args = adapter.parse_args(
-        ["p", "--session-id", "s", "--phase", "any label", "--preliminary"]
-    )
-    preliminary = adapter.policy_for_context(args.preliminary)
-    assert "not research/brief.md or campaign artifacts" in preliminary
-    assert adapter.CAMPAIGN_CONTEXT_GUIDANCE not in preliminary
-    regular = adapter.parse_args(
-        ["p", "--session-id", "s", "--phase", "scientific model"]
-    )
-    assert adapter.policy_for_context(regular.preliminary) == adapter.POLICY
-
-
 @pytest.mark.parametrize(
     "command",
     [
@@ -441,7 +428,7 @@ def test_a_refusal_is_reported_once_not_twice(capsys):
 
     assert "call-1" in console.denied_calls
     assert console.denials == 1
-    assert capsys.readouterr().out.count("Denied by the harness") == 1
+    assert capsys.readouterr().out.count("This action is unavailable") == 1
 
 
 def test_streamed_text_is_not_repeated_by_the_final_message(capsys):
@@ -1066,90 +1053,6 @@ def test_campaign_artifacts_are_not_offloaded_out_of_the_session():
     # Evaluation panels run about 120 KiB; the threshold sits well above them so
     # the primary scientific evidence stays in the session by default.
     assert adapter.LARGE_OUTPUT_MAX_BYTES >= 256 * 1024
-
-
-def test_the_policy_separates_enforced_boundaries_from_non_binding_advice():
-    # The injected text is the contract, so it is asserted without the SDK.
-    content = " ".join(adapter.POLICY.split())
-
-    assert "<harness_boundary>" in content
-    assert "<pi_guidance>" in content
-    # The note is explicitly advice the tool layer does not enforce.
-    assert "This note is advice, not a harness rule" in content
-    assert "no call is rejected for departing from it" in content
-    assert "Tests are human-owned" in content
-    assert "Never create, modify, delete, or restore files under tests/" in content
-    assert "write exactly one operation to research/operation_request.json" in content
-    assert (
-        "session ends only through checkpoint or a terminal campaign_conclusion"
-        in content
-    )
-    assert "Use targeted linting, parsing or lightweight analysis" in content
-    assert "when they resolve uncertainty introduced by the work" in content
-    assert "Runner owns final contract and execution validation" in content
-    assert "Reviewing your own scientific reasoning against the evidence" in content
-    # The pytest clause claims exactly what the command layer enforces: only
-    # repository-wide runs are refused, targeted runs stay permitted.
-    assert "Repository-wide pytest execution belongs to the runner" in content
-    assert "Targeted tests and focused checks on PI-owned code" in content
-    assert "Pytest execution belongs to the runner." not in content
-    assert adapter.command_denial("uv run pytest") == adapter.SUITE_DENIAL
-    assert adapter.command_denial("uv run pytest tests") == adapter.SUITE_DENIAL
-    assert adapter.command_denial("uv run pytest --color no") == adapter.SUITE_DENIAL
-    assert (
-        adapter.command_denial("uv run pytest --durations-min 1")
-        == adapter.SUITE_DENIAL
-    )
-    assert (
-        adapter.command_denial("uv run pytest --code-highlight yes")
-        == adapter.SUITE_DENIAL
-    )
-    assert (
-        adapter.command_denial("uv run pytest --rootdir tests") == adapter.SUITE_DENIAL
-    )
-    assert (
-        adapter.command_denial(
-            "uv run pytest tests/autoresearch/test_copilot_researcher.py"
-        )
-        is None
-    )
-
-
-def test_the_policy_does_not_steer_the_researcher_to_read_less_or_stop_early():
-    # Context economy is never a reason to inspect less evidence, and a written
-    # deliverable is never a reason to stop reviewing the science.
-    content = " ".join(adapter.POLICY.split())
-
-    for discouraged in (
-        "read what you need rather than whole artifacts",
-        "resends the whole conversation",
-        "prefer one aggregation over",
-        "do not perform a separate final validation pass solely",
-        "The phase ends when its deliverable has been written",
-    ):
-        assert discouraged not in content
-
-    assert "Read whatever evidence the scientific question requires" in content
-    assert "context size is never a reason to leave evidence unread" in content
-
-
-def test_the_repository_policy_is_stated_to_the_model_as_well_as_enforced():
-    pytest.importorskip("copilot")
-    args = adapter.parse_args(["p", "--session-id", "s"])
-
-    message = adapter.session_options(args, adapter.Console(), asyncio.Event())[
-        "system_message"
-    ]
-    content = " ".join(message["content"].split())
-
-    assert message["mode"] == "append"
-    assert str(ROOT) in content
-    assert "run_experiment.py" in content
-    assert "research/brief.md and the campaign artifacts" in content
-    assert "authoritative scientific context" in content
-    assert "Do not use Git history as scientific evidence" in content
-    assert "current scientific code state or delta" in content
-    assert "routine workspace-discovery step" in content
 
 
 # --- session identity -------------------------------------------------------

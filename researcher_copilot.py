@@ -127,30 +127,27 @@ READ_ONLY_GIT = frozenset(
 )
 
 GIT_DENIAL = (
-    "Denied by the harness: the runner owns mutating Git operations and "
-    "restoration. Read-only git is available for code provenance and code "
-    "inspection when the current task requires it. Request schema-6 "
-    "restore_recipe when a saved candidate recipe must be restored."
+    "This action is unavailable. Use read-only Git only when code inspection "
+    "requires it; use the restoration contract in research/instruments.md when "
+    "a saved recipe is needed."
 )
 
 EXECUTION_DENIAL = (
-    "Denied by the harness: the Runner executes schema-6 operations, not the PI. "
-    "Write one operation to research/operation_request.json for the Runner."
+    "This action is unavailable. Use the matching execution contract in "
+    "research/instruments.md."
 )
 
 SUITE_DENIAL = (
-    "Denied by the harness: a repository-wide pytest run belongs to the runner. "
-    "Use targeted linting, parsing or lightweight analysis for scientific changes."
+    "Repository-wide tests are unavailable here. Use targeted checks that address "
+    "uncertainty introduced by the scientific work."
 )
 
 DEPENDENCY_DENIAL = (
-    "Denied by the harness: the project dependency set is human-owned. Use the "
-    "installed environment without installing, removing, syncing or locking packages."
+    "Dependency changes are unavailable. Use the installed project environment."
 )
 
 FILE_EDIT_DENIAL = (
-    "Denied by the harness: direct edits are limited to the PI-owned scientific "
-    "surface declared in AGENTS.md."
+    "This path is outside the editable scientific surface defined in AGENTS.md."
 )
 
 RESERVED_SCRIPT_NAMES = (
@@ -297,57 +294,19 @@ SEPARATORS = (";", "&&", "||", "|", "\n", "\r")
 LARGE_OUTPUT_DIR = ROOT / ".copilot" / "large-output"
 LARGE_OUTPUT_MAX_BYTES = 262_144
 
-CAMPAIGN_CONTEXT_GUIDANCE = """- Use research/brief.md and the campaign artifacts as the authoritative
-    scientific context. Do not use Git history as scientific evidence or as a
-    routine workspace-discovery step."""
-PRELIMINARY_CONTEXT_GUIDANCE = """- In the preliminary scientific-model phase, use only the human-authored
-    robot and task specification, not research/brief.md or campaign artifacts.
-    Do not use Git history as scientific evidence or routine workspace discovery."""
+CAMPAIGN_CONTEXT_GUIDANCE = """- Begin with research/brief.md and follow its evidence references as the
+  scientific question requires."""
+PRELIMINARY_CONTEXT_GUIDANCE = """- Build the preliminary scientific model only from research/scenario.md and
+  relevant human-authored implementation."""
 
 POLICY = f"""
-<harness_policy>
-<harness_boundary>
-This session runs inside the repository worktree {ROOT}. The harness enforces
-the rules below at the tool boundary, so a rejected call fails rather than
-succeeding silently. A rejection names the sanctioned alternative; follow it
-instead of retrying the same command.
-
-- The Runner executes schema-6 operations. Never invoke
-  research/run_experiment.py, training, measurement evaluators, the viewer, or
-  the final benchmark directly.
+<pi_operating_context>
 {CAMPAIGN_CONTEXT_GUIDANCE}
-- The runner owns mutating Git operations, provenance and restoration.
-    Read-only Git is available only when the current task specifically requires
-    inspecting the current scientific code state or delta. Request the schema-6
-    restore_recipe operation to restore a saved candidate recipe.
-- Tests are human-owned. Never create, modify, delete, or restore files under
-    tests/.
-- File-write permissions with an explicit target are rejected outside the
-    PI-owned scientific surface. If a runtime permission does not identify its
-    target safely, the launcher verifies the complete tracked/untracked delta
-    before loading Runner or adapter code.
-- Repository-wide pytest execution belongs to the runner. Targeted tests and
-  focused checks on PI-owned code remain permitted instruments.
-- During an active schema-6 scientific session, write exactly one operation to
-    research/operation_request.json. The session ends only through checkpoint
-    or a terminal campaign_conclusion; measurement, training, inquiry, model_role,
-    and restore_recipe results return to the same bounded session.
-</harness_boundary>
-
-<pi_guidance>
-This note is advice, not a harness rule: no call is rejected for departing from
-it. Read whatever evidence the scientific question requires; context size is
-never a reason to leave evidence unread.
-
-Use targeted linting, parsing or lightweight analysis while developing the
-PI-owned scientific implementation when they resolve uncertainty introduced by
-the work. The
-Runner owns final contract and execution validation, so do not re-run lint,
-parsing or schema checks purely to reconfirm what the Runner will check.
-Reviewing your own scientific reasoning against the evidence before submitting
-is part of the bounded session, not a redundant pass.
-</pi_guidance>
-</harness_policy>
+- Work within the scientific surface defined in AGENTS.md.
+- Use targeted local analysis when it resolves uncertainty in the scientific work.
+- When external execution or restoration is needed, follow the matching contract
+  in research/instruments.md instead of executing it directly.
+</pi_operating_context>
 """.strip()
 
 

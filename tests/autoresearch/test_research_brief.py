@@ -101,17 +101,6 @@ def test_brief_leads_with_goal_evidence_gap_inquiry_and_checkpoint(
     monkeypatch.setattr(brief, "RESEARCH_DIR", research)
 
     text = brief.render_research_brief()
-    headings = [
-        "## Human goal",
-        "## Best evidence relative to the goal",
-        "## Current goal gap",
-        "## Active inquiry and goal relevance",
-        "## Latest durable PI checkpoint",
-        "## Available artifacts and evidence",
-        "## Strategic resource use",
-    ]
-    positions = [text.index(heading) for heading in headings]
-    assert positions == sorted(positions)
     assert "Reach and hold with at least 98% official success." in text
     assert "Earlier evidence isolates a stabilization failure." in text
     assert "Hold reliability remains below the goal." in text
@@ -195,15 +184,12 @@ def test_failed_and_superseded_attempts_are_history_not_evidence(
     evidence = text.split("### Completed operation evidence", 1)[1].split(
         "### Execution history", 1
     )[0]
-    history = text.split("### Execution history (not evidence)", 1)[1].split(
-        "## Strategic resource use", 1
-    )[0]
+    history = text.split("### Execution history (not evidence)", 1)[1]
 
     assert "`E1` `inquiry`" in evidence
     assert "`E0`" not in evidence
     assert "`E0` `inquiry` failed: injected failure; superseded by `E1`." in history
-    assert "- Completed other lifecycle operations: 1." in text
-    assert "- Failed operation attempts: 1; superseded attempts: 1." in text
+    assert "Strategic resource use" not in text
     assert "completed or allocated" not in text
 
 

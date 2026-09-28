@@ -1,31 +1,24 @@
-# Runner instruments
+# Scientific instruments
 
-This document specifies strict schema-6 invocation and artifact contracts.
-Ownership and command authority are defined in `AGENTS.md`.
+This document specifies exact request shapes, acceptance conditions, and
+outputs. It does not recommend when or whether to use an instrument.
+Scientific decisions belong to the PI under `research/program.md`; ownership
+and command authority are defined in `AGENTS.md`.
 
 ## Operation request envelope
 
-Each Runner round trip reads `research/operation_request.json`. The file is one
-JSON object containing exactly one top-level operation kind:
+Write `research/operation_request.json` as one JSON object containing exactly
+one top-level operation kind:
 
 ```text
 inquiry | measurement | training | checkpoint | model_role |
 restore_recipe | campaign_conclusion
 ```
 
-The Runner validates the request, assigns an operation identity, freezes its
-inputs in `research/research_state.json`, executes it, records the completed
-event in state and `research/results.jsonl`, updates `research/EXPERIMENTS.md`,
-and removes the consumed request. A failed transaction remains in
-`pending_operation`. After implementation repair, reacceptance preserves the
-request and assigns a superseding operation identity. The PI may instead write
-a different valid request; the Runner records the failed attempt, accepts the
-replacement under a new identity, and links the two attempts reciprocally.
-
 Measurement identities are `M#`, training identities are `T#`, and other event
-identities are `E#`.
+identities are `E#`. Only completed identities may be cited as evidence.
 
-Operation availability is strict:
+Accepted operations depend on the current scientific session:
 
 - `startup`: measurement, training, model role, recipe restoration, checkpoint;
 - `goal_review`: inquiry open or campaign conclusion; checkpoint becomes
@@ -34,8 +27,7 @@ Operation availability is strict:
   reframe or close, checkpoint.
 
 Opening, reframing, and closing an inquiry require a checkpoint before another
-operation. A checkpoint or terminal campaign conclusion clears the active
-scientific session and its bounded backend-session identity.
+operation.
 
 ## Inquiry operations
 
@@ -79,10 +71,9 @@ Close:
 }
 ```
 
-Opening is accepted only in a goal-review session with no active inquiry and
-while the persisted `max_inquiries` guard permits another identity. Reframing
-and closing require the active inquiry's session. Inquiry operations allocate
-no training identity.
+Opening is accepted only in a goal-review session with no active inquiry.
+Reframing and closing require the active inquiry's session. Inquiry operations
+allocate no training identity.
 
 ## Measurement operation
 
@@ -125,10 +116,10 @@ count and non-negative seed. `task_reference` uses its protected fixed panel.
 `robot_learning.scenario`; their declared JSON artifact is campaign-scoped
 under `research/evaluations/`.
 
-Candidate artifacts, evaluator semantics, module sources, PI-owned scientific
-changes, and effective parameters are frozen at acceptance. Completed
-measurement artifacts are fingerprinted and recorded. Reused panels and paired
-comparisons retain their existing identity and integrity checks.
+The accepted candidate artifacts, evaluator semantics, module sources,
+PI-owned scientific changes, and effective parameters remain attached to the
+result. Reused panels and paired comparisons retain their identity and
+integrity checks.
 
 ## Training operation
 
@@ -161,14 +152,10 @@ Transfer initialization:
 }
 ```
 
-The Runner validates PI-owned changed sources and active parameters, publishes
-the exact scientific recipe, records the parent identity when present,
+The operation validates PI-owned changed sources and active parameters,
 executes the requested seed and step count, archives all produced candidates,
-and records learning-dynamics facts and mechanical provenance. Completion does
-not assign working, best-known, or retained roles.
-
-Interrupted execution resumes the accepted transaction and candidate location;
-it does not allocate a second training identity.
+and records the parent, scientific recipe, and learning-dynamics facts.
+Completion does not assign working, best-known, or retained roles.
 
 ## Durable checkpoint
 
@@ -189,11 +176,9 @@ it does not allocate a second training identity.
 ```
 
 `completed_operations` exactly matches the active session's completed operation
-IDs. Every evidence reference is the ID of an operation event whose status is
-`completed`. Artifact paths are outputs of those operations, not independent
-evidence references. The Runner publishes the session's PI-owned
-scientific surface, stores the checkpoint with its commit and session/inquiry
-identity, and clears the active scientific session.
+IDs. Every evidence reference is a completed operation identity. Artifact paths
+are outputs of those operations, not independent evidence references. An
+accepted checkpoint ends the current scientific session.
 
 ## Model-role operation
 
@@ -226,9 +211,8 @@ Retention adds a label:
 }
 ```
 
-Evidence entries name completed operation IDs. The Runner publishes the
-candidate under the campaign retained archive and updates only the requested
-role.
+Evidence entries name completed operation IDs. Retention archives the candidate
+under the requested label and updates only the requested role.
 
 ## Recipe restoration
 
@@ -241,10 +225,9 @@ role.
 }
 ```
 
-The Runner resolves the candidate's recorded scientific commit, restores the
-PI-owned scientific files and parameters represented by that recipe, removes
-PI-owned files absent from it, verifies the result, and updates the active
-session's scientific parent commit. It does not assign a model role.
+The operation restores the PI-owned scientific files and parameters represented
+by the candidate's recorded recipe, removes PI-owned files absent from that
+recipe, and verifies the result. It does not assign a model role.
 
 ## Campaign conclusion
 
@@ -271,16 +254,12 @@ No-route conclusion:
 ```
 
 Both forms require a goal-review session and no active inquiry. The assessment
-request also requires an explicit best-known candidate. The Runner records the
-terminal request, clears the scientific session, executes the protected
-official assessment as a separate Runner-owned transition, and records its
-passed or failed result. `no_credible_route` records the terminal state without
-running an assessment.
+request also requires an explicit best-known candidate. It executes the
+protected official assessment and records its passed or failed result.
+`no_credible_route` records the terminal state without running an assessment.
 
 ## Scientific-model publication
 
-Before any scientific session exists, the launcher validates
-`research/scientific_model.md` for the `Established facts`, `Physical
-consequences`, and `Unknowns` registers. The Runner commits the exact file,
-records its commit in schema-6 state, and permits scientific sessions only
-after publication.
+Before other campaign work, `research/scientific_model.md` must contain
+substantive `Established facts`, `Physical consequences`, and `Unknowns`
+registers. Once accepted, it remains fixed for the campaign.

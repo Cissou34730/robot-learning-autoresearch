@@ -75,49 +75,18 @@ const DISABLED_TOOLS: Record<string, boolean> = {
   todoread: false,
 };
 
-const CAMPAIGN_CONTEXT_GUIDANCE = `- Use research/brief.md and the campaign artifacts as the authoritative
-  scientific context. Do not use Git history as scientific evidence or as a
-  routine workspace-discovery step.`;
-const PRELIMINARY_CONTEXT_GUIDANCE = `- In the preliminary scientific-model phase, use only the human-authored
-  robot and task specification, not research/brief.md or campaign artifacts.
-  Do not use Git history as scientific evidence or routine workspace discovery.`;
+const CAMPAIGN_CONTEXT_GUIDANCE = `- Begin with research/brief.md and follow its evidence references as the
+  scientific question requires.`;
+const PRELIMINARY_CONTEXT_GUIDANCE = `- Build the preliminary scientific model only from research/scenario.md and
+  relevant human-authored implementation.`;
 
-const POLICY = `<harness_policy>
-This session runs inside the repository worktree the launcher selected. The
-harness enforces the rules below at the tool boundary, so a rejected call fails
-rather than succeeding silently. A rejection names the sanctioned alternative;
-follow it instead of retrying the same command.
-
-- The Runner executes schema-6 operations. Never invoke
-  research/run_experiment.py, training, measurement evaluators, the viewer, or
-  the final benchmark directly.
+const POLICY = `<pi_operating_context>
 ${CAMPAIGN_CONTEXT_GUIDANCE}
-- The runner owns mutating Git operations, provenance and restoration.
-  Read-only Git is available only when the current task specifically requires
-  inspecting the current scientific code state or delta. Request the schema-6
-  restore_recipe operation to restore a saved candidate recipe.
-- Tests are human-owned. Never create, modify, delete, or restore files under
-  tests/.
-- File-write permissions with an explicit target are rejected outside the
-  PI-owned scientific surface. If a runtime permission does not identify its
-  target safely, the launcher verifies the complete tracked/untracked delta
-  before loading Runner or adapter code.
-- Repository-wide pytest execution belongs to the runner. Targeted tests and
-  focused checks on PI-owned code remain permitted instruments.
-- During an active schema-6 scientific session, write exactly one operation to
-  research/operation_request.json. The session ends only through checkpoint or
-  a terminal campaign_conclusion; measurement, training, inquiry, model_role,
-  and restore_recipe results return to the same bounded session.
-- Every tool call resends the whole conversation, so prefer one aggregation over
-  the same command repeated per file, and read what you need rather than whole
-  artifacts. Separate calls remain appropriate when the scientific question
-  differs between artifacts or aggregation would make the analysis less clear.
-  Context efficiency does not determine which scientific evidence is worth
-  examining.
-- Use targeted linting, parsing or lightweight analysis while developing
-  PI-owned scientific implementation when they resolve uncertainty introduced
-  by the work. The Runner owns final contract and execution validation.
-</harness_policy>`;
+- Work within the scientific surface defined in AGENTS.md.
+- Use targeted local analysis when it resolves uncertainty in the scientific work.
+- When external execution or restoration is needed, follow the matching contract
+  in research/instruments.md instead of executing it directly.
+</pi_operating_context>`;
 
 export function policyForContext(preliminary: boolean): string {
   return preliminary

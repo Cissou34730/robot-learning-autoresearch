@@ -9,9 +9,10 @@ direction, inquiry design, scientific implementation, tool construction,
 measurement and training design, evidence interpretation, and goal-progress
 assessment belong to that one role.
 
-The Runner is separate. It validates operation shapes and protected
-boundaries, executes requested heavy operations, records facts, publishes
-artifacts, and recovers transactions. It does not judge scientific adequacy.
+The Runner is not a scientific actor. It enforces operational boundaries,
+executes accepted requests, and records factual outcomes. It does not choose
+scientific questions or methods, interpret evidence, judge adequacy, or decide
+whether the campaign is making progress.
 
 ## Objective and hierarchy
 
@@ -28,24 +29,23 @@ The lifecycle has five levels:
 5. an instrument operation.
 
 None of the lower levels is an independent success criterion. In particular,
-training is not the campaign structure, and an inquiry is not the campaign.
+an inquiry is not the campaign.
 
 ## Campaign startup
 
-A fresh schema-6 campaign begins with a dedicated preliminary PI session. That
-session constructs `research/scientific_model.md` from the human-authored robot,
+A fresh campaign begins with a dedicated preliminary PI session. That session
+constructs `research/scientific_model.md` from the human-authored robot,
 physics, sensing, task, and assessment implementation. The model separates
-established facts, physical consequences, and unknowns. The Runner publishes
-the exact validated document before the first scientific session begins.
+established facts, physical consequences, and unknowns, then remains fixed as
+the campaign's physical reference.
 
-The first scientific session has kind `startup`. It may use measurement,
-training, model-role, and recipe-restoration operations while the PI designs or
-revises the tools, observations, reward, training recipe, and measurements
-needed for the human goal. It ends with a checkpoint, after which the campaign
-enters goal review.
+The first scientific session establishes the most credible initial direction
+from the human goal and the scientific model. Evidence produced during that
+work can refine the direction before the session ends with a checkpoint and
+the campaign enters goal review.
 
-There is no mandatory baseline phase. Working and best-known roles remain empty
-until the PI explicitly assigns candidates using completed evidence.
+Working and best-known roles remain empty until the PI explicitly assigns
+candidates using completed evidence.
 
 ## Goal review
 
@@ -61,23 +61,16 @@ condition, and rationale. The opening goal-review session then ends at a
 durable checkpoint, and a fresh inquiry session continues from that state.
 Goal review permits only inquiry opening, campaign conclusion, and checkpoint.
 
-`MaxInquiries` defaults to 15. It is an unattended guard on creation of another
-inquiry only. It is not a training limit, scientific stopping rule, target, or
-automatic conclusion.
-
 ## Inquiry work
 
 An inquiry is a temporary question or obstacle whose resolution can change the
-route toward the human goal. Its bounded sessions can inspect evidence, change
-PI-owned scientific code, build diagnostics, request measurements, request
-training, manage model roles, restore a saved recipe, reframe the inquiry, or
-close it.
+route toward the human goal. Within it, the PI chooses whichever supported
+scientific actions can produce the evidence or implementation change needed for
+the next decision. No intervention category is privileged in advance.
 
 Measurement and training are peer instruments. Either returns factual results
-to the same active bounded session. There is no mandatory post-training phase,
-forced evaluation, experiment-bound decision, or Runner-owned method
-lifecycle. A PI-authored method label may organize related work in a
-checkpoint, but it creates no lifecycle gate.
+to the same active bounded session without implying a required successor
+action.
 
 An inquiry reframe is a scientific-session boundary: after recording the
 reframe, the PI checkpoints before any further operation and resumes the
@@ -85,43 +78,32 @@ reframed inquiry in a fresh bounded session.
 
 An inquiry closes when its closure condition is met, evidence redirects the
 campaign, the question is no longer a credible route, or it has produced the
-actionable result for which it was opened. Closure is independent of method
-state. After the closing session checkpoints its decision, the campaign returns
-to goal review.
+actionable result for which it was opened. After the closing session
+checkpoints its decision, the campaign returns to goal review.
 
 ## Bounded scientific sessions
 
 A scientific session is bounded by one coherent objective rather than by an
-operation count. It can span several Runner round trips under the same backend
-session identity while active. That identity and its exact adapter, model and
-reasoning descriptor are persisted only inside the active scientific session,
-so launcher restart resumes the same bounded conversation only with an exact
-configuration match and never creates campaign-long identity. The session ends
-only when the PI submits a durable checkpoint or makes a terminal goal-level
-decision.
+operation count. It may span several evidence-producing actions and ends when
+the PI records a durable checkpoint or makes a terminal goal-level decision.
 
-The checkpoint carries the human-goal connection, current gap and synthesis,
-evidence references, decision frontier, completed operations, candidate and
-model-role situation, next direction or closure assessment, and cumulative
-resource use. A later fresh session continues from that durable state rather
-than from campaign-long conversation memory.
-
-The lifecycle has no SDK token guard, compaction controller, or persisted
-campaign-long conversation.
+The checkpoint preserves the human-goal connection, current synthesis,
+supporting evidence, remaining gap, decision frontier, and next direction or
+closure assessment. A later fresh session continues from that durable state.
 
 ## Evidence and model roles
 
-Operation identities are independent: measurements use `M#`, training uses
-`T#`, and other lifecycle events use `E#`. Completed events and artifacts form
-the factual campaign record.
+Only completed operations and their artifacts form the factual campaign
+record.
 
 Development measurements support PI judgment but do not declare the official
 goal reached. Working, best-known, and retained roles are explicit,
 evidence-backed operations. Training never changes a role implicitly.
 
-The official assessment is a one-time Runner-owned transition after the PI
-requests it. Its recorded pass or fail result ends the campaign. A conclusion
-that no credible route remains also ends the campaign without assessment.
+The PI alone decides whether the evidence justifies requesting the official
+assessment. The protected assessment then returns the recorded pass or fail
+result that ends the campaign. The PI may instead conclude that no credible
+route remains, ending the campaign without assessment.
 
 ## Context routing
 

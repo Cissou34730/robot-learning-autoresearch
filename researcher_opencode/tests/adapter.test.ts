@@ -9,7 +9,6 @@ import {
   describeError,
   isIgnoredChange,
   lastMessageID,
-  policyForContext,
   relativeTo,
   resolveSession,
   serverConfig,
@@ -20,26 +19,6 @@ import {
 import type { OpencodeClient } from "@opencode-ai/sdk";
 import { parseArgs } from "../src/args.ts";
 import { Console } from "../src/console.ts";
-
-test("preliminary policy excludes campaign evidence without changing later phases", () => {
-  const preliminary = policyForContext(true);
-  const later = policyForContext(false);
-  assert.match(preliminary, /not research\/brief\.md or campaign artifacts/);
-  assert.doesNotMatch(preliminary, /Use research\/brief\.md and the campaign artifacts/);
-  assert.match(later, /Use research\/brief\.md and the campaign artifacts/);
-});
-
-test("PI policy uses schema-6 operations and protects tests", () => {
-  const policy = policyForContext(false);
-  assert.match(policy, /schema-6/);
-  assert.match(policy, /research\/operation_request\.json/);
-  assert.match(policy, /restore_recipe/);
-  assert.match(policy, /Tests are human-owned/);
-  assert.match(policy, /session ends only through checkpoint/);
-  assert.doesNotMatch(policy, /Researcher-authored tests/);
-  assert.doesNotMatch(policy, /lineage proposal/);
-  assert.doesNotMatch(policy, /phase deliverable/);
-});
 
 /** A client that answers only the two reads liveness reconciliation performs. */
 function fakeClient(parts: {

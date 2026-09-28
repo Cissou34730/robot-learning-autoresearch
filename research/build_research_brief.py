@@ -234,7 +234,6 @@ def _checkpoint_lines(state: dict) -> list[str]:
     if not isinstance(checkpoint, dict):
         return ["- No durable PI checkpoint has been recorded."]
     return [
-        f"- Session: `{checkpoint['session_id']}`",
         f"- Inquiry: `{checkpoint['inquiry_id'] or '-'}`",
         f"- Human-goal connection: {checkpoint['human_goal_connection']}",
         f"- Current synthesis: {checkpoint['current_synthesis']}",
@@ -248,26 +247,22 @@ def _checkpoint_lines(state: dict) -> list[str]:
         f"- Candidates and roles: {checkpoint['candidates_and_roles']}",
         f"- Next direction or closure: {checkpoint['next_direction_or_closure']}",
         f"- Cumulative resource use: {checkpoint['cumulative_resource_use']}",
-        f"- Scientific commit: `{checkpoint['scientific_commit']}`",
     ]
 
 
 def _session_lines(state: dict) -> list[str]:
     session = state["scientific_session"]
     if not isinstance(session, dict):
-        return ["- None; the next PI session will start from durable state."]
+        return ["- None; the next scientific work begins from durable state."]
     return [
-        f"- ID: `{session['id']}`",
-        f"- Kind: `{session['kind']}`",
         f"- Objective: {session['objective']}",
         f"- Inquiry: `{session['inquiry_id'] or '-'}`",
-        "- Completed operations in this session: "
+        "- Completed operations in the current work: "
         + (
             ", ".join(f"`{item}`" for item in session["operation_ids"])
             if session["operation_ids"]
             else "none"
         ),
-        f"- Scientific parent commit: `{session['scientific_parent_commit']}`",
     ]
 
 
@@ -374,23 +369,6 @@ def render_research_brief() -> str:
     state = json.loads(state_path.read_text(encoding="utf-8"))
     runner_repository.validate_research_state(state, allow_missing_artifact=True)
 
-    pending = state["pending_operation"]
-    terminal = state["terminal_state"]
-    campaign = state["campaign"]
-    completed_events = _completed_events(state)
-    completed_measurements = sum(
-        event["kind"] == "measurement" for event in completed_events
-    )
-    completed_training = sum(event["kind"] == "training" for event in completed_events)
-    completed_other = (
-        len(completed_events) - completed_measurements - completed_training
-    )
-    failed_events = [
-        event for event in state["operation_events"] if event.get("status") == "failed"
-    ]
-    superseded_attempts = sum(
-        event.get("superseded_by") is not None for event in failed_events
-    )
     lines = [
         "# Research brief",
         "",
@@ -416,7 +394,7 @@ def render_research_brief() -> str:
         "",
         *_checkpoint_lines(state),
         "",
-        "## Current bounded scientific session",
+        "## Current scientific work",
         "",
         *_session_lines(state),
         "",
@@ -432,45 +410,6 @@ def render_research_brief() -> str:
         "",
         *_execution_history_lines(state),
         "",
-        "## Strategic resource use",
-        "",
-        (
-            f"- Inquiries created: {state['counters']['inquiry']} of "
-            f"{campaign['max_inquiries']} unattended maximum."
-        ),
-        f"- Scientific sessions started: {state['counters']['session']}.",
-        f"- Completed measurement operations: {completed_measurements}.",
-        f"- Completed training operations: {completed_training}.",
-        f"- Completed other lifecycle operations: {completed_other}.",
-        (
-            f"- Failed operation attempts: {len(failed_events)}; "
-            f"superseded attempts: {superseded_attempts}."
-        ),
-        f"- Candidate artifacts available: {len(state['candidates'])}.",
-        "",
-        "## Current control state",
-        "",
-        (
-            f"- Pending Runner operation: `{pending['id']}` `{pending['kind']}` "
-            f"at `{pending['progress']}`"
-            + (f"; failure: {pending['failure']}" if pending["failure"] else "")
-            + "."
-            if isinstance(pending, dict)
-            else "- Pending Runner operation: none."
-        ),
-        (
-            f"- Terminal decision: `{terminal['status']}`; {terminal['reason']}"
-            if isinstance(terminal, dict)
-            else "- Terminal decision: none."
-        ),
-        f"- Last factual verdict: {state['last_verdict']}",
-        "",
-        (
-            "Training is one evidence-producing operation among measurements, "
-            "diagnostics, inquiry decisions, model-role assignments, recipe "
-            "restoration, and checkpoints. Detailed facts remain in "
-            "`research/results.jsonl` and referenced artifacts."
-        ),
     ]
     return "\n".join(lines).rstrip() + "\n"
 

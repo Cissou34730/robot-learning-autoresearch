@@ -15,26 +15,19 @@ import { fileURLToPath } from "node:url";
  */
 
 export const GIT_DENIAL =
-  "Denied by the harness: the runner owns mutating Git operations and " +
-  "restoration. Read-only git is available for code provenance and code " +
-  "inspection when the current task requires it. Request schema-6 " +
-  "restore_recipe when a saved candidate recipe must be restored.";
-
+  "This action is unavailable. Use read-only Git only when code inspection " +
+  "requires it; use the restoration contract in research/instruments.md when " +
+  "a saved recipe is needed.";
 export const EXECUTION_DENIAL =
-  "Denied by the harness: the Runner executes schema-6 operations, not the PI. " +
-  "Write one operation to research/operation_request.json for the Runner.";
-
+  "This action is unavailable. Use the matching execution contract in " +
+  "research/instruments.md.";
 export const SUITE_DENIAL =
-  "Denied by the harness: a repository-wide pytest run belongs to the runner. " +
-  "Use targeted linting, parsing or lightweight analysis for scientific changes.";
-
+  "Repository-wide tests are unavailable here. Use targeted checks that address " +
+  "uncertainty introduced by the scientific work.";
 export const DEPENDENCY_DENIAL =
-  "Denied by the harness: the project dependency set is human-owned. Use the " +
-  "installed environment without installing, removing, syncing or locking packages.";
-
+  "Dependency changes are unavailable. Use the installed project environment.";
 export const FILE_EDIT_DENIAL =
-  "Denied by the harness: direct edits are limited to the PI-owned scientific " +
-  "surface declared in AGENTS.md.";
+  "This path is outside the editable scientific surface defined in AGENTS.md.";
 
 const RESERVED_SCRIPT_NAMES = new Set([
   "run_experiment.py",
