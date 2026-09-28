@@ -106,6 +106,53 @@ const GIT_GLOBAL_VALUE_OPTIONS = new Set([
   "--super-prefix",
   "--work-tree",
 ]);
+const UV_RUN_FLAG_OPTIONS = new Set([
+  "-U",
+  "-h",
+  "-m",
+  "-n",
+  "-q",
+  "-s",
+  "-v",
+  "--active",
+  "--all-extras",
+  "--all-groups",
+  "--all-packages",
+  "--compile-bytecode",
+  "--exact",
+  "--frozen",
+  "--gui-script",
+  "--help",
+  "--isolated",
+  "--locked",
+  "--managed-python",
+  "--module",
+  "--no-binary",
+  "--no-build",
+  "--no-build-isolation",
+  "--no-cache",
+  "--no-config",
+  "--no-default-groups",
+  "--no-dev",
+  "--no-editable",
+  "--no-env-file",
+  "--no-index",
+  "--no-managed-python",
+  "--no-progress",
+  "--no-project",
+  "--no-python-downloads",
+  "--no-sources",
+  "--no-sync",
+  "--offline",
+  "--only-dev",
+  "--quiet",
+  "--refresh",
+  "--reinstall",
+  "--script",
+  "--system-certs",
+  "--upgrade",
+  "--verbose",
+]);
 const ROOT = fileURLToPath(new URL("../..", import.meta.url));
 
 const SEPARATORS = [";", "&&", "||", "|", "\n", "\r"];
@@ -158,20 +205,35 @@ function stripEdgePunctuation(value: string): string {
   return value.replace(/^[&.]+/, "").replace(/[&.]+$/, "");
 }
 
-/** Drop a leading `uv run [--flag value]` so the real invocation is visible. */
+function uvOptionSpan(token: string): number {
+  const option = token.split("=", 1)[0]!;
+  if (token.includes("=") || UV_RUN_FLAG_OPTIONS.has(option)) return 1;
+  if (token.startsWith("--")) return 2;
+  for (let position = 1; position < token.length; position += 1) {
+    if (UV_RUN_FLAG_OPTIONS.has(`-${token[position]}`)) continue;
+    return position + 1 < token.length ? 1 : 2;
+  }
+  return 1;
+}
+
+/** Drop a leading `uv [global flags] run [run flags]` by option arity. */
 export function stripLauncherPrefix(tokens: string[]): string[] {
   if (tokens.length === 0) return tokens;
   const head = tokens[0]!.toLowerCase();
-  if (head !== "uv" && head !== "uvx") return tokens;
+  if (head !== "uv") return tokens;
   let index = 1;
-  if (index < tokens.length && tokens[index]!.toLowerCase() === "run") {
-    index += 1;
+  while (index < tokens.length && tokens[index]!.toLowerCase() !== "run") {
+    if (!tokens[index]!.startsWith("-") || tokens[index] === "--") return tokens;
+    index += uvOptionSpan(tokens[index]!);
   }
+  if (index >= tokens.length) return tokens;
+  index += 1;
   while (index < tokens.length && tokens[index]!.startsWith("-")) {
-    index += 1;
-    if (index < tokens.length && !tokens[index]!.startsWith("-")) {
+    if (tokens[index] === "--") {
       index += 1;
+      break;
     }
+    index += uvOptionSpan(tokens[index]!);
   }
   return tokens.slice(index);
 }
@@ -262,55 +324,74 @@ function namesTargetedTestFile(token: string): boolean {
 }
 
 const PYTEST_FLAG_OPTIONS = new Set([
-  "-q",
-  "--quiet",
-  "-v",
-  "--verbose",
-  "-x",
-  "--exitfirst",
-  "-s",
+  "-V",
+  "-h",
   "-l",
-  "--showlocals",
-  "--lf",
-  "--last-failed",
-  "--ff",
-  "--failed-first",
-  "--nf",
-  "--new-first",
-  "--sw",
-  "--stepwise",
-  "--stepwise-skip",
-  "--stepwise-ignore",
+  "-q",
+  "-s",
+  "-v",
+  "-x",
+  "--cache-clear",
   "--co",
-  "--collect-only",
-  "--pyargs",
-  "--noconftest",
-  "--keep-duplicates",
   "--collect-in-virtualenv",
-  "--doctest-modules",
+  "--collect-only",
+  "--collectonly",
+  "--continue-on-collection-errors",
+  "--disable-plugin-autoload",
+  "--disable-pytest-warnings",
+  "--disable-warnings",
   "--doctest-continue-on-failure",
+  "--doctest-ignore-import-errors",
+  "--doctest-modules",
+  "--exitfirst",
+  "--failed-first",
+  "--ff",
   "--fixtures",
   "--fixtures-per-test",
-  "--pdb",
-  "--trace",
-  "--runxfail",
-  "--cache-clear",
-  "--no-header",
-  "--no-summary",
-  "--no-fold",
+  "--force-short-summary",
   "--full-trace",
+  "--fulltrace",
+  "--funcargs",
+  "--help",
+  "--keep-duplicates",
+  "--keepduplicates",
+  "--last-failed",
+  "--lf",
+  "--lsof",
+  "--markers",
+  "--new-first",
+  "--nf",
+  "--no-fold-skipped",
+  "--no-header",
+  "--no-showlocals",
+  "--no-summary",
+  "--noconftest",
+  "--pdb",
+  "--pyargs",
+  "--quiet",
+  "--runxfail",
   "--setup-only",
   "--setup-plan",
   "--setup-show",
-  "--disable-warnings",
-  "--disable-plugin-autoload",
-  "--trace-config",
-  "--strict",
-  "--strict-markers",
+  "--setuponly",
+  "--setupplan",
+  "--setupshow",
+  "--showlocals",
+  "--stepwise",
+  "--stepwise-reset",
+  "--stepwise-skip",
   "--strict-config",
-  "--continue-on-collection-errors",
-  "--help",
+  "--strict-markers",
+  "--strict",
+  "--sw",
+  "--sw-reset",
+  "--sw-skip",
+  "--trace",
+  "--trace-config",
+  "--traceconfig",
+  "--verbose",
   "--version",
+  "--xfail-tb",
 ]);
 
 function shortOptionSpan(token: string): number {

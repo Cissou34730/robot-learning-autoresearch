@@ -74,6 +74,36 @@ test("a repository-wide pytest run belongs to the runner", () => {
   assert.equal(commandDenial("pytest.exe -k foo"), SUITE_DENIAL);
 });
 
+test("uv run option arity cannot hide denied commands", () => {
+  for (const flag of [
+    "--locked",
+    "--frozen",
+    "--offline",
+    "--no-sync",
+    "--no-project",
+  ]) {
+    assert.equal(commandDenial(`uv run ${flag} git commit -m x`), GIT_DENIAL);
+    assert.equal(commandDenial(`uv run ${flag} pytest`), SUITE_DENIAL);
+  }
+  assert.equal(commandDenial("uv run --project . git commit -m x"), GIT_DENIAL);
+  assert.equal(commandDenial("uv run --python 3.12 pytest"), SUITE_DENIAL);
+});
+
+test("pytest no-value aliases leave targeted selectors visible", () => {
+  const existing = "tests/autoresearch/test_copilot_researcher.py";
+  for (const flag of [
+    "--markers",
+    "--no-showlocals",
+    "--stepwise-reset",
+    "--traceconfig",
+    "--fulltrace",
+    "-h",
+    "-V",
+  ]) {
+    assert.equal(commandDenial(`uv run pytest ${flag} ${existing}`), null);
+  }
+});
+
 test("dependency management is refused", () => {
   assert.equal(commandDenial("uv add numpy"), DEPENDENCY_DENIAL);
   assert.equal(commandDenial("uv sync"), DEPENDENCY_DENIAL);

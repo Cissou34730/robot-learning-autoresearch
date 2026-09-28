@@ -173,6 +173,25 @@ def test_a_repository_wide_test_run_is_refused():
     )
 
 
+@pytest.mark.parametrize(
+    "flag", ["--locked", "--frozen", "--offline", "--no-sync", "--no-project"]
+)
+def test_uv_run_value_less_flags_do_not_hide_denied_commands(flag):
+    assert (
+        adapter.command_denial(f"uv run {flag} git commit -m x")
+        == adapter.GIT_DENIAL
+    )
+    assert adapter.command_denial(f"uv run {flag} pytest") == adapter.SUITE_DENIAL
+
+
+def test_uv_run_value_options_consume_only_their_values():
+    assert (
+        adapter.command_denial("uv run --project . git commit -m x")
+        == adapter.GIT_DENIAL
+    )
+    assert adapter.command_denial("uv run --python 3.12 pytest") == adapter.SUITE_DENIAL
+
+
 def test_a_targeted_test_run_remains_permitted():
     # AGENTS.md and research/instruments.md allow targeted tests and focused
     # checks, so the command layer refuses only repository-wide runs.
@@ -185,6 +204,16 @@ def test_a_targeted_test_run_remains_permitted():
     # The value-less options pytest itself declares are recognised, including
     # ones a hand-maintained list omitted.
     for flag in ("--strict", "--disable-plugin-autoload", "--trace-config"):
+        assert adapter.command_denial(f"uv run pytest {flag} {existing}") is None
+    for flag in (
+        "--markers",
+        "--no-showlocals",
+        "--stepwise-reset",
+        "--traceconfig",
+        "--fulltrace",
+        "-h",
+        "-V",
+    ):
         assert adapter.command_denial(f"uv run pytest {flag} {existing}") is None
     # Repeated and combined short flags consume nothing either.
     assert adapter.command_denial(f"uv run pytest -q -q {existing}") is None
@@ -253,6 +282,9 @@ def test_the_execution_target_is_resolved_through_the_launcher_prefix():
         "research/run_experiment.py"
     )
     assert resolve(["uv", "run", "--group", "researcher", "python", "x.py"]) == "x.py"
+    assert resolve(["uv", "run", "--locked", "git", "commit"]) == "git"
+    assert resolve(["uv", "--offline", "run", "--project", ".", "pytest"]) == "pytest"
+    assert resolve(["uv", "run", "--", "pytest"]) == "pytest"
     assert resolve(["uv", "run", "python", "-m", "robot_learning.train"]) == (
         "robot_learning.train"
     )

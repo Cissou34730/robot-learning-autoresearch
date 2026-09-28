@@ -190,6 +190,55 @@ GIT_GLOBAL_VALUE_OPTIONS = frozenset(
         "--work-tree",
     }
 )
+UV_RUN_FLAG_OPTIONS = frozenset(
+    {
+        "-U",
+        "-h",
+        "-m",
+        "-n",
+        "-q",
+        "-s",
+        "-v",
+        "--active",
+        "--all-extras",
+        "--all-groups",
+        "--all-packages",
+        "--compile-bytecode",
+        "--exact",
+        "--frozen",
+        "--gui-script",
+        "--help",
+        "--isolated",
+        "--locked",
+        "--managed-python",
+        "--module",
+        "--no-binary",
+        "--no-build",
+        "--no-build-isolation",
+        "--no-cache",
+        "--no-config",
+        "--no-default-groups",
+        "--no-dev",
+        "--no-editable",
+        "--no-env-file",
+        "--no-index",
+        "--no-managed-python",
+        "--no-progress",
+        "--no-project",
+        "--no-python-downloads",
+        "--no-sources",
+        "--no-sync",
+        "--offline",
+        "--only-dev",
+        "--quiet",
+        "--refresh",
+        "--reinstall",
+        "--script",
+        "--system-certs",
+        "--upgrade",
+        "--verbose",
+    }
+)
 
 SEPARATORS = (";", "&&", "||", "|", "\n", "\r")
 
@@ -288,17 +337,37 @@ def clean_command_token(token: str) -> str:
     return value
 
 
+def _uv_option_span(token: str) -> int:
+    """How many tokens a uv option consumes, including any separate value."""
+    option = token.split("=", 1)[0]
+    if "=" in token or option in UV_RUN_FLAG_OPTIONS:
+        return 1
+    if token.startswith("--"):
+        return 2
+    for position, character in enumerate(token[1:], start=1):
+        if f"-{character}" in UV_RUN_FLAG_OPTIONS:
+            continue
+        return 1 if position + 1 < len(token) else 2
+    return 1
+
+
 def strip_launcher_prefix(tokens: list[str]) -> list[str]:
-    """Drop a leading `uv run [--flag value]` so the real invocation is visible."""
-    if not tokens or tokens[0].lower() not in {"uv", "uvx"}:
+    """Drop a leading `uv [global flags] run [run flags]` by option arity."""
+    if not tokens or tokens[0].lower() != "uv":
         return tokens
     index = 1
-    if index < len(tokens) and tokens[index].lower() == "run":
-        index += 1
+    while index < len(tokens) and tokens[index].lower() != "run":
+        if not tokens[index].startswith("-") or tokens[index] == "--":
+            return tokens
+        index += _uv_option_span(tokens[index])
+    if index >= len(tokens):
+        return tokens
+    index += 1
     while index < len(tokens) and tokens[index].startswith("-"):
-        index += 1
-        if index < len(tokens) and not tokens[index].startswith("-"):
+        if tokens[index] == "--":
             index += 1
+            break
+        index += _uv_option_span(tokens[index])
     return tokens[index:]
 
 
@@ -399,52 +468,74 @@ def names_targeted_test_file(token: str) -> bool:
 # cannot expose its value as a selector and a repository-wide run stays denied.
 PYTEST_FALLBACK_FLAG_OPTIONS = frozenset(
     {
-        "-q",
-        "--quiet",
-        "-v",
-        "--verbose",
-        "-x",
-        "--exitfirst",
-        "-s",
+        "-V",
+        "-h",
         "-l",
-        "--showlocals",
-        "--lf",
-        "--last-failed",
-        "--ff",
-        "--failed-first",
-        "--nf",
-        "--new-first",
-        "--sw",
-        "--stepwise",
-        "--stepwise-skip",
-        "--stepwise-ignore",
+        "-q",
+        "-s",
+        "-v",
+        "-x",
+        "--cache-clear",
         "--co",
-        "--collect-only",
-        "--pyargs",
-        "--noconftest",
-        "--keep-duplicates",
         "--collect-in-virtualenv",
-        "--doctest-modules",
+        "--collect-only",
+        "--collectonly",
+        "--continue-on-collection-errors",
+        "--disable-plugin-autoload",
+        "--disable-pytest-warnings",
+        "--disable-warnings",
         "--doctest-continue-on-failure",
+        "--doctest-ignore-import-errors",
+        "--doctest-modules",
+        "--exitfirst",
+        "--failed-first",
+        "--ff",
         "--fixtures",
         "--fixtures-per-test",
-        "--pdb",
-        "--trace",
-        "--runxfail",
-        "--cache-clear",
-        "--no-header",
-        "--no-summary",
-        "--no-fold",
+        "--force-short-summary",
         "--full-trace",
+        "--fulltrace",
+        "--funcargs",
+        "--help",
+        "--keep-duplicates",
+        "--keepduplicates",
+        "--last-failed",
+        "--lf",
+        "--lsof",
+        "--markers",
+        "--new-first",
+        "--nf",
+        "--no-fold-skipped",
+        "--no-header",
+        "--no-showlocals",
+        "--no-summary",
+        "--noconftest",
+        "--pdb",
+        "--pyargs",
+        "--quiet",
+        "--runxfail",
         "--setup-only",
         "--setup-plan",
         "--setup-show",
-        "--disable-warnings",
-        "--strict-markers",
+        "--setuponly",
+        "--setupplan",
+        "--setupshow",
+        "--showlocals",
+        "--stepwise",
+        "--stepwise-reset",
+        "--stepwise-skip",
         "--strict-config",
-        "--continue-on-collection-errors",
-        "--help",
+        "--strict-markers",
+        "--strict",
+        "--sw",
+        "--sw-reset",
+        "--sw-skip",
+        "--trace",
+        "--trace-config",
+        "--traceconfig",
+        "--verbose",
         "--version",
+        "--xfail-tb",
     }
 )
 
