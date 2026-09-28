@@ -23,6 +23,9 @@ HOLD_EXIT_FORFEIT_FRACTION = 0.0
 OUTSIDE_BAND_WIDTH = 0.01
 OUTSIDE_BAND_PENALTY = 0.1
 HOLD_COMPLETE_BONUS = 50.0
+JOINT_LIMIT_RADIANS = float(np.deg2rad(170.0))
+JOINT_LIMIT_SAFE_MARGIN_RADIANS = float(np.deg2rad(20.0))
+JOINT_LIMIT_PENALTY_COEFFICIENT = 0.25
 
 
 @dataclass(frozen=True)
@@ -44,11 +47,30 @@ def _hold_progress_potential(held_steps: int, hold_steps_required: int) -> float
     return HOLD_PROGRESS_BONUS * float(progress**HOLD_PROGRESS_EXPONENT)
 
 
+def _joint_limit_penalty(joint_positions: np.ndarray | None) -> float:
+    if joint_positions is None:
+        return 0.0
+    positions = np.asarray(joint_positions, dtype=np.float64)
+    if positions.shape != (2,):
+        raise ValueError("joint_positions must contain exactly two joint positions")
+    if not np.all(np.isfinite(positions)):
+        raise ValueError("joint_positions must contain only finite values")
+    minimum_margin = float(np.min(JOINT_LIMIT_RADIANS - np.abs(positions)))
+    deficit = np.clip(
+        (JOINT_LIMIT_SAFE_MARGIN_RADIANS - minimum_margin)
+        / JOINT_LIMIT_SAFE_MARGIN_RADIANS,
+        0.0,
+        2.0,
+    )
+    return -JOINT_LIMIT_PENALTY_COEFFICIENT * float(deficit**2)
+
+
 def reach_reward(
     previous_distance: float,
     current_distance: float,
     success_threshold: float,
     action: np.ndarray | None = None,
+    joint_positions: np.ndarray | None = None,
     held_steps: int = 0,
     previous_held_steps: int = 0,
     hold_steps_required: int = 100,
@@ -73,6 +95,9 @@ def reach_reward(
     else:
         hold_progress = current_hold_capital - previous_hold_capital
     reward += hold_progress
+
+    joint_limit_penalty = _joint_limit_penalty(joint_positions)
+    reward += joint_limit_penalty
 
     outside_band = 0.0
     if penalize_outside and current_distance > success_threshold:
@@ -101,6 +126,7 @@ def reach_reward(
             "progress": float(progress),
             "closeness": float(closeness),
             "hold_progress": float(hold_progress),
+            "joint_limit_penalty": float(joint_limit_penalty),
             "outside_band": float(outside_band),
             "hold_complete": float(hold_complete),
             "action_cost": float(action_cost),
