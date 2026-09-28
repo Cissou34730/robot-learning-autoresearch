@@ -21,3 +21,4 @@
 | M5 | measurement | I1 | completed |
 | E8 | checkpoint | I1 | checkpointed |
 | E9 | restore_recipe | I1 | restored |
+| T6 | training | I1 | completed |
