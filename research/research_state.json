@@ -1426,49 +1426,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "set_best_known",
-        "candidate_id": "T1:checkpoint-120832",
-        "evidence": [
-          "M1"
-        ],
-        "reason": "M1 establishes T1:checkpoint-120832 as the strongest current candidate: it reaches 97% on the independent research panel, 97.5% on the fixed task-reference panel, and wins both discordant matched episodes against checkpoint-115712. It is not yet credible for official assessment because the reference result is one success short of the 98% threshold; residual failures are concentrated in approach at folded inner-radius or difficult-angle targets, with one observed interrupted hold. Retain this candidate as the baseline for a targeted hold-aware refinement."
-      },
-      "publication": {
-        "destination": "research/checkpoints/retained/a1297064-def3-4191-8914-19ef91412bcb/t1-c8cf701d5-9b52e16ae5b060dc9a7282c4b3ee10daf35361eca876915b647b70f0733703de",
-        "fingerprint": "9b52e16ae5b060dc9a7282c4b3ee10daf35361eca876915b647b70f0733703de",
-        "source": "research/checkpoints/candidates/a1297064-def3-4191-8914-19ef91412bcb/t1/checkpoint-120832"
-      },
-      "result": {
-        "action": "set_best_known",
-        "candidate": "T1:checkpoint-120832",
-        "evidence": [
-          "M1"
-        ],
-        "status": "assigned"
-      }
-    },
-    "failure": null,
-    "id": "E4",
-    "inquiry_id": "I1",
-    "kind": "model_role",
-    "progress": "completed",
-    "request": {
-      "model_role": {
-        "action": "set_best_known",
-        "candidate": "T1:checkpoint-120832",
-        "evidence": [
-          "M1"
-        ],
-        "reason": "M1 establishes T1:checkpoint-120832 as the strongest current candidate: it reaches 97% on the independent research panel, 97.5% on the fixed task-reference panel, and wins both discordant matched episodes against checkpoint-115712. It is not yet credible for official assessment because the reference result is one success short of the 98% threshold; residual failures are concentrated in approach at folded inner-radius or difficult-angle targets, with one observed interrupted hold. Retain this candidate as the baseline for a targeted hold-aware refinement."
-      }
-    },
-    "request_fingerprint": "4209a4af7482c72b037470c6fdecb036375e9480c3ec7782b4f9c62084512ec3",
-    "session_id": "S3",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T1 produced late candidates through 120832 steps. No candidate has a working, best-known, or retained role because independent development evidence is still absent.",
     "completed_operations": [
