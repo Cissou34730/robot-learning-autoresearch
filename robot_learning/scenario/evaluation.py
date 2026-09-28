@@ -177,18 +177,18 @@ def evaluate_research_model(
             elif was_in_tolerance:
                 hold_interruptions += 1
             if first_reach_step is not None:
-                max_post_entry_distance_cm = max(
-                    distance_cm
-                    if np.isnan(max_post_entry_distance_cm)
-                    else max_post_entry_distance_cm,
-                    max_post_entry_distance_cm,
-                )
-                max_post_entry_excursion_cm = max(
-                    max(distance_cm - 1.0, 0.0)
-                    if np.isnan(max_post_entry_excursion_cm)
-                    else max_post_entry_excursion_cm,
-                    max_post_entry_excursion_cm,
-                )
+                if np.isnan(max_post_entry_distance_cm):
+                    max_post_entry_distance_cm = distance_cm
+                else:
+                    max_post_entry_distance_cm = max(
+                        distance_cm, max_post_entry_distance_cm
+                    )
+                if np.isnan(max_post_entry_excursion_cm):
+                    max_post_entry_excursion_cm = max(distance_cm - 1.0, 0.0)
+                else:
+                    max_post_entry_excursion_cm = max(
+                        distance_cm - 1.0, max_post_entry_excursion_cm
+                    )
                 if held_steps == 0:
                     post_entry_out_of_band_steps += 1
                 if np.isnan(max_post_entry_endpoint_speed_cm_s):
