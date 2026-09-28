@@ -123,8 +123,9 @@ def test_redirected_boundary_collapses_whitespace_without_wrapping():
     assert completed.returncode == 0, completed.stderr
     rendered = completed.stdout.splitlines()
     assert len(rendered) == 1
-    assert "[session] END | S4 goal review | strategic usage prompt 12k output 800" in (
-        rendered[0]
+    assert (
+        "[session] END | S4 goal review | strategic usage prompt 12k output 800"
+        in (rendered[0])
     )
     assert rendered[0].endswith("x" * 160)
     assert "  " not in rendered[0]
@@ -351,7 +352,9 @@ def test_campaign_conclusion_pairs_session_end_with_campaign_boundary(
             "id": "11111111-1111-1111-1111-111111111111",
         },
     }
-    monkeypatch.setattr(run_experiment.repository, "load_state", lambda **_kwargs: state)
+    monkeypatch.setattr(
+        run_experiment.repository, "load_state", lambda **_kwargs: state
+    )
     monkeypatch.setattr(run_experiment.repository, "write_state", lambda _state: None)
     monkeypatch.setattr(
         run_experiment.repository, "upsert_operation_event", lambda _event: None
@@ -472,9 +475,7 @@ def test_campaign_conclusion_pairs_session_end_with_campaign_boundary(
                 "session_id": "S5",
                 "inquiry_id": None,
                 "request": {
-                    "campaign_conclusion": {
-                        "action": "request_official_assessment"
-                    }
+                    "campaign_conclusion": {"action": "request_official_assessment"}
                 },
                 "request_fingerprint": "fingerprint",
                 "progress": "completed",
@@ -520,7 +521,9 @@ def test_completed_pending_recovery_uses_the_shared_completion_presenter(
         "campaign": {"id": "campaign"},
     }
     boundaries = []
-    monkeypatch.setattr(run_experiment.repository, "load_state", lambda **_kwargs: state)
+    monkeypatch.setattr(
+        run_experiment.repository, "load_state", lambda **_kwargs: state
+    )
     monkeypatch.setattr(run_experiment.repository, "write_state", lambda _state: None)
     monkeypatch.setattr(
         run_experiment.repository, "commit_runner_memory", lambda _message: True
