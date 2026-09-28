@@ -159,9 +159,7 @@ class LiveProgress:
 
     def line(self, message: str, *, archive: bool = False) -> None:
         stream = self._out()
-        timestamp_plain = (
-            f"[{datetime.now():%H:%M:%S}]"  # noqa: DTZ005 - local console time
-        )
+        timestamp_plain = f"[{datetime.now():%H:%M:%S}]"  # noqa: DTZ005 - local console time
         message = _clip(message, max(_console_width() - len(timestamp_plain) - 1, 20))
         timestamp = timestamp_plain
         if stream.isatty():
@@ -290,12 +288,33 @@ def training_heartbeat(
     record: dict[str, float] | None,
 ) -> str:
     percent = min(100.0, 100 * steps / target) if target else 0.0
-    return (
+    reward = None if not record else record.get("ep_rew_mean")
+    scenario_fragment = scenario_progress_metric(record) if record else None
+    verbose = (
         f"TRAIN {operation_id} | {percent:.0f}% | "
         f"{format_count(steps)}/{format_count(target)} | {format_count(fps)} fps | "
         f"{format_duration(elapsed)} | ETA {format_duration(eta)}"
-        + training_progress_suffix(record)
+        + (
+            "".join(
+                (
+                    f" | reward {float(reward):g}" if reward is not None else "",
+                    f" | {scenario_fragment}" if scenario_fragment else "",
+                )
+            )
+        )
     )
+    available = max(_console_width() - len("[00:00:00] "), 20)
+    if len(verbose) <= available:
+        return verbose
+    compact = (
+        f"T {operation_id} {percent:.0f}% "
+        f"{format_count(steps)}/{format_count(target)} "
+        f"{format_duration(elapsed)}/{format_duration(eta)} "
+        f"{format_count(fps)}fps"
+        + (f" r{float(reward):g}" if reward is not None else "")
+        + (f" {scenario_fragment}" if scenario_fragment else "")
+    )
+    return compact
 
 
 def _usage_rows(campaign_id: str, session_id: str | None = None) -> list[dict]:

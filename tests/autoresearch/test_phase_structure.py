@@ -180,6 +180,77 @@ def _run_launcher_trust_script(
     )
 
 
+@powershell_only
+def test_redirected_status_lines_are_one_write_each(tmp_path):
+    script = tmp_path / "status-write-probe.ps1"
+    script.write_text(
+        f"""
+$ast = [System.Management.Automation.Language.Parser]::ParseFile(
+    '{TRUST_SCRIPT_PATH}', [ref]$null, [ref]$null)
+$definition = $ast.FindAll({{
+    param($node)
+    $node -is [System.Management.Automation.Language.FunctionDefinitionAst] -and
+        $node.Name -eq 'Write-Status'
+}}, $true) | Select-Object -First 1
+. ([scriptblock]::Create($definition.Extent.Text))
+$script:writes = @()
+function global:Write-Host {{
+    param(
+        [Parameter(Position=0, ValueFromRemainingArguments=$true)][object[]]$Object,
+        [ConsoleColor]$ForegroundColor,
+        [switch]$NoNewline
+    )
+    $script:writes += [pscustomobject]@{{
+        text = ($Object -join ' ')
+        no_newline = [bool]$NoNewline
+    }}
+}}
+Write-Status -Message (('boundary prose ' * 60).Trim()) `
+    -Color Magenta -Label session
+$script:writes | ConvertTo-Json -Compress
+""",
+        encoding="utf-8",
+    )
+    completed = subprocess.run(
+        [
+            POWERSHELL,
+            "-NoProfile",
+            "-NonInteractive",
+            "-ExecutionPolicy",
+            "Bypass",
+            "-File",
+            str(script),
+        ],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert completed.returncode == 0, completed.stderr
+    writes = json.loads(completed.stdout)
+    if isinstance(writes, dict):
+        writes = [writes]
+    assert len(writes) > 1
+    assert all(not write["no_newline"] for write in writes)
+    assert writes[0]["text"].startswith("[")
+    assert "[session]" in writes[0]["text"]
+    assert all("[session]" not in write["text"] for write in writes[1:])
+
+
+def test_launcher_balances_preparation_and_leaves_terminal_end_to_runner():
+    preparation_start = (
+        'Write-Status "START | campaign preparation" -Color Magenta -Label session'
+    )
+    preparation_end = (
+        'Write-Status "END | campaign preparation" -Color Magenta -Label session'
+    )
+
+    assert SCRIPT.count(preparation_start) == 1
+    assert SCRIPT.count(preparation_end) == 1
+    assert SCRIPT.index(preparation_start) < SCRIPT.index(preparation_end)
+    assert '"END | no credible route remains | "' not in SCRIPT
+
+
 def _trust_test_repository(path: Path) -> None:
     (path / "research" / "evaluations" / "campaign").mkdir(parents=True)
     (path / "robot_learning" / "scenario").mkdir(parents=True)

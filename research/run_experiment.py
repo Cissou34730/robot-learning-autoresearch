@@ -1789,11 +1789,6 @@ def main() -> int:
         )
         if changed:
             repository.write_state(state)
-        console.boundary(
-            "campaign",
-            "GUARD",
-            f"MaxInquiries {state['campaign']['max_inquiries']}",
-        )
         return 0
     if args.check_scientific_model_deliverable:
         return check_scientific_model_deliverable()

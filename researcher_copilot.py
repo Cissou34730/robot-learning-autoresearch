@@ -11,13 +11,15 @@ from __future__ import annotations
 import argparse
 import asyncio
 import json
+import ntpath
 import re
 import shlex
+import shutil
 import subprocess
 import sys
 import time
 from datetime import UTC, datetime
-from pathlib import Path
+from pathlib import Path, PureWindowsPath
 
 from research.stop_control import stop_requested, wait_for_stop_request
 
@@ -26,6 +28,7 @@ UUID_PATTERN = re.compile(
     r"\b[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-"
     r"[0-9a-fA-F]{4}-[0-9a-fA-F]{12}\b"
 )
+WINDOWS_PATH_PATTERN = re.compile(r"[A-Za-z]:[\\/](?:[^ \r\n:]+[\\/])*[^ \r\n:]+")
 
 EXIT_OK = 0
 EXIT_SESSION_ERROR = 2
@@ -358,9 +361,17 @@ def _repository_relative_target(target: str) -> str | None:
 
 
 def compact_console_path(target: str) -> str:
-    path = Path(target)
+    raw = str(target).strip()
+    if re.match(r"^[A-Za-z]:[\\/]", raw):
+        normalized = ntpath.normpath(raw).replace("\\", "/")
+        root = ntpath.normpath(str(ROOT.resolve())).replace("\\", "/").rstrip("/")
+        if normalized.casefold().startswith(root.casefold() + "/"):
+            return normalized[len(root) + 1 :]
+        parts = PureWindowsPath(raw).parts[-2:]
+        return ".../" + "/".join(parts)
+    path = Path(raw)
     if not path.is_absolute():
-        return path.as_posix()
+        return raw.replace("\\", "/")
     try:
         return path.resolve().relative_to(ROOT.resolve()).as_posix()
     except (OSError, ValueError):
@@ -368,10 +379,11 @@ def compact_console_path(target: str) -> str:
 
 
 def compact_console_text(text: object) -> str:
-    value = str(text or "")
-    for root in (str(ROOT), str(ROOT).replace("\\", "/")):
-        value = value.replace(root, ".")
-    return UUID_PATTERN.sub("<id>", value)
+    value = UUID_PATTERN.sub("<id>", str(text or ""))
+    return WINDOWS_PATH_PATTERN.sub(
+        lambda match: compact_console_path(match.group(0)),
+        value,
+    )
 
 
 def is_pi_writable_path(target: str, *, preliminary: bool = False) -> bool:
@@ -885,15 +897,24 @@ def offloaded_since(before: set[str]) -> tuple[int, int]:
     return (len(written), sum(entry.stat().st_size for entry in written))
 
 
+def _console_width() -> int:
+    return max(shutil.get_terminal_size(fallback=(100, 24)).columns, 40)
+
+
 class Console:
     """Everything the human sees, and nothing the protocol reads back."""
 
-    def __init__(self, label: str = "") -> None:
+    def __init__(self, label: str = "", columns: int | None = None) -> None:
         # Which experiment and phase this session is, so one long console log
         # stays attributable without reading backwards for the last banner.
         self.label = label
         self._mid_stream = False
         self._at_line_start = True
+        self._message_width = max((columns or _console_width()) - 4, 20)
+        self._message_buffer = ""
+        self._message_spacing = ""
+        self._message_column = 0
+        self._message_continues_word = False
         self._turn = 0
         self._turn_started_at: float | None = None
         self._turn_model = ""
@@ -945,12 +966,65 @@ class Console:
         """End the model's block, so the next fact starts at column zero."""
         if not self._mid_stream:
             return
+        self._flush_message(final=True)
         if sys.stdout.isatty():
             sys.stdout.write(_RESET)
         if not self._at_line_start:
             print(flush=True)
         self._mid_stream = False
         self._at_line_start = True
+        self._message_buffer = ""
+        self._message_spacing = ""
+        self._message_column = 0
+        self._message_continues_word = False
+
+    def _message_newline(self) -> None:
+        print(flush=True)
+        self._at_line_start = True
+        self._message_spacing = ""
+        self._message_column = 0
+        self._message_continues_word = False
+
+    def _write_message_word(self, word: str) -> None:
+        spacing = self._message_spacing
+        if (
+            not self._at_line_start
+            and self._message_column + len(spacing) + len(word) > self._message_width
+        ):
+            self._message_newline()
+            spacing = ""
+        if self._at_line_start:
+            sys.stdout.write(_GUTTER if sys.stdout.isatty() else _PLAIN_GUTTER)
+            self._at_line_start = False
+        elif spacing:
+            sys.stdout.write(spacing)
+            self._message_column += len(spacing)
+        sys.stdout.write(word)
+        self._message_column += len(word)
+        self._message_spacing = ""
+        sys.stdout.flush()
+
+    def _flush_message(self, *, final: bool) -> None:
+        tokens = re.findall(r"\n|[^\S\n]+|\S+", self._message_buffer)
+        for token in tokens:
+            if token == "\n":
+                self._message_newline()
+            elif token.isspace():
+                self._message_spacing += token
+                self._message_continues_word = False
+            elif self._message_continues_word and not self._message_spacing:
+                sys.stdout.write(token)
+                sys.stdout.flush()
+                self._message_column += len(token)
+            else:
+                self._write_message_word(token)
+                self._message_continues_word = True
+        self._message_buffer = ""
+        if final and self._message_spacing and not self._at_line_start:
+            sys.stdout.write(self._message_spacing)
+            sys.stdout.flush()
+            self._message_column += len(self._message_spacing)
+            self._message_spacing = ""
 
     def delta(self, text: str) -> None:
         if not text:
@@ -961,21 +1035,14 @@ class Console:
             self._at_line_start = True
             if sys.stdout.isatty():
                 sys.stdout.write(_MESSAGE)
-        for index, part in enumerate(text.split("\n")):
-            if index:
-                print(flush=True)
-                self._at_line_start = True
-            if not part:
-                continue
-            if self._at_line_start:
-                # Every line of the message carries the gutter, including the
-                # bare ones, so none of them reads as harness output.
-                sys.stdout.write(_GUTTER if sys.stdout.isatty() else _PLAIN_GUTTER)
-                self._at_line_start = False
-            print(part, end="", flush=True)
+        self._message_buffer += text
+        self._flush_message(final=False)
 
     def message(self, text: str) -> None:
-        if self._mid_stream or not text:
+        if self._mid_stream:
+            self._flush_message(final=True)
+            return
+        if not text:
             return
         self.delta(text)
         self._close_message()

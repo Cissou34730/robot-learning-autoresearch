@@ -972,6 +972,7 @@ try {
             if ((Invoke-ScientificModelPhase -State $state) -eq 130) {
                 break
             }
+            Write-Status "END | campaign preparation" -Color Magenta -Label session
             Update-ResearchBrief
             continue
         }
@@ -1001,10 +1002,6 @@ try {
                     ConvertFrom-Json
                 break
             }
-            Write-Status (
-                "END | no credible route remains | " +
-                (Get-CampaignResourceSummary -State $state)
-            ) -Color Green -Label campaign
             break
         }
 

@@ -48,7 +48,23 @@ function Write-Status {
     if ($lines.Count -eq 0) {
         $lines.Add("")
     }
+    $redirected = try {
+        [Console]::IsOutputRedirected
+    }
+    catch {
+        $true
+    }
     for ($index = 0; $index -lt $lines.Count; $index += 1) {
+        if ($redirected) {
+            $prefix = if ($index -eq 0) {
+                "$timestamp $marker "
+            }
+            else {
+                " " * $prefixLength
+            }
+            Write-Host "$prefix$($lines[$index])"
+            continue
+        }
         if ($index -eq 0) {
             Write-Host "$timestamp " -ForegroundColor DarkGray -NoNewline
             Write-Host $marker -ForegroundColor $Color -NoNewline

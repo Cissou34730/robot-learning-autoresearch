@@ -8,6 +8,9 @@
  * lifecycle boundaries.
  */
 
+import { isAbsolute, relative, resolve, win32 } from "node:path";
+import { fileURLToPath } from "node:url";
+
 const RESET = "\u001b[0m";
 const DIM = "\u001b[90m";
 /** The model's own words: one block behind a gutter, so a line it writes is
@@ -18,6 +21,7 @@ const GUTTER = `${DIM}${PLAIN_GUTTER}\u2502${RESET}${MESSAGE} `;
 const UUID_PATTERN =
   /\b[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}\b/g;
 const WINDOWS_PATH_PATTERN = /[A-Za-z]:[\\/](?:[^ \r\n:]+[\\/])*[^ \r\n:]+/g;
+const ROOT = fileURLToPath(new URL("../..", import.meta.url));
 
 const MARKER_COLORS: Record<string, string> = {
   ">": "\u001b[36m",
@@ -68,13 +72,42 @@ export function thousands(count: number): string {
   return count >= 1000 ? `${Math.round(count / 1000)}k` : String(count);
 }
 
-function compactText(text: string): string {
+export function compactConsolePath(target: string): string {
+  const value = target.trim();
+  if (win32.isAbsolute(value)) {
+    const normalized = win32.normalize(value);
+    const root = win32.normalize(ROOT);
+    const withinRoot = win32.relative(root, normalized);
+    if (
+      withinRoot !== "" &&
+      !withinRoot.startsWith(`..${win32.sep}`) &&
+      !win32.isAbsolute(withinRoot)
+    ) {
+      return withinRoot.replace(/\\/g, "/");
+    }
+    const parts = normalized.split(/[\\/]/).filter(Boolean);
+    return `.../${parts.slice(-2).join("/")}`;
+  }
+  if (isAbsolute(value)) {
+    const normalized = resolve(value);
+    const withinRoot = relative(ROOT, normalized);
+    if (
+      withinRoot !== "" &&
+      !withinRoot.startsWith("..") &&
+      !isAbsolute(withinRoot)
+    ) {
+      return withinRoot.replace(/\\/g, "/");
+    }
+    const parts = normalized.split(/[\\/]/).filter(Boolean);
+    return `.../${parts.slice(-2).join("/")}`;
+  }
+  return value.replace(/\\/g, "/");
+}
+
+export function compactText(text: string): string {
   return text
     .replace(UUID_PATTERN, "<id>")
-    .replace(WINDOWS_PATH_PATTERN, (path) => {
-      const parts = path.split(/[\\/]/);
-      return `.../${parts.slice(-2).join("/")}`;
-    });
+    .replace(WINDOWS_PATH_PATTERN, (path) => compactConsolePath(path));
 }
 
 export class Console {
@@ -95,6 +128,11 @@ export class Console {
 
   private midStream = false;
   private atLineStart = true;
+  private readonly messageWidth: number;
+  private messageBuffer = "";
+  private messageSpacing = "";
+  private messageColumn = 0;
+  private messageContinuesWord = false;
   private turn = 0;
   private turnStartedAt: number | null = null;
   private turnModel = "";
@@ -103,8 +141,9 @@ export class Console {
   private turnPromptAtStart = 0;
   private turnCacheReadAtStart = 0;
   private turnOutputAtStart = 0;
-  constructor(label = "") {
+  constructor(label = "", columns = process.stdout.columns ?? 100) {
     this.label = label;
+    this.messageWidth = Math.max(columns - 4, 20);
   }
 
   tagged(text: string): string {
@@ -136,10 +175,68 @@ export class Console {
 
   private closeMessage(): void {
     if (!this.midStream) return;
+    this.flushMessage(true);
     if (process.stdout.isTTY) process.stdout.write(RESET);
     if (!this.atLineStart) process.stdout.write("\n");
     this.midStream = false;
     this.atLineStart = true;
+    this.messageBuffer = "";
+    this.messageSpacing = "";
+    this.messageColumn = 0;
+    this.messageContinuesWord = false;
+  }
+
+  private messageNewline(): void {
+    process.stdout.write("\n");
+    this.atLineStart = true;
+    this.messageSpacing = "";
+    this.messageColumn = 0;
+    this.messageContinuesWord = false;
+  }
+
+  private writeMessageWord(word: string): void {
+    let spacing = this.messageSpacing;
+    if (
+      !this.atLineStart &&
+      this.messageColumn + spacing.length + word.length > this.messageWidth
+    ) {
+      this.messageNewline();
+      spacing = "";
+    }
+    if (this.atLineStart) {
+      process.stdout.write(process.stdout.isTTY ? GUTTER : PLAIN_GUTTER);
+      this.atLineStart = false;
+    } else if (spacing) {
+      process.stdout.write(spacing);
+      this.messageColumn += spacing.length;
+    }
+    process.stdout.write(word);
+    this.messageColumn += word.length;
+    this.messageSpacing = "";
+  }
+
+  private flushMessage(final: boolean): void {
+    const tokens = this.messageBuffer.match(/\n|[^\S\n]+|\S+/g) ?? [];
+    for (const token of tokens) {
+      if (token === "\n") {
+        this.messageNewline();
+      } else if (/^\s+$/.test(token)) {
+        this.messageSpacing += token;
+        this.messageContinuesWord = false;
+      } else if (this.messageContinuesWord && !this.messageSpacing) {
+        process.stdout.write(token);
+        this.messageColumn += token.length;
+      } else {
+        this.writeMessageWord(token);
+        this.messageContinuesWord = true;
+      }
+    }
+    this.messageBuffer = "";
+    if (final && this.messageSpacing && !this.atLineStart) {
+      process.stdout.write(this.messageSpacing);
+      this.messageColumn += this.messageSpacing.length;
+      this.messageSpacing = "";
+    }
   }
 
   delta(text: string): void {
@@ -150,26 +247,16 @@ export class Console {
       this.atLineStart = true;
       if (process.stdout.isTTY) process.stdout.write(MESSAGE);
     }
-    const pieces = text.split("\n");
-    for (let index = 0; index < pieces.length; index += 1) {
-      if (index > 0) {
-        process.stdout.write("\n");
-        this.atLineStart = true;
-      }
-      const piece = pieces[index]!;
-      if (!piece) continue;
-      if (this.atLineStart) {
-        // Every line of the message carries the gutter, including the bare
-        // ones, so none of them reads as harness output.
-        process.stdout.write(process.stdout.isTTY ? GUTTER : PLAIN_GUTTER);
-        this.atLineStart = false;
-      }
-      process.stdout.write(piece);
-    }
+    this.messageBuffer += text;
+    this.flushMessage(false);
   }
 
   message(text: string): void {
-    if (this.midStream || !text) return;
+    if (this.midStream) {
+      this.flushMessage(true);
+      return;
+    }
+    if (!text) return;
     this.delta(text);
     this.closeMessage();
   }
@@ -225,6 +312,7 @@ export class Console {
   }
 
   fileChanged(operation: FileOperation, path: string): void {
+    path = compactConsolePath(path);
     const marker =
       operation === "created" ? "+" : operation === "deleted" ? "-" : "~";
     if (this.changedFiles.get(path) !== marker) {
@@ -248,7 +336,8 @@ export class Console {
     void sessionID;
     void elapsedSeconds;
     for (const path of changed) {
-      if (!this.changedFiles.has(path)) this.line(`  ~ ${path}`);
+      const compact = compactConsolePath(path);
+      if (!this.changedFiles.has(compact)) this.line(`  ~ ${compact}`);
     }
   }
 

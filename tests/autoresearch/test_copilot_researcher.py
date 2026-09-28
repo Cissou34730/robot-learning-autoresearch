@@ -460,6 +460,55 @@ def test_the_final_message_is_shown_when_nothing_streamed(capsys):
     assert capsys.readouterr().out == "  complete answer\n"
 
 
+def test_separate_pi_messages_each_start_with_their_own_gutter(capsys):
+    console = adapter.Console()
+
+    console.message("first answer")
+    console.message("second answer")
+
+    assert capsys.readouterr().out == "  first answer\n  second answer\n"
+
+
+@pytest.mark.parametrize(
+    ("target", "expected"),
+    [
+        (ROOT / "research" / "brief.md", "research/brief.md"),
+        (ROOT.parent / "private" / "trace.log", ".../private/trace.log"),
+        (Path("research") / "brief.md", "research/brief.md"),
+    ],
+)
+def test_console_paths_are_compact_and_repository_relative(target, expected):
+    assert adapter.compact_console_path(str(target)) == expected
+
+
+def test_console_text_compacts_repository_and_external_paths():
+    repository_path = ROOT / "research" / "brief.md"
+    external_path = ROOT.parent / "private" / "trace.log"
+
+    rendered = adapter.compact_console_text(
+        f"Read {repository_path} after {external_path}"
+    )
+
+    assert "research/brief.md" in rendered
+    assert ".../private/trace.log" in rendered
+    assert str(ROOT) not in rendered
+    assert str(ROOT.parent) not in rendered
+
+
+def test_long_pi_prose_wraps_with_a_continuation_gutter_without_losing_words(capsys):
+    message = (
+        "Choose the measurement whose result would most improve the next "
+        "decision toward the human goal."
+    )
+
+    adapter.Console(columns=36).message(message)
+
+    lines = capsys.readouterr().out.splitlines()
+    assert len(lines) > 1
+    assert all(line.startswith("  ") and len(line) <= 36 for line in lines)
+    assert " ".join(line[2:] for line in lines) == message
+
+
 def test_every_line_of_a_message_carries_its_own_gutter(capsys):
     console = adapter.Console()
 

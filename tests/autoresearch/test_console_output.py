@@ -1,10 +1,14 @@
 import json
+import re
 from io import StringIO
+
+import pytest
 
 from research import run_experiment, runner_console
 
 
 def test_training_heartbeat_keeps_every_live_field(monkeypatch):
+    monkeypatch.setattr(runner_console, "_console_width", lambda: 120)
     monkeypatch.setattr(
         runner_console,
         "scenario_progress_metric",
@@ -29,6 +33,51 @@ def test_training_heartbeat_keeps_every_live_field(monkeypatch):
         "5m57s",
         "ETA 1m08s",
         "reward 163",
+        "success 54%",
+    ):
+        assert fact in line
+
+
+@pytest.mark.parametrize("width", [80, 120])
+def test_training_heartbeat_render_preserves_fields_at_common_widths(
+    monkeypatch, width
+):
+    class Tty(StringIO):
+        def isatty(self):
+            return True
+
+    monkeypatch.setattr(runner_console, "_console_width", lambda: width)
+    monkeypatch.setattr(
+        runner_console,
+        "scenario_progress_metric",
+        lambda _record: "success 54%",
+    )
+    stream = Tty()
+    progress = runner_console.LiveProgress(stream=stream, archive_seconds=999)
+
+    progress.line(
+        runner_console.training_heartbeat(
+            "T3",
+            101_000,
+            120_000,
+            357,
+            68,
+            357,
+            {"ep_rew_mean": 163},
+        )
+    )
+
+    rendered = re.sub(r"\x1b\[[0-9;]*[A-Za-z]", "", stream.getvalue())
+    line = rendered.replace("\r", "").strip()
+    assert len(line) <= width
+    for fact in (
+        "T3",
+        "84%",
+        "101k/120k",
+        "5m57s",
+        "1m08s",
+        "357",
+        "163",
         "success 54%",
     ):
         assert fact in line
@@ -154,8 +203,12 @@ def test_operation_execution_has_request_start_and_completion_boundaries(monkeyp
         "load_state",
         lambda **_kwargs: state,
     )
-    monkeypatch.setattr(run_experiment, "_canonical_fingerprint", lambda _value: "fingerprint")
-    monkeypatch.setattr(run_experiment, "_write_accepted_request_handoff", lambda _pending: None)
+    monkeypatch.setattr(
+        run_experiment, "_canonical_fingerprint", lambda _value: "fingerprint"
+    )
+    monkeypatch.setattr(
+        run_experiment, "_write_accepted_request_handoff", lambda _pending: None
+    )
     monkeypatch.setattr(
         run_experiment.console,
         "boundary",
@@ -193,3 +246,47 @@ def test_compact_path_hides_machine_specific_repository_prefix():
 
     assert rendered == "research/evaluations/campaign/measurement.json"
     assert str(runner_console._ROOT) not in rendered
+
+
+def test_no_credible_route_has_one_runner_owned_campaign_end(monkeypatch):
+    boundaries = []
+    state = {
+        "scientific_session": {
+            "id": "S4",
+        },
+        "campaign": {
+            "id": "11111111-1111-1111-1111-111111111111",
+        },
+    }
+    pending = {
+        "kind": "campaign_conclusion",
+        "data": {
+            "result": {
+                "status": "no_credible_route",
+            }
+        },
+    }
+    monkeypatch.setattr(
+        run_experiment.console,
+        "boundary",
+        lambda scope, action, subject="", detail="": boundaries.append(
+            (scope, action, subject, detail)
+        ),
+    )
+    monkeypatch.setattr(
+        run_experiment.console,
+        "usage_summary",
+        lambda *_args: "usage",
+    )
+    monkeypatch.setattr(
+        run_experiment.repository,
+        "current_campaign_id",
+        lambda _state: state["campaign"]["id"],
+    )
+
+    run_experiment._announce_consequential_completion(state, pending, "session usage")
+
+    assert boundaries == [
+        ("session", "END", "S4", "session usage"),
+        ("campaign", "END", "no credible route", "usage"),
+    ]

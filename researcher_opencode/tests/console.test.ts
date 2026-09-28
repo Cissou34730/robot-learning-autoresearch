@@ -1,7 +1,15 @@
 import assert from "node:assert/strict";
+import { join } from "node:path";
 import { test } from "node:test";
+import { fileURLToPath } from "node:url";
 
-import { Console } from "../src/console.ts";
+import {
+  compactConsolePath,
+  compactText,
+  Console,
+} from "../src/console.ts";
+
+const ROOT = fileURLToPath(new URL("../..", import.meta.url));
 
 function captureOutput(action: () => void): string {
   const written: string[] = [];
@@ -38,6 +46,16 @@ test("operation request changes are exposed immediately", () => {
   assert.match(output, /PI operation request updated/);
 });
 
+test("separate PI messages each start with their own gutter", () => {
+  const output = captureOutput(() => {
+    const console = new Console();
+    console.message("first answer");
+    console.message("second answer");
+  });
+
+  assert.equal(output, "  first answer\n  second answer\n");
+});
+
 test("backend UUIDs and absolute Windows paths are compacted in PI messages", () => {
   const output = captureOutput(() => {
     new Console().message(
@@ -49,4 +67,34 @@ test("backend UUIDs and absolute Windows paths are compacted in PI messages", ()
   assert.match(output, /\.\.\.\/research\/brief\.md/);
   assert.match(output, /<id>/);
   assert.doesNotMatch(output, /C:\\work\\repo/);
+});
+
+test("repository and external path compaction matches the Copilot console", () => {
+  const repositoryPath = join(ROOT, "research", "brief.md");
+  const externalPath = join(ROOT, "..", "private", "trace.log");
+
+  assert.equal(compactConsolePath(repositoryPath), "research/brief.md");
+  assert.equal(compactConsolePath(externalPath), ".../private/trace.log");
+  assert.equal(compactConsolePath("research\\brief.md"), "research/brief.md");
+  assert.equal(
+    compactText(`Read ${repositoryPath} after ${externalPath}`),
+    "Read research/brief.md after .../private/trace.log",
+  );
+});
+
+test("long PI prose wraps with a continuation gutter without losing words", () => {
+  const message =
+    "Choose the measurement whose result would most improve the next " +
+    "decision toward the human goal.";
+  const output = captureOutput(() => {
+    new Console("", 36).message(message);
+  });
+
+  const lines = output.trimEnd().split("\n");
+  assert.ok(lines.length > 1);
+  assert.ok(lines.every((line) => line.startsWith("  ") && line.length <= 36));
+  assert.equal(
+    lines.map((line) => line.slice(2)).join(" "),
+    message,
+  );
 });
