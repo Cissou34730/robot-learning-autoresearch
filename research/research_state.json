@@ -1,5 +1,13 @@
 {
-  "active_inquiry": null,
+  "active_inquiry": {
+    "closure_condition": "Close after evaluating the strongest late T1 candidates on independent research and task-reference panels with hold diagnostics, then assign a best-known candidate and either request official assessment when the evidence supports it or select one evidence-based next intervention.",
+    "goal_connection": "Independent episode success and hold-specific failure attribution are required to determine whether a T1 candidate is credible for official assessment or whether continued training or a control/reward change is needed to reach at least 98% official-distribution success.",
+    "id": "I1",
+    "opened_in_session": "S2",
+    "question": "Do independent development evaluations of the strongest late T1 checkpoints demonstrate complete uninterrupted-hold success near the 98% goal across the official target distribution, and if not, which approach, branch, overshoot, or hold failure mode limits them?",
+    "rationale": "T1 corrected the known radius-distribution omission and reached 0.94 in-training success at 120832 steps, but no independent evaluation has measured episode success or uninterrupted-hold reliability. A bounded diagnostic evaluation is the highest-value next step because it distinguishes generalization and residual hold failures from a need for a new learning or control intervention.",
+    "reframes": []
+  },
   "campaign": {
     "base_commit": "c6183faf5ed4997a932a12ce263a837ec5cc633c",
     "id": "a1297064-def3-4191-8914-19ef91412bcb",
@@ -826,16 +834,16 @@
     }
   },
   "counters": {
-    "event": 1,
-    "inquiry": 0,
+    "event": 2,
+    "inquiry": 1,
     "measurement": 0,
-    "session": 1,
+    "session": 2,
     "training": 1
   },
   "human_goal": {
     "source": "research/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -1081,9 +1089,69 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-09-28T14:12:52Z",
+      "error": null,
+      "id": "E2",
+      "inquiry_id": "I1",
+      "kind": "inquiry",
+      "request": {
+        "action": "open",
+        "closure_condition": "Close after evaluating the strongest late T1 candidates on independent research and task-reference panels with hold diagnostics, then assign a best-known candidate and either request official assessment when the evidence supports it or select one evidence-based next intervention.",
+        "goal_connection": "Independent episode success and hold-specific failure attribution are required to determine whether a T1 candidate is credible for official assessment or whether continued training or a control/reward change is needed to reach at least 98% official-distribution success.",
+        "question": "Do independent development evaluations of the strongest late T1 checkpoints demonstrate complete uninterrupted-hold success near the 98% goal across the official target distribution, and if not, which approach, branch, overshoot, or hold failure mode limits them?",
+        "rationale": "T1 corrected the known radius-distribution omission and reached 0.94 in-training success at 120832 steps, but no independent evaluation has measured episode success or uninterrupted-hold reliability. A bounded diagnostic evaluation is the highest-value next step because it distinguishes generalization and residual hold failures from a need for a new learning or control intervention."
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I1",
+        "status": "completed"
+      },
+      "session_id": "S2",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "open",
+        "inquiry": {
+          "closure_condition": "Close after evaluating the strongest late T1 candidates on independent research and task-reference panels with hold diagnostics, then assign a best-known candidate and either request official assessment when the evidence supports it or select one evidence-based next intervention.",
+          "goal_connection": "Independent episode success and hold-specific failure attribution are required to determine whether a T1 candidate is credible for official assessment or whether continued training or a control/reward change is needed to reach at least 98% official-distribution success.",
+          "id": "I1",
+          "opened_in_session": "S2",
+          "question": "Do independent development evaluations of the strongest late T1 checkpoints demonstrate complete uninterrupted-hold success near the 98% goal across the official target distribution, and if not, which approach, branch, overshoot, or hold failure mode limits them?",
+          "rationale": "T1 corrected the known radius-distribution omission and reached 0.94 in-training success at 120832 steps, but no independent evaluation has measured episode success or uninterrupted-hold reliability. A bounded diagnostic evaluation is the highest-value next step because it distinguishes generalization and residual hold failures from a need for a new learning or control intervention.",
+          "reframes": []
+        }
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I1",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E2",
+    "inquiry_id": null,
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "open",
+        "closure_condition": "Close after evaluating the strongest late T1 candidates on independent research and task-reference panels with hold diagnostics, then assign a best-known candidate and either request official assessment when the evidence supports it or select one evidence-based next intervention.",
+        "goal_connection": "Independent episode success and hold-specific failure attribution are required to determine whether a T1 candidate is credible for official assessment or whether continued training or a control/reward change is needed to reach at least 98% official-distribution success.",
+        "question": "Do independent development evaluations of the strongest late T1 checkpoints demonstrate complete uninterrupted-hold success near the 98% goal across the official target distribution, and if not, which approach, branch, overshoot, or hold failure mode limits them?",
+        "rationale": "T1 corrected the known radius-distribution omission and reached 0.94 in-training success at 120832 steps, but no independent evaluation has measured episode success or uninterrupted-hold reliability. A bounded diagnostic evaluation is the highest-value next step because it distinguishes generalization and residual hold failures from a need for a new learning or control intervention."
+      }
+    },
+    "request_fingerprint": "139433fab6496365745635bfd603e68aa0321d82fa8447ced6e8d3f5aaffa6fe",
+    "session_id": "S2",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T1 produced candidates through 120832 steps. No candidate has a working, best-known, or retained role because none has independent development evidence yet.",
     "completed_operations": [
@@ -1108,6 +1176,21 @@
     "path": "research/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "02f3f8a9-52c1-46fa-a3bf-343bac0f626b",
+    "id": "S2",
+    "inquiry_id": null,
+    "kind": "goal_review",
+    "objective": "Decide whether to request official assessment, open one bounded goal-linked inquiry, or conclude that no credible route remains.",
+    "operation_ids": [
+      "E2"
+    ],
+    "scientific_parent_commit": "63406003a7be45ce6f14f516282662e80e5731cd"
+  },
   "terminal_state": null
 }
