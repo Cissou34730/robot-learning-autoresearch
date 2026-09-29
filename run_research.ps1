@@ -730,6 +730,20 @@ function New-ScientificSessionPrompt {
             "Do not request another inquiry."
         )
     }
+    elseif (
+        $State.scientific_session.kind -eq "inquiry" -and
+        $State.active_inquiry
+    ) {
+        @(
+            "Before choosing another action, determine whether the completed evidence now supplies the decision-relevant answer specified by the active inquiry's exact question and closure condition."
+            "The inquiry is ready to close when the evidence is sufficient for the scientific decision it was opened to enable. Exhaustive certainty is not required; record remaining uncertainty when resolving it could no longer change that decision."
+            "When the closure condition has been established, the question has been redirected or is no longer credible, or the actionable result has been produced, use the inquiry close contract now."
+            "Closure records the fulfilled scientific purpose before checkpointing and returning to goal review, where the remaining human-goal gap determines whether another inquiry, official assessment, or campaign conclusion follows."
+            "Further inquiry work is justified by a named consequential uncertainty whose resolution could change the inquiry's answer. Reframe when that work belongs to a different question."
+            "Existing PI-owned implementations have no privileged status; inspect, modify, or replace them when that is the most credible scientific action before submitting an operation."
+            "When ready to act, use the matching contract in research/instruments.md to submit one scientific action."
+        )
+    }
     else {
         @(
             "Choose the operation whose result would most improve the next decision toward the human goal."
@@ -1063,7 +1077,9 @@ try {
             }
             else {
                 (
-                    "Advance $($state.active_inquiry.id) toward its closure condition: " +
+                    "Bring $($state.active_inquiry.id) to the decision required " +
+                    "by its closure condition, and close it as soon as the " +
+                    "evidence supplies that decision: " +
                     "$($state.active_inquiry.closure_condition)"
                 )
             }
