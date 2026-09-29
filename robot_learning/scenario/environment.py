@@ -41,12 +41,14 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
         hold_seconds: float = HOLD_SECONDS,
         frame_skip: int = FRAME_SKIP,
         max_episode_steps: int = MAX_EPISODE_STEPS,
+        boundary_braking_scale: float = 1.0,
         policy_runtime=None,
     ) -> None:
         super().__init__()
         self.max_episode_steps = max_episode_steps
         self.frame_skip = frame_skip
         self.target_radius_range = target_radius_range
+        self.boundary_braking_scale = boundary_braking_scale
         self.policy_io = policy_runtime.io if policy_runtime else make_policy_io()
 
         self.model = mujoco.MjModel.from_xml_path(str(TWO_JOINT_ARM_XML_PATH))
@@ -98,6 +100,9 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
 
     def _observation(self) -> np.ndarray:
         return self.policy_io.observe(self.data)
+
+    def _current_boundary_braking_scale(self) -> float:
+        return self.boundary_braking_scale
 
     def reset(
         self, *, seed: int | None = None, options: dict[str, Any] | None = None
@@ -153,6 +158,7 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
             penalize_outside=self._outside_after_hold,
             joint_velocity=self.data.qvel,
             endpoint_velocity=endpoint_velocity(self.data),
+            boundary_braking_scale=self._current_boundary_braking_scale(),
         )
         self._previous_distance = distance
 

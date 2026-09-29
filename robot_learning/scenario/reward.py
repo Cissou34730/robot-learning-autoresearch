@@ -54,15 +54,19 @@ def _boundary_braking_penalties(
     action: np.ndarray | None,
     joint_velocity: np.ndarray | None,
     endpoint_velocity: np.ndarray | None,
+    scale: float,
 ) -> tuple[float, float, float]:
     if BOUNDARY_BAND_WIDTH <= 0:
         raise ValueError("BOUNDARY_BAND_WIDTH must be positive")
+    if not 0.0 <= scale <= 1.0:
+        raise ValueError("boundary braking scale must be between 0 and 1")
     boundary_weight = float(
         np.exp(
             -0.5
             * ((distance - success_threshold) / BOUNDARY_BAND_WIDTH) ** 2
         )
     )
+    boundary_weight *= scale
     joint_velocity_penalty = 0.0
     if joint_velocity is not None:
         joint_velocity_penalty = -(
@@ -102,6 +106,7 @@ def reach_reward(
     penalize_outside: bool = False,
     joint_velocity: np.ndarray | None = None,
     endpoint_velocity: np.ndarray | None = None,
+    boundary_braking_scale: float = 1.0,
 ) -> RewardResult:
     progress = PROGRESS_COEFFICIENT * (previous_distance - current_distance)
     reward = progress
@@ -154,6 +159,7 @@ def reach_reward(
         action,
         joint_velocity,
         endpoint_velocity,
+        boundary_braking_scale,
     )
     reward += (
         joint_velocity_penalty
