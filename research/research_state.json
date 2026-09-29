@@ -7913,72 +7913,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "candidate_id": "T1:checkpoint-100352",
-        "parameters": {
-          "algorithm": {
-            "name": "ppo"
-          },
-          "policy": {
-            "activation": "tanh",
-            "net_arch": [
-              64,
-              64
-            ]
-          },
-          "ppo": {
-            "batch_size": 64,
-            "ent_coef": 0.01,
-            "gae_lambda": 0.95,
-            "gamma": 0.99,
-            "learning_rate": 0.0003,
-            "n_steps": 1024
-          },
-          "training": {
-            "checkpoint_every_steps": 5000,
-            "n_envs": 1
-          }
-        },
-        "parent": "e63fb781f524a41d78f44169b01e8960b909aed5",
-        "remove_created": [],
-        "restore": [
-          "robot_learning/scenario/policy_io.py"
-        ],
-        "session_id": "S8"
-      },
-      "pre_restore_manifest": [
-        {
-          "exists": true,
-          "fingerprint": "e03556d7e5085e9e2370a59f51017fe37bfa9bba5cf06b51850592b9730b0c4e",
-          "path": "robot_learning/scenario/policy_io.py"
-        }
-      ],
-      "result": {
-        "candidate": "T1:checkpoint-100352",
-        "restored_paths": [
-          "robot_learning/scenario/policy_io.py"
-        ],
-        "scientific_commit": "e63fb781f524a41d78f44169b01e8960b909aed5",
-        "status": "restored"
-      }
-    },
-    "failure": null,
-    "id": "E13",
-    "inquiry_id": "I1",
-    "kind": "restore_recipe",
-    "progress": "completed",
-    "request": {
-      "restore_recipe": {
-        "candidate": "T1:checkpoint-100352",
-        "reason": "Restore the reproducible T1 baseline before testing the narrower policy-only feasible-branch commitment intervention. This preserves the unchanged reward, target distribution, direct torque action semantics, observation size, and learned T1 approach/hold behavior required for a valid paired comparison."
-      }
-    },
-    "request_fingerprint": "52b83ef698f873cfb0ddab261c63ea0e128d2464aacf13862c6fc6270ea9e520",
-    "session_id": "S8",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T1:checkpoint-100352 remains the sole best-known candidate, assigned by E4, with retained artifact fingerprint 1a8952087047. T7 checkpoints are rejected and have no assigned role. No working or official candidate is assigned.",
     "completed_operations": [
