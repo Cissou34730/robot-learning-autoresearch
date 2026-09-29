@@ -4807,7 +4807,7 @@
     }
   },
   "counters": {
-    "event": 14,
+    "event": 15,
     "inquiry": 1,
     "measurement": 8,
     "session": 8,
@@ -4816,7 +4816,7 @@
   "human_goal": {
     "source": "research/scenario.md"
   },
-  "last_verdict": "assigned",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": "T8:checkpoint-5120",
     "retained": {},
@@ -9072,33 +9072,173 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-09-29T00:26:48Z",
+      "error": null,
+      "id": "E15",
+      "inquiry_id": "I1",
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "T8:checkpoint-5120 is the best-known candidate, assigned by E14, with M8 evidence at 159/160 complete-hold successes and model fingerprint 85497cedbc3b398c33a5212b7f8bab501e6957f8eb8e83edcc77a6d90026928f. T8:checkpoint-10240 is an equal-outcome unassigned alternative; T8:checkpoint-35840 and T1 remain unassigned or superseded. No official candidate role is assigned.",
+        "completed_operations": [
+          "E13",
+          "T8",
+          "M8",
+          "E14"
+        ],
+        "cumulative_resource_use": "T1 used one fresh 100352-step PPO training operation and baseline panels M1/M7; T2/M2, T3/M3, T4/M4, T5/M5, and T6/M6 tested and rejected reward, observation, distribution, curriculum, and action-path alternatives. E7, E9, and E10 restored T1 between lines. E13 restored T1 before T8. T7 used one 100352-step transfer-training operation and M7 evaluated its early and terminal checkpoints. T8 used one 50000-step transfer-training operation and M8 evaluated three T8 checkpoints plus T1 on the shared 160-episode panel. No official benchmark assessment has yet been requested.",
+        "current_goal_gap": "T8:checkpoint-5120 is the best-known candidate at 159/160 (99.375%) on the shared 160-episode panel, with 9 candidate wins versus 1 T1 reference win and a +5.0 percentage-point success delta. This exceeds the projected 98% research threshold, but official success is still unknown because the protected assessment uses a distinct 200-episode panel. T8:checkpoint-10240 ties this result; T8:checkpoint-35840 achieves 157/160.",
+        "current_synthesis": "M1 and M7 establish that T1 failures were dominated by policy-controlled acquisition of an infeasible open-branch posture for negative-angle targets: six failures never entered tolerance and three held only 1-2 checks, all with negative minimum joint-limit margin, while no failures were caused by later hold interruption. M8 shows that a static geometry-gated observation-only remap, applied from the initial observation only when open is infeasible and folded is feasible, repairs this mechanism without changing reward, target distribution, observation size, or direct torque realization: T8:checkpoint-5120 reaches 159/160 and wins 9 of 10 discordant episodes against T1. The late remap in T7 and direct action correction in T6 remain rejected; the evidence supports feasible-branch policy semantics, not forced physical posture control.",
+        "decision_frontier": "Accept T8:checkpoint-5120 as the best-known research candidate and reject T7 and the other tested interventions as improvements. I1's closure condition is met: the baseline has decomposition by reach, first entry, longest hold, residual motion, branch/posture, and target geometry, and M8 supports one actionable intervention with paired improvement and no observed broad degradation. Do not claim the human goal is met until the protected 200-episode official assessment is executed.",
+        "evidence_references": [
+          "T1",
+          "M1",
+          "M7",
+          "T8",
+          "M8",
+          "E14"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 of 200 official episodes to complete an uninterrupted 2-second hold. M8 measured the best T8 candidate at 159/160 (99.375%) on the complete-hold research panel, exceeding the research threshold and providing a credible frozen policy for official assessment, while the official 200-episode result remains unmeasured.",
+        "next_direction_or_closure": "Close I1 in the next inquiry session because its stated behavioral closure condition is satisfied. Then, with no active inquiry and T8:checkpoint-5120 explicitly best-known, request the protected official assessment. Treat the official 200-episode result as the only evidence of reaching the human goal; if it is below 196/200, reopen scientific work rather than treating the research-panel result as sufficient."
+      },
+      "result": {
+        "session_id": "S8",
+        "status": "checkpointed"
+      },
+      "session_id": "S8",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "81bfb41fff15aaffa7b1fbbc37f3f673d58205c1",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "T8:checkpoint-5120 is the best-known candidate, assigned by E14, with M8 evidence at 159/160 complete-hold successes and model fingerprint 85497cedbc3b398c33a5212b7f8bab501e6957f8eb8e83edcc77a6d90026928f. T8:checkpoint-10240 is an equal-outcome unassigned alternative; T8:checkpoint-35840 and T1 remain unassigned or superseded. No official candidate role is assigned.",
+        "completed_operations": [
+          "E13",
+          "T8",
+          "M8",
+          "E14"
+        ],
+        "cumulative_resource_use": "T1 used one fresh 100352-step PPO training operation and baseline panels M1/M7; T2/M2, T3/M3, T4/M4, T5/M5, and T6/M6 tested and rejected reward, observation, distribution, curriculum, and action-path alternatives. E7, E9, and E10 restored T1 between lines. E13 restored T1 before T8. T7 used one 100352-step transfer-training operation and M7 evaluated its early and terminal checkpoints. T8 used one 50000-step transfer-training operation and M8 evaluated three T8 checkpoints plus T1 on the shared 160-episode panel. No official benchmark assessment has yet been requested.",
+        "current_goal_gap": "T8:checkpoint-5120 is the best-known candidate at 159/160 (99.375%) on the shared 160-episode panel, with 9 candidate wins versus 1 T1 reference win and a +5.0 percentage-point success delta. This exceeds the projected 98% research threshold, but official success is still unknown because the protected assessment uses a distinct 200-episode panel. T8:checkpoint-10240 ties this result; T8:checkpoint-35840 achieves 157/160.",
+        "current_synthesis": "M1 and M7 establish that T1 failures were dominated by policy-controlled acquisition of an infeasible open-branch posture for negative-angle targets: six failures never entered tolerance and three held only 1-2 checks, all with negative minimum joint-limit margin, while no failures were caused by later hold interruption. M8 shows that a static geometry-gated observation-only remap, applied from the initial observation only when open is infeasible and folded is feasible, repairs this mechanism without changing reward, target distribution, observation size, or direct torque realization: T8:checkpoint-5120 reaches 159/160 and wins 9 of 10 discordant episodes against T1. The late remap in T7 and direct action correction in T6 remain rejected; the evidence supports feasible-branch policy semantics, not forced physical posture control.",
+        "decision_frontier": "Accept T8:checkpoint-5120 as the best-known research candidate and reject T7 and the other tested interventions as improvements. I1's closure condition is met: the baseline has decomposition by reach, first entry, longest hold, residual motion, branch/posture, and target geometry, and M8 supports one actionable intervention with paired improvement and no observed broad degradation. Do not claim the human goal is met until the protected 200-episode official assessment is executed.",
+        "evidence_references": [
+          "T1",
+          "M1",
+          "M7",
+          "T8",
+          "M8",
+          "E14"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 of 200 official episodes to complete an uninterrupted 2-second hold. M8 measured the best T8 candidate at 159/160 (99.375%) on the complete-hold research panel, exceeding the research threshold and providing a credible frozen policy for official assessment, while the official 200-episode result remains unmeasured.",
+        "inquiry_id": "I1",
+        "next_direction_or_closure": "Close I1 in the next inquiry session because its stated behavioral closure condition is satisfied. Then, with no active inquiry and T8:checkpoint-5120 explicitly best-known, request the protected official assessment. Treat the official 200-episode result as the only evidence of reaching the human goal; if it is below 196/200, reopen scientific work rather than treating the research-panel result as sufficient.",
+        "session_id": "S8"
+      },
+      "presentation": {
+        "backend_session_id": "1455ae32-b500-4fa4-8bbc-a1ea2bde2054",
+        "campaign_id": "3b9f0c1b-33c6-451a-b321-744b012458e5",
+        "campaign_usage": "45m00s | 121.39 AIU | prompt 19.4m (85% cached) | output 128.3k",
+        "session_id": "S8",
+        "session_kind": "inquiry",
+        "session_usage": "6m12s | 14.30 AIU | prompt 3.2m (91% cached) | output 13.2k"
+      },
+      "result": {
+        "session_id": "S8",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "fdd39feb89f27b932ca03c036a2537ef642709ff",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E15",
+    "inquiry_id": "I1",
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "T8:checkpoint-5120 is the best-known candidate, assigned by E14, with M8 evidence at 159/160 complete-hold successes and model fingerprint 85497cedbc3b398c33a5212b7f8bab501e6957f8eb8e83edcc77a6d90026928f. T8:checkpoint-10240 is an equal-outcome unassigned alternative; T8:checkpoint-35840 and T1 remain unassigned or superseded. No official candidate role is assigned.",
+        "completed_operations": [
+          "E13",
+          "T8",
+          "M8",
+          "E14"
+        ],
+        "cumulative_resource_use": "T1 used one fresh 100352-step PPO training operation and baseline panels M1/M7; T2/M2, T3/M3, T4/M4, T5/M5, and T6/M6 tested and rejected reward, observation, distribution, curriculum, and action-path alternatives. E7, E9, and E10 restored T1 between lines. E13 restored T1 before T8. T7 used one 100352-step transfer-training operation and M7 evaluated its early and terminal checkpoints. T8 used one 50000-step transfer-training operation and M8 evaluated three T8 checkpoints plus T1 on the shared 160-episode panel. No official benchmark assessment has yet been requested.",
+        "current_goal_gap": "T8:checkpoint-5120 is the best-known candidate at 159/160 (99.375%) on the shared 160-episode panel, with 9 candidate wins versus 1 T1 reference win and a +5.0 percentage-point success delta. This exceeds the projected 98% research threshold, but official success is still unknown because the protected assessment uses a distinct 200-episode panel. T8:checkpoint-10240 ties this result; T8:checkpoint-35840 achieves 157/160.",
+        "current_synthesis": "M1 and M7 establish that T1 failures were dominated by policy-controlled acquisition of an infeasible open-branch posture for negative-angle targets: six failures never entered tolerance and three held only 1-2 checks, all with negative minimum joint-limit margin, while no failures were caused by later hold interruption. M8 shows that a static geometry-gated observation-only remap, applied from the initial observation only when open is infeasible and folded is feasible, repairs this mechanism without changing reward, target distribution, observation size, or direct torque realization: T8:checkpoint-5120 reaches 159/160 and wins 9 of 10 discordant episodes against T1. The late remap in T7 and direct action correction in T6 remain rejected; the evidence supports feasible-branch policy semantics, not forced physical posture control.",
+        "decision_frontier": "Accept T8:checkpoint-5120 as the best-known research candidate and reject T7 and the other tested interventions as improvements. I1's closure condition is met: the baseline has decomposition by reach, first entry, longest hold, residual motion, branch/posture, and target geometry, and M8 supports one actionable intervention with paired improvement and no observed broad degradation. Do not claim the human goal is met until the protected 200-episode official assessment is executed.",
+        "evidence_references": [
+          "T1",
+          "M1",
+          "M7",
+          "T8",
+          "M8",
+          "E14"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 of 200 official episodes to complete an uninterrupted 2-second hold. M8 measured the best T8 candidate at 159/160 (99.375%) on the complete-hold research panel, exceeding the research threshold and providing a credible frozen policy for official assessment, while the official 200-episode result remains unmeasured.",
+        "next_direction_or_closure": "Close I1 in the next inquiry session because its stated behavioral closure condition is satisfied. Then, with no active inquiry and T8:checkpoint-5120 explicitly best-known, request the protected official assessment. Treat the official 200-episode result as the only evidence of reaching the human goal; if it is below 196/200, reopen scientific work rather than treating the research-panel result as sufficient."
+      }
+    },
+    "request_fingerprint": "a05221c805a5f8935b4d93038ef584e9b1f73fc25d506c362fc3f7382a15b211",
+    "session_id": "S8",
+    "supersedes": null
+  },
   "pi_checkpoint": {
-    "candidates_and_roles": "T1:checkpoint-100352 remains the sole best-known candidate, assigned by E4, with retained artifact fingerprint 1a8952087047. T7 checkpoints are rejected and have no assigned role. No working or official candidate is assigned.",
+    "candidates_and_roles": "T8:checkpoint-5120 is the best-known candidate, assigned by E14, with M8 evidence at 159/160 complete-hold successes and model fingerprint 85497cedbc3b398c33a5212b7f8bab501e6957f8eb8e83edcc77a6d90026928f. T8:checkpoint-10240 is an equal-outcome unassigned alternative; T8:checkpoint-35840 and T1 remain unassigned or superseded. No official candidate role is assigned.",
     "completed_operations": [
-      "T7",
-      "M7"
+      "E13",
+      "T8",
+      "M8",
+      "E14"
     ],
-    "cumulative_resource_use": "T1 used one fresh 100352-step PPO training operation and M1 one 160-episode panel; E4 assigned the best-known role. T2/M2, T3/M3, T4/M4, T5/M5, and T6/M6 tested and rejected reward, observation, distribution, curriculum, and action-path alternatives. E7, E9, and E10 restored T1 between lines. T7 used one 100352-step transfer-training operation and M7 evaluated its 10240-step and 100352-step checkpoints plus T1 on the shared 160-episode panel. No official benchmark assessment was requested.",
-    "current_goal_gap": "T1:checkpoint-100352 remains the best-known candidate at 151/160 (94.375%) on the shared 160-episode panel, 45 successes short of the projected 196/200 target. T7:checkpoint-10240 achieved 148/160 (92.5%) with 2 candidate wins versus 5 reference wins; T7:checkpoint-100352 achieved 131/160 (81.875%) with 0 candidate wins versus 20 reference wins. No candidate is eligible for official assessment.",
-    "current_synthesis": "M7 closes the behavioral diagnosis required by I1 for the reproducible T1 baseline. T1 has 6 no-entry failures and 3 failures whose longest uninterrupted hold is only 1-2 checks; there are no failures caused by a later hold interruption. The 9 failures all have negative minimum joint-limit margin, and the angle breakdown is concentrated in the (-180,-90] sector (9 failures), while the other three angle sectors have no failures. Radius alone is not sufficient: T1 succeeds at 92.9% for radii 18-20 cm and 95.0% for 6-10 cm. Entry conditioning is only weakly elevated in failures and successful holds exhibit substantial endpoint motion, so residual hold regulation is not the dominant failure phase. T7's observation-only open/folded channel remap does not improve this mechanism: the early checkpoint is 3 successes below T1 and loses 5 paired episodes, while the terminal checkpoint adds no-entry failures, degrades across all angle sectors, and loses all 20 discordant paired episodes. The actionable mechanism remains policy-controlled feasible-posture acquisition for difficult negative-angle targets, but the tested remap is rejected because it disrupts the learned branch and approach dynamics.",
-    "decision_frontier": "Keep T1:checkpoint-100352 as best-known and reject T7:checkpoint-10240 and T7:checkpoint-100352 as improvements. Do not use the T7 late observation channel swap, direct IK action correction, dense limit reward, appended branch-margin observations, broad radius exposure, or targeted curriculum. The next intervention must remain policy-controlled, preserve direct torque action semantics and the learned T1 approach/hold behavior, and alter branch commitment only when a feasible-posture decision is needed. Pre-register that it must reduce T1's negative-angle no-entry/short-hold failures without increasing failures elsewhere and must beat T1 on the shared paired panel.",
+    "cumulative_resource_use": "T1 used one fresh 100352-step PPO training operation and baseline panels M1/M7; T2/M2, T3/M3, T4/M4, T5/M5, and T6/M6 tested and rejected reward, observation, distribution, curriculum, and action-path alternatives. E7, E9, and E10 restored T1 between lines. E13 restored T1 before T8. T7 used one 100352-step transfer-training operation and M7 evaluated its early and terminal checkpoints. T8 used one 50000-step transfer-training operation and M8 evaluated three T8 checkpoints plus T1 on the shared 160-episode panel. No official benchmark assessment has yet been requested.",
+    "current_goal_gap": "T8:checkpoint-5120 is the best-known candidate at 159/160 (99.375%) on the shared 160-episode panel, with 9 candidate wins versus 1 T1 reference win and a +5.0 percentage-point success delta. This exceeds the projected 98% research threshold, but official success is still unknown because the protected assessment uses a distinct 200-episode panel. T8:checkpoint-10240 ties this result; T8:checkpoint-35840 achieves 157/160.",
+    "current_synthesis": "M1 and M7 establish that T1 failures were dominated by policy-controlled acquisition of an infeasible open-branch posture for negative-angle targets: six failures never entered tolerance and three held only 1-2 checks, all with negative minimum joint-limit margin, while no failures were caused by later hold interruption. M8 shows that a static geometry-gated observation-only remap, applied from the initial observation only when open is infeasible and folded is feasible, repairs this mechanism without changing reward, target distribution, observation size, or direct torque realization: T8:checkpoint-5120 reaches 159/160 and wins 9 of 10 discordant episodes against T1. The late remap in T7 and direct action correction in T6 remain rejected; the evidence supports feasible-branch policy semantics, not forced physical posture control.",
+    "decision_frontier": "Accept T8:checkpoint-5120 as the best-known research candidate and reject T7 and the other tested interventions as improvements. I1's closure condition is met: the baseline has decomposition by reach, first entry, longest hold, residual motion, branch/posture, and target geometry, and M8 supports one actionable intervention with paired improvement and no observed broad degradation. Do not claim the human goal is met until the protected 200-episode official assessment is executed.",
     "evidence_references": [
       "T1",
       "M1",
-      "M5",
-      "T6",
-      "M6",
-      "T7",
-      "M7"
+      "M7",
+      "T8",
+      "M8",
+      "E14"
     ],
-    "human_goal_connection": "The human goal requires at least 196 of 200 official episodes to complete an uninterrupted 2-second hold. T1 remains below that threshold at 151/160 development successes, so the checkpoint records the failure mechanism and prevents treating reach or shaped reward as sufficient progress.",
+    "human_goal_connection": "The human goal requires at least 196 of 200 official episodes to complete an uninterrupted 2-second hold. M8 measured the best T8 candidate at 159/160 (99.375%) on the complete-hold research panel, exceeding the research threshold and providing a credible frozen policy for official assessment, while the official 200-episode result remains unmeasured.",
     "inquiry_id": "I1",
-    "next_direction_or_closure": "I1 is advanced but remains open: its closure condition is met for baseline behavioral decomposition and one actionable next direction, not for the human success threshold. First restore the T1 recipe before further experimentation. Then test one narrower policy-only feasible-branch commitment mechanism focused on the negative-angle/open-branch acquisition failures, with unchanged reward, target distribution, action realization, and observation size; evaluate it against T1 with the same complete-hold and diagnostic panel. Do not request official assessment unless a candidate demonstrates paired research improvement approaching 98%.",
-    "scientific_commit": "dce51275b3bb54a2808cb120ce486020a9aaf790",
-    "session_id": "S7"
+    "next_direction_or_closure": "Close I1 in the next inquiry session because its stated behavioral closure condition is satisfied. Then, with no active inquiry and T8:checkpoint-5120 explicitly best-known, request the protected official assessment. Treat the official 200-episode result as the only evidence of reaching the human goal; if it is below 196/200, reopen scientific work rather than treating the research-panel result as sufficient.",
+    "scientific_commit": "fdd39feb89f27b932ca03c036a2537ef642709ff",
+    "session_id": "S8"
   },
   "schema_version": 6,
   "scientific_model": {
@@ -9106,24 +9246,6 @@
     "path": "research/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "1455ae32-b500-4fa4-8bbc-a1ea2bde2054",
-    "id": "S8",
-    "inquiry_id": "I1",
-    "kind": "inquiry",
-    "objective": "Advance I1 toward its closure condition: Close the inquiry when a reproducible baseline candidate has behavioral evidence decomposed by reach, first entry, longest uninterrupted hold, residual motion, branch or posture, and target geometry, and that evidence supports one actionable next intervention or establishes that no credible route toward the goal remains.",
-    "operation_ids": [
-      "E13",
-      "T8",
-      "M8",
-      "E14"
-    ],
-    "scientific_parent_commit": "81bfb41fff15aaffa7b1fbbc37f3f673d58205c1"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
