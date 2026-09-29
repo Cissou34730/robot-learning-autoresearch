@@ -465,29 +465,18 @@ function Update-ResearchBrief {
 function Get-HumanGoalSummary {
     param([Parameter(Mandatory)]$State)
 
+    if ($State.human_goal.summary) {
+        return [string]$State.human_goal.summary
+    }
     $scenario = Get-Content "research\scenario.md" -Raw
-    $successCriterionMatch = [regex]::Match(
+    $match = [regex]::Match(
         $scenario,
         '(?ms)^## Success criterion\s+(?<body>.*?)(?=^## |\z)'
     )
-    $successCriterion = if ($State.human_goal.summary) {
-        [string]$State.human_goal.summary
+    if ($match.Success) {
+        return (($match.Groups["body"].Value -replace '\s+', ' ').Trim())
     }
-    elseif ($successCriterionMatch.Success) {
-        (($successCriterionMatch.Groups["body"].Value -replace '\s+', ' ').Trim())
-    }
-    else {
-        ""
-    }
-    $officialScope = (
-        "Official scope: the complete target distribution in " +
-        "research/scenario.md, across its full radius and angular ranges, " +
-        "with success requiring the complete uninterrupted in-tolerance hold."
-    )
-    if ($successCriterion) {
-        return "$officialScope Campaign criterion: $successCriterion"
-    }
-    return "$officialScope The protected campaign criterion is defined there."
+    return "The protected human goal is defined in research/scenario.md."
 }
 
 function Get-LatestSessionResult {
@@ -608,11 +597,6 @@ function Get-RequiredSessionSummaryTransition {
                 "actionable until this goal-review session ends and its fresh " +
                 "inquiry session starts."
             )
-            CheckpointGuidance = (
-                "Use the checkpoint contract in research/instruments.md and " +
-                "preserve the opened inquiry, its evidence basis, the observed " +
-                "remaining goal gap, and the transition to its fresh session."
-            )
         }
     }
     if (
@@ -641,34 +625,10 @@ function Get-RequiredSessionSummaryTransition {
                     "Save the inquiry-session summary after the $action of " +
                     "$inquiryId."
                 )
-                Inquiry = if ($action -eq "close") {
-                    (
-                        "The close decision is complete. Preserve its outcome " +
-                        "for goal review, which makes the next campaign-level decision."
-                    )
-                }
-                else {
-                    (
-                        "The reframe decision is complete. Further scientific work " +
-                        "belongs to the fresh inquiry session created after this summary."
-                    )
-                }
-                CheckpointGuidance = if ($action -eq "close") {
-                    (
-                        "Use the checkpoint contract in research/instruments.md " +
-                        "and preserve the evidence-supported inquiry outcome and " +
-                        "observed remaining goal gap. Return the campaign to goal " +
-                        "review rather than selecting another route here."
-                    )
-                }
-                else {
-                    (
-                        "Use the checkpoint contract in research/instruments.md " +
-                        "and preserve the reframe decision, its evidence basis, " +
-                        "the observed remaining goal gap, and the transition to " +
-                        "the fresh inquiry session."
-                    )
-                }
+                Inquiry = (
+                    "The $action decision is complete. Further scientific work " +
+                    "belongs to the fresh session created after this summary."
+                )
             }
         }
     }
@@ -713,18 +673,6 @@ function New-ScientificSessionPrompt {
     else {
         "No durable PI synthesis has been recorded yet."
     }
-    $frontier = if ($checkpoint -and $checkpoint.decision_frontier) {
-        [string]$checkpoint.decision_frontier
-    }
-    else {
-        "No durable decision frontier has been recorded yet."
-    }
-    $nextDirection = if ($checkpoint -and $checkpoint.next_direction_or_closure) {
-        [string]$checkpoint.next_direction_or_closure
-    }
-    else {
-        "No durable next-direction proposal has been recorded yet."
-    }
     $transition = Get-RequiredSessionSummaryTransition -State $State
     $terminalGoalReview = (
         -not $transition -and
@@ -747,7 +695,7 @@ function New-ScientificSessionPrompt {
         "None. Establish and checkpoint the most credible initial scientific direction; inquiry selection follows in goal review."
     }
     elseif ($State.scientific_session.kind -eq "inquiry") {
-        "The inquiry has closed. Preserve its outcome for goal review, which makes the next campaign-level decision."
+        "The inquiry has closed. Preserve its outcome and the resulting campaign decision."
     }
     elseif ($terminalGoalReview) {
         "None. Decide whether the evidence supports official assessment or a conclusion that no credible route remains."
@@ -768,20 +716,11 @@ function New-ScientificSessionPrompt {
     else {
         [string]$session.objective
     }
-    $activeInquirySession = (
-        -not $transition -and
-        $session.kind -eq "inquiry" -and
-        $State.active_inquiry
-    )
-    $goalReviewSession = (
-        -not $transition -and
-        $session.kind -eq "goal_review"
-    )
     $actionGuidance = if ($transition) {
         @(
             "The sole legal next action is the checkpoint operation that saves the current session summary."
             "Do not request training, measurement, model-role changes, restoration, another inquiry change, or a campaign conclusion in this session."
-            [string]$transition.CheckpointGuidance
+            "Use the checkpoint contract in research/instruments.md and preserve the transition decision, evidence, remaining goal gap, and next direction."
         )
     }
     elseif ($terminalGoalReview) {
@@ -791,24 +730,16 @@ function New-ScientificSessionPrompt {
             "Do not request another inquiry."
         )
     }
-    elseif ($activeInquirySession) {
+    elseif (
+        $State.scientific_session.kind -eq "inquiry" -and
+        $State.active_inquiry
+    ) {
         @(
             "Before choosing another action, determine whether the completed evidence now supplies the decision-relevant answer specified by the active inquiry's exact question and closure condition."
             "The inquiry is ready to close when the evidence is sufficient for the scientific decision it was opened to enable. Exhaustive certainty is not required; record remaining uncertainty when resolving it could no longer change that decision."
             "When the closure condition has been established, the question has been redirected or is no longer credible, or the actionable result has been produced, use the inquiry close contract now."
-            "Closure records the evidence-supported outcome and remaining uncertainty before checkpointing. Preserve that result for goal review; do not select the next campaign route in the closing inquiry session."
+            "Closure records the fulfilled scientific purpose before checkpointing and returning to goal review, where the remaining human-goal gap determines whether another inquiry, official assessment, or campaign conclusion follows."
             "Further inquiry work is justified by a named consequential uncertainty whose resolution could change the inquiry's answer. Reframe when that work belongs to a different question."
-            "Select the next action according to the evidence needed to resolve the active inquiry's scientific decision in service of the human goal."
-            "Existing PI-owned implementations have no privileged status; inspect, modify, or replace them when that is the most credible scientific action before submitting an operation."
-            "When ready to act, use the matching contract in research/instruments.md to submit one scientific action."
-        )
-    }
-    elseif ($goalReviewSession) {
-        @(
-            "Goal review makes the next campaign-level decision from the complete evidence and the human goal."
-            "Use the previous checkpoint's decision frontier as context. Treat its next direction as a fallible proposal, not an instruction, and reconsider it independently rather than continuing it by default."
-            "Describe the current goal gap as the observed shortfall across the official task and what remains unexplained, not as a proposed remedy."
-            "Decide whether the evidence supports official assessment, one bounded goal-linked inquiry, or a conclusion that no credible route remains."
             "Existing PI-owned implementations have no privileged status; inspect, modify, or replace them when that is the most credible scientific action before submitting an operation."
             "When ready to act, use the matching contract in research/instruments.md to submit one scientific action."
         )
@@ -823,40 +754,13 @@ function New-ScientificSessionPrompt {
         )
     }
 
-    $contextSections = if ($activeInquirySession) {
-        @(
-            "Human goal: $goal"
-            "Active inquiry: $inquiry"
-            "Decision frontier: $frontier"
-            "Current scientific understanding: $synthesis"
-            "Current evidence relative to the goal: $bestEvidence $(Get-LatestSessionResult -State $State)"
-            "Current goal gap: $gap"
-            "Current objective: $objective"
-        )
-    }
-    elseif ($goalReviewSession) {
-        @(
-            "Human goal: $goal"
-            "Current goal gap: $gap"
-            "Current scientific understanding: $synthesis"
-            "Current evidence relative to the goal: $bestEvidence $(Get-LatestSessionResult -State $State)"
-            "Previous checkpoint context: Decision frontier: $frontier Proposed next direction or closure (non-binding): $nextDirection"
-            "Active inquiry: $inquiry"
-            "Current objective: $objective"
-        )
-    }
-    else {
-        @(
-            "Human goal: $goal"
-            "Current evidence relative to the goal: $bestEvidence $(Get-LatestSessionResult -State $State)"
-            "Current scientific understanding: $synthesis"
-            "Current goal gap: $gap"
-            "Active inquiry: $inquiry"
-            "Current objective: $objective"
-        )
-    }
     $sections = @(
-        $contextSections
+        "Human goal: $goal"
+        "Current evidence relative to the goal: $bestEvidence $(Get-LatestSessionResult -State $State)"
+        "Current scientific understanding: $synthesis"
+        "Current goal gap: $gap"
+        "Active inquiry: $inquiry"
+        "Current objective: $objective"
         $correction
         $piPersona
         $scientificModelUseGuidance
