@@ -21,7 +21,6 @@ from robot_learning.scenario.environment import make_evaluation_env
 
 # Bumped when the meaning of a scenario evaluation summary changes.
 RESEARCH_EVALUATION_SUMMARY_VERSION = 4
-SETTLING_WINDOW_STEPS = 10
 
 
 def evaluate_research_model(
@@ -52,9 +51,7 @@ def evaluate_research_model(
         min_distance_cm = float("inf")
         final_distance_cm = float("nan")
         first_reach_step: int | None = None
-        settling_step: int | None = None
         max_held_steps = 0
-        current_held_steps = 0
         in_tolerance_steps = 0
         hold_interruptions = 0
         was_in_tolerance = False
@@ -70,19 +67,10 @@ def evaluate_research_model(
             max_held_steps = max(max_held_steps, held_steps)
             if held_steps > 0:
                 in_tolerance_steps += 1
-                current_held_steps += 1
                 if first_reach_step is None:
                     first_reach_step = steps
-                if (
-                    settling_step is None
-                    and current_held_steps >= SETTLING_WINDOW_STEPS
-                ):
-                    settling_step = steps - SETTLING_WINDOW_STEPS + 1
             elif was_in_tolerance:
                 hold_interruptions += 1
-                current_held_steps = 0
-            else:
-                current_held_steps = 0
             was_in_tolerance = held_steps > 0
             if "is_success" in info:
                 success = bool(info["is_success"])
@@ -112,15 +100,9 @@ def evaluate_research_model(
                 "min_distance_cm": min_distance_cm,
                 "final_distance_cm": final_distance_cm,
                 "first_reach_step": first_reach_step,
-                "first_entry_step": first_reach_step,
-                "settling_step": settling_step,
                 "max_held_steps": max_held_steps,
-                "longest_uninterrupted_hold_steps": max_held_steps,
                 "in_tolerance_steps": in_tolerance_steps,
                 "hold_interruptions": hold_interruptions,
-                "timeout_distance_cm": (
-                    final_distance_cm if truncated else None
-                ),
             }
         )
         if progress_callback is not None:
@@ -140,11 +122,6 @@ def evaluate_research_model(
         "research_evidence": {
             "episode_diagnostics": episode_diagnostics,
             "units": {"distance": "cm", "time": "control_steps"},
-            "settling_definition": (
-                "first sample of the first 10-consecutive-sample "
-                "in-tolerance run"
-            ),
-            "settling_window_steps": SETTLING_WINDOW_STEPS,
         },
     }
 
