@@ -24,3 +24,4 @@
 | E15 | inquiry | I4 | completed |
 | E16 | checkpoint | - | checkpointed |
 | E17 | restore_recipe | I4 | restored |
+| T3 | training | I4 | completed |
