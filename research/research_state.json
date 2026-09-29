@@ -9182,41 +9182,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "model": "T8:checkpoint-5120",
-        "reason": "T8:checkpoint-5120 is the explicit best-known candidate and achieved 159 of 160 complete-hold successes on the independent development panel, exceeding the 98% threshold with a mechanism-specific improvement supported by M1, M7, and M8. The protected 200-episode assessment is the only remaining evidence that can establish whether at least 196 episodes succeed under the official task distribution; if it falls below 196, scientific work must reopen.",
-        "status": "official_assessment_requested"
-      },
-      "presentation": {
-        "backend_session_id": "96732602-0207-478c-8bed-43db478701c6",
-        "campaign_id": "3b9f0c1b-33c6-451a-b321-744b012458e5",
-        "campaign_usage": "47m11s | 129.11 AIU | prompt 20.3m (84% cached) | output 133k",
-        "session_id": "S10",
-        "session_kind": "goal_review",
-        "session_usage": "38s | 2.00 AIU | prompt 247.7k (76% cached) | output 1.1k"
-      },
-      "result": {
-        "model": "T8:checkpoint-5120",
-        "status": "official_assessment_requested"
-      }
-    },
-    "failure": null,
-    "id": "E18",
-    "inquiry_id": null,
-    "kind": "campaign_conclusion",
-    "progress": "completed",
-    "request": {
-      "campaign_conclusion": {
-        "action": "request_official_assessment",
-        "reason": "T8:checkpoint-5120 is the explicit best-known candidate and achieved 159 of 160 complete-hold successes on the independent development panel, exceeding the 98% threshold with a mechanism-specific improvement supported by M1, M7, and M8. The protected 200-episode assessment is the only remaining evidence that can establish whether at least 196 episodes succeed under the official task distribution; if it falls below 196, scientific work must reopen."
-      }
-    },
-    "request_fingerprint": "d4341a378adbaaca3b16c5cb52d5af74732f5d7f8778439f77ddfd1f5faea1b6",
-    "session_id": "S10",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T8:checkpoint-5120 is the explicit best-known candidate assigned by E14, with model fingerprint 85497cedbc3b398c33a5212b7f8bab501e6957f8eb8e83edcc77a6d90026928f and retained artifact. T8:checkpoint-10240 is an equal-outcome unassigned alternative; T8:checkpoint-35840 and T1 are unassigned or superseded. No working or official role is assigned.",
     "completed_operations": [
