@@ -2467,7 +2467,7 @@
     }
   },
   "counters": {
-    "event": 18,
+    "event": 19,
     "inquiry": 4,
     "measurement": 4,
     "session": 10,
@@ -2476,7 +2476,7 @@
   "human_goal": {
     "source": "research/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -4389,29 +4389,189 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-09-29T22:47:29Z",
+      "error": null,
+      "id": "E19",
+      "inquiry_id": "I4",
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "T1:checkpoint-100352 is the strongest measured reference candidate, with 196/200 successes on M4's shared 200-episode development panel, but has no assigned working, best-known, or retained role and has not received official assessment. T3:checkpoint-100352 is unassigned after its 116/200 result and decisive paired loss. T2:checkpoint-100352 remains unassigned after its M3 degradation.",
+        "completed_operations": [
+          "E17",
+          "T3",
+          "M4",
+          "E18"
+        ],
+        "cumulative_resource_use": "The campaign has used three fresh PPO training runs of 120,832 completed steps each, two 160-episode development panels, one 138-target diagnostic grid, and two paired 200-episode development panels evaluating candidates on shared seeds. I3 changed robot_learning/scenario/observations.py; I4 changed robot_learning/scenario/training_environment.py and restored evaluation diagnostics; E17 restored the T1 baseline recipe. No official assessment has run.",
+        "current_goal_gap": "M4 measured T1:checkpoint-100352 at 196/200 successes (98.0%) and T3:checkpoint-100352 at 116/200 (58.0%) on the shared 200-episode complete-distribution development panel. T3 is not credible for role assignment. T1 meets the numerical development-panel threshold but official assessment remains unrun, and no candidate has working, best-known, or retained status.",
+        "current_synthesis": "Observed: M4's shared-seed panel measured T1 at 196/200 successes and T3 at 116/200, with 80 baseline wins and 0 intervention wins. Observed: T3 had 43 negative-bearing failures versus 4 for T1, no tolerance entry in 74 failed episodes versus 2, and no established settling in 84 failed episodes versus 4. Observed: every episode that established settling completed the uninterrupted 100-step hold for both candidates; both reached a maximum uninterrupted hold of 100 steps. The full-radius training-support intervention therefore did not reduce the observed approach and settling shortfall and materially degraded complete-task success under this recorded recipe. This is evidence against that intervention and recipe, not proof that all other training recipes or combined interventions are ineffective. The remaining goal shortfall is official verification and a decision about the next credible route.",
+        "decision_frontier": "Goal review must choose the next bounded campaign step from the closed I4 result and the complete evidence. It should preserve the distinction between M4's 196/200 development-panel result and the still-unrun official assessment, and should not assign T3 a role.",
+        "evidence_references": [
+          "T2",
+          "M3",
+          "E13",
+          "E15",
+          "E17",
+          "T3",
+          "M4",
+          "E18"
+        ],
+        "human_goal_connection": "The campaign still targets at least 196 successful episodes out of 200 under the complete official target distribution, with every success requiring the complete uninterrupted 100-control-step hold. I4's controlled M4 result reached 196/200 for the baseline on a development panel but did not establish official performance; its full-radius intervention was substantially worse.",
+        "next_direction_or_closure": "The inquiry-session summary is complete. In the next goal-review session, a non-binding direction is to decide whether to assess T1 officially or open a new inquiry targeting the remaining negative-bearing approach and settling failures; no direction is selected by this checkpoint."
+      },
+      "result": {
+        "session_id": "S10",
+        "status": "checkpointed"
+      },
+      "session_id": "S10",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "5153a29ab15c47e4b10a3a07eca9715837938ac9",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "T1:checkpoint-100352 is the strongest measured reference candidate, with 196/200 successes on M4's shared 200-episode development panel, but has no assigned working, best-known, or retained role and has not received official assessment. T3:checkpoint-100352 is unassigned after its 116/200 result and decisive paired loss. T2:checkpoint-100352 remains unassigned after its M3 degradation.",
+        "completed_operations": [
+          "E17",
+          "T3",
+          "M4",
+          "E18"
+        ],
+        "cumulative_resource_use": "The campaign has used three fresh PPO training runs of 120,832 completed steps each, two 160-episode development panels, one 138-target diagnostic grid, and two paired 200-episode development panels evaluating candidates on shared seeds. I3 changed robot_learning/scenario/observations.py; I4 changed robot_learning/scenario/training_environment.py and restored evaluation diagnostics; E17 restored the T1 baseline recipe. No official assessment has run.",
+        "current_goal_gap": "M4 measured T1:checkpoint-100352 at 196/200 successes (98.0%) and T3:checkpoint-100352 at 116/200 (58.0%) on the shared 200-episode complete-distribution development panel. T3 is not credible for role assignment. T1 meets the numerical development-panel threshold but official assessment remains unrun, and no candidate has working, best-known, or retained status.",
+        "current_synthesis": "Observed: M4's shared-seed panel measured T1 at 196/200 successes and T3 at 116/200, with 80 baseline wins and 0 intervention wins. Observed: T3 had 43 negative-bearing failures versus 4 for T1, no tolerance entry in 74 failed episodes versus 2, and no established settling in 84 failed episodes versus 4. Observed: every episode that established settling completed the uninterrupted 100-step hold for both candidates; both reached a maximum uninterrupted hold of 100 steps. The full-radius training-support intervention therefore did not reduce the observed approach and settling shortfall and materially degraded complete-task success under this recorded recipe. This is evidence against that intervention and recipe, not proof that all other training recipes or combined interventions are ineffective. The remaining goal shortfall is official verification and a decision about the next credible route.",
+        "decision_frontier": "Goal review must choose the next bounded campaign step from the closed I4 result and the complete evidence. It should preserve the distinction between M4's 196/200 development-panel result and the still-unrun official assessment, and should not assign T3 a role.",
+        "evidence_references": [
+          "T2",
+          "M3",
+          "E13",
+          "E15",
+          "E17",
+          "T3",
+          "M4",
+          "E18"
+        ],
+        "human_goal_connection": "The campaign still targets at least 196 successful episodes out of 200 under the complete official target distribution, with every success requiring the complete uninterrupted 100-control-step hold. I4's controlled M4 result reached 196/200 for the baseline on a development panel but did not establish official performance; its full-radius intervention was substantially worse.",
+        "inquiry_id": "I4",
+        "next_direction_or_closure": "The inquiry-session summary is complete. In the next goal-review session, a non-binding direction is to decide whether to assess T1 officially or open a new inquiry targeting the remaining negative-bearing approach and settling failures; no direction is selected by this checkpoint.",
+        "session_id": "S10"
+      },
+      "presentation": {
+        "backend_session_id": "afb2cdd8-6064-450b-89a0-de539ccfe063",
+        "campaign_id": "eb19a5f3-14b3-4590-ad74-1b31cf5ae3d5",
+        "campaign_usage": "39m15s | 88.23 AIU | prompt 14.9m (87% cached) | output 104.8k",
+        "session_id": "S10",
+        "session_kind": "inquiry",
+        "session_usage": "9m42s | 19.28 AIU | prompt 3.3m (87% cached) | output 20.6k"
+      },
+      "result": {
+        "session_id": "S10",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "b47b17415b30cb8e11500d0309de9ea5a04f9d1e",
+      "scientific_manifest": [
+        {
+          "exists": true,
+          "fingerprint": "d0aa36a98bfd79a9f7129779d84d54e90a4f07d98db3291938bd86dee7a9caf3",
+          "path": "robot_learning/scenario/evaluation.py"
+        }
+      ],
+      "scientific_paths": [
+        "robot_learning/scenario/evaluation.py"
+      ]
+    },
+    "failure": null,
+    "id": "E19",
+    "inquiry_id": "I4",
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "T1:checkpoint-100352 is the strongest measured reference candidate, with 196/200 successes on M4's shared 200-episode development panel, but has no assigned working, best-known, or retained role and has not received official assessment. T3:checkpoint-100352 is unassigned after its 116/200 result and decisive paired loss. T2:checkpoint-100352 remains unassigned after its M3 degradation.",
+        "completed_operations": [
+          "E17",
+          "T3",
+          "M4",
+          "E18"
+        ],
+        "cumulative_resource_use": "The campaign has used three fresh PPO training runs of 120,832 completed steps each, two 160-episode development panels, one 138-target diagnostic grid, and two paired 200-episode development panels evaluating candidates on shared seeds. I3 changed robot_learning/scenario/observations.py; I4 changed robot_learning/scenario/training_environment.py and restored evaluation diagnostics; E17 restored the T1 baseline recipe. No official assessment has run.",
+        "current_goal_gap": "M4 measured T1:checkpoint-100352 at 196/200 successes (98.0%) and T3:checkpoint-100352 at 116/200 (58.0%) on the shared 200-episode complete-distribution development panel. T3 is not credible for role assignment. T1 meets the numerical development-panel threshold but official assessment remains unrun, and no candidate has working, best-known, or retained status.",
+        "current_synthesis": "Observed: M4's shared-seed panel measured T1 at 196/200 successes and T3 at 116/200, with 80 baseline wins and 0 intervention wins. Observed: T3 had 43 negative-bearing failures versus 4 for T1, no tolerance entry in 74 failed episodes versus 2, and no established settling in 84 failed episodes versus 4. Observed: every episode that established settling completed the uninterrupted 100-step hold for both candidates; both reached a maximum uninterrupted hold of 100 steps. The full-radius training-support intervention therefore did not reduce the observed approach and settling shortfall and materially degraded complete-task success under this recorded recipe. This is evidence against that intervention and recipe, not proof that all other training recipes or combined interventions are ineffective. The remaining goal shortfall is official verification and a decision about the next credible route.",
+        "decision_frontier": "Goal review must choose the next bounded campaign step from the closed I4 result and the complete evidence. It should preserve the distinction between M4's 196/200 development-panel result and the still-unrun official assessment, and should not assign T3 a role.",
+        "evidence_references": [
+          "T2",
+          "M3",
+          "E13",
+          "E15",
+          "E17",
+          "T3",
+          "M4",
+          "E18"
+        ],
+        "human_goal_connection": "The campaign still targets at least 196 successful episodes out of 200 under the complete official target distribution, with every success requiring the complete uninterrupted 100-control-step hold. I4's controlled M4 result reached 196/200 for the baseline on a development panel but did not establish official performance; its full-radius intervention was substantially worse.",
+        "next_direction_or_closure": "The inquiry-session summary is complete. In the next goal-review session, a non-binding direction is to decide whether to assess T1 officially or open a new inquiry targeting the remaining negative-bearing approach and settling failures; no direction is selected by this checkpoint."
+      }
+    },
+    "request_fingerprint": "869457f85a3434f87272ea3714807d0918d77174f6630f5f01373ccc88951d33",
+    "session_id": "S10",
+    "supersedes": null
+  },
   "pi_checkpoint": {
-    "candidates_and_roles": "T1:checkpoint-100352 remains the reference candidate with M1, M2, and M3 artifacts. T2:checkpoint-100352 has M3 evidence showing substantial degradation and is unassigned. No candidate is assigned working, best-known, or retained status.",
+    "candidates_and_roles": "T1:checkpoint-100352 is the strongest measured reference candidate, with 196/200 successes on M4's shared 200-episode development panel, but has no assigned working, best-known, or retained role and has not received official assessment. T3:checkpoint-100352 is unassigned after its 116/200 result and decisive paired loss. T2:checkpoint-100352 remains unassigned after its M3 degradation.",
     "completed_operations": [
-      "E15"
+      "E17",
+      "T3",
+      "M4",
+      "E18"
     ],
-    "cumulative_resource_use": "The campaign has used two fresh PPO training runs of 120,832 completed steps each, two 160-episode development panels, one 138-target diagnostic grid, and one paired 200-episode development panel evaluating two candidates on shared seeds. T2 changed robot_learning/scenario/observations.py; M3, E13, and E15 used no training allocation.",
-    "current_goal_gap": "T1:checkpoint-100352 achieved 192/200 successes (96.0%) and T2:checkpoint-100352 achieved 129/200 (64.5%) on the shared 200-episode development panel, so the at-least-196/200 official objective remains unverified. T2 is not a credible candidate for role assignment. T1 remains below the objective and no candidate has working, best-known, or retained status; official assessment has not been run.",
-    "current_synthesis": "Observed: M3's controlled shared-seed panel measured T1 at 192/200 successes and T2 at 129/200, with 69 baseline wins versus 6 intervention wins and a -31.5 percentage-point intervention difference. Observed: T2 had 27 negative-bearing failures versus 8 for T1, never entered tolerance in 59 episodes versus 5, and failed to establish settling in 70 versus 8. Observed: among settled episodes, T2 had 3 post-settling interruption cases and 1 episode whose longest hold was below 100 steps, while T1 had 2 and 0; both candidates had a maximum uninterrupted hold of 100 steps. The tested sine/cosine branch-error and joint-limit-margin representation therefore did not reduce the targeted approach shortfall and materially degraded complete-task success. This is an evidence-supported result for that intervention and training recipe, not proof that every possible branch representation is ineffective. I4 is an open question about the separate training-support mismatch; no evidence has yet been produced for its intervention.",
-    "decision_frontier": "The goal-review session opened I4 and must now end before I4 actions are taken. The fresh I4 session must determine whether expanding training support from 0.14-0.20 m to the complete official 0.06-0.20 m radius range improves the observed negative-bearing approach and settling shortfall while preserving uninterrupted hold behavior. Official assessment remains premature because T1 is below 196/200 and has no explicit best-known role.",
+    "cumulative_resource_use": "The campaign has used three fresh PPO training runs of 120,832 completed steps each, two 160-episode development panels, one 138-target diagnostic grid, and two paired 200-episode development panels evaluating candidates on shared seeds. I3 changed robot_learning/scenario/observations.py; I4 changed robot_learning/scenario/training_environment.py and restored evaluation diagnostics; E17 restored the T1 baseline recipe. No official assessment has run.",
+    "current_goal_gap": "M4 measured T1:checkpoint-100352 at 196/200 successes (98.0%) and T3:checkpoint-100352 at 116/200 (58.0%) on the shared 200-episode complete-distribution development panel. T3 is not credible for role assignment. T1 meets the numerical development-panel threshold but official assessment remains unrun, and no candidate has working, best-known, or retained status.",
+    "current_synthesis": "Observed: M4's shared-seed panel measured T1 at 196/200 successes and T3 at 116/200, with 80 baseline wins and 0 intervention wins. Observed: T3 had 43 negative-bearing failures versus 4 for T1, no tolerance entry in 74 failed episodes versus 2, and no established settling in 84 failed episodes versus 4. Observed: every episode that established settling completed the uninterrupted 100-step hold for both candidates; both reached a maximum uninterrupted hold of 100 steps. The full-radius training-support intervention therefore did not reduce the observed approach and settling shortfall and materially degraded complete-task success under this recorded recipe. This is evidence against that intervention and recipe, not proof that all other training recipes or combined interventions are ineffective. The remaining goal shortfall is official verification and a decision about the next credible route.",
+    "decision_frontier": "Goal review must choose the next bounded campaign step from the closed I4 result and the complete evidence. It should preserve the distinction between M4's 196/200 development-panel result and the still-unrun official assessment, and should not assign T3 a role.",
     "evidence_references": [
       "T2",
       "M3",
       "E13",
-      "E15"
+      "E15",
+      "E17",
+      "T3",
+      "M4",
+      "E18"
     ],
-    "human_goal_connection": "The campaign continues to target at least 196 successful episodes out of 200 under the official target distribution, with every success requiring the complete uninterrupted 100-control-step hold. Goal review opened I4 because the available baseline remains below that objective and the tested I3 representation intervention was decisively worse.",
-    "inquiry_id": null,
-    "next_direction_or_closure": "The next session is the fresh inquiry session for I4. A non-binding direction is to run a controlled full-radius training-support intervention against the baseline recipe, then measure approach, settling, post-settling interruptions, longest uninterrupted hold, and total success on the complete official distribution before any role assignment or official assessment decision.",
-    "scientific_commit": "dba0ff14db22d815ee78764ddedd6eedbd8e58af",
-    "session_id": "S9"
+    "human_goal_connection": "The campaign still targets at least 196 successful episodes out of 200 under the complete official target distribution, with every success requiring the complete uninterrupted 100-control-step hold. I4's controlled M4 result reached 196/200 for the baseline on a development panel but did not establish official performance; its full-radius intervention was substantially worse.",
+    "inquiry_id": "I4",
+    "next_direction_or_closure": "The inquiry-session summary is complete. In the next goal-review session, a non-binding direction is to decide whether to assess T1 officially or open a new inquiry targeting the remaining negative-bearing approach and settling failures; no direction is selected by this checkpoint.",
+    "scientific_commit": "b47b17415b30cb8e11500d0309de9ea5a04f9d1e",
+    "session_id": "S10"
   },
   "schema_version": 6,
   "scientific_model": {
@@ -4419,24 +4579,6 @@
     "path": "research/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "afb2cdd8-6064-450b-89a0-de539ccfe063",
-    "id": "S10",
-    "inquiry_id": "I4",
-    "kind": "inquiry",
-    "objective": "Bring I4 to the decision required by its closure condition, and close it as soon as the evidence supplies that decision: Close when controlled baseline-versus-full-radius-support evidence is decision-sufficient: the intervention's negative-bearing approach outcomes, settling outcomes, post-settling interruptions, longest uninterrupted hold, and total success are measured on the complete official distribution, and the result either supports a credible route to 196/200 or rejects full-radius training support as sufficient for that route.",
-    "operation_ids": [
-      "E17",
-      "T3",
-      "M4",
-      "E18"
-    ],
-    "scientific_parent_commit": "5153a29ab15c47e4b10a3a07eca9715837938ac9"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
