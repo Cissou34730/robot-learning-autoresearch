@@ -1,13 +1,5 @@
 {
-  "active_inquiry": {
-    "closure_condition": "Close after a bounded mechanism test and shared-panel measurement establish whether the intervention is actionable: it must preserve T1-like entry and materially improve complete uninterrupted success toward at least 157/160, with entry, overshoot, streak, interruption, and minimum-distance diagnostics showing the mechanism rather than a training-only gain. Otherwise reject the route and return to goal review.",
-    "goal_connection": "T1 achieves 151/160 complete uninterrupted successes, leaving a 9-failure development gap and no credible basis for the 196/200 official objective. The inquiry targets the failure regime identified by I1 while explicitly avoiding the global braking route rejected by I2 and I3.",
-    "id": "I4",
-    "opened_in_session": "S8",
-    "question": "Can a reach-preserving, state-dependent terminal stabilization mechanism correct T1's near-boundary non-entry and immediate post-entry overshoot failures without sacrificing approach competence?",
-    "rationale": "The physical model identifies residual momentum during the 20 ms action hold and low-velocity terminal regulation as consequential unknowns. I1 localized the remaining failures to boundary entry and immediate overshoot, while I2 and I3 rejected full-strength and staged weak global braking because they damaged reach or evaluation behavior. A terminal-only, state-dependent intervention is therefore a materially different and still goal-relevant route that can be tested without treating training success as evidence of official success.",
-    "reframes": []
-  },
+  "active_inquiry": null,
   "campaign": {
     "base_commit": "de0b95fc51dade1126d56b84d3429b25c85230ca",
     "id": "7f551163-bae6-40bc-9b0b-a960be607ffb",
@@ -3293,7 +3285,7 @@
     }
   },
   "counters": {
-    "event": 15,
+    "event": 16,
     "inquiry": 4,
     "measurement": 4,
     "session": 9,
@@ -5450,9 +5442,63 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-09-29T15:18:49Z",
+      "error": null,
+      "id": "E16",
+      "inquiry_id": "I4",
+      "kind": "inquiry",
+      "request": {
+        "action": "close",
+        "outcome": "rejected",
+        "reason": "I4 is not actionable toward the human goal. On the shared 160-episode panel, T4:checkpoint-100352 achieved 131/160 complete uninterrupted successes (81.875%) versus T1:checkpoint-100352 at 151/160 (94.375%); all 20 discordant episodes favored T1. The required diagnostics show loss of approach and hold competence rather than terminal correction: T4 entered 140/160 episodes versus T1's 154/160, had mean first entry at 12.84 versus 13.12 steps, mean post-entry overshoot of 0.037 cm versus 0.011 cm, mean longest uninterrupted streak of 82.1 versus 94.4 steps, 137 hold interruptions versus 5, and mean minimum distance of 1.371 cm versus 0.278 cm. The terminal-only state-dependent velocity penalty therefore did not preserve T1-like entry or improve complete uninterrupted success toward 157/160; remaining uncertainty cannot change rejection of this route. Return to goal review."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I4",
+        "outcome": "rejected",
+        "reason": "I4 is not actionable toward the human goal. On the shared 160-episode panel, T4:checkpoint-100352 achieved 131/160 complete uninterrupted successes (81.875%) versus T1:checkpoint-100352 at 151/160 (94.375%); all 20 discordant episodes favored T1. The required diagnostics show loss of approach and hold competence rather than terminal correction: T4 entered 140/160 episodes versus T1's 154/160, had mean first entry at 12.84 versus 13.12 steps, mean post-entry overshoot of 0.037 cm versus 0.011 cm, mean longest uninterrupted streak of 82.1 versus 94.4 steps, 137 hold interruptions versus 5, and mean minimum distance of 1.371 cm versus 0.278 cm. The terminal-only state-dependent velocity penalty therefore did not preserve T1-like entry or improve complete uninterrupted success toward 157/160; remaining uncertainty cannot change rejection of this route. Return to goal review.",
+        "status": "completed"
+      },
+      "session_id": "S9",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "close",
+        "inquiry_id": "I4",
+        "outcome": "rejected",
+        "reason": "I4 is not actionable toward the human goal. On the shared 160-episode panel, T4:checkpoint-100352 achieved 131/160 complete uninterrupted successes (81.875%) versus T1:checkpoint-100352 at 151/160 (94.375%); all 20 discordant episodes favored T1. The required diagnostics show loss of approach and hold competence rather than terminal correction: T4 entered 140/160 episodes versus T1's 154/160, had mean first entry at 12.84 versus 13.12 steps, mean post-entry overshoot of 0.037 cm versus 0.011 cm, mean longest uninterrupted streak of 82.1 versus 94.4 steps, 137 hold interruptions versus 5, and mean minimum distance of 1.371 cm versus 0.278 cm. The terminal-only state-dependent velocity penalty therefore did not preserve T1-like entry or improve complete uninterrupted success toward 157/160; remaining uncertainty cannot change rejection of this route. Return to goal review."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I4",
+        "outcome": "rejected",
+        "reason": "I4 is not actionable toward the human goal. On the shared 160-episode panel, T4:checkpoint-100352 achieved 131/160 complete uninterrupted successes (81.875%) versus T1:checkpoint-100352 at 151/160 (94.375%); all 20 discordant episodes favored T1. The required diagnostics show loss of approach and hold competence rather than terminal correction: T4 entered 140/160 episodes versus T1's 154/160, had mean first entry at 12.84 versus 13.12 steps, mean post-entry overshoot of 0.037 cm versus 0.011 cm, mean longest uninterrupted streak of 82.1 versus 94.4 steps, 137 hold interruptions versus 5, and mean minimum distance of 1.371 cm versus 0.278 cm. The terminal-only state-dependent velocity penalty therefore did not preserve T1-like entry or improve complete uninterrupted success toward 157/160; remaining uncertainty cannot change rejection of this route. Return to goal review.",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E16",
+    "inquiry_id": "I4",
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "close",
+        "outcome": "rejected",
+        "reason": "I4 is not actionable toward the human goal. On the shared 160-episode panel, T4:checkpoint-100352 achieved 131/160 complete uninterrupted successes (81.875%) versus T1:checkpoint-100352 at 151/160 (94.375%); all 20 discordant episodes favored T1. The required diagnostics show loss of approach and hold competence rather than terminal correction: T4 entered 140/160 episodes versus T1's 154/160, had mean first entry at 12.84 versus 13.12 steps, mean post-entry overshoot of 0.037 cm versus 0.011 cm, mean longest uninterrupted streak of 82.1 versus 94.4 steps, 137 hold interruptions versus 5, and mean minimum distance of 1.371 cm versus 0.278 cm. The terminal-only state-dependent velocity penalty therefore did not preserve T1-like entry or improve complete uninterrupted success toward 157/160; remaining uncertainty cannot change rejection of this route. Return to goal review."
+      }
+    },
+    "request_fingerprint": "f0495a232e28791ae07b92fc02c55c38e9e50cb33482aa0cf3e712e6181a834e",
+    "session_id": "S9",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T1:checkpoint-100352 remains the best measured reference at 151/160 and is available with M1, M2, and M3 diagnostics. T3:checkpoint-100352 remains the rejected I3 staged weak-braking candidate at 118/160, and T2:checkpoint-120832 remains the rejected I2 candidate at 0/160. Working, best-known, and retained roles remain unassigned.",
     "completed_operations": [
@@ -5500,7 +5546,8 @@
     "objective": "Bring I4 to the decision required by its closure condition, and close it as soon as the evidence supplies that decision: Close after a bounded mechanism test and shared-panel measurement establish whether the intervention is actionable: it must preserve T1-like entry and materially improve complete uninterrupted success toward at least 157/160, with entry, overshoot, streak, interruption, and minimum-distance diagnostics showing the mechanism rather than a training-only gain. Otherwise reject the route and return to goal review.",
     "operation_ids": [
       "T4",
-      "M4"
+      "M4",
+      "E16"
     ],
     "scientific_parent_commit": "9ec114067ac47ff76d29da3e46d3ba93792caf65"
   },
