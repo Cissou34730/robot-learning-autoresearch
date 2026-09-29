@@ -1,5 +1,13 @@
 {
-  "active_inquiry": null,
+  "active_inquiry": {
+    "closure_condition": "Close after a bounded mechanism test and shared-panel measurement establish whether the intervention is actionable: it must preserve T1-like entry and materially improve complete uninterrupted success toward at least 157/160, with entry, overshoot, streak, interruption, and minimum-distance diagnostics showing the mechanism rather than a training-only gain. Otherwise reject the route and return to goal review.",
+    "goal_connection": "T1 achieves 151/160 complete uninterrupted successes, leaving a 9-failure development gap and no credible basis for the 196/200 official objective. The inquiry targets the failure regime identified by I1 while explicitly avoiding the global braking route rejected by I2 and I3.",
+    "id": "I4",
+    "opened_in_session": "S8",
+    "question": "Can a reach-preserving, state-dependent terminal stabilization mechanism correct T1's near-boundary non-entry and immediate post-entry overshoot failures without sacrificing approach competence?",
+    "rationale": "The physical model identifies residual momentum during the 20 ms action hold and low-velocity terminal regulation as consequential unknowns. I1 localized the remaining failures to boundary entry and immediate overshoot, while I2 and I3 rejected full-strength and staged weak global braking because they damaged reach or evaluation behavior. A terminal-only, state-dependent intervention is therefore a materially different and still goal-relevant route that can be tested without treating training success as evidence of official success.",
+    "reframes": []
+  },
   "campaign": {
     "base_commit": "de0b95fc51dade1126d56b84d3429b25c85230ca",
     "id": "7f551163-bae6-40bc-9b0b-a960be607ffb",
@@ -2466,16 +2474,16 @@
     }
   },
   "counters": {
-    "event": 13,
-    "inquiry": 3,
+    "event": 14,
+    "inquiry": 4,
     "measurement": 3,
-    "session": 7,
+    "session": 8,
     "training": 3
   },
   "human_goal": {
     "source": "research/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -4081,9 +4089,69 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-09-29T14:39:58Z",
+      "error": null,
+      "id": "E14",
+      "inquiry_id": "I4",
+      "kind": "inquiry",
+      "request": {
+        "action": "open",
+        "closure_condition": "Close after a bounded mechanism test and shared-panel measurement establish whether the intervention is actionable: it must preserve T1-like entry and materially improve complete uninterrupted success toward at least 157/160, with entry, overshoot, streak, interruption, and minimum-distance diagnostics showing the mechanism rather than a training-only gain. Otherwise reject the route and return to goal review.",
+        "goal_connection": "T1 achieves 151/160 complete uninterrupted successes, leaving a 9-failure development gap and no credible basis for the 196/200 official objective. The inquiry targets the failure regime identified by I1 while explicitly avoiding the global braking route rejected by I2 and I3.",
+        "question": "Can a reach-preserving, state-dependent terminal stabilization mechanism correct T1's near-boundary non-entry and immediate post-entry overshoot failures without sacrificing approach competence?",
+        "rationale": "The physical model identifies residual momentum during the 20 ms action hold and low-velocity terminal regulation as consequential unknowns. I1 localized the remaining failures to boundary entry and immediate overshoot, while I2 and I3 rejected full-strength and staged weak global braking because they damaged reach or evaluation behavior. A terminal-only, state-dependent intervention is therefore a materially different and still goal-relevant route that can be tested without treating training success as evidence of official success."
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I4",
+        "status": "completed"
+      },
+      "session_id": "S8",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "open",
+        "inquiry": {
+          "closure_condition": "Close after a bounded mechanism test and shared-panel measurement establish whether the intervention is actionable: it must preserve T1-like entry and materially improve complete uninterrupted success toward at least 157/160, with entry, overshoot, streak, interruption, and minimum-distance diagnostics showing the mechanism rather than a training-only gain. Otherwise reject the route and return to goal review.",
+          "goal_connection": "T1 achieves 151/160 complete uninterrupted successes, leaving a 9-failure development gap and no credible basis for the 196/200 official objective. The inquiry targets the failure regime identified by I1 while explicitly avoiding the global braking route rejected by I2 and I3.",
+          "id": "I4",
+          "opened_in_session": "S8",
+          "question": "Can a reach-preserving, state-dependent terminal stabilization mechanism correct T1's near-boundary non-entry and immediate post-entry overshoot failures without sacrificing approach competence?",
+          "rationale": "The physical model identifies residual momentum during the 20 ms action hold and low-velocity terminal regulation as consequential unknowns. I1 localized the remaining failures to boundary entry and immediate overshoot, while I2 and I3 rejected full-strength and staged weak global braking because they damaged reach or evaluation behavior. A terminal-only, state-dependent intervention is therefore a materially different and still goal-relevant route that can be tested without treating training success as evidence of official success.",
+          "reframes": []
+        }
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I4",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E14",
+    "inquiry_id": null,
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "open",
+        "closure_condition": "Close after a bounded mechanism test and shared-panel measurement establish whether the intervention is actionable: it must preserve T1-like entry and materially improve complete uninterrupted success toward at least 157/160, with entry, overshoot, streak, interruption, and minimum-distance diagnostics showing the mechanism rather than a training-only gain. Otherwise reject the route and return to goal review.",
+        "goal_connection": "T1 achieves 151/160 complete uninterrupted successes, leaving a 9-failure development gap and no credible basis for the 196/200 official objective. The inquiry targets the failure regime identified by I1 while explicitly avoiding the global braking route rejected by I2 and I3.",
+        "question": "Can a reach-preserving, state-dependent terminal stabilization mechanism correct T1's near-boundary non-entry and immediate post-entry overshoot failures without sacrificing approach competence?",
+        "rationale": "The physical model identifies residual momentum during the 20 ms action hold and low-velocity terminal regulation as consequential unknowns. I1 localized the remaining failures to boundary entry and immediate overshoot, while I2 and I3 rejected full-strength and staged weak global braking because they damaged reach or evaluation behavior. A terminal-only, state-dependent intervention is therefore a materially different and still goal-relevant route that can be tested without treating training success as evidence of official success."
+      }
+    },
+    "request_fingerprint": "d87ac8ca2f2858194ae6b868f27bb7f8a77ded4dd050b6fdb05e1aa6d9f1f22d",
+    "session_id": "S8",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T1:checkpoint-100352 remains the best measured reference at 151/160 and is available with M1, M2, and M3 diagnostics. T3:checkpoint-100352 is archived as the rejected I3 staged weak-braking candidate at 118/160. T2:checkpoint-120832 remains archived as the rejected I2 candidate at 0/160. Working, best-known, and retained roles remain unassigned.",
     "completed_operations": [
@@ -4119,6 +4187,21 @@
     "path": "research/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "4daff759-903e-437b-8a03-5720dcefa328",
+    "id": "S8",
+    "inquiry_id": null,
+    "kind": "goal_review",
+    "objective": "Decide whether to request official assessment, open one bounded goal-linked inquiry, or conclude that no credible route remains.",
+    "operation_ids": [
+      "E14"
+    ],
+    "scientific_parent_commit": "b44f315bfc3c62db866ec9edc8e84a29c4dd4c50"
+  },
   "terminal_state": null
 }
