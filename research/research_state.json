@@ -18,7 +18,9 @@
   "candidates": {
     "T1:checkpoint-100352": {
       "artifact": "research/checkpoints/candidates/7f551163-bae6-40bc-9b0b-a960be607ffb/t1/checkpoint-100352",
-      "evaluation_artifacts": [],
+      "evaluation_artifacts": [
+        "research/evaluations/7f551163-bae6-40bc-9b0b-a960be607ffb/evaluation-7f551163-bae6-40bc-9b0b-a960be607ffb-m1-T1-checkpoint-100352-160ep-seed4200-e4adf0fbab95.json"
+      ],
       "fingerprint": "cf44d3b493f3ecd78dce1d8d3cc951299c10d56ce7c63d7085b5787d3106ee15",
       "id": "T1:checkpoint-100352",
       "name": "checkpoint-100352",
@@ -836,7 +838,7 @@
   "counters": {
     "event": 3,
     "inquiry": 1,
-    "measurement": 0,
+    "measurement": 1,
     "session": 3,
     "training": 1
   },
@@ -1138,9 +1140,147 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-09-29T13:43:27Z",
+      "error": null,
+      "id": "M1",
+      "inquiry_id": "I1",
+      "kind": "measurement",
+      "request": {
+        "description": "Measure the strongest first-baseline checkpoint on a held-out official-distribution panel, recording complete success together with target geometry, first entry, distance trajectory, longest and final in-tolerance streaks, interruptions, and final distance.",
+        "measurements": [
+          {
+            "candidate": "T1:checkpoint-100352",
+            "episodes": 160,
+            "instrument": "research_evaluation",
+            "label": "I1 first baseline official-distribution diagnostics",
+            "seed": 4200
+          }
+        ],
+        "paired_comparisons": [],
+        "rationale": "T1 produced a candidate with 0.97 recent in-training success, but training coverage and reward do not establish official behavior. This 160-episode panel distinguishes inner-radius failures from approach/braking failures and interruptions during the 100-step hold before selecting an intervention."
+      },
+      "result": {
+        "measurements": [
+          {
+            "candidate": "T1:checkpoint-100352",
+            "candidate_id": "T1:checkpoint-100352",
+            "instrument": "research_evaluation",
+            "label": "I1 first baseline official-distribution diagnostics",
+            "metrics": {
+              "episodes": 160,
+              "evaluation_artifact": "research/evaluations/7f551163-bae6-40bc-9b0b-a960be607ffb/evaluation-7f551163-bae6-40bc-9b0b-a960be607ffb-m1-T1-checkpoint-100352-160ep-seed4200-e4adf0fbab95.json",
+              "evaluation_artifact_fingerprint": "b026abf9df15357d409593e6d7e05214925cd10214293ee789f01a6607e070d7",
+              "evaluation_semantics": "e4adf0fbab95",
+              "model_fingerprint": "cf44d3b493f3ecd78dce1d8d3cc951299c10d56ce7c63d7085b5787d3106ee15",
+              "official_benchmark": false,
+              "schema_version": 6,
+              "seed": 4200,
+              "success_percent": 94.375,
+              "successes": 151
+            }
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": null
+      },
+      "session_id": "S3",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "evaluation_semantics": "e4adf0fbab95",
+      "measurements": [
+        {
+          "artifact": "research/checkpoints/candidates/7f551163-bae6-40bc-9b0b-a960be607ffb/t1/checkpoint-100352",
+          "candidate": "T1:checkpoint-100352",
+          "candidate_id": "T1:checkpoint-100352",
+          "episodes": 160,
+          "instrument": "research_evaluation",
+          "label": "I1 first baseline official-distribution diagnostics",
+          "model_fingerprint": "cf44d3b493f3ecd78dce1d8d3cc951299c10d56ce7c63d7085b5787d3106ee15",
+          "seed": 4200
+        }
+      ],
+      "module_provenance": null,
+      "paired_comparisons": [],
+      "partial_results": [
+        {
+          "candidate": "T1:checkpoint-100352",
+          "candidate_id": "T1:checkpoint-100352",
+          "instrument": "research_evaluation",
+          "label": "I1 first baseline official-distribution diagnostics",
+          "metrics": {
+            "episodes": 160,
+            "evaluation_artifact": "research/evaluations/7f551163-bae6-40bc-9b0b-a960be607ffb/evaluation-7f551163-bae6-40bc-9b0b-a960be607ffb-m1-T1-checkpoint-100352-160ep-seed4200-e4adf0fbab95.json",
+            "evaluation_artifact_fingerprint": "b026abf9df15357d409593e6d7e05214925cd10214293ee789f01a6607e070d7",
+            "evaluation_semantics": "e4adf0fbab95",
+            "model_fingerprint": "cf44d3b493f3ecd78dce1d8d3cc951299c10d56ce7c63d7085b5787d3106ee15",
+            "official_benchmark": false,
+            "schema_version": 6,
+            "seed": 4200,
+            "success_percent": 94.375,
+            "successes": 151
+          }
+        }
+      ],
+      "result": {
+        "measurements": [
+          {
+            "candidate": "T1:checkpoint-100352",
+            "candidate_id": "T1:checkpoint-100352",
+            "instrument": "research_evaluation",
+            "label": "I1 first baseline official-distribution diagnostics",
+            "metrics": {
+              "episodes": 160,
+              "evaluation_artifact": "research/evaluations/7f551163-bae6-40bc-9b0b-a960be607ffb/evaluation-7f551163-bae6-40bc-9b0b-a960be607ffb-m1-T1-checkpoint-100352-160ep-seed4200-e4adf0fbab95.json",
+              "evaluation_artifact_fingerprint": "b026abf9df15357d409593e6d7e05214925cd10214293ee789f01a6607e070d7",
+              "evaluation_semantics": "e4adf0fbab95",
+              "model_fingerprint": "cf44d3b493f3ecd78dce1d8d3cc951299c10d56ce7c63d7085b5787d3106ee15",
+              "official_benchmark": false,
+              "schema_version": 6,
+              "seed": 4200,
+              "success_percent": 94.375,
+              "successes": 151
+            }
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": null
+      },
+      "task_reference_contract": null
+    },
+    "failure": null,
+    "id": "M1",
+    "inquiry_id": "I1",
+    "kind": "measurement",
+    "progress": "completed",
+    "request": {
+      "measurement": {
+        "description": "Measure the strongest first-baseline checkpoint on a held-out official-distribution panel, recording complete success together with target geometry, first entry, distance trajectory, longest and final in-tolerance streaks, interruptions, and final distance.",
+        "measurements": [
+          {
+            "candidate": "T1:checkpoint-100352",
+            "episodes": 160,
+            "instrument": "research_evaluation",
+            "label": "I1 first baseline official-distribution diagnostics",
+            "seed": 4200
+          }
+        ],
+        "paired_comparisons": [],
+        "rationale": "T1 produced a candidate with 0.97 recent in-training success, but training coverage and reward do not establish official behavior. This 160-episode panel distinguishes inner-radius failures from approach/braking failures and interruptions during the 100-step hold before selecting an intervention."
+      }
+    },
+    "request_fingerprint": "22f822b1d2ce3162c36070a00146fab2956e4c5e3cd03ca9689275398a3e8b5c",
+    "session_id": "S3",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No candidates exist. Working, best-known, and retained roles remain intentionally empty because no training or measurement operation has produced evidence for assigning a model role.",
     "completed_operations": [
@@ -1177,7 +1317,8 @@
     "kind": "inquiry",
     "objective": "Bring I1 to the decision required by its closure condition, and close it as soon as the evidence supplies that decision: Close when a trained baseline and targeted behavior diagnostics provide decision-sufficient evidence identifying the dominant failure regime, or show that no single regime is dominant and specify the next discriminating intervention, with success measured under the official target distribution and hold criterion.",
     "operation_ids": [
-      "T1"
+      "T1",
+      "M1"
     ],
     "scientific_parent_commit": "cbcc7200783c00c4159e9272fba52f01cb1a5f6d"
   },
