@@ -1,5 +1,13 @@
 {
-  "active_inquiry": null,
+  "active_inquiry": {
+    "closure_condition": "Close when controlled evidence determines whether the staged or weak braking route is an actionable path toward at least 98% complete uninterrupted success: either a candidate reaches at least 157/160 on the shared official-distribution development panel while retaining T1-like entry, or the intervention is shown to lose entry competence or provide no decision-relevant success improvement.",
+    "goal_connection": "The current best measured behavior is 151/160 successes, below the 196/200 official objective. A successful route must preserve approach and entry competence while reducing the remaining boundary-entry and immediate post-entry failures.",
+    "id": "I3",
+    "opened_in_session": "S6",
+    "question": "Can a reach-preserving staged or substantially weaker braking curriculum improve complete uninterrupted hold success by correcting near-boundary regulation without sacrificing T1-like tolerance entry?",
+    "rationale": "I1 identified near-boundary non-entry and immediate post-entry overshoot as the dominant T1 failure mechanisms. I2 showed that simultaneous Gaussian-gated penalties on joint velocity, endpoint velocity, and action suppressed approach entirely, with 0/160 successes and no tolerance entries versus T1's 151/160. This rejects the tested penalty regime but leaves timing and magnitude unresolved; a staged or much weaker intervention directly discriminates whether braking can be added after reach behavior is established.",
+    "reframes": []
+  },
   "campaign": {
     "base_commit": "de0b95fc51dade1126d56b84d3429b25c85230ca",
     "id": "7f551163-bae6-40bc-9b0b-a960be607ffb",
@@ -1647,16 +1655,16 @@
     }
   },
   "counters": {
-    "event": 9,
-    "inquiry": 2,
+    "event": 10,
+    "inquiry": 3,
     "measurement": 2,
-    "session": 5,
+    "session": 6,
     "training": 2
   },
   "human_goal": {
     "source": "research/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -2653,9 +2661,69 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-09-29T14:16:00Z",
+      "error": null,
+      "id": "E10",
+      "inquiry_id": "I3",
+      "kind": "inquiry",
+      "request": {
+        "action": "open",
+        "closure_condition": "Close when controlled evidence determines whether the staged or weak braking route is an actionable path toward at least 98% complete uninterrupted success: either a candidate reaches at least 157/160 on the shared official-distribution development panel while retaining T1-like entry, or the intervention is shown to lose entry competence or provide no decision-relevant success improvement.",
+        "goal_connection": "The current best measured behavior is 151/160 successes, below the 196/200 official objective. A successful route must preserve approach and entry competence while reducing the remaining boundary-entry and immediate post-entry failures.",
+        "question": "Can a reach-preserving staged or substantially weaker braking curriculum improve complete uninterrupted hold success by correcting near-boundary regulation without sacrificing T1-like tolerance entry?",
+        "rationale": "I1 identified near-boundary non-entry and immediate post-entry overshoot as the dominant T1 failure mechanisms. I2 showed that simultaneous Gaussian-gated penalties on joint velocity, endpoint velocity, and action suppressed approach entirely, with 0/160 successes and no tolerance entries versus T1's 151/160. This rejects the tested penalty regime but leaves timing and magnitude unresolved; a staged or much weaker intervention directly discriminates whether braking can be added after reach behavior is established."
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I3",
+        "status": "completed"
+      },
+      "session_id": "S6",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "open",
+        "inquiry": {
+          "closure_condition": "Close when controlled evidence determines whether the staged or weak braking route is an actionable path toward at least 98% complete uninterrupted success: either a candidate reaches at least 157/160 on the shared official-distribution development panel while retaining T1-like entry, or the intervention is shown to lose entry competence or provide no decision-relevant success improvement.",
+          "goal_connection": "The current best measured behavior is 151/160 successes, below the 196/200 official objective. A successful route must preserve approach and entry competence while reducing the remaining boundary-entry and immediate post-entry failures.",
+          "id": "I3",
+          "opened_in_session": "S6",
+          "question": "Can a reach-preserving staged or substantially weaker braking curriculum improve complete uninterrupted hold success by correcting near-boundary regulation without sacrificing T1-like tolerance entry?",
+          "rationale": "I1 identified near-boundary non-entry and immediate post-entry overshoot as the dominant T1 failure mechanisms. I2 showed that simultaneous Gaussian-gated penalties on joint velocity, endpoint velocity, and action suppressed approach entirely, with 0/160 successes and no tolerance entries versus T1's 151/160. This rejects the tested penalty regime but leaves timing and magnitude unresolved; a staged or much weaker intervention directly discriminates whether braking can be added after reach behavior is established.",
+          "reframes": []
+        }
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I3",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E10",
+    "inquiry_id": null,
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "open",
+        "closure_condition": "Close when controlled evidence determines whether the staged or weak braking route is an actionable path toward at least 98% complete uninterrupted success: either a candidate reaches at least 157/160 on the shared official-distribution development panel while retaining T1-like entry, or the intervention is shown to lose entry competence or provide no decision-relevant success improvement.",
+        "goal_connection": "The current best measured behavior is 151/160 successes, below the 196/200 official objective. A successful route must preserve approach and entry competence while reducing the remaining boundary-entry and immediate post-entry failures.",
+        "question": "Can a reach-preserving staged or substantially weaker braking curriculum improve complete uninterrupted hold success by correcting near-boundary regulation without sacrificing T1-like tolerance entry?",
+        "rationale": "I1 identified near-boundary non-entry and immediate post-entry overshoot as the dominant T1 failure mechanisms. I2 showed that simultaneous Gaussian-gated penalties on joint velocity, endpoint velocity, and action suppressed approach entirely, with 0/160 successes and no tolerance entries versus T1's 151/160. This rejects the tested penalty regime but leaves timing and magnitude unresolved; a staged or much weaker intervention directly discriminates whether braking can be added after reach behavior is established."
+      }
+    },
+    "request_fingerprint": "1726aab69fada1ba3fcef3c85c8fe704dd3663fbccabc1846d1d78bf64deaa06",
+    "session_id": "S6",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T1:checkpoint-100352 remains available with M1 and M2 diagnostics. T2:checkpoint-120832 remains archived with M2 diagnostics but is not viable after 0/160 success. Working, best-known, and retained roles remain unassigned because no model-role operation has been completed.",
     "completed_operations": [
@@ -2688,6 +2756,21 @@
     "path": "research/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "009db4e1-30a0-4351-9c99-80ce3d0271c1",
+    "id": "S6",
+    "inquiry_id": null,
+    "kind": "goal_review",
+    "objective": "Decide whether to request official assessment, open one bounded goal-linked inquiry, or conclude that no credible route remains.",
+    "operation_ids": [
+      "E10"
+    ],
+    "scientific_parent_commit": "847a5c1073362dbaa00ffcf94d81324c828477b5"
+  },
   "terminal_state": null
 }
