@@ -84,44 +84,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "open",
-        "inquiry": {
-          "closure_condition": "Close this inquiry after a baseline candidate has been measured under the official distribution with radius- and angle-stratified success, first-entry and overshoot behavior, longest uninterrupted streak, interruption count, residual end-effector velocity, joint-limit margin, action saturation, and action changes. The result must support a documented choice of distribution, hold-regulation, combined intervention, or no credible route.",
-          "goal_connection": "The human goal requires at least 196 of 200 official episodes to complete a 100-sample uninterrupted hold. Identifying whether the first bottleneck is target coverage, local regulation, or both determines the smallest credible intervention while preserving the protected task and success definition.",
-          "id": "I1",
-          "opened_in_session": "S2",
-          "question": "For a baseline PPO policy, are failures under the official 6-20 cm target distribution dominated by inner-radius distribution shift, inadequate uninterrupted-hold regulation on covered targets, or their interaction?",
-          "rationale": "There is no candidate or behavioral evidence yet. The current recipe excludes 6-14 cm targets and gives zero hold-exit forfeiture, so binary success alone cannot distinguish distribution failure from repeated tolerance crossings. A bounded baseline diagnostic is the highest-value next step before changing the reward or training distribution.",
-          "reframes": []
-        }
-      },
-      "result": {
-        "action": "open",
-        "inquiry_id": "I1",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E2",
-    "inquiry_id": null,
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "open",
-        "closure_condition": "Close this inquiry after a baseline candidate has been measured under the official distribution with radius- and angle-stratified success, first-entry and overshoot behavior, longest uninterrupted streak, interruption count, residual end-effector velocity, joint-limit margin, action saturation, and action changes. The result must support a documented choice of distribution, hold-regulation, combined intervention, or no credible route.",
-        "goal_connection": "The human goal requires at least 196 of 200 official episodes to complete a 100-sample uninterrupted hold. Identifying whether the first bottleneck is target coverage, local regulation, or both determines the smallest credible intervention while preserving the protected task and success definition.",
-        "question": "For a baseline PPO policy, are failures under the official 6-20 cm target distribution dominated by inner-radius distribution shift, inadequate uninterrupted-hold regulation on covered targets, or their interaction?",
-        "rationale": "There is no candidate or behavioral evidence yet. The current recipe excludes 6-14 cm targets and gives zero hold-exit forfeiture, so binary success alone cannot distinguish distribution failure from repeated tolerance crossings. A bounded baseline diagnostic is the highest-value next step before changing the reward or training distribution."
-      }
-    },
-    "request_fingerprint": "8f84f6ba81215fe61efc707d34de5a22f4453a27d19f6db2bdf0144dd086aaa6",
-    "session_id": "S2",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "No candidates have been trained, measured, or assigned roles. Working, best-known, and retained roles are empty.",
     "completed_operations": [],
