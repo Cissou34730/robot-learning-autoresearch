@@ -1,13 +1,5 @@
 {
-  "active_inquiry": {
-    "closure_condition": "Close when a completed baseline candidate has been measured on the official target distribution with episode success and diagnostics stratified by target radius and bearing and by first entry, settling, longest uninterrupted hold, interruptions, and timeout distance, providing a supported actionable answer about whether low-radius coverage, closed-loop hold regulation, or both must be addressed first.",
-    "goal_connection": "The human goal requires at least 196 of 200 official episodes to complete the full 100-sample hold. Identifying the dominant failure mechanism is necessary to choose an intervention that improves complete-distribution episode success rather than optimizing a proxy such as distance or shaped return.",
-    "id": "I1",
-    "opened_in_session": "S2",
-    "question": "For a first candidate trained with the current learning recipe, is the dominant cause of failure on the official task distribution unsupported low-radius geometry, failure to settle and regulate the uninterrupted hold on supported targets, or a phase-specific combination of both?",
-    "rationale": "No candidate or episode evidence exists, so official assessment is unjustified and no-credible-route closure is unsupported. The physical model identifies two consequential competing explanations: the training distribution excludes 0.06-0.14 m, while success also depends on removing residual motion and maintaining a 1 cm tolerance for 100 consecutive observations. A baseline measurement with trajectory-phase and geometry diagnostics is the smallest discriminating inquiry before selecting training or control changes.",
-    "reframes": []
-  },
+  "active_inquiry": null,
   "campaign": {
     "base_commit": "8ac206f76ce0bd7fb8f098b4fe6dceac2a2a311f",
     "id": "eb19a5f3-14b3-4590-ad74-1b31cf5ae3d5",
@@ -836,7 +828,7 @@
     }
   },
   "counters": {
-    "event": 3,
+    "event": 4,
     "inquiry": 1,
     "measurement": 1,
     "session": 3,
@@ -1183,9 +1175,63 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-09-29T21:24:32Z",
+      "error": null,
+      "id": "E4",
+      "inquiry_id": "I1",
+      "kind": "inquiry",
+      "request": {
+        "action": "close",
+        "outcome": "M1 closes I1 with a supported phase- and geometry-specific answer. T1:checkpoint-100352 achieved 151/160 successes (94.375%) on the official target distribution. The 9 failures were concentrated at negative bearings: 4/25 successes for -180 to -135 degrees and 5/26 successes for -135 to -90 degrees, while every episode in the other six bearing strata succeeded. By phase, 6 failures never entered tolerance, 3 entered but never established the 10-sample settling run (longest holds of 1 or 2 samples), and 0 failures reached settling and then lost the required uninterrupted 100-sample hold. Radius strata did not show a dominant low-radius deficit: success was 95.0% at 6-10 cm, 94.3% at 10-14 cm, 96.8% at 14-17 cm, and 91.7% at 17-20 cm. The actionable answer is to address bearing-specific approach and settling failure first; closed-loop hold regulation is not the dominant baseline failure, and unsupported low-radius coverage alone is not supported as the dominant cause.",
+        "reason": "The completed T1 baseline and M1 diagnostics satisfy I1's closure condition by measuring success, target radius and bearing, first entry, settling, longest uninterrupted hold, interruptions, and timeout distance. All failures occurred in one negative-bearing approach sector, including supported-radius targets, and timeout distances were 1.129-1.857 cm. Remaining uncertainty is whether the bearing-sector failure interacts with particular low-radius inverse-kinematic branches, because the 160-episode panel is not a controlled factorial sample; that uncertainty does not change the first decision that approach/settling robustness must be addressed before hold regulation."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I1",
+        "outcome": "M1 closes I1 with a supported phase- and geometry-specific answer. T1:checkpoint-100352 achieved 151/160 successes (94.375%) on the official target distribution. The 9 failures were concentrated at negative bearings: 4/25 successes for -180 to -135 degrees and 5/26 successes for -135 to -90 degrees, while every episode in the other six bearing strata succeeded. By phase, 6 failures never entered tolerance, 3 entered but never established the 10-sample settling run (longest holds of 1 or 2 samples), and 0 failures reached settling and then lost the required uninterrupted 100-sample hold. Radius strata did not show a dominant low-radius deficit: success was 95.0% at 6-10 cm, 94.3% at 10-14 cm, 96.8% at 14-17 cm, and 91.7% at 17-20 cm. The actionable answer is to address bearing-specific approach and settling failure first; closed-loop hold regulation is not the dominant baseline failure, and unsupported low-radius coverage alone is not supported as the dominant cause.",
+        "reason": "The completed T1 baseline and M1 diagnostics satisfy I1's closure condition by measuring success, target radius and bearing, first entry, settling, longest uninterrupted hold, interruptions, and timeout distance. All failures occurred in one negative-bearing approach sector, including supported-radius targets, and timeout distances were 1.129-1.857 cm. Remaining uncertainty is whether the bearing-sector failure interacts with particular low-radius inverse-kinematic branches, because the 160-episode panel is not a controlled factorial sample; that uncertainty does not change the first decision that approach/settling robustness must be addressed before hold regulation.",
+        "status": "completed"
+      },
+      "session_id": "S3",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "close",
+        "inquiry_id": "I1",
+        "outcome": "M1 closes I1 with a supported phase- and geometry-specific answer. T1:checkpoint-100352 achieved 151/160 successes (94.375%) on the official target distribution. The 9 failures were concentrated at negative bearings: 4/25 successes for -180 to -135 degrees and 5/26 successes for -135 to -90 degrees, while every episode in the other six bearing strata succeeded. By phase, 6 failures never entered tolerance, 3 entered but never established the 10-sample settling run (longest holds of 1 or 2 samples), and 0 failures reached settling and then lost the required uninterrupted 100-sample hold. Radius strata did not show a dominant low-radius deficit: success was 95.0% at 6-10 cm, 94.3% at 10-14 cm, 96.8% at 14-17 cm, and 91.7% at 17-20 cm. The actionable answer is to address bearing-specific approach and settling failure first; closed-loop hold regulation is not the dominant baseline failure, and unsupported low-radius coverage alone is not supported as the dominant cause.",
+        "reason": "The completed T1 baseline and M1 diagnostics satisfy I1's closure condition by measuring success, target radius and bearing, first entry, settling, longest uninterrupted hold, interruptions, and timeout distance. All failures occurred in one negative-bearing approach sector, including supported-radius targets, and timeout distances were 1.129-1.857 cm. Remaining uncertainty is whether the bearing-sector failure interacts with particular low-radius inverse-kinematic branches, because the 160-episode panel is not a controlled factorial sample; that uncertainty does not change the first decision that approach/settling robustness must be addressed before hold regulation."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I1",
+        "outcome": "M1 closes I1 with a supported phase- and geometry-specific answer. T1:checkpoint-100352 achieved 151/160 successes (94.375%) on the official target distribution. The 9 failures were concentrated at negative bearings: 4/25 successes for -180 to -135 degrees and 5/26 successes for -135 to -90 degrees, while every episode in the other six bearing strata succeeded. By phase, 6 failures never entered tolerance, 3 entered but never established the 10-sample settling run (longest holds of 1 or 2 samples), and 0 failures reached settling and then lost the required uninterrupted 100-sample hold. Radius strata did not show a dominant low-radius deficit: success was 95.0% at 6-10 cm, 94.3% at 10-14 cm, 96.8% at 14-17 cm, and 91.7% at 17-20 cm. The actionable answer is to address bearing-specific approach and settling failure first; closed-loop hold regulation is not the dominant baseline failure, and unsupported low-radius coverage alone is not supported as the dominant cause.",
+        "reason": "The completed T1 baseline and M1 diagnostics satisfy I1's closure condition by measuring success, target radius and bearing, first entry, settling, longest uninterrupted hold, interruptions, and timeout distance. All failures occurred in one negative-bearing approach sector, including supported-radius targets, and timeout distances were 1.129-1.857 cm. Remaining uncertainty is whether the bearing-sector failure interacts with particular low-radius inverse-kinematic branches, because the 160-episode panel is not a controlled factorial sample; that uncertainty does not change the first decision that approach/settling robustness must be addressed before hold regulation.",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E4",
+    "inquiry_id": "I1",
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "close",
+        "outcome": "M1 closes I1 with a supported phase- and geometry-specific answer. T1:checkpoint-100352 achieved 151/160 successes (94.375%) on the official target distribution. The 9 failures were concentrated at negative bearings: 4/25 successes for -180 to -135 degrees and 5/26 successes for -135 to -90 degrees, while every episode in the other six bearing strata succeeded. By phase, 6 failures never entered tolerance, 3 entered but never established the 10-sample settling run (longest holds of 1 or 2 samples), and 0 failures reached settling and then lost the required uninterrupted 100-sample hold. Radius strata did not show a dominant low-radius deficit: success was 95.0% at 6-10 cm, 94.3% at 10-14 cm, 96.8% at 14-17 cm, and 91.7% at 17-20 cm. The actionable answer is to address bearing-specific approach and settling failure first; closed-loop hold regulation is not the dominant baseline failure, and unsupported low-radius coverage alone is not supported as the dominant cause.",
+        "reason": "The completed T1 baseline and M1 diagnostics satisfy I1's closure condition by measuring success, target radius and bearing, first entry, settling, longest uninterrupted hold, interruptions, and timeout distance. All failures occurred in one negative-bearing approach sector, including supported-radius targets, and timeout distances were 1.129-1.857 cm. Remaining uncertainty is whether the bearing-sector failure interacts with particular low-radius inverse-kinematic branches, because the 160-episode panel is not a controlled factorial sample; that uncertainty does not change the first decision that approach/settling robustness must be addressed before hold regulation."
+      }
+    },
+    "request_fingerprint": "b1177138e70a05a55824ed6bf1d7b52fab47b3e14cabbf1732442b43c21c9a7f",
+    "session_id": "S3",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No candidates have been trained, evaluated, or assigned working, best-known, or retained roles.",
     "completed_operations": [
@@ -1223,7 +1269,8 @@
     "objective": "Bring I1 to the decision required by its closure condition, and close it as soon as the evidence supplies that decision: Close when a completed baseline candidate has been measured on the official target distribution with episode success and diagnostics stratified by target radius and bearing and by first entry, settling, longest uninterrupted hold, interruptions, and timeout distance, providing a supported actionable answer about whether low-radius coverage, closed-loop hold regulation, or both must be addressed first.",
     "operation_ids": [
       "T1",
-      "M1"
+      "M1",
+      "E4"
     ],
     "scientific_parent_commit": "1ccb3241a758ef4d4159df18e15d3d00e16f01d0"
   },
