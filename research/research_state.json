@@ -1,13 +1,5 @@
 {
-  "active_inquiry": {
-    "closure_condition": "Close when a trained baseline and targeted behavior diagnostics provide decision-sufficient evidence identifying the dominant failure regime, or show that no single regime is dominant and specify the next discriminating intervention, with success measured under the official target distribution and hold criterion.",
-    "goal_connection": "Identifying the dominant failure mechanism is necessary to choose the intervention most likely to reach at least 196 successes in the protected 200-episode assessment; the inquiry will measure complete episode success together with geometry- and phase-specific behavior rather than optimize reward alone.",
-    "id": "I1",
-    "opened_in_session": "S2",
-    "question": "For a first trained candidate under the official target distribution, are episode failures dominated by the current training coverage gap at radii 0.06-0.14 m, by transient reach and braking before stable entry, or by interruptions during the 100-step hold?",
-    "rationale": "There is no candidate or behavioral evidence, so official assessment and a no-route conclusion are both unsupported. The fixed model identifies reachable targets, configuration-dependent transient control, and a concrete mismatch between training radii 0.14-0.20 m and official radii 0.06-0.20 m. A bounded baseline-and-diagnostics inquiry can discriminate coverage, approach/braking, and long-horizon stabilization explanations before committing campaign resources to a recipe or environment change.",
-    "reframes": []
-  },
+  "active_inquiry": null,
   "campaign": {
     "base_commit": "de0b95fc51dade1126d56b84d3429b25c85230ca",
     "id": "7f551163-bae6-40bc-9b0b-a960be607ffb",
@@ -836,7 +828,7 @@
     }
   },
   "counters": {
-    "event": 3,
+    "event": 4,
     "inquiry": 1,
     "measurement": 1,
     "session": 3,
@@ -1190,9 +1182,63 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-09-29T13:46:12Z",
+      "error": null,
+      "id": "E4",
+      "inquiry_id": "I1",
+      "kind": "inquiry",
+      "request": {
+        "action": "close",
+        "outcome": "The first baseline achieved 151/160 complete uninterrupted successes (94.375%) on the held-out official target distribution. Failures were dominated by transient boundary regulation: 6/9 failures never entered the 1 cm tolerance, with minimum distances near the boundary (mean 0.98 cm), and the 3/9 that entered immediately lost the hold after only 1-2 sampled steps with post-entry overshoot of 0.19-0.55 cm. Failure rates were similar across radius bands (5.0% at 6-10 cm, 5.7% at 10-14 cm, 5.1% at 14-18 cm, and 7.1% at 18-20 cm), so the current 0.06-0.14 m coverage gap is not the dominant explanation. Hold interruptions contribute but are secondary: they occurred in 3/9 failures, and no failure entered and then remained uninterrupted without completing. I1 therefore identifies transient reach/braking and boundary regulation as the next intervention target.",
+        "reason": "T1 and M1 satisfy the closure condition with a trained baseline and phase-specific official-distribution diagnostics. The evidence discriminates the competing mechanisms: failures are distributed across the annulus rather than concentrated below 14 cm, most failures miss stable entry by a small margin, and the entered failures lose tolerance immediately rather than fail after a long stable hold. Remaining uncertainty about how to improve the transient is consequential for the next inquiry, but further I1 measurement is not needed to choose that direction."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I1",
+        "outcome": "The first baseline achieved 151/160 complete uninterrupted successes (94.375%) on the held-out official target distribution. Failures were dominated by transient boundary regulation: 6/9 failures never entered the 1 cm tolerance, with minimum distances near the boundary (mean 0.98 cm), and the 3/9 that entered immediately lost the hold after only 1-2 sampled steps with post-entry overshoot of 0.19-0.55 cm. Failure rates were similar across radius bands (5.0% at 6-10 cm, 5.7% at 10-14 cm, 5.1% at 14-18 cm, and 7.1% at 18-20 cm), so the current 0.06-0.14 m coverage gap is not the dominant explanation. Hold interruptions contribute but are secondary: they occurred in 3/9 failures, and no failure entered and then remained uninterrupted without completing. I1 therefore identifies transient reach/braking and boundary regulation as the next intervention target.",
+        "reason": "T1 and M1 satisfy the closure condition with a trained baseline and phase-specific official-distribution diagnostics. The evidence discriminates the competing mechanisms: failures are distributed across the annulus rather than concentrated below 14 cm, most failures miss stable entry by a small margin, and the entered failures lose tolerance immediately rather than fail after a long stable hold. Remaining uncertainty about how to improve the transient is consequential for the next inquiry, but further I1 measurement is not needed to choose that direction.",
+        "status": "completed"
+      },
+      "session_id": "S3",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "close",
+        "inquiry_id": "I1",
+        "outcome": "The first baseline achieved 151/160 complete uninterrupted successes (94.375%) on the held-out official target distribution. Failures were dominated by transient boundary regulation: 6/9 failures never entered the 1 cm tolerance, with minimum distances near the boundary (mean 0.98 cm), and the 3/9 that entered immediately lost the hold after only 1-2 sampled steps with post-entry overshoot of 0.19-0.55 cm. Failure rates were similar across radius bands (5.0% at 6-10 cm, 5.7% at 10-14 cm, 5.1% at 14-18 cm, and 7.1% at 18-20 cm), so the current 0.06-0.14 m coverage gap is not the dominant explanation. Hold interruptions contribute but are secondary: they occurred in 3/9 failures, and no failure entered and then remained uninterrupted without completing. I1 therefore identifies transient reach/braking and boundary regulation as the next intervention target.",
+        "reason": "T1 and M1 satisfy the closure condition with a trained baseline and phase-specific official-distribution diagnostics. The evidence discriminates the competing mechanisms: failures are distributed across the annulus rather than concentrated below 14 cm, most failures miss stable entry by a small margin, and the entered failures lose tolerance immediately rather than fail after a long stable hold. Remaining uncertainty about how to improve the transient is consequential for the next inquiry, but further I1 measurement is not needed to choose that direction."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I1",
+        "outcome": "The first baseline achieved 151/160 complete uninterrupted successes (94.375%) on the held-out official target distribution. Failures were dominated by transient boundary regulation: 6/9 failures never entered the 1 cm tolerance, with minimum distances near the boundary (mean 0.98 cm), and the 3/9 that entered immediately lost the hold after only 1-2 sampled steps with post-entry overshoot of 0.19-0.55 cm. Failure rates were similar across radius bands (5.0% at 6-10 cm, 5.7% at 10-14 cm, 5.1% at 14-18 cm, and 7.1% at 18-20 cm), so the current 0.06-0.14 m coverage gap is not the dominant explanation. Hold interruptions contribute but are secondary: they occurred in 3/9 failures, and no failure entered and then remained uninterrupted without completing. I1 therefore identifies transient reach/braking and boundary regulation as the next intervention target.",
+        "reason": "T1 and M1 satisfy the closure condition with a trained baseline and phase-specific official-distribution diagnostics. The evidence discriminates the competing mechanisms: failures are distributed across the annulus rather than concentrated below 14 cm, most failures miss stable entry by a small margin, and the entered failures lose tolerance immediately rather than fail after a long stable hold. Remaining uncertainty about how to improve the transient is consequential for the next inquiry, but further I1 measurement is not needed to choose that direction.",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E4",
+    "inquiry_id": "I1",
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "close",
+        "outcome": "The first baseline achieved 151/160 complete uninterrupted successes (94.375%) on the held-out official target distribution. Failures were dominated by transient boundary regulation: 6/9 failures never entered the 1 cm tolerance, with minimum distances near the boundary (mean 0.98 cm), and the 3/9 that entered immediately lost the hold after only 1-2 sampled steps with post-entry overshoot of 0.19-0.55 cm. Failure rates were similar across radius bands (5.0% at 6-10 cm, 5.7% at 10-14 cm, 5.1% at 14-18 cm, and 7.1% at 18-20 cm), so the current 0.06-0.14 m coverage gap is not the dominant explanation. Hold interruptions contribute but are secondary: they occurred in 3/9 failures, and no failure entered and then remained uninterrupted without completing. I1 therefore identifies transient reach/braking and boundary regulation as the next intervention target.",
+        "reason": "T1 and M1 satisfy the closure condition with a trained baseline and phase-specific official-distribution diagnostics. The evidence discriminates the competing mechanisms: failures are distributed across the annulus rather than concentrated below 14 cm, most failures miss stable entry by a small margin, and the entered failures lose tolerance immediately rather than fail after a long stable hold. Remaining uncertainty about how to improve the transient is consequential for the next inquiry, but further I1 measurement is not needed to choose that direction."
+      }
+    },
+    "request_fingerprint": "ad1ca563e1bd57e9268d20b9590d613a3ba684536618eb5bba70b61979d1a24e",
+    "session_id": "S3",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No candidates exist. Working, best-known, and retained roles remain intentionally empty because no training or measurement operation has produced evidence for assigning a model role.",
     "completed_operations": [
@@ -1230,7 +1276,8 @@
     "objective": "Bring I1 to the decision required by its closure condition, and close it as soon as the evidence supplies that decision: Close when a trained baseline and targeted behavior diagnostics provide decision-sufficient evidence identifying the dominant failure regime, or show that no single regime is dominant and specify the next discriminating intervention, with success measured under the official target distribution and hold criterion.",
     "operation_ids": [
       "T1",
-      "M1"
+      "M1",
+      "E4"
     ],
     "scientific_parent_commit": "cbcc7200783c00c4159e9272fba52f01cb1a5f6d"
   },
