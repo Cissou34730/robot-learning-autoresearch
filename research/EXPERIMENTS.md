@@ -28,3 +28,4 @@
 | E16 | inquiry | I4 | completed |
 | E17 | checkpoint | I4 | checkpointed |
 | E18 | inquiry | I5 | completed |
+| E19 | checkpoint | - | checkpointed |
