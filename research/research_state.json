@@ -828,7 +828,7 @@
     }
   },
   "counters": {
-    "event": 4,
+    "event": 5,
     "inquiry": 1,
     "measurement": 1,
     "session": 3,
@@ -837,7 +837,7 @@
   "human_goal": {
     "source": "research/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -1205,26 +1205,157 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-09-29T13:48:17Z",
+      "error": null,
+      "id": "E5",
+      "inquiry_id": "I1",
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "Candidate T1:checkpoint-100352 remains available with its M1 diagnostic artifact, but working, best-known, and retained roles remain unassigned because no role operation has been completed.",
+        "completed_operations": [
+          "T1",
+          "M1",
+          "E4"
+        ],
+        "cumulative_resource_use": "One fresh PPO training run requested for 120,000 steps completed at 120,832 effective steps, producing 24 archived candidates. One 160-episode research evaluation panel was completed for T1:checkpoint-100352. No official assessment has been executed.",
+        "current_goal_gap": "The first measured candidate achieved 151/160 successes (94.375%) on a held-out official-distribution panel, below the 98% objective. No candidate has been assigned a working or best-known role, and no official assessment has been run. The remaining gap is to improve transient boundary regulation sufficiently to establish a credible candidate near the required success level.",
+        "current_synthesis": "T1 trained a PPO policy on radii 0.14-0.20 m. M1 measured it on the official 0.06-0.20 m distribution with 151/160 complete uninterrupted successes. Of 9 failures, 6 never entered the 1 cm tolerance and 3 entered but lost it after only 1-2 sampled steps; post-entry overshoot was 0.19-0.55 cm. Failure rates were similar across radius bands, so the training coverage gap was not dominant. Hold interruptions occurred in 3/9 failures and were secondary. The evidence supports transient reach/braking and boundary regulation as the next scientific target, while leaving the precise effective intervention unresolved.",
+        "decision_frontier": "At goal review, decide whether to open a fresh inquiry focused on improving transient braking and tolerance-boundary regulation, using T1 as the baseline and M1 as the diagnostic reference. The next inquiry should test a concrete control-relevant intervention and measure complete official-distribution success without substituting reward for the uninterrupted 100-step hold criterion.",
+        "evidence_references": [
+          "T1",
+          "M1",
+          "E4"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 successes in the protected 200-episode assessment. I1 established that the first baseline is below that requirement and that transient reach, braking, and boundary regulation are the most consequential observed deficit, providing the evidence needed to choose the next intervention.",
+        "next_direction_or_closure": "Return to goal review. The inquiry-session result is actionable but the campaign goal is not met; open a new bounded inquiry for transient reach/braking and boundary regulation, or choose another evidence-backed intervention direction if the goal review identifies a more credible route."
+      },
+      "result": {
+        "session_id": "S3",
+        "status": "checkpointed"
+      },
+      "session_id": "S3",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "cbcc7200783c00c4159e9272fba52f01cb1a5f6d",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "Candidate T1:checkpoint-100352 remains available with its M1 diagnostic artifact, but working, best-known, and retained roles remain unassigned because no role operation has been completed.",
+        "completed_operations": [
+          "T1",
+          "M1",
+          "E4"
+        ],
+        "cumulative_resource_use": "One fresh PPO training run requested for 120,000 steps completed at 120,832 effective steps, producing 24 archived candidates. One 160-episode research evaluation panel was completed for T1:checkpoint-100352. No official assessment has been executed.",
+        "current_goal_gap": "The first measured candidate achieved 151/160 successes (94.375%) on a held-out official-distribution panel, below the 98% objective. No candidate has been assigned a working or best-known role, and no official assessment has been run. The remaining gap is to improve transient boundary regulation sufficiently to establish a credible candidate near the required success level.",
+        "current_synthesis": "T1 trained a PPO policy on radii 0.14-0.20 m. M1 measured it on the official 0.06-0.20 m distribution with 151/160 complete uninterrupted successes. Of 9 failures, 6 never entered the 1 cm tolerance and 3 entered but lost it after only 1-2 sampled steps; post-entry overshoot was 0.19-0.55 cm. Failure rates were similar across radius bands, so the training coverage gap was not dominant. Hold interruptions occurred in 3/9 failures and were secondary. The evidence supports transient reach/braking and boundary regulation as the next scientific target, while leaving the precise effective intervention unresolved.",
+        "decision_frontier": "At goal review, decide whether to open a fresh inquiry focused on improving transient braking and tolerance-boundary regulation, using T1 as the baseline and M1 as the diagnostic reference. The next inquiry should test a concrete control-relevant intervention and measure complete official-distribution success without substituting reward for the uninterrupted 100-step hold criterion.",
+        "evidence_references": [
+          "T1",
+          "M1",
+          "E4"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 successes in the protected 200-episode assessment. I1 established that the first baseline is below that requirement and that transient reach, braking, and boundary regulation are the most consequential observed deficit, providing the evidence needed to choose the next intervention.",
+        "inquiry_id": "I1",
+        "next_direction_or_closure": "Return to goal review. The inquiry-session result is actionable but the campaign goal is not met; open a new bounded inquiry for transient reach/braking and boundary regulation, or choose another evidence-backed intervention direction if the goal review identifies a more credible route.",
+        "session_id": "S3"
+      },
+      "presentation": {
+        "backend_session_id": "7c937edc-8cc5-49f7-8fcf-46850bfec99d",
+        "campaign_id": "7f551163-bae6-40bc-9b0b-a960be607ffb",
+        "campaign_usage": "12m18s | 16.21 AIU | prompt 2.5m (87% cached) | output 29.9k",
+        "session_id": "S3",
+        "session_kind": "inquiry",
+        "session_usage": "6m51s | 8.14 AIU | prompt 1.5m (90% cached) | output 14.1k"
+      },
+      "result": {
+        "session_id": "S3",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "a826adefb5ef291ac00ffeac58282a050bdaafd9",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E5",
+    "inquiry_id": "I1",
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "Candidate T1:checkpoint-100352 remains available with its M1 diagnostic artifact, but working, best-known, and retained roles remain unassigned because no role operation has been completed.",
+        "completed_operations": [
+          "T1",
+          "M1",
+          "E4"
+        ],
+        "cumulative_resource_use": "One fresh PPO training run requested for 120,000 steps completed at 120,832 effective steps, producing 24 archived candidates. One 160-episode research evaluation panel was completed for T1:checkpoint-100352. No official assessment has been executed.",
+        "current_goal_gap": "The first measured candidate achieved 151/160 successes (94.375%) on a held-out official-distribution panel, below the 98% objective. No candidate has been assigned a working or best-known role, and no official assessment has been run. The remaining gap is to improve transient boundary regulation sufficiently to establish a credible candidate near the required success level.",
+        "current_synthesis": "T1 trained a PPO policy on radii 0.14-0.20 m. M1 measured it on the official 0.06-0.20 m distribution with 151/160 complete uninterrupted successes. Of 9 failures, 6 never entered the 1 cm tolerance and 3 entered but lost it after only 1-2 sampled steps; post-entry overshoot was 0.19-0.55 cm. Failure rates were similar across radius bands, so the training coverage gap was not dominant. Hold interruptions occurred in 3/9 failures and were secondary. The evidence supports transient reach/braking and boundary regulation as the next scientific target, while leaving the precise effective intervention unresolved.",
+        "decision_frontier": "At goal review, decide whether to open a fresh inquiry focused on improving transient braking and tolerance-boundary regulation, using T1 as the baseline and M1 as the diagnostic reference. The next inquiry should test a concrete control-relevant intervention and measure complete official-distribution success without substituting reward for the uninterrupted 100-step hold criterion.",
+        "evidence_references": [
+          "T1",
+          "M1",
+          "E4"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 successes in the protected 200-episode assessment. I1 established that the first baseline is below that requirement and that transient reach, braking, and boundary regulation are the most consequential observed deficit, providing the evidence needed to choose the next intervention.",
+        "next_direction_or_closure": "Return to goal review. The inquiry-session result is actionable but the campaign goal is not met; open a new bounded inquiry for transient reach/braking and boundary regulation, or choose another evidence-backed intervention direction if the goal review identifies a more credible route."
+      }
+    },
+    "request_fingerprint": "02c69d9c556a4eef4112548179dc9a6f2d365950d33540149bfdb6791bbdf3ac",
+    "session_id": "S3",
+    "supersedes": null
+  },
   "pi_checkpoint": {
-    "candidates_and_roles": "No candidates exist. Working, best-known, and retained roles remain intentionally empty because no training or measurement operation has produced evidence for assigning a model role.",
+    "candidates_and_roles": "Candidate T1:checkpoint-100352 remains available with its M1 diagnostic artifact, but working, best-known, and retained roles remain unassigned because no role operation has been completed.",
     "completed_operations": [
-      "E2"
+      "T1",
+      "M1",
+      "E4"
     ],
-    "cumulative_resource_use": "No training, evaluation, measurement, or other scientific operation has been executed. Completed work consists of the preliminary scientific model, checkpoint E1, and inquiry-opening operation E2; no compute resources have been spent on a candidate.",
-    "current_goal_gap": "There is no trained candidate, development measurement, or official assessment. The campaign has no evidence-based estimate of success or of whether the main deficit is target coverage, transient reach and braking, or long-horizon hold stability.",
-    "current_synthesis": "The fixed model establishes that all official targets are geometrically reachable and that the observation exposes joint state, Cartesian error, and both nominal IK branches. Closed-loop transient regulation into a 1 cm set for 100 sampled control intervals under bounded torque and 20 ms action holding is a plausible difficulty, but remains unmeasured. Training currently covers only radii 0.14-0.20 m while the official distribution covers 0.06-0.20 m; this coverage mismatch may interact with folded-posture conditioning and hold stability, but causality is unestablished.",
-    "decision_frontier": "In the fresh I1 session, obtain a first trained baseline and targeted behavior diagnostics under the official target distribution. Distinguish failures concentrated in the inner-radius coverage gap from transient reach or braking failures and from interruptions during the required 100-step hold, using episode success, target geometry, first entry, peak and settling behavior, longest in-tolerance streak, interruptions, and final distance.",
+    "cumulative_resource_use": "One fresh PPO training run requested for 120,000 steps completed at 120,832 effective steps, producing 24 archived candidates. One 160-episode research evaluation panel was completed for T1:checkpoint-100352. No official assessment has been executed.",
+    "current_goal_gap": "The first measured candidate achieved 151/160 successes (94.375%) on a held-out official-distribution panel, below the 98% objective. No candidate has been assigned a working or best-known role, and no official assessment has been run. The remaining gap is to improve transient boundary regulation sufficiently to establish a credible candidate near the required success level.",
+    "current_synthesis": "T1 trained a PPO policy on radii 0.14-0.20 m. M1 measured it on the official 0.06-0.20 m distribution with 151/160 complete uninterrupted successes. Of 9 failures, 6 never entered the 1 cm tolerance and 3 entered but lost it after only 1-2 sampled steps; post-entry overshoot was 0.19-0.55 cm. Failure rates were similar across radius bands, so the training coverage gap was not dominant. Hold interruptions occurred in 3/9 failures and were secondary. The evidence supports transient reach/braking and boundary regulation as the next scientific target, while leaving the precise effective intervention unresolved.",
+    "decision_frontier": "At goal review, decide whether to open a fresh inquiry focused on improving transient braking and tolerance-boundary regulation, using T1 as the baseline and M1 as the diagnostic reference. The next inquiry should test a concrete control-relevant intervention and measure complete official-distribution success without substituting reward for the uninterrupted 100-step hold criterion.",
     "evidence_references": [
-      "E2"
+      "T1",
+      "M1",
+      "E4"
     ],
-    "human_goal_connection": "The human goal requires at least 196 successes in the protected 200-episode assessment. Because no candidate or behavioral evidence exists, the campaign must first identify the failure mechanism that most constrains complete uninterrupted reach-and-hold success rather than treat surrogate reward or unmeasured assumptions as progress.",
-    "inquiry_id": null,
-    "next_direction_or_closure": "End the goal-review session and continue in a fresh I1 inquiry session. Use the bounded baseline-and-diagnostics result to choose whether to repair target coverage, redesign the control-relevant policy recipe, investigate stabilization dynamics, or reframe the inquiry if the evidence points elsewhere.",
-    "scientific_commit": "a79eb6275fb3d718690c74a9afa7b657a701d828",
-    "session_id": "S2"
+    "human_goal_connection": "The human goal requires at least 196 successes in the protected 200-episode assessment. I1 established that the first baseline is below that requirement and that transient reach, braking, and boundary regulation are the most consequential observed deficit, providing the evidence needed to choose the next intervention.",
+    "inquiry_id": "I1",
+    "next_direction_or_closure": "Return to goal review. The inquiry-session result is actionable but the campaign goal is not met; open a new bounded inquiry for transient reach/braking and boundary regulation, or choose another evidence-backed intervention direction if the goal review identifies a more credible route.",
+    "scientific_commit": "a826adefb5ef291ac00ffeac58282a050bdaafd9",
+    "session_id": "S3"
   },
   "schema_version": 6,
   "scientific_model": {
@@ -1232,23 +1363,6 @@
     "path": "research/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "7c937edc-8cc5-49f7-8fcf-46850bfec99d",
-    "id": "S3",
-    "inquiry_id": "I1",
-    "kind": "inquiry",
-    "objective": "Bring I1 to the decision required by its closure condition, and close it as soon as the evidence supplies that decision: Close when a trained baseline and targeted behavior diagnostics provide decision-sufficient evidence identifying the dominant failure regime, or show that no single regime is dominant and specify the next discriminating intervention, with success measured under the official target distribution and hold criterion.",
-    "operation_ids": [
-      "T1",
-      "M1",
-      "E4"
-    ],
-    "scientific_parent_commit": "cbcc7200783c00c4159e9272fba52f01cb1a5f6d"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
