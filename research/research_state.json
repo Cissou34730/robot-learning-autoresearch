@@ -3285,7 +3285,7 @@
     }
   },
   "counters": {
-    "event": 16,
+    "event": 17,
     "inquiry": 4,
     "measurement": 4,
     "session": 9,
@@ -3294,7 +3294,7 @@
   "human_goal": {
     "source": "research/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -5465,18 +5465,180 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-09-29T15:20:43Z",
+      "error": null,
+      "id": "E17",
+      "inquiry_id": "I4",
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "T1:checkpoint-100352 remains the best measured reference at 151/160 and is available with M1, M2, M3, and M4 diagnostics. T4:checkpoint-100352 is the rejected I4 terminal-stabilization candidate at 131/160. T3:checkpoint-100352 remains the rejected I3 candidate at 118/160, and T2:checkpoint-120832 remains the rejected I2 candidate at 0/160. Working, best-known, and retained roles remain unassigned.",
+        "completed_operations": [
+          "T4",
+          "M4",
+          "E16"
+        ],
+        "cumulative_resource_use": "Four training runs have completed: T1 and T2 fresh 120000-step requests, T3 transfer 120000-step request, and T4 transfer 120000-step request, each producing 120832 effective steps except the archived 100352-step selected checkpoints. Four 160-episode research panels have completed: M1, M2, M3, and M4. No official assessment or model-role assignment has been executed. E14 opened I4, T4 and M4 tested it, and E16 closed it as rejected.",
+        "current_goal_gap": "T1:checkpoint-100352 remains at 151/160 successes, nine successes below the 157/160 development threshold and 45 below the 196/200 official objective. T4:checkpoint-100352 achieved 131/160 and is rejected. T3:checkpoint-100352 is 118/160 and T2:checkpoint-120832 is 0/160. No candidate has a working or best-known role, and no official assessment has run.",
+        "current_synthesis": "I1 localized T1 failures primarily to near-boundary non-entry and immediate post-entry overshoot. I2 rejected full-strength Gaussian braking, and I3 rejected staged weak braking because both routes damaged measured evaluation behavior. I4 tested terminal-only state-dependent velocity stabilization with global boundary braking disabled. On the shared 160-episode panel, T4 achieved 131/160 versus T1's 151/160, with all 20 discordant episodes favoring T1. T4 entered 140/160 versus T1's 154/160, had mean post-entry overshoot 0.037 cm versus 0.011 cm, mean longest uninterrupted streak 82.1 versus 94.4 steps, 137 interruptions versus 5, and mean minimum distance 1.371 cm versus 0.278 cm. The intervention therefore worsened approach and hold competence rather than correcting the targeted mechanism; I4 is rejected.",
+        "decision_frontier": "I4 is closed as rejected. The campaign returns to goal review; the remaining 45-success official gap and absence of a candidate at 157/160 mean neither official assessment nor a best-known role assignment is justified by the current evidence.",
+        "evidence_references": [
+          "T1",
+          "M1",
+          "E4",
+          "T2",
+          "M2",
+          "E8",
+          "E10",
+          "T3",
+          "M3",
+          "E12",
+          "E14",
+          "T4",
+          "M4",
+          "E16"
+        ],
+        "human_goal_connection": "The human goal remains at least 196 complete uninterrupted successes in the protected 200-episode official assessment. T1:checkpoint-100352 remains at 151/160 successes (94.375%), so official assessment is not justified. I4 tested a reach-preserving terminal stabilization route against the identified residual-momentum failure regime and rejected it.",
+        "next_direction_or_closure": "Return to goal review in a fresh session. Preserve I4's rejection and do not request official assessment on the current evidence. Any further work must begin from a newly named, goal-linked consequential uncertainty; otherwise conclude that no credible route remains."
+      },
+      "result": {
+        "session_id": "S9",
+        "status": "checkpointed"
+      },
+      "session_id": "S9",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "9ec114067ac47ff76d29da3e46d3ba93792caf65",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "T1:checkpoint-100352 remains the best measured reference at 151/160 and is available with M1, M2, M3, and M4 diagnostics. T4:checkpoint-100352 is the rejected I4 terminal-stabilization candidate at 131/160. T3:checkpoint-100352 remains the rejected I3 candidate at 118/160, and T2:checkpoint-120832 remains the rejected I2 candidate at 0/160. Working, best-known, and retained roles remain unassigned.",
+        "completed_operations": [
+          "T4",
+          "M4",
+          "E16"
+        ],
+        "cumulative_resource_use": "Four training runs have completed: T1 and T2 fresh 120000-step requests, T3 transfer 120000-step request, and T4 transfer 120000-step request, each producing 120832 effective steps except the archived 100352-step selected checkpoints. Four 160-episode research panels have completed: M1, M2, M3, and M4. No official assessment or model-role assignment has been executed. E14 opened I4, T4 and M4 tested it, and E16 closed it as rejected.",
+        "current_goal_gap": "T1:checkpoint-100352 remains at 151/160 successes, nine successes below the 157/160 development threshold and 45 below the 196/200 official objective. T4:checkpoint-100352 achieved 131/160 and is rejected. T3:checkpoint-100352 is 118/160 and T2:checkpoint-120832 is 0/160. No candidate has a working or best-known role, and no official assessment has run.",
+        "current_synthesis": "I1 localized T1 failures primarily to near-boundary non-entry and immediate post-entry overshoot. I2 rejected full-strength Gaussian braking, and I3 rejected staged weak braking because both routes damaged measured evaluation behavior. I4 tested terminal-only state-dependent velocity stabilization with global boundary braking disabled. On the shared 160-episode panel, T4 achieved 131/160 versus T1's 151/160, with all 20 discordant episodes favoring T1. T4 entered 140/160 versus T1's 154/160, had mean post-entry overshoot 0.037 cm versus 0.011 cm, mean longest uninterrupted streak 82.1 versus 94.4 steps, 137 interruptions versus 5, and mean minimum distance 1.371 cm versus 0.278 cm. The intervention therefore worsened approach and hold competence rather than correcting the targeted mechanism; I4 is rejected.",
+        "decision_frontier": "I4 is closed as rejected. The campaign returns to goal review; the remaining 45-success official gap and absence of a candidate at 157/160 mean neither official assessment nor a best-known role assignment is justified by the current evidence.",
+        "evidence_references": [
+          "T1",
+          "M1",
+          "E4",
+          "T2",
+          "M2",
+          "E8",
+          "E10",
+          "T3",
+          "M3",
+          "E12",
+          "E14",
+          "T4",
+          "M4",
+          "E16"
+        ],
+        "human_goal_connection": "The human goal remains at least 196 complete uninterrupted successes in the protected 200-episode official assessment. T1:checkpoint-100352 remains at 151/160 successes (94.375%), so official assessment is not justified. I4 tested a reach-preserving terminal stabilization route against the identified residual-momentum failure regime and rejected it.",
+        "inquiry_id": "I4",
+        "next_direction_or_closure": "Return to goal review in a fresh session. Preserve I4's rejection and do not request official assessment on the current evidence. Any further work must begin from a newly named, goal-linked consequential uncertainty; otherwise conclude that no credible route remains.",
+        "session_id": "S9"
+      },
+      "presentation": {
+        "backend_session_id": "9e876fb2-a1bf-4fdb-928c-d6f7b166e3f0",
+        "campaign_id": "7f551163-bae6-40bc-9b0b-a960be607ffb",
+        "campaign_usage": "35m49s | 57.16 AIU | prompt 9.5m (87% cached) | output 86.4k",
+        "session_id": "S9",
+        "session_kind": "inquiry",
+        "session_usage": "5m57s | 9.47 AIU | prompt 1.7m (89% cached) | output 14.8k"
+      },
+      "result": {
+        "session_id": "S9",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "3059c4e46ffbe93bdb9cb0b4e452937170f25571",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E17",
+    "inquiry_id": "I4",
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "T1:checkpoint-100352 remains the best measured reference at 151/160 and is available with M1, M2, M3, and M4 diagnostics. T4:checkpoint-100352 is the rejected I4 terminal-stabilization candidate at 131/160. T3:checkpoint-100352 remains the rejected I3 candidate at 118/160, and T2:checkpoint-120832 remains the rejected I2 candidate at 0/160. Working, best-known, and retained roles remain unassigned.",
+        "completed_operations": [
+          "T4",
+          "M4",
+          "E16"
+        ],
+        "cumulative_resource_use": "Four training runs have completed: T1 and T2 fresh 120000-step requests, T3 transfer 120000-step request, and T4 transfer 120000-step request, each producing 120832 effective steps except the archived 100352-step selected checkpoints. Four 160-episode research panels have completed: M1, M2, M3, and M4. No official assessment or model-role assignment has been executed. E14 opened I4, T4 and M4 tested it, and E16 closed it as rejected.",
+        "current_goal_gap": "T1:checkpoint-100352 remains at 151/160 successes, nine successes below the 157/160 development threshold and 45 below the 196/200 official objective. T4:checkpoint-100352 achieved 131/160 and is rejected. T3:checkpoint-100352 is 118/160 and T2:checkpoint-120832 is 0/160. No candidate has a working or best-known role, and no official assessment has run.",
+        "current_synthesis": "I1 localized T1 failures primarily to near-boundary non-entry and immediate post-entry overshoot. I2 rejected full-strength Gaussian braking, and I3 rejected staged weak braking because both routes damaged measured evaluation behavior. I4 tested terminal-only state-dependent velocity stabilization with global boundary braking disabled. On the shared 160-episode panel, T4 achieved 131/160 versus T1's 151/160, with all 20 discordant episodes favoring T1. T4 entered 140/160 versus T1's 154/160, had mean post-entry overshoot 0.037 cm versus 0.011 cm, mean longest uninterrupted streak 82.1 versus 94.4 steps, 137 interruptions versus 5, and mean minimum distance 1.371 cm versus 0.278 cm. The intervention therefore worsened approach and hold competence rather than correcting the targeted mechanism; I4 is rejected.",
+        "decision_frontier": "I4 is closed as rejected. The campaign returns to goal review; the remaining 45-success official gap and absence of a candidate at 157/160 mean neither official assessment nor a best-known role assignment is justified by the current evidence.",
+        "evidence_references": [
+          "T1",
+          "M1",
+          "E4",
+          "T2",
+          "M2",
+          "E8",
+          "E10",
+          "T3",
+          "M3",
+          "E12",
+          "E14",
+          "T4",
+          "M4",
+          "E16"
+        ],
+        "human_goal_connection": "The human goal remains at least 196 complete uninterrupted successes in the protected 200-episode official assessment. T1:checkpoint-100352 remains at 151/160 successes (94.375%), so official assessment is not justified. I4 tested a reach-preserving terminal stabilization route against the identified residual-momentum failure regime and rejected it.",
+        "next_direction_or_closure": "Return to goal review in a fresh session. Preserve I4's rejection and do not request official assessment on the current evidence. Any further work must begin from a newly named, goal-linked consequential uncertainty; otherwise conclude that no credible route remains."
+      }
+    },
+    "request_fingerprint": "e269a63b911b35410e1c0b152dd3ff33ce12e856f99c84437cb98cfce633d2a0",
+    "session_id": "S9",
+    "supersedes": null
+  },
   "pi_checkpoint": {
-    "candidates_and_roles": "T1:checkpoint-100352 remains the best measured reference at 151/160 and is available with M1, M2, and M3 diagnostics. T3:checkpoint-100352 remains the rejected I3 staged weak-braking candidate at 118/160, and T2:checkpoint-120832 remains the rejected I2 candidate at 0/160. Working, best-known, and retained roles remain unassigned.",
+    "candidates_and_roles": "T1:checkpoint-100352 remains the best measured reference at 151/160 and is available with M1, M2, M3, and M4 diagnostics. T4:checkpoint-100352 is the rejected I4 terminal-stabilization candidate at 131/160. T3:checkpoint-100352 remains the rejected I3 candidate at 118/160, and T2:checkpoint-120832 remains the rejected I2 candidate at 0/160. Working, best-known, and retained roles remain unassigned.",
     "completed_operations": [
-      "E14"
+      "T4",
+      "M4",
+      "E16"
     ],
-    "cumulative_resource_use": "Three training runs have completed: T1 and T2 fresh 120000-step requests producing 120832 effective steps each, and T3 transfer 120000-step request producing 120832 effective steps and 24 archived candidates. Three 160-episode research panels have completed: M1, M2, and M3. No official assessment or model-role assignment has been executed. E10 opened I3, E12 closed I3, and E14 opened I4.",
-    "current_goal_gap": "T1:checkpoint-100352 remains at 151/160 successes (94.375%), nine successes below the 157/160 development threshold and 45 below the 196/200 official objective. T3:checkpoint-100352 is 118/160 and T2:checkpoint-120832 is 0/160. No candidate has a working or best-known role, and no official assessment has run.",
-    "current_synthesis": "I1 localized T1 failures primarily to near-boundary non-entry and immediate post-entry overshoot. I2 rejected full-strength Gaussian braking because it destroyed approach competence. I3 rejected staged weak braking because T3 lost all 33 discordant shared-panel episodes to T1 despite high training success. These results reject global braking curricula, but do not resolve whether terminal, state-dependent stabilization can reduce residual-momentum failures while preserving T1-like reach and entry.",
-    "decision_frontier": "The goal-review decision is to continue with one bounded inquiry, I4, rather than request official assessment or conclude that no credible route remains. The next inquiry session must test the stated terminal stabilization mechanism against complete uninterrupted success and the established entry, overshoot, streak, interruption, and minimum-distance diagnostics. Training reward and training success are not sufficient evidence.",
+    "cumulative_resource_use": "Four training runs have completed: T1 and T2 fresh 120000-step requests, T3 transfer 120000-step request, and T4 transfer 120000-step request, each producing 120832 effective steps except the archived 100352-step selected checkpoints. Four 160-episode research panels have completed: M1, M2, M3, and M4. No official assessment or model-role assignment has been executed. E14 opened I4, T4 and M4 tested it, and E16 closed it as rejected.",
+    "current_goal_gap": "T1:checkpoint-100352 remains at 151/160 successes, nine successes below the 157/160 development threshold and 45 below the 196/200 official objective. T4:checkpoint-100352 achieved 131/160 and is rejected. T3:checkpoint-100352 is 118/160 and T2:checkpoint-120832 is 0/160. No candidate has a working or best-known role, and no official assessment has run.",
+    "current_synthesis": "I1 localized T1 failures primarily to near-boundary non-entry and immediate post-entry overshoot. I2 rejected full-strength Gaussian braking, and I3 rejected staged weak braking because both routes damaged measured evaluation behavior. I4 tested terminal-only state-dependent velocity stabilization with global boundary braking disabled. On the shared 160-episode panel, T4 achieved 131/160 versus T1's 151/160, with all 20 discordant episodes favoring T1. T4 entered 140/160 versus T1's 154/160, had mean post-entry overshoot 0.037 cm versus 0.011 cm, mean longest uninterrupted streak 82.1 versus 94.4 steps, 137 interruptions versus 5, and mean minimum distance 1.371 cm versus 0.278 cm. The intervention therefore worsened approach and hold competence rather than correcting the targeted mechanism; I4 is rejected.",
+    "decision_frontier": "I4 is closed as rejected. The campaign returns to goal review; the remaining 45-success official gap and absence of a candidate at 157/160 mean neither official assessment nor a best-known role assignment is justified by the current evidence.",
     "evidence_references": [
       "T1",
       "M1",
@@ -5488,13 +5650,16 @@
       "T3",
       "M3",
       "E12",
-      "E14"
+      "E14",
+      "T4",
+      "M4",
+      "E16"
     ],
-    "human_goal_connection": "The human goal remains at least 196 complete uninterrupted successes in the protected 200-episode official assessment. The current best measured reference, T1:checkpoint-100352, has 151/160 successes, so official assessment is not justified. Goal review opened I4 to test a materially different, reach-preserving terminal stabilization route aimed at the identified boundary failures.",
-    "inquiry_id": null,
-    "next_direction_or_closure": "End this goal-review session and begin the fresh inquiry session for I4. Its bounded question is whether reach-preserving, state-dependent terminal stabilization corrects near-boundary non-entry and immediate post-entry overshoot without sacrificing approach competence. Close and reject the route if it does not preserve T1-like entry and materially improve complete uninterrupted success toward at least 157/160; otherwise use the measured mechanism as the basis for the next decision.",
-    "scientific_commit": "c241c53f516de273bc227475533465b6a496b5b7",
-    "session_id": "S8"
+    "human_goal_connection": "The human goal remains at least 196 complete uninterrupted successes in the protected 200-episode official assessment. T1:checkpoint-100352 remains at 151/160 successes (94.375%), so official assessment is not justified. I4 tested a reach-preserving terminal stabilization route against the identified residual-momentum failure regime and rejected it.",
+    "inquiry_id": "I4",
+    "next_direction_or_closure": "Return to goal review in a fresh session. Preserve I4's rejection and do not request official assessment on the current evidence. Any further work must begin from a newly named, goal-linked consequential uncertainty; otherwise conclude that no credible route remains.",
+    "scientific_commit": "3059c4e46ffbe93bdb9cb0b4e452937170f25571",
+    "session_id": "S9"
   },
   "schema_version": 6,
   "scientific_model": {
@@ -5502,23 +5667,6 @@
     "path": "research/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "9e876fb2-a1bf-4fdb-928c-d6f7b166e3f0",
-    "id": "S9",
-    "inquiry_id": "I4",
-    "kind": "inquiry",
-    "objective": "Bring I4 to the decision required by its closure condition, and close it as soon as the evidence supplies that decision: Close after a bounded mechanism test and shared-panel measurement establish whether the intervention is actionable: it must preserve T1-like entry and materially improve complete uninterrupted success toward at least 157/160, with entry, overshoot, streak, interruption, and minimum-distance diagnostics showing the mechanism rather than a training-only gain. Otherwise reject the route and return to goal review.",
-    "operation_ids": [
-      "T4",
-      "M4",
-      "E16"
-    ],
-    "scientific_parent_commit": "9ec114067ac47ff76d29da3e46d3ba93792caf65"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
