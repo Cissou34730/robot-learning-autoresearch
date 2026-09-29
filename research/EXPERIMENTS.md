@@ -44,3 +44,4 @@
 | E30 | checkpoint | - | checkpointed |
 | E31 | restore_recipe | I7 | restored |
 | T5 | training | I7 | completed |
+| M7 | measurement | I7 | completed |
