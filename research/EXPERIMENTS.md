@@ -42,3 +42,4 @@
 | E28 | checkpoint | I6 | checkpointed |
 | E29 | inquiry | I7 | completed |
 | E30 | checkpoint | - | checkpointed |
+| E31 | restore_recipe | I7 | restored |
