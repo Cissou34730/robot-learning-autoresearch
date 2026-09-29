@@ -4628,44 +4628,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "open",
-        "inquiry": {
-          "closure_condition": "Close when controlled fresh baseline-versus-intervention evidence uses the complete official distribution and shared episode seeds to measure negative-bearing approach failures, tolerance entry, settling, post-settling interruptions, longest uninterrupted hold, and total success, and either the intervention reaches at least 196/200 while preserving post-settling hold behavior or it fails to reduce the targeted tail or materially degrades complete-task success.",
-          "goal_connection": "The human goal requires at least 196 successful episodes out of 200 under the complete official target distribution, with every success requiring a 100-sample uninterrupted hold. Resolving whether braking and settling are under-rewarded can identify a materially different route for closing T1's remaining gap while preserving the demonstrated post-settling hold capability.",
-          "id": "I6",
-          "opened_in_session": "S13",
-          "question": "Can a hold-aware, velocity-sensitive reward and credit-assignment intervention reduce the persistent negative-bearing approach and settling tail without degrading the complete uninterrupted hold, or does the tail remain after the rejected representation and radius-support routes are excluded?",
-          "rationale": "M5 observed T1 at 194/200 on a fresh panel: all six failures had negative bearings, five failed to establish the 10-sample settling run, and one failed after settling, while a 100-step hold was achieved elsewhere. The tested angular branch representation and full-radius training-support interventions were both decisively negative, so neither supplies a credible next route. The current reward provides linear hold-progress and a completion bonus but no explicit velocity or braking credit and only a weak outside-band penalty; this makes phase-aware credit assignment a consequential competing explanation for the remaining approach and settling tail, not an established cause. A bounded reward intervention can test it without changing the official task, hold semantics, or target distribution used for assessment.",
-          "reframes": []
-        }
-      },
-      "result": {
-        "action": "open",
-        "inquiry_id": "I6",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E24",
-    "inquiry_id": null,
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "open",
-        "closure_condition": "Close when controlled fresh baseline-versus-intervention evidence uses the complete official distribution and shared episode seeds to measure negative-bearing approach failures, tolerance entry, settling, post-settling interruptions, longest uninterrupted hold, and total success, and either the intervention reaches at least 196/200 while preserving post-settling hold behavior or it fails to reduce the targeted tail or materially degrades complete-task success.",
-        "goal_connection": "The human goal requires at least 196 successful episodes out of 200 under the complete official target distribution, with every success requiring a 100-sample uninterrupted hold. Resolving whether braking and settling are under-rewarded can identify a materially different route for closing T1's remaining gap while preserving the demonstrated post-settling hold capability.",
-        "question": "Can a hold-aware, velocity-sensitive reward and credit-assignment intervention reduce the persistent negative-bearing approach and settling tail without degrading the complete uninterrupted hold, or does the tail remain after the rejected representation and radius-support routes are excluded?",
-        "rationale": "M5 observed T1 at 194/200 on a fresh panel: all six failures had negative bearings, five failed to establish the 10-sample settling run, and one failed after settling, while a 100-step hold was achieved elsewhere. The tested angular branch representation and full-radius training-support interventions were both decisively negative, so neither supplies a credible next route. The current reward provides linear hold-progress and a completion bonus but no explicit velocity or braking credit and only a weak outside-band penalty; this makes phase-aware credit assignment a consequential competing explanation for the remaining approach and settling tail, not an established cause. A bounded reward intervention can test it without changing the official task, hold semantics, or target distribution used for assessment."
-      }
-    },
-    "request_fingerprint": "8a2b59be6c842e20c93a1f0c0b4edd1019b7eb71a6c839e1af31bbddcc36febf",
-    "session_id": "S13",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T1:checkpoint-100352 remains the strongest measured candidate but is unassigned after M5's 194/200 fresh panel. T2:checkpoint-100352 remains unassigned after its 129/200 paired degradation. T3:checkpoint-100352 remains unassigned after its 116/200 degradation. No candidate has working, best-known, or retained status.",
     "completed_operations": [
