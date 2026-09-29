@@ -28,15 +28,24 @@ def _markdown_section(text: str, heading: str) -> str:
 
 def _human_goal(state: dict) -> str:
     summary = state["human_goal"].get("summary")
-    if isinstance(summary, str) and summary.strip():
-        return summary.strip()
     scenario_path = RESEARCH_DIR / "scenario.md"
+    official_task = ""
+    success_criterion = ""
     if scenario_path.is_file():
-        success = _markdown_section(
-            scenario_path.read_text(encoding="utf-8"), "Success criterion"
+        scenario = scenario_path.read_text(encoding="utf-8")
+        official_task = _markdown_section(scenario, "Official task")
+        success_criterion = _markdown_section(scenario, "Success criterion")
+    if isinstance(summary, str) and summary.strip():
+        success_criterion = summary.strip()
+    if official_task and success_criterion:
+        return (
+            f"Official task: {official_task} "
+            f"Success criterion: {success_criterion}"
         )
-        if success:
-            return success
+    if success_criterion:
+        return success_criterion
+    if official_task:
+        return official_task
     return f"Defined by `{state['human_goal']['source']}`."
 
 
@@ -239,7 +248,7 @@ def _checkpoint_lines(state: dict) -> list[str]:
         f"- Inquiry: `{checkpoint['inquiry_id'] or '-'}`",
         f"- Human-goal connection: {checkpoint['human_goal_connection']}",
         f"- Current synthesis: {checkpoint['current_synthesis']}",
-        f"- Decision frontier: {checkpoint['decision_frontier']}",
+        f"- Previous decision frontier: {checkpoint['decision_frontier']}",
         "- Completed operations: "
         + (
             ", ".join(f"`{item}`" for item in checkpoint["completed_operations"])
@@ -247,7 +256,10 @@ def _checkpoint_lines(state: dict) -> list[str]:
             else "none"
         ),
         f"- Candidates and roles: {checkpoint['candidates_and_roles']}",
-        f"- Next direction or closure: {checkpoint['next_direction_or_closure']}",
+        (
+            "- Previous next direction or closure (non-binding proposal): "
+            f"{checkpoint['next_direction_or_closure']}"
+        ),
         f"- Cumulative resource use: {checkpoint['cumulative_resource_use']}",
     ]
 
