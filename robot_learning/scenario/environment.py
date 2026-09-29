@@ -51,6 +51,7 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
 
         self.model = mujoco.MjModel.from_xml_path(str(TWO_JOINT_ARM_XML_PATH))
         self.data = mujoco.MjData(self.model)
+        self._end_effector_site_id = self.model.site("end_effector").id
 
         self.success_threshold = success_threshold
         control_dt = self.model.opt.timestep * self.frame_skip
@@ -71,6 +72,7 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
         self._previous_distance = 0.0
         self._held_steps = 0
         self._outside_after_hold = False
+        self._previous_end_effector_speed = 0.0
 
     def _end_effector_position(self) -> np.ndarray:
         return self.data.site("end_effector").xpos.copy()
@@ -79,6 +81,18 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
         return float(
             np.linalg.norm(self._end_effector_position() - self.data.mocap_pos[0])
         )
+
+    def _end_effector_speed(self) -> float:
+        position_jacobian = np.zeros((3, self.model.nv), dtype=np.float64)
+        rotation_jacobian = np.zeros((3, self.model.nv), dtype=np.float64)
+        mujoco.mj_jacSite(
+            self.model,
+            self.data,
+            position_jacobian,
+            rotation_jacobian,
+            self._end_effector_site_id,
+        )
+        return float(np.linalg.norm(position_jacobian @ self.data.qvel))
 
     def _sample_target_position(self) -> None:
         angle = float(self.np_random.uniform(-np.pi, np.pi))
@@ -117,6 +131,7 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
         self._previous_distance = self._distance_to_target()
         self._held_steps = 0
         self._outside_after_hold = False
+        self._previous_end_effector_speed = self._end_effector_speed()
         return self._observation(), {}
 
     def step(
@@ -132,6 +147,7 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
             mujoco.mj_step(self.model, self.data)
 
         distance = self._distance_to_target()
+        end_effector_speed = self._end_effector_speed()
 
         previous_held_steps = self._held_steps
         if distance <= self.success_threshold:
@@ -151,8 +167,11 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
             previous_held_steps=previous_held_steps,
             hold_steps_required=self.hold_steps_required,
             penalize_outside=self._outside_after_hold,
+            current_end_effector_speed=end_effector_speed,
+            previous_end_effector_speed=self._previous_end_effector_speed,
         )
         self._previous_distance = distance
+        self._previous_end_effector_speed = end_effector_speed
 
         self._step_count += 1
         terminated = self._held_steps >= self.hold_steps_required
