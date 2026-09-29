@@ -25,7 +25,7 @@ from robot_learning.benchmark.spec import (
     TARGET_RADIUS_RANGE,
 )
 from robot_learning.robots.two_joint_arm import TWO_JOINT_ARM_XML_PATH
-from robot_learning.scenario.observations import OBSERVATION_SIZE
+from robot_learning.scenario.observations import OBSERVATION_SIZE, endpoint_velocity
 from robot_learning.scenario.policy_io import make_policy_io
 from robot_learning.scenario.reward import reach_reward
 
@@ -151,6 +151,8 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
             previous_held_steps=previous_held_steps,
             hold_steps_required=self.hold_steps_required,
             penalize_outside=self._outside_after_hold,
+            joint_velocity=self.data.qvel,
+            endpoint_velocity=endpoint_velocity(self.data),
         )
         self._previous_distance = distance
 

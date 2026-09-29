@@ -4,11 +4,25 @@ Generic training code never inspects this layout: it only sees the Gymnasium
 observation space declared by the scenario environment.
 """
 
+import mujoco
 import numpy as np
 
 from robot_learning.robots.two_joint_arm import FOREARM_LENGTH, UPPER_ARM_LENGTH
 
-OBSERVATION_SIZE = 11
+OBSERVATION_SIZE = 14
+
+
+def endpoint_velocity(data) -> np.ndarray:
+    jacobian = np.zeros((3, data.model.nv), dtype=np.float64)
+    angular_jacobian = np.zeros_like(jacobian)
+    mujoco.mj_jacSite(
+        data.model,
+        data,
+        jacobian,
+        angular_jacobian,
+        data.site("end_effector").id,
+    )
+    return jacobian @ data.qvel
 
 
 def reach_observation(data) -> np.ndarray:
@@ -39,6 +53,7 @@ def reach_observation(data) -> np.ndarray:
             data.qpos,
             data.qvel,
             end_effector - data.mocap_pos[0],
+            endpoint_velocity(data),
             [
                 wrap_to_pi(shoulder_open - float(data.qpos[0])),
                 wrap_to_pi(elbow_open - float(data.qpos[1])),
