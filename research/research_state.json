@@ -7834,44 +7834,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "open",
-        "inquiry": {
-          "closure_condition": "Close when controlled evidence on a fresh shared-seed complete-distribution panel, using the established phase and uninterrupted-hold diagnostics, determines whether a temporally structured policy or control formulation preserves baseline complete-task behavior and reaches at least 196/200. If it fails to reach the threshold or materially degrades complete-task success or hold behavior, reject this route and return to goal review.",
-          "goal_connection": "The latest controlled fresh complete-distribution panel measured the strongest baseline and both hard-negative rehearsal candidates at 192/200, four successes below the 196/200 threshold. Official assessment is therefore not justified. The human goal requires complete uninterrupted holds, so any route must improve the rare approach and settling failures without trading away the demonstrated hold capability.",
-          "id": "I8",
-          "opened_in_session": "S17",
-          "question": "Can a materially different temporal policy or control formulation that separates high-energy approach from low-velocity settling and hold improve the residual negative-bearing approach and settling failures, while preserving complete uninterrupted-hold behavior, or do those failures persist despite changing the policy's temporal organization?",
-          "rationale": "Observed evidence rejects angular representation, broader radius training, velocity-sensitive reward, and hard-negative rehearsal within the existing feed-forward PPO recipe, but does not test whether the single policy's temporal organization and credit assignment are the limiting mechanism. The scientific model predicts distinct coupled phases: coordinated approach, motion shedding, settling, and 100-sample regulation. A bounded inquiry into a materially different phase-aware policy or control formulation can discriminate whether the residual tail is an optimization and temporal-organization limitation rather than a plant or observation limitation, while retaining the immutable task, action interface, and complete hold criterion.",
-          "reframes": []
-        }
-      },
-      "result": {
-        "action": "open",
-        "inquiry_id": "I8",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E34",
-    "inquiry_id": null,
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "open",
-        "closure_condition": "Close when controlled evidence on a fresh shared-seed complete-distribution panel, using the established phase and uninterrupted-hold diagnostics, determines whether a temporally structured policy or control formulation preserves baseline complete-task behavior and reaches at least 196/200. If it fails to reach the threshold or materially degrades complete-task success or hold behavior, reject this route and return to goal review.",
-        "goal_connection": "The latest controlled fresh complete-distribution panel measured the strongest baseline and both hard-negative rehearsal candidates at 192/200, four successes below the 196/200 threshold. Official assessment is therefore not justified. The human goal requires complete uninterrupted holds, so any route must improve the rare approach and settling failures without trading away the demonstrated hold capability.",
-        "question": "Can a materially different temporal policy or control formulation that separates high-energy approach from low-velocity settling and hold improve the residual negative-bearing approach and settling failures, while preserving complete uninterrupted-hold behavior, or do those failures persist despite changing the policy's temporal organization?",
-        "rationale": "Observed evidence rejects angular representation, broader radius training, velocity-sensitive reward, and hard-negative rehearsal within the existing feed-forward PPO recipe, but does not test whether the single policy's temporal organization and credit assignment are the limiting mechanism. The scientific model predicts distinct coupled phases: coordinated approach, motion shedding, settling, and 100-sample regulation. A bounded inquiry into a materially different phase-aware policy or control formulation can discriminate whether the residual tail is an optimization and temporal-organization limitation rather than a plant or observation limitation, while retaining the immutable task, action interface, and complete hold criterion."
-      }
-    },
-    "request_fingerprint": "f84ccc286d8f05b51c825d8623d89d0d25ebb4e4011c018cb5c1c408b39ff6a9",
-    "session_id": "S17",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T1:checkpoint-100352 remains the strongest measured candidate but is unassigned after M7's 192/200 panel. T5:checkpoint-5120 and T5:checkpoint-10240 tied T1 at 192/200 and remain unassigned. T4:checkpoint-100352 remains rejected after its 0/200 paired result and zero training success. T2:checkpoint-100352 and T3:checkpoint-100352 remain unassigned after earlier degradation results. No candidate has working, best-known, or retained status.",
     "completed_operations": [
