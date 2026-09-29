@@ -36,3 +36,4 @@
 | E24 | inquiry | I6 | completed |
 | E25 | checkpoint | - | checkpointed |
 | E26 | restore_recipe | I6 | restored |
+| T4 | training | I6 | completed |
