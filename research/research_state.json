@@ -4808,13 +4808,20 @@
   "human_goal": {
     "source": "research/scenario.md"
   },
-  "last_verdict": "official_assessment_requested",
+  "last_verdict": "official assessment goal reached; success 99.5%; 200 episodes",
   "model_roles": {
     "best_known": "T8:checkpoint-5120",
     "retained": {},
     "working": null
   },
-  "official_assessment": null,
+  "official_assessment": {
+    "artifact": "research/checkpoints/retained/3b9f0c1b-33c6-451a-b321-744b012458e5/t8-c4c293ff5-85497cedbc3b398c33a5212b7f8bab501e6957f8eb8e83edcc77a6d90026928f",
+    "completed_at": "2026-09-29T00:33:30Z",
+    "fingerprint": "85497cedbc3b398c33a5212b7f8bab501e6957f8eb8e83edcc77a6d90026928f",
+    "model": "T8:checkpoint-5120",
+    "status": "passed",
+    "summary": "goal reached; success 99.5%; 200 episodes"
+  },
   "operation_events": [
     {
       "completed_at": "2026-09-28T22:14:23Z",
@@ -9163,7 +9170,7 @@
       "supersedes": null
     },
     {
-      "completed_at": "2026-09-29T00:32:01Z",
+      "completed_at": "2026-09-29T00:33:30Z",
       "error": null,
       "id": "E18",
       "inquiry_id": null,
@@ -9174,7 +9181,7 @@
       },
       "result": {
         "model": "T8:checkpoint-5120",
-        "status": "official_assessment_requested"
+        "status": "official_assessment_passed"
       },
       "session_id": "S10",
       "status": "completed",
@@ -9217,6 +9224,6 @@
   "terminal_state": {
     "model": "T8:checkpoint-5120",
     "reason": "T8:checkpoint-5120 is the explicit best-known candidate and achieved 159 of 160 complete-hold successes on the independent development panel, exceeding the 98% threshold with a mechanism-specific improvement supported by M1, M7, and M8. The protected 200-episode assessment is the only remaining evidence that can establish whether at least 196 episodes succeed under the official task distribution; if it falls below 196, scientific work must reopen.",
-    "status": "official_assessment_requested"
+    "status": "official_assessment_passed"
   }
 }
