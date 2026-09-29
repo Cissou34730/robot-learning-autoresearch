@@ -1,13 +1,5 @@
 {
-  "active_inquiry": {
-    "closure_condition": "Close when controlled baseline-versus-full-radius-support evidence is decision-sufficient: the intervention's negative-bearing approach outcomes, settling outcomes, post-settling interruptions, longest uninterrupted hold, and total success are measured on the complete official distribution, and the result either supports a credible route to 196/200 or rejects full-radius training support as sufficient for that route.",
-    "goal_connection": "T1 is close to the human objective at 192/200 on the paired development panel but remains four successes short, and its residual failures are concentrated in approach and settling. Resolving whether the explicit training-support mismatch contributes to that tail could provide a materially different route to at least 196/200 without repeating the rejected branch-representation intervention.",
-    "id": "I4",
-    "opened_in_session": "S9",
-    "question": "Can matching the training target distribution to the complete official 0.06-0.20 m radius support, while leaving the baseline observation representation, reward, and hold mechanics unchanged, reduce the negative-bearing approach and settling failures without degrading complete uninterrupted hold success?",
-    "rationale": "M1, M2, and M3 establish an observed negative-bearing approach shortfall, including failures at training-supported radii, while settled baseline episodes almost always completed the 100-step hold. M3 decisively rejects the tested sine/cosine branch-error and joint-limit-margin representation, but it does not test the separate scientific-model unknown that training excludes 0.06-0.14 m targets. A fresh intervention that changes only the training target support can discriminate whether broader folded-geometry experience improves the approach tail while preserving the baseline state representation and hold behavior; official assessment remains premature because T1 is below 196/200 and has no best-known role.",
-    "reframes": []
-  },
+  "active_inquiry": null,
   "campaign": {
     "base_commit": "8ac206f76ce0bd7fb8f098b4fe6dceac2a2a311f",
     "id": "eb19a5f3-14b3-4590-ad74-1b31cf5ae3d5",
@@ -2475,7 +2467,7 @@
     }
   },
   "counters": {
-    "event": 17,
+    "event": 18,
     "inquiry": 4,
     "measurement": 4,
     "session": 10,
@@ -4374,9 +4366,63 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-09-29T22:44:52Z",
+      "error": null,
+      "id": "E18",
+      "inquiry_id": "I4",
+      "kind": "inquiry",
+      "request": {
+        "action": "close",
+        "outcome": "M4 provides a decision-sufficient negative answer to I4. On the shared 200-episode complete official-distribution panel, the baseline T1 achieved 196/200 successes (98.0%), while the full-radius-support T3 achieved 116/200 (58.0%), with 0 intervention wins versus 80 baseline wins and a -40.0 percentage-point success difference. The intervention produced 43 negative-bearing failures versus 4 for T1, never entered tolerance in 74 failed episodes versus 2, and failed to establish the 10-sample settling run in 84 failed episodes versus 4. No episode that established settling subsequently lost the hold for either candidate; the longest uninterrupted hold was below 100 steps in all 84 T3 failures versus all 4 T1 failures, while both candidates reached a maximum hold of 100 steps. Full-radius training support therefore did not reduce the targeted approach or settling shortfall and materially degraded complete uninterrupted-hold success; it is rejected as sufficient for the route to 196/200.",
+        "reason": "The controlled paired M4 evidence measures the required negative-bearing approach outcomes, tolerance entry, settling, post-settling interruptions, longest uninterrupted hold, and total success for baseline T1 and full-radius intervention T3 on identical episode seeds across the complete official radius and bearing distribution. The intervention changes the training support to 0.06-0.20 m while retaining the baseline observation representation, reward, task mechanics, PPO recipe, and hold semantics. It fails decisively on the goal-linked outcome and cannot support retaining I4. Remaining uncertainty includes other training recipes or combined interventions, but resolving it belongs to a future goal-review decision and cannot change I4's answer."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I4",
+        "outcome": "M4 provides a decision-sufficient negative answer to I4. On the shared 200-episode complete official-distribution panel, the baseline T1 achieved 196/200 successes (98.0%), while the full-radius-support T3 achieved 116/200 (58.0%), with 0 intervention wins versus 80 baseline wins and a -40.0 percentage-point success difference. The intervention produced 43 negative-bearing failures versus 4 for T1, never entered tolerance in 74 failed episodes versus 2, and failed to establish the 10-sample settling run in 84 failed episodes versus 4. No episode that established settling subsequently lost the hold for either candidate; the longest uninterrupted hold was below 100 steps in all 84 T3 failures versus all 4 T1 failures, while both candidates reached a maximum hold of 100 steps. Full-radius training support therefore did not reduce the targeted approach or settling shortfall and materially degraded complete uninterrupted-hold success; it is rejected as sufficient for the route to 196/200.",
+        "reason": "The controlled paired M4 evidence measures the required negative-bearing approach outcomes, tolerance entry, settling, post-settling interruptions, longest uninterrupted hold, and total success for baseline T1 and full-radius intervention T3 on identical episode seeds across the complete official radius and bearing distribution. The intervention changes the training support to 0.06-0.20 m while retaining the baseline observation representation, reward, task mechanics, PPO recipe, and hold semantics. It fails decisively on the goal-linked outcome and cannot support retaining I4. Remaining uncertainty includes other training recipes or combined interventions, but resolving it belongs to a future goal-review decision and cannot change I4's answer.",
+        "status": "completed"
+      },
+      "session_id": "S10",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "close",
+        "inquiry_id": "I4",
+        "outcome": "M4 provides a decision-sufficient negative answer to I4. On the shared 200-episode complete official-distribution panel, the baseline T1 achieved 196/200 successes (98.0%), while the full-radius-support T3 achieved 116/200 (58.0%), with 0 intervention wins versus 80 baseline wins and a -40.0 percentage-point success difference. The intervention produced 43 negative-bearing failures versus 4 for T1, never entered tolerance in 74 failed episodes versus 2, and failed to establish the 10-sample settling run in 84 failed episodes versus 4. No episode that established settling subsequently lost the hold for either candidate; the longest uninterrupted hold was below 100 steps in all 84 T3 failures versus all 4 T1 failures, while both candidates reached a maximum hold of 100 steps. Full-radius training support therefore did not reduce the targeted approach or settling shortfall and materially degraded complete uninterrupted-hold success; it is rejected as sufficient for the route to 196/200.",
+        "reason": "The controlled paired M4 evidence measures the required negative-bearing approach outcomes, tolerance entry, settling, post-settling interruptions, longest uninterrupted hold, and total success for baseline T1 and full-radius intervention T3 on identical episode seeds across the complete official radius and bearing distribution. The intervention changes the training support to 0.06-0.20 m while retaining the baseline observation representation, reward, task mechanics, PPO recipe, and hold semantics. It fails decisively on the goal-linked outcome and cannot support retaining I4. Remaining uncertainty includes other training recipes or combined interventions, but resolving it belongs to a future goal-review decision and cannot change I4's answer."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I4",
+        "outcome": "M4 provides a decision-sufficient negative answer to I4. On the shared 200-episode complete official-distribution panel, the baseline T1 achieved 196/200 successes (98.0%), while the full-radius-support T3 achieved 116/200 (58.0%), with 0 intervention wins versus 80 baseline wins and a -40.0 percentage-point success difference. The intervention produced 43 negative-bearing failures versus 4 for T1, never entered tolerance in 74 failed episodes versus 2, and failed to establish the 10-sample settling run in 84 failed episodes versus 4. No episode that established settling subsequently lost the hold for either candidate; the longest uninterrupted hold was below 100 steps in all 84 T3 failures versus all 4 T1 failures, while both candidates reached a maximum hold of 100 steps. Full-radius training support therefore did not reduce the targeted approach or settling shortfall and materially degraded complete uninterrupted-hold success; it is rejected as sufficient for the route to 196/200.",
+        "reason": "The controlled paired M4 evidence measures the required negative-bearing approach outcomes, tolerance entry, settling, post-settling interruptions, longest uninterrupted hold, and total success for baseline T1 and full-radius intervention T3 on identical episode seeds across the complete official radius and bearing distribution. The intervention changes the training support to 0.06-0.20 m while retaining the baseline observation representation, reward, task mechanics, PPO recipe, and hold semantics. It fails decisively on the goal-linked outcome and cannot support retaining I4. Remaining uncertainty includes other training recipes or combined interventions, but resolving it belongs to a future goal-review decision and cannot change I4's answer.",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E18",
+    "inquiry_id": "I4",
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "close",
+        "outcome": "M4 provides a decision-sufficient negative answer to I4. On the shared 200-episode complete official-distribution panel, the baseline T1 achieved 196/200 successes (98.0%), while the full-radius-support T3 achieved 116/200 (58.0%), with 0 intervention wins versus 80 baseline wins and a -40.0 percentage-point success difference. The intervention produced 43 negative-bearing failures versus 4 for T1, never entered tolerance in 74 failed episodes versus 2, and failed to establish the 10-sample settling run in 84 failed episodes versus 4. No episode that established settling subsequently lost the hold for either candidate; the longest uninterrupted hold was below 100 steps in all 84 T3 failures versus all 4 T1 failures, while both candidates reached a maximum hold of 100 steps. Full-radius training support therefore did not reduce the targeted approach or settling shortfall and materially degraded complete uninterrupted-hold success; it is rejected as sufficient for the route to 196/200.",
+        "reason": "The controlled paired M4 evidence measures the required negative-bearing approach outcomes, tolerance entry, settling, post-settling interruptions, longest uninterrupted hold, and total success for baseline T1 and full-radius intervention T3 on identical episode seeds across the complete official radius and bearing distribution. The intervention changes the training support to 0.06-0.20 m while retaining the baseline observation representation, reward, task mechanics, PPO recipe, and hold semantics. It fails decisively on the goal-linked outcome and cannot support retaining I4. Remaining uncertainty includes other training recipes or combined interventions, but resolving it belongs to a future goal-review decision and cannot change I4's answer."
+      }
+    },
+    "request_fingerprint": "03c1e748a91505bc2a7bae693a40b8b59fddff8644d6f3b01fc807ce7f844816",
+    "session_id": "S10",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T1:checkpoint-100352 remains the reference candidate with M1, M2, and M3 artifacts. T2:checkpoint-100352 has M3 evidence showing substantial degradation and is unassigned. No candidate is assigned working, best-known, or retained status.",
     "completed_operations": [
@@ -4418,7 +4464,8 @@
     "operation_ids": [
       "E17",
       "T3",
-      "M4"
+      "M4",
+      "E18"
     ],
     "scientific_parent_commit": "5153a29ab15c47e4b10a3a07eca9715837938ac9"
   },
