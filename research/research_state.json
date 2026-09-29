@@ -1,13 +1,5 @@
 {
-  "active_inquiry": {
-    "closure_condition": "Close the inquiry when a reproducible baseline candidate has behavioral evidence decomposed by reach, first entry, longest uninterrupted hold, residual motion, branch or posture, and target geometry, and that evidence supports one actionable next intervention or establishes that no credible route toward the goal remains.",
-    "goal_connection": "Identifying the dominant failure mechanism is necessary to choose an intervention that can raise uninterrupted 2-second hold success toward at least 196 of 200 official episodes; reach-only or shaped-reward progress is not sufficient evidence.",
-    "id": "I1",
-    "opened_in_session": "S2",
-    "question": "For a reproducible baseline learned policy, which mechanism most limits official complete-hold success: failure to reach a valid posture, settling and residual motion, active endpoint hold regulation, inverse-kinematic branch or joint-limit choice, or target geometry and conditioning?",
-    "rationale": "The campaign has no candidate, model role, or behavioral evidence, so official assessment is impossible and no-credible-route closure is unsupported. The physical model predicts coupled reach-to-hold dynamics but does not determine which failure phase dominates. A baseline behavioral decomposition will discriminate those explanations and direct the next scientific action.",
-    "reframes": []
-  },
+  "active_inquiry": null,
   "campaign": {
     "base_commit": "aa8b34a8137ff3c0b7b0a936797e60450334fcb6",
     "id": "3b9f0c1b-33c6-451a-b321-744b012458e5",
@@ -4807,16 +4799,16 @@
     }
   },
   "counters": {
-    "event": 15,
+    "event": 16,
     "inquiry": 1,
     "measurement": 8,
-    "session": 8,
+    "session": 9,
     "training": 8
   },
   "human_goal": {
     "source": "research/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": "T8:checkpoint-5120",
     "retained": {},
@@ -9110,9 +9102,63 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-09-29T00:28:34Z",
+      "error": null,
+      "id": "E16",
+      "inquiry_id": "I1",
+      "kind": "inquiry",
+      "request": {
+        "action": "close",
+        "outcome": "I1 is closed. Reproducible baseline behavioral evidence decomposed reach, first entry, longest uninterrupted hold, residual motion, branch and posture, and target geometry. The dominant failure mechanism was acquisition of an infeasible open-branch posture for negative-angle targets, not later hold interruption. A static geometry-gated observation-only remap that selects the feasible folded branch repaired this mechanism, with T8:checkpoint-5120 reaching 159 of 160 complete-hold successes and winning 9 of 10 discordant paired episodes against T1.",
+        "reason": "M1 and M7 provide the baseline phase and posture decomposition, while M8 provides a paired mechanism-specific intervention without changing reward, target distribution, observation size, or direct torque realization. This satisfies I1's closure condition and supports the actionable next direction of assigning T8:checkpoint-5120 as best-known and requesting the protected 200-episode official assessment; the research-panel result is not treated as proof of the human goal."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I1",
+        "outcome": "I1 is closed. Reproducible baseline behavioral evidence decomposed reach, first entry, longest uninterrupted hold, residual motion, branch and posture, and target geometry. The dominant failure mechanism was acquisition of an infeasible open-branch posture for negative-angle targets, not later hold interruption. A static geometry-gated observation-only remap that selects the feasible folded branch repaired this mechanism, with T8:checkpoint-5120 reaching 159 of 160 complete-hold successes and winning 9 of 10 discordant paired episodes against T1.",
+        "reason": "M1 and M7 provide the baseline phase and posture decomposition, while M8 provides a paired mechanism-specific intervention without changing reward, target distribution, observation size, or direct torque realization. This satisfies I1's closure condition and supports the actionable next direction of assigning T8:checkpoint-5120 as best-known and requesting the protected 200-episode official assessment; the research-panel result is not treated as proof of the human goal.",
+        "status": "completed"
+      },
+      "session_id": "S9",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "close",
+        "inquiry_id": "I1",
+        "outcome": "I1 is closed. Reproducible baseline behavioral evidence decomposed reach, first entry, longest uninterrupted hold, residual motion, branch and posture, and target geometry. The dominant failure mechanism was acquisition of an infeasible open-branch posture for negative-angle targets, not later hold interruption. A static geometry-gated observation-only remap that selects the feasible folded branch repaired this mechanism, with T8:checkpoint-5120 reaching 159 of 160 complete-hold successes and winning 9 of 10 discordant paired episodes against T1.",
+        "reason": "M1 and M7 provide the baseline phase and posture decomposition, while M8 provides a paired mechanism-specific intervention without changing reward, target distribution, observation size, or direct torque realization. This satisfies I1's closure condition and supports the actionable next direction of assigning T8:checkpoint-5120 as best-known and requesting the protected 200-episode official assessment; the research-panel result is not treated as proof of the human goal."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I1",
+        "outcome": "I1 is closed. Reproducible baseline behavioral evidence decomposed reach, first entry, longest uninterrupted hold, residual motion, branch and posture, and target geometry. The dominant failure mechanism was acquisition of an infeasible open-branch posture for negative-angle targets, not later hold interruption. A static geometry-gated observation-only remap that selects the feasible folded branch repaired this mechanism, with T8:checkpoint-5120 reaching 159 of 160 complete-hold successes and winning 9 of 10 discordant paired episodes against T1.",
+        "reason": "M1 and M7 provide the baseline phase and posture decomposition, while M8 provides a paired mechanism-specific intervention without changing reward, target distribution, observation size, or direct torque realization. This satisfies I1's closure condition and supports the actionable next direction of assigning T8:checkpoint-5120 as best-known and requesting the protected 200-episode official assessment; the research-panel result is not treated as proof of the human goal.",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E16",
+    "inquiry_id": "I1",
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "close",
+        "outcome": "I1 is closed. Reproducible baseline behavioral evidence decomposed reach, first entry, longest uninterrupted hold, residual motion, branch and posture, and target geometry. The dominant failure mechanism was acquisition of an infeasible open-branch posture for negative-angle targets, not later hold interruption. A static geometry-gated observation-only remap that selects the feasible folded branch repaired this mechanism, with T8:checkpoint-5120 reaching 159 of 160 complete-hold successes and winning 9 of 10 discordant paired episodes against T1.",
+        "reason": "M1 and M7 provide the baseline phase and posture decomposition, while M8 provides a paired mechanism-specific intervention without changing reward, target distribution, observation size, or direct torque realization. This satisfies I1's closure condition and supports the actionable next direction of assigning T8:checkpoint-5120 as best-known and requesting the protected 200-episode official assessment; the research-panel result is not treated as proof of the human goal."
+      }
+    },
+    "request_fingerprint": "ae065349d5d4c54cd3c4cd7b5c15693d4f3dcb95682f2aaff028204ee6e8109a",
+    "session_id": "S9",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T8:checkpoint-5120 is the best-known candidate, assigned by E14, with M8 evidence at 159/160 complete-hold successes and model fingerprint 85497cedbc3b398c33a5212b7f8bab501e6957f8eb8e83edcc77a6d90026928f. T8:checkpoint-10240 is an equal-outcome unassigned alternative; T8:checkpoint-35840 and T1 remain unassigned or superseded. No official candidate role is assigned.",
     "completed_operations": [
@@ -9145,6 +9191,21 @@
     "path": "research/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "e968a25a-0fa0-471d-af79-741ee2246881",
+    "id": "S9",
+    "inquiry_id": "I1",
+    "kind": "inquiry",
+    "objective": "Advance I1 toward its closure condition: Close the inquiry when a reproducible baseline candidate has behavioral evidence decomposed by reach, first entry, longest uninterrupted hold, residual motion, branch or posture, and target geometry, and that evidence supports one actionable next intervention or establishes that no credible route toward the goal remains.",
+    "operation_ids": [
+      "E16"
+    ],
+    "scientific_parent_commit": "ce919ada5d8c86435ae8a756b29b42e11cf37cf0"
+  },
   "terminal_state": null
 }
