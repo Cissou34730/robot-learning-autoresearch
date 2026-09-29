@@ -1,13 +1,5 @@
 {
-  "active_inquiry": {
-    "closure_condition": "Close when targeted, behaviorally grounded evidence discriminates among the competing mechanisms at a resolution sufficient to choose one goal-linked intervention and defines a measurement that checks both negative-bearing approach/settling and complete uninterrupted hold performance on the full official distribution.",
-    "goal_connection": "Resolving this mechanism determines the least speculative bounded intervention for closing the gap from 151/160 development successes to at least 196/200 official successes, while preserving the demonstrated complete 100-sample hold behavior.",
-    "id": "I2",
-    "opened_in_session": "S4",
-    "question": "Which mechanism best explains the negative-bearing approach and settling failures: a branch or angular-representation and branch-selection limitation near shoulder-limit bearings, insufficient training-distribution coverage of those trajectories, or their interaction?",
-    "rationale": "The latest development panel found all nine failures in negative-bearing approach or settling, with no failure that reached settling and then lost the 100-sample hold. That localizes the shortfall but does not establish whether the cause is representation and branch selection, missing training support, or their interaction. Official assessment is premature because no candidate has reached the objective or been assigned best-known status.",
-    "reframes": []
-  },
+  "active_inquiry": null,
   "campaign": {
     "base_commit": "8ac206f76ce0bd7fb8f098b4fe6dceac2a2a311f",
     "id": "eb19a5f3-14b3-4590-ad74-1b31cf5ae3d5",
@@ -837,16 +829,16 @@
     }
   },
   "counters": {
-    "event": 8,
+    "event": 9,
     "inquiry": 2,
     "measurement": 2,
-    "session": 5,
+    "session": 6,
     "training": 1
   },
   "human_goal": {
     "source": "research/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -1460,9 +1452,63 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-09-29T21:43:46Z",
+      "error": null,
+      "id": "E9",
+      "inquiry_id": "I2",
+      "kind": "inquiry",
+      "request": {
+        "action": "close",
+        "outcome": "I2 is closed with the negative-bearing approach shortfall best explained by a sign/asymmetry-sensitive angular representation and branch-selection limitation near shoulder-limit bearings. M2's mirrored grid produced 3 failures only in the negative sector and 0 in the mirrored positive sector, including failures at both 6 cm below the 14 cm training boundary and 14 cm and 18 cm on the training-supported side. The supported-radius failures reject insufficient radius coverage alone as the primary mechanism. All three failures were approach failures, while every grid episode that established settling completed the uninterrupted 100-sample hold, so hold regulation is not the active shortfall. Interaction with training coverage remains possible but does not change the selected intervention: make branch feasibility and angular continuity explicit to the policy or training process, while preserving the existing hold behavior.",
+        "reason": "M2 meets the closure condition by behaviorally separating the competing explanations and defining the goal-linked measurement. The follow-on measurement must use the complete official radius range 0.06-0.20 m and full bearing range -180 to 180 degrees, count success only after 100 consecutive in-tolerance control samples, and report negative-bearing approach failures, settling failures, post-settling hold interruptions, longest uninterrupted holds, and total episode success separately. This checks the proposed branch/angular intervention against both the localized negative-bearing failure mode and the complete uninterrupted-hold human goal; the 158/160 development result remains non-official."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I2",
+        "outcome": "I2 is closed with the negative-bearing approach shortfall best explained by a sign/asymmetry-sensitive angular representation and branch-selection limitation near shoulder-limit bearings. M2's mirrored grid produced 3 failures only in the negative sector and 0 in the mirrored positive sector, including failures at both 6 cm below the 14 cm training boundary and 14 cm and 18 cm on the training-supported side. The supported-radius failures reject insufficient radius coverage alone as the primary mechanism. All three failures were approach failures, while every grid episode that established settling completed the uninterrupted 100-sample hold, so hold regulation is not the active shortfall. Interaction with training coverage remains possible but does not change the selected intervention: make branch feasibility and angular continuity explicit to the policy or training process, while preserving the existing hold behavior.",
+        "reason": "M2 meets the closure condition by behaviorally separating the competing explanations and defining the goal-linked measurement. The follow-on measurement must use the complete official radius range 0.06-0.20 m and full bearing range -180 to 180 degrees, count success only after 100 consecutive in-tolerance control samples, and report negative-bearing approach failures, settling failures, post-settling hold interruptions, longest uninterrupted holds, and total episode success separately. This checks the proposed branch/angular intervention against both the localized negative-bearing failure mode and the complete uninterrupted-hold human goal; the 158/160 development result remains non-official.",
+        "status": "completed"
+      },
+      "session_id": "S6",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "close",
+        "inquiry_id": "I2",
+        "outcome": "I2 is closed with the negative-bearing approach shortfall best explained by a sign/asymmetry-sensitive angular representation and branch-selection limitation near shoulder-limit bearings. M2's mirrored grid produced 3 failures only in the negative sector and 0 in the mirrored positive sector, including failures at both 6 cm below the 14 cm training boundary and 14 cm and 18 cm on the training-supported side. The supported-radius failures reject insufficient radius coverage alone as the primary mechanism. All three failures were approach failures, while every grid episode that established settling completed the uninterrupted 100-sample hold, so hold regulation is not the active shortfall. Interaction with training coverage remains possible but does not change the selected intervention: make branch feasibility and angular continuity explicit to the policy or training process, while preserving the existing hold behavior.",
+        "reason": "M2 meets the closure condition by behaviorally separating the competing explanations and defining the goal-linked measurement. The follow-on measurement must use the complete official radius range 0.06-0.20 m and full bearing range -180 to 180 degrees, count success only after 100 consecutive in-tolerance control samples, and report negative-bearing approach failures, settling failures, post-settling hold interruptions, longest uninterrupted holds, and total episode success separately. This checks the proposed branch/angular intervention against both the localized negative-bearing failure mode and the complete uninterrupted-hold human goal; the 158/160 development result remains non-official."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I2",
+        "outcome": "I2 is closed with the negative-bearing approach shortfall best explained by a sign/asymmetry-sensitive angular representation and branch-selection limitation near shoulder-limit bearings. M2's mirrored grid produced 3 failures only in the negative sector and 0 in the mirrored positive sector, including failures at both 6 cm below the 14 cm training boundary and 14 cm and 18 cm on the training-supported side. The supported-radius failures reject insufficient radius coverage alone as the primary mechanism. All three failures were approach failures, while every grid episode that established settling completed the uninterrupted 100-sample hold, so hold regulation is not the active shortfall. Interaction with training coverage remains possible but does not change the selected intervention: make branch feasibility and angular continuity explicit to the policy or training process, while preserving the existing hold behavior.",
+        "reason": "M2 meets the closure condition by behaviorally separating the competing explanations and defining the goal-linked measurement. The follow-on measurement must use the complete official radius range 0.06-0.20 m and full bearing range -180 to 180 degrees, count success only after 100 consecutive in-tolerance control samples, and report negative-bearing approach failures, settling failures, post-settling hold interruptions, longest uninterrupted holds, and total episode success separately. This checks the proposed branch/angular intervention against both the localized negative-bearing failure mode and the complete uninterrupted-hold human goal; the 158/160 development result remains non-official.",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E9",
+    "inquiry_id": "I2",
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "close",
+        "outcome": "I2 is closed with the negative-bearing approach shortfall best explained by a sign/asymmetry-sensitive angular representation and branch-selection limitation near shoulder-limit bearings. M2's mirrored grid produced 3 failures only in the negative sector and 0 in the mirrored positive sector, including failures at both 6 cm below the 14 cm training boundary and 14 cm and 18 cm on the training-supported side. The supported-radius failures reject insufficient radius coverage alone as the primary mechanism. All three failures were approach failures, while every grid episode that established settling completed the uninterrupted 100-sample hold, so hold regulation is not the active shortfall. Interaction with training coverage remains possible but does not change the selected intervention: make branch feasibility and angular continuity explicit to the policy or training process, while preserving the existing hold behavior.",
+        "reason": "M2 meets the closure condition by behaviorally separating the competing explanations and defining the goal-linked measurement. The follow-on measurement must use the complete official radius range 0.06-0.20 m and full bearing range -180 to 180 degrees, count success only after 100 consecutive in-tolerance control samples, and report negative-bearing approach failures, settling failures, post-settling hold interruptions, longest uninterrupted holds, and total episode success separately. This checks the proposed branch/angular intervention against both the localized negative-bearing failure mode and the complete uninterrupted-hold human goal; the 158/160 development result remains non-official."
+      }
+    },
+    "request_fingerprint": "4d0e71539184dafca577203e559995b1c52e13122e7a06082aa779f81b8f82eb",
+    "session_id": "S6",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T1:checkpoint-100352 is the available reference candidate and has M1 and M2 evaluation artifacts. No candidate is assigned working, best-known, or retained status.",
     "completed_operations": [
@@ -1489,6 +1535,21 @@
     "path": "research/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "84f8f96e-64c5-4aa9-9eca-f7e433288b20",
+    "id": "S6",
+    "inquiry_id": "I2",
+    "kind": "inquiry",
+    "objective": "Bring I2 to the decision required by its closure condition, and close it as soon as the evidence supplies that decision: Close when targeted, behaviorally grounded evidence discriminates among the competing mechanisms at a resolution sufficient to choose one goal-linked intervention and defines a measurement that checks both negative-bearing approach/settling and complete uninterrupted hold performance on the full official distribution.",
+    "operation_ids": [
+      "E9"
+    ],
+    "scientific_parent_commit": "dbbe0e5384b79913c59b2bed26c8b09e3a6c6e0f"
+  },
   "terminal_state": null
 }
