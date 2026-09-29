@@ -9127,38 +9127,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I1",
-        "outcome": "I1 is closed. Reproducible baseline behavioral evidence decomposed reach, first entry, longest uninterrupted hold, residual motion, branch and posture, and target geometry. The dominant failure mechanism was acquisition of an infeasible open-branch posture for negative-angle targets, not later hold interruption. A static geometry-gated observation-only remap that selects the feasible folded branch repaired this mechanism, with T8:checkpoint-5120 reaching 159 of 160 complete-hold successes and winning 9 of 10 discordant paired episodes against T1.",
-        "reason": "M1 and M7 provide the baseline phase and posture decomposition, while M8 provides a paired mechanism-specific intervention without changing reward, target distribution, observation size, or direct torque realization. This satisfies I1's closure condition and supports the actionable next direction of assigning T8:checkpoint-5120 as best-known and requesting the protected 200-episode official assessment; the research-panel result is not treated as proof of the human goal."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I1",
-        "outcome": "I1 is closed. Reproducible baseline behavioral evidence decomposed reach, first entry, longest uninterrupted hold, residual motion, branch and posture, and target geometry. The dominant failure mechanism was acquisition of an infeasible open-branch posture for negative-angle targets, not later hold interruption. A static geometry-gated observation-only remap that selects the feasible folded branch repaired this mechanism, with T8:checkpoint-5120 reaching 159 of 160 complete-hold successes and winning 9 of 10 discordant paired episodes against T1.",
-        "reason": "M1 and M7 provide the baseline phase and posture decomposition, while M8 provides a paired mechanism-specific intervention without changing reward, target distribution, observation size, or direct torque realization. This satisfies I1's closure condition and supports the actionable next direction of assigning T8:checkpoint-5120 as best-known and requesting the protected 200-episode official assessment; the research-panel result is not treated as proof of the human goal.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E16",
-    "inquiry_id": "I1",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "I1 is closed. Reproducible baseline behavioral evidence decomposed reach, first entry, longest uninterrupted hold, residual motion, branch and posture, and target geometry. The dominant failure mechanism was acquisition of an infeasible open-branch posture for negative-angle targets, not later hold interruption. A static geometry-gated observation-only remap that selects the feasible folded branch repaired this mechanism, with T8:checkpoint-5120 reaching 159 of 160 complete-hold successes and winning 9 of 10 discordant paired episodes against T1.",
-        "reason": "M1 and M7 provide the baseline phase and posture decomposition, while M8 provides a paired mechanism-specific intervention without changing reward, target distribution, observation size, or direct torque realization. This satisfies I1's closure condition and supports the actionable next direction of assigning T8:checkpoint-5120 as best-known and requesting the protected 200-episode official assessment; the research-panel result is not treated as proof of the human goal."
-      }
-    },
-    "request_fingerprint": "ae065349d5d4c54cd3c4cd7b5c15693d4f3dcb95682f2aaff028204ee6e8109a",
-    "session_id": "S9",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T8:checkpoint-5120 is the best-known candidate, assigned by E14, with M8 evidence at 159/160 complete-hold successes and model fingerprint 85497cedbc3b398c33a5212b7f8bab501e6957f8eb8e83edcc77a6d90026928f. T8:checkpoint-10240 is an equal-outcome unassigned alternative; T8:checkpoint-35840 and T1 remain unassigned or superseded. No official candidate role is assigned.",
     "completed_operations": [
