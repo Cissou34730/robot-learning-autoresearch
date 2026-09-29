@@ -466,20 +466,10 @@ function Get-HumanGoalSummary {
     param([Parameter(Mandatory)]$State)
 
     $scenario = Get-Content "research\scenario.md" -Raw
-    $officialTaskMatch = [regex]::Match(
-        $scenario,
-        '(?ms)^## Official task\s+(?<body>.*?)(?=^## |\z)'
-    )
     $successCriterionMatch = [regex]::Match(
         $scenario,
         '(?ms)^## Success criterion\s+(?<body>.*?)(?=^## |\z)'
     )
-    $officialTask = if ($officialTaskMatch.Success) {
-        (($officialTaskMatch.Groups["body"].Value -replace '\s+', ' ').Trim())
-    }
-    else {
-        ""
-    }
     $successCriterion = if ($State.human_goal.summary) {
         [string]$State.human_goal.summary
     }
@@ -489,16 +479,15 @@ function Get-HumanGoalSummary {
     else {
         ""
     }
-    if ($officialTask -and $successCriterion) {
-        return "Official task: $officialTask Success criterion: $successCriterion"
-    }
+    $officialScope = (
+        "Official scope: the complete target distribution in " +
+        "research/scenario.md, across its full radius and angular ranges, " +
+        "with success requiring the complete uninterrupted in-tolerance hold."
+    )
     if ($successCriterion) {
-        return $successCriterion
+        return "$officialScope Campaign criterion: $successCriterion"
     }
-    if ($officialTask) {
-        return $officialTask
-    }
-    return "The protected human goal is defined in research/scenario.md."
+    return "$officialScope The protected campaign criterion is defined there."
 }
 
 function Get-LatestSessionResult {

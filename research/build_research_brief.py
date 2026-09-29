@@ -29,24 +29,20 @@ def _markdown_section(text: str, heading: str) -> str:
 def _human_goal(state: dict) -> str:
     summary = state["human_goal"].get("summary")
     scenario_path = RESEARCH_DIR / "scenario.md"
-    official_task = ""
     success_criterion = ""
     if scenario_path.is_file():
         scenario = scenario_path.read_text(encoding="utf-8")
-        official_task = _markdown_section(scenario, "Official task")
         success_criterion = _markdown_section(scenario, "Success criterion")
     if isinstance(summary, str) and summary.strip():
         success_criterion = summary.strip()
-    if official_task and success_criterion:
-        return (
-            f"Official task: {official_task} "
-            f"Success criterion: {success_criterion}"
-        )
+    official_scope = (
+        "Official scope: the complete target distribution in research/scenario.md, "
+        "across its full radius and angular ranges, with success requiring the "
+        "complete uninterrupted in-tolerance hold."
+    )
     if success_criterion:
-        return success_criterion
-    if official_task:
-        return official_task
-    return f"Defined by `{state['human_goal']['source']}`."
+        return f"{official_scope} Campaign criterion: {success_criterion}"
+    return f"{official_scope} The protected campaign criterion is defined there."
 
 
 def _artifact(value: object) -> str:
