@@ -19,7 +19,8 @@
     "T1:checkpoint-100352": {
       "artifact": "research/checkpoints/candidates/eb19a5f3-14b3-4590-ad74-1b31cf5ae3d5/t1/checkpoint-100352",
       "evaluation_artifacts": [
-        "research/evaluations/eb19a5f3-14b3-4590-ad74-1b31cf5ae3d5/evaluation-eb19a5f3-14b3-4590-ad74-1b31cf5ae3d5-m1-T1-checkpoint-100352-160ep-seed4200-c10131b35f13.json"
+        "research/evaluations/eb19a5f3-14b3-4590-ad74-1b31cf5ae3d5/evaluation-eb19a5f3-14b3-4590-ad74-1b31cf5ae3d5-m1-T1-checkpoint-100352-160ep-seed4200-c10131b35f13.json",
+        "research/evaluations/eb19a5f3-14b3-4590-ad74-1b31cf5ae3d5/evaluation-eb19a5f3-14b3-4590-ad74-1b31cf5ae3d5-m2-T1-checkpoint-100352-160ep-seed6200-c10131b35f13.json"
       ],
       "fingerprint": "c9b24fc4281c7ce6457bdcbbe47fe313deeffddf58e8b4e9e9d2a5f0e9609067",
       "id": "T1:checkpoint-100352",
@@ -838,14 +839,14 @@
   "counters": {
     "event": 7,
     "inquiry": 2,
-    "measurement": 1,
-    "session": 4,
+    "measurement": 2,
+    "session": 5,
     "training": 1
   },
   "human_goal": {
     "source": "research/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -1296,9 +1297,391 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-09-29T21:35:59Z",
+      "error": null,
+      "id": "M2",
+      "inquiry_id": "I2",
+      "kind": "measurement",
+      "request": {
+        "description": "Run a targeted I2 mechanism diagnostic on T1:checkpoint-100352 using a symmetric bearing and radius grid, paired with a fresh full-distribution research evaluation.",
+        "measurements": [
+          {
+            "args": [
+              "--model",
+              "research/checkpoints/candidates/eb19a5f3-14b3-4590-ad74-1b31cf5ae3d5/t1/checkpoint-100352/model.zip",
+              "--output",
+              "research/evaluations/eb19a5f3-14b3-4590-ad74-1b31cf5ae3d5/i2_mechanism_grid.json"
+            ],
+            "artifact": "research/evaluations/eb19a5f3-14b3-4590-ad74-1b31cf5ae3d5/i2_mechanism_grid.json",
+            "instrument": "python_module",
+            "label": "I2 symmetric bearing and radius mechanism grid",
+            "module": "research.lab.i2_mechanism"
+          },
+          {
+            "candidate": "T1:checkpoint-100352",
+            "episodes": 160,
+            "instrument": "research_evaluation",
+            "label": "I2 fresh full-distribution phase and hold check",
+            "seed": 6200
+          }
+        ],
+        "rationale": "I2 remains unresolved because the prior panel localized failures to negative-bearing approach and settling but did not control bearing sign, radius support, or branch-limit proximity. The grid compares mirrored targets at identical radii, including both training-supported and unsupported radii, and records initial branch features, analytic joint-limit feasibility, approach and settling phase outcomes, and the complete uninterrupted 100-sample hold outcome. The paired research evaluation checks that the same phase attribution and full hold criterion remain measured across the official target distribution."
+      },
+      "result": {
+        "measurements": [
+          {
+            "args": [
+              "--model",
+              "research/checkpoints/candidates/eb19a5f3-14b3-4590-ad74-1b31cf5ae3d5/t1/checkpoint-100352/model.zip",
+              "--output",
+              "research/evaluations/eb19a5f3-14b3-4590-ad74-1b31cf5ae3d5/i2_mechanism_grid.json"
+            ],
+            "instrument": "python_module",
+            "label": "I2 symmetric bearing and radius mechanism grid",
+            "metrics": {
+              "evaluation_artifact": "research/evaluations/eb19a5f3-14b3-4590-ad74-1b31cf5ae3d5/python-module-M2-1-i2_mechanism_grid.json",
+              "evaluation_artifact_fingerprint": "12e83ba3ab378ecdd3745ed82b7d22ccf758922a84de7440ab291440115f41dc"
+            },
+            "module": "research.lab.i2_mechanism"
+          },
+          {
+            "candidate": "T1:checkpoint-100352",
+            "candidate_id": "T1:checkpoint-100352",
+            "instrument": "research_evaluation",
+            "label": "I2 fresh full-distribution phase and hold check",
+            "metrics": {
+              "episodes": 160,
+              "evaluation_artifact": "research/evaluations/eb19a5f3-14b3-4590-ad74-1b31cf5ae3d5/evaluation-eb19a5f3-14b3-4590-ad74-1b31cf5ae3d5-m2-T1-checkpoint-100352-160ep-seed6200-c10131b35f13.json",
+              "evaluation_artifact_fingerprint": "f673a92fbeff460f08ae38399f05a9e58b75f52359f0e9b4c6e8861fefe62eaa",
+              "evaluation_semantics": "c10131b35f13",
+              "model_fingerprint": "c9b24fc4281c7ce6457bdcbbe47fe313deeffddf58e8b4e9e9d2a5f0e9609067",
+              "official_benchmark": false,
+              "schema_version": 5,
+              "seed": 6200,
+              "success_percent": 98.75,
+              "successes": 158
+            }
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": {
+          "campaign_lab_manifest": [
+            {
+              "fingerprint": "7df60e1d421c7123371f51bbec039a789e90414fe6490ac074585e422e79e679",
+              "path": "research/lab/i2_mechanism.py"
+            }
+          ],
+          "campaign_lab_publication": {
+            "commit": "6a7bdeb27ea066633c1c4e291333f85c31d21822",
+            "fingerprint": "9c324111912174ee90f80972922359bfd322ee84833f7277b834333a52f08bda",
+            "manifest": [
+              {
+                "fingerprint": "7df60e1d421c7123371f51bbec039a789e90414fe6490ac074585e422e79e679",
+                "path": "research/lab/i2_mechanism.py"
+              }
+            ]
+          },
+          "code_parent_commit": "4128824a7909b3a67e734baa0bf052653ce04ab3",
+          "effective_parameters": {
+            "algorithm": {
+              "name": "ppo"
+            },
+            "policy": {
+              "activation": "tanh",
+              "net_arch": [
+                64,
+                64
+              ]
+            },
+            "ppo": {
+              "batch_size": 64,
+              "ent_coef": 0.01,
+              "gae_lambda": 0.95,
+              "gamma": 0.99,
+              "learning_rate": 0.0003,
+              "n_steps": 1024
+            },
+            "training": {
+              "checkpoint_every_steps": 5000,
+              "n_envs": 1
+            }
+          },
+          "module_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "7df60e1d421c7123371f51bbec039a789e90414fe6490ac074585e422e79e679",
+              "path": "research/lab/i2_mechanism.py"
+            }
+          ],
+          "module_paths": [
+            "research/lab/i2_mechanism.py"
+          ],
+          "scientific_commit": null,
+          "scientific_manifest": [],
+          "scientific_paths": []
+        }
+      },
+      "session_id": "S5",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "evaluation_semantics": "c10131b35f13",
+      "measurements": [
+        {
+          "args": [
+            "--model",
+            "research/checkpoints/candidates/eb19a5f3-14b3-4590-ad74-1b31cf5ae3d5/t1/checkpoint-100352/model.zip",
+            "--output",
+            "research/evaluations/eb19a5f3-14b3-4590-ad74-1b31cf5ae3d5/i2_mechanism_grid.json"
+          ],
+          "artifact": "research/evaluations/eb19a5f3-14b3-4590-ad74-1b31cf5ae3d5/i2_mechanism_grid.json",
+          "instrument": "python_module",
+          "label": "I2 symmetric bearing and radius mechanism grid",
+          "module": "research.lab.i2_mechanism"
+        },
+        {
+          "artifact": "research/checkpoints/candidates/eb19a5f3-14b3-4590-ad74-1b31cf5ae3d5/t1/checkpoint-100352",
+          "candidate": "T1:checkpoint-100352",
+          "candidate_id": "T1:checkpoint-100352",
+          "episodes": 160,
+          "instrument": "research_evaluation",
+          "label": "I2 fresh full-distribution phase and hold check",
+          "model_fingerprint": "c9b24fc4281c7ce6457bdcbbe47fe313deeffddf58e8b4e9e9d2a5f0e9609067",
+          "seed": 6200
+        }
+      ],
+      "module_provenance": {
+        "campaign_lab_manifest": [
+          {
+            "fingerprint": "7df60e1d421c7123371f51bbec039a789e90414fe6490ac074585e422e79e679",
+            "path": "research/lab/i2_mechanism.py"
+          }
+        ],
+        "campaign_lab_publication": {
+          "commit": "6a7bdeb27ea066633c1c4e291333f85c31d21822",
+          "fingerprint": "9c324111912174ee90f80972922359bfd322ee84833f7277b834333a52f08bda",
+          "manifest": [
+            {
+              "fingerprint": "7df60e1d421c7123371f51bbec039a789e90414fe6490ac074585e422e79e679",
+              "path": "research/lab/i2_mechanism.py"
+            }
+          ]
+        },
+        "code_parent_commit": "4128824a7909b3a67e734baa0bf052653ce04ab3",
+        "effective_parameters": {
+          "algorithm": {
+            "name": "ppo"
+          },
+          "policy": {
+            "activation": "tanh",
+            "net_arch": [
+              64,
+              64
+            ]
+          },
+          "ppo": {
+            "batch_size": 64,
+            "ent_coef": 0.01,
+            "gae_lambda": 0.95,
+            "gamma": 0.99,
+            "learning_rate": 0.0003,
+            "n_steps": 1024
+          },
+          "training": {
+            "checkpoint_every_steps": 5000,
+            "n_envs": 1
+          }
+        },
+        "module_manifest": [
+          {
+            "exists": true,
+            "fingerprint": "7df60e1d421c7123371f51bbec039a789e90414fe6490ac074585e422e79e679",
+            "path": "research/lab/i2_mechanism.py"
+          }
+        ],
+        "module_paths": [
+          "research/lab/i2_mechanism.py"
+        ],
+        "scientific_commit": null,
+        "scientific_manifest": [],
+        "scientific_paths": []
+      },
+      "paired_comparisons": [],
+      "partial_results": [
+        {
+          "args": [
+            "--model",
+            "research/checkpoints/candidates/eb19a5f3-14b3-4590-ad74-1b31cf5ae3d5/t1/checkpoint-100352/model.zip",
+            "--output",
+            "research/evaluations/eb19a5f3-14b3-4590-ad74-1b31cf5ae3d5/i2_mechanism_grid.json"
+          ],
+          "instrument": "python_module",
+          "label": "I2 symmetric bearing and radius mechanism grid",
+          "metrics": {
+            "evaluation_artifact": "research/evaluations/eb19a5f3-14b3-4590-ad74-1b31cf5ae3d5/python-module-M2-1-i2_mechanism_grid.json",
+            "evaluation_artifact_fingerprint": "12e83ba3ab378ecdd3745ed82b7d22ccf758922a84de7440ab291440115f41dc"
+          },
+          "module": "research.lab.i2_mechanism"
+        },
+        {
+          "candidate": "T1:checkpoint-100352",
+          "candidate_id": "T1:checkpoint-100352",
+          "instrument": "research_evaluation",
+          "label": "I2 fresh full-distribution phase and hold check",
+          "metrics": {
+            "episodes": 160,
+            "evaluation_artifact": "research/evaluations/eb19a5f3-14b3-4590-ad74-1b31cf5ae3d5/evaluation-eb19a5f3-14b3-4590-ad74-1b31cf5ae3d5-m2-T1-checkpoint-100352-160ep-seed6200-c10131b35f13.json",
+            "evaluation_artifact_fingerprint": "f673a92fbeff460f08ae38399f05a9e58b75f52359f0e9b4c6e8861fefe62eaa",
+            "evaluation_semantics": "c10131b35f13",
+            "model_fingerprint": "c9b24fc4281c7ce6457bdcbbe47fe313deeffddf58e8b4e9e9d2a5f0e9609067",
+            "official_benchmark": false,
+            "schema_version": 5,
+            "seed": 6200,
+            "success_percent": 98.75,
+            "successes": 158
+          }
+        }
+      ],
+      "result": {
+        "measurements": [
+          {
+            "args": [
+              "--model",
+              "research/checkpoints/candidates/eb19a5f3-14b3-4590-ad74-1b31cf5ae3d5/t1/checkpoint-100352/model.zip",
+              "--output",
+              "research/evaluations/eb19a5f3-14b3-4590-ad74-1b31cf5ae3d5/i2_mechanism_grid.json"
+            ],
+            "instrument": "python_module",
+            "label": "I2 symmetric bearing and radius mechanism grid",
+            "metrics": {
+              "evaluation_artifact": "research/evaluations/eb19a5f3-14b3-4590-ad74-1b31cf5ae3d5/python-module-M2-1-i2_mechanism_grid.json",
+              "evaluation_artifact_fingerprint": "12e83ba3ab378ecdd3745ed82b7d22ccf758922a84de7440ab291440115f41dc"
+            },
+            "module": "research.lab.i2_mechanism"
+          },
+          {
+            "candidate": "T1:checkpoint-100352",
+            "candidate_id": "T1:checkpoint-100352",
+            "instrument": "research_evaluation",
+            "label": "I2 fresh full-distribution phase and hold check",
+            "metrics": {
+              "episodes": 160,
+              "evaluation_artifact": "research/evaluations/eb19a5f3-14b3-4590-ad74-1b31cf5ae3d5/evaluation-eb19a5f3-14b3-4590-ad74-1b31cf5ae3d5-m2-T1-checkpoint-100352-160ep-seed6200-c10131b35f13.json",
+              "evaluation_artifact_fingerprint": "f673a92fbeff460f08ae38399f05a9e58b75f52359f0e9b4c6e8861fefe62eaa",
+              "evaluation_semantics": "c10131b35f13",
+              "model_fingerprint": "c9b24fc4281c7ce6457bdcbbe47fe313deeffddf58e8b4e9e9d2a5f0e9609067",
+              "official_benchmark": false,
+              "schema_version": 5,
+              "seed": 6200,
+              "success_percent": 98.75,
+              "successes": 158
+            }
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": {
+          "campaign_lab_manifest": [
+            {
+              "fingerprint": "7df60e1d421c7123371f51bbec039a789e90414fe6490ac074585e422e79e679",
+              "path": "research/lab/i2_mechanism.py"
+            }
+          ],
+          "campaign_lab_publication": {
+            "commit": "6a7bdeb27ea066633c1c4e291333f85c31d21822",
+            "fingerprint": "9c324111912174ee90f80972922359bfd322ee84833f7277b834333a52f08bda",
+            "manifest": [
+              {
+                "fingerprint": "7df60e1d421c7123371f51bbec039a789e90414fe6490ac074585e422e79e679",
+                "path": "research/lab/i2_mechanism.py"
+              }
+            ]
+          },
+          "code_parent_commit": "4128824a7909b3a67e734baa0bf052653ce04ab3",
+          "effective_parameters": {
+            "algorithm": {
+              "name": "ppo"
+            },
+            "policy": {
+              "activation": "tanh",
+              "net_arch": [
+                64,
+                64
+              ]
+            },
+            "ppo": {
+              "batch_size": 64,
+              "ent_coef": 0.01,
+              "gae_lambda": 0.95,
+              "gamma": 0.99,
+              "learning_rate": 0.0003,
+              "n_steps": 1024
+            },
+            "training": {
+              "checkpoint_every_steps": 5000,
+              "n_envs": 1
+            }
+          },
+          "module_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "7df60e1d421c7123371f51bbec039a789e90414fe6490ac074585e422e79e679",
+              "path": "research/lab/i2_mechanism.py"
+            }
+          ],
+          "module_paths": [
+            "research/lab/i2_mechanism.py"
+          ],
+          "scientific_commit": null,
+          "scientific_manifest": [],
+          "scientific_paths": []
+        }
+      },
+      "task_reference_contract": null
+    },
+    "failure": null,
+    "id": "M2",
+    "inquiry_id": "I2",
+    "kind": "measurement",
+    "progress": "completed",
+    "request": {
+      "measurement": {
+        "description": "Run a targeted I2 mechanism diagnostic on T1:checkpoint-100352 using a symmetric bearing and radius grid, paired with a fresh full-distribution research evaluation.",
+        "measurements": [
+          {
+            "args": [
+              "--model",
+              "research/checkpoints/candidates/eb19a5f3-14b3-4590-ad74-1b31cf5ae3d5/t1/checkpoint-100352/model.zip",
+              "--output",
+              "research/evaluations/eb19a5f3-14b3-4590-ad74-1b31cf5ae3d5/i2_mechanism_grid.json"
+            ],
+            "artifact": "research/evaluations/eb19a5f3-14b3-4590-ad74-1b31cf5ae3d5/i2_mechanism_grid.json",
+            "instrument": "python_module",
+            "label": "I2 symmetric bearing and radius mechanism grid",
+            "module": "research.lab.i2_mechanism"
+          },
+          {
+            "candidate": "T1:checkpoint-100352",
+            "episodes": 160,
+            "instrument": "research_evaluation",
+            "label": "I2 fresh full-distribution phase and hold check",
+            "seed": 6200
+          }
+        ],
+        "rationale": "I2 remains unresolved because the prior panel localized failures to negative-bearing approach and settling but did not control bearing sign, radius support, or branch-limit proximity. The grid compares mirrored targets at identical radii, including both training-supported and unsupported radii, and records initial branch features, analytic joint-limit feasibility, approach and settling phase outcomes, and the complete uninterrupted 100-sample hold outcome. The paired research evaluation checks that the same phase attribution and full hold criterion remain measured across the official target distribution."
+      }
+    },
+    "request_fingerprint": "1917682db8ad985fcd679c14ed3c8b791b296710d7ff3c60dad7053883bc7dea",
+    "session_id": "S5",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T1 produced the available candidates, including T1:checkpoint-100352, which M1 measured at 151/160 successes. No candidate is assigned working, best-known, or retained status.",
     "completed_operations": [
@@ -1326,6 +1709,21 @@
     "path": "research/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "254c736f-58e4-4ae4-a3e6-f083e157a176",
+    "id": "S5",
+    "inquiry_id": "I2",
+    "kind": "inquiry",
+    "objective": "Bring I2 to the decision required by its closure condition, and close it as soon as the evidence supplies that decision: Close when targeted, behaviorally grounded evidence discriminates among the competing mechanisms at a resolution sufficient to choose one goal-linked intervention and defines a measurement that checks both negative-bearing approach/settling and complete uninterrupted hold performance on the full official distribution.",
+    "operation_ids": [
+      "M2"
+    ],
+    "scientific_parent_commit": "4128824a7909b3a67e734baa0bf052653ce04ab3"
+  },
   "terminal_state": null
 }
