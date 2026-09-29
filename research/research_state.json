@@ -2466,7 +2466,7 @@
     }
   },
   "counters": {
-    "event": 12,
+    "event": 13,
     "inquiry": 3,
     "measurement": 3,
     "session": 7,
@@ -2475,7 +2475,7 @@
   "human_goal": {
     "source": "research/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -4040,34 +4040,185 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-09-29T14:37:59Z",
+      "error": null,
+      "id": "E13",
+      "inquiry_id": "I3",
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "T1:checkpoint-100352 remains the best measured reference at 151/160 and is available with M1, M2, and M3 diagnostics. T3:checkpoint-100352 is archived as the rejected I3 staged weak-braking candidate at 118/160. T2:checkpoint-120832 remains archived as the rejected I2 candidate at 0/160. Working, best-known, and retained roles remain unassigned.",
+        "completed_operations": [
+          "T3",
+          "M3",
+          "E12"
+        ],
+        "cumulative_resource_use": "Three training runs have completed: T1 and T2 fresh 120000-step requests producing 120832 effective steps each, and T3 transfer 120000-step request producing 120832 effective steps and 24 archived candidates. Three 160-episode research panels have completed: M1, M2, and M3. No official assessment or model-role assignment has been executed. E10 opened I3 and E12 closed it.",
+        "current_goal_gap": "T1:checkpoint-100352 remains the best measured candidate at 151/160 successes (94.375%), below the 157/160 I3 development threshold and the 196/200 official objective. T3:checkpoint-100352 achieved 118/160 (73.75%) and T2:checkpoint-120832 achieved 0/160; no candidate has a working or best-known role, and no official assessment has been run.",
+        "current_synthesis": "I1 localized T1 failures primarily to near-boundary non-entry and immediate post-entry overshoot. I2 showed that the tested full-strength Gaussian braking intervention destroyed approach competence. I3 then transferred T1 with a 30000-step no-braking warm-up and ramped to only 10% braking strength, preserving high training success but not evaluation behavior: T3 lost all 33 discordant shared-panel episodes to T1 and finished 33 successes lower. The controlled evidence rejects staged weak braking as an actionable route toward the human goal; training reward and training success were not substitutes for complete uninterrupted evaluation success.",
+        "decision_frontier": "At goal review, select a new inquiry or conclude the campaign based on the remaining gap. Any new route must address the boundary-entry and immediate post-entry failures while being judged by complete uninterrupted episode success and the established entry, overshoot, streak, interruption, and minimum-distance diagnostics. Do not request official assessment until a candidate is credibly near the 98% objective.",
+        "evidence_references": [
+          "T1",
+          "M1",
+          "E4",
+          "T2",
+          "M2",
+          "E8",
+          "E10",
+          "T3",
+          "M3",
+          "E12"
+        ],
+        "human_goal_connection": "The human goal remains at least 196 complete uninterrupted successes in the protected 200-episode official assessment. I3 tested whether staged or substantially weaker braking could improve the T1 boundary failures without sacrificing entry; the route was rejected, so the campaign still needs a credible intervention beyond the tested braking curricula.",
+        "next_direction_or_closure": "I3 is closed. Return to goal review and choose the next scientifically justified inquiry only if it names a consequential uncertainty that could improve complete uninterrupted success beyond T1; otherwise conclude that no credible route remains. Preserve the rejection of the tested staged and weak braking route and do not repeat it without a materially different mechanism."
+      },
+      "result": {
+        "session_id": "S7",
+        "status": "checkpointed"
+      },
+      "session_id": "S7",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "72a440411d62082c73be5d6c167114ac5413fd86",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "T1:checkpoint-100352 remains the best measured reference at 151/160 and is available with M1, M2, and M3 diagnostics. T3:checkpoint-100352 is archived as the rejected I3 staged weak-braking candidate at 118/160. T2:checkpoint-120832 remains archived as the rejected I2 candidate at 0/160. Working, best-known, and retained roles remain unassigned.",
+        "completed_operations": [
+          "T3",
+          "M3",
+          "E12"
+        ],
+        "cumulative_resource_use": "Three training runs have completed: T1 and T2 fresh 120000-step requests producing 120832 effective steps each, and T3 transfer 120000-step request producing 120832 effective steps and 24 archived candidates. Three 160-episode research panels have completed: M1, M2, and M3. No official assessment or model-role assignment has been executed. E10 opened I3 and E12 closed it.",
+        "current_goal_gap": "T1:checkpoint-100352 remains the best measured candidate at 151/160 successes (94.375%), below the 157/160 I3 development threshold and the 196/200 official objective. T3:checkpoint-100352 achieved 118/160 (73.75%) and T2:checkpoint-120832 achieved 0/160; no candidate has a working or best-known role, and no official assessment has been run.",
+        "current_synthesis": "I1 localized T1 failures primarily to near-boundary non-entry and immediate post-entry overshoot. I2 showed that the tested full-strength Gaussian braking intervention destroyed approach competence. I3 then transferred T1 with a 30000-step no-braking warm-up and ramped to only 10% braking strength, preserving high training success but not evaluation behavior: T3 lost all 33 discordant shared-panel episodes to T1 and finished 33 successes lower. The controlled evidence rejects staged weak braking as an actionable route toward the human goal; training reward and training success were not substitutes for complete uninterrupted evaluation success.",
+        "decision_frontier": "At goal review, select a new inquiry or conclude the campaign based on the remaining gap. Any new route must address the boundary-entry and immediate post-entry failures while being judged by complete uninterrupted episode success and the established entry, overshoot, streak, interruption, and minimum-distance diagnostics. Do not request official assessment until a candidate is credibly near the 98% objective.",
+        "evidence_references": [
+          "T1",
+          "M1",
+          "E4",
+          "T2",
+          "M2",
+          "E8",
+          "E10",
+          "T3",
+          "M3",
+          "E12"
+        ],
+        "human_goal_connection": "The human goal remains at least 196 complete uninterrupted successes in the protected 200-episode official assessment. I3 tested whether staged or substantially weaker braking could improve the T1 boundary failures without sacrificing entry; the route was rejected, so the campaign still needs a credible intervention beyond the tested braking curricula.",
+        "inquiry_id": "I3",
+        "next_direction_or_closure": "I3 is closed. Return to goal review and choose the next scientifically justified inquiry only if it names a consequential uncertainty that could improve complete uninterrupted success beyond T1; otherwise conclude that no credible route remains. Preserve the rejection of the tested staged and weak braking route and do not repeat it without a materially different mechanism.",
+        "session_id": "S7"
+      },
+      "presentation": {
+        "backend_session_id": "e068aab8-bfcc-45fd-8b10-7faa301f85cf",
+        "campaign_id": "7f551163-bae6-40bc-9b0b-a960be607ffb",
+        "campaign_usage": "28m14s | 44.88 AIU | prompt 7.4m (87% cached) | output 67.2k",
+        "session_id": "S7",
+        "session_kind": "inquiry",
+        "session_usage": "5m49s | 7.87 AIU | prompt 1.2m (85% cached) | output 12.9k"
+      },
+      "result": {
+        "session_id": "S7",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "677c515723d4076fa1792d7e04fa4f771d670b63",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E13",
+    "inquiry_id": "I3",
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "T1:checkpoint-100352 remains the best measured reference at 151/160 and is available with M1, M2, and M3 diagnostics. T3:checkpoint-100352 is archived as the rejected I3 staged weak-braking candidate at 118/160. T2:checkpoint-120832 remains archived as the rejected I2 candidate at 0/160. Working, best-known, and retained roles remain unassigned.",
+        "completed_operations": [
+          "T3",
+          "M3",
+          "E12"
+        ],
+        "cumulative_resource_use": "Three training runs have completed: T1 and T2 fresh 120000-step requests producing 120832 effective steps each, and T3 transfer 120000-step request producing 120832 effective steps and 24 archived candidates. Three 160-episode research panels have completed: M1, M2, and M3. No official assessment or model-role assignment has been executed. E10 opened I3 and E12 closed it.",
+        "current_goal_gap": "T1:checkpoint-100352 remains the best measured candidate at 151/160 successes (94.375%), below the 157/160 I3 development threshold and the 196/200 official objective. T3:checkpoint-100352 achieved 118/160 (73.75%) and T2:checkpoint-120832 achieved 0/160; no candidate has a working or best-known role, and no official assessment has been run.",
+        "current_synthesis": "I1 localized T1 failures primarily to near-boundary non-entry and immediate post-entry overshoot. I2 showed that the tested full-strength Gaussian braking intervention destroyed approach competence. I3 then transferred T1 with a 30000-step no-braking warm-up and ramped to only 10% braking strength, preserving high training success but not evaluation behavior: T3 lost all 33 discordant shared-panel episodes to T1 and finished 33 successes lower. The controlled evidence rejects staged weak braking as an actionable route toward the human goal; training reward and training success were not substitutes for complete uninterrupted evaluation success.",
+        "decision_frontier": "At goal review, select a new inquiry or conclude the campaign based on the remaining gap. Any new route must address the boundary-entry and immediate post-entry failures while being judged by complete uninterrupted episode success and the established entry, overshoot, streak, interruption, and minimum-distance diagnostics. Do not request official assessment until a candidate is credibly near the 98% objective.",
+        "evidence_references": [
+          "T1",
+          "M1",
+          "E4",
+          "T2",
+          "M2",
+          "E8",
+          "E10",
+          "T3",
+          "M3",
+          "E12"
+        ],
+        "human_goal_connection": "The human goal remains at least 196 complete uninterrupted successes in the protected 200-episode official assessment. I3 tested whether staged or substantially weaker braking could improve the T1 boundary failures without sacrificing entry; the route was rejected, so the campaign still needs a credible intervention beyond the tested braking curricula.",
+        "next_direction_or_closure": "I3 is closed. Return to goal review and choose the next scientifically justified inquiry only if it names a consequential uncertainty that could improve complete uninterrupted success beyond T1; otherwise conclude that no credible route remains. Preserve the rejection of the tested staged and weak braking route and do not repeat it without a materially different mechanism."
+      }
+    },
+    "request_fingerprint": "b85263178a37064bf7b6c18daa87b0e3aa12b7814ac4e712ece4c1e26b917ba6",
+    "session_id": "S7",
+    "supersedes": null
+  },
   "pi_checkpoint": {
-    "candidates_and_roles": "T1:checkpoint-100352 remains available with M1 and M2 diagnostics. T2:checkpoint-120832 remains archived with M2 diagnostics but is not viable after 0/160 success. Working, best-known, and retained roles remain unassigned because no model-role operation has been completed.",
+    "candidates_and_roles": "T1:checkpoint-100352 remains the best measured reference at 151/160 and is available with M1, M2, and M3 diagnostics. T3:checkpoint-100352 is archived as the rejected I3 staged weak-braking candidate at 118/160. T2:checkpoint-120832 remains archived as the rejected I2 candidate at 0/160. Working, best-known, and retained roles remain unassigned.",
     "completed_operations": [
-      "E10"
+      "T3",
+      "M3",
+      "E12"
     ],
-    "cumulative_resource_use": "Two fresh PPO training runs requested for 120,000 steps completed at 120,832 effective steps each, producing 24 archived candidates per run. Two 160-episode research evaluation panels were completed: M1 for T1 and M2 as a shared-seed paired comparison of T1 and T2. No official assessment has been executed and no model role has been assigned. E10 opened I3 and consumed no training or evaluation resources.",
-    "current_goal_gap": "The best measured candidate remains T1:checkpoint-100352 at 151/160 successes (94.375%), below the 196/200 objective. T2:checkpoint-120832 is not viable after 0/160 successes and 0/160 tolerance entries. No candidate has a working or best-known role, and no official assessment has been run.",
-    "current_synthesis": "I1 established that T1 failures were dominated by near-boundary non-entry and immediate post-entry overshoot rather than the inner-radius coverage gap or long-horizon interruptions. I2 tested endpoint velocity observations and Gaussian-gated penalties on joint velocity, endpoint velocity, and action near the 1 cm boundary; on shared seeds 4200-4359, T2 lost all 151 discordant episodes to T1 and never entered tolerance. This rejects the tested penalty magnitude and timing as an actionable route, but does not establish that braking is irrelevant. E10 opened I3 to discriminate whether braking can be introduced in a reach-preserving staged or substantially weaker curriculum.",
-    "decision_frontier": "In the fresh I3 inquiry session, test a staged or substantially weaker braking intervention against T1 as the behavioral reference. Preserve T1-like approach and tolerance entry before introducing a bounded boundary-regulation objective, and judge candidates by complete uninterrupted official-distribution success together with first entry, post-entry overshoot, longest streak, interruptions, and minimum distance. Do not use reward or partial hold progress as a substitute for the episode criterion.",
+    "cumulative_resource_use": "Three training runs have completed: T1 and T2 fresh 120000-step requests producing 120832 effective steps each, and T3 transfer 120000-step request producing 120832 effective steps and 24 archived candidates. Three 160-episode research panels have completed: M1, M2, and M3. No official assessment or model-role assignment has been executed. E10 opened I3 and E12 closed it.",
+    "current_goal_gap": "T1:checkpoint-100352 remains the best measured candidate at 151/160 successes (94.375%), below the 157/160 I3 development threshold and the 196/200 official objective. T3:checkpoint-100352 achieved 118/160 (73.75%) and T2:checkpoint-120832 achieved 0/160; no candidate has a working or best-known role, and no official assessment has been run.",
+    "current_synthesis": "I1 localized T1 failures primarily to near-boundary non-entry and immediate post-entry overshoot. I2 showed that the tested full-strength Gaussian braking intervention destroyed approach competence. I3 then transferred T1 with a 30000-step no-braking warm-up and ramped to only 10% braking strength, preserving high training success but not evaluation behavior: T3 lost all 33 discordant shared-panel episodes to T1 and finished 33 successes lower. The controlled evidence rejects staged weak braking as an actionable route toward the human goal; training reward and training success were not substitutes for complete uninterrupted evaluation success.",
+    "decision_frontier": "At goal review, select a new inquiry or conclude the campaign based on the remaining gap. Any new route must address the boundary-entry and immediate post-entry failures while being judged by complete uninterrupted episode success and the established entry, overshoot, streak, interruption, and minimum-distance diagnostics. Do not request official assessment until a candidate is credibly near the 98% objective.",
     "evidence_references": [
       "T1",
       "M1",
       "E4",
-      "E6",
       "T2",
       "M2",
       "E8",
-      "E9",
-      "E10"
+      "E10",
+      "T3",
+      "M3",
+      "E12"
     ],
-    "human_goal_connection": "The human goal requires at least 196 complete uninterrupted successes in the protected 200-episode assessment. T1 achieved 151/160 on a held-out official-distribution panel, while I2's controlled braking candidate achieved 0/160, so the campaign still needs a reach-preserving intervention that improves boundary regulation without sacrificing tolerance entry.",
-    "inquiry_id": null,
-    "next_direction_or_closure": "The goal-review session ends with I3 opened. Continue in the fresh I3 inquiry session; use a controlled staged or weak braking test to determine whether the remaining transient boundary failures are correctable without destroying reach competence. Do not request official assessment unless a candidate is credibly near the 98% objective, and do not conclude that no credible route remains while this unresolved, goal-linked timing and magnitude question is still actionable.",
-    "scientific_commit": "7fff18e3635a753cd9026715f291ada71a447545",
-    "session_id": "S6"
+    "human_goal_connection": "The human goal remains at least 196 complete uninterrupted successes in the protected 200-episode official assessment. I3 tested whether staged or substantially weaker braking could improve the T1 boundary failures without sacrificing entry; the route was rejected, so the campaign still needs a credible intervention beyond the tested braking curricula.",
+    "inquiry_id": "I3",
+    "next_direction_or_closure": "I3 is closed. Return to goal review and choose the next scientifically justified inquiry only if it names a consequential uncertainty that could improve complete uninterrupted success beyond T1; otherwise conclude that no credible route remains. Preserve the rejection of the tested staged and weak braking route and do not repeat it without a materially different mechanism.",
+    "scientific_commit": "677c515723d4076fa1792d7e04fa4f771d670b63",
+    "session_id": "S7"
   },
   "schema_version": 6,
   "scientific_model": {
@@ -4075,23 +4226,6 @@
     "path": "research/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "e068aab8-bfcc-45fd-8b10-7faa301f85cf",
-    "id": "S7",
-    "inquiry_id": "I3",
-    "kind": "inquiry",
-    "objective": "Bring I3 to the decision required by its closure condition, and close it as soon as the evidence supplies that decision: Close when controlled evidence determines whether the staged or weak braking route is an actionable path toward at least 98% complete uninterrupted success: either a candidate reaches at least 157/160 on the shared official-distribution development panel while retaining T1-like entry, or the intervention is shown to lose entry competence or provide no decision-relevant success improvement.",
-    "operation_ids": [
-      "T3",
-      "M3",
-      "E12"
-    ],
-    "scientific_parent_commit": "72a440411d62082c73be5d6c167114ac5413fd86"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
