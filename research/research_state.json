@@ -5543,44 +5543,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "open",
-        "inquiry": {
-          "closure_condition": "Close after a fresh, controlled endpoint-velocity observation intervention is trained and evaluated against T1 on the shared 160-episode panel, if it either reaches the development gate with no material approach regression or fails to improve complete success while preserving T1-like entry behavior.",
-          "goal_connection": "A positive result would provide a reach-preserving route from T1's 151/160 development successes toward the 157/160 development gate and ultimately the 196/200 official objective; a negative result would remove observation sufficiency as a credible next route.",
-          "id": "I5",
-          "opened_in_session": "S10",
-          "question": "Is the remaining failure gap primarily caused by the policy having to infer configuration-dependent endpoint velocity from joint state, such that explicitly exposing endpoint velocity can improve near-boundary entry and complete uninterrupted holding without damaging T1-like approach?",
-          "rationale": "T1's failures are concentrated in near-boundary non-entry and immediate post-entry overshoot, while full-strength, staged, and terminal velocity reward penalties all damaged evaluation behavior. The scientific model identifies endpoint response and observation sufficiency as unresolved, and the current 11-dimensional interface exposes joint velocity but not the Cartesian velocity that directly governs tolerance-boundary crossing. This inquiry changes representation rather than adding another braking penalty and is therefore a discriminating test of a distinct mechanism.",
-          "reframes": []
-        }
-      },
-      "result": {
-        "action": "open",
-        "inquiry_id": "I5",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E18",
-    "inquiry_id": null,
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "open",
-        "closure_condition": "Close after a fresh, controlled endpoint-velocity observation intervention is trained and evaluated against T1 on the shared 160-episode panel, if it either reaches the development gate with no material approach regression or fails to improve complete success while preserving T1-like entry behavior.",
-        "goal_connection": "A positive result would provide a reach-preserving route from T1's 151/160 development successes toward the 157/160 development gate and ultimately the 196/200 official objective; a negative result would remove observation sufficiency as a credible next route.",
-        "question": "Is the remaining failure gap primarily caused by the policy having to infer configuration-dependent endpoint velocity from joint state, such that explicitly exposing endpoint velocity can improve near-boundary entry and complete uninterrupted holding without damaging T1-like approach?",
-        "rationale": "T1's failures are concentrated in near-boundary non-entry and immediate post-entry overshoot, while full-strength, staged, and terminal velocity reward penalties all damaged evaluation behavior. The scientific model identifies endpoint response and observation sufficiency as unresolved, and the current 11-dimensional interface exposes joint velocity but not the Cartesian velocity that directly governs tolerance-boundary crossing. This inquiry changes representation rather than adding another braking penalty and is therefore a discriminating test of a distinct mechanism."
-      }
-    },
-    "request_fingerprint": "db7ed0abd19f5f35fea34d248f84b19272eb5badbc9ffb6a238e102bfe84f20f",
-    "session_id": "S10",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T1:checkpoint-100352 remains the best measured reference at 151/160 and is available with M1, M2, M3, and M4 diagnostics. T4:checkpoint-100352 is the rejected I4 terminal-stabilization candidate at 131/160. T3:checkpoint-100352 remains the rejected I3 candidate at 118/160, and T2:checkpoint-120832 remains the rejected I2 candidate at 0/160. Working, best-known, and retained roles remain unassigned.",
     "completed_operations": [
