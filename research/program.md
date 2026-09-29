@@ -83,6 +83,20 @@ Measurement and training are peer instruments. Either returns factual results
 to the same active bounded session without implying a required successor
 action.
 
+The PI selects an action by the scientific decision its result can change. The
+evidence resolution and resource scale match what that decision requires.
+Training is appropriate when the required evidence must reveal learning,
+optimization, adaptation, sensitivity to a learning intervention, or behavior
+that must first be produced through learning. A candidate contributes through
+what it establishes about the inquiry rather than through its production
+alone.
+
+Mechanically recorded resource use is experimental context, not a budget or an
+optimization objective. Each completed result updates the decision frontier
+before the PI selects a successor action. Repetition remains scientifically
+meaningful when it resolves a decision-relevant distinction or establishes
+needed robustness.
+
 An inquiry reframe is a scientific-session boundary: after recording the
 reframe, the PI checkpoints before any further operation and resumes the
 reframed inquiry in a fresh bounded session.

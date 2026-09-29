@@ -575,6 +575,38 @@ function Get-CampaignResourceSummary {
     )
 }
 
+function Get-ScientificResourceSummary {
+    param([Parameter(Mandatory)]$State)
+
+    $completed = @(
+        $State.operation_events | Where-Object { $_.status -eq "completed" }
+    )
+    $trainingEvents = @($completed | Where-Object { $_.kind -eq "training" })
+    $measurementEvents = @(
+        $completed | Where-Object { $_.kind -eq "measurement" }
+    )
+    [long]$trainingSteps = 0
+    foreach ($event in $trainingEvents) {
+        if ($null -ne $event.result.requested_steps) {
+            $trainingSteps += [long]$event.result.requested_steps
+        }
+    }
+    [long]$evaluationEpisodes = 0
+    foreach ($event in $measurementEvents) {
+        foreach ($measurement in @($event.result.measurements)) {
+            if ($null -ne $measurement.metrics.episodes) {
+                $evaluationEpisodes += [long]$measurement.metrics.episodes
+            }
+        }
+    }
+    return (
+        "completed training operations $($trainingEvents.Count), requested " +
+        "training steps $trainingSteps | completed measurement operations " +
+        "$($measurementEvents.Count), evaluated episodes $evaluationEpisodes | " +
+        "candidates $($State.candidates.PSObject.Properties.Count)"
+    )
+}
+
 function Get-RequiredSessionSummaryTransition {
     param([Parameter(Mandatory)]$State)
 
@@ -673,6 +705,14 @@ function New-ScientificSessionPrompt {
     else {
         "No durable PI synthesis has been recorded yet."
     }
+    $frontier = if ($checkpoint -and $checkpoint.decision_frontier) {
+        [string]$checkpoint.decision_frontier
+    }
+    else {
+        "No durable decision frontier has been recorded yet."
+    }
+    $latestResult = Get-LatestSessionResult -State $State
+    $resourceUse = Get-ScientificResourceSummary -State $State
     $transition = Get-RequiredSessionSummaryTransition -State $State
     $terminalGoalReview = (
         -not $transition -and
@@ -716,6 +756,11 @@ function New-ScientificSessionPrompt {
     else {
         [string]$session.objective
     }
+    $activeInquirySession = (
+        -not $transition -and
+        $session.kind -eq "inquiry" -and
+        $State.active_inquiry
+    )
     $actionGuidance = if ($transition) {
         @(
             "The sole legal next action is the checkpoint operation that saves the current session summary."
@@ -730,16 +775,15 @@ function New-ScientificSessionPrompt {
             "Do not request another inquiry."
         )
     }
-    elseif (
-        $State.scientific_session.kind -eq "inquiry" -and
-        $State.active_inquiry
-    ) {
+    elseif ($activeInquirySession) {
         @(
             "Before choosing another action, determine whether the completed evidence now supplies the decision-relevant answer specified by the active inquiry's exact question and closure condition."
             "The inquiry is ready to close when the evidence is sufficient for the scientific decision it was opened to enable. Exhaustive certainty is not required; record remaining uncertainty when resolving it could no longer change that decision."
             "When the closure condition has been established, the question has been redirected or is no longer credible, or the actionable result has been produced, use the inquiry close contract now."
-            "Closure records the fulfilled scientific purpose before checkpointing and returning to goal review, where the remaining human-goal gap determines whether another inquiry, official assessment, or campaign conclusion follows."
-            "Further inquiry work is justified by a named consequential uncertainty whose resolution could change the inquiry's answer. Reframe when that work belongs to a different question."
+            "Select the next action by the scientific decision its result can change. Resolve the consequential uncertainty separating the live alternatives at the evidence resolution and resource scale that decision requires."
+            "Training is appropriate when the required evidence must reveal learning, optimization, adaptation, sensitivity to a learning intervention, or behavior that must first be produced through learning."
+            "Use each completed result to update the decision frontier before selecting its successor. Repetition is scientifically distinct when it resolves a decision-relevant distinction or establishes needed robustness."
+            "Reframe when the consequential work belongs to a different question."
             "Existing PI-owned implementations have no privileged status; inspect, modify, or replace them when that is the most credible scientific action before submitting an operation."
             "When ready to act, use the matching contract in research/instruments.md to submit one scientific action."
         )
@@ -754,17 +798,38 @@ function New-ScientificSessionPrompt {
         )
     }
 
+    $contextSections = if ($activeInquirySession) {
+        @(
+            "Scientific decision now: $inquiry"
+            "Current objective: $objective"
+            "Decision frontier: $frontier"
+            "Current scientific understanding: $synthesis"
+            "Latest completed result: $latestResult"
+            "Mechanically recorded resource use: $resourceUse"
+            "Human-goal context: $goal"
+        )
+    }
+    else {
+        @(
+            "Human goal: $goal"
+            "Current evidence relative to the goal: $bestEvidence $latestResult"
+            "Current scientific understanding: $synthesis"
+            "Decision frontier: $frontier"
+            "Current goal gap: $gap"
+            "Mechanically recorded resource use: $resourceUse"
+            "Active inquiry: $inquiry"
+            "Current objective: $objective"
+        )
+    }
+    $goalDirection = if (-not $activeInquirySession) {
+        "Direct every decision toward the human goal and distinguish evidence from conjecture."
+    }
     $sections = @(
-        "Human goal: $goal"
-        "Current evidence relative to the goal: $bestEvidence $(Get-LatestSessionResult -State $State)"
-        "Current scientific understanding: $synthesis"
-        "Current goal gap: $gap"
-        "Active inquiry: $inquiry"
-        "Current objective: $objective"
+        $contextSections
         $correction
         $piPersona
         $scientificModelUseGuidance
-        "Direct every decision toward the human goal and distinguish evidence from conjecture."
+        $goalDirection
         $actionGuidance
         "Begin with research/brief.md and the latest checkpoint. Consult research/scenario.md, research/scientific_model.md, and other evidence only as the scientific question requires."
     ) | Where-Object { $_ }
