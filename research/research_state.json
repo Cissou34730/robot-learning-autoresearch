@@ -1,13 +1,5 @@
 {
-  "active_inquiry": {
-    "closure_condition": "Close when a controlled candidate trained with the boundary-aware braking intervention has been compared with T1 on shared held-out official-distribution episode seeds using complete success, minimum distance, first entry, post-entry overshoot, longest uninterrupted streak, and interruptions, and the evidence either supports the intervention as an actionable route toward at least 196/200 or shows that it does not improve the transient failure regime and identifies the next discriminating intervention.",
-    "goal_connection": "The human goal requires at least 196 successes in the protected 200-episode assessment. T1 reached only 151/160 on a held-out official-distribution panel, and E4 attributes most failures to near-boundary non-entry or immediate post-entry overshoot. Improving braking and boundary regulation is therefore a direct route to closing the observed success gap, while the complete uninterrupted hold remains the sole outcome criterion.",
-    "id": "I2",
-    "opened_in_session": "S4",
-    "question": "Can a boundary-aware braking intervention during training, using the observed joint and endpoint velocity to penalize residual motion and excessive action near the 1 cm tolerance boundary, improve complete uninterrupted success under the official target distribution compared with T1?",
-    "rationale": "The fixed model predicts that bounded torque held for 20 ms can carry residual momentum across the 1 cm boundary, while current observations expose joint velocities but the baseline reward provides no meaningful near-boundary velocity or braking objective. M1/E4 found 6/9 failures never entered within tolerance and 3/9 entered but lost it after only 1-2 samples, with similar failure rates across radius bands, making transient regulation more credible than expanding radius coverage. A bounded boundary-aware braking test can discriminate whether this mechanism is sufficient without substituting reward or a partial hold metric for the official episode criterion.",
-    "reframes": []
-  },
+  "active_inquiry": null,
   "campaign": {
     "base_commit": "de0b95fc51dade1126d56b84d3429b25c85230ca",
     "id": "7f551163-bae6-40bc-9b0b-a960be607ffb",
@@ -1655,7 +1647,7 @@
     }
   },
   "counters": {
-    "event": 7,
+    "event": 8,
     "inquiry": 2,
     "measurement": 2,
     "session": 5,
@@ -2600,9 +2592,63 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-09-29T14:12:14Z",
+      "error": null,
+      "id": "E8",
+      "inquiry_id": "I2",
+      "kind": "inquiry",
+      "request": {
+        "action": "close",
+        "outcome": "I2 found that the tested boundary-aware braking intervention did not improve complete uninterrupted success; it destroyed approach competence under the controlled training budget. On the shared held-out official-distribution panel, T2:checkpoint-120832 achieved 0/160 successes versus T1:checkpoint-100352 at 151/160, with paired candidate wins 0, reference wins 151, and net wins -151. T2 never entered the 1 cm tolerance in any episode: first entry and post-entry overshoot were therefore undefined, longest uninterrupted in-tolerance streak was 0 steps in all 160 episodes, and interruptions were 0 because no hold was initiated. Its mean minimum distance was 9.48 cm (median 7.13 cm), compared with T1's 0.278 cm mean (median 0.221 cm); T1 entered in 154/160 episodes, with mean first entry at 13.1 steps, mean longest streak 94.4 steps, mean post-entry overshoot 0.011 cm among entered episodes, and 5 total interruptions. The evidence rejects this intervention as an actionable route toward 196/200 and shows that the braking penalties overwhelmed or misdirected reach learning rather than selectively correcting the transient boundary regime. The next discriminating intervention is a reach-preserving staged or substantially weaker braking curriculum: first recover T1-like approach and entry behavior, then ramp a boundary penalty only after reliable entry, while keeping complete uninterrupted success as the evaluation criterion.",
+        "reason": "The closure condition is satisfied by a controlled fresh candidate, paired shared-seed official-distribution evaluation, and all required outcome diagnostics. T2 lost every discordant episode to T1 and failed before the boundary-regulation phase, so further measurement within I2 cannot distinguish braking efficacy from the intervention's gross suppression of reaching. I2 is therefore closed negatively; the consequential remaining question belongs to a new inquiry about reach-preserving curriculum or penalty scaling, not additional I2 comparison."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I2",
+        "outcome": "I2 found that the tested boundary-aware braking intervention did not improve complete uninterrupted success; it destroyed approach competence under the controlled training budget. On the shared held-out official-distribution panel, T2:checkpoint-120832 achieved 0/160 successes versus T1:checkpoint-100352 at 151/160, with paired candidate wins 0, reference wins 151, and net wins -151. T2 never entered the 1 cm tolerance in any episode: first entry and post-entry overshoot were therefore undefined, longest uninterrupted in-tolerance streak was 0 steps in all 160 episodes, and interruptions were 0 because no hold was initiated. Its mean minimum distance was 9.48 cm (median 7.13 cm), compared with T1's 0.278 cm mean (median 0.221 cm); T1 entered in 154/160 episodes, with mean first entry at 13.1 steps, mean longest streak 94.4 steps, mean post-entry overshoot 0.011 cm among entered episodes, and 5 total interruptions. The evidence rejects this intervention as an actionable route toward 196/200 and shows that the braking penalties overwhelmed or misdirected reach learning rather than selectively correcting the transient boundary regime. The next discriminating intervention is a reach-preserving staged or substantially weaker braking curriculum: first recover T1-like approach and entry behavior, then ramp a boundary penalty only after reliable entry, while keeping complete uninterrupted success as the evaluation criterion.",
+        "reason": "The closure condition is satisfied by a controlled fresh candidate, paired shared-seed official-distribution evaluation, and all required outcome diagnostics. T2 lost every discordant episode to T1 and failed before the boundary-regulation phase, so further measurement within I2 cannot distinguish braking efficacy from the intervention's gross suppression of reaching. I2 is therefore closed negatively; the consequential remaining question belongs to a new inquiry about reach-preserving curriculum or penalty scaling, not additional I2 comparison.",
+        "status": "completed"
+      },
+      "session_id": "S5",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "close",
+        "inquiry_id": "I2",
+        "outcome": "I2 found that the tested boundary-aware braking intervention did not improve complete uninterrupted success; it destroyed approach competence under the controlled training budget. On the shared held-out official-distribution panel, T2:checkpoint-120832 achieved 0/160 successes versus T1:checkpoint-100352 at 151/160, with paired candidate wins 0, reference wins 151, and net wins -151. T2 never entered the 1 cm tolerance in any episode: first entry and post-entry overshoot were therefore undefined, longest uninterrupted in-tolerance streak was 0 steps in all 160 episodes, and interruptions were 0 because no hold was initiated. Its mean minimum distance was 9.48 cm (median 7.13 cm), compared with T1's 0.278 cm mean (median 0.221 cm); T1 entered in 154/160 episodes, with mean first entry at 13.1 steps, mean longest streak 94.4 steps, mean post-entry overshoot 0.011 cm among entered episodes, and 5 total interruptions. The evidence rejects this intervention as an actionable route toward 196/200 and shows that the braking penalties overwhelmed or misdirected reach learning rather than selectively correcting the transient boundary regime. The next discriminating intervention is a reach-preserving staged or substantially weaker braking curriculum: first recover T1-like approach and entry behavior, then ramp a boundary penalty only after reliable entry, while keeping complete uninterrupted success as the evaluation criterion.",
+        "reason": "The closure condition is satisfied by a controlled fresh candidate, paired shared-seed official-distribution evaluation, and all required outcome diagnostics. T2 lost every discordant episode to T1 and failed before the boundary-regulation phase, so further measurement within I2 cannot distinguish braking efficacy from the intervention's gross suppression of reaching. I2 is therefore closed negatively; the consequential remaining question belongs to a new inquiry about reach-preserving curriculum or penalty scaling, not additional I2 comparison."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I2",
+        "outcome": "I2 found that the tested boundary-aware braking intervention did not improve complete uninterrupted success; it destroyed approach competence under the controlled training budget. On the shared held-out official-distribution panel, T2:checkpoint-120832 achieved 0/160 successes versus T1:checkpoint-100352 at 151/160, with paired candidate wins 0, reference wins 151, and net wins -151. T2 never entered the 1 cm tolerance in any episode: first entry and post-entry overshoot were therefore undefined, longest uninterrupted in-tolerance streak was 0 steps in all 160 episodes, and interruptions were 0 because no hold was initiated. Its mean minimum distance was 9.48 cm (median 7.13 cm), compared with T1's 0.278 cm mean (median 0.221 cm); T1 entered in 154/160 episodes, with mean first entry at 13.1 steps, mean longest streak 94.4 steps, mean post-entry overshoot 0.011 cm among entered episodes, and 5 total interruptions. The evidence rejects this intervention as an actionable route toward 196/200 and shows that the braking penalties overwhelmed or misdirected reach learning rather than selectively correcting the transient boundary regime. The next discriminating intervention is a reach-preserving staged or substantially weaker braking curriculum: first recover T1-like approach and entry behavior, then ramp a boundary penalty only after reliable entry, while keeping complete uninterrupted success as the evaluation criterion.",
+        "reason": "The closure condition is satisfied by a controlled fresh candidate, paired shared-seed official-distribution evaluation, and all required outcome diagnostics. T2 lost every discordant episode to T1 and failed before the boundary-regulation phase, so further measurement within I2 cannot distinguish braking efficacy from the intervention's gross suppression of reaching. I2 is therefore closed negatively; the consequential remaining question belongs to a new inquiry about reach-preserving curriculum or penalty scaling, not additional I2 comparison.",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E8",
+    "inquiry_id": "I2",
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "close",
+        "outcome": "I2 found that the tested boundary-aware braking intervention did not improve complete uninterrupted success; it destroyed approach competence under the controlled training budget. On the shared held-out official-distribution panel, T2:checkpoint-120832 achieved 0/160 successes versus T1:checkpoint-100352 at 151/160, with paired candidate wins 0, reference wins 151, and net wins -151. T2 never entered the 1 cm tolerance in any episode: first entry and post-entry overshoot were therefore undefined, longest uninterrupted in-tolerance streak was 0 steps in all 160 episodes, and interruptions were 0 because no hold was initiated. Its mean minimum distance was 9.48 cm (median 7.13 cm), compared with T1's 0.278 cm mean (median 0.221 cm); T1 entered in 154/160 episodes, with mean first entry at 13.1 steps, mean longest streak 94.4 steps, mean post-entry overshoot 0.011 cm among entered episodes, and 5 total interruptions. The evidence rejects this intervention as an actionable route toward 196/200 and shows that the braking penalties overwhelmed or misdirected reach learning rather than selectively correcting the transient boundary regime. The next discriminating intervention is a reach-preserving staged or substantially weaker braking curriculum: first recover T1-like approach and entry behavior, then ramp a boundary penalty only after reliable entry, while keeping complete uninterrupted success as the evaluation criterion.",
+        "reason": "The closure condition is satisfied by a controlled fresh candidate, paired shared-seed official-distribution evaluation, and all required outcome diagnostics. T2 lost every discordant episode to T1 and failed before the boundary-regulation phase, so further measurement within I2 cannot distinguish braking efficacy from the intervention's gross suppression of reaching. I2 is therefore closed negatively; the consequential remaining question belongs to a new inquiry about reach-preserving curriculum or penalty scaling, not additional I2 comparison."
+      }
+    },
+    "request_fingerprint": "7f2b88f7eb13dbabae269a782e7b1cd83c6ebfefe87a679ac479301dd5184574",
+    "session_id": "S5",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "Candidate T1:checkpoint-100352 remains available with its M1 diagnostic artifact. Working, best-known, and retained roles remain unassigned because no role operation has been completed.",
     "completed_operations": [
@@ -2643,7 +2689,8 @@
     "objective": "Bring I2 to the decision required by its closure condition, and close it as soon as the evidence supplies that decision: Close when a controlled candidate trained with the boundary-aware braking intervention has been compared with T1 on shared held-out official-distribution episode seeds using complete success, minimum distance, first entry, post-entry overshoot, longest uninterrupted streak, and interruptions, and the evidence either supports the intervention as an actionable route toward at least 196/200 or shows that it does not improve the transient failure regime and identifies the next discriminating intervention.",
     "operation_ids": [
       "T2",
-      "M2"
+      "M2",
+      "E8"
     ],
     "scientific_parent_commit": "5807a8d6c02a99a3dce12dad574d02ac94caa359"
   },
