@@ -1,13 +1,5 @@
 {
-  "active_inquiry": {
-    "closure_condition": "Close when controlled baseline-versus-intervention evidence provides a decision-sufficient answer: negative-bearing approach outcomes, settling outcomes, post-settling interruptions, longest uninterrupted hold, and total success are measured on the official distribution, and the resulting candidate is either a credible route to the 196/200 objective or the intervention is shown not to provide that route.",
-    "goal_connection": "Resolving this question can close the remaining development gap from 158/160 toward at least 196/200 official successes while preserving the hold behavior already observed after settling.",
-    "id": "I3",
-    "opened_in_session": "S7",
-    "question": "Can an explicitly branch-feasible, angularly continuous policy or training representation causally reduce the observed negative-bearing approach failures, without degrading settling or the complete uninterrupted hold across the official distribution?",
-    "rationale": "E4, M1, M2, and E9 show a repeatable negative-bearing approach shortfall, including training-supported radii, while every grid episode that settled completed the 100-sample hold. Analytic inverse kinematics identified feasible alternate folded branches for the failed targets, and the recorded approach actions were consistent with selecting a shoulder-limit branch. The mechanism is therefore actionable but untested; official assessment would be premature, while the evidence does not justify concluding that no credible route remains.",
-    "reframes": []
-  },
+  "active_inquiry": null,
   "campaign": {
     "base_commit": "8ac206f76ce0bd7fb8f098b4fe6dceac2a2a311f",
     "id": "eb19a5f3-14b3-4590-ad74-1b31cf5ae3d5",
@@ -1656,7 +1648,7 @@
     }
   },
   "counters": {
-    "event": 12,
+    "event": 13,
     "inquiry": 3,
     "measurement": 3,
     "session": 8,
@@ -2900,9 +2892,63 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-09-29T22:16:48Z",
+      "error": null,
+      "id": "E13",
+      "inquiry_id": "I3",
+      "kind": "inquiry",
+      "request": {
+        "action": "close",
+        "outcome": "M3 provides a decision-sufficient negative answer to I3. On the shared 200-episode official-distribution development panel, the baseline T1 achieved 192/200 successes (96.0%) while the angularly continuous, branch-feasibility-aware T2 achieved 129/200 (64.5%), with 6 intervention wins versus 69 baseline wins and a -31.5 percentage-point success difference. The intervention did not reduce the targeted negative-bearing approach failures: T2 had 27 negative-bearing failures versus 8 for T1. Phase diagnostics likewise show degradation before settling: T2 never entered tolerance in 59 episodes versus 5 for T1, and failed to establish settling in 70 versus 8. Post-settling behavior was not preserved: T2 had 3 settled episodes with interruptions and 1 settled episode whose longest hold was below 100 steps, versus 2 and 0 for T1. Both candidates had a maximum uninterrupted hold of 100 steps, but T2 reached that criterion in only 129 episodes. The explicitly sine/cosine angular-error and joint-limit-margin representation therefore is not a credible route to the 196/200 objective under this training recipe and materially degrades the complete task outcome.",
+        "reason": "The controlled paired M3 evidence measures negative-bearing approach outcomes, settling outcomes, post-settling interruptions, longest uninterrupted hold, and total success on the complete official radius and bearing distribution using shared episode seeds. It rejects the tested intervention as a route toward the human goal and answers I3 at the decision resolution for which it was opened. The representation hypothesis is not supported as an effective causal intervention in this implementation; remaining uncertainty about other branch encodings or training recipes belongs to a new goal-review decision and cannot justify keeping I3 open. The baseline remains below the objective and has not received an official assessment."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I3",
+        "outcome": "M3 provides a decision-sufficient negative answer to I3. On the shared 200-episode official-distribution development panel, the baseline T1 achieved 192/200 successes (96.0%) while the angularly continuous, branch-feasibility-aware T2 achieved 129/200 (64.5%), with 6 intervention wins versus 69 baseline wins and a -31.5 percentage-point success difference. The intervention did not reduce the targeted negative-bearing approach failures: T2 had 27 negative-bearing failures versus 8 for T1. Phase diagnostics likewise show degradation before settling: T2 never entered tolerance in 59 episodes versus 5 for T1, and failed to establish settling in 70 versus 8. Post-settling behavior was not preserved: T2 had 3 settled episodes with interruptions and 1 settled episode whose longest hold was below 100 steps, versus 2 and 0 for T1. Both candidates had a maximum uninterrupted hold of 100 steps, but T2 reached that criterion in only 129 episodes. The explicitly sine/cosine angular-error and joint-limit-margin representation therefore is not a credible route to the 196/200 objective under this training recipe and materially degrades the complete task outcome.",
+        "reason": "The controlled paired M3 evidence measures negative-bearing approach outcomes, settling outcomes, post-settling interruptions, longest uninterrupted hold, and total success on the complete official radius and bearing distribution using shared episode seeds. It rejects the tested intervention as a route toward the human goal and answers I3 at the decision resolution for which it was opened. The representation hypothesis is not supported as an effective causal intervention in this implementation; remaining uncertainty about other branch encodings or training recipes belongs to a new goal-review decision and cannot justify keeping I3 open. The baseline remains below the objective and has not received an official assessment.",
+        "status": "completed"
+      },
+      "session_id": "S8",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "close",
+        "inquiry_id": "I3",
+        "outcome": "M3 provides a decision-sufficient negative answer to I3. On the shared 200-episode official-distribution development panel, the baseline T1 achieved 192/200 successes (96.0%) while the angularly continuous, branch-feasibility-aware T2 achieved 129/200 (64.5%), with 6 intervention wins versus 69 baseline wins and a -31.5 percentage-point success difference. The intervention did not reduce the targeted negative-bearing approach failures: T2 had 27 negative-bearing failures versus 8 for T1. Phase diagnostics likewise show degradation before settling: T2 never entered tolerance in 59 episodes versus 5 for T1, and failed to establish settling in 70 versus 8. Post-settling behavior was not preserved: T2 had 3 settled episodes with interruptions and 1 settled episode whose longest hold was below 100 steps, versus 2 and 0 for T1. Both candidates had a maximum uninterrupted hold of 100 steps, but T2 reached that criterion in only 129 episodes. The explicitly sine/cosine angular-error and joint-limit-margin representation therefore is not a credible route to the 196/200 objective under this training recipe and materially degrades the complete task outcome.",
+        "reason": "The controlled paired M3 evidence measures negative-bearing approach outcomes, settling outcomes, post-settling interruptions, longest uninterrupted hold, and total success on the complete official radius and bearing distribution using shared episode seeds. It rejects the tested intervention as a route toward the human goal and answers I3 at the decision resolution for which it was opened. The representation hypothesis is not supported as an effective causal intervention in this implementation; remaining uncertainty about other branch encodings or training recipes belongs to a new goal-review decision and cannot justify keeping I3 open. The baseline remains below the objective and has not received an official assessment."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I3",
+        "outcome": "M3 provides a decision-sufficient negative answer to I3. On the shared 200-episode official-distribution development panel, the baseline T1 achieved 192/200 successes (96.0%) while the angularly continuous, branch-feasibility-aware T2 achieved 129/200 (64.5%), with 6 intervention wins versus 69 baseline wins and a -31.5 percentage-point success difference. The intervention did not reduce the targeted negative-bearing approach failures: T2 had 27 negative-bearing failures versus 8 for T1. Phase diagnostics likewise show degradation before settling: T2 never entered tolerance in 59 episodes versus 5 for T1, and failed to establish settling in 70 versus 8. Post-settling behavior was not preserved: T2 had 3 settled episodes with interruptions and 1 settled episode whose longest hold was below 100 steps, versus 2 and 0 for T1. Both candidates had a maximum uninterrupted hold of 100 steps, but T2 reached that criterion in only 129 episodes. The explicitly sine/cosine angular-error and joint-limit-margin representation therefore is not a credible route to the 196/200 objective under this training recipe and materially degrades the complete task outcome.",
+        "reason": "The controlled paired M3 evidence measures negative-bearing approach outcomes, settling outcomes, post-settling interruptions, longest uninterrupted hold, and total success on the complete official radius and bearing distribution using shared episode seeds. It rejects the tested intervention as a route toward the human goal and answers I3 at the decision resolution for which it was opened. The representation hypothesis is not supported as an effective causal intervention in this implementation; remaining uncertainty about other branch encodings or training recipes belongs to a new goal-review decision and cannot justify keeping I3 open. The baseline remains below the objective and has not received an official assessment.",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E13",
+    "inquiry_id": "I3",
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "close",
+        "outcome": "M3 provides a decision-sufficient negative answer to I3. On the shared 200-episode official-distribution development panel, the baseline T1 achieved 192/200 successes (96.0%) while the angularly continuous, branch-feasibility-aware T2 achieved 129/200 (64.5%), with 6 intervention wins versus 69 baseline wins and a -31.5 percentage-point success difference. The intervention did not reduce the targeted negative-bearing approach failures: T2 had 27 negative-bearing failures versus 8 for T1. Phase diagnostics likewise show degradation before settling: T2 never entered tolerance in 59 episodes versus 5 for T1, and failed to establish settling in 70 versus 8. Post-settling behavior was not preserved: T2 had 3 settled episodes with interruptions and 1 settled episode whose longest hold was below 100 steps, versus 2 and 0 for T1. Both candidates had a maximum uninterrupted hold of 100 steps, but T2 reached that criterion in only 129 episodes. The explicitly sine/cosine angular-error and joint-limit-margin representation therefore is not a credible route to the 196/200 objective under this training recipe and materially degrades the complete task outcome.",
+        "reason": "The controlled paired M3 evidence measures negative-bearing approach outcomes, settling outcomes, post-settling interruptions, longest uninterrupted hold, and total success on the complete official radius and bearing distribution using shared episode seeds. It rejects the tested intervention as a route toward the human goal and answers I3 at the decision resolution for which it was opened. The representation hypothesis is not supported as an effective causal intervention in this implementation; remaining uncertainty about other branch encodings or training recipes belongs to a new goal-review decision and cannot justify keeping I3 open. The baseline remains below the objective and has not received an official assessment."
+      }
+    },
+    "request_fingerprint": "e4a4b99643afceeae66e32f5e3e68f821905ba4c1d0a0e0a043c142b408c38f2",
+    "session_id": "S8",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T1:checkpoint-100352 remains the available reference candidate with M1 and M2 evaluation artifacts. No candidate is assigned working, best-known, or retained status.",
     "completed_operations": [
@@ -2944,7 +2990,8 @@
     "objective": "Bring I3 to the decision required by its closure condition, and close it as soon as the evidence supplies that decision: Close when controlled baseline-versus-intervention evidence provides a decision-sufficient answer: negative-bearing approach outcomes, settling outcomes, post-settling interruptions, longest uninterrupted hold, and total success are measured on the official distribution, and the resulting candidate is either a credible route to the 196/200 objective or the intervention is shown not to provide that route.",
     "operation_ids": [
       "T2",
-      "M3"
+      "M3",
+      "E13"
     ],
     "scientific_parent_commit": "22748ed96109139f0581faec6d03e0ae08489e52"
   },
