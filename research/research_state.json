@@ -1,5 +1,13 @@
 {
-  "active_inquiry": null,
+  "active_inquiry": {
+    "closure_condition": "Close when a completed baseline candidate has been measured on the official target distribution with episode success and diagnostics stratified by target radius and bearing and by first entry, settling, longest uninterrupted hold, interruptions, and timeout distance, providing a supported actionable answer about whether low-radius coverage, closed-loop hold regulation, or both must be addressed first.",
+    "goal_connection": "The human goal requires at least 196 of 200 official episodes to complete the full 100-sample hold. Identifying the dominant failure mechanism is necessary to choose an intervention that improves complete-distribution episode success rather than optimizing a proxy such as distance or shaped return.",
+    "id": "I1",
+    "opened_in_session": "S2",
+    "question": "For a first candidate trained with the current learning recipe, is the dominant cause of failure on the official task distribution unsupported low-radius geometry, failure to settle and regulate the uninterrupted hold on supported targets, or a phase-specific combination of both?",
+    "rationale": "No candidate or episode evidence exists, so official assessment is unjustified and no-credible-route closure is unsupported. The physical model identifies two consequential competing explanations: the training distribution excludes 0.06-0.14 m, while success also depends on removing residual motion and maintaining a 1 cm tolerance for 100 consecutive observations. A baseline measurement with trajectory-phase and geometry diagnostics is the smallest discriminating inquiry before selecting training or control changes.",
+    "reframes": []
+  },
   "campaign": {
     "base_commit": "8ac206f76ce0bd7fb8f098b4fe6dceac2a2a311f",
     "id": "eb19a5f3-14b3-4590-ad74-1b31cf5ae3d5",
@@ -9,16 +17,16 @@
   },
   "candidates": {},
   "counters": {
-    "event": 1,
-    "inquiry": 0,
+    "event": 2,
+    "inquiry": 1,
     "measurement": 0,
-    "session": 1,
+    "session": 2,
     "training": 0
   },
   "human_goal": {
     "source": "research/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -51,9 +59,69 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-09-29T21:09:43Z",
+      "error": null,
+      "id": "E2",
+      "inquiry_id": "I1",
+      "kind": "inquiry",
+      "request": {
+        "action": "open",
+        "closure_condition": "Close when a completed baseline candidate has been measured on the official target distribution with episode success and diagnostics stratified by target radius and bearing and by first entry, settling, longest uninterrupted hold, interruptions, and timeout distance, providing a supported actionable answer about whether low-radius coverage, closed-loop hold regulation, or both must be addressed first.",
+        "goal_connection": "The human goal requires at least 196 of 200 official episodes to complete the full 100-sample hold. Identifying the dominant failure mechanism is necessary to choose an intervention that improves complete-distribution episode success rather than optimizing a proxy such as distance or shaped return.",
+        "question": "For a first candidate trained with the current learning recipe, is the dominant cause of failure on the official task distribution unsupported low-radius geometry, failure to settle and regulate the uninterrupted hold on supported targets, or a phase-specific combination of both?",
+        "rationale": "No candidate or episode evidence exists, so official assessment is unjustified and no-credible-route closure is unsupported. The physical model identifies two consequential competing explanations: the training distribution excludes 0.06-0.14 m, while success also depends on removing residual motion and maintaining a 1 cm tolerance for 100 consecutive observations. A baseline measurement with trajectory-phase and geometry diagnostics is the smallest discriminating inquiry before selecting training or control changes."
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I1",
+        "status": "completed"
+      },
+      "session_id": "S2",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "open",
+        "inquiry": {
+          "closure_condition": "Close when a completed baseline candidate has been measured on the official target distribution with episode success and diagnostics stratified by target radius and bearing and by first entry, settling, longest uninterrupted hold, interruptions, and timeout distance, providing a supported actionable answer about whether low-radius coverage, closed-loop hold regulation, or both must be addressed first.",
+          "goal_connection": "The human goal requires at least 196 of 200 official episodes to complete the full 100-sample hold. Identifying the dominant failure mechanism is necessary to choose an intervention that improves complete-distribution episode success rather than optimizing a proxy such as distance or shaped return.",
+          "id": "I1",
+          "opened_in_session": "S2",
+          "question": "For a first candidate trained with the current learning recipe, is the dominant cause of failure on the official task distribution unsupported low-radius geometry, failure to settle and regulate the uninterrupted hold on supported targets, or a phase-specific combination of both?",
+          "rationale": "No candidate or episode evidence exists, so official assessment is unjustified and no-credible-route closure is unsupported. The physical model identifies two consequential competing explanations: the training distribution excludes 0.06-0.14 m, while success also depends on removing residual motion and maintaining a 1 cm tolerance for 100 consecutive observations. A baseline measurement with trajectory-phase and geometry diagnostics is the smallest discriminating inquiry before selecting training or control changes.",
+          "reframes": []
+        }
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I1",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E2",
+    "inquiry_id": null,
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "open",
+        "closure_condition": "Close when a completed baseline candidate has been measured on the official target distribution with episode success and diagnostics stratified by target radius and bearing and by first entry, settling, longest uninterrupted hold, interruptions, and timeout distance, providing a supported actionable answer about whether low-radius coverage, closed-loop hold regulation, or both must be addressed first.",
+        "goal_connection": "The human goal requires at least 196 of 200 official episodes to complete the full 100-sample hold. Identifying the dominant failure mechanism is necessary to choose an intervention that improves complete-distribution episode success rather than optimizing a proxy such as distance or shaped return.",
+        "question": "For a first candidate trained with the current learning recipe, is the dominant cause of failure on the official task distribution unsupported low-radius geometry, failure to settle and regulate the uninterrupted hold on supported targets, or a phase-specific combination of both?",
+        "rationale": "No candidate or episode evidence exists, so official assessment is unjustified and no-credible-route closure is unsupported. The physical model identifies two consequential competing explanations: the training distribution excludes 0.06-0.14 m, while success also depends on removing residual motion and maintaining a 1 cm tolerance for 100 consecutive observations. A baseline measurement with trajectory-phase and geometry diagnostics is the smallest discriminating inquiry before selecting training or control changes."
+      }
+    },
+    "request_fingerprint": "113f3d7be8cbf920a9b172cc42d88308d10e06156f08d1f7aaad18fae2fe48c2",
+    "session_id": "S2",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No candidates have been trained, evaluated, or assigned a working, best-known, or retained role.",
     "completed_operations": [],
@@ -74,6 +142,21 @@
     "path": "research/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "bf853d8d-401c-4de6-aabd-b7148a630b40",
+    "id": "S2",
+    "inquiry_id": null,
+    "kind": "goal_review",
+    "objective": "Decide whether to request official assessment, open one bounded goal-linked inquiry, or conclude that no credible route remains.",
+    "operation_ids": [
+      "E2"
+    ],
+    "scientific_parent_commit": "45737d086e597326c3ab288e1a2a0c57d39b3801"
+  },
   "terminal_state": null
 }
