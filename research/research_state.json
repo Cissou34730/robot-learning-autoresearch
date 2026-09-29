@@ -6041,38 +6041,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I6",
-        "outcome": "M6 provides a decision-sufficient negative answer to I6. On the shared 200-episode complete official-distribution development panel, baseline T1 achieved 195/200 successes (97.5%), while the hold-aware velocity-sensitive reward and credit-assignment intervention T4 achieved 0/200. The paired comparison recorded 195 baseline wins, 0 intervention wins, 195 discordant episodes, and a -97.5 percentage-point intervention difference. The intervention therefore materially degraded complete-task success and did not provide a credible route to the 196/200 objective.",
-        "reason": "M6 satisfies I6's closure condition with controlled fresh baseline-versus-intervention evidence using identical episode seeds across the complete official target distribution and the established phase diagnostics. The intervention's zero-success outcome is decisive evidence against this reward and credit-assignment recipe, consistent with T4's zero training success and negative learning returns. The result does not establish that all velocity-sensitive or hold-aware rewards are ineffective; remaining uncertainty about other reward designs or learning methods could only be addressed by a future goal-review decision."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I6",
-        "outcome": "M6 provides a decision-sufficient negative answer to I6. On the shared 200-episode complete official-distribution development panel, baseline T1 achieved 195/200 successes (97.5%), while the hold-aware velocity-sensitive reward and credit-assignment intervention T4 achieved 0/200. The paired comparison recorded 195 baseline wins, 0 intervention wins, 195 discordant episodes, and a -97.5 percentage-point intervention difference. The intervention therefore materially degraded complete-task success and did not provide a credible route to the 196/200 objective.",
-        "reason": "M6 satisfies I6's closure condition with controlled fresh baseline-versus-intervention evidence using identical episode seeds across the complete official target distribution and the established phase diagnostics. The intervention's zero-success outcome is decisive evidence against this reward and credit-assignment recipe, consistent with T4's zero training success and negative learning returns. The result does not establish that all velocity-sensitive or hold-aware rewards are ineffective; remaining uncertainty about other reward designs or learning methods could only be addressed by a future goal-review decision.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E27",
-    "inquiry_id": "I6",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "M6 provides a decision-sufficient negative answer to I6. On the shared 200-episode complete official-distribution development panel, baseline T1 achieved 195/200 successes (97.5%), while the hold-aware velocity-sensitive reward and credit-assignment intervention T4 achieved 0/200. The paired comparison recorded 195 baseline wins, 0 intervention wins, 195 discordant episodes, and a -97.5 percentage-point intervention difference. The intervention therefore materially degraded complete-task success and did not provide a credible route to the 196/200 objective.",
-        "reason": "M6 satisfies I6's closure condition with controlled fresh baseline-versus-intervention evidence using identical episode seeds across the complete official target distribution and the established phase diagnostics. The intervention's zero-success outcome is decisive evidence against this reward and credit-assignment recipe, consistent with T4's zero training success and negative learning returns. The result does not establish that all velocity-sensitive or hold-aware rewards are ineffective; remaining uncertainty about other reward designs or learning methods could only be addressed by a future goal-review decision."
-      }
-    },
-    "request_fingerprint": "a065642a882c62217faa728680e1dca7660c60e4080cac2a799fd87c28341bea",
-    "session_id": "S14",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T1:checkpoint-100352 remains the strongest measured candidate but is unassigned after M5's 194/200 panel. T2:checkpoint-100352 and T3:checkpoint-100352 remain unassigned after their degradation results. No candidate has working, best-known, or retained status.",
     "completed_operations": [
