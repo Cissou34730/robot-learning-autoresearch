@@ -828,7 +828,7 @@
     }
   },
   "counters": {
-    "event": 4,
+    "event": 5,
     "inquiry": 1,
     "measurement": 1,
     "session": 3,
@@ -837,7 +837,7 @@
   "human_goal": {
     "source": "research/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -1198,26 +1198,165 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-09-29T21:26:17Z",
+      "error": null,
+      "id": "E5",
+      "inquiry_id": "I1",
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "T1 produced the available candidates, including T1:checkpoint-100352, which was measured by M1. No candidate is assigned working, best-known, or retained status; role assignment remains a goal-review decision supported by completed evidence.",
+        "completed_operations": [
+          "T1",
+          "M1",
+          "E4"
+        ],
+        "cumulative_resource_use": "Completed scientific operations used one fresh PPO training run with 120,832 completed steps and one 160-episode development evaluation panel at seed 4200. No official assessment has been run.",
+        "current_goal_gap": "The measured baseline T1:checkpoint-100352 achieved 151/160 successes (94.375%) on a development panel, below the 98% objective and not an official 200-episode assessment. Nine failures remained, all in negative-bearing approach or settling: six never entered tolerance and three entered for only 1-2 consecutive samples. No failed episode reached settling and then lost the required 100-sample hold. No candidate has yet been assigned working or best-known status.",
+        "current_synthesis": "Observed evidence from M1 and E4: baseline failures were concentrated in the -180 to -90 degree bearing sector, with 4/25 successes in -180 to -135 degrees and 5/26 in -135 to -90 degrees; all other bearing strata achieved 100% on this panel. Radius strata did not show a dominant low-radius deficit, with success rates of 95.0%, 94.3%, 96.8%, and 91.7% across 6-10, 10-14, 14-17, and 17-20 cm. The observed shortfall is therefore bearing-specific approach and settling reliability, not demonstrated hold-regulation loss. The remaining branch interaction is a hypothesis, not an established finding.",
+        "decision_frontier": "Goal review must select the next bounded route toward at least 196/200 official successes. The evidence supports prioritizing an intervention that improves approach and settling in the negative-bearing sector while preserving the demonstrated 100-sample hold behavior; the current panel does not justify prioritizing hold regulation or low-radius coverage alone. Any selected candidate must later be measured on the complete official distribution before role assignment or official assessment.",
+        "evidence_references": [
+          "T1",
+          "M1",
+          "E4"
+        ],
+        "human_goal_connection": "The human goal is at least 196 successful episodes out of 200 under the official target distribution, with each success requiring a complete uninterrupted 100-control-step hold. The closed I1 inquiry provided the first behaviorally grounded failure diagnosis needed to choose the next goal-directed intervention rather than optimize shaped return.",
+        "next_direction_or_closure": "In goal review, a credible non-binding direction is to design and test a training or policy intervention targeted at the diagnosed negative-bearing approach and settling failure, with explicit protection of the complete uninterrupted hold criterion. The intervention category, candidate selection, and required evidence remain for the next session; no claim of progress to 98% is made from the 94.375% development result."
+      },
+      "result": {
+        "session_id": "S3",
+        "status": "checkpointed"
+      },
+      "session_id": "S3",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "1ccb3241a758ef4d4159df18e15d3d00e16f01d0",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "T1 produced the available candidates, including T1:checkpoint-100352, which was measured by M1. No candidate is assigned working, best-known, or retained status; role assignment remains a goal-review decision supported by completed evidence.",
+        "completed_operations": [
+          "T1",
+          "M1",
+          "E4"
+        ],
+        "cumulative_resource_use": "Completed scientific operations used one fresh PPO training run with 120,832 completed steps and one 160-episode development evaluation panel at seed 4200. No official assessment has been run.",
+        "current_goal_gap": "The measured baseline T1:checkpoint-100352 achieved 151/160 successes (94.375%) on a development panel, below the 98% objective and not an official 200-episode assessment. Nine failures remained, all in negative-bearing approach or settling: six never entered tolerance and three entered for only 1-2 consecutive samples. No failed episode reached settling and then lost the required 100-sample hold. No candidate has yet been assigned working or best-known status.",
+        "current_synthesis": "Observed evidence from M1 and E4: baseline failures were concentrated in the -180 to -90 degree bearing sector, with 4/25 successes in -180 to -135 degrees and 5/26 in -135 to -90 degrees; all other bearing strata achieved 100% on this panel. Radius strata did not show a dominant low-radius deficit, with success rates of 95.0%, 94.3%, 96.8%, and 91.7% across 6-10, 10-14, 14-17, and 17-20 cm. The observed shortfall is therefore bearing-specific approach and settling reliability, not demonstrated hold-regulation loss. The remaining branch interaction is a hypothesis, not an established finding.",
+        "decision_frontier": "Goal review must select the next bounded route toward at least 196/200 official successes. The evidence supports prioritizing an intervention that improves approach and settling in the negative-bearing sector while preserving the demonstrated 100-sample hold behavior; the current panel does not justify prioritizing hold regulation or low-radius coverage alone. Any selected candidate must later be measured on the complete official distribution before role assignment or official assessment.",
+        "evidence_references": [
+          "T1",
+          "M1",
+          "E4"
+        ],
+        "human_goal_connection": "The human goal is at least 196 successful episodes out of 200 under the official target distribution, with each success requiring a complete uninterrupted 100-control-step hold. The closed I1 inquiry provided the first behaviorally grounded failure diagnosis needed to choose the next goal-directed intervention rather than optimize shaped return.",
+        "inquiry_id": "I1",
+        "next_direction_or_closure": "In goal review, a credible non-binding direction is to design and test a training or policy intervention targeted at the diagnosed negative-bearing approach and settling failure, with explicit protection of the complete uninterrupted hold criterion. The intervention category, candidate selection, and required evidence remain for the next session; no claim of progress to 98% is made from the 94.375% development result.",
+        "session_id": "S3"
+      },
+      "presentation": {
+        "backend_session_id": "864dec56-2af3-487f-95f7-99de778d32d7",
+        "campaign_id": "eb19a5f3-14b3-4590-ad74-1b31cf5ae3d5",
+        "campaign_usage": "10m19s | 21.90 AIU | prompt 3.6m (87% cached) | output 33.2k",
+        "session_id": "S3",
+        "session_kind": "inquiry",
+        "session_usage": "3m41s | 13.86 AIU | prompt 2.7m (88% cached) | output 12.1k"
+      },
+      "result": {
+        "session_id": "S3",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "a7913757598d2887fc736fc7e0377077d4b3935f",
+      "scientific_manifest": [
+        {
+          "exists": true,
+          "fingerprint": "d0aa36a98bfd79a9f7129779d84d54e90a4f07d98db3291938bd86dee7a9caf3",
+          "path": "robot_learning/scenario/evaluation.py"
+        }
+      ],
+      "scientific_paths": [
+        "robot_learning/scenario/evaluation.py"
+      ]
+    },
+    "failure": null,
+    "id": "E5",
+    "inquiry_id": "I1",
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "T1 produced the available candidates, including T1:checkpoint-100352, which was measured by M1. No candidate is assigned working, best-known, or retained status; role assignment remains a goal-review decision supported by completed evidence.",
+        "completed_operations": [
+          "T1",
+          "M1",
+          "E4"
+        ],
+        "cumulative_resource_use": "Completed scientific operations used one fresh PPO training run with 120,832 completed steps and one 160-episode development evaluation panel at seed 4200. No official assessment has been run.",
+        "current_goal_gap": "The measured baseline T1:checkpoint-100352 achieved 151/160 successes (94.375%) on a development panel, below the 98% objective and not an official 200-episode assessment. Nine failures remained, all in negative-bearing approach or settling: six never entered tolerance and three entered for only 1-2 consecutive samples. No failed episode reached settling and then lost the required 100-sample hold. No candidate has yet been assigned working or best-known status.",
+        "current_synthesis": "Observed evidence from M1 and E4: baseline failures were concentrated in the -180 to -90 degree bearing sector, with 4/25 successes in -180 to -135 degrees and 5/26 in -135 to -90 degrees; all other bearing strata achieved 100% on this panel. Radius strata did not show a dominant low-radius deficit, with success rates of 95.0%, 94.3%, 96.8%, and 91.7% across 6-10, 10-14, 14-17, and 17-20 cm. The observed shortfall is therefore bearing-specific approach and settling reliability, not demonstrated hold-regulation loss. The remaining branch interaction is a hypothesis, not an established finding.",
+        "decision_frontier": "Goal review must select the next bounded route toward at least 196/200 official successes. The evidence supports prioritizing an intervention that improves approach and settling in the negative-bearing sector while preserving the demonstrated 100-sample hold behavior; the current panel does not justify prioritizing hold regulation or low-radius coverage alone. Any selected candidate must later be measured on the complete official distribution before role assignment or official assessment.",
+        "evidence_references": [
+          "T1",
+          "M1",
+          "E4"
+        ],
+        "human_goal_connection": "The human goal is at least 196 successful episodes out of 200 under the official target distribution, with each success requiring a complete uninterrupted 100-control-step hold. The closed I1 inquiry provided the first behaviorally grounded failure diagnosis needed to choose the next goal-directed intervention rather than optimize shaped return.",
+        "next_direction_or_closure": "In goal review, a credible non-binding direction is to design and test a training or policy intervention targeted at the diagnosed negative-bearing approach and settling failure, with explicit protection of the complete uninterrupted hold criterion. The intervention category, candidate selection, and required evidence remain for the next session; no claim of progress to 98% is made from the 94.375% development result."
+      }
+    },
+    "request_fingerprint": "a2f6ead8a9a9cfc1ee36c3d1587218c8806a3503622f1bdb4467a655b8eadcf9",
+    "session_id": "S3",
+    "supersedes": null
+  },
   "pi_checkpoint": {
-    "candidates_and_roles": "No candidates have been trained, evaluated, or assigned working, best-known, or retained roles.",
+    "candidates_and_roles": "T1 produced the available candidates, including T1:checkpoint-100352, which was measured by M1. No candidate is assigned working, best-known, or retained status; role assignment remains a goal-review decision supported by completed evidence.",
     "completed_operations": [
-      "E2"
+      "T1",
+      "M1",
+      "E4"
     ],
-    "cumulative_resource_use": "No training, evaluation, or other scientific operation has completed; cumulative campaign resource use remains zero.",
-    "current_goal_gap": "No learned candidate or episode evidence exists, so the campaign has no measured success rate or best-known model. Training currently samples only 0.14-0.20 m while the official distribution spans 0.06-0.20 m, and settling and uninterrupted hold stability remain unmeasured.",
-    "current_synthesis": "Established by the campaign-start physical model: every official target is statically reachable on at least one inverse-kinematic branch, while success additionally requires reaching, removing residual motion, and remaining within the 1 cm disk for 100 consecutive sampled observations. No behavioral finding has yet distinguished unsupported low-radius geometry from closed-loop hold-regulation failure; both remain hypotheses. Goal review therefore opened inquiry I1 to obtain discriminating baseline evidence rather than select an intervention prematurely.",
-    "decision_frontier": "The fresh I1 inquiry must establish a baseline candidate and measure it on the official target distribution, with results stratified by target radius and bearing and by first entry, settling, longest uninterrupted hold, interruptions, and timeout distance. The resulting evidence will determine whether low-radius coverage, hold regulation, or both require intervention before any claim about progress toward 98% is made.",
+    "cumulative_resource_use": "Completed scientific operations used one fresh PPO training run with 120,832 completed steps and one 160-episode development evaluation panel at seed 4200. No official assessment has been run.",
+    "current_goal_gap": "The measured baseline T1:checkpoint-100352 achieved 151/160 successes (94.375%) on a development panel, below the 98% objective and not an official 200-episode assessment. Nine failures remained, all in negative-bearing approach or settling: six never entered tolerance and three entered for only 1-2 consecutive samples. No failed episode reached settling and then lost the required 100-sample hold. No candidate has yet been assigned working or best-known status.",
+    "current_synthesis": "Observed evidence from M1 and E4: baseline failures were concentrated in the -180 to -90 degree bearing sector, with 4/25 successes in -180 to -135 degrees and 5/26 in -135 to -90 degrees; all other bearing strata achieved 100% on this panel. Radius strata did not show a dominant low-radius deficit, with success rates of 95.0%, 94.3%, 96.8%, and 91.7% across 6-10, 10-14, 14-17, and 17-20 cm. The observed shortfall is therefore bearing-specific approach and settling reliability, not demonstrated hold-regulation loss. The remaining branch interaction is a hypothesis, not an established finding.",
+    "decision_frontier": "Goal review must select the next bounded route toward at least 196/200 official successes. The evidence supports prioritizing an intervention that improves approach and settling in the negative-bearing sector while preserving the demonstrated 100-sample hold behavior; the current panel does not justify prioritizing hold regulation or low-radius coverage alone. Any selected candidate must later be measured on the complete official distribution before role assignment or official assessment.",
     "evidence_references": [
-      "E2"
+      "T1",
+      "M1",
+      "E4"
     ],
-    "human_goal_connection": "The human goal is at least 196 successful episodes out of 200 under the official target distribution, with each success requiring a complete uninterrupted 100-control-step hold. The opened inquiry is directly relevant because no distance or return proxy can establish this criterion.",
-    "inquiry_id": null,
-    "next_direction_or_closure": "The goal-review session is complete and inquiry I1 is now the active bounded route. In the fresh inquiry session, a credible non-binding direction is to produce and diagnose a current-recipe baseline across the full official distribution; no training correction or control intervention is selected until the phase- and geometry-stratified failure evidence is available.",
-    "scientific_commit": "975a6af940659f278feb8bb92ecba967fcfcec72",
-    "session_id": "S2"
+    "human_goal_connection": "The human goal is at least 196 successful episodes out of 200 under the official target distribution, with each success requiring a complete uninterrupted 100-control-step hold. The closed I1 inquiry provided the first behaviorally grounded failure diagnosis needed to choose the next goal-directed intervention rather than optimize shaped return.",
+    "inquiry_id": "I1",
+    "next_direction_or_closure": "In goal review, a credible non-binding direction is to design and test a training or policy intervention targeted at the diagnosed negative-bearing approach and settling failure, with explicit protection of the complete uninterrupted hold criterion. The intervention category, candidate selection, and required evidence remain for the next session; no claim of progress to 98% is made from the 94.375% development result.",
+    "scientific_commit": "a7913757598d2887fc736fc7e0377077d4b3935f",
+    "session_id": "S3"
   },
   "schema_version": 6,
   "scientific_model": {
@@ -1225,23 +1364,6 @@
     "path": "research/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "864dec56-2af3-487f-95f7-99de778d32d7",
-    "id": "S3",
-    "inquiry_id": "I1",
-    "kind": "inquiry",
-    "objective": "Bring I1 to the decision required by its closure condition, and close it as soon as the evidence supplies that decision: Close when a completed baseline candidate has been measured on the official target distribution with episode success and diagnostics stratified by target radius and bearing and by first entry, settling, longest uninterrupted hold, interruptions, and timeout distance, providing a supported actionable answer about whether low-radius coverage, closed-loop hold regulation, or both must be addressed first.",
-    "operation_ids": [
-      "T1",
-      "M1",
-      "E4"
-    ],
-    "scientific_parent_commit": "1ccb3241a758ef4d4159df18e15d3d00e16f01d0"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
