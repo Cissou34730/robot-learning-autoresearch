@@ -1,5 +1,13 @@
 {
-  "active_inquiry": null,
+  "active_inquiry": {
+    "closure_condition": "Close when controlled baseline-versus-intervention evidence provides a decision-sufficient answer: negative-bearing approach outcomes, settling outcomes, post-settling interruptions, longest uninterrupted hold, and total success are measured on the official distribution, and the resulting candidate is either a credible route to the 196/200 objective or the intervention is shown not to provide that route.",
+    "goal_connection": "Resolving this question can close the remaining development gap from 158/160 toward at least 196/200 official successes while preserving the hold behavior already observed after settling.",
+    "id": "I3",
+    "opened_in_session": "S7",
+    "question": "Can an explicitly branch-feasible, angularly continuous policy or training representation causally reduce the observed negative-bearing approach failures, without degrading settling or the complete uninterrupted hold across the official distribution?",
+    "rationale": "E4, M1, M2, and E9 show a repeatable negative-bearing approach shortfall, including training-supported radii, while every grid episode that settled completed the 100-sample hold. Analytic inverse kinematics identified feasible alternate folded branches for the failed targets, and the recorded approach actions were consistent with selecting a shoulder-limit branch. The mechanism is therefore actionable but untested; official assessment would be premature, while the evidence does not justify concluding that no credible route remains.",
+    "reframes": []
+  },
   "campaign": {
     "base_commit": "8ac206f76ce0bd7fb8f098b4fe6dceac2a2a311f",
     "id": "eb19a5f3-14b3-4590-ad74-1b31cf5ae3d5",
@@ -829,16 +837,16 @@
     }
   },
   "counters": {
-    "event": 10,
-    "inquiry": 2,
+    "event": 11,
+    "inquiry": 3,
     "measurement": 2,
-    "session": 6,
+    "session": 7,
     "training": 1
   },
   "human_goal": {
     "source": "research/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -1508,9 +1516,69 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-09-29T21:48:40Z",
+      "error": null,
+      "id": "E11",
+      "inquiry_id": "I3",
+      "kind": "inquiry",
+      "request": {
+        "action": "open",
+        "closure_condition": "Close when controlled baseline-versus-intervention evidence provides a decision-sufficient answer: negative-bearing approach outcomes, settling outcomes, post-settling interruptions, longest uninterrupted hold, and total success are measured on the official distribution, and the resulting candidate is either a credible route to the 196/200 objective or the intervention is shown not to provide that route.",
+        "goal_connection": "Resolving this question can close the remaining development gap from 158/160 toward at least 196/200 official successes while preserving the hold behavior already observed after settling.",
+        "question": "Can an explicitly branch-feasible, angularly continuous policy or training representation causally reduce the observed negative-bearing approach failures, without degrading settling or the complete uninterrupted hold across the official distribution?",
+        "rationale": "E4, M1, M2, and E9 show a repeatable negative-bearing approach shortfall, including training-supported radii, while every grid episode that settled completed the 100-sample hold. Analytic inverse kinematics identified feasible alternate folded branches for the failed targets, and the recorded approach actions were consistent with selecting a shoulder-limit branch. The mechanism is therefore actionable but untested; official assessment would be premature, while the evidence does not justify concluding that no credible route remains."
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I3",
+        "status": "completed"
+      },
+      "session_id": "S7",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "open",
+        "inquiry": {
+          "closure_condition": "Close when controlled baseline-versus-intervention evidence provides a decision-sufficient answer: negative-bearing approach outcomes, settling outcomes, post-settling interruptions, longest uninterrupted hold, and total success are measured on the official distribution, and the resulting candidate is either a credible route to the 196/200 objective or the intervention is shown not to provide that route.",
+          "goal_connection": "Resolving this question can close the remaining development gap from 158/160 toward at least 196/200 official successes while preserving the hold behavior already observed after settling.",
+          "id": "I3",
+          "opened_in_session": "S7",
+          "question": "Can an explicitly branch-feasible, angularly continuous policy or training representation causally reduce the observed negative-bearing approach failures, without degrading settling or the complete uninterrupted hold across the official distribution?",
+          "rationale": "E4, M1, M2, and E9 show a repeatable negative-bearing approach shortfall, including training-supported radii, while every grid episode that settled completed the 100-sample hold. Analytic inverse kinematics identified feasible alternate folded branches for the failed targets, and the recorded approach actions were consistent with selecting a shoulder-limit branch. The mechanism is therefore actionable but untested; official assessment would be premature, while the evidence does not justify concluding that no credible route remains.",
+          "reframes": []
+        }
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I3",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E11",
+    "inquiry_id": null,
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "open",
+        "closure_condition": "Close when controlled baseline-versus-intervention evidence provides a decision-sufficient answer: negative-bearing approach outcomes, settling outcomes, post-settling interruptions, longest uninterrupted hold, and total success are measured on the official distribution, and the resulting candidate is either a credible route to the 196/200 objective or the intervention is shown not to provide that route.",
+        "goal_connection": "Resolving this question can close the remaining development gap from 158/160 toward at least 196/200 official successes while preserving the hold behavior already observed after settling.",
+        "question": "Can an explicitly branch-feasible, angularly continuous policy or training representation causally reduce the observed negative-bearing approach failures, without degrading settling or the complete uninterrupted hold across the official distribution?",
+        "rationale": "E4, M1, M2, and E9 show a repeatable negative-bearing approach shortfall, including training-supported radii, while every grid episode that settled completed the 100-sample hold. Analytic inverse kinematics identified feasible alternate folded branches for the failed targets, and the recorded approach actions were consistent with selecting a shoulder-limit branch. The mechanism is therefore actionable but untested; official assessment would be premature, while the evidence does not justify concluding that no credible route remains."
+      }
+    },
+    "request_fingerprint": "320f11a007b189629d674efea8d727e9f29ec28c4b86b9b40ecb7d8b3f612e0d",
+    "session_id": "S7",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T1:checkpoint-100352 is the available reference candidate with M1 and M2 evaluation artifacts. No candidate is assigned working, best-known, or retained status.",
     "completed_operations": [
@@ -1538,6 +1606,21 @@
     "path": "research/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "e40dfc68-12a5-4a2e-a4fc-fa6596a6789c",
+    "id": "S7",
+    "inquiry_id": null,
+    "kind": "goal_review",
+    "objective": "Decide whether to request official assessment, open one bounded goal-linked inquiry, or conclude that no credible route remains.",
+    "operation_ids": [
+      "E11"
+    ],
+    "scientific_parent_commit": "34186818e1f367d347b0adc5f0add715fa710ff8"
+  },
   "terminal_state": null
 }
