@@ -4042,38 +4042,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I3",
-        "outcome": "The staged weak-braking route is not actionable toward the human goal and I3 is closed.",
-        "reason": "Controlled shared-seed evidence shows T3:checkpoint-100352 achieved 118/160 complete uninterrupted successes (73.75%) versus T1:checkpoint-100352 at 151/160 (94.375%). T3 lost all 33 discordant episodes, with paired net wins of -33 and no candidate wins. Although the transfer curriculum preserved high training success, it did not preserve measured official-distribution behavior: it fell 20.625 percentage points below T1 and remained far below the 157/160 I3 threshold. Thus staged introduction and a final braking scale of 10% did not provide decision-relevant improvement and the route is rejected. Residual uncertainty about other braking schedules cannot change I3's decision because this controlled reach-preserving test already demonstrated substantial degradation rather than a near-threshold tradeoff."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I3",
-        "outcome": "The staged weak-braking route is not actionable toward the human goal and I3 is closed.",
-        "reason": "Controlled shared-seed evidence shows T3:checkpoint-100352 achieved 118/160 complete uninterrupted successes (73.75%) versus T1:checkpoint-100352 at 151/160 (94.375%). T3 lost all 33 discordant episodes, with paired net wins of -33 and no candidate wins. Although the transfer curriculum preserved high training success, it did not preserve measured official-distribution behavior: it fell 20.625 percentage points below T1 and remained far below the 157/160 I3 threshold. Thus staged introduction and a final braking scale of 10% did not provide decision-relevant improvement and the route is rejected. Residual uncertainty about other braking schedules cannot change I3's decision because this controlled reach-preserving test already demonstrated substantial degradation rather than a near-threshold tradeoff.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E12",
-    "inquiry_id": "I3",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "The staged weak-braking route is not actionable toward the human goal and I3 is closed.",
-        "reason": "Controlled shared-seed evidence shows T3:checkpoint-100352 achieved 118/160 complete uninterrupted successes (73.75%) versus T1:checkpoint-100352 at 151/160 (94.375%). T3 lost all 33 discordant episodes, with paired net wins of -33 and no candidate wins. Although the transfer curriculum preserved high training success, it did not preserve measured official-distribution behavior: it fell 20.625 percentage points below T1 and remained far below the 157/160 I3 threshold. Thus staged introduction and a final braking scale of 10% did not provide decision-relevant improvement and the route is rejected. Residual uncertainty about other braking schedules cannot change I3's decision because this controlled reach-preserving test already demonstrated substantial degradation rather than a near-threshold tradeoff."
-      }
-    },
-    "request_fingerprint": "db12ae6f47d749364b712026221beb5bff070e7bd9cc39fdbe72165266399d1a",
-    "session_id": "S7",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T1:checkpoint-100352 remains available with M1 and M2 diagnostics. T2:checkpoint-120832 remains archived with M2 diagnostics but is not viable after 0/160 success. Working, best-known, and retained roles remain unassigned because no model-role operation has been completed.",
     "completed_operations": [
