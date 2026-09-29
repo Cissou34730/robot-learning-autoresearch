@@ -33,3 +33,4 @@
 | M5 | measurement | I5 | completed |
 | E22 | inquiry | I5 | completed |
 | E23 | checkpoint | I5 | checkpointed |
+| E24 | inquiry | I6 | completed |
