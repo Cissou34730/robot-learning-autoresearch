@@ -1647,7 +1647,7 @@
     }
   },
   "counters": {
-    "event": 8,
+    "event": 9,
     "inquiry": 2,
     "measurement": 2,
     "session": 5,
@@ -1656,7 +1656,7 @@
   "human_goal": {
     "source": "research/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -2615,29 +2615,173 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-09-29T14:14:06Z",
+      "error": null,
+      "id": "E9",
+      "inquiry_id": "I2",
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "T1:checkpoint-100352 remains available with M1 and M2 diagnostics. T2:checkpoint-120832 remains archived with M2 diagnostics but is not viable after 0/160 success. Working, best-known, and retained roles remain unassigned because no model-role operation has been completed.",
+        "completed_operations": [
+          "T2",
+          "M2",
+          "E8"
+        ],
+        "cumulative_resource_use": "Two fresh PPO training runs requested for 120,000 steps completed at 120,832 effective steps each, producing 24 archived candidates per run. Two 160-episode research evaluation panels were completed: M1 for T1 and M2 as a shared-seed paired comparison of T1 and T2. No official assessment has been executed and no model role has been assigned.",
+        "current_goal_gap": "The best measured candidate remains T1 at 151/160 successes (94.375%), below the 196/200 objective. T2 is not a viable candidate: it achieved 0/160, entered tolerance in 0/160 episodes, and had a mean minimum distance of 9.48 cm. No candidate has a working or best-known role, and no official assessment has been run.",
+        "current_synthesis": "I1 established that T1 failures were dominated by near-boundary non-entry and immediate post-entry overshoot rather than the inner-radius coverage gap or long-horizon interruptions. I2 tested a fresh PPO candidate with endpoint velocity in the observation and Gaussian-gated penalties on joint velocity, endpoint velocity, and action near the 1 cm boundary. On shared seeds 4200-4359, T2 achieved 0/160 successes versus T1's 151/160, lost all 151 discordant episodes, never entered tolerance, and had zero uninterrupted streak and zero interruptions because no hold began. The intervention therefore suppressed approach competence instead of selectively correcting braking. The negative result is actionable but does not establish that braking is irrelevant; it identifies penalty magnitude and timing as the consequential confound.",
+        "decision_frontier": "At goal review, decide whether to open a new inquiry testing a reach-preserving staged or substantially weaker braking curriculum: preserve T1-like approach and entry first, then introduce a bounded boundary penalty only after reliable entry. Judge any new candidate by complete uninterrupted official-distribution success and the same transient diagnostics; do not use reward or partial hold progress as a substitute.",
+        "evidence_references": [
+          "T1",
+          "M1",
+          "E4",
+          "E6",
+          "T2",
+          "M2",
+          "E8"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 complete uninterrupted successes in the protected 200-episode assessment. T1 achieved 151/160 on a held-out official-distribution panel, and I2's controlled braking candidate achieved 0/160, so the campaign still needs a reach-preserving intervention that improves boundary regulation without sacrificing entry.",
+        "next_direction_or_closure": "I2 is closed negatively and the campaign returns to goal review. The next scientifically discriminating direction is a new inquiry for a reach-preserving staged or weaker braking intervention, with T1 as the behavioral reference; do not run an official assessment until a candidate is credibly near the 98% objective."
+      },
+      "result": {
+        "session_id": "S5",
+        "status": "checkpointed"
+      },
+      "session_id": "S5",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "5807a8d6c02a99a3dce12dad574d02ac94caa359",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "T1:checkpoint-100352 remains available with M1 and M2 diagnostics. T2:checkpoint-120832 remains archived with M2 diagnostics but is not viable after 0/160 success. Working, best-known, and retained roles remain unassigned because no model-role operation has been completed.",
+        "completed_operations": [
+          "T2",
+          "M2",
+          "E8"
+        ],
+        "cumulative_resource_use": "Two fresh PPO training runs requested for 120,000 steps completed at 120,832 effective steps each, producing 24 archived candidates per run. Two 160-episode research evaluation panels were completed: M1 for T1 and M2 as a shared-seed paired comparison of T1 and T2. No official assessment has been executed and no model role has been assigned.",
+        "current_goal_gap": "The best measured candidate remains T1 at 151/160 successes (94.375%), below the 196/200 objective. T2 is not a viable candidate: it achieved 0/160, entered tolerance in 0/160 episodes, and had a mean minimum distance of 9.48 cm. No candidate has a working or best-known role, and no official assessment has been run.",
+        "current_synthesis": "I1 established that T1 failures were dominated by near-boundary non-entry and immediate post-entry overshoot rather than the inner-radius coverage gap or long-horizon interruptions. I2 tested a fresh PPO candidate with endpoint velocity in the observation and Gaussian-gated penalties on joint velocity, endpoint velocity, and action near the 1 cm boundary. On shared seeds 4200-4359, T2 achieved 0/160 successes versus T1's 151/160, lost all 151 discordant episodes, never entered tolerance, and had zero uninterrupted streak and zero interruptions because no hold began. The intervention therefore suppressed approach competence instead of selectively correcting braking. The negative result is actionable but does not establish that braking is irrelevant; it identifies penalty magnitude and timing as the consequential confound.",
+        "decision_frontier": "At goal review, decide whether to open a new inquiry testing a reach-preserving staged or substantially weaker braking curriculum: preserve T1-like approach and entry first, then introduce a bounded boundary penalty only after reliable entry. Judge any new candidate by complete uninterrupted official-distribution success and the same transient diagnostics; do not use reward or partial hold progress as a substitute.",
+        "evidence_references": [
+          "T1",
+          "M1",
+          "E4",
+          "E6",
+          "T2",
+          "M2",
+          "E8"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 complete uninterrupted successes in the protected 200-episode assessment. T1 achieved 151/160 on a held-out official-distribution panel, and I2's controlled braking candidate achieved 0/160, so the campaign still needs a reach-preserving intervention that improves boundary regulation without sacrificing entry.",
+        "inquiry_id": "I2",
+        "next_direction_or_closure": "I2 is closed negatively and the campaign returns to goal review. The next scientifically discriminating direction is a new inquiry for a reach-preserving staged or weaker braking intervention, with T1 as the behavioral reference; do not run an official assessment until a candidate is credibly near the 98% objective.",
+        "session_id": "S5"
+      },
+      "presentation": {
+        "backend_session_id": "e4ea9fac-6b75-4856-8ae1-7e60ba317480",
+        "campaign_id": "7f551163-bae6-40bc-9b0b-a960be607ffb",
+        "campaign_usage": "20m15s | 33.09 AIU | prompt 5.7m (88% cached) | output 49.8k",
+        "session_id": "S5",
+        "session_kind": "inquiry",
+        "session_usage": "5m39s | 12.80 AIU | prompt 2.6m (90% cached) | output 14.7k"
+      },
+      "result": {
+        "session_id": "S5",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "a78c6c41548c3d50f666a31faab3748b8620b702",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E9",
+    "inquiry_id": "I2",
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "T1:checkpoint-100352 remains available with M1 and M2 diagnostics. T2:checkpoint-120832 remains archived with M2 diagnostics but is not viable after 0/160 success. Working, best-known, and retained roles remain unassigned because no model-role operation has been completed.",
+        "completed_operations": [
+          "T2",
+          "M2",
+          "E8"
+        ],
+        "cumulative_resource_use": "Two fresh PPO training runs requested for 120,000 steps completed at 120,832 effective steps each, producing 24 archived candidates per run. Two 160-episode research evaluation panels were completed: M1 for T1 and M2 as a shared-seed paired comparison of T1 and T2. No official assessment has been executed and no model role has been assigned.",
+        "current_goal_gap": "The best measured candidate remains T1 at 151/160 successes (94.375%), below the 196/200 objective. T2 is not a viable candidate: it achieved 0/160, entered tolerance in 0/160 episodes, and had a mean minimum distance of 9.48 cm. No candidate has a working or best-known role, and no official assessment has been run.",
+        "current_synthesis": "I1 established that T1 failures were dominated by near-boundary non-entry and immediate post-entry overshoot rather than the inner-radius coverage gap or long-horizon interruptions. I2 tested a fresh PPO candidate with endpoint velocity in the observation and Gaussian-gated penalties on joint velocity, endpoint velocity, and action near the 1 cm boundary. On shared seeds 4200-4359, T2 achieved 0/160 successes versus T1's 151/160, lost all 151 discordant episodes, never entered tolerance, and had zero uninterrupted streak and zero interruptions because no hold began. The intervention therefore suppressed approach competence instead of selectively correcting braking. The negative result is actionable but does not establish that braking is irrelevant; it identifies penalty magnitude and timing as the consequential confound.",
+        "decision_frontier": "At goal review, decide whether to open a new inquiry testing a reach-preserving staged or substantially weaker braking curriculum: preserve T1-like approach and entry first, then introduce a bounded boundary penalty only after reliable entry. Judge any new candidate by complete uninterrupted official-distribution success and the same transient diagnostics; do not use reward or partial hold progress as a substitute.",
+        "evidence_references": [
+          "T1",
+          "M1",
+          "E4",
+          "E6",
+          "T2",
+          "M2",
+          "E8"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 complete uninterrupted successes in the protected 200-episode assessment. T1 achieved 151/160 on a held-out official-distribution panel, and I2's controlled braking candidate achieved 0/160, so the campaign still needs a reach-preserving intervention that improves boundary regulation without sacrificing entry.",
+        "next_direction_or_closure": "I2 is closed negatively and the campaign returns to goal review. The next scientifically discriminating direction is a new inquiry for a reach-preserving staged or weaker braking intervention, with T1 as the behavioral reference; do not run an official assessment until a candidate is credibly near the 98% objective."
+      }
+    },
+    "request_fingerprint": "6682cc8d8c3d64c71ae12be89784b31fde132f346f149c543c33ac787a05d225",
+    "session_id": "S5",
+    "supersedes": null
+  },
   "pi_checkpoint": {
-    "candidates_and_roles": "Candidate T1:checkpoint-100352 remains available with its M1 diagnostic artifact. Working, best-known, and retained roles remain unassigned because no role operation has been completed.",
+    "candidates_and_roles": "T1:checkpoint-100352 remains available with M1 and M2 diagnostics. T2:checkpoint-120832 remains archived with M2 diagnostics but is not viable after 0/160 success. Working, best-known, and retained roles remain unassigned because no model-role operation has been completed.",
     "completed_operations": [
-      "E6"
+      "T2",
+      "M2",
+      "E8"
     ],
-    "cumulative_resource_use": "One fresh PPO training run requested for 120,000 steps completed at 120,832 effective steps, producing 24 archived candidates. One 160-episode research evaluation panel was completed for T1:checkpoint-100352. No resources have yet been spent on I2, and no official assessment has been executed.",
-    "current_goal_gap": "T1 achieved 151/160 successes (94.375%) on a held-out official-distribution panel, below the 98% objective. No candidate has a working or best-known role, and no official assessment has been run. The remaining gap is to produce and measure a candidate whose transient reach, braking, and boundary regulation are sufficiently reliable for a credible 196/200 assessment result.",
-    "current_synthesis": "T1 trained PPO on radii 0.14-0.20 m. M1 measured it on the official 0.06-0.20 m distribution: 6 of 9 failures never entered the 1 cm tolerance and 3 entered but lost it after only 1-2 sampled steps, with 0.19-0.55 cm post-entry overshoot. Similar failure rates across radius bands show that the training coverage gap is not the dominant explanation; hold interruptions were secondary. The physical model predicts that bounded torque held for 20 ms can carry residual momentum across the tolerance boundary. Because the observation includes joint and endpoint state but the baseline reward has no meaningful near-boundary velocity or braking objective, a boundary-aware braking intervention is a credible next test, but its effectiveness remains unestablished.",
-    "decision_frontier": "In the fresh I2 inquiry session, implement and train a controlled boundary-aware braking candidate, then compare it with T1 on shared held-out official-distribution episode seeds. Judge the intervention by complete episode success and the diagnostic measures of minimum distance, first entry, post-entry overshoot, longest uninterrupted streak, and interruptions; do not use reward or partial hold progress as a substitute for the official criterion.",
+    "cumulative_resource_use": "Two fresh PPO training runs requested for 120,000 steps completed at 120,832 effective steps each, producing 24 archived candidates per run. Two 160-episode research evaluation panels were completed: M1 for T1 and M2 as a shared-seed paired comparison of T1 and T2. No official assessment has been executed and no model role has been assigned.",
+    "current_goal_gap": "The best measured candidate remains T1 at 151/160 successes (94.375%), below the 196/200 objective. T2 is not a viable candidate: it achieved 0/160, entered tolerance in 0/160 episodes, and had a mean minimum distance of 9.48 cm. No candidate has a working or best-known role, and no official assessment has been run.",
+    "current_synthesis": "I1 established that T1 failures were dominated by near-boundary non-entry and immediate post-entry overshoot rather than the inner-radius coverage gap or long-horizon interruptions. I2 tested a fresh PPO candidate with endpoint velocity in the observation and Gaussian-gated penalties on joint velocity, endpoint velocity, and action near the 1 cm boundary. On shared seeds 4200-4359, T2 achieved 0/160 successes versus T1's 151/160, lost all 151 discordant episodes, never entered tolerance, and had zero uninterrupted streak and zero interruptions because no hold began. The intervention therefore suppressed approach competence instead of selectively correcting braking. The negative result is actionable but does not establish that braking is irrelevant; it identifies penalty magnitude and timing as the consequential confound.",
+    "decision_frontier": "At goal review, decide whether to open a new inquiry testing a reach-preserving staged or substantially weaker braking curriculum: preserve T1-like approach and entry first, then introduce a bounded boundary penalty only after reliable entry. Judge any new candidate by complete uninterrupted official-distribution success and the same transient diagnostics; do not use reward or partial hold progress as a substitute.",
     "evidence_references": [
       "T1",
       "M1",
       "E4",
-      "E6"
+      "E6",
+      "T2",
+      "M2",
+      "E8"
     ],
-    "human_goal_connection": "The human goal requires at least 196 complete uninterrupted successes in the protected 200-episode assessment. The measured baseline achieved only 151/160 successes, so the campaign must first establish whether improving transient braking and tolerance-boundary regulation can close the remaining gap without changing the official success criterion.",
-    "inquiry_id": null,
-    "next_direction_or_closure": "The goal-review session is complete and I2 is opened. After this checkpoint, start the fresh I2 inquiry session and test the specified boundary-aware braking intervention against T1. Close I2 when the controlled comparison either supports it as an actionable route toward at least 196/200 or shows that it does not improve the transient failure regime and identifies the next discriminating intervention.",
-    "scientific_commit": "ffc284926a09a3ce110a6d20dc42b01334b4efaa",
-    "session_id": "S4"
+    "human_goal_connection": "The human goal requires at least 196 complete uninterrupted successes in the protected 200-episode assessment. T1 achieved 151/160 on a held-out official-distribution panel, and I2's controlled braking candidate achieved 0/160, so the campaign still needs a reach-preserving intervention that improves boundary regulation without sacrificing entry.",
+    "inquiry_id": "I2",
+    "next_direction_or_closure": "I2 is closed negatively and the campaign returns to goal review. The next scientifically discriminating direction is a new inquiry for a reach-preserving staged or weaker braking intervention, with T1 as the behavioral reference; do not run an official assessment until a candidate is credibly near the 98% objective.",
+    "scientific_commit": "a78c6c41548c3d50f666a31faab3748b8620b702",
+    "session_id": "S5"
   },
   "schema_version": 6,
   "scientific_model": {
@@ -2645,23 +2789,6 @@
     "path": "research/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "e4ea9fac-6b75-4856-8ae1-7e60ba317480",
-    "id": "S5",
-    "inquiry_id": "I2",
-    "kind": "inquiry",
-    "objective": "Bring I2 to the decision required by its closure condition, and close it as soon as the evidence supplies that decision: Close when a controlled candidate trained with the boundary-aware braking intervention has been compared with T1 on shared held-out official-distribution episode seeds using complete success, minimum distance, first entry, post-entry overshoot, longest uninterrupted streak, and interruptions, and the evidence either supports the intervention as an actionable route toward at least 196/200 or shows that it does not improve the transient failure regime and identifies the next discriminating intervention.",
-    "operation_ids": [
-      "T2",
-      "M2",
-      "E8"
-    ],
-    "scientific_parent_commit": "5807a8d6c02a99a3dce12dad574d02ac94caa359"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
