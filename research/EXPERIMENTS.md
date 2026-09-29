@@ -2,3 +2,4 @@
 
 | Operation | Kind | Inquiry | Result |
 |---|---|---|---|
+| E1 | checkpoint | - | checkpointed |
