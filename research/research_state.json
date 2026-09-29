@@ -2468,7 +2468,7 @@
     }
   },
   "counters": {
-    "event": 22,
+    "event": 23,
     "inquiry": 5,
     "measurement": 5,
     "session": 12,
@@ -2477,7 +2477,7 @@
   "human_goal": {
     "source": "research/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -4563,34 +4563,149 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-09-29T22:58:42Z",
+      "error": null,
+      "id": "E23",
+      "inquiry_id": "I5",
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "T1:checkpoint-100352 remains the strongest measured candidate but is unassigned after M5's 194/200 fresh panel. T2:checkpoint-100352 remains unassigned after its 129/200 paired degradation. T3:checkpoint-100352 remains unassigned after its 116/200 degradation. No candidate has working, best-known, or retained status.",
+        "completed_operations": [
+          "M5",
+          "E22"
+        ],
+        "cumulative_resource_use": "The campaign has used three fresh PPO training runs of 120,832 completed steps each, three 160-episode development panels, one 138-target diagnostic grid, and three 200-episode development panels, including M5's fresh 200-episode panel. I3 changed robot_learning/scenario/observations.py; I4 changed robot_learning/scenario/training_environment.py and restored evaluation diagnostics; E17 restored the T1 baseline recipe. No official assessment has run.",
+        "current_goal_gap": "M5 measured T1:checkpoint-100352 at 194/200 successes (97.0%) on a fresh non-official complete-distribution panel, below the 196/200 objective. The candidate therefore has no best-known role and no official assessment has been requested. The campaign still lacks a candidate with decision-sufficient evidence for the human goal.",
+        "current_synthesis": "Observed: M5 measured T1:checkpoint-100352 at 194/200 successes (97.0%) on fresh episode seeds 10200-10399. All 6 failures had negative target bearings; 2 never entered tolerance, 5 never established the 10-sample settling run, and 1 established settling but did not complete the uninterrupted hold. T1 reached a maximum uninterrupted hold of 100 steps. Across M4 and M5, the remaining observed shortfall is a variable negative-bearing approach and settling tail, not a demonstrated inability to complete the hold after settling. This result withholds assessment readiness for T1. It does not establish that no other intervention or route can remove the tail.",
+        "decision_frontier": "I5 is closed with the evidence-supported decision to withhold assigning T1:checkpoint-100352 as best-known and to withhold requesting the protected official assessment. Goal review must now decide whether the remaining negative-bearing approach and settling shortfall warrants a new goal-linked inquiry and route, or whether another campaign-level decision is justified. The 194/200 development result is not an official assessment result.",
+        "evidence_references": [
+          "M5",
+          "E22"
+        ],
+        "human_goal_connection": "The campaign still targets at least 196 successful episodes out of 200 under the complete official target distribution, with every success requiring the complete uninterrupted 100-control-step hold. I5 assessed whether T1:checkpoint-100352 was sufficiently credible to freeze for protected official assessment.",
+        "next_direction_or_closure": "The inquiry-session summary is complete and I5 is closed. In the next goal-review session, a non-binding direction is to examine whether a new scientific inquiry can address the demonstrated negative-bearing approach and settling tail without treating prior failed interventions as sufficient. No training, measurement, role assignment, official assessment request, or claim that the human goal has been reached is made here."
+      },
+      "result": {
+        "session_id": "S12",
+        "status": "checkpointed"
+      },
+      "session_id": "S12",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "48e0b02731c2111eaf651dabdfafd51d6cd06056",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "T1:checkpoint-100352 remains the strongest measured candidate but is unassigned after M5's 194/200 fresh panel. T2:checkpoint-100352 remains unassigned after its 129/200 paired degradation. T3:checkpoint-100352 remains unassigned after its 116/200 degradation. No candidate has working, best-known, or retained status.",
+        "completed_operations": [
+          "M5",
+          "E22"
+        ],
+        "cumulative_resource_use": "The campaign has used three fresh PPO training runs of 120,832 completed steps each, three 160-episode development panels, one 138-target diagnostic grid, and three 200-episode development panels, including M5's fresh 200-episode panel. I3 changed robot_learning/scenario/observations.py; I4 changed robot_learning/scenario/training_environment.py and restored evaluation diagnostics; E17 restored the T1 baseline recipe. No official assessment has run.",
+        "current_goal_gap": "M5 measured T1:checkpoint-100352 at 194/200 successes (97.0%) on a fresh non-official complete-distribution panel, below the 196/200 objective. The candidate therefore has no best-known role and no official assessment has been requested. The campaign still lacks a candidate with decision-sufficient evidence for the human goal.",
+        "current_synthesis": "Observed: M5 measured T1:checkpoint-100352 at 194/200 successes (97.0%) on fresh episode seeds 10200-10399. All 6 failures had negative target bearings; 2 never entered tolerance, 5 never established the 10-sample settling run, and 1 established settling but did not complete the uninterrupted hold. T1 reached a maximum uninterrupted hold of 100 steps. Across M4 and M5, the remaining observed shortfall is a variable negative-bearing approach and settling tail, not a demonstrated inability to complete the hold after settling. This result withholds assessment readiness for T1. It does not establish that no other intervention or route can remove the tail.",
+        "decision_frontier": "I5 is closed with the evidence-supported decision to withhold assigning T1:checkpoint-100352 as best-known and to withhold requesting the protected official assessment. Goal review must now decide whether the remaining negative-bearing approach and settling shortfall warrants a new goal-linked inquiry and route, or whether another campaign-level decision is justified. The 194/200 development result is not an official assessment result.",
+        "evidence_references": [
+          "M5",
+          "E22"
+        ],
+        "human_goal_connection": "The campaign still targets at least 196 successful episodes out of 200 under the complete official target distribution, with every success requiring the complete uninterrupted 100-control-step hold. I5 assessed whether T1:checkpoint-100352 was sufficiently credible to freeze for protected official assessment.",
+        "inquiry_id": "I5",
+        "next_direction_or_closure": "The inquiry-session summary is complete and I5 is closed. In the next goal-review session, a non-binding direction is to examine whether a new scientific inquiry can address the demonstrated negative-bearing approach and settling tail without treating prior failed interventions as sufficient. No training, measurement, role assignment, official assessment request, or claim that the human goal has been reached is made here.",
+        "session_id": "S12"
+      },
+      "presentation": {
+        "backend_session_id": "3b102dda-922d-49b8-a1af-4658d05634c2",
+        "campaign_id": "eb19a5f3-14b3-4590-ad74-1b31cf5ae3d5",
+        "campaign_usage": "43m43s | 104.50 AIU | prompt 17.2m (86% cached) | output 117k",
+        "session_id": "S12",
+        "session_kind": "inquiry",
+        "session_usage": "2m33s | 7.58 AIU | prompt 1.1m (82% cached) | output 5.5k"
+      },
+      "result": {
+        "session_id": "S12",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "404fab458209b461a2e83a782cfbe302ce5c330b",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E23",
+    "inquiry_id": "I5",
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "T1:checkpoint-100352 remains the strongest measured candidate but is unassigned after M5's 194/200 fresh panel. T2:checkpoint-100352 remains unassigned after its 129/200 paired degradation. T3:checkpoint-100352 remains unassigned after its 116/200 degradation. No candidate has working, best-known, or retained status.",
+        "completed_operations": [
+          "M5",
+          "E22"
+        ],
+        "cumulative_resource_use": "The campaign has used three fresh PPO training runs of 120,832 completed steps each, three 160-episode development panels, one 138-target diagnostic grid, and three 200-episode development panels, including M5's fresh 200-episode panel. I3 changed robot_learning/scenario/observations.py; I4 changed robot_learning/scenario/training_environment.py and restored evaluation diagnostics; E17 restored the T1 baseline recipe. No official assessment has run.",
+        "current_goal_gap": "M5 measured T1:checkpoint-100352 at 194/200 successes (97.0%) on a fresh non-official complete-distribution panel, below the 196/200 objective. The candidate therefore has no best-known role and no official assessment has been requested. The campaign still lacks a candidate with decision-sufficient evidence for the human goal.",
+        "current_synthesis": "Observed: M5 measured T1:checkpoint-100352 at 194/200 successes (97.0%) on fresh episode seeds 10200-10399. All 6 failures had negative target bearings; 2 never entered tolerance, 5 never established the 10-sample settling run, and 1 established settling but did not complete the uninterrupted hold. T1 reached a maximum uninterrupted hold of 100 steps. Across M4 and M5, the remaining observed shortfall is a variable negative-bearing approach and settling tail, not a demonstrated inability to complete the hold after settling. This result withholds assessment readiness for T1. It does not establish that no other intervention or route can remove the tail.",
+        "decision_frontier": "I5 is closed with the evidence-supported decision to withhold assigning T1:checkpoint-100352 as best-known and to withhold requesting the protected official assessment. Goal review must now decide whether the remaining negative-bearing approach and settling shortfall warrants a new goal-linked inquiry and route, or whether another campaign-level decision is justified. The 194/200 development result is not an official assessment result.",
+        "evidence_references": [
+          "M5",
+          "E22"
+        ],
+        "human_goal_connection": "The campaign still targets at least 196 successful episodes out of 200 under the complete official target distribution, with every success requiring the complete uninterrupted 100-control-step hold. I5 assessed whether T1:checkpoint-100352 was sufficiently credible to freeze for protected official assessment.",
+        "next_direction_or_closure": "The inquiry-session summary is complete and I5 is closed. In the next goal-review session, a non-binding direction is to examine whether a new scientific inquiry can address the demonstrated negative-bearing approach and settling tail without treating prior failed interventions as sufficient. No training, measurement, role assignment, official assessment request, or claim that the human goal has been reached is made here."
+      }
+    },
+    "request_fingerprint": "fe82472a83c4e722cf8ca4132eba5eceeb0529d557262b173758c75a5d4d809b",
+    "session_id": "S12",
+    "supersedes": null
+  },
   "pi_checkpoint": {
-    "candidates_and_roles": "T1:checkpoint-100352 remains the strongest measured candidate, with 196/200 successes on M4's shared development panel, but has no working, best-known, or retained role. T3:checkpoint-100352 remains unassigned and is not credible after its 116/200 result and decisive paired loss. T2:checkpoint-100352 remains unassigned after its M3 degradation.",
+    "candidates_and_roles": "T1:checkpoint-100352 remains the strongest measured candidate but is unassigned after M5's 194/200 fresh panel. T2:checkpoint-100352 remains unassigned after its 129/200 paired degradation. T3:checkpoint-100352 remains unassigned after its 116/200 degradation. No candidate has working, best-known, or retained status.",
     "completed_operations": [
-      "E20"
+      "M5",
+      "E22"
     ],
-    "cumulative_resource_use": "The campaign has used three fresh PPO training runs of 120,832 completed steps each, two 160-episode development panels, one 138-target diagnostic grid, and two paired 200-episode development panels evaluating candidates on shared seeds. I3 changed robot_learning/scenario/observations.py; I4 changed robot_learning/scenario/training_environment.py and restored evaluation diagnostics; E17 restored the T1 baseline recipe. E20 opened I5 without consuming training or measurement resources. No official assessment has run.",
-    "current_goal_gap": "M4 measured T1:checkpoint-100352 at 196/200 successes (98.0%) and T3:checkpoint-100352 at 116/200 (58.0%) on a shared 200-episode development panel. T3 is not credible for role assignment. T1 meets the numerical development-panel threshold, but official assessment remains unrun and no candidate has working, best-known, or retained status.",
-    "current_synthesis": "Observed: M4 measured T1 at 196/200 and T3 at 116/200, with 80 baseline wins and 0 intervention wins. Observed: T3 had 43 negative-bearing failures versus 4 for T1, no tolerance entry in 74 failed episodes versus 2, and no established settling in 84 failed episodes versus 4. Observed: every episode that established settling completed the uninterrupted 100-step hold for both candidates, and both reached a maximum uninterrupted hold of 100 steps. The full-radius-support intervention therefore degraded complete-task success under this recipe and did not reduce the observed approach and settling shortfall. This result rejects that intervention and recipe as sufficient; it does not establish that no other route can work. The remaining issue is assessment readiness for T1, not a demonstrated hold-regulation failure.",
-    "decision_frontier": "I5 is now opened but no action has yet been taken in its inquiry session. The next bounded decision is whether a fresh non-official 200-episode complete-distribution evaluation of T1, with the established negative-bearing approach, settling, interruption, longest-hold, and total-success diagnostics, supports assigning T1 as best-known and requesting official assessment, or instead requires withholding that assignment. M4 remains development evidence and must not be treated as the official result.",
+    "cumulative_resource_use": "The campaign has used three fresh PPO training runs of 120,832 completed steps each, three 160-episode development panels, one 138-target diagnostic grid, and three 200-episode development panels, including M5's fresh 200-episode panel. I3 changed robot_learning/scenario/observations.py; I4 changed robot_learning/scenario/training_environment.py and restored evaluation diagnostics; E17 restored the T1 baseline recipe. No official assessment has run.",
+    "current_goal_gap": "M5 measured T1:checkpoint-100352 at 194/200 successes (97.0%) on a fresh non-official complete-distribution panel, below the 196/200 objective. The candidate therefore has no best-known role and no official assessment has been requested. The campaign still lacks a candidate with decision-sufficient evidence for the human goal.",
+    "current_synthesis": "Observed: M5 measured T1:checkpoint-100352 at 194/200 successes (97.0%) on fresh episode seeds 10200-10399. All 6 failures had negative target bearings; 2 never entered tolerance, 5 never established the 10-sample settling run, and 1 established settling but did not complete the uninterrupted hold. T1 reached a maximum uninterrupted hold of 100 steps. Across M4 and M5, the remaining observed shortfall is a variable negative-bearing approach and settling tail, not a demonstrated inability to complete the hold after settling. This result withholds assessment readiness for T1. It does not establish that no other intervention or route can remove the tail.",
+    "decision_frontier": "I5 is closed with the evidence-supported decision to withhold assigning T1:checkpoint-100352 as best-known and to withhold requesting the protected official assessment. Goal review must now decide whether the remaining negative-bearing approach and settling shortfall warrants a new goal-linked inquiry and route, or whether another campaign-level decision is justified. The 194/200 development result is not an official assessment result.",
     "evidence_references": [
-      "T2",
-      "M3",
-      "E13",
-      "E15",
-      "E17",
-      "T3",
-      "M4",
-      "E18",
-      "E20"
+      "M5",
+      "E22"
     ],
-    "human_goal_connection": "The campaign still targets at least 196 successful episodes out of 200 under the complete official target distribution, with every success requiring the complete uninterrupted 100-control-step hold. Goal review opened I5 to determine whether T1 is credible for protected official assessment or whether its development variability and remaining approach and settling failures require further goal-linked work.",
-    "inquiry_id": null,
-    "next_direction_or_closure": "The goal-review session is complete. In the fresh I5 inquiry session, a non-binding direction is to run the specified fresh 200-episode development evaluation of T1 and use its phase diagnostics to decide assessment readiness. No role assignment, official assessment request, or claim that the human goal has been reached is made in this checkpoint.",
-    "scientific_commit": "7e58d29bd3d845d52f4725be707907b4b258857c",
-    "session_id": "S11"
+    "human_goal_connection": "The campaign still targets at least 196 successful episodes out of 200 under the complete official target distribution, with every success requiring the complete uninterrupted 100-control-step hold. I5 assessed whether T1:checkpoint-100352 was sufficiently credible to freeze for protected official assessment.",
+    "inquiry_id": "I5",
+    "next_direction_or_closure": "The inquiry-session summary is complete and I5 is closed. In the next goal-review session, a non-binding direction is to examine whether a new scientific inquiry can address the demonstrated negative-bearing approach and settling tail without treating prior failed interventions as sufficient. No training, measurement, role assignment, official assessment request, or claim that the human goal has been reached is made here.",
+    "scientific_commit": "404fab458209b461a2e83a782cfbe302ce5c330b",
+    "session_id": "S12"
   },
   "schema_version": 6,
   "scientific_model": {
@@ -4598,22 +4713,6 @@
     "path": "research/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "3b102dda-922d-49b8-a1af-4658d05634c2",
-    "id": "S12",
-    "inquiry_id": "I5",
-    "kind": "inquiry",
-    "objective": "Bring I5 to the decision required by its closure condition, and close it as soon as the evidence supplies that decision: Close when one fresh, non-official 200-episode complete-distribution evaluation of T1:checkpoint-100352, using the established phase diagnostics, provides decision-sufficient evidence either to assign T1 as best-known and proceed to official assessment or to withhold that assignment because the candidate is not sufficiently credible.",
-    "operation_ids": [
-      "M5",
-      "E22"
-    ],
-    "scientific_parent_commit": "48e0b02731c2111eaf651dabdfafd51d6cd06056"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
