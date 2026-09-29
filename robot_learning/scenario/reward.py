@@ -19,14 +19,10 @@ CLOSENESS_LENGTH_SCALE = 0.05
 ACTION_COST_COEFFICIENT = 0.01
 HOLD_PROGRESS_BONUS = 50.0
 HOLD_PROGRESS_EXPONENT = 1.0
-HOLD_EXIT_FORFEIT_FRACTION = 0.5
+HOLD_EXIT_FORFEIT_FRACTION = 0.0
 OUTSIDE_BAND_WIDTH = 0.01
 OUTSIDE_BAND_PENALTY = 0.1
 HOLD_COMPLETE_BONUS = 50.0
-VELOCITY_SETTLING_BAND = 0.03
-VELOCITY_SCALE = 0.25
-VELOCITY_PENALTY_COEFFICIENT = 0.75
-BRAKING_CREDIT_COEFFICIENT = 0.5
 
 
 @dataclass(frozen=True)
@@ -57,8 +53,6 @@ def reach_reward(
     previous_held_steps: int = 0,
     hold_steps_required: int = 100,
     penalize_outside: bool = False,
-    current_end_effector_speed: float = 0.0,
-    previous_end_effector_speed: float = 0.0,
 ) -> RewardResult:
     progress = PROGRESS_COEFFICIENT * (previous_distance - current_distance)
     reward = progress
@@ -79,31 +73,6 @@ def reach_reward(
     else:
         hold_progress = current_hold_capital - previous_hold_capital
     reward += hold_progress
-
-    if VELOCITY_SETTLING_BAND <= 0 or VELOCITY_SCALE <= 0:
-        raise ValueError("velocity reward scales must be positive")
-    settling_fraction = np.clip(
-        (
-            success_threshold
-            + VELOCITY_SETTLING_BAND
-            - current_distance
-        )
-        / VELOCITY_SETTLING_BAND,
-        0.0,
-        1.0,
-    )
-    velocity_weight = max(float(settling_fraction), float(held_steps > 0))
-    current_speed = max(float(current_end_effector_speed), 0.0) / VELOCITY_SCALE
-    previous_speed = max(float(previous_end_effector_speed), 0.0) / VELOCITY_SCALE
-    velocity_penalty = -(
-        VELOCITY_PENALTY_COEFFICIENT * velocity_weight * current_speed**2
-    )
-    braking_credit = (
-        BRAKING_CREDIT_COEFFICIENT
-        * velocity_weight
-        * (previous_speed**2 - current_speed**2)
-    )
-    reward += velocity_penalty + braking_credit
 
     outside_band = 0.0
     if penalize_outside and current_distance > success_threshold:
@@ -132,8 +101,6 @@ def reach_reward(
             "progress": float(progress),
             "closeness": float(closeness),
             "hold_progress": float(hold_progress),
-            "velocity_penalty": float(velocity_penalty),
-            "braking_credit": float(braking_credit),
             "outside_band": float(outside_band),
             "hold_complete": float(hold_complete),
             "action_cost": float(action_cost),
