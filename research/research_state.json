@@ -3287,7 +3287,7 @@
     }
   },
   "counters": {
-    "event": 27,
+    "event": 28,
     "inquiry": 6,
     "measurement": 6,
     "session": 14,
@@ -3296,7 +3296,7 @@
   "human_goal": {
     "source": "research/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -6039,28 +6039,165 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-09-29T23:23:43Z",
+      "error": null,
+      "id": "E28",
+      "inquiry_id": "I6",
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "T1:checkpoint-100352 remains the strongest measured candidate but is unassigned after M6's 195/200 panel. T4:checkpoint-100352 is rejected after its 0/200 paired result and zero training success. T2:checkpoint-100352 and T3:checkpoint-100352 remain unassigned after earlier degradation results. No candidate has working, best-known, or retained status.",
+        "completed_operations": [
+          "E26",
+          "T4",
+          "M6",
+          "E27"
+        ],
+        "cumulative_resource_use": "The campaign has used four fresh PPO training runs of 120,832 completed steps each, four 160-episode development panels, one 138-target diagnostic grid, and four 200-episode development panels, including M6's paired T1-versus-T4 panel. I3 changed robot_learning/scenario/observations.py; I4 changed robot_learning/scenario/training_environment.py and restored evaluation diagnostics; E17 restored the T1 baseline recipe; I6 changed robot_learning/scenario/reward.py and robot_learning/scenario/environment.py before T4. No official assessment has run.",
+        "current_goal_gap": "M6 measured baseline T1:checkpoint-100352 at 195/200 successes (97.5%) and velocity-sensitive reward intervention T4:checkpoint-100352 at 0/200 on a shared fresh complete-distribution panel. The intervention materially degraded complete-task success, no candidate has working or best-known status, and official assessment remains unrequested.",
+        "current_synthesis": "Observed: M6's controlled shared-seed panel measured T1 at 195/200 and T4 at 0/200, with 195 baseline wins, 0 intervention wins, and a -97.5 percentage-point intervention difference. Observed: T4 also had zero training success and negative episode reward at every recorded checkpoint. These findings reject this hold-aware velocity-sensitive reward and credit-assignment recipe as a route toward the goal. The result does not establish that every velocity-sensitive or hold-aware reward design is ineffective. The previously observed shortfall remains variable negative-bearing approach and settling reliability; the demonstrated ability to complete the uninterrupted hold after settling is not overturned by M6.",
+        "decision_frontier": "I6 is closed with E27 because M6 supplied controlled fresh baseline-versus-intervention evidence on the complete official distribution with shared seeds and showed decisive complete-task degradation. The campaign remains below the 196/200 objective and has no assigned best-known candidate. Goal review must choose any subsequent route; no official assessment is justified by the current evidence.",
+        "evidence_references": [
+          "E26",
+          "T4",
+          "M6",
+          "E27"
+        ],
+        "human_goal_connection": "The campaign still targets at least 196 successful episodes out of 200 under the complete official task distribution, with every success requiring the complete uninterrupted 100-control-step hold. I6 tested a reward and credit-assignment route intended to close the remaining approach and settling gap while preserving that criterion.",
+        "next_direction_or_closure": "The I6 inquiry-session summary is complete. The next campaign decision belongs to goal review, which may consider a materially different route for the observed negative-bearing approach and settling tail or another campaign-level decision. This checkpoint selects no route, requests no official assessment, and makes no claim that the human goal has been reached."
+      },
+      "result": {
+        "session_id": "S14",
+        "status": "checkpointed"
+      },
+      "session_id": "S14",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "9c6550a9c46035eb9374a28c3d215685060592dc",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "T1:checkpoint-100352 remains the strongest measured candidate but is unassigned after M6's 195/200 panel. T4:checkpoint-100352 is rejected after its 0/200 paired result and zero training success. T2:checkpoint-100352 and T3:checkpoint-100352 remain unassigned after earlier degradation results. No candidate has working, best-known, or retained status.",
+        "completed_operations": [
+          "E26",
+          "T4",
+          "M6",
+          "E27"
+        ],
+        "cumulative_resource_use": "The campaign has used four fresh PPO training runs of 120,832 completed steps each, four 160-episode development panels, one 138-target diagnostic grid, and four 200-episode development panels, including M6's paired T1-versus-T4 panel. I3 changed robot_learning/scenario/observations.py; I4 changed robot_learning/scenario/training_environment.py and restored evaluation diagnostics; E17 restored the T1 baseline recipe; I6 changed robot_learning/scenario/reward.py and robot_learning/scenario/environment.py before T4. No official assessment has run.",
+        "current_goal_gap": "M6 measured baseline T1:checkpoint-100352 at 195/200 successes (97.5%) and velocity-sensitive reward intervention T4:checkpoint-100352 at 0/200 on a shared fresh complete-distribution panel. The intervention materially degraded complete-task success, no candidate has working or best-known status, and official assessment remains unrequested.",
+        "current_synthesis": "Observed: M6's controlled shared-seed panel measured T1 at 195/200 and T4 at 0/200, with 195 baseline wins, 0 intervention wins, and a -97.5 percentage-point intervention difference. Observed: T4 also had zero training success and negative episode reward at every recorded checkpoint. These findings reject this hold-aware velocity-sensitive reward and credit-assignment recipe as a route toward the goal. The result does not establish that every velocity-sensitive or hold-aware reward design is ineffective. The previously observed shortfall remains variable negative-bearing approach and settling reliability; the demonstrated ability to complete the uninterrupted hold after settling is not overturned by M6.",
+        "decision_frontier": "I6 is closed with E27 because M6 supplied controlled fresh baseline-versus-intervention evidence on the complete official distribution with shared seeds and showed decisive complete-task degradation. The campaign remains below the 196/200 objective and has no assigned best-known candidate. Goal review must choose any subsequent route; no official assessment is justified by the current evidence.",
+        "evidence_references": [
+          "E26",
+          "T4",
+          "M6",
+          "E27"
+        ],
+        "human_goal_connection": "The campaign still targets at least 196 successful episodes out of 200 under the complete official task distribution, with every success requiring the complete uninterrupted 100-control-step hold. I6 tested a reward and credit-assignment route intended to close the remaining approach and settling gap while preserving that criterion.",
+        "inquiry_id": "I6",
+        "next_direction_or_closure": "The I6 inquiry-session summary is complete. The next campaign decision belongs to goal review, which may consider a materially different route for the observed negative-bearing approach and settling tail or another campaign-level decision. This checkpoint selects no route, requests no official assessment, and makes no claim that the human goal has been reached.",
+        "session_id": "S14"
+      },
+      "presentation": {
+        "backend_session_id": "abfc8cba-e5df-4716-b372-584fda26da90",
+        "campaign_id": "eb19a5f3-14b3-4590-ad74-1b31cf5ae3d5",
+        "campaign_usage": "52m28s | 127.67 AIU | prompt 21.5m (86% cached) | output 136.7k",
+        "session_id": "S14",
+        "session_kind": "inquiry",
+        "session_usage": "6m18s | 14.66 AIU | prompt 3.3m (91% cached) | output 12.8k"
+      },
+      "result": {
+        "session_id": "S14",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "794e5ed281e8621744f04318a8312e7dff83dc6f",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E28",
+    "inquiry_id": "I6",
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "T1:checkpoint-100352 remains the strongest measured candidate but is unassigned after M6's 195/200 panel. T4:checkpoint-100352 is rejected after its 0/200 paired result and zero training success. T2:checkpoint-100352 and T3:checkpoint-100352 remain unassigned after earlier degradation results. No candidate has working, best-known, or retained status.",
+        "completed_operations": [
+          "E26",
+          "T4",
+          "M6",
+          "E27"
+        ],
+        "cumulative_resource_use": "The campaign has used four fresh PPO training runs of 120,832 completed steps each, four 160-episode development panels, one 138-target diagnostic grid, and four 200-episode development panels, including M6's paired T1-versus-T4 panel. I3 changed robot_learning/scenario/observations.py; I4 changed robot_learning/scenario/training_environment.py and restored evaluation diagnostics; E17 restored the T1 baseline recipe; I6 changed robot_learning/scenario/reward.py and robot_learning/scenario/environment.py before T4. No official assessment has run.",
+        "current_goal_gap": "M6 measured baseline T1:checkpoint-100352 at 195/200 successes (97.5%) and velocity-sensitive reward intervention T4:checkpoint-100352 at 0/200 on a shared fresh complete-distribution panel. The intervention materially degraded complete-task success, no candidate has working or best-known status, and official assessment remains unrequested.",
+        "current_synthesis": "Observed: M6's controlled shared-seed panel measured T1 at 195/200 and T4 at 0/200, with 195 baseline wins, 0 intervention wins, and a -97.5 percentage-point intervention difference. Observed: T4 also had zero training success and negative episode reward at every recorded checkpoint. These findings reject this hold-aware velocity-sensitive reward and credit-assignment recipe as a route toward the goal. The result does not establish that every velocity-sensitive or hold-aware reward design is ineffective. The previously observed shortfall remains variable negative-bearing approach and settling reliability; the demonstrated ability to complete the uninterrupted hold after settling is not overturned by M6.",
+        "decision_frontier": "I6 is closed with E27 because M6 supplied controlled fresh baseline-versus-intervention evidence on the complete official distribution with shared seeds and showed decisive complete-task degradation. The campaign remains below the 196/200 objective and has no assigned best-known candidate. Goal review must choose any subsequent route; no official assessment is justified by the current evidence.",
+        "evidence_references": [
+          "E26",
+          "T4",
+          "M6",
+          "E27"
+        ],
+        "human_goal_connection": "The campaign still targets at least 196 successful episodes out of 200 under the complete official task distribution, with every success requiring the complete uninterrupted 100-control-step hold. I6 tested a reward and credit-assignment route intended to close the remaining approach and settling gap while preserving that criterion.",
+        "next_direction_or_closure": "The I6 inquiry-session summary is complete. The next campaign decision belongs to goal review, which may consider a materially different route for the observed negative-bearing approach and settling tail or another campaign-level decision. This checkpoint selects no route, requests no official assessment, and makes no claim that the human goal has been reached."
+      }
+    },
+    "request_fingerprint": "76177f264067a092b9de0dda430e7a8b970aea7fd63c31694a060a753a13653a",
+    "session_id": "S14",
+    "supersedes": null
+  },
   "pi_checkpoint": {
-    "candidates_and_roles": "T1:checkpoint-100352 remains the strongest measured candidate but is unassigned after M5's 194/200 panel. T2:checkpoint-100352 and T3:checkpoint-100352 remain unassigned after their degradation results. No candidate has working, best-known, or retained status.",
+    "candidates_and_roles": "T1:checkpoint-100352 remains the strongest measured candidate but is unassigned after M6's 195/200 panel. T4:checkpoint-100352 is rejected after its 0/200 paired result and zero training success. T2:checkpoint-100352 and T3:checkpoint-100352 remain unassigned after earlier degradation results. No candidate has working, best-known, or retained status.",
     "completed_operations": [
-      "E24"
+      "E26",
+      "T4",
+      "M6",
+      "E27"
     ],
-    "cumulative_resource_use": "The campaign has used three fresh PPO training runs of 120,832 completed steps each, three 160-episode development panels, one 138-target diagnostic grid, and three 200-episode development panels, including M5's fresh 200-episode panel. I3 changed robot_learning/scenario/observations.py; I4 changed robot_learning/scenario/training_environment.py and restored evaluation diagnostics; E17 restored the T1 baseline recipe. I6 was opened by E24. No official assessment has run.",
-    "current_goal_gap": "M5 measured T1:checkpoint-100352 at 194/200 successes (97.0%) on fresh non-official complete-distribution seeds 10200-10399, below the 196/200 objective. T1 has no best-known role and no official assessment has been requested.",
-    "current_synthesis": "Observed: M5's six failures all had negative target bearings; two never entered tolerance, five never established the 10-sample settling run, and one established settling but did not complete the uninterrupted hold. T1 reached a maximum uninterrupted hold of 100 steps. Across M4 and M5, the remaining observed shortfall is a variable negative-bearing approach and settling tail, not a demonstrated inability to complete the hold after settling. The angular-representation and full-radius-support interventions were decisively negative, but they do not establish that no other route can remove the tail. I6 therefore tests, as a hypothesis rather than an established cause, whether hold-aware velocity-sensitive reward and credit assignment can improve braking and settling while preserving complete-hold behavior.",
-    "decision_frontier": "The goal-review decision is complete: official assessment remains withheld because T1 is below the development objective and has no best-known assignment. No campaign conclusion is justified because the observed tail remains a bounded, goal-relevant unresolved mechanism. I6 has been opened; no training, measurement, role assignment, restoration, or official assessment is authorized in this session.",
+    "cumulative_resource_use": "The campaign has used four fresh PPO training runs of 120,832 completed steps each, four 160-episode development panels, one 138-target diagnostic grid, and four 200-episode development panels, including M6's paired T1-versus-T4 panel. I3 changed robot_learning/scenario/observations.py; I4 changed robot_learning/scenario/training_environment.py and restored evaluation diagnostics; E17 restored the T1 baseline recipe; I6 changed robot_learning/scenario/reward.py and robot_learning/scenario/environment.py before T4. No official assessment has run.",
+    "current_goal_gap": "M6 measured baseline T1:checkpoint-100352 at 195/200 successes (97.5%) and velocity-sensitive reward intervention T4:checkpoint-100352 at 0/200 on a shared fresh complete-distribution panel. The intervention materially degraded complete-task success, no candidate has working or best-known status, and official assessment remains unrequested.",
+    "current_synthesis": "Observed: M6's controlled shared-seed panel measured T1 at 195/200 and T4 at 0/200, with 195 baseline wins, 0 intervention wins, and a -97.5 percentage-point intervention difference. Observed: T4 also had zero training success and negative episode reward at every recorded checkpoint. These findings reject this hold-aware velocity-sensitive reward and credit-assignment recipe as a route toward the goal. The result does not establish that every velocity-sensitive or hold-aware reward design is ineffective. The previously observed shortfall remains variable negative-bearing approach and settling reliability; the demonstrated ability to complete the uninterrupted hold after settling is not overturned by M6.",
+    "decision_frontier": "I6 is closed with E27 because M6 supplied controlled fresh baseline-versus-intervention evidence on the complete official distribution with shared seeds and showed decisive complete-task degradation. The campaign remains below the 196/200 objective and has no assigned best-known candidate. Goal review must choose any subsequent route; no official assessment is justified by the current evidence.",
     "evidence_references": [
-      "M5",
-      "E22",
-      "E24"
+      "E26",
+      "T4",
+      "M6",
+      "E27"
     ],
-    "human_goal_connection": "The campaign still targets at least 196 successful episodes out of 200 under the complete official task distribution, with each success requiring the complete uninterrupted 100-control-step hold.",
-    "inquiry_id": null,
-    "next_direction_or_closure": "Non-binding proposal for the next I6 inquiry session: inspect the existing reward and training surfaces, then use controlled baseline-versus-intervention evidence on the complete official distribution with shared seeds to determine whether phase-aware velocity/braking credit reduces negative-bearing approach and settling failures without degrading the uninterrupted hold. Close I6 if the targeted tail is not reduced or complete-task success materially degrades; otherwise continue only toward a candidate that reaches at least 196/200 with preserved hold behavior.",
-    "scientific_commit": "caa3ab4e5579b2df78e4514842fa8db00fe9d09d",
-    "session_id": "S13"
+    "human_goal_connection": "The campaign still targets at least 196 successful episodes out of 200 under the complete official task distribution, with every success requiring the complete uninterrupted 100-control-step hold. I6 tested a reward and credit-assignment route intended to close the remaining approach and settling gap while preserving that criterion.",
+    "inquiry_id": "I6",
+    "next_direction_or_closure": "The I6 inquiry-session summary is complete. The next campaign decision belongs to goal review, which may consider a materially different route for the observed negative-bearing approach and settling tail or another campaign-level decision. This checkpoint selects no route, requests no official assessment, and makes no claim that the human goal has been reached.",
+    "scientific_commit": "794e5ed281e8621744f04318a8312e7dff83dc6f",
+    "session_id": "S14"
   },
   "schema_version": 6,
   "scientific_model": {
@@ -6068,24 +6205,6 @@
     "path": "research/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "abfc8cba-e5df-4716-b372-584fda26da90",
-    "id": "S14",
-    "inquiry_id": "I6",
-    "kind": "inquiry",
-    "objective": "Bring I6 to the decision required by its closure condition, and close it as soon as the evidence supplies that decision: Close when controlled fresh baseline-versus-intervention evidence uses the complete official distribution and shared episode seeds to measure negative-bearing approach failures, tolerance entry, settling, post-settling interruptions, longest uninterrupted hold, and total success, and either the intervention reaches at least 196/200 while preserving post-settling hold behavior or it fails to reduce the targeted tail or materially degrades complete-task success.",
-    "operation_ids": [
-      "E26",
-      "T4",
-      "M6",
-      "E27"
-    ],
-    "scientific_parent_commit": "9c6550a9c46035eb9374a28c3d215685060592dc"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
