@@ -84,44 +84,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "open",
-        "inquiry": {
-          "closure_condition": "Close when a trained baseline and targeted behavior diagnostics provide decision-sufficient evidence identifying the dominant failure regime, or show that no single regime is dominant and specify the next discriminating intervention, with success measured under the official target distribution and hold criterion.",
-          "goal_connection": "Identifying the dominant failure mechanism is necessary to choose the intervention most likely to reach at least 196 successes in the protected 200-episode assessment; the inquiry will measure complete episode success together with geometry- and phase-specific behavior rather than optimize reward alone.",
-          "id": "I1",
-          "opened_in_session": "S2",
-          "question": "For a first trained candidate under the official target distribution, are episode failures dominated by the current training coverage gap at radii 0.06-0.14 m, by transient reach and braking before stable entry, or by interruptions during the 100-step hold?",
-          "rationale": "There is no candidate or behavioral evidence, so official assessment and a no-route conclusion are both unsupported. The fixed model identifies reachable targets, configuration-dependent transient control, and a concrete mismatch between training radii 0.14-0.20 m and official radii 0.06-0.20 m. A bounded baseline-and-diagnostics inquiry can discriminate coverage, approach/braking, and long-horizon stabilization explanations before committing campaign resources to a recipe or environment change.",
-          "reframes": []
-        }
-      },
-      "result": {
-        "action": "open",
-        "inquiry_id": "I1",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E2",
-    "inquiry_id": null,
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "open",
-        "closure_condition": "Close when a trained baseline and targeted behavior diagnostics provide decision-sufficient evidence identifying the dominant failure regime, or show that no single regime is dominant and specify the next discriminating intervention, with success measured under the official target distribution and hold criterion.",
-        "goal_connection": "Identifying the dominant failure mechanism is necessary to choose the intervention most likely to reach at least 196 successes in the protected 200-episode assessment; the inquiry will measure complete episode success together with geometry- and phase-specific behavior rather than optimize reward alone.",
-        "question": "For a first trained candidate under the official target distribution, are episode failures dominated by the current training coverage gap at radii 0.06-0.14 m, by transient reach and braking before stable entry, or by interruptions during the 100-step hold?",
-        "rationale": "There is no candidate or behavioral evidence, so official assessment and a no-route conclusion are both unsupported. The fixed model identifies reachable targets, configuration-dependent transient control, and a concrete mismatch between training radii 0.14-0.20 m and official radii 0.06-0.20 m. A bounded baseline-and-diagnostics inquiry can discriminate coverage, approach/braking, and long-horizon stabilization explanations before committing campaign resources to a recipe or environment change."
-      }
-    },
-    "request_fingerprint": "6ec168fdac246e1ab87692af18e6edb45766b7dd26af4a170a358adf77064ae6",
-    "session_id": "S2",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "No candidates exist and working, best-known, and retained roles remain intentionally empty.",
     "completed_operations": [],
