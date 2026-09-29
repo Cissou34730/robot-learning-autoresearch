@@ -7767,38 +7767,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I7",
-        "outcome": "I7 provides a decision-sufficient negative answer. The residual baseline failures are consistently localized at the broad mechanism level to negative-bearing approach and settling reliability, rather than a demonstrated loss of uninterrupted-hold capability after settling. However, the evidence-backed hard-negative rehearsal route did not improve that tail: on a fresh shared-seed 200-episode complete-distribution panel, T1:checkpoint-100352, T5:checkpoint-5120, and T5:checkpoint-10240 each achieved 192/200 successes. Each rehearsal checkpoint tied the baseline in total success, with one candidate win, one baseline win, two discordant episodes, and zero net wins. Neither candidate reached the 196/200 threshold or supplied a credible path to it.",
-        "reason": "M7 satisfies I7's closure condition by combining the previously resolved physical localization with controlled fresh complete-distribution evidence for the selected conservative route. The intervention preserved the evaluation semantics and did not show a complete-task degradation relative to the baseline on the shared panel, but it also did not improve performance or provide a credible route to at least 196/200. Together with the rejected angular-representation, full-radius-training, and velocity-sensitive reward routes, no credible improvement route remains supported within this inquiry. Remaining uncertainty concerns other untested learning methods or interventions and cannot change the present I7 decision without a new goal-review direction; no candidate should receive best-known status from M7."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I7",
-        "outcome": "I7 provides a decision-sufficient negative answer. The residual baseline failures are consistently localized at the broad mechanism level to negative-bearing approach and settling reliability, rather than a demonstrated loss of uninterrupted-hold capability after settling. However, the evidence-backed hard-negative rehearsal route did not improve that tail: on a fresh shared-seed 200-episode complete-distribution panel, T1:checkpoint-100352, T5:checkpoint-5120, and T5:checkpoint-10240 each achieved 192/200 successes. Each rehearsal checkpoint tied the baseline in total success, with one candidate win, one baseline win, two discordant episodes, and zero net wins. Neither candidate reached the 196/200 threshold or supplied a credible path to it.",
-        "reason": "M7 satisfies I7's closure condition by combining the previously resolved physical localization with controlled fresh complete-distribution evidence for the selected conservative route. The intervention preserved the evaluation semantics and did not show a complete-task degradation relative to the baseline on the shared panel, but it also did not improve performance or provide a credible route to at least 196/200. Together with the rejected angular-representation, full-radius-training, and velocity-sensitive reward routes, no credible improvement route remains supported within this inquiry. Remaining uncertainty concerns other untested learning methods or interventions and cannot change the present I7 decision without a new goal-review direction; no candidate should receive best-known status from M7.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E32",
-    "inquiry_id": "I7",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "I7 provides a decision-sufficient negative answer. The residual baseline failures are consistently localized at the broad mechanism level to negative-bearing approach and settling reliability, rather than a demonstrated loss of uninterrupted-hold capability after settling. However, the evidence-backed hard-negative rehearsal route did not improve that tail: on a fresh shared-seed 200-episode complete-distribution panel, T1:checkpoint-100352, T5:checkpoint-5120, and T5:checkpoint-10240 each achieved 192/200 successes. Each rehearsal checkpoint tied the baseline in total success, with one candidate win, one baseline win, two discordant episodes, and zero net wins. Neither candidate reached the 196/200 threshold or supplied a credible path to it.",
-        "reason": "M7 satisfies I7's closure condition by combining the previously resolved physical localization with controlled fresh complete-distribution evidence for the selected conservative route. The intervention preserved the evaluation semantics and did not show a complete-task degradation relative to the baseline on the shared panel, but it also did not improve performance or provide a credible route to at least 196/200. Together with the rejected angular-representation, full-radius-training, and velocity-sensitive reward routes, no credible improvement route remains supported within this inquiry. Remaining uncertainty concerns other untested learning methods or interventions and cannot change the present I7 decision without a new goal-review direction; no candidate should receive best-known status from M7."
-      }
-    },
-    "request_fingerprint": "1fa21ee5699abeec6e4f47028389dfa25adc9e5d511dd9e2f4cf798c59cd91f4",
-    "session_id": "S16",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T1:checkpoint-100352 remains the strongest measured candidate but is unassigned after its 195/200 M6 panel. T4:checkpoint-100352 is rejected after its 0/200 paired result and zero training success. T2:checkpoint-100352 and T3:checkpoint-100352 remain unassigned after earlier degradation results. No candidate has working, best-known, or retained status.",
     "completed_operations": [
