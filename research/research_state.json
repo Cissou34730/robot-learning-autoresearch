@@ -4116,7 +4116,7 @@
     }
   },
   "counters": {
-    "event": 34,
+    "event": 35,
     "inquiry": 8,
     "measurement": 7,
     "session": 17,
@@ -4125,7 +4125,7 @@
   "human_goal": {
     "source": "research/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -7832,32 +7832,157 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-09-29T23:56:55Z",
+      "error": null,
+      "id": "E35",
+      "inquiry_id": null,
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "T1:checkpoint-100352 remains the strongest measured candidate but is unassigned after M7's 192/200 panel. T5:checkpoint-5120 and T5:checkpoint-10240 tied T1 at 192/200 and remain unassigned. T4:checkpoint-100352 remains rejected after its 0/200 paired result and zero training success. T2:checkpoint-100352 and T3:checkpoint-100352 remain unassigned after earlier degradation results. No candidate has working, best-known, or retained status.",
+        "completed_operations": [
+          "E34"
+        ],
+        "cumulative_resource_use": "The campaign has used five PPO training runs of 120,832 completed steps each, five 160-episode development panels, one 138-target diagnostic grid, five 200-episode development panels, and one paired three-candidate M7 panel. I3 changed robot_learning/scenario/observations.py; I4 changed robot_learning/scenario/training_environment.py and restored evaluation diagnostics; E17 restored the T1 baseline recipe; I6 changed robot_learning/scenario/reward.py and robot_learning/scenario/environment.py before T4; I7 added training-only hard-negative rehearsal in robot_learning/scenario/training_environment.py before T5. No official assessment has run.",
+        "current_goal_gap": "M7 measured T1:checkpoint-100352, T5:checkpoint-5120, and T5:checkpoint-10240 at 192/200 successes (96.0%) on the same fresh complete-distribution panel. No candidate reached 196/200, no candidate has working or best-known status, and official assessment remains unrequested.",
+        "current_synthesis": "Observed: M7 measured all three candidates at 192/200, with each rehearsal candidate recording one win against one baseline win across two discordant episodes and zero net wins. Observed: prior evidence localizes the residual failures broadly to negative-bearing approach and settling reliability, while episodes that establish settling generally complete the uninterrupted hold. Observed: angular representation, full-radius training, velocity-sensitive reward, and hard-negative rehearsal did not provide a credible route to 196/200. Hypothesis under I8: the remaining tail may depend on the temporal organization and credit assignment of the feed-forward policy rather than on a newly demonstrated plant or observation limitation; this is unresolved and must be tested without changing the official task or hold criterion.",
+        "decision_frontier": "The goal-review session opened I8 through E34. Official assessment is not justified because the latest controlled panel remains at 192/200 and no candidate has explicit best-known status. This checkpoint ends the goal-review session; I8 is now the active bounded inquiry, and no training, measurement, model-role change, restoration, inquiry change, or campaign conclusion is requested in this session.",
+        "evidence_references": [
+          "E31",
+          "T5",
+          "M7",
+          "E32",
+          "E34"
+        ],
+        "human_goal_connection": "The campaign continues to target at least 196 successful episodes out of 200 under the complete official task distribution, with every success requiring the complete uninterrupted 100-control-step hold. Goal review opened I8 to test whether a materially different temporal policy or control formulation can close the remaining approach and settling gap without sacrificing hold behavior.",
+        "next_direction_or_closure": "The goal-review session is complete. In the fresh I8 inquiry session, a non-binding direction is to inspect and, if warranted, redesign the PI-owned policy or control/training surface so approach, motion shedding, settling, and uninterrupted hold are temporally organized, then use controlled fresh complete-distribution evidence with the established phase diagnostics. Any route must preserve the complete hold criterion and provide a credible path to at least 196/200; this checkpoint makes no claim that the route will succeed."
+      },
+      "result": {
+        "session_id": "S17",
+        "status": "checkpointed"
+      },
+      "session_id": "S17",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "2bd7d1cb510ef5fb25676a94174e31fd188fa0e0",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "T1:checkpoint-100352 remains the strongest measured candidate but is unassigned after M7's 192/200 panel. T5:checkpoint-5120 and T5:checkpoint-10240 tied T1 at 192/200 and remain unassigned. T4:checkpoint-100352 remains rejected after its 0/200 paired result and zero training success. T2:checkpoint-100352 and T3:checkpoint-100352 remain unassigned after earlier degradation results. No candidate has working, best-known, or retained status.",
+        "completed_operations": [
+          "E34"
+        ],
+        "cumulative_resource_use": "The campaign has used five PPO training runs of 120,832 completed steps each, five 160-episode development panels, one 138-target diagnostic grid, five 200-episode development panels, and one paired three-candidate M7 panel. I3 changed robot_learning/scenario/observations.py; I4 changed robot_learning/scenario/training_environment.py and restored evaluation diagnostics; E17 restored the T1 baseline recipe; I6 changed robot_learning/scenario/reward.py and robot_learning/scenario/environment.py before T4; I7 added training-only hard-negative rehearsal in robot_learning/scenario/training_environment.py before T5. No official assessment has run.",
+        "current_goal_gap": "M7 measured T1:checkpoint-100352, T5:checkpoint-5120, and T5:checkpoint-10240 at 192/200 successes (96.0%) on the same fresh complete-distribution panel. No candidate reached 196/200, no candidate has working or best-known status, and official assessment remains unrequested.",
+        "current_synthesis": "Observed: M7 measured all three candidates at 192/200, with each rehearsal candidate recording one win against one baseline win across two discordant episodes and zero net wins. Observed: prior evidence localizes the residual failures broadly to negative-bearing approach and settling reliability, while episodes that establish settling generally complete the uninterrupted hold. Observed: angular representation, full-radius training, velocity-sensitive reward, and hard-negative rehearsal did not provide a credible route to 196/200. Hypothesis under I8: the remaining tail may depend on the temporal organization and credit assignment of the feed-forward policy rather than on a newly demonstrated plant or observation limitation; this is unresolved and must be tested without changing the official task or hold criterion.",
+        "decision_frontier": "The goal-review session opened I8 through E34. Official assessment is not justified because the latest controlled panel remains at 192/200 and no candidate has explicit best-known status. This checkpoint ends the goal-review session; I8 is now the active bounded inquiry, and no training, measurement, model-role change, restoration, inquiry change, or campaign conclusion is requested in this session.",
+        "evidence_references": [
+          "E31",
+          "T5",
+          "M7",
+          "E32",
+          "E34"
+        ],
+        "human_goal_connection": "The campaign continues to target at least 196 successful episodes out of 200 under the complete official task distribution, with every success requiring the complete uninterrupted 100-control-step hold. Goal review opened I8 to test whether a materially different temporal policy or control formulation can close the remaining approach and settling gap without sacrificing hold behavior.",
+        "inquiry_id": null,
+        "next_direction_or_closure": "The goal-review session is complete. In the fresh I8 inquiry session, a non-binding direction is to inspect and, if warranted, redesign the PI-owned policy or control/training surface so approach, motion shedding, settling, and uninterrupted hold are temporally organized, then use controlled fresh complete-distribution evidence with the established phase diagnostics. Any route must preserve the complete hold criterion and provide a credible path to at least 196/200; this checkpoint makes no claim that the route will succeed.",
+        "session_id": "S17"
+      },
+      "presentation": {
+        "backend_session_id": "29177969-59e5-4e80-8f70-cd9708a95f84",
+        "campaign_id": "eb19a5f3-14b3-4590-ad74-1b31cf5ae3d5",
+        "campaign_usage": "1h07m | 169.24 AIU | prompt 26.9m (85% cached) | output 179.4k",
+        "session_id": "S17",
+        "session_kind": "goal_review",
+        "session_usage": "2m11s | 5.94 AIU | prompt 917.8k (84% cached) | output 6.3k"
+      },
+      "result": {
+        "session_id": "S17",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "6c4dc0f642e0033f6adfa4e46f8e1681b274ec8a",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E35",
+    "inquiry_id": null,
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "T1:checkpoint-100352 remains the strongest measured candidate but is unassigned after M7's 192/200 panel. T5:checkpoint-5120 and T5:checkpoint-10240 tied T1 at 192/200 and remain unassigned. T4:checkpoint-100352 remains rejected after its 0/200 paired result and zero training success. T2:checkpoint-100352 and T3:checkpoint-100352 remain unassigned after earlier degradation results. No candidate has working, best-known, or retained status.",
+        "completed_operations": [
+          "E34"
+        ],
+        "cumulative_resource_use": "The campaign has used five PPO training runs of 120,832 completed steps each, five 160-episode development panels, one 138-target diagnostic grid, five 200-episode development panels, and one paired three-candidate M7 panel. I3 changed robot_learning/scenario/observations.py; I4 changed robot_learning/scenario/training_environment.py and restored evaluation diagnostics; E17 restored the T1 baseline recipe; I6 changed robot_learning/scenario/reward.py and robot_learning/scenario/environment.py before T4; I7 added training-only hard-negative rehearsal in robot_learning/scenario/training_environment.py before T5. No official assessment has run.",
+        "current_goal_gap": "M7 measured T1:checkpoint-100352, T5:checkpoint-5120, and T5:checkpoint-10240 at 192/200 successes (96.0%) on the same fresh complete-distribution panel. No candidate reached 196/200, no candidate has working or best-known status, and official assessment remains unrequested.",
+        "current_synthesis": "Observed: M7 measured all three candidates at 192/200, with each rehearsal candidate recording one win against one baseline win across two discordant episodes and zero net wins. Observed: prior evidence localizes the residual failures broadly to negative-bearing approach and settling reliability, while episodes that establish settling generally complete the uninterrupted hold. Observed: angular representation, full-radius training, velocity-sensitive reward, and hard-negative rehearsal did not provide a credible route to 196/200. Hypothesis under I8: the remaining tail may depend on the temporal organization and credit assignment of the feed-forward policy rather than on a newly demonstrated plant or observation limitation; this is unresolved and must be tested without changing the official task or hold criterion.",
+        "decision_frontier": "The goal-review session opened I8 through E34. Official assessment is not justified because the latest controlled panel remains at 192/200 and no candidate has explicit best-known status. This checkpoint ends the goal-review session; I8 is now the active bounded inquiry, and no training, measurement, model-role change, restoration, inquiry change, or campaign conclusion is requested in this session.",
+        "evidence_references": [
+          "E31",
+          "T5",
+          "M7",
+          "E32",
+          "E34"
+        ],
+        "human_goal_connection": "The campaign continues to target at least 196 successful episodes out of 200 under the complete official task distribution, with every success requiring the complete uninterrupted 100-control-step hold. Goal review opened I8 to test whether a materially different temporal policy or control formulation can close the remaining approach and settling gap without sacrificing hold behavior.",
+        "next_direction_or_closure": "The goal-review session is complete. In the fresh I8 inquiry session, a non-binding direction is to inspect and, if warranted, redesign the PI-owned policy or control/training surface so approach, motion shedding, settling, and uninterrupted hold are temporally organized, then use controlled fresh complete-distribution evidence with the established phase diagnostics. Any route must preserve the complete hold criterion and provide a credible path to at least 196/200; this checkpoint makes no claim that the route will succeed."
+      }
+    },
+    "request_fingerprint": "edd1db33be61d0eb1d15dd6318e56387f3a398c0a636f873b99bcb69ccc795f9",
+    "session_id": "S17",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T1:checkpoint-100352 remains the strongest measured candidate but is unassigned after M7's 192/200 panel. T5:checkpoint-5120 and T5:checkpoint-10240 tied T1 at 192/200 and remain unassigned. T4:checkpoint-100352 remains rejected after its 0/200 paired result and zero training success. T2:checkpoint-100352 and T3:checkpoint-100352 remain unassigned after earlier degradation results. No candidate has working, best-known, or retained status.",
     "completed_operations": [
-      "E31",
-      "T5",
-      "M7",
-      "E32"
+      "E34"
     ],
     "cumulative_resource_use": "The campaign has used five PPO training runs of 120,832 completed steps each, five 160-episode development panels, one 138-target diagnostic grid, five 200-episode development panels, and one paired three-candidate M7 panel. I3 changed robot_learning/scenario/observations.py; I4 changed robot_learning/scenario/training_environment.py and restored evaluation diagnostics; E17 restored the T1 baseline recipe; I6 changed robot_learning/scenario/reward.py and robot_learning/scenario/environment.py before T4; I7 added training-only hard-negative rehearsal in robot_learning/scenario/training_environment.py before T5. No official assessment has run.",
-    "current_goal_gap": "M7 measured the restored T1 baseline and both hard-negative rehearsal checkpoints T5:checkpoint-5120 and T5:checkpoint-10240 at 192/200 successes (96.0%) on the same fresh complete-distribution panel. No candidate reached the 196/200 threshold, no candidate has working or best-known status, and official assessment remains unrequested.",
-    "current_synthesis": "Observed: M7 measured T1:checkpoint-100352, T5:checkpoint-5120, and T5:checkpoint-10240 each at 192/200 on a fresh shared-seed complete-distribution panel. Observed: each rehearsal candidate had one win against one baseline win across two discordant episodes, yielding zero net wins and no success improvement. Observed: the prior evidence localizes the residual failures broadly to negative-bearing approach and settling reliability, while episodes that establish settling generally demonstrate the uninterrupted hold. Observed: angular-representation, full-radius-training, velocity-sensitive reward, and hard-negative rehearsal routes did not provide a credible route to 196/200. The remaining uncertainty is about other untested learning methods or interventions, not about the decision enabled by I7.",
-    "decision_frontier": "I7 is closed by E32. M7 supplied controlled fresh evidence for the selected conservative intervention: it preserved complete-task performance relative to T1 on the shared panel but did not improve it or reach 196/200. The inquiry therefore supports no credible improvement route within its tested scope. The next decision belongs to a fresh goal-review session; this checkpoint requests no training, measurement, model-role change, restoration, inquiry change, or campaign conclusion.",
+    "current_goal_gap": "M7 measured T1:checkpoint-100352, T5:checkpoint-5120, and T5:checkpoint-10240 at 192/200 successes (96.0%) on the same fresh complete-distribution panel. No candidate reached 196/200, no candidate has working or best-known status, and official assessment remains unrequested.",
+    "current_synthesis": "Observed: M7 measured all three candidates at 192/200, with each rehearsal candidate recording one win against one baseline win across two discordant episodes and zero net wins. Observed: prior evidence localizes the residual failures broadly to negative-bearing approach and settling reliability, while episodes that establish settling generally complete the uninterrupted hold. Observed: angular representation, full-radius training, velocity-sensitive reward, and hard-negative rehearsal did not provide a credible route to 196/200. Hypothesis under I8: the remaining tail may depend on the temporal organization and credit assignment of the feed-forward policy rather than on a newly demonstrated plant or observation limitation; this is unresolved and must be tested without changing the official task or hold criterion.",
+    "decision_frontier": "The goal-review session opened I8 through E34. Official assessment is not justified because the latest controlled panel remains at 192/200 and no candidate has explicit best-known status. This checkpoint ends the goal-review session; I8 is now the active bounded inquiry, and no training, measurement, model-role change, restoration, inquiry change, or campaign conclusion is requested in this session.",
     "evidence_references": [
       "E31",
       "T5",
       "M7",
-      "E32"
+      "E32",
+      "E34"
     ],
-    "human_goal_connection": "The campaign still targets at least 196 successful episodes out of 200 under the complete official task distribution, with every success requiring the complete uninterrupted 100-control-step hold. I7 tested whether the localized residual failure mechanism could be improved conservatively without sacrificing that hold behavior.",
-    "inquiry_id": "I7",
-    "next_direction_or_closure": "The inquiry-session summary is complete. A subsequent goal-review session may decide whether to pursue a materially different campaign route or conclude that no credible route remains. This is a non-binding transition and makes no claim that the human goal has been reached.",
-    "scientific_commit": "ef4ac9fd8d26668c1db0534ce336dd2fc8c7f2c2",
-    "session_id": "S16"
+    "human_goal_connection": "The campaign continues to target at least 196 successful episodes out of 200 under the complete official task distribution, with every success requiring the complete uninterrupted 100-control-step hold. Goal review opened I8 to test whether a materially different temporal policy or control formulation can close the remaining approach and settling gap without sacrificing hold behavior.",
+    "inquiry_id": null,
+    "next_direction_or_closure": "The goal-review session is complete. In the fresh I8 inquiry session, a non-binding direction is to inspect and, if warranted, redesign the PI-owned policy or control/training surface so approach, motion shedding, settling, and uninterrupted hold are temporally organized, then use controlled fresh complete-distribution evidence with the established phase diagnostics. Any route must preserve the complete hold criterion and provide a credible path to at least 196/200; this checkpoint makes no claim that the route will succeed.",
+    "scientific_commit": "6c4dc0f642e0033f6adfa4e46f8e1681b274ec8a",
+    "session_id": "S17"
   },
   "schema_version": 6,
   "scientific_model": {
@@ -7865,21 +7990,6 @@
     "path": "research/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "29177969-59e5-4e80-8f70-cd9708a95f84",
-    "id": "S17",
-    "inquiry_id": null,
-    "kind": "goal_review",
-    "objective": "Decide whether to request official assessment, open one bounded goal-linked inquiry, or conclude that no credible route remains.",
-    "operation_ids": [
-      "E34"
-    ],
-    "scientific_parent_commit": "2bd7d1cb510ef5fb25676a94174e31fd188fa0e0"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
