@@ -20,7 +20,7 @@ from robot_learning.policy_runtime import load_runtime
 from robot_learning.scenario.environment import make_evaluation_env
 
 # Bumped when the meaning of a scenario evaluation summary changes.
-RESEARCH_EVALUATION_SUMMARY_VERSION = 4
+RESEARCH_EVALUATION_SUMMARY_VERSION = 5
 
 
 def evaluate_research_model(
@@ -55,6 +55,12 @@ def evaluate_research_model(
         in_tolerance_steps = 0
         hold_interruptions = 0
         was_in_tolerance = False
+        distance_trace_cm: list[float] = []
+        held_steps_trace: list[int] = []
+        longest_streak_start_step: int | None = None
+        current_streak_start_step: int | None = None
+        final_streak_start_step: int | None = None
+        post_entry_peak_distance_cm: float | None = None
         while not (terminated or truncated):
             action = runtime.predict(obs)
             obs, reward, terminated, truncated, info = env.step(action)
@@ -62,16 +68,32 @@ def evaluate_research_model(
             reward_total += float(reward)
             distance_cm = 100.0 * float(info["distance"])
             held_steps = int(info.get("held_steps", 0))
+            distance_trace_cm.append(distance_cm)
+            held_steps_trace.append(held_steps)
             min_distance_cm = min(min_distance_cm, distance_cm)
             final_distance_cm = distance_cm
-            max_held_steps = max(max_held_steps, held_steps)
             if held_steps > 0:
                 in_tolerance_steps += 1
                 if first_reach_step is None:
                     first_reach_step = steps
+                if current_streak_start_step is None:
+                    current_streak_start_step = steps
+                if held_steps > max_held_steps:
+                    longest_streak_start_step = steps - held_steps + 1
+                max_held_steps = max(max_held_steps, held_steps)
+                final_streak_start_step = current_streak_start_step
             elif was_in_tolerance:
                 hold_interruptions += 1
+                current_streak_start_step = None
+                final_streak_start_step = None
             was_in_tolerance = held_steps > 0
+            if first_reach_step is not None:
+                if post_entry_peak_distance_cm is None:
+                    post_entry_peak_distance_cm = distance_cm
+                else:
+                    post_entry_peak_distance_cm = max(
+                        post_entry_peak_distance_cm, distance_cm
+                    )
             if "is_success" in info:
                 success = bool(info["is_success"])
 
@@ -103,6 +125,22 @@ def evaluate_research_model(
                 "max_held_steps": max_held_steps,
                 "in_tolerance_steps": in_tolerance_steps,
                 "hold_interruptions": hold_interruptions,
+                "longest_in_tolerance_streak": max_held_steps,
+                "longest_streak_start_step": longest_streak_start_step,
+                "final_streak_start_step": final_streak_start_step,
+                "final_in_tolerance_streak": (
+                    held_steps_trace[-1]
+                    if held_steps_trace and held_steps_trace[-1] > 0
+                    else 0
+                ),
+                "post_entry_peak_distance_cm": post_entry_peak_distance_cm,
+                "post_entry_peak_overshoot_cm": (
+                    max(0.0, post_entry_peak_distance_cm - 1.0)
+                    if post_entry_peak_distance_cm is not None
+                    else None
+                ),
+                "distance_trace_cm": distance_trace_cm,
+                "held_steps_trace": held_steps_trace,
             }
         )
         if progress_callback is not None:
@@ -110,7 +148,7 @@ def evaluate_research_model(
 
     successes = sum(episode["success"] for episode in episode_results)
     return {
-        "schema_version": 5,
+        "schema_version": 6,
         "model": str(model_path),
         "episodes": episodes,
         "seed": seed,
