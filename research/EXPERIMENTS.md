@@ -35,3 +35,4 @@
 | E15 | checkpoint | I1 | checkpointed |
 | E16 | inquiry | I1 | completed |
 | E17 | checkpoint | I1 | checkpointed |
+| E18 | campaign_conclusion | - | official_assessment_requested |
