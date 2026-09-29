@@ -4770,7 +4770,7 @@
       "training_steps": 50176
     },
     "T8:checkpoint-5120": {
-      "artifact": "research/checkpoints/candidates/3b9f0c1b-33c6-451a-b321-744b012458e5/t8/checkpoint-5120",
+      "artifact": "research/checkpoints/retained/3b9f0c1b-33c6-451a-b321-744b012458e5/t8-c4c293ff5-85497cedbc3b398c33a5212b7f8bab501e6957f8eb8e83edcc77a6d90026928f",
       "evaluation_artifacts": [
         "research/evaluations/3b9f0c1b-33c6-451a-b321-744b012458e5/evaluation-3b9f0c1b-33c6-451a-b321-744b012458e5-m8-T8-checkpoint-5120-160ep-seed4200-7623f5b89fc1.json"
       ],
@@ -4807,7 +4807,7 @@
     }
   },
   "counters": {
-    "event": 13,
+    "event": 14,
     "inquiry": 1,
     "measurement": 8,
     "session": 8,
@@ -4816,9 +4816,9 @@
   "human_goal": {
     "source": "research/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "assigned",
   "model_roles": {
-    "best_known": "T1:checkpoint-100352",
+    "best_known": "T8:checkpoint-5120",
     "retained": {},
     "working": null
   },
@@ -9043,9 +9043,83 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-09-29T00:24:53Z",
+      "error": null,
+      "id": "E14",
+      "inquiry_id": "I1",
+      "kind": "model_role",
+      "request": {
+        "action": "set_best_known",
+        "candidate": "T8:checkpoint-5120",
+        "evidence": [
+          "T8",
+          "M8"
+        ],
+        "reason": "M8 measured T8:checkpoint-5120 at 159/160 complete-hold successes (99.375%), improving on T1's 151/160 with 9 candidate wins versus 1 reference win and a +5.0 percentage-point paired delta. It is tied with T8:checkpoint-10240 on outcome but uses the least adaptation, preserving the transferred T1 behavior most conservatively while correcting the diagnosed infeasible open-branch failures. No official assessment has yet been requested."
+      },
+      "result": {
+        "action": "set_best_known",
+        "candidate": "T8:checkpoint-5120",
+        "evidence": [
+          "T8",
+          "M8"
+        ],
+        "status": "assigned"
+      },
+      "session_id": "S8",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "set_best_known",
+        "candidate_id": "T8:checkpoint-5120",
+        "evidence": [
+          "T8",
+          "M8"
+        ],
+        "reason": "M8 measured T8:checkpoint-5120 at 159/160 complete-hold successes (99.375%), improving on T1's 151/160 with 9 candidate wins versus 1 reference win and a +5.0 percentage-point paired delta. It is tied with T8:checkpoint-10240 on outcome but uses the least adaptation, preserving the transferred T1 behavior most conservatively while correcting the diagnosed infeasible open-branch failures. No official assessment has yet been requested."
+      },
+      "publication": {
+        "destination": "research/checkpoints/retained/3b9f0c1b-33c6-451a-b321-744b012458e5/t8-c4c293ff5-85497cedbc3b398c33a5212b7f8bab501e6957f8eb8e83edcc77a6d90026928f",
+        "fingerprint": "85497cedbc3b398c33a5212b7f8bab501e6957f8eb8e83edcc77a6d90026928f",
+        "source": "research/checkpoints/candidates/3b9f0c1b-33c6-451a-b321-744b012458e5/t8/checkpoint-5120"
+      },
+      "result": {
+        "action": "set_best_known",
+        "candidate": "T8:checkpoint-5120",
+        "evidence": [
+          "T8",
+          "M8"
+        ],
+        "status": "assigned"
+      }
+    },
+    "failure": null,
+    "id": "E14",
+    "inquiry_id": "I1",
+    "kind": "model_role",
+    "progress": "completed",
+    "request": {
+      "model_role": {
+        "action": "set_best_known",
+        "candidate": "T8:checkpoint-5120",
+        "evidence": [
+          "T8",
+          "M8"
+        ],
+        "reason": "M8 measured T8:checkpoint-5120 at 159/160 complete-hold successes (99.375%), improving on T1's 151/160 with 9 candidate wins versus 1 reference win and a +5.0 percentage-point paired delta. It is tied with T8:checkpoint-10240 on outcome but uses the least adaptation, preserving the transferred T1 behavior most conservatively while correcting the diagnosed infeasible open-branch failures. No official assessment has yet been requested."
+      }
+    },
+    "request_fingerprint": "259cf0284add8aa460af5750e69bd6a6c8d1152c6e850bf7e3f365a5077a2a58",
+    "session_id": "S8",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T1:checkpoint-100352 remains the sole best-known candidate, assigned by E4, with retained artifact fingerprint 1a8952087047. T7 checkpoints are rejected and have no assigned role. No working or official candidate is assigned.",
     "completed_operations": [
@@ -9091,7 +9165,8 @@
     "operation_ids": [
       "E13",
       "T8",
-      "M8"
+      "M8",
+      "E14"
     ],
     "scientific_parent_commit": "81bfb41fff15aaffa7b1fbbc37f3f673d58205c1"
   },
