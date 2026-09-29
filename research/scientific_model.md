@@ -1,235 +1,178 @@
-# Scientific model of the two-joint arm reach-and-hold task
+# Scientific model of the two-joint reach-and-hold system
 
-This is the campaign-start physical model. It distinguishes what is directly
-specified by the human-authored implementation from consequences inferred from
-that specification and from quantities that are not yet resolved. The task is
-not a static inverse-kinematics problem: success requires selecting and
-executing a dynamically feasible trajectory, dissipating motion, and keeping
-the end effector inside a small target neighborhood for the entire measured
-hold.
+The system is a deterministic, planar, torque-controlled two-link arm with a
+stationary point target. The learned controller does not need to make contact
+with or transport the target. It must steer the end effector into a small
+three-dimensional distance ball and keep it there for the full hold duration.
+Consequently, success is a coupled reach, braking, convergence, and
+disturbance-free regulation problem rather than a point-reaching problem.
 
 ## Established facts
 
-The human-authored implementation establishes a deterministic planar two-joint
-MuJoCo arm, its reset state, direct motor interface, observation contract, and
-the official target, timing, tolerance, hold, and assessment rules described
-below.
+The human-authored model fixes the arm geometry, physical parameters, simulator
+timing, observation contract, target distribution, and complete-hold outcome
+semantics described below. These are repository facts; their behavioral
+implications are kept separate in the Physical consequences register.
 
-### Robot geometry and state
+### Robot geometry and kinematics
 
-- The robot is a planar serial arm with two revolute joints. The shoulder is at
-  the world origin and both joint axes are the world z axis. The upper arm
-  length is 0.12 m and the forearm length is 0.10 m, so the end-effector site
-  is at the end of a 0.22 m two-link chain. The arm plane is z = 0.02 m.
-- The shoulder and elbow joint ranges are declared as -170 to 170 degrees.
-  The joint coordinates are the shoulder angle `q1` and the elbow angle `q2`
-  relative to the upper arm. The end-effector position is therefore
-  `x = 0.12 cos(q1) + 0.10 cos(q1 + q2)`,
-  `y = 0.12 sin(q1) + 0.10 sin(q1 + q2)`,
-  `z = 0.02`.
-- The reset state is `q = (0, 0)` with zero joint velocity. The initial
-  end-effector position is consequently (0.22, 0, 0.02). Reset samples one
-  fixed target with radius uniformly from 0.06 to 0.20 m and angle uniformly
-  over -pi to pi, then places it in the arm plane.
-- The target is a kinematic mocap body and its geom is non-colliding. The plane
-  and base geom are also explicitly non-colliding. The link geoms retain their
-  default contact settings.
+The shoulder and elbow are revolute joints about the world z axis. The upper
+arm length is 0.12 m and the forearm length is 0.10 m. Let `q1` be the
+shoulder angle and `q2` the elbow angle relative to the upper arm. The end
+effector position in the horizontal plane is
 
-### Actuation, simulation, and timing
+    x = 0.12 cos(q1) + 0.10 cos(q1 + q2)
+    y = 0.12 sin(q1) + 0.10 sin(q1 + q2)
 
-- There are two independent MuJoCo motor actuators, one per joint. The action
-  has two components, is clipped to [-1, 1], is written directly to
-  `data.ctrl`, and is held constant for 10 physics steps. Each physics step
-  uses a 0.002 s timestep, so the policy acts at 0.020 s intervals (50 Hz).
-- Each motor has gear 5 and a control range of [-1, 1]. Thus the normalized
-  command is a direct joint-torque command through a fixed gear transmission,
-  with the available torque scale set by that transmission and by the
-  compiled MuJoCo actuator semantics.
-- Gravity is zero. Each joint has explicit damping 0.5 and armature 0.01.
-  No spring or joint friction-loss term is specified. The XML does not
-  explicitly specify link inertials, density, integrator, or solver settings.
+Both joints have a stated range of -170 to 170 degrees. The arm plane is at
+z = 0.02 m; the target is placed at that same height. The nominal
+unconstrained workspace is the annulus from `|0.12 - 0.10| = 0.02 m` to
+`0.12 + 0.10 = 0.22 m`, with the joint limits removing configurations near
+some angular wrap boundaries.
 
-### Task and assessment
+At reset, `q1 = q2 = 0` and both joint velocities are zero. The arm is fully
+extended along +x, so the end effector starts at `(0.22, 0, 0.02)`. The
+official target has angle uniformly distributed over the full circle and
+radius uniformly distributed from 0.06 to 0.20 m. This is uniform in radius,
+not uniform in planar area. Every official target radius is inside the nominal
+workspace; the target distribution is therefore not intended to contain
+unreachable points, although legal inverse-kinematic branches can differ near
+the joint limits.
 
-- A target is inside tolerance when the three-dimensional Euclidean distance
-  from the end-effector site to the target is at most 0.01 m. Because target
-  z is set to the end-effector plane, the measured error is physically planar.
-- The official implementation updates distance only after each 10-substep
-  control interval. A hold is 100 consecutive in-tolerance control samples,
-  equivalent to 2.0 s at the stated timing. Any sampled excursion outside the
-  threshold resets the streak. An episode truncates after 500 control steps,
-  or 10 s, unless the hold terminates it first.
-- The official assessment uses one frozen policy on 200 fixed-seed episodes
-  from the official distribution. At least 196 successes are required for the
-  98% objective.
-- The baseline training environment currently samples radii from 0.14 to
-  0.20 m, while official evaluation samples 0.06 to 0.20 m. The mechanics and
-  hold definition are shared, but this is a distribution difference in the
-  default learning setup.
+### Actuation, dynamics, and timing
 
-### Observation and policy interface
+The XML uses two direct MuJoCo motor actuators. The policy action is clipped to
+`[-1, 1]^2`, held constant for ten physics steps, and applied directly as the
+two actuator controls. With gear 5, this gives a nominal joint torque of
+`5 * action` in the corresponding generalized coordinate, subject to
+saturation. There is no position or velocity servo between the policy and the
+plant.
 
-- The policy receives 11 float32 values: the two joint positions, two joint
-  velocities, the three-vector from end effector to target, and four wrapped
-  joint errors to the two analytic inverse-kinematics branches.
-- For a target with polar angle `phi`, the analytic elbow solutions are
-  `q2 = +/- acos((r^2 - L1^2 - L2^2)/(2 L1 L2))`, with the corresponding
-  shoulder angle
-  `q1 = phi - atan2(L2 sin(q2), L1 + L2 cos(q2))`. The observation supplies
-  errors to both branches. The target vector, together with joint positions
-  and known link lengths, also makes the target position reconstructible; no
-  camera or noisy sensor model is used.
-- The observation contains no action history, actuator state, hold-streak
-  counter, or explicit elapsed time. The final benchmark supplies zero reward;
-  the research environment supplies progress, closeness, hold-progress,
-  action-cost, and completion terms, but the physical success test is the same.
+The physics timestep is 0.002 s and the policy control interval is 0.020 s
+(50 Hz). The official two-second hold is therefore 100 consecutive
+post-control-step tolerance observations. An episode can last at most 500
+control steps. Gravity is zero. The moving upper-arm and forearm bodies
+compiled from the XML have masses of approximately 0.099 kg and 0.052 kg.
+Each joint has armature 0.01 and viscous damping 0.5 in MuJoCo's joint units.
+The effective inertia seen at each joint varies with elbow configuration
+because the links are coupled; velocity-dependent coupling is also present.
+No task-relevant contact forces are modeled: the plane, base, and target
+geometry are non-colliding for this task.
+
+### Task outcome and controller information
+
+After each ten-step integration burst, the simulator computes the Euclidean
+three-dimensional distance between the end-effector site and the mocap target.
+The official success condition is distance at most 0.01 m for 100 consecutive
+control steps. A single outside sample resets the consecutive hold count.
+Proximity, reward, and merely terminating at the time limit are not success.
+The benchmark's operational check is at the control samples, even though the
+physical intention is an uninterrupted two-second hold; excursions between
+samples are not independently evaluated by the benchmark.
+
+The observation has 11 values: the two joint positions, two joint velocities,
+the three components of the end-effector-to-target displacement, and four
+wrapped angular errors to the two analytical inverse-kinematic branches
+(elbow-positive and elbow-negative). The target is stationary and there is no
+observation noise, target velocity, contact sensing, force sensing, or
+explicit actuator-state observation. Given the known base frame, joint
+positions, and relative displacement, the target position is effectively
+recoverable; the branch-error features additionally expose the geometry of
+the two candidate solutions. Angle wrapping introduces a representation
+discontinuity at the +/-pi boundary.
+
+The current training reward is shaped by distance progress and closeness,
+adds incremental hold-progress reward, charges a small action cost, and gives
+a completion bonus. It is not the official outcome definition. In particular,
+the current hold-exit forfeiture is zero, so partial or repeatedly interrupted
+holds can be attractive to the reward while still being failures under the
+task contract.
 
 ## Physical consequences
 
-These established mechanics imply that the policy must solve a coupled
-reach-and-regulate problem: it must choose a feasible configuration, control
-transient motion, and remain inside the tolerance region at every measured
-hold boundary.
+The arm begins at a kinematic singularity: at `q1 = q2 = 0`, the planar
+Jacobian has rank one. An infinitesimal joint motion initially produces only
+transverse end-effector motion; radial motion requires first creating an elbow
+deflection. This makes the first part of a trajectory qualitatively different
+from regulation near a non-singular target configuration. The controller must
+choose a shoulder direction and bend the elbow before it can efficiently
+change range.
 
-### Reachability and kinematic alternatives
+For a target at planar polar coordinates `(r, phi)`, the two mathematical
+inverse-kinematic branches can be written as
 
-For link lengths `L1 = 0.12` and `L2 = 0.10`, the unconstrained planar
-reachable radii are 0.02 to 0.22 m. The official interval 0.06 to 0.20 m is
-inside this annulus, but its outer edge is only 0.02 m short of full extension
-and its inner edge is only 0.04 m beyond the folded-radius boundary. The
-official targets are therefore reachable in position, while the two ends of
-the radial interval retain different sensitivities to configuration and
-velocity errors.
+    q2 = +/- arccos((r^2 - 0.12^2 - 0.10^2) / (2 * 0.12 * 0.10))
+    q1 = phi - atan2(0.10 sin(q2), 0.12 + 0.10 cos(q2)).
 
-Except at a kinematic singularity, each target has two inverse-kinematic
-configurations: positive and negative relative elbow angle, corresponding to
-the two sides of the shoulder-elbow geometry. Across the official radial
-range, the magnitude of `q2` is approximately 49 to 150 degrees. The shoulder
-angle required by a given target direction differs between these branches;
-the +/-170 degree limits can exclude one branch for some directions while
-leaving the other available. Branch selection is consequently a real
-behavioral choice, not merely an observation feature. Switching branches
-requires a large configuration motion and is not a harmless local correction.
+The official radius range gives elbow magnitudes of roughly 49 to 150 degrees,
+so the target itself is away from the exact fully extended and fully folded
+singularities. Both branches exist mathematically, but the shoulder limit can
+remove one branch for some target angles. A policy can therefore solve the
+same target with different elbow posture, path, velocity profile, and torque
+history. It is not required to select the branch suggested by the observation
+ordering.
 
-The planar position Jacobian maps joint velocity to end-effector velocity.
-Its determinant is proportional to `L1 L2 sin(q2)`, so radial and tangential
-control authority depends on the selected elbow configuration. Nearer
-full-extension or folded geometries, small joint errors can produce
-direction-dependent Cartesian errors and the same Cartesian correction can
-require different joint torques. The official range avoids the exact
-singular radii but does not make the two branches dynamically equivalent.
+The initial target distance is angle-dependent: it is
+`sqrt(0.22^2 + r^2 - 2*0.22*r*cos(phi))`, ranging approximately from 0.02 to
+0.42 m over the official distribution. The policy must infer direction and
+range from the relative displacement and move from the extended singular
+posture. Since the target has no orientation and does not exert forces, the
+task has no grasp, collision-avoidance, or force-control requirement.
 
-### Motion and stabilization
+A successful trajectory needs more than inverse kinematics. It must generate
+enough torque to accelerate the coupled links, avoid joint-limit interference,
+then dissipate kinetic energy before entering the 1 cm ball. The 20 ms
+zero-order-held command and torque saturation make this a sampled-data
+regulation problem: a command that is appropriate for approach can cause a
+post-entry overshoot. Near the target, damping helps remove velocity, but it
+does not guarantee a hold if residual velocity carries the end effector across
+the tolerance boundary. An ideal stationary configuration needs no sustaining
+torque in this zero-gravity model; the difficult quantity to control is
+therefore residual motion and its coupled correction, not static load.
 
-The action does not specify a desired position or velocity. It applies a
-piecewise-constant torque command to a second-order arm whose acceleration
-depends on configuration-dependent link inertia, coupled Coriolis/centripetal
-terms, armature, damping, and the 50 Hz command schedule. A useful physical
-description is
+The tolerance ball translates into different joint tolerances depending on
+the Jacobian at the chosen solution. Tangential errors are generally
+first-order in joint error, while radial sensitivity becomes poorly
+conditioned near extended or folded postures. Thus equal end-effector
+accuracy does not imply equal joint accuracy or equal control effort across
+targets and IK branches. A policy can also remain successful while moving
+inside the ball; zero velocity is physically sufficient but not required by
+the benchmark. The decisive behavioral property is a 100-sample uninterrupted
+streak, not the minimum distance reached.
 
-`M(q) qdd + C(q, qdot) qdot + D qdot = B u`,
-
-with gravity absent, explicit damping in `D`, reflected armature in `M`, and
-the motor gear in `B`. Reaching therefore requires both selecting a
-configuration and shaping velocity; a command that reduces instantaneous
-position error can still carry enough kinetic energy to cross the 1 cm region.
-
-At the target there is no gravity to counterbalance and no specified
-disturbance. A stationary exact configuration can require nearly zero torque,
-but arriving with residual velocity is not equivalent to holding: damping
-must dissipate that velocity before the end effector leaves the tolerance
-ball. The hold is consequently a convergence and local regulation problem,
-not just a first-entry event. Because the success counter is reset by any
-sampled miss, a brief overshoot, oscillation, or branch-side correction
-interrupts the complete hold.
-
-The reset state is fully extended along positive x, with the target anywhere
-on the official annulus. Initial distance can be as small as about 0.02 m and
-as large as about 0.42 m. Targets on the opposite side therefore require a
-large coordinated reorientation before stabilization, while near-positive-x
-targets test precise braking from an already extended configuration. The
-uniform-radius distribution is not uniform over workspace area: it gives
-equal probability to radial intervals rather than equal probability per unit
-area.
-
-The measured hold is discrete at 20 ms boundaries even though MuJoCo advances
-the dynamics at 2 ms. Sub-control-interval excursions are simulated and can
-alter the next sampled state, but they are not independently counted as
-failures. Conversely, a sampled miss resets the hold even if the continuous
-trajectory was inside for most of that interval.
-
-### Observation, control, and outcome coupling
-
-The joint positions and velocities plus the target-relative vector make the
-instantaneous physical state effectively observable under the deterministic
-simulator model. The branch errors make the two nominal goal configurations
-explicit, reducing the need for the policy to infer inverse kinematics from
-trial and error. The observation still does not reveal how long the current
-in-tolerance streak has lasted. Two episodes can have identical physical
-observations and require different remaining hold times; the policy must
-therefore execute a stationary or stabilizing behavior that succeeds
-independently of that hidden task-progress state.
-
-The causal chain is: target sampling and reset determine a goal and initial
-state; the policy maps the current observation to two normalized torques;
-MuJoCo integrates those torques for 20 ms; the resulting site position is
-compared with the fixed target; and only the resulting consecutive
-in-tolerance sequence determines task success. A policy can reach the target
-quickly yet fail the episode through poor velocity regulation, branch
-switching, torque saturation, or recurrent tolerance-boundary crossings.
-
-### Scientifically meaningful behavior quantities
-
-Across a complete episode, the physically informative quantities are target
-radius and angle; joint position and velocity trajectories; commanded and
-effective joint torques; action saturation and variation; end-effector
-position and Cartesian velocity; radial and tangential target error; Jacobian
-conditioning or manipulability; inverse-kinematic branch and distance to
-joint limits; kinetic energy; first entry time; velocity and error at entry;
-longest consecutive in-tolerance streak; number and timing of hold
-interruptions; and the final distance. Contact generation and forces, if
-present for link geometries, are also meaningful because they would change
-the available motion rather than represent a learning-only failure.
+The baseline training radius range is 0.14 to 0.20 m, while the official
+range includes 0.06 to 0.20 m. A policy trained only on the baseline therefore
+faces a systematic inner-radius and corresponding posture/conditioning shift
+at assessment. This is a distribution issue, not evidence that the inner
+targets are physically impossible.
 
 ## Unknowns
 
-- The compiled link masses, centers of mass, and inertia tensors are not
-  stated in the XML. They are inferred by MuJoCo from the geom definitions
-  and defaults, so the exact mass matrix, acceleration under a saturated
-  command, and configuration-dependent bandwidth are unresolved from the
-  source alone.
-- The XML leaves the MuJoCo integrator and solver configuration at defaults.
-  The exact discrete damping, numerical energy behavior, and effects of the
-  2 ms integration step therefore remain runtime quantities rather than
-  analytically fixed properties of the written task.
-- Gear transmission establishes the command scale, but the precise effective
-  actuator torque after MuJoCo transmission, control clipping, joint limits,
-  and any compiled actuator constraints has not been measured. The resulting
-  time-to-reach and braking margin are unknown.
-- Link geoms do not disable contact. It is unresolved whether MuJoCo's
-  collision filtering generates relevant adjacent-link contacts in the folded
-  configurations and, if so, whether contact impulses create a distinct
-  failure class. The plane, base, and target cannot provide such contacts
-  under their explicit settings.
-- The observation code is exact and deterministic, but there is no empirical
-  characterization yet of numerical sensitivity in the wrapped angles,
-  target-relative vector, or analytic branch errors near joint limits. The
-  practical policy sensitivity to these representations is unknown.
-- The attainable hold margin is unknown: no campaign evidence yet establishes
-  the distribution of entry velocities, boundary crossings, settling times,
-  torque saturation, or branch preference under a learned policy. These
-  determine whether failures are primarily reachability, transient control,
-  stabilization, or distribution-generalization failures.
-- The default training distribution does not include official radii from
-  0.06 to 0.14 m. Before evidence, it is unknown whether the representation
-  and learned dynamics generalize from the trained outer annulus to those
-  inner configurations, or whether their distinct inverse-kinematic and
-  braking geometry causes a disproportionate loss in official success.
-- The success contract observes only control-boundary distances. The extent
-  to which sub-20 ms excursions occur without being sampled, and whether
-  those excursions materially precede later hold interruptions, is unknown.
-- There is no observation noise, external disturbance, or target motion in the
-  human-authored simulator. Thus robustness to those phenomena is outside the
-  established task model, while the policy's robustness to simulator
-  discretization, initial geometry, and target distribution remains to be
-  established by campaign evidence.
+Before campaign evidence exists, the plant equations and nominal geometry are
+known, but the learned closed-loop behavior is not. The important unresolved
+quantities are:
+
+- whether the policy reliably chooses a legal IK branch across the full angle
+  range, especially where one branch approaches the shoulder limit;
+- time to first enter the tolerance ball, approach overshoot, settling time,
+  and residual end-effector speed at entry;
+- the longest uninterrupted in-tolerance streak and the mechanisms of any
+  interruption, separated by target radius, angle, and selected branch;
+- how torque saturation, damping, configuration-dependent inertia, and the
+  20 ms action hold interact during acceleration and braking;
+- whether the policy has learned a genuine local regulator or only a
+  repeated crossing/hovering behavior that receives shaped reward;
+- sensitivity of the final hold to the one-centimeter boundary and to
+  post-step versus between-step excursions;
+- the distribution of joint-limit margin, action magnitude, action changes,
+  joint velocity, end-effector velocity, and accumulated control effort over a
+  complete successful or failed episode.
+
+The scientifically meaningful record of a complete behavior is therefore not
+just success percentage. It includes target radius and angle, joint trajectory
+and branch identity, end-effector displacement and distance, time to first
+entry, velocity and control during entry, longest consecutive hold, number of
+interruptions, joint-limit margin, saturation, and the final distance. These
+quantities distinguish unreachable or poorly conditioned geometry, inadequate
+trajectory control, late braking, and failure to stabilize, without confusing
+those mechanisms with the binary official verdict.

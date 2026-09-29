@@ -23,6 +23,44 @@ from robot_learning.scenario.environment import make_evaluation_env
 RESEARCH_EVALUATION_SUMMARY_VERSION = 4
 
 
+def _angle_bin(angle_degrees: float, bin_count: int = 8) -> str:
+    width = 360.0 / bin_count
+    index = int(np.floor((angle_degrees + 180.0) / width)) % bin_count
+    start = -180.0 + index * width
+    end = start + width
+    return f"{start:g}..{end:g}"
+
+
+def _radius_bin(radius_cm: float) -> str:
+    if radius_cm < 10.0:
+        return "6..10"
+    if radius_cm < 14.0:
+        return "10..14"
+    if radius_cm < 18.0:
+        return "14..18"
+    return "18..20"
+
+
+def _stratified_success(
+    diagnostics: list[dict],
+    *,
+    key: str,
+) -> dict[str, dict[str, float | int]]:
+    grouped: dict[str, list[dict]] = {}
+    for item in diagnostics:
+        grouped.setdefault(str(item[key]), []).append(item)
+    return {
+        group: {
+            "episodes": len(items),
+            "successes": sum(bool(item["success"]) for item in items),
+            "success_percent": 100.0
+            * sum(bool(item["success"]) for item in items)
+            / len(items),
+        }
+        for group, items in sorted(grouped.items())
+    }
+
+
 def evaluate_research_model(
     model_path: Path,
     *,
@@ -36,6 +74,7 @@ def evaluate_research_model(
         raise ValueError("an evaluation panel requires at least one episode")
     runtime = load_runtime(model_path, algorithm)
     env = make_evaluation_env(policy_runtime=runtime)
+    control_dt = env.model.opt.timestep * env.frame_skip
 
     episode_results: list[dict] = []
     episode_diagnostics: list[dict] = []
@@ -55,12 +94,34 @@ def evaluate_research_model(
         in_tolerance_steps = 0
         hold_interruptions = 0
         was_in_tolerance = False
+        distance_trace_cm: list[float] = []
+        end_effector_speed_cm_s: list[float] = []
+        joint_limit_margin_degrees: list[float] = []
+        action_trace: list[list[float]] = []
         while not (terminated or truncated):
             action = runtime.predict(obs)
+            previous_position = env._end_effector_position()
             obs, reward, terminated, truncated, info = env.step(action)
             steps += 1
             reward_total += float(reward)
             distance_cm = 100.0 * float(info["distance"])
+            current_position = env._end_effector_position()
+            end_effector_speed_cm_s.append(
+                100.0
+                * float(np.linalg.norm(current_position - previous_position))
+                / control_dt
+            )
+            distance_trace_cm.append(distance_cm)
+            action_array = np.asarray(action, dtype=np.float64).reshape(-1)
+            action_trace.append(action_array.tolist())
+            joint_ranges = np.asarray(env.model.jnt_range[:2], dtype=np.float64)
+            joint_margin = np.minimum(
+                env.data.qpos[:2] - joint_ranges[:, 0],
+                joint_ranges[:, 1] - env.data.qpos[:2],
+            )
+            joint_limit_margin_degrees.append(
+                float(np.degrees(np.min(joint_margin)))
+            )
             held_steps = int(info.get("held_steps", 0))
             min_distance_cm = min(min_distance_cm, distance_cm)
             final_distance_cm = distance_cm
@@ -75,6 +136,36 @@ def evaluate_research_model(
             if "is_success" in info:
                 success = bool(info["is_success"])
 
+        first_entry_index = next(
+            (
+                index
+                for index, distance in enumerate(distance_trace_cm)
+                if distance <= 1.0
+            ),
+            None,
+        )
+        post_entry_distances = (
+            []
+            if first_entry_index is None
+            else distance_trace_cm[first_entry_index : first_entry_index + 21]
+        )
+        post_entry_max_distance_cm = (
+            None
+            if not post_entry_distances
+            else max(post_entry_distances)
+        )
+        post_entry_overshoot_cm = (
+            None
+            if post_entry_max_distance_cm is None
+            else max(0.0, post_entry_max_distance_cm - 1.0)
+        )
+        action_array = np.asarray(action_trace, dtype=np.float64)
+        action_deltas = (
+            np.diff(action_array, axis=0)
+            if len(action_array) > 1
+            else np.empty((0, 2), dtype=np.float64)
+        )
+        saturated_actions = np.abs(action_array) >= 0.999
         episode_results.append(
             {
                 "episode": episode,
@@ -103,6 +194,40 @@ def evaluate_research_model(
                 "max_held_steps": max_held_steps,
                 "in_tolerance_steps": in_tolerance_steps,
                 "hold_interruptions": hold_interruptions,
+                "distance_trace_cm": distance_trace_cm,
+                "end_effector_speed_cm_s": end_effector_speed_cm_s,
+                "joint_limit_margin_degrees": joint_limit_margin_degrees,
+                "action_trace": action_trace,
+                "first_entry_speed_cm_s": (
+                    None
+                    if first_entry_index is None
+                    else end_effector_speed_cm_s[first_entry_index]
+                ),
+                "post_entry_max_distance_cm": post_entry_max_distance_cm,
+                "post_entry_overshoot_cm": post_entry_overshoot_cm,
+                "residual_end_effector_speed_cm_s": (
+                    end_effector_speed_cm_s[-1]
+                ),
+                "minimum_joint_limit_margin_degrees": min(
+                    joint_limit_margin_degrees
+                ),
+                "action_saturation_count": int(np.sum(saturated_actions)),
+                "action_saturation_fraction": float(
+                    np.mean(saturated_actions)
+                ),
+                "action_change_count": int(
+                    np.sum(np.linalg.norm(action_deltas, axis=1) > 1e-6)
+                ),
+                "mean_action_change": (
+                    0.0
+                    if len(action_deltas) == 0
+                    else float(np.mean(np.linalg.norm(action_deltas, axis=1)))
+                ),
+                "maximum_action_change": (
+                    0.0
+                    if len(action_deltas) == 0
+                    else float(np.max(np.linalg.norm(action_deltas, axis=1)))
+                ),
             }
         )
         if progress_callback is not None:
@@ -121,7 +246,36 @@ def evaluate_research_model(
         # failures and checking whether performance varies by target geometry.
         "research_evidence": {
             "episode_diagnostics": episode_diagnostics,
-            "units": {"distance": "cm", "time": "control_steps"},
+            "stratified_success": {
+                "radius_cm": _stratified_success(
+                    [
+                        {
+                            **item,
+                            "radius_bin": _radius_bin(item["target_radius_cm"]),
+                        }
+                        for item in episode_diagnostics
+                    ],
+                    key="radius_bin",
+                ),
+                "angle_degrees": _stratified_success(
+                    [
+                        {
+                            **item,
+                            "angle_bin": _angle_bin(
+                                item["target_angle_degrees"]
+                            ),
+                        }
+                        for item in episode_diagnostics
+                    ],
+                    key="angle_bin",
+                ),
+            },
+            "units": {
+                "distance": "cm",
+                "speed": "cm_per_s",
+                "joint_limit_margin": "degrees",
+                "time": "control_steps",
+            },
         },
     }
 
