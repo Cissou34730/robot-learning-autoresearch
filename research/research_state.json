@@ -1265,44 +1265,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "open",
-        "inquiry": {
-          "closure_condition": "Close when targeted, behaviorally grounded evidence discriminates among the competing mechanisms at a resolution sufficient to choose one goal-linked intervention and defines a measurement that checks both negative-bearing approach/settling and complete uninterrupted hold performance on the full official distribution.",
-          "goal_connection": "Resolving this mechanism determines the least speculative bounded intervention for closing the gap from 151/160 development successes to at least 196/200 official successes, while preserving the demonstrated complete 100-sample hold behavior.",
-          "id": "I2",
-          "opened_in_session": "S4",
-          "question": "Which mechanism best explains the negative-bearing approach and settling failures: a branch or angular-representation and branch-selection limitation near shoulder-limit bearings, insufficient training-distribution coverage of those trajectories, or their interaction?",
-          "rationale": "The latest development panel found all nine failures in negative-bearing approach or settling, with no failure that reached settling and then lost the 100-sample hold. That localizes the shortfall but does not establish whether the cause is representation and branch selection, missing training support, or their interaction. Official assessment is premature because no candidate has reached the objective or been assigned best-known status.",
-          "reframes": []
-        }
-      },
-      "result": {
-        "action": "open",
-        "inquiry_id": "I2",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E6",
-    "inquiry_id": null,
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "open",
-        "closure_condition": "Close when targeted, behaviorally grounded evidence discriminates among the competing mechanisms at a resolution sufficient to choose one goal-linked intervention and defines a measurement that checks both negative-bearing approach/settling and complete uninterrupted hold performance on the full official distribution.",
-        "goal_connection": "Resolving this mechanism determines the least speculative bounded intervention for closing the gap from 151/160 development successes to at least 196/200 official successes, while preserving the demonstrated complete 100-sample hold behavior.",
-        "question": "Which mechanism best explains the negative-bearing approach and settling failures: a branch or angular-representation and branch-selection limitation near shoulder-limit bearings, insufficient training-distribution coverage of those trajectories, or their interaction?",
-        "rationale": "The latest development panel found all nine failures in negative-bearing approach or settling, with no failure that reached settling and then lost the 100-sample hold. That localizes the shortfall but does not establish whether the cause is representation and branch selection, missing training support, or their interaction. Official assessment is premature because no candidate has reached the objective or been assigned best-known status."
-      }
-    },
-    "request_fingerprint": "95b0ee312f68599186eaf5e716cc1e3ea3d9676c08bfc23a27e242f36b152549",
-    "session_id": "S4",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T1 produced the available candidates, including T1:checkpoint-100352, which was measured by M1. No candidate is assigned working, best-known, or retained status; role assignment remains a goal-review decision supported by completed evidence.",
     "completed_operations": [
