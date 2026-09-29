@@ -11,68 +11,48 @@ from robot_learning.robots.two_joint_arm import FOREARM_LENGTH, UPPER_ARM_LENGTH
 from robot_learning.scenario.observations import reach_observation
 
 JOINT_LIMIT_RADIANS = np.deg2rad(170.0)
-BRANCH_COMMIT_DISTANCE_METERS = 0.06
 
 
 def physical_action(action):
     return action
 
 
+def _wrap_to_pi(angle: float) -> float:
+    return float((angle + np.pi) % (2.0 * np.pi) - np.pi)
+
+
+def _ik_postures(data) -> tuple[np.ndarray, np.ndarray]:
+    target_x = float(data.mocap_pos[0][0])
+    target_y = float(data.mocap_pos[0][1])
+    cos_elbow = (
+        target_x**2 + target_y**2 - UPPER_ARM_LENGTH**2 - FOREARM_LENGTH**2
+    ) / (2.0 * UPPER_ARM_LENGTH * FOREARM_LENGTH)
+    elbow_open = float(np.arccos(np.clip(cos_elbow, -1.0, 1.0)))
+    target_angle = float(np.arctan2(target_y, target_x))
+
+    def posture(elbow: float) -> np.ndarray:
+        shoulder = target_angle - np.arctan2(
+            FOREARM_LENGTH * np.sin(elbow),
+            UPPER_ARM_LENGTH + FOREARM_LENGTH * np.cos(elbow),
+        )
+        return np.array([_wrap_to_pi(shoulder), elbow], dtype=np.float64)
+
+    return posture(elbow_open), posture(-elbow_open)
+
+
+def _joint_limit_margin(posture: np.ndarray) -> float:
+    return float(JOINT_LIMIT_RADIANS - np.max(np.abs(posture)))
+
+
 def make_policy_io():
-    branch_remapped = False
-
-    def reset():
-        nonlocal branch_remapped
-        branch_remapped = False
-
     def observe(data):
-        nonlocal branch_remapped
         observation = reach_observation(data)
-        if not branch_remapped and float(np.linalg.norm(observation[4:7])) <= (
-            BRANCH_COMMIT_DISTANCE_METERS
+        open_posture, folded_posture = _ik_postures(data)
+        if (
+            _joint_limit_margin(open_posture) < 0.0
+            <= _joint_limit_margin(folded_posture)
         ):
-            target_x = float(data.mocap_pos[0][0])
-            target_y = float(data.mocap_pos[0][1])
-            target_angle = float(np.arctan2(target_y, target_x))
-            cos_elbow = (
-                target_x**2
-                + target_y**2
-                - UPPER_ARM_LENGTH**2
-                - FOREARM_LENGTH**2
-            ) / (2.0 * UPPER_ARM_LENGTH * FOREARM_LENGTH)
-            elbow_open = float(np.arccos(np.clip(cos_elbow, -1.0, 1.0)))
-            elbow_folded = -elbow_open
-
-            def shoulder_for_elbow(elbow: float) -> float:
-                return float(
-                    (
-                        target_angle
-                        - np.arctan2(
-                            FOREARM_LENGTH * np.sin(elbow),
-                            UPPER_ARM_LENGTH
-                            + FOREARM_LENGTH * np.cos(elbow),
-                        )
-                        + np.pi
-                    )
-                    % (2.0 * np.pi)
-                    - np.pi
-                )
-
-            shoulder_open = shoulder_for_elbow(elbow_open)
-            shoulder_folded = shoulder_for_elbow(elbow_folded)
-            open_margin = min(
-                JOINT_LIMIT_RADIANS - abs(shoulder_open),
-                JOINT_LIMIT_RADIANS - abs(elbow_open),
-            )
-            folded_margin = min(
-                JOINT_LIMIT_RADIANS - abs(shoulder_folded),
-                JOINT_LIMIT_RADIANS - abs(elbow_folded),
-            )
-            if open_margin < 0.0 <= folded_margin:
-                branch_remapped = True
-
-        if branch_remapped:
             observation[7:11] = observation[[9, 10, 7, 8]]
         return observation
 
-    return PolicyIO(observe=observe, action=physical_action, reset=reset)
+    return PolicyIO(observe=observe, action=physical_action)
