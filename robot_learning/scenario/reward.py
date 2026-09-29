@@ -27,6 +27,8 @@ BOUNDARY_BAND_WIDTH = 0.005
 JOINT_VELOCITY_PENALTY = 0.01
 ENDPOINT_VELOCITY_PENALTY = 1.0
 BOUNDARY_ACTION_PENALTY = 0.05
+TERMINAL_JOINT_VELOCITY_PENALTY = 0.01
+TERMINAL_ENDPOINT_VELOCITY_PENALTY = 0.5
 
 
 @dataclass(frozen=True)
@@ -95,6 +97,33 @@ def _boundary_braking_penalties(
     )
 
 
+def _terminal_stabilization_penalties(
+    distance: float,
+    success_threshold: float,
+    joint_velocity: np.ndarray | None,
+    endpoint_velocity: np.ndarray | None,
+    scale: float,
+) -> tuple[float, float]:
+    if not 0.0 <= scale <= 1.0:
+        raise ValueError("terminal stabilization scale must be between 0 and 1")
+    terminal_weight = scale * float(distance <= success_threshold)
+    joint_velocity_penalty = 0.0
+    if joint_velocity is not None:
+        joint_velocity_penalty = -(
+            terminal_weight
+            * TERMINAL_JOINT_VELOCITY_PENALTY
+            * float(np.sum(np.square(joint_velocity)))
+        )
+    endpoint_velocity_penalty = 0.0
+    if endpoint_velocity is not None:
+        endpoint_velocity_penalty = -(
+            terminal_weight
+            * TERMINAL_ENDPOINT_VELOCITY_PENALTY
+            * float(np.sum(np.square(endpoint_velocity)))
+        )
+    return float(joint_velocity_penalty), float(endpoint_velocity_penalty)
+
+
 def reach_reward(
     previous_distance: float,
     current_distance: float,
@@ -107,6 +136,7 @@ def reach_reward(
     joint_velocity: np.ndarray | None = None,
     endpoint_velocity: np.ndarray | None = None,
     boundary_braking_scale: float = 1.0,
+    terminal_stabilization_scale: float = 0.0,
 ) -> RewardResult:
     progress = PROGRESS_COEFFICIENT * (previous_distance - current_distance)
     reward = progress
@@ -161,10 +191,22 @@ def reach_reward(
         endpoint_velocity,
         boundary_braking_scale,
     )
+    (
+        terminal_joint_velocity_penalty,
+        terminal_endpoint_velocity_penalty,
+    ) = _terminal_stabilization_penalties(
+        current_distance,
+        success_threshold,
+        joint_velocity,
+        endpoint_velocity,
+        terminal_stabilization_scale,
+    )
     reward += (
         joint_velocity_penalty
         + endpoint_velocity_penalty
         + boundary_action_penalty
+        + terminal_joint_velocity_penalty
+        + terminal_endpoint_velocity_penalty
     )
 
     return RewardResult(
@@ -179,5 +221,7 @@ def reach_reward(
             "boundary_joint_velocity": joint_velocity_penalty,
             "boundary_endpoint_velocity": endpoint_velocity_penalty,
             "boundary_action": boundary_action_penalty,
+            "terminal_joint_velocity": terminal_joint_velocity_penalty,
+            "terminal_endpoint_velocity": terminal_endpoint_velocity_penalty,
         },
     )
