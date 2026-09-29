@@ -11,17 +11,21 @@ automatically a successful one. Superseded and reverted entries remain here.
 
 ## Current baseline
 
-As of 2026-09-29, the harness is restored to `b4f1cdf`: the winning campaign's
-harness plus the inquiry-closure correction. Only harness files were restored;
-the subsequent campaign's scientific recipes and artifacts were not rewound.
+The reference baseline is `b4f1cdf`: the winning campaign's harness plus the
+inquiry-closure correction, restored in `4a48da9`. Only harness files were
+restored; the subsequent campaign's scientific recipes and artifacts were not
+rewound.
+
+The active experiment is the reduced scientific handoff below. It is a single
+prompt-only bundle on this reference baseline; its campaign effect is untested.
 
 The objective under investigation is scientifically justified action selection:
 the PI chooses the action that can resolve a consequential uncertainty rather
 than automatically turning each plausible explanation into another training
 intervention. The objective is not simply fewer training runs.
 
-The closure correction is retained for lifecycle correctness. No retained
-post-win correction has demonstrated a solution to training-first behavior.
+The closure correction is retained for lifecycle correctness. No post-win
+correction has yet demonstrated a solution to training-first behavior.
 
 ## 2026-09-29 reference: winning campaign
 
@@ -130,6 +134,49 @@ post-win correction has demonstrated a solution to training-first behavior.
   parsing, Ruff, and all 20 focused brief/launcher tests passed.
 - **Result:** a simpler, understood baseline, not a solution to training-first
   behavior. No campaign was launched or reset for this rollback.
+
+## 2026-09-29: reduced scientific handoff - active, campaign-untested
+
+- **Baseline / scope:** `4a48da9`, whose harness matches `b4f1cdf`.
+  `run_research.ps1` and `research/build_research_brief.py`; this log records
+  the change. The experiment is introduced by the commit updating this entry.
+- **Rationale:** the failed campaign promoted a conjectured explanation into
+  the next intervention inquiry. Once the inquiry required a trained
+  correction, action selection within it was already committed to training.
+  The intervention point is the checkpoint/closure/goal-review handoff.
+- **Change:** checkpoint guidance distinguishes observed findings from
+  hypotheses and describes the goal gap as a shortfall rather than a fix.
+  Closure records the answer, its implications for hypotheses, and uncertainty
+  for goal review. Goal review independently chooses the unresolved scientific
+  decision; the previous next direction is explicitly non-binding.
+- **Context change:** ordinary goal review reads goal, gap, understanding,
+  evidence, previous frontier, and proposed direction in that order. Other
+  session context ordering remains at the reference baseline. The goal stays
+  first, with one concise reminder that it covers the complete official task
+  distribution; the full task paragraph is not repeated.
+- **Limits:** no state fields, Runner scientific judgments, training rules,
+  resource framing, mandatory diagnostic sequence, or hypothesis checklist.
+  The existing open/reframe/close session boundaries and closure criterion are
+  preserved. This is not a restoration of the entire earlier prompt rollout.
+- **Implementation checks:** PowerShell parsing, Ruff, and 20 focused
+  brief/launcher tests passed. Direct rendered-context checks covered startup,
+  ordinary and terminal goal review, active and closed inquiries, and the
+  open/reframe/close transitions. These checks do not test scientific judgment.
+- **Expected result:** a conjecture remains a conjecture across fresh sessions.
+  The next inquiry addresses the decision that evidence has not resolved,
+  instead of inheriting a proposed remedy as a requirement. Training remains
+  a valid deliberate choice, not the default consequence of the handoff.
+- **Observation to record:** after consequential measurements, inspect the
+  checkpoint, closure outcome, and next goal-review decision. Does the
+  conjecture retain its evidential status? Does goal review account for what
+  remains unexplained and earlier negative results, rather than repeat a
+  correction by default? Does the chosen action answer the stated decision?
+- **Failure signal:** if successive inquiries still automatically turn the
+  unresolved explanation into another trained intervention, the bundle has
+  not solved the problem. Fewer training runs alone do not establish success;
+  successful wording checks also do not establish success.
+- **Campaign observation / disposition:** none yet. Active as one tracked
+  experiment, not a validated improvement. No campaign was started or resumed.
 
 ## Discussed but not implemented
 
