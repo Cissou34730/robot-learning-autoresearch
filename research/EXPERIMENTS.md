@@ -24,3 +24,4 @@
 | E14 | inquiry | I4 | completed |
 | E15 | checkpoint | - | checkpointed |
 | T4 | training | I4 | completed |
+| M4 | measurement | I4 | completed |
