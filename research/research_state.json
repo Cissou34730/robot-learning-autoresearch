@@ -1,145 +1,38 @@
 {
-  "active_inquiry": {
-    "closure_condition": "Close this inquiry after a baseline candidate has been measured under the official distribution with radius- and angle-stratified success, first-entry and overshoot behavior, longest uninterrupted streak, interruption count, residual end-effector velocity, joint-limit margin, action saturation, and action changes. The result must support a documented choice of distribution, hold-regulation, combined intervention, or no credible route.",
-    "goal_connection": "The human goal requires at least 196 of 200 official episodes to complete a 100-sample uninterrupted hold. Identifying whether the first bottleneck is target coverage, local regulation, or both determines the smallest credible intervention while preserving the protected task and success definition.",
-    "id": "I1",
-    "opened_in_session": "S2",
-    "question": "For a baseline PPO policy, are failures under the official 6-20 cm target distribution dominated by inner-radius distribution shift, inadequate uninterrupted-hold regulation on covered targets, or their interaction?",
-    "rationale": "There is no candidate or behavioral evidence yet. The current recipe excludes 6-14 cm targets and gives zero hold-exit forfeiture, so binary success alone cannot distinguish distribution failure from repeated tolerance crossings. A bounded baseline diagnostic is the highest-value next step before changing the reward or training distribution.",
-    "reframes": []
-  },
+  "active_inquiry": null,
   "campaign": {
-    "base_commit": "82caa805403e2b8bf5e83c129662b7698f13210d",
-    "id": "108300ce-8a22-4891-9b62-1fde8e26c3be",
+    "base_commit": "de0b95fc51dade1126d56b84d3429b25c85230ca",
+    "id": "7f551163-bae6-40bc-9b0b-a960be607ffb",
     "max_inquiries": 15,
     "recipe_source_commit": "9fbe544002f73f9b50ded6986a6a6b6db90fea40",
-    "started_at": "2026-09-29T05:21:15.095385+00:00"
+    "started_at": "2026-09-29T13:13:01.087390+00:00"
   },
   "candidates": {},
   "counters": {
-    "event": 3,
-    "inquiry": 1,
+    "event": 0,
+    "inquiry": 0,
     "measurement": 0,
-    "session": 2,
+    "session": 0,
     "training": 0
   },
   "human_goal": {
     "source": "research/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "fresh campaign initialized; scientific model pending",
   "model_roles": {
     "best_known": null,
     "retained": {},
     "working": null
   },
   "official_assessment": null,
-  "operation_events": [
-    {
-      "completed_at": "2026-09-29T05:28:13Z",
-      "error": null,
-      "id": "E1",
-      "inquiry_id": null,
-      "kind": "checkpoint",
-      "request": {
-        "candidates_and_roles": "No candidates have been trained, measured, or assigned roles. Working, best-known, and retained roles are empty.",
-        "completed_operations": [],
-        "cumulative_resource_use": "No training, evaluation, or other scientific operation has completed; compute and measurement use are zero.",
-        "current_goal_gap": "There is no trained candidate or behavioral evidence yet. The current implementation trains PPO on radii 14-20 cm rather than the official 6-20 cm distribution, and its hold-exit forfeiture is zero, so the learning signal may reward reaching or repeated tolerance crossings without reliably learning the complete hold. The magnitude of this gap and whether it is primarily distribution coverage, local regulation, or both are unmeasured.",
-        "current_synthesis": "The physical model makes the decisive behavior a sampled-data reach, braking, convergence, and regulation problem: the arm starts at an extended singularity, torque is saturated and held for 20 ms, and residual coupled velocity can carry the end effector outside the 1 cm ball after entry. Two competing explanations are credible before data. First, failures may be caused mainly by the training distribution excluding inner targets, which changes IK posture and conditioning at official assessment. Second, failures may occur even on covered targets because the zero-forfeiture shaped reward does not sufficiently distinguish an uninterrupted 100-step hold from repeated entry and exit, leaving the policy without a strong local regulator. A baseline policy and diagnostics that separate radius, entry/settling behavior, longest streak, interruptions, velocity, and action saturation can discriminate these mechanisms before selecting an intervention.",
-        "decision_frontier": "The next decision is whether the first credible bottleneck is official-distribution coverage, hold-regulation learning, or their interaction. The discriminating evidence must compare complete success and hold-streak behavior across the official radius range and target angles while measuring first entry, overshoot, residual end-effector motion, interruptions, joint-limit margin, torque saturation, and action changes; binary success alone cannot identify the mechanism.",
-        "evidence_references": [],
-        "human_goal_connection": "The human goal is at least 196 successes in the protected 200-episode official panel, where each success requires 100 consecutive control samples within 1 cm. The campaign must therefore optimize complete hold reliability over the full 6-20 cm, full-angle target distribution, not proximity or interrupted dwell.",
-        "next_direction_or_closure": "Enter goal review and open one bounded inquiry that first establishes baseline behavior under the official distribution and tests whether failures are dominated by inner-radius coverage or by inadequate uninterrupted-hold regulation. Use that result to choose between a distribution intervention, a hold-aware reward/control intervention, or a combined change, while preserving the protected task and official assessment."
-      },
-      "result": {
-        "session_id": "S1",
-        "status": "checkpointed"
-      },
-      "session_id": "S1",
-      "status": "completed",
-      "superseded_by": null,
-      "supersedes": null
-    },
-    {
-      "completed_at": "2026-09-29T05:29:40Z",
-      "error": null,
-      "id": "E2",
-      "inquiry_id": "I1",
-      "kind": "inquiry",
-      "request": {
-        "action": "open",
-        "closure_condition": "Close this inquiry after a baseline candidate has been measured under the official distribution with radius- and angle-stratified success, first-entry and overshoot behavior, longest uninterrupted streak, interruption count, residual end-effector velocity, joint-limit margin, action saturation, and action changes. The result must support a documented choice of distribution, hold-regulation, combined intervention, or no credible route.",
-        "goal_connection": "The human goal requires at least 196 of 200 official episodes to complete a 100-sample uninterrupted hold. Identifying whether the first bottleneck is target coverage, local regulation, or both determines the smallest credible intervention while preserving the protected task and success definition.",
-        "question": "For a baseline PPO policy, are failures under the official 6-20 cm target distribution dominated by inner-radius distribution shift, inadequate uninterrupted-hold regulation on covered targets, or their interaction?",
-        "rationale": "There is no candidate or behavioral evidence yet. The current recipe excludes 6-14 cm targets and gives zero hold-exit forfeiture, so binary success alone cannot distinguish distribution failure from repeated tolerance crossings. A bounded baseline diagnostic is the highest-value next step before changing the reward or training distribution."
-      },
-      "result": {
-        "action": "open",
-        "inquiry_id": "I1",
-        "status": "completed"
-      },
-      "session_id": "S2",
-      "status": "completed",
-      "superseded_by": null,
-      "supersedes": null
-    },
-    {
-      "completed_at": "2026-09-29T05:36:50Z",
-      "error": null,
-      "id": "E3",
-      "inquiry_id": null,
-      "kind": "checkpoint",
-      "request": {
-        "candidates_and_roles": "No candidates have been trained, measured, or assigned roles. Working, best-known, and retained roles are empty.",
-        "completed_operations": [
-          "E2"
-        ],
-        "cumulative_resource_use": "No training, measurement, official assessment, or other scientific operation has completed; compute and measurement use remain zero.",
-        "current_goal_gap": "No candidate has been trained or measured, so the official success gap is unquantified. The baseline recipe excludes inner targets below 14 cm and uses zero hold-exit forfeiture, leaving both distribution coverage and local regulation as unresolved risks.",
-        "current_synthesis": "The physical model identifies sampled-data reach, braking, convergence, and regulation as the decisive behavior. Inner-radius distribution shift and inadequate hold-aware regulation remain competing explanations; neither can be selected without a candidate and diagnostics that distinguish complete holds from repeated tolerance crossings.",
-        "decision_frontier": "The goal-review decision is to end the review with I1 open and begin its fresh inquiry session. The next scientific action should establish a baseline candidate under the official distribution and stratify complete success, first entry, overshoot, longest streak, interruptions, residual end-effector velocity, joint-limit margin, saturation, and action changes by radius and angle.",
-        "evidence_references": [
-          "E1",
-          "E2"
-        ],
-        "human_goal_connection": "The human goal is at least 196 successes in the protected 200-episode official panel, with each success requiring 100 consecutive control samples within 1 cm. The campaign must optimize complete uninterrupted-hold reliability across the official 6-20 cm, full-angle target distribution.",
-        "next_direction_or_closure": "After this checkpoint, in the I1 inquiry session, train or measure a baseline candidate under the official distribution. Use the resulting evidence to choose a distribution intervention, a hold-regulation intervention, a combined intervention, or\u2014only if supported\u2014no credible route; do not request official assessment before a candidate is evidenced."
-      },
-      "result": {
-        "session_id": "S2",
-        "status": "checkpointed"
-      },
-      "session_id": "S2",
-      "status": "completed",
-      "superseded_by": null,
-      "supersedes": null
-    }
-  ],
+  "operation_events": [],
   "pending_operation": null,
-  "pi_checkpoint": {
-    "candidates_and_roles": "No candidates have been trained, measured, or assigned roles. Working, best-known, and retained roles are empty.",
-    "completed_operations": [
-      "E2"
-    ],
-    "cumulative_resource_use": "No training, measurement, official assessment, or other scientific operation has completed; compute and measurement use remain zero.",
-    "current_goal_gap": "No candidate has been trained or measured, so the official success gap is unquantified. The baseline recipe excludes inner targets below 14 cm and uses zero hold-exit forfeiture, leaving both distribution coverage and local regulation as unresolved risks.",
-    "current_synthesis": "The physical model identifies sampled-data reach, braking, convergence, and regulation as the decisive behavior. Inner-radius distribution shift and inadequate hold-aware regulation remain competing explanations; neither can be selected without a candidate and diagnostics that distinguish complete holds from repeated tolerance crossings.",
-    "decision_frontier": "The goal-review decision is to end the review with I1 open and begin its fresh inquiry session. The next scientific action should establish a baseline candidate under the official distribution and stratify complete success, first entry, overshoot, longest streak, interruptions, residual end-effector velocity, joint-limit margin, saturation, and action changes by radius and angle.",
-    "evidence_references": [
-      "E1",
-      "E2"
-    ],
-    "human_goal_connection": "The human goal is at least 196 successes in the protected 200-episode official panel, with each success requiring 100 consecutive control samples within 1 cm. The campaign must optimize complete uninterrupted-hold reliability across the official 6-20 cm, full-angle target distribution.",
-    "inquiry_id": null,
-    "next_direction_or_closure": "After this checkpoint, in the I1 inquiry session, train or measure a baseline candidate under the official distribution. Use the resulting evidence to choose a distribution intervention, a hold-regulation intervention, a combined intervention, or\u2014only if supported\u2014no credible route; do not request official assessment before a candidate is evidenced.",
-    "scientific_commit": "158b3974b2c89315f3a575ed915a076974c26f65",
-    "session_id": "S2"
-  },
+  "pi_checkpoint": null,
   "schema_version": 6,
   "scientific_model": {
-    "commit": "bccc54a3ea3ead8875488b3f47c1ca534dae7d90",
+    "commit": null,
     "path": "research/scientific_model.md",
-    "status": "ready"
+    "status": "pending"
   },
   "scientific_session": null,
   "terminal_state": null
