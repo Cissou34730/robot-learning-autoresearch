@@ -30,3 +30,4 @@
 | E12 | checkpoint | I1 | checkpointed |
 | E13 | restore_recipe | I1 | restored |
 | T8 | training | I1 | completed |
+| M8 | measurement | I1 | completed |
