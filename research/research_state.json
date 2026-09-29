@@ -1,13 +1,5 @@
 {
-  "active_inquiry": {
-    "closure_condition": "Close when one fresh, non-official 200-episode complete-distribution evaluation of T1:checkpoint-100352, using the established phase diagnostics, provides decision-sufficient evidence either to assign T1 as best-known and proceed to official assessment or to withhold that assignment because the candidate is not sufficiently credible.",
-    "goal_connection": "The human goal is at least 196 successful episodes out of 200 under the official target distribution, with every success requiring the complete uninterrupted 100-control-step hold. Resolving assessment readiness determines whether the strongest available policy should be frozen for the protected official test or whether the remaining observed tail still requires a credible new route.",
-    "id": "I5",
-    "opened_in_session": "S11",
-    "question": "Does the complete evidence now justify assigning T1:checkpoint-100352 as best-known and requesting the official assessment, or does its variable development performance and remaining negative-bearing approach and settling tail require withholding assessment?",
-    "rationale": "M4 measured T1 at 196/200, but this is a development result and earlier panels measured 151/160, 158/160, and 192/200. The tested I3 representation intervention and I4 full-radius-support intervention were decisively negative, so no tested alternative is a stronger route. A bounded fresh panel can test whether M4's threshold result is reproducible while preserving the distinction between development evidence and the protected official assessment; it should report negative-bearing approach and settling failures and complete uninterrupted-hold outcomes rather than rely on return alone.",
-    "reframes": []
-  },
+  "active_inquiry": null,
   "campaign": {
     "base_commit": "8ac206f76ce0bd7fb8f098b4fe6dceac2a2a311f",
     "id": "eb19a5f3-14b3-4590-ad74-1b31cf5ae3d5",
@@ -2476,7 +2468,7 @@
     }
   },
   "counters": {
-    "event": 21,
+    "event": 22,
     "inquiry": 5,
     "measurement": 5,
     "session": 12,
@@ -4548,9 +4540,63 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-09-29T22:56:43Z",
+      "error": null,
+      "id": "E22",
+      "inquiry_id": "I5",
+      "kind": "inquiry",
+      "request": {
+        "action": "close",
+        "outcome": "Withhold assigning T1:checkpoint-100352 as best-known and withhold requesting the official assessment.",
+        "reason": "M5 completed I5's closure condition with one fresh non-official 200-episode complete-distribution evaluation: T1 achieved 194/200 successes (97.0%), below the required 196/200 threshold. All 6 failures had negative bearings; 2 never entered tolerance, 5 never established settling, and 1 lost the hold after settling. The candidate reached a maximum uninterrupted hold of 100 steps, so this panel does not demonstrate a hold-regulation capacity failure, but it does show a persistent negative-bearing approach and settling tail and does not make T1 sufficiently credible for protected official assessment. Remaining uncertainty is whether a different future route can remove that tail; resolving it belongs to subsequent goal-linked work, not I5."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I5",
+        "outcome": "Withhold assigning T1:checkpoint-100352 as best-known and withhold requesting the official assessment.",
+        "reason": "M5 completed I5's closure condition with one fresh non-official 200-episode complete-distribution evaluation: T1 achieved 194/200 successes (97.0%), below the required 196/200 threshold. All 6 failures had negative bearings; 2 never entered tolerance, 5 never established settling, and 1 lost the hold after settling. The candidate reached a maximum uninterrupted hold of 100 steps, so this panel does not demonstrate a hold-regulation capacity failure, but it does show a persistent negative-bearing approach and settling tail and does not make T1 sufficiently credible for protected official assessment. Remaining uncertainty is whether a different future route can remove that tail; resolving it belongs to subsequent goal-linked work, not I5.",
+        "status": "completed"
+      },
+      "session_id": "S12",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "close",
+        "inquiry_id": "I5",
+        "outcome": "Withhold assigning T1:checkpoint-100352 as best-known and withhold requesting the official assessment.",
+        "reason": "M5 completed I5's closure condition with one fresh non-official 200-episode complete-distribution evaluation: T1 achieved 194/200 successes (97.0%), below the required 196/200 threshold. All 6 failures had negative bearings; 2 never entered tolerance, 5 never established settling, and 1 lost the hold after settling. The candidate reached a maximum uninterrupted hold of 100 steps, so this panel does not demonstrate a hold-regulation capacity failure, but it does show a persistent negative-bearing approach and settling tail and does not make T1 sufficiently credible for protected official assessment. Remaining uncertainty is whether a different future route can remove that tail; resolving it belongs to subsequent goal-linked work, not I5."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I5",
+        "outcome": "Withhold assigning T1:checkpoint-100352 as best-known and withhold requesting the official assessment.",
+        "reason": "M5 completed I5's closure condition with one fresh non-official 200-episode complete-distribution evaluation: T1 achieved 194/200 successes (97.0%), below the required 196/200 threshold. All 6 failures had negative bearings; 2 never entered tolerance, 5 never established settling, and 1 lost the hold after settling. The candidate reached a maximum uninterrupted hold of 100 steps, so this panel does not demonstrate a hold-regulation capacity failure, but it does show a persistent negative-bearing approach and settling tail and does not make T1 sufficiently credible for protected official assessment. Remaining uncertainty is whether a different future route can remove that tail; resolving it belongs to subsequent goal-linked work, not I5.",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E22",
+    "inquiry_id": "I5",
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "close",
+        "outcome": "Withhold assigning T1:checkpoint-100352 as best-known and withhold requesting the official assessment.",
+        "reason": "M5 completed I5's closure condition with one fresh non-official 200-episode complete-distribution evaluation: T1 achieved 194/200 successes (97.0%), below the required 196/200 threshold. All 6 failures had negative bearings; 2 never entered tolerance, 5 never established settling, and 1 lost the hold after settling. The candidate reached a maximum uninterrupted hold of 100 steps, so this panel does not demonstrate a hold-regulation capacity failure, but it does show a persistent negative-bearing approach and settling tail and does not make T1 sufficiently credible for protected official assessment. Remaining uncertainty is whether a different future route can remove that tail; resolving it belongs to subsequent goal-linked work, not I5."
+      }
+    },
+    "request_fingerprint": "ee2a2a6b611b44b3d9d799112b0fbcc802403c1012dc389e65c7d88e00b04e20",
+    "session_id": "S12",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T1:checkpoint-100352 remains the strongest measured candidate, with 196/200 successes on M4's shared development panel, but has no working, best-known, or retained role. T3:checkpoint-100352 remains unassigned and is not credible after its 116/200 result and decisive paired loss. T2:checkpoint-100352 remains unassigned after its M3 degradation.",
     "completed_operations": [
@@ -4595,7 +4641,8 @@
     "kind": "inquiry",
     "objective": "Bring I5 to the decision required by its closure condition, and close it as soon as the evidence supplies that decision: Close when one fresh, non-official 200-episode complete-distribution evaluation of T1:checkpoint-100352, using the established phase diagnostics, provides decision-sufficient evidence either to assign T1 as best-known and proceed to official assessment or to withhold that assignment because the candidate is not sufficiently credible.",
     "operation_ids": [
-      "M5"
+      "M5",
+      "E22"
     ],
     "scientific_parent_commit": "48e0b02731c2111eaf651dabdfafd51d6cd06056"
   },
