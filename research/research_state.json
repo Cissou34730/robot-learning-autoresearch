@@ -6108,44 +6108,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "open",
-        "inquiry": {
-          "closure_condition": "Close when targeted evidence distinguishes the dominant residual-failure mechanism at a resolution sufficient to choose the next campaign decision, and either identifies a candidate route that preserves baseline complete-task performance while providing a credible path to at least 196/200 on a fresh complete-distribution panel, or supports the conclusion that no credible improvement route remains.",
-          "goal_connection": "The latest controlled panel is 195/200, one success below the 196/200 threshold, while prior fresh panels measured 194/200 and 196/200. Resolving whether the residual failures are a stable physical class or policy variability is necessary before assigning a best-known candidate or requesting the official assessment, and a successful route must preserve complete uninterrupted-hold success over the full official distribution.",
-          "id": "I7",
-          "opened_in_session": "S15",
-          "question": "What mechanism produces the remaining rare complete-task failures of the T1 baseline across fresh complete-distribution panels: a stable negative-bearing approach and settling class, or policy variability that is not localized to one physical class, and which evidence-backed route can improve that tail without degrading the established uninterrupted-hold behavior?",
-          "rationale": "Observed evidence shows T1 at 194/200, 196/200, and 195/200 on fresh 200-episode complete-distribution panels, while the tested angular-representation, full-radius-training, and velocity-sensitive hold-aware interventions materially degraded success. M6's five baseline failures were all at negative bearings and included both non-entry cases and repeated post-entry interruptions, so the physical model still permits competing approach/branch and local stabilization explanations. The residual shortfall is near-threshold but not stable enough to justify official assessment, and prior negative interventions do not resolve the remaining mechanism. A bounded mechanism-first inquiry is warranted before another intervention or terminal campaign decision.",
-          "reframes": []
-        }
-      },
-      "result": {
-        "action": "open",
-        "inquiry_id": "I7",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E29",
-    "inquiry_id": null,
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "open",
-        "closure_condition": "Close when targeted evidence distinguishes the dominant residual-failure mechanism at a resolution sufficient to choose the next campaign decision, and either identifies a candidate route that preserves baseline complete-task performance while providing a credible path to at least 196/200 on a fresh complete-distribution panel, or supports the conclusion that no credible improvement route remains.",
-        "goal_connection": "The latest controlled panel is 195/200, one success below the 196/200 threshold, while prior fresh panels measured 194/200 and 196/200. Resolving whether the residual failures are a stable physical class or policy variability is necessary before assigning a best-known candidate or requesting the official assessment, and a successful route must preserve complete uninterrupted-hold success over the full official distribution.",
-        "question": "What mechanism produces the remaining rare complete-task failures of the T1 baseline across fresh complete-distribution panels: a stable negative-bearing approach and settling class, or policy variability that is not localized to one physical class, and which evidence-backed route can improve that tail without degrading the established uninterrupted-hold behavior?",
-        "rationale": "Observed evidence shows T1 at 194/200, 196/200, and 195/200 on fresh 200-episode complete-distribution panels, while the tested angular-representation, full-radius-training, and velocity-sensitive hold-aware interventions materially degraded success. M6's five baseline failures were all at negative bearings and included both non-entry cases and repeated post-entry interruptions, so the physical model still permits competing approach/branch and local stabilization explanations. The residual shortfall is near-threshold but not stable enough to justify official assessment, and prior negative interventions do not resolve the remaining mechanism. A bounded mechanism-first inquiry is warranted before another intervention or terminal campaign decision."
-      }
-    },
-    "request_fingerprint": "8aa28365a732c60a594901b1e491464a2ba0ed6ec4496d392dc62c6ad269b187",
-    "session_id": "S15",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T1:checkpoint-100352 remains the strongest measured candidate but is unassigned after M6's 195/200 panel. T4:checkpoint-100352 is rejected after its 0/200 paired result and zero training success. T2:checkpoint-100352 and T3:checkpoint-100352 remain unassigned after earlier degradation results. No candidate has working, best-known, or retained status.",
     "completed_operations": [
