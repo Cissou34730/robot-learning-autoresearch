@@ -673,6 +673,12 @@ function New-ScientificSessionPrompt {
     else {
         "No durable PI synthesis has been recorded yet."
     }
+    $frontier = if ($checkpoint -and $checkpoint.decision_frontier) {
+        [string]$checkpoint.decision_frontier
+    }
+    else {
+        "No durable decision frontier has been recorded yet."
+    }
     $transition = Get-RequiredSessionSummaryTransition -State $State
     $terminalGoalReview = (
         -not $transition -and
@@ -716,6 +722,11 @@ function New-ScientificSessionPrompt {
     else {
         [string]$session.objective
     }
+    $activeInquirySession = (
+        -not $transition -and
+        $session.kind -eq "inquiry" -and
+        $State.active_inquiry
+    )
     $actionGuidance = if ($transition) {
         @(
             "The sole legal next action is the checkpoint operation that saves the current session summary."
@@ -730,16 +741,14 @@ function New-ScientificSessionPrompt {
             "Do not request another inquiry."
         )
     }
-    elseif (
-        $State.scientific_session.kind -eq "inquiry" -and
-        $State.active_inquiry
-    ) {
+    elseif ($activeInquirySession) {
         @(
             "Before choosing another action, determine whether the completed evidence now supplies the decision-relevant answer specified by the active inquiry's exact question and closure condition."
             "The inquiry is ready to close when the evidence is sufficient for the scientific decision it was opened to enable. Exhaustive certainty is not required; record remaining uncertainty when resolving it could no longer change that decision."
             "When the closure condition has been established, the question has been redirected or is no longer credible, or the actionable result has been produced, use the inquiry close contract now."
             "Closure records the fulfilled scientific purpose before checkpointing and returning to goal review, where the remaining human-goal gap determines whether another inquiry, official assessment, or campaign conclusion follows."
             "Further inquiry work is justified by a named consequential uncertainty whose resolution could change the inquiry's answer. Reframe when that work belongs to a different question."
+            "Select the next action according to the evidence needed to resolve the active inquiry's scientific decision in service of the human goal."
             "Existing PI-owned implementations have no privileged status; inspect, modify, or replace them when that is the most credible scientific action before submitting an operation."
             "When ready to act, use the matching contract in research/instruments.md to submit one scientific action."
         )
@@ -754,13 +763,29 @@ function New-ScientificSessionPrompt {
         )
     }
 
+    $contextSections = if ($activeInquirySession) {
+        @(
+            "Human goal: $goal"
+            "Active inquiry: $inquiry"
+            "Decision frontier: $frontier"
+            "Current scientific understanding: $synthesis"
+            "Current evidence relative to the goal: $bestEvidence $(Get-LatestSessionResult -State $State)"
+            "Current goal gap: $gap"
+            "Current objective: $objective"
+        )
+    }
+    else {
+        @(
+            "Human goal: $goal"
+            "Current evidence relative to the goal: $bestEvidence $(Get-LatestSessionResult -State $State)"
+            "Current scientific understanding: $synthesis"
+            "Current goal gap: $gap"
+            "Active inquiry: $inquiry"
+            "Current objective: $objective"
+        )
+    }
     $sections = @(
-        "Human goal: $goal"
-        "Current evidence relative to the goal: $bestEvidence $(Get-LatestSessionResult -State $State)"
-        "Current scientific understanding: $synthesis"
-        "Current goal gap: $gap"
-        "Active inquiry: $inquiry"
-        "Current objective: $objective"
+        $contextSections
         $correction
         $piPersona
         $scientificModelUseGuidance
