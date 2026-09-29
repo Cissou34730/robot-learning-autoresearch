@@ -17,52 +17,10 @@ import numpy as np
 
 from robot_learning.paired_evidence import episode_outcomes
 from robot_learning.policy_runtime import load_runtime
-from robot_learning.robots.two_joint_arm import FOREARM_LENGTH, UPPER_ARM_LENGTH
 from robot_learning.scenario.environment import make_evaluation_env
 
 # Bumped when the meaning of a scenario evaluation summary changes.
 RESEARCH_EVALUATION_SUMMARY_VERSION = 4
-JOINT_LIMIT_RADIANS = np.deg2rad(170.0)
-
-
-def _endpoint_speed(qpos: np.ndarray, qvel: np.ndarray) -> float:
-    angle = float(qpos[0] + qpos[1])
-    shoulder_velocity = float(qvel[0])
-    elbow_velocity = float(qvel[0] + qvel[1])
-    velocity = np.array(
-        [
-            -UPPER_ARM_LENGTH * np.sin(float(qpos[0])) * shoulder_velocity
-            - FOREARM_LENGTH * np.sin(angle) * elbow_velocity,
-            UPPER_ARM_LENGTH * np.cos(float(qpos[0])) * shoulder_velocity
-            + FOREARM_LENGTH * np.cos(angle) * elbow_velocity,
-        ]
-    )
-    return float(np.linalg.norm(velocity))
-
-
-def _jacobian_condition(qpos: np.ndarray) -> float:
-    angle = float(qpos[0] + qpos[1])
-    jacobian = np.array(
-        [
-            [
-                -UPPER_ARM_LENGTH * np.sin(float(qpos[0]))
-                - FOREARM_LENGTH * np.sin(angle),
-                -FOREARM_LENGTH * np.sin(angle),
-            ],
-            [
-                UPPER_ARM_LENGTH * np.cos(float(qpos[0]))
-                + FOREARM_LENGTH * np.cos(angle),
-                FOREARM_LENGTH * np.cos(angle),
-            ],
-        ]
-    )
-    return float(np.linalg.cond(jacobian))
-
-
-def _nearest_ik_branch(observation: np.ndarray) -> str:
-    open_error = float(np.linalg.norm(observation[7:9]))
-    folded_error = float(np.linalg.norm(observation[9:11]))
-    return "open" if open_error <= folded_error else "folded"
 
 
 def evaluate_research_model(
@@ -97,55 +55,20 @@ def evaluate_research_model(
         in_tolerance_steps = 0
         hold_interruptions = 0
         was_in_tolerance = False
-        previous_branch: str | None = None
-        branch_switches = 0
-        hold_endpoint_speeds: list[float] = []
-        hold_joint_speeds: list[float] = []
-        first_entry_branch: str | None = None
-        first_entry_joint_positions: list[float] | None = None
-        first_entry_joint_limit_margin_degrees: float | None = None
-        first_entry_jacobian_condition: float | None = None
-        first_entry_endpoint_speed_mps: float | None = None
-        min_joint_limit_margin_degrees = float("inf")
-        max_jacobian_condition = 0.0
         while not (terminated or truncated):
             action = runtime.predict(obs)
             obs, reward, terminated, truncated, info = env.step(action)
             steps += 1
             reward_total += float(reward)
-            qpos = np.asarray(env.data.qpos[:2], dtype=np.float64)
-            qvel = np.asarray(env.data.qvel[:2], dtype=np.float64)
-            endpoint_speed_mps = _endpoint_speed(qpos, qvel)
-            joint_limit_margin_degrees = float(
-                np.degrees(JOINT_LIMIT_RADIANS - np.max(np.abs(qpos)))
-            )
-            jacobian_condition = _jacobian_condition(qpos)
-            branch = _nearest_ik_branch(obs)
-            if previous_branch is not None and branch != previous_branch:
-                branch_switches += 1
-            previous_branch = branch
             distance_cm = 100.0 * float(info["distance"])
             held_steps = int(info.get("held_steps", 0))
             min_distance_cm = min(min_distance_cm, distance_cm)
             final_distance_cm = distance_cm
             max_held_steps = max(max_held_steps, held_steps)
-            min_joint_limit_margin_degrees = min(
-                min_joint_limit_margin_degrees, joint_limit_margin_degrees
-            )
-            max_jacobian_condition = max(max_jacobian_condition, jacobian_condition)
             if held_steps > 0:
                 in_tolerance_steps += 1
                 if first_reach_step is None:
                     first_reach_step = steps
-                    first_entry_branch = branch
-                    first_entry_joint_positions = qpos.tolist()
-                    first_entry_joint_limit_margin_degrees = (
-                        joint_limit_margin_degrees
-                    )
-                    first_entry_jacobian_condition = jacobian_condition
-                    first_entry_endpoint_speed_mps = endpoint_speed_mps
-                hold_endpoint_speeds.append(endpoint_speed_mps)
-                hold_joint_speeds.append(float(np.linalg.norm(qvel)))
             elif was_in_tolerance:
                 hold_interruptions += 1
             was_in_tolerance = held_steps > 0
@@ -180,30 +103,6 @@ def evaluate_research_model(
                 "max_held_steps": max_held_steps,
                 "in_tolerance_steps": in_tolerance_steps,
                 "hold_interruptions": hold_interruptions,
-                "first_entry_branch": first_entry_branch,
-                "final_branch": previous_branch,
-                "branch_switches": branch_switches,
-                "first_entry_joint_positions_rad": first_entry_joint_positions,
-                "final_joint_positions_rad": qpos.tolist(),
-                "min_joint_limit_margin_degrees": min_joint_limit_margin_degrees,
-                "first_entry_joint_limit_margin_degrees": (
-                    first_entry_joint_limit_margin_degrees
-                ),
-                "first_entry_jacobian_condition": first_entry_jacobian_condition,
-                "max_jacobian_condition": max_jacobian_condition,
-                "first_entry_endpoint_speed_mps": first_entry_endpoint_speed_mps,
-                "max_hold_endpoint_speed_mps": max(hold_endpoint_speeds, default=0.0),
-                "mean_hold_endpoint_speed_mps": (
-                    float(np.mean(hold_endpoint_speeds))
-                    if hold_endpoint_speeds
-                    else None
-                ),
-                "max_hold_joint_speed_rad_s": max(hold_joint_speeds, default=0.0),
-                "mean_hold_joint_speed_rad_s": (
-                    float(np.mean(hold_joint_speeds))
-                    if hold_joint_speeds
-                    else None
-                ),
             }
         )
         if progress_callback is not None:
@@ -211,7 +110,7 @@ def evaluate_research_model(
 
     successes = sum(episode["success"] for episode in episode_results)
     return {
-        "schema_version": 6,
+        "schema_version": 5,
         "model": str(model_path),
         "episodes": episodes,
         "seed": seed,
