@@ -2982,44 +2982,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "open",
-        "inquiry": {
-          "closure_condition": "Close when controlled baseline-versus-full-radius-support evidence is decision-sufficient: the intervention's negative-bearing approach outcomes, settling outcomes, post-settling interruptions, longest uninterrupted hold, and total success are measured on the complete official distribution, and the result either supports a credible route to 196/200 or rejects full-radius training support as sufficient for that route.",
-          "goal_connection": "T1 is close to the human objective at 192/200 on the paired development panel but remains four successes short, and its residual failures are concentrated in approach and settling. Resolving whether the explicit training-support mismatch contributes to that tail could provide a materially different route to at least 196/200 without repeating the rejected branch-representation intervention.",
-          "id": "I4",
-          "opened_in_session": "S9",
-          "question": "Can matching the training target distribution to the complete official 0.06-0.20 m radius support, while leaving the baseline observation representation, reward, and hold mechanics unchanged, reduce the negative-bearing approach and settling failures without degrading complete uninterrupted hold success?",
-          "rationale": "M1, M2, and M3 establish an observed negative-bearing approach shortfall, including failures at training-supported radii, while settled baseline episodes almost always completed the 100-step hold. M3 decisively rejects the tested sine/cosine branch-error and joint-limit-margin representation, but it does not test the separate scientific-model unknown that training excludes 0.06-0.14 m targets. A fresh intervention that changes only the training target support can discriminate whether broader folded-geometry experience improves the approach tail while preserving the baseline state representation and hold behavior; official assessment remains premature because T1 is below 196/200 and has no best-known role.",
-          "reframes": []
-        }
-      },
-      "result": {
-        "action": "open",
-        "inquiry_id": "I4",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E15",
-    "inquiry_id": null,
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "open",
-        "closure_condition": "Close when controlled baseline-versus-full-radius-support evidence is decision-sufficient: the intervention's negative-bearing approach outcomes, settling outcomes, post-settling interruptions, longest uninterrupted hold, and total success are measured on the complete official distribution, and the result either supports a credible route to 196/200 or rejects full-radius training support as sufficient for that route.",
-        "goal_connection": "T1 is close to the human objective at 192/200 on the paired development panel but remains four successes short, and its residual failures are concentrated in approach and settling. Resolving whether the explicit training-support mismatch contributes to that tail could provide a materially different route to at least 196/200 without repeating the rejected branch-representation intervention.",
-        "question": "Can matching the training target distribution to the complete official 0.06-0.20 m radius support, while leaving the baseline observation representation, reward, and hold mechanics unchanged, reduce the negative-bearing approach and settling failures without degrading complete uninterrupted hold success?",
-        "rationale": "M1, M2, and M3 establish an observed negative-bearing approach shortfall, including failures at training-supported radii, while settled baseline episodes almost always completed the 100-step hold. M3 decisively rejects the tested sine/cosine branch-error and joint-limit-margin representation, but it does not test the separate scientific-model unknown that training excludes 0.06-0.14 m targets. A fresh intervention that changes only the training target support can discriminate whether broader folded-geometry experience improves the approach tail while preserving the baseline state representation and hold behavior; official assessment remains premature because T1 is below 196/200 and has no best-known role."
-      }
-    },
-    "request_fingerprint": "8f06d18f9c1fb4fbef50c599c191c1b901b2f091addb7096d40cab78cc7ca415",
-    "session_id": "S9",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T1:checkpoint-100352 remains the reference candidate with M1, M2, and M3 artifacts; T2:checkpoint-100352 has M3 evidence showing substantial degradation and is unassigned. No candidate is assigned working, best-known, or retained status.",
     "completed_operations": [
