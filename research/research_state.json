@@ -1,13 +1,5 @@
 {
-  "active_inquiry": {
-    "closure_condition": "Close positively only if the bounded work produces one frozen learned candidate, without runtime controller assistance, that reaches at least 196/200 on each of two fresh shared-seed complete-distribution panels and does not materially degrade the restored T1 reference. Close negatively if the predeclared training-and-selection protocol fails to produce that result, or if its candidate materially degrades the restored reference; in either case record whether the evidence supports official assessment or campaign conclusion.",
-    "goal_connection": "The campaign still needs a learned policy with at least 196 complete uninterrupted-hold successes out of 200 under the official task distribution. T1 reached 196/200 and 194/200 on the latest shared panels but is not repeatably qualified, while no learned candidate has best-known status. Resolving whether this near-threshold behavior can be made repeatable directly determines whether official assessment is justified or whether no credible learned route remains.",
-    "id": "I15",
-    "opened_in_session": "S35",
-    "question": "Can a bounded training-and-selection protocol recover and stabilize the near-threshold direct-policy behavior already observed in T1, yielding one frozen learned policy that reaches at least 196/200 on two fresh complete-distribution panels without runtime controller assistance, or do the observed 192-196 results represent a reliability ceiling for the remaining direct-policy route?",
-    "rationale": "Observed evidence supports the model-based controller as a physical solution in M16 but decisively rejects the tested controller-distillation route in M17. The remaining learned evidence is the restored direct-policy formulation, whose fresh results span 192/200 to 196/200 and whose selected retraining route in I11 failed substantially. This leaves a consequential distinction unresolved: whether the learned closed-loop behavior exists but is not reproducibly selected, or whether the near-threshold panels are the practical ceiling of this route. A bounded inquiry is warranted because a repeatable candidate would change the campaign decision, while failure would justify concluding that no credible learned route remains; it does not reopen I14 or assume a particular correction.",
-    "reframes": []
-  },
+  "active_inquiry": null,
   "campaign": {
     "base_commit": "8ac206f76ce0bd7fb8f098b4fe6dceac2a2a311f",
     "id": "eb19a5f3-14b3-4590-ad74-1b31cf5ae3d5",
@@ -10305,7 +10297,7 @@
     }
   },
   "counters": {
-    "event": 70,
+    "event": 71,
     "inquiry": 15,
     "measurement": 18,
     "session": 36,
@@ -20537,9 +20529,63 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-09-30T03:21:16Z",
+      "error": null,
+      "id": "E71",
+      "inquiry_id": "I15",
+      "kind": "inquiry",
+      "request": {
+        "action": "close",
+        "outcome": "negative",
+        "reason": "M18 resolves I15 negatively. The predeclared selected frozen direct-policy candidate T13:checkpoint-5120, evaluated without runtime controller assistance, achieved 197/200 on fresh panel A and 195/200 on fresh panel B, so it missed the required 196/200 threshold on one of the two panels. The restored T1 reference achieved 198/200 and 195/200 on the same panels. The paired comparison over 400 shared-seed episodes recorded 0 candidate wins versus 1 reference win, with a -0.25 percentage-point candidate delta, so the candidate did not materially degrade the restored reference; nevertheless, the closure condition requires both candidate panels to reach at least 196/200 and is not met. The bounded direct-policy stabilization protocol therefore does not justify official assessment. The result supports a reliability ceiling for this tested route at the required decision threshold, while not proving that every possible learned method is impossible; remaining uncertainty cannot change I15's negative answer."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I15",
+        "outcome": "negative",
+        "reason": "M18 resolves I15 negatively. The predeclared selected frozen direct-policy candidate T13:checkpoint-5120, evaluated without runtime controller assistance, achieved 197/200 on fresh panel A and 195/200 on fresh panel B, so it missed the required 196/200 threshold on one of the two panels. The restored T1 reference achieved 198/200 and 195/200 on the same panels. The paired comparison over 400 shared-seed episodes recorded 0 candidate wins versus 1 reference win, with a -0.25 percentage-point candidate delta, so the candidate did not materially degrade the restored reference; nevertheless, the closure condition requires both candidate panels to reach at least 196/200 and is not met. The bounded direct-policy stabilization protocol therefore does not justify official assessment. The result supports a reliability ceiling for this tested route at the required decision threshold, while not proving that every possible learned method is impossible; remaining uncertainty cannot change I15's negative answer.",
+        "status": "completed"
+      },
+      "session_id": "S36",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "close",
+        "inquiry_id": "I15",
+        "outcome": "negative",
+        "reason": "M18 resolves I15 negatively. The predeclared selected frozen direct-policy candidate T13:checkpoint-5120, evaluated without runtime controller assistance, achieved 197/200 on fresh panel A and 195/200 on fresh panel B, so it missed the required 196/200 threshold on one of the two panels. The restored T1 reference achieved 198/200 and 195/200 on the same panels. The paired comparison over 400 shared-seed episodes recorded 0 candidate wins versus 1 reference win, with a -0.25 percentage-point candidate delta, so the candidate did not materially degrade the restored reference; nevertheless, the closure condition requires both candidate panels to reach at least 196/200 and is not met. The bounded direct-policy stabilization protocol therefore does not justify official assessment. The result supports a reliability ceiling for this tested route at the required decision threshold, while not proving that every possible learned method is impossible; remaining uncertainty cannot change I15's negative answer."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I15",
+        "outcome": "negative",
+        "reason": "M18 resolves I15 negatively. The predeclared selected frozen direct-policy candidate T13:checkpoint-5120, evaluated without runtime controller assistance, achieved 197/200 on fresh panel A and 195/200 on fresh panel B, so it missed the required 196/200 threshold on one of the two panels. The restored T1 reference achieved 198/200 and 195/200 on the same panels. The paired comparison over 400 shared-seed episodes recorded 0 candidate wins versus 1 reference win, with a -0.25 percentage-point candidate delta, so the candidate did not materially degrade the restored reference; nevertheless, the closure condition requires both candidate panels to reach at least 196/200 and is not met. The bounded direct-policy stabilization protocol therefore does not justify official assessment. The result supports a reliability ceiling for this tested route at the required decision threshold, while not proving that every possible learned method is impossible; remaining uncertainty cannot change I15's negative answer.",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E71",
+    "inquiry_id": "I15",
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "close",
+        "outcome": "negative",
+        "reason": "M18 resolves I15 negatively. The predeclared selected frozen direct-policy candidate T13:checkpoint-5120, evaluated without runtime controller assistance, achieved 197/200 on fresh panel A and 195/200 on fresh panel B, so it missed the required 196/200 threshold on one of the two panels. The restored T1 reference achieved 198/200 and 195/200 on the same panels. The paired comparison over 400 shared-seed episodes recorded 0 candidate wins versus 1 reference win, with a -0.25 percentage-point candidate delta, so the candidate did not materially degrade the restored reference; nevertheless, the closure condition requires both candidate panels to reach at least 196/200 and is not met. The bounded direct-policy stabilization protocol therefore does not justify official assessment. The result supports a reliability ceiling for this tested route at the required decision threshold, while not proving that every possible learned method is impossible; remaining uncertainty cannot change I15's negative answer."
+      }
+    },
+    "request_fingerprint": "45667bfc0460e5e0d0db960dd746acf25d5f59f9f62c39c34abc3abc1391ab18",
+    "session_id": "S36",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No candidate has working, best-known, or retained status. T12:checkpoint-6144 is rejected as an I14 route by M17. T1:checkpoint-100352 remains an unassigned reference candidate and is not promoted by this checkpoint.",
     "completed_operations": [
@@ -20582,7 +20628,8 @@
     "operation_ids": [
       "E70",
       "T13",
-      "M18"
+      "M18",
+      "E71"
     ],
     "scientific_parent_commit": "1dc1a8155c2b0b17601597337116d48832e58f16"
   },
