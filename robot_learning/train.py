@@ -17,7 +17,6 @@ from robot_learning.training.candidate_checkpoint_callback import (
     CandidateCheckpointCallback,
 )
 from robot_learning.training.checkpoint import export_runtime
-from robot_learning.training.policy import BranchFactorizedExtractor
 from robot_learning.training.research_config import load_experiment_config
 
 # The current learning method. Replacing it is a normal research change.
@@ -54,14 +53,6 @@ def build_policy_kwargs(policy_config: dict) -> dict:
     }
     if "log_std_init" in policy_config:
         result["log_std_init"] = policy_config["log_std_init"]
-    representation = policy_config.get("representation", "mlp")
-    if representation == "branch_factorized":
-        result["features_extractor_class"] = BranchFactorizedExtractor
-        result["features_extractor_kwargs"] = {
-            "hidden_size": int(policy_config.get("branch_hidden_size", 32))
-        }
-    elif representation != "mlp":
-        raise ValueError(f"unknown policy representation: {representation}")
     return result
 
 
