@@ -7,19 +7,19 @@ before export (module-level imports or captured objects, not runtime imports).
 import numpy as np
 
 from robot_learning.policy_runtime import PolicyIO
-from robot_learning.scenario.observations import reach_observation
+from robot_learning.scenario.observations import (
+    reach_observation,
+    select_analytic_ik_reference,
+    wrap_to_pi,
+)
 
-HANDOFF_RADIUS = 0.03
-SUCCESS_THRESHOLD = 0.01
-POSITION_GAIN = 180.0
-VELOCITY_GAIN = 4.0
-JOINT_DAMPING_GAIN = 0.15
+REFERENCE_POSITION_GAIN = 0.16
+REFERENCE_VELOCITY_GAIN = 0.035
+RESIDUAL_TORQUE_SCALE = 0.5
 ACTUATOR_GEAR = 5.0
-UPPER_ARM_LENGTH = 0.12
-FOREARM_LENGTH = 0.10
 
 
-class AcquisitionRegulationHandoff:
+class BranchConditionedReference:
     def __init__(self) -> None:
         self.reset()
 
@@ -27,64 +27,42 @@ class AcquisitionRegulationHandoff:
         self._qpos: np.ndarray | None = None
         self._qvel: np.ndarray | None = None
         self._target: np.ndarray | None = None
+        self._joint_reference: np.ndarray | None = None
+        self._ik_branch: int | None = None
 
     def observe(self, data) -> np.ndarray:
         self._qpos = np.array(data.qpos[:2], dtype=np.float64, copy=True)
         self._qvel = np.array(data.qvel[:2], dtype=np.float64, copy=True)
         self._target = np.array(data.mocap_pos[0, :2], dtype=np.float64, copy=True)
-        return reach_observation(data)
+        if self._joint_reference is None:
+            self._joint_reference, self._ik_branch = select_analytic_ik_reference(
+                self._target, self._qpos
+            )
+        return reach_observation(
+            data,
+            joint_reference=self._joint_reference,
+            ik_branch=self._ik_branch,
+        )
 
     def action(self, action) -> np.ndarray:
         requested = np.asarray(action, dtype=np.float64)
-        if self._qpos is None or self._qvel is None or self._target is None:
+        if self._qpos is None or self._qvel is None or self._joint_reference is None:
             return requested
 
-        shoulder, elbow = self._qpos
-        distal_angle = shoulder + elbow
-        sin_shoulder = np.sin(shoulder)
-        cos_shoulder = np.cos(shoulder)
-        sin_distal = np.sin(distal_angle)
-        cos_distal = np.cos(distal_angle)
-        end_effector = np.array(
+        reference_error = np.array(
             [
-                UPPER_ARM_LENGTH * cos_shoulder + FOREARM_LENGTH * cos_distal,
-                UPPER_ARM_LENGTH * sin_shoulder + FOREARM_LENGTH * sin_distal,
+                wrap_to_pi(
+                    float(self._joint_reference[index]) - float(self._qpos[index])
+                )
+                for index in range(2)
             ],
             dtype=np.float64,
         )
-        jacobian = np.array(
-            [
-                [
-                    -UPPER_ARM_LENGTH * sin_shoulder
-                    - FOREARM_LENGTH * sin_distal,
-                    -FOREARM_LENGTH * sin_distal,
-                ],
-                [
-                    UPPER_ARM_LENGTH * cos_shoulder
-                    + FOREARM_LENGTH * cos_distal,
-                    FOREARM_LENGTH * cos_distal,
-                ],
-            ],
-            dtype=np.float64,
-        )
-        distance = float(np.linalg.norm(end_effector - self._target))
-        blend = np.clip(
-            (HANDOFF_RADIUS - distance) / (HANDOFF_RADIUS - SUCCESS_THRESHOLD),
-            0.0,
-            1.0,
-        )
-        if blend == 0.0:
-            return requested
-
-        endpoint_velocity = jacobian @ self._qvel
-        task_force = (
-            POSITION_GAIN * (self._target - end_effector)
-            - VELOCITY_GAIN * endpoint_velocity
-        )
-        regulator = (
-            jacobian.T @ task_force - JOINT_DAMPING_GAIN * self._qvel
+        scaffold = (
+            REFERENCE_POSITION_GAIN * reference_error
+            - REFERENCE_VELOCITY_GAIN * self._qvel
         ) / ACTUATOR_GEAR
-        return ((1.0 - blend) * requested + blend * regulator).astype(
+        return (scaffold + RESIDUAL_TORQUE_SCALE * requested).astype(
             np.float64, copy=False
         )
 
@@ -94,9 +72,9 @@ def physical_action(action):
 
 
 def make_policy_io():
-    handoff = AcquisitionRegulationHandoff()
+    reference = BranchConditionedReference()
     return PolicyIO(
-        observe=handoff.observe,
-        action=handoff.action,
-        reset=handoff.reset,
+        observe=reference.observe,
+        action=reference.action,
+        reset=reference.reset,
     )
