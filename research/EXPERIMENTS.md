@@ -71,3 +71,4 @@
 | E49 | inquiry | I11 | completed |
 | E50 | checkpoint | - | checkpointed |
 | E51 | restore_recipe | I11 | restored |
+| T9 | training | I11 | completed |
