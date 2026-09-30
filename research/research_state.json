@@ -9280,8 +9280,8 @@
   "counters": {
     "event": 63,
     "inquiry": 14,
-    "measurement": 13,
-    "session": 31,
+    "measurement": 15,
+    "session": 32,
     "training": 11
   },
   "human_goal": {
@@ -17693,9 +17693,181 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-09-30T02:32:17Z",
+      "error": "research.lab.i14_controller failed:\n\nTraceback (most recent call last):\n  File \"<frozen runpy>\", line 198, in _run_module_as_main\n  File \"<frozen runpy>\", line 88, in _run_code\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\research\\lab\\i14_controller.py\", line 217, in <module>\n    main()\n    ~~~~^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\research\\lab\\i14_controller.py\", line 196, in main\n    records = [_run_episode(env, args.seed + episode) for episode in range(args.episodes)]\n               ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\research\\lab\\i14_controller.py\", line 122, in _run_episode\n    action = controller.action()\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\research\\lab\\i14_controller.py\", line 93, in action\n    mujoco.mj_fullM(self.env.model, mass_matrix, self.env.data.qM)\n                                                 ^^^^^^^^^^^^^^^^\nAttributeError: 'mujoco._structs.MjData' object has no attribute 'qM'. Did you mean: 'M'?\n",
+      "id": "M14",
+      "inquiry_id": "I14",
+      "kind": "measurement",
+      "request": {
+        "description": "I14 direct full-distribution test of a fixed computed-torque model-based controller, with phase diagnostics and a fresh baseline panel on the same episode seeds.",
+        "measurements": [
+          {
+            "args": [
+              "--episodes",
+              "200",
+              "--seed",
+              "22200",
+              "--output",
+              "research/evaluations/eb19a5f3-14b3-4590-ad74-1b31cf5ae3d5/i14_controller.json"
+            ],
+            "artifact": "research/evaluations/eb19a5f3-14b3-4590-ad74-1b31cf5ae3d5/i14_controller.json",
+            "instrument": "python_module",
+            "label": "I14 fixed controller full-distribution panel",
+            "module": "research.lab.i14_controller"
+          },
+          {
+            "candidate": "T1:checkpoint-100352",
+            "episodes": 200,
+            "instrument": "research_evaluation",
+            "label": "I14 restored baseline shared-seed panel",
+            "seed": 22200
+          }
+        ],
+        "rationale": "The active inquiry requires first determining whether explicit feasible-branch selection, model-based inertia/bias compensation, velocity damping, and closed-loop stabilization can reliably complete the official distribution before any learned distillation is attempted. The controller is fixed before execution and supplies no runtime assistance to a learned policy."
+      },
+      "result": {
+        "error": "research.lab.i14_controller failed:\n\nTraceback (most recent call last):\n  File \"<frozen runpy>\", line 198, in _run_module_as_main\n  File \"<frozen runpy>\", line 88, in _run_code\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\research\\lab\\i14_controller.py\", line 217, in <module>\n    main()\n    ~~~~^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\research\\lab\\i14_controller.py\", line 196, in main\n    records = [_run_episode(env, args.seed + episode) for episode in range(args.episodes)]\n               ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\research\\lab\\i14_controller.py\", line 122, in _run_episode\n    action = controller.action()\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\research\\lab\\i14_controller.py\", line 93, in action\n    mujoco.mj_fullM(self.env.model, mass_matrix, self.env.data.qM)\n                                                 ^^^^^^^^^^^^^^^^\nAttributeError: 'mujoco._structs.MjData' object has no attribute 'qM'. Did you mean: 'M'?\n",
+        "status": "failed"
+      },
+      "session_id": "S32",
+      "status": "failed",
+      "superseded_by": "M15",
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "evaluation_semantics": "f1d0bafa9b02",
+      "measurements": [
+        {
+          "args": [
+            "--episodes",
+            "200",
+            "--seed",
+            "22200",
+            "--output",
+            "research/evaluations/eb19a5f3-14b3-4590-ad74-1b31cf5ae3d5/i14_controller.json"
+          ],
+          "artifact": "research/evaluations/eb19a5f3-14b3-4590-ad74-1b31cf5ae3d5/i14_controller.json",
+          "instrument": "python_module",
+          "label": "I14 fixed controller full-distribution panel",
+          "module": "research.lab.i14_controller"
+        },
+        {
+          "artifact": "research/checkpoints/candidates/eb19a5f3-14b3-4590-ad74-1b31cf5ae3d5/t1/checkpoint-100352",
+          "candidate": "T1:checkpoint-100352",
+          "candidate_id": "T1:checkpoint-100352",
+          "episodes": 200,
+          "instrument": "research_evaluation",
+          "label": "I14 restored baseline shared-seed panel",
+          "model_fingerprint": "c9b24fc4281c7ce6457bdcbbe47fe313deeffddf58e8b4e9e9d2a5f0e9609067",
+          "seed": 22200
+        }
+      ],
+      "module_provenance": {
+        "campaign_lab_manifest": [
+          {
+            "fingerprint": "9d82b586e46936ee39c46956bfa6f2552251e7a37e984b2e615e182e362105df",
+            "path": "research/lab/i14_controller.py"
+          },
+          {
+            "fingerprint": "7df60e1d421c7123371f51bbec039a789e90414fe6490ac074585e422e79e679",
+            "path": "research/lab/i2_mechanism.py"
+          }
+        ],
+        "campaign_lab_publication": null,
+        "code_parent_commit": "7d77d63ef145a29b760a4dc8636f986c506bb71d",
+        "effective_parameters": {
+          "algorithm": {
+            "name": "ppo"
+          },
+          "policy": {
+            "activation": "tanh",
+            "net_arch": [
+              64,
+              64
+            ]
+          },
+          "ppo": {
+            "batch_size": 64,
+            "ent_coef": 0.01,
+            "gae_lambda": 0.95,
+            "gamma": 0.99,
+            "learning_rate": 0.0003,
+            "n_steps": 1024
+          },
+          "teacher_initialization": {
+            "batch_size": 64,
+            "epochs": 40,
+            "learning_rate": 0.001,
+            "position_gain": 2.5,
+            "samples": 8192,
+            "velocity_damping": 0.25
+          },
+          "training": {
+            "checkpoint_every_steps": 5000,
+            "n_envs": 1
+          }
+        },
+        "module_manifest": [
+          {
+            "exists": true,
+            "fingerprint": "9d82b586e46936ee39c46956bfa6f2552251e7a37e984b2e615e182e362105df",
+            "path": "research/lab/i14_controller.py"
+          }
+        ],
+        "module_paths": [
+          "research/lab/i14_controller.py"
+        ],
+        "scientific_commit": null,
+        "scientific_manifest": [],
+        "scientific_paths": []
+      },
+      "paired_comparisons": [],
+      "partial_results": [],
+      "result": null,
+      "task_reference_contract": null
+    },
+    "failure": null,
+    "id": "M15",
+    "inquiry_id": "I14",
+    "kind": "measurement",
+    "progress": "accepted",
+    "request": {
+      "measurement": {
+        "description": "I14 direct full-distribution test of a fixed computed-torque model-based controller, with phase diagnostics and a fresh baseline panel on the same episode seeds.",
+        "measurements": [
+          {
+            "args": [
+              "--episodes",
+              "200",
+              "--seed",
+              "22200",
+              "--output",
+              "research/evaluations/eb19a5f3-14b3-4590-ad74-1b31cf5ae3d5/i14_controller.json"
+            ],
+            "artifact": "research/evaluations/eb19a5f3-14b3-4590-ad74-1b31cf5ae3d5/i14_controller.json",
+            "instrument": "python_module",
+            "label": "I14 fixed controller full-distribution panel",
+            "module": "research.lab.i14_controller"
+          },
+          {
+            "candidate": "T1:checkpoint-100352",
+            "episodes": 200,
+            "instrument": "research_evaluation",
+            "label": "I14 restored baseline shared-seed panel",
+            "seed": 22200
+          }
+        ],
+        "rationale": "M14 failed before execution because the controller referenced the legacy qM field rather than native MuJoCo 3.12 data.M. This resubmission preserves the pre-specified controller, panel, seed, and baseline comparison; it changes only the native mass-matrix API access and does not alter the scientific intervention."
+      }
+    },
+    "request_fingerprint": "242f228a2ba7c221ec3924d6e2efa975927104bd232b6405e84dab4d628a723b",
+    "session_id": "S32",
+    "supersedes": "M14"
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T11:checkpoint-120832 is rejected as the I13 teacher-initialization route. T1:checkpoint-100352 remains unassigned despite being the strongest measured baseline because it did not meet both fresh 196/200 thresholds. T10:checkpoint-120832 remains rejected as the I12 hybrid route. No candidate has working, best-known, or retained status.",
     "completed_operations": [
@@ -17728,6 +17900,19 @@
     "path": "research/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "5a9802d5-d2d0-46c0-b2db-e753e33c6605",
+    "id": "S32",
+    "inquiry_id": "I14",
+    "kind": "inquiry",
+    "objective": "Bring I14 to the decision required by its closure condition, and close it as soon as the evidence supplies that decision: Close when bounded evidence establishes either that a pre-specified model-based controller cannot reliably solve the complete distribution or that a training-only selected distilled policy fails the 196/200 threshold on two fresh shared-seed panels; close positively only if the distilled learned policy reaches at least 196/200 on both fresh panels without runtime controller assistance. If the controller or distillation route materially degrades the restored baseline, reject it as a credible campaign route.",
+    "operation_ids": [],
+    "scientific_parent_commit": "7d77d63ef145a29b760a4dc8636f986c506bb71d"
+  },
   "terminal_state": null
 }

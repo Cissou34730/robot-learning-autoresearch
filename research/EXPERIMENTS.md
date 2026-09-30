@@ -89,3 +89,4 @@
 | E61 | checkpoint | I13 | checkpointed |
 | E62 | inquiry | I14 | completed |
 | E63 | checkpoint | - | checkpointed |
+| M14 | measurement | I14 | failed |
