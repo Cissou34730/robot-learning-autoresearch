@@ -59,3 +59,4 @@
 | T7 | training | I9 | completed |
 | M9 | measurement | I9 | completed |
 | E41 | inquiry | I9 | completed |
+| E42 | checkpoint | I9 | checkpointed |

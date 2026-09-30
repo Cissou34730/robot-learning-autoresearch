@@ -5750,7 +5750,7 @@
     }
   },
   "counters": {
-    "event": 41,
+    "event": 42,
     "inquiry": 9,
     "measurement": 9,
     "session": 21,
@@ -5759,7 +5759,7 @@
   "human_goal": {
     "source": "research/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -11176,29 +11176,157 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-09-30T00:41:46Z",
+      "error": null,
+      "id": "E42",
+      "inquiry_id": "I9",
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "T1:checkpoint-100352 and T7:checkpoint-120832 remain unassigned measured candidates. T7 is rejected as an I9 route by M9; no candidate has working, best-known, or retained status.",
+        "completed_operations": [
+          "T7",
+          "M9",
+          "E41"
+        ],
+        "cumulative_resource_use": "The campaign has used seven PPO training runs of 120,832 completed steps each, six 160-episode development panels, one 138-target diagnostic grid, seven 200-episode development panels including the M9 paired I9 panel, and one paired three-candidate M7 panel. I9 added one continuous residual control formulation, one fresh training run, and one fresh paired complete-distribution measurement. No official assessment has run.",
+        "current_goal_gap": "M9 measured the restored T1 baseline at 194/200 (97.0%) on a fresh complete-distribution panel, two successes below the 196/200 threshold. The I9 T7 candidate achieved 137/200 (68.5%) and is rejected; no candidate is justified for official assessment or best-known assignment.",
+        "current_synthesis": "Observed: M9 measured T1 at 194/200 and T7:checkpoint-120832 at 137/200 on the same fresh shared-seed complete-distribution panel. Observed: the paired comparison recorded 63 T1 wins, 6 T7 wins, 69 discordant episodes, and a -28.5 percentage-point T7 difference. Observed: successful T7 episodes that completed the task reached the required uninterrupted 100-step hold, while the candidate's large shortfall was in reaching or maintaining the target before complete success. Observed: the continuous feasible-IK target-configuration reference, latched branch selection, velocity damping, and bounded learned residual therefore materially degraded the baseline and did not provide a credible route to 196/200. Remaining uncertainty concerns other interfaces or training formulations, not the tested I9 formulation.",
+        "decision_frontier": "I9 is closed with a negative answer. M9 supplies the controlled complete-distribution evidence required by its closure condition and rejects the tested continuous residual interface. Official assessment remains unjustified because no candidate reached 196/200 or has best-known status. Goal review must choose the next campaign step for the remaining two-success gap.",
+        "evidence_references": [
+          "T7",
+          "M9",
+          "E41"
+        ],
+        "human_goal_connection": "The campaign still targets a learned policy with at least 196 successes out of 200 under the complete official task distribution, where every success requires the complete uninterrupted 100-step hold. I9 tested whether a continuous model-informed residual torque interface could close the remaining approach and settling gap without changing that criterion.",
+        "next_direction_or_closure": "This checkpoint ends the I9 inquiry session and returns the campaign to goal review. The next session should decide whether a new consequential mechanism remains credible for the remaining complete-task gap or whether campaign conclusion is warranted; any further work must preserve the complete uninterrupted-hold criterion and must not treat partial reach or isolated holds as sufficient evidence."
+      },
+      "result": {
+        "session_id": "S21",
+        "status": "checkpointed"
+      },
+      "session_id": "S21",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "aa20d499ee96febd28411fa1338a207a12221a99",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "T1:checkpoint-100352 and T7:checkpoint-120832 remain unassigned measured candidates. T7 is rejected as an I9 route by M9; no candidate has working, best-known, or retained status.",
+        "completed_operations": [
+          "T7",
+          "M9",
+          "E41"
+        ],
+        "cumulative_resource_use": "The campaign has used seven PPO training runs of 120,832 completed steps each, six 160-episode development panels, one 138-target diagnostic grid, seven 200-episode development panels including the M9 paired I9 panel, and one paired three-candidate M7 panel. I9 added one continuous residual control formulation, one fresh training run, and one fresh paired complete-distribution measurement. No official assessment has run.",
+        "current_goal_gap": "M9 measured the restored T1 baseline at 194/200 (97.0%) on a fresh complete-distribution panel, two successes below the 196/200 threshold. The I9 T7 candidate achieved 137/200 (68.5%) and is rejected; no candidate is justified for official assessment or best-known assignment.",
+        "current_synthesis": "Observed: M9 measured T1 at 194/200 and T7:checkpoint-120832 at 137/200 on the same fresh shared-seed complete-distribution panel. Observed: the paired comparison recorded 63 T1 wins, 6 T7 wins, 69 discordant episodes, and a -28.5 percentage-point T7 difference. Observed: successful T7 episodes that completed the task reached the required uninterrupted 100-step hold, while the candidate's large shortfall was in reaching or maintaining the target before complete success. Observed: the continuous feasible-IK target-configuration reference, latched branch selection, velocity damping, and bounded learned residual therefore materially degraded the baseline and did not provide a credible route to 196/200. Remaining uncertainty concerns other interfaces or training formulations, not the tested I9 formulation.",
+        "decision_frontier": "I9 is closed with a negative answer. M9 supplies the controlled complete-distribution evidence required by its closure condition and rejects the tested continuous residual interface. Official assessment remains unjustified because no candidate reached 196/200 or has best-known status. Goal review must choose the next campaign step for the remaining two-success gap.",
+        "evidence_references": [
+          "T7",
+          "M9",
+          "E41"
+        ],
+        "human_goal_connection": "The campaign still targets a learned policy with at least 196 successes out of 200 under the complete official task distribution, where every success requires the complete uninterrupted 100-step hold. I9 tested whether a continuous model-informed residual torque interface could close the remaining approach and settling gap without changing that criterion.",
+        "inquiry_id": "I9",
+        "next_direction_or_closure": "This checkpoint ends the I9 inquiry session and returns the campaign to goal review. The next session should decide whether a new consequential mechanism remains credible for the remaining complete-task gap or whether campaign conclusion is warranted; any further work must preserve the complete uninterrupted-hold criterion and must not treat partial reach or isolated holds as sufficient evidence.",
+        "session_id": "S21"
+      },
+      "presentation": {
+        "backend_session_id": "e191ddb3-b093-42b9-92d2-4691d95a5240",
+        "campaign_id": "eb19a5f3-14b3-4590-ad74-1b31cf5ae3d5",
+        "campaign_usage": "1h21m | 213.51 AIU | prompt 33.4m (84% cached) | output 219.2k",
+        "session_id": "S21",
+        "session_kind": "inquiry",
+        "session_usage": "5m18s | 18.61 AIU | prompt 3.3m (87% cached) | output 15.7k"
+      },
+      "result": {
+        "session_id": "S21",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "7d6da52bfc86c5a11c55b11c257559860dd23338",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E42",
+    "inquiry_id": "I9",
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "T1:checkpoint-100352 and T7:checkpoint-120832 remain unassigned measured candidates. T7 is rejected as an I9 route by M9; no candidate has working, best-known, or retained status.",
+        "completed_operations": [
+          "T7",
+          "M9",
+          "E41"
+        ],
+        "cumulative_resource_use": "The campaign has used seven PPO training runs of 120,832 completed steps each, six 160-episode development panels, one 138-target diagnostic grid, seven 200-episode development panels including the M9 paired I9 panel, and one paired three-candidate M7 panel. I9 added one continuous residual control formulation, one fresh training run, and one fresh paired complete-distribution measurement. No official assessment has run.",
+        "current_goal_gap": "M9 measured the restored T1 baseline at 194/200 (97.0%) on a fresh complete-distribution panel, two successes below the 196/200 threshold. The I9 T7 candidate achieved 137/200 (68.5%) and is rejected; no candidate is justified for official assessment or best-known assignment.",
+        "current_synthesis": "Observed: M9 measured T1 at 194/200 and T7:checkpoint-120832 at 137/200 on the same fresh shared-seed complete-distribution panel. Observed: the paired comparison recorded 63 T1 wins, 6 T7 wins, 69 discordant episodes, and a -28.5 percentage-point T7 difference. Observed: successful T7 episodes that completed the task reached the required uninterrupted 100-step hold, while the candidate's large shortfall was in reaching or maintaining the target before complete success. Observed: the continuous feasible-IK target-configuration reference, latched branch selection, velocity damping, and bounded learned residual therefore materially degraded the baseline and did not provide a credible route to 196/200. Remaining uncertainty concerns other interfaces or training formulations, not the tested I9 formulation.",
+        "decision_frontier": "I9 is closed with a negative answer. M9 supplies the controlled complete-distribution evidence required by its closure condition and rejects the tested continuous residual interface. Official assessment remains unjustified because no candidate reached 196/200 or has best-known status. Goal review must choose the next campaign step for the remaining two-success gap.",
+        "evidence_references": [
+          "T7",
+          "M9",
+          "E41"
+        ],
+        "human_goal_connection": "The campaign still targets a learned policy with at least 196 successes out of 200 under the complete official task distribution, where every success requires the complete uninterrupted 100-step hold. I9 tested whether a continuous model-informed residual torque interface could close the remaining approach and settling gap without changing that criterion.",
+        "next_direction_or_closure": "This checkpoint ends the I9 inquiry session and returns the campaign to goal review. The next session should decide whether a new consequential mechanism remains credible for the remaining complete-task gap or whether campaign conclusion is warranted; any further work must preserve the complete uninterrupted-hold criterion and must not treat partial reach or isolated holds as sufficient evidence."
+      }
+    },
+    "request_fingerprint": "b30eeafd0ce1ab08fad9e6b7359088f79540e6c4a3f8d2591b28b3e0eaf2fb8d",
+    "session_id": "S21",
+    "supersedes": null
+  },
   "pi_checkpoint": {
-    "candidates_and_roles": "T6:checkpoint-45056, T6:checkpoint-50176, T6:checkpoint-70656, and T1:checkpoint-100352 remain unassigned measured candidates. No candidate has working, best-known, or retained status. I9 has no candidate yet.",
+    "candidates_and_roles": "T1:checkpoint-100352 and T7:checkpoint-120832 remain unassigned measured candidates. T7 is rejected as an I9 route by M9; no candidate has working, best-known, or retained status.",
     "completed_operations": [
-      "E39"
+      "T7",
+      "M9",
+      "E41"
     ],
-    "cumulative_resource_use": "The campaign has used six PPO training runs of 120,832 completed steps each, six 160-episode development panels, one 138-target diagnostic grid, six 200-episode development panels including the M8 four-candidate paired panel, and one paired three-candidate M7 panel. I8 added one phase-aware control formulation before T6. E39 opened I9 but added no training, measurement, or evaluation resources. No official assessment has run.",
-    "current_goal_gap": "The fresh M8 panel measured the restored T1 baseline at 192/200 (96.0%), while the phase-aware T6 candidates measured 180/200, 191/200, and 188/200. No candidate reached 196/200 or preserved the baseline strongly enough to justify official assessment.",
-    "current_synthesis": "Observed: M8 measured all three phase-aware T6 candidates below the 196/200 threshold on the same fresh shared-seed complete-distribution panel as T1. Observed: T6:checkpoint-45056 lost to T1 by 6 to 18 wins with a -6.0 percentage-point outcome difference; T6:checkpoint-50176 was closest, with 8 to 9 wins, 17 discordant episodes, and a -0.5 percentage-point difference; T6:checkpoint-70656 lost by 8 to 12 wins with a -2.0 percentage-point difference. Observed: the tested phase-aware formulation did not provide a credible improvement over the baseline complete-task result or a route to 196/200. Observed: the measured T6 policies still reached 100-step uninterrupted holds in successful episodes, so the panel does not establish a new loss of hold capability after settling; the measured shortfall remains before or during successful settling. Hypothesis: the tested phase-aware command split is too intrusive or mismatched to the learned policy and does not resolve the residual negative-bearing approach and settling tail. This does not establish that every possible temporal formulation is ineffective. Observed: E39 opened I9 to test one materially different, continuous model-informed residual torque interface while preserving the baseline observation representation and complete uninterrupted-hold semantics. No implementation, training, measurement, or candidate result has yet been produced for I9.",
-    "decision_frontier": "Official assessment remains unjustified because no candidate has reached 196/200 or been assigned best-known status. The goal-review decision was to open I9 rather than request assessment or conclude that no credible route remains. This goal-review session now ends; I9 is actionable only in its fresh inquiry session.",
+    "cumulative_resource_use": "The campaign has used seven PPO training runs of 120,832 completed steps each, six 160-episode development panels, one 138-target diagnostic grid, seven 200-episode development panels including the M9 paired I9 panel, and one paired three-candidate M7 panel. I9 added one continuous residual control formulation, one fresh training run, and one fresh paired complete-distribution measurement. No official assessment has run.",
+    "current_goal_gap": "M9 measured the restored T1 baseline at 194/200 (97.0%) on a fresh complete-distribution panel, two successes below the 196/200 threshold. The I9 T7 candidate achieved 137/200 (68.5%) and is rejected; no candidate is justified for official assessment or best-known assignment.",
+    "current_synthesis": "Observed: M9 measured T1 at 194/200 and T7:checkpoint-120832 at 137/200 on the same fresh shared-seed complete-distribution panel. Observed: the paired comparison recorded 63 T1 wins, 6 T7 wins, 69 discordant episodes, and a -28.5 percentage-point T7 difference. Observed: successful T7 episodes that completed the task reached the required uninterrupted 100-step hold, while the candidate's large shortfall was in reaching or maintaining the target before complete success. Observed: the continuous feasible-IK target-configuration reference, latched branch selection, velocity damping, and bounded learned residual therefore materially degraded the baseline and did not provide a credible route to 196/200. Remaining uncertainty concerns other interfaces or training formulations, not the tested I9 formulation.",
+    "decision_frontier": "I9 is closed with a negative answer. M9 supplies the controlled complete-distribution evidence required by its closure condition and rejects the tested continuous residual interface. Official assessment remains unjustified because no candidate reached 196/200 or has best-known status. Goal review must choose the next campaign step for the remaining two-success gap.",
     "evidence_references": [
-      "T6",
-      "M8",
-      "E37",
-      "E39"
+      "T7",
+      "M9",
+      "E41"
     ],
-    "human_goal_connection": "The campaign still targets a learned policy with at least 196 successes out of 200 under the complete official task distribution, where every success requires the complete uninterrupted 100-step hold. I9 was opened because the current best result remains below that threshold and the observed shortfall is concentrated before or during settling.",
-    "inquiry_id": null,
-    "next_direction_or_closure": "The next session should conduct the bounded I9 inquiry. It must preserve the complete uninterrupted-hold criterion and resolve whether the continuous model-informed residual torque interface can address the observed negative-bearing approach and settling shortfall without degrading the baseline complete-task outcome. Closure requires either evidence supporting a candidate at or above 196/200 with preserved post-settling hold behavior, or evidence that the interface cannot preserve the baseline or provide a credible route to the goal.",
-    "scientific_commit": "140e104be5ea2654f56438a98a879c2079eb6af8",
-    "session_id": "S20"
+    "human_goal_connection": "The campaign still targets a learned policy with at least 196 successes out of 200 under the complete official task distribution, where every success requires the complete uninterrupted 100-step hold. I9 tested whether a continuous model-informed residual torque interface could close the remaining approach and settling gap without changing that criterion.",
+    "inquiry_id": "I9",
+    "next_direction_or_closure": "This checkpoint ends the I9 inquiry session and returns the campaign to goal review. The next session should decide whether a new consequential mechanism remains credible for the remaining complete-task gap or whether campaign conclusion is warranted; any further work must preserve the complete uninterrupted-hold criterion and must not treat partial reach or isolated holds as sufficient evidence.",
+    "scientific_commit": "7d6da52bfc86c5a11c55b11c257559860dd23338",
+    "session_id": "S21"
   },
   "schema_version": 6,
   "scientific_model": {
@@ -11206,23 +11334,6 @@
     "path": "research/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "e191ddb3-b093-42b9-92d2-4691d95a5240",
-    "id": "S21",
-    "inquiry_id": "I9",
-    "kind": "inquiry",
-    "objective": "Bring I9 to the decision required by its closure condition, and close it as soon as the evidence supplies that decision: Close when bounded implementation, training, and controlled shared-seed complete-distribution measurements establish either a candidate with at least 196/200 successes and preserved post-settling uninterrupted-hold behavior sufficient to justify explicit best-known assignment, or that the interface cannot preserve the baseline complete-task outcome or cannot provide a credible route to 196/200. Do not treat partial reach, minimum distance, or isolated hold traces as sufficient closure evidence.",
-    "operation_ids": [
-      "T7",
-      "M9",
-      "E41"
-    ],
-    "scientific_parent_commit": "aa20d499ee96febd28411fa1338a207a12221a99"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
