@@ -11,6 +11,7 @@ different distribution, tolerance or horizon. The human-defined task is
 enforced only by the protected benchmark in `robot_learning/benchmark/`.
 """
 
+import inspect
 from typing import Any, ClassVar
 
 import gymnasium as gym
@@ -48,6 +49,9 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
         self.frame_skip = frame_skip
         self.target_radius_range = target_radius_range
         self.policy_io = policy_runtime.io if policy_runtime else make_policy_io()
+        self._observation_accepts_hold_progress = (
+            "hold_progress" in inspect.signature(self.policy_io.observe).parameters
+        )
 
         self.model = mujoco.MjModel.from_xml_path(str(TWO_JOINT_ARM_XML_PATH))
         self.data = mujoco.MjData(self.model)
@@ -98,6 +102,11 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
         ]
 
     def _observation(self) -> np.ndarray:
+        if self._observation_accepts_hold_progress:
+            hold_progress = self._held_steps / self.hold_steps_required
+            return self.policy_io.observe(
+                self.data, hold_progress=float(hold_progress)
+            )
         return self.policy_io.observe(self.data)
 
     def reset(
