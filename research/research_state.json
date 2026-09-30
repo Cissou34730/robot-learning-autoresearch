@@ -1,5 +1,13 @@
 {
-  "active_inquiry": null,
+  "active_inquiry": {
+    "closure_condition": "Close or reframe after a reproducible baseline candidate has a completed fixed-seed development evaluation reporting, for every episode, target radius and angle, first in-tolerance step, maximum uninterrupted held steps, hold interruptions, and minimum and final distance, with results compared between the baseline training distribution and the official development distribution. Late or geometry-correlated first reach failures support a coverage/trajectory direction; early reach followed by short holds and repeated interruptions support a stabilization-aware direction; mixed results require identifying the dominant subgroup.",
+    "goal_connection": "The human goal requires at least 196 successes in the 200-episode official panel. Identifying whether the first policy is limited by reach/coverage or by stabilization determines the next intervention without mistaking geometric reach for complete episode success.",
+    "id": "I1",
+    "opened_in_session": "S2",
+    "question": "In the first learned policy, are episode failures dominated by target acquisition and full-distribution reachability/branch coverage, or by entering the tolerance and then failing the uninterrupted 2-second stabilization hold?",
+    "rationale": "No trained candidate or completed development evidence exists, so the current goal gap is unmeasured. The fixed scientific model makes both bounded-actuation reachability and low-residual-motion stabilization plausible limiting mechanisms, while the narrower training radial distribution creates an independent coverage risk. One bounded inquiry beginning with the maintainer's required 120000-step baseline and a non-overlapping diagnostic evaluation will produce the evidence needed for the next goal-linked decision.",
+    "reframes": []
+  },
   "campaign": {
     "base_commit": "c02b0d59e8ef397c87d92f70e986ad545e585b95",
     "id": "e8788df6-9f4a-4dac-92b7-48e40477e827",
@@ -9,16 +17,16 @@
   },
   "candidates": {},
   "counters": {
-    "event": 1,
-    "inquiry": 0,
+    "event": 2,
+    "inquiry": 1,
     "measurement": 0,
-    "session": 1,
+    "session": 2,
     "training": 0
   },
   "human_goal": {
     "source": "research/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -51,9 +59,69 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-09-30T21:53:44Z",
+      "error": null,
+      "id": "E2",
+      "inquiry_id": "I1",
+      "kind": "inquiry",
+      "request": {
+        "action": "open",
+        "closure_condition": "Close or reframe after a reproducible baseline candidate has a completed fixed-seed development evaluation reporting, for every episode, target radius and angle, first in-tolerance step, maximum uninterrupted held steps, hold interruptions, and minimum and final distance, with results compared between the baseline training distribution and the official development distribution. Late or geometry-correlated first reach failures support a coverage/trajectory direction; early reach followed by short holds and repeated interruptions support a stabilization-aware direction; mixed results require identifying the dominant subgroup.",
+        "goal_connection": "The human goal requires at least 196 successes in the 200-episode official panel. Identifying whether the first policy is limited by reach/coverage or by stabilization determines the next intervention without mistaking geometric reach for complete episode success.",
+        "question": "In the first learned policy, are episode failures dominated by target acquisition and full-distribution reachability/branch coverage, or by entering the tolerance and then failing the uninterrupted 2-second stabilization hold?",
+        "rationale": "No trained candidate or completed development evidence exists, so the current goal gap is unmeasured. The fixed scientific model makes both bounded-actuation reachability and low-residual-motion stabilization plausible limiting mechanisms, while the narrower training radial distribution creates an independent coverage risk. One bounded inquiry beginning with the maintainer's required 120000-step baseline and a non-overlapping diagnostic evaluation will produce the evidence needed for the next goal-linked decision."
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I1",
+        "status": "completed"
+      },
+      "session_id": "S2",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "open",
+        "inquiry": {
+          "closure_condition": "Close or reframe after a reproducible baseline candidate has a completed fixed-seed development evaluation reporting, for every episode, target radius and angle, first in-tolerance step, maximum uninterrupted held steps, hold interruptions, and minimum and final distance, with results compared between the baseline training distribution and the official development distribution. Late or geometry-correlated first reach failures support a coverage/trajectory direction; early reach followed by short holds and repeated interruptions support a stabilization-aware direction; mixed results require identifying the dominant subgroup.",
+          "goal_connection": "The human goal requires at least 196 successes in the 200-episode official panel. Identifying whether the first policy is limited by reach/coverage or by stabilization determines the next intervention without mistaking geometric reach for complete episode success.",
+          "id": "I1",
+          "opened_in_session": "S2",
+          "question": "In the first learned policy, are episode failures dominated by target acquisition and full-distribution reachability/branch coverage, or by entering the tolerance and then failing the uninterrupted 2-second stabilization hold?",
+          "rationale": "No trained candidate or completed development evidence exists, so the current goal gap is unmeasured. The fixed scientific model makes both bounded-actuation reachability and low-residual-motion stabilization plausible limiting mechanisms, while the narrower training radial distribution creates an independent coverage risk. One bounded inquiry beginning with the maintainer's required 120000-step baseline and a non-overlapping diagnostic evaluation will produce the evidence needed for the next goal-linked decision.",
+          "reframes": []
+        }
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I1",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E2",
+    "inquiry_id": null,
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "open",
+        "closure_condition": "Close or reframe after a reproducible baseline candidate has a completed fixed-seed development evaluation reporting, for every episode, target radius and angle, first in-tolerance step, maximum uninterrupted held steps, hold interruptions, and minimum and final distance, with results compared between the baseline training distribution and the official development distribution. Late or geometry-correlated first reach failures support a coverage/trajectory direction; early reach followed by short holds and repeated interruptions support a stabilization-aware direction; mixed results require identifying the dominant subgroup.",
+        "goal_connection": "The human goal requires at least 196 successes in the 200-episode official panel. Identifying whether the first policy is limited by reach/coverage or by stabilization determines the next intervention without mistaking geometric reach for complete episode success.",
+        "question": "In the first learned policy, are episode failures dominated by target acquisition and full-distribution reachability/branch coverage, or by entering the tolerance and then failing the uninterrupted 2-second stabilization hold?",
+        "rationale": "No trained candidate or completed development evidence exists, so the current goal gap is unmeasured. The fixed scientific model makes both bounded-actuation reachability and low-residual-motion stabilization plausible limiting mechanisms, while the narrower training radial distribution creates an independent coverage risk. One bounded inquiry beginning with the maintainer's required 120000-step baseline and a non-overlapping diagnostic evaluation will produce the evidence needed for the next goal-linked decision."
+      }
+    },
+    "request_fingerprint": "5240b71c30f6713bf2977d9ca6bc8d5c4fbd1259191ac0efe55e050b8bb8c867",
+    "session_id": "S2",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No candidates exist; working, best-known, and retained roles are empty.",
     "completed_operations": [],
@@ -74,6 +142,21 @@
     "path": "research/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "bb2b8db6-6cac-405d-8a72-952df63a8076",
+    "id": "S2",
+    "inquiry_id": null,
+    "kind": "goal_review",
+    "objective": "Decide whether to request official assessment, open one bounded goal-linked inquiry, or conclude that no credible route remains.",
+    "operation_ids": [
+      "E2"
+    ],
+    "scientific_parent_commit": "fbf035ef2275c81d892bc30aa8e4ec5ca80ca91b"
+  },
   "terminal_state": null
 }
