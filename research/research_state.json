@@ -1,5 +1,13 @@
 {
-  "active_inquiry": null,
+  "active_inquiry": {
+    "closure_condition": "Train one fresh 120000-step candidate with only the normalized hold-progress observation added to the T1 recipe, then compare it with T1 on the fixed 200-episode development panel. Close the inquiry as insufficient if complete successes do not improve over 189/200 or if post-entry failures improve only by introducing a material regression in the -180 to -90 degree acquisition sector; redirect only if the paired diagnostics identify a different dominant mechanism.",
+    "goal_connection": "The human goal requires at least 196 complete uninterrupted holds in a 200-episode official panel. T1 reaches 189/200 development successes, with five post-entry hold failures and six angular acquisition failures. Making the temporal phase observable tests whether the remaining hold failures arise from the current policy's inability to condition stabilization on hold progress, while preserving the acquisition recipe that T1 supports.",
+    "id": "I4",
+    "opened_in_session": "S8",
+    "question": "Can exposing normalized uninterrupted-hold progress to the policy, while preserving T1's full-angle target distribution and analytic branch observations, reduce complete-hold failures without sacrificing angular acquisition?",
+    "rationale": "The physical model identifies the 2-second hold as a temporal control requirement, but the current 11-value memoryless observation omits hold progress. T3 tested stronger endpoint-speed reward shaping and collapsed to zero success, while I2's acquisition intervention traded angular failures for hold failures. A phase-progress observation is a distinct, low-confounding intervention that preserves T1's sampling, branch inputs, reward, and torque interface, and its paired result directly tests whether temporal observability can close the complete-hold gap.",
+    "reframes": []
+  },
   "campaign": {
     "base_commit": "c02b0d59e8ef397c87d92f70e986ad545e585b95",
     "id": "e8788df6-9f4a-4dac-92b7-48e40477e827",
@@ -2466,16 +2474,16 @@
     }
   },
   "counters": {
-    "event": 13,
-    "inquiry": 3,
+    "event": 14,
+    "inquiry": 4,
     "measurement": 3,
-    "session": 7,
+    "session": 8,
     "training": 3
   },
   "human_goal": {
     "source": "research/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -4154,9 +4162,69 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-09-30T22:48:43Z",
+      "error": null,
+      "id": "E14",
+      "inquiry_id": "I4",
+      "kind": "inquiry",
+      "request": {
+        "action": "open",
+        "closure_condition": "Train one fresh 120000-step candidate with only the normalized hold-progress observation added to the T1 recipe, then compare it with T1 on the fixed 200-episode development panel. Close the inquiry as insufficient if complete successes do not improve over 189/200 or if post-entry failures improve only by introducing a material regression in the -180 to -90 degree acquisition sector; redirect only if the paired diagnostics identify a different dominant mechanism.",
+        "goal_connection": "The human goal requires at least 196 complete uninterrupted holds in a 200-episode official panel. T1 reaches 189/200 development successes, with five post-entry hold failures and six angular acquisition failures. Making the temporal phase observable tests whether the remaining hold failures arise from the current policy's inability to condition stabilization on hold progress, while preserving the acquisition recipe that T1 supports.",
+        "question": "Can exposing normalized uninterrupted-hold progress to the policy, while preserving T1's full-angle target distribution and analytic branch observations, reduce complete-hold failures without sacrificing angular acquisition?",
+        "rationale": "The physical model identifies the 2-second hold as a temporal control requirement, but the current 11-value memoryless observation omits hold progress. T3 tested stronger endpoint-speed reward shaping and collapsed to zero success, while I2's acquisition intervention traded angular failures for hold failures. A phase-progress observation is a distinct, low-confounding intervention that preserves T1's sampling, branch inputs, reward, and torque interface, and its paired result directly tests whether temporal observability can close the complete-hold gap."
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I4",
+        "status": "completed"
+      },
+      "session_id": "S8",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "open",
+        "inquiry": {
+          "closure_condition": "Train one fresh 120000-step candidate with only the normalized hold-progress observation added to the T1 recipe, then compare it with T1 on the fixed 200-episode development panel. Close the inquiry as insufficient if complete successes do not improve over 189/200 or if post-entry failures improve only by introducing a material regression in the -180 to -90 degree acquisition sector; redirect only if the paired diagnostics identify a different dominant mechanism.",
+          "goal_connection": "The human goal requires at least 196 complete uninterrupted holds in a 200-episode official panel. T1 reaches 189/200 development successes, with five post-entry hold failures and six angular acquisition failures. Making the temporal phase observable tests whether the remaining hold failures arise from the current policy's inability to condition stabilization on hold progress, while preserving the acquisition recipe that T1 supports.",
+          "id": "I4",
+          "opened_in_session": "S8",
+          "question": "Can exposing normalized uninterrupted-hold progress to the policy, while preserving T1's full-angle target distribution and analytic branch observations, reduce complete-hold failures without sacrificing angular acquisition?",
+          "rationale": "The physical model identifies the 2-second hold as a temporal control requirement, but the current 11-value memoryless observation omits hold progress. T3 tested stronger endpoint-speed reward shaping and collapsed to zero success, while I2's acquisition intervention traded angular failures for hold failures. A phase-progress observation is a distinct, low-confounding intervention that preserves T1's sampling, branch inputs, reward, and torque interface, and its paired result directly tests whether temporal observability can close the complete-hold gap.",
+          "reframes": []
+        }
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I4",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E14",
+    "inquiry_id": null,
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "open",
+        "closure_condition": "Train one fresh 120000-step candidate with only the normalized hold-progress observation added to the T1 recipe, then compare it with T1 on the fixed 200-episode development panel. Close the inquiry as insufficient if complete successes do not improve over 189/200 or if post-entry failures improve only by introducing a material regression in the -180 to -90 degree acquisition sector; redirect only if the paired diagnostics identify a different dominant mechanism.",
+        "goal_connection": "The human goal requires at least 196 complete uninterrupted holds in a 200-episode official panel. T1 reaches 189/200 development successes, with five post-entry hold failures and six angular acquisition failures. Making the temporal phase observable tests whether the remaining hold failures arise from the current policy's inability to condition stabilization on hold progress, while preserving the acquisition recipe that T1 supports.",
+        "question": "Can exposing normalized uninterrupted-hold progress to the policy, while preserving T1's full-angle target distribution and analytic branch observations, reduce complete-hold failures without sacrificing angular acquisition?",
+        "rationale": "The physical model identifies the 2-second hold as a temporal control requirement, but the current 11-value memoryless observation omits hold progress. T3 tested stronger endpoint-speed reward shaping and collapsed to zero success, while I2's acquisition intervention traded angular failures for hold failures. A phase-progress observation is a distinct, low-confounding intervention that preserves T1's sampling, branch inputs, reward, and torque interface, and its paired result directly tests whether temporal observability can close the complete-hold gap."
+      }
+    },
+    "request_fingerprint": "8dea2d61ea72355b5cb768c7f1c84cddc97e390fbcb7190049b1bd0d4f4c78b9",
+    "session_id": "S8",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T1:checkpoint-100352 remains the strongest evidence-backed development candidate and baseline reference at 189/200, supported by M1, M2, and M3. T2:checkpoint-120832 remains a measured but insufficient intervention at 176/200 with 19 post-entry hold failures. T3:checkpoint-120832 is a measured failed stabilization recipe at 0/200 and has no role. No candidate has been assigned working, best-known, or retained status.",
     "completed_operations": [
@@ -4193,6 +4261,21 @@
     "path": "research/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "29803932-e5a5-4e43-9fd4-dff5a7fe8804",
+    "id": "S8",
+    "inquiry_id": null,
+    "kind": "goal_review",
+    "objective": "Decide whether to request official assessment, open one bounded goal-linked inquiry, or conclude that no credible route remains.",
+    "operation_ids": [
+      "E14"
+    ],
+    "scientific_parent_commit": "fb6f8786b05093e03bd19f8ad2480ca94533dde1"
+  },
   "terminal_state": null
 }
