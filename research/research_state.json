@@ -1,5 +1,13 @@
 {
-  "active_inquiry": null,
+  "active_inquiry": {
+    "closure_condition": "Close when shared-seed measurements of a T2-derived candidate and the strongest T1/T2 references establish whether velocity-first convergence and regulation improve overall success and uninterrupted holds without materially sacrificing acquisition, or when the measurements show that this route cannot plausibly reach the 196-of-200 requirement.",
+    "goal_connection": "The human goal requires at least 196 of 200 official episodes to complete one uninterrupted 100-step hold. T2 reaches only 153 of 160 on the shared development panel, with four no-entry failures and three hold interruptions, so the inquiry directly targets the remaining success gap.",
+    "id": "I3",
+    "opened_in_session": "S6",
+    "question": "Can a velocity-first convergence and regulation intervention retain T2's acquisition and negative-angle gains while eliminating the residual-speed, saturated-action, and hold-interruption failures that prevent a 98% official success policy?",
+    "rationale": "Official assessment is premature because no candidate has established the 98% goal or an explicit best-known role. A credible route remains: T2 improved acquisition from 151/160 to 153/160 and reduced no-entry failures, while its higher entry velocity and unchanged hold interruptions identify a specific coupled control failure consistent with the physical model. The next session should preserve T2's full-radius and negative-angle training recipe and make residual velocity and saturated-action avoidance the primary scientific test.",
+    "reframes": []
+  },
   "campaign": {
     "base_commit": "eabb35c663a2df5b356b05849912e07ba78c15c4",
     "id": "35365763-6aa0-4675-8e86-f8f277558aa4",
@@ -1377,16 +1385,16 @@
     }
   },
   "counters": {
-    "event": 9,
-    "inquiry": 2,
+    "event": 10,
+    "inquiry": 3,
     "measurement": 2,
-    "session": 5,
+    "session": 6,
     "training": 2
   },
   "human_goal": {
     "source": "research/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -2539,9 +2547,69 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-09-30T10:54:40Z",
+      "error": null,
+      "id": "E10",
+      "inquiry_id": "I3",
+      "kind": "inquiry",
+      "request": {
+        "action": "open",
+        "closure_condition": "Close when shared-seed measurements of a T2-derived candidate and the strongest T1/T2 references establish whether velocity-first convergence and regulation improve overall success and uninterrupted holds without materially sacrificing acquisition, or when the measurements show that this route cannot plausibly reach the 196-of-200 requirement.",
+        "goal_connection": "The human goal requires at least 196 of 200 official episodes to complete one uninterrupted 100-step hold. T2 reaches only 153 of 160 on the shared development panel, with four no-entry failures and three hold interruptions, so the inquiry directly targets the remaining success gap.",
+        "question": "Can a velocity-first convergence and regulation intervention retain T2's acquisition and negative-angle gains while eliminating the residual-speed, saturated-action, and hold-interruption failures that prevent a 98% official success policy?",
+        "rationale": "Official assessment is premature because no candidate has established the 98% goal or an explicit best-known role. A credible route remains: T2 improved acquisition from 151/160 to 153/160 and reduced no-entry failures, while its higher entry velocity and unchanged hold interruptions identify a specific coupled control failure consistent with the physical model. The next session should preserve T2's full-radius and negative-angle training recipe and make residual velocity and saturated-action avoidance the primary scientific test."
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I3",
+        "status": "completed"
+      },
+      "session_id": "S6",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "open",
+        "inquiry": {
+          "closure_condition": "Close when shared-seed measurements of a T2-derived candidate and the strongest T1/T2 references establish whether velocity-first convergence and regulation improve overall success and uninterrupted holds without materially sacrificing acquisition, or when the measurements show that this route cannot plausibly reach the 196-of-200 requirement.",
+          "goal_connection": "The human goal requires at least 196 of 200 official episodes to complete one uninterrupted 100-step hold. T2 reaches only 153 of 160 on the shared development panel, with four no-entry failures and three hold interruptions, so the inquiry directly targets the remaining success gap.",
+          "id": "I3",
+          "opened_in_session": "S6",
+          "question": "Can a velocity-first convergence and regulation intervention retain T2's acquisition and negative-angle gains while eliminating the residual-speed, saturated-action, and hold-interruption failures that prevent a 98% official success policy?",
+          "rationale": "Official assessment is premature because no candidate has established the 98% goal or an explicit best-known role. A credible route remains: T2 improved acquisition from 151/160 to 153/160 and reduced no-entry failures, while its higher entry velocity and unchanged hold interruptions identify a specific coupled control failure consistent with the physical model. The next session should preserve T2's full-radius and negative-angle training recipe and make residual velocity and saturated-action avoidance the primary scientific test.",
+          "reframes": []
+        }
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I3",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E10",
+    "inquiry_id": null,
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "open",
+        "closure_condition": "Close when shared-seed measurements of a T2-derived candidate and the strongest T1/T2 references establish whether velocity-first convergence and regulation improve overall success and uninterrupted holds without materially sacrificing acquisition, or when the measurements show that this route cannot plausibly reach the 196-of-200 requirement.",
+        "goal_connection": "The human goal requires at least 196 of 200 official episodes to complete one uninterrupted 100-step hold. T2 reaches only 153 of 160 on the shared development panel, with four no-entry failures and three hold interruptions, so the inquiry directly targets the remaining success gap.",
+        "question": "Can a velocity-first convergence and regulation intervention retain T2's acquisition and negative-angle gains while eliminating the residual-speed, saturated-action, and hold-interruption failures that prevent a 98% official success policy?",
+        "rationale": "Official assessment is premature because no candidate has established the 98% goal or an explicit best-known role. A credible route remains: T2 improved acquisition from 151/160 to 153/160 and reduced no-entry failures, while its higher entry velocity and unchanged hold interruptions identify a specific coupled control failure consistent with the physical model. The next session should preserve T2's full-radius and negative-angle training recipe and make residual velocity and saturated-action avoidance the primary scientific test."
+      }
+    },
+    "request_fingerprint": "ae71fa824d864d95a22072ec736132718d8705267cf3127a0e81b70d8f895373",
+    "session_id": "S6",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T1:checkpoint-100352 remains the reference at 151/160 (94.375%). T2:checkpoint-65536 and T2:checkpoint-75776 each reached 153/160 (95.625%) on the shared panel; checkpoint 65536 is the stronger provisional candidate because its median entry speed was lower. No working, best-known, or retained role is assigned.",
     "completed_operations": [
@@ -2574,6 +2642,21 @@
     "path": "research/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "03e9a3a3-3cb6-47d4-9dbf-15230fe48403",
+    "id": "S6",
+    "inquiry_id": null,
+    "kind": "goal_review",
+    "objective": "Decide whether to request official assessment, open one bounded goal-linked inquiry, or conclude that no credible route remains.",
+    "operation_ids": [
+      "E10"
+    ],
+    "scientific_parent_commit": "2a05e4b63ca7f36b9ae7e416fe4526f802bf5d4c"
+  },
   "terminal_state": null
 }
