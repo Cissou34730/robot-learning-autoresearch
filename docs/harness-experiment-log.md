@@ -411,3 +411,16 @@ separate from harness changes so their outcomes are not conflated.
   removing an illustrative number from a PI-visible contract.
 - **Status:** pending implementation. This entry does not change or interrupt
   the current training operation.
+
+## TODO: add strict-scope guidance to Copilot instruction files
+
+- [ ] Add the agreed guidance to Copilot instruction files, not `AGENTS.md`.
+  Treat approved scope as a strict boundary and make the smallest complete
+  change. Require explicit approval before adjacent fixes, refactors,
+  abstractions, agents, speculative tests, or new test infrastructure.
+  Validate proportionally with existing targeted checks or a minimal
+  reproduction. Report unrelated environment blockers and stop rather than
+  expanding into another investigation or repair. Once the requested change
+  is complete, commit and push when required, then stop.
+- **Status:** pending implementation. This is a backlog entry only; no
+  instruction file or `AGENTS.md` is changed by it.
