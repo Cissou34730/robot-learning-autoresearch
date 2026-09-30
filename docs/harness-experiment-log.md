@@ -463,3 +463,19 @@ separate from harness changes so their outcomes are not conflated.
   Ruff passed; no new tests or parser infrastructure were added.
 - **Disposition:** implemented. The scientific model is not rewritten, and
   no campaign operation is started, resumed, or reset.
+
+## Remove the repository-level engineering instruction bundle
+
+- **Implementation commit:** the commit containing this entry,
+  `Remove repository-level engineering scope instructions`.
+- **Reason:** the maintainer requested removal after the next PI startup chose
+  a baseline before structural changes. The shared instruction bundle is a
+  possible source of engineering-to-science priming despite its PI exemption;
+  that causal interpretation is not established by this single campaign.
+- **Change:** remove only the added maintainer-directed engineering section
+  from `.github/copilot-instructions.md`. Keep its AGENTS.md reference.
+- **Expected improvement:** remove this possible source of conflicting
+  scientific-action guidance without imposing a mandatory preparation sequence.
+- **Disposition:** the instruction-file portion of `3d6d29e` is withdrawn.
+  The maintainer-owned training allocation, robotics/RL inquiry guidance, and
+  `AGENTS.md` are unchanged. No campaign operation is executed by this change.
