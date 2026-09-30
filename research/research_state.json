@@ -10164,7 +10164,7 @@
     }
   },
   "counters": {
-    "event": 68,
+    "event": 69,
     "inquiry": 15,
     "measurement": 17,
     "session": 35,
@@ -10173,7 +10173,7 @@
   "human_goal": {
     "source": "research/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -19699,29 +19699,167 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-09-30T03:06:33Z",
+      "error": null,
+      "id": "E69",
+      "inquiry_id": null,
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "No candidate has working, best-known, or retained status. T12:checkpoint-6144 is rejected as an I14 route by M17. T1:checkpoint-100352 remains an unassigned reference candidate and is not promoted by this checkpoint.",
+        "completed_operations": [
+          "E68"
+        ],
+        "cumulative_resource_use": "I14 used one completed controller measurement M16, T12 training with twenty archived candidates, and M17 with four fresh 200-episode evaluations plus paired comparisons. E66 closed I14 and E68 opened I15. No official assessment has run; I15 has not yet consumed training or measurement resources.",
+        "current_goal_gap": "The selected training-only distilled candidate T12:checkpoint-6144 achieved 47/200 and 40/200 on two fresh panels, 149 and 156 successes below the 196/200 threshold. No learned candidate has working, best-known, or retained status. The restored T1 reference achieved 196/200 and 194/200 on those panels but is not a repeatably qualified campaign candidate.",
+        "current_synthesis": "Observed: M16's pre-specified computed-torque controller achieved 200/200 on its complete-distribution panel. Observed: T12 produced twenty candidates with zero recorded training success, and the predeclared earliest-checkpoint tie-break selected T12:checkpoint-6144. Observed: without runtime controller assistance, M17 measured that candidate at 47/200 and 40/200 on two fresh panels; the shared-seed comparison recorded 3 distilled-candidate wins versus 306 restored-reference wins over 400 episodes, with a -75.75 percentage-point success delta. Observed: the distilled route materially degraded the restored baseline and failed I14's 196/200 threshold on both panels. Hypothesis: the tested training process did not preserve the controller's closed-loop behavior. This does not establish that every possible distillation method is impossible, but that remaining uncertainty cannot change I14's bounded route decision.",
+        "decision_frontier": "I14 is closed negatively, and its specified controller-distillation route is rejected as a credible route to the campaign goal. Goal review opened I15 to resolve whether the near-threshold direct-policy behavior can be made repeatable; I15 is not actionable in this goal-review session and will continue in its fresh inquiry session.",
+        "evidence_references": [
+          "M16",
+          "T12",
+          "M17",
+          "E66",
+          "E68"
+        ],
+        "human_goal_connection": "The campaign still requires one frozen learned policy achieving at least 196 complete uninterrupted-hold successes out of 200 under the complete official task distribution. I15 is opened because the remaining direct-policy evidence is near threshold but not repeatably qualified.",
+        "next_direction_or_closure": "The next session should begin the bounded I15 inquiry and determine whether a predeclared training-and-selection protocol can produce a repeatable learned candidate at or above 196/200 on two fresh complete-distribution panels without runtime controller assistance. No training, measurement, model-role change, restoration, inquiry change, or campaign conclusion is requested in this session."
+      },
+      "result": {
+        "session_id": "S35",
+        "status": "checkpointed"
+      },
+      "session_id": "S35",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "3582abb72c764f78f4c4aefabe20b87ef55c96a6",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.0,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 3e-05,
+          "n_steps": 2048
+        },
+        "teacher_distillation": {
+          "acceleration_limit": 160.0,
+          "batch_size": 64,
+          "epochs": 80,
+          "epochs_per_update": 1,
+          "learning_rate": 0.001,
+          "position_gain": 36.0,
+          "samples": 8192,
+          "velocity_gain": 12.0
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "No candidate has working, best-known, or retained status. T12:checkpoint-6144 is rejected as an I14 route by M17. T1:checkpoint-100352 remains an unassigned reference candidate and is not promoted by this checkpoint.",
+        "completed_operations": [
+          "E68"
+        ],
+        "cumulative_resource_use": "I14 used one completed controller measurement M16, T12 training with twenty archived candidates, and M17 with four fresh 200-episode evaluations plus paired comparisons. E66 closed I14 and E68 opened I15. No official assessment has run; I15 has not yet consumed training or measurement resources.",
+        "current_goal_gap": "The selected training-only distilled candidate T12:checkpoint-6144 achieved 47/200 and 40/200 on two fresh panels, 149 and 156 successes below the 196/200 threshold. No learned candidate has working, best-known, or retained status. The restored T1 reference achieved 196/200 and 194/200 on those panels but is not a repeatably qualified campaign candidate.",
+        "current_synthesis": "Observed: M16's pre-specified computed-torque controller achieved 200/200 on its complete-distribution panel. Observed: T12 produced twenty candidates with zero recorded training success, and the predeclared earliest-checkpoint tie-break selected T12:checkpoint-6144. Observed: without runtime controller assistance, M17 measured that candidate at 47/200 and 40/200 on two fresh panels; the shared-seed comparison recorded 3 distilled-candidate wins versus 306 restored-reference wins over 400 episodes, with a -75.75 percentage-point success delta. Observed: the distilled route materially degraded the restored baseline and failed I14's 196/200 threshold on both panels. Hypothesis: the tested training process did not preserve the controller's closed-loop behavior. This does not establish that every possible distillation method is impossible, but that remaining uncertainty cannot change I14's bounded route decision.",
+        "decision_frontier": "I14 is closed negatively, and its specified controller-distillation route is rejected as a credible route to the campaign goal. Goal review opened I15 to resolve whether the near-threshold direct-policy behavior can be made repeatable; I15 is not actionable in this goal-review session and will continue in its fresh inquiry session.",
+        "evidence_references": [
+          "M16",
+          "T12",
+          "M17",
+          "E66",
+          "E68"
+        ],
+        "human_goal_connection": "The campaign still requires one frozen learned policy achieving at least 196 complete uninterrupted-hold successes out of 200 under the complete official task distribution. I15 is opened because the remaining direct-policy evidence is near threshold but not repeatably qualified.",
+        "inquiry_id": null,
+        "next_direction_or_closure": "The next session should begin the bounded I15 inquiry and determine whether a predeclared training-and-selection protocol can produce a repeatable learned candidate at or above 196/200 on two fresh complete-distribution panels without runtime controller assistance. No training, measurement, model-role change, restoration, inquiry change, or campaign conclusion is requested in this session.",
+        "session_id": "S35"
+      },
+      "presentation": {
+        "backend_session_id": "88fbd033-4813-46e7-aca1-6764631d26ec",
+        "campaign_id": "eb19a5f3-14b3-4590-ad74-1b31cf5ae3d5",
+        "campaign_usage": "2h09m | 374.83 AIU | prompt 60.4m (85% cached) | output 351.2k",
+        "session_id": "S35",
+        "session_kind": "goal_review",
+        "session_usage": "2m32s | 9.36 AIU | prompt 1.5m (85% cached) | output 7.1k"
+      },
+      "result": {
+        "session_id": "S35",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "0462b580661b1ffa50b82c3bb2480f9b7c53efbf",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E69",
+    "inquiry_id": null,
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "No candidate has working, best-known, or retained status. T12:checkpoint-6144 is rejected as an I14 route by M17. T1:checkpoint-100352 remains an unassigned reference candidate and is not promoted by this checkpoint.",
+        "completed_operations": [
+          "E68"
+        ],
+        "cumulative_resource_use": "I14 used one completed controller measurement M16, T12 training with twenty archived candidates, and M17 with four fresh 200-episode evaluations plus paired comparisons. E66 closed I14 and E68 opened I15. No official assessment has run; I15 has not yet consumed training or measurement resources.",
+        "current_goal_gap": "The selected training-only distilled candidate T12:checkpoint-6144 achieved 47/200 and 40/200 on two fresh panels, 149 and 156 successes below the 196/200 threshold. No learned candidate has working, best-known, or retained status. The restored T1 reference achieved 196/200 and 194/200 on those panels but is not a repeatably qualified campaign candidate.",
+        "current_synthesis": "Observed: M16's pre-specified computed-torque controller achieved 200/200 on its complete-distribution panel. Observed: T12 produced twenty candidates with zero recorded training success, and the predeclared earliest-checkpoint tie-break selected T12:checkpoint-6144. Observed: without runtime controller assistance, M17 measured that candidate at 47/200 and 40/200 on two fresh panels; the shared-seed comparison recorded 3 distilled-candidate wins versus 306 restored-reference wins over 400 episodes, with a -75.75 percentage-point success delta. Observed: the distilled route materially degraded the restored baseline and failed I14's 196/200 threshold on both panels. Hypothesis: the tested training process did not preserve the controller's closed-loop behavior. This does not establish that every possible distillation method is impossible, but that remaining uncertainty cannot change I14's bounded route decision.",
+        "decision_frontier": "I14 is closed negatively, and its specified controller-distillation route is rejected as a credible route to the campaign goal. Goal review opened I15 to resolve whether the near-threshold direct-policy behavior can be made repeatable; I15 is not actionable in this goal-review session and will continue in its fresh inquiry session.",
+        "evidence_references": [
+          "M16",
+          "T12",
+          "M17",
+          "E66",
+          "E68"
+        ],
+        "human_goal_connection": "The campaign still requires one frozen learned policy achieving at least 196 complete uninterrupted-hold successes out of 200 under the complete official task distribution. I15 is opened because the remaining direct-policy evidence is near threshold but not repeatably qualified.",
+        "next_direction_or_closure": "The next session should begin the bounded I15 inquiry and determine whether a predeclared training-and-selection protocol can produce a repeatable learned candidate at or above 196/200 on two fresh complete-distribution panels without runtime controller assistance. No training, measurement, model-role change, restoration, inquiry change, or campaign conclusion is requested in this session."
+      }
+    },
+    "request_fingerprint": "6fa0f6594688a90dbc74628373d6e388621a3de69599d101afd0607d4d1f92d6",
+    "session_id": "S35",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No candidate has working, best-known, or retained status. T12:checkpoint-6144 is rejected as an I14 route by M17. T1:checkpoint-100352 remains an unassigned reference candidate and is not promoted by this checkpoint.",
     "completed_operations": [
-      "E66"
+      "E68"
     ],
-    "cumulative_resource_use": "I14 used one completed controller measurement M16, T12 training with twenty archived candidates, and M17 with four fresh 200-episode evaluations plus paired comparisons. E66 closed the inquiry. No official assessment has run.",
-    "current_goal_gap": "The selected training-only distilled candidate T12:checkpoint-6144 achieved 47/200 and 40/200 on two fresh panels, 149 and 156 successes below the 196/200 threshold. No learned candidate has working, best-known, or retained status. The restored T1 reference achieved 196/200 and 194/200 on the same panels but is not a repeatably qualified campaign candidate.",
+    "cumulative_resource_use": "I14 used one completed controller measurement M16, T12 training with twenty archived candidates, and M17 with four fresh 200-episode evaluations plus paired comparisons. E66 closed I14 and E68 opened I15. No official assessment has run; I15 has not yet consumed training or measurement resources.",
+    "current_goal_gap": "The selected training-only distilled candidate T12:checkpoint-6144 achieved 47/200 and 40/200 on two fresh panels, 149 and 156 successes below the 196/200 threshold. No learned candidate has working, best-known, or retained status. The restored T1 reference achieved 196/200 and 194/200 on those panels but is not a repeatably qualified campaign candidate.",
     "current_synthesis": "Observed: M16's pre-specified computed-torque controller achieved 200/200 on its complete-distribution panel. Observed: T12 produced twenty candidates with zero recorded training success, and the predeclared earliest-checkpoint tie-break selected T12:checkpoint-6144. Observed: without runtime controller assistance, M17 measured that candidate at 47/200 and 40/200 on two fresh panels; the shared-seed comparison recorded 3 distilled-candidate wins versus 306 restored-reference wins over 400 episodes, with a -75.75 percentage-point success delta. Observed: the distilled route materially degraded the restored baseline and failed I14's 196/200 threshold on both panels. Hypothesis: the tested training process did not preserve the controller's closed-loop behavior. This does not establish that every possible distillation method is impossible, but that remaining uncertainty cannot change I14's bounded route decision.",
-    "decision_frontier": "I14 is closed negatively. Its specified controller-distillation route is rejected as a credible route to the campaign goal; no further I14 work is decision-relevant. The campaign has transitioned to goal review with no active inquiry.",
+    "decision_frontier": "I14 is closed negatively, and its specified controller-distillation route is rejected as a credible route to the campaign goal. Goal review opened I15 to resolve whether the near-threshold direct-policy behavior can be made repeatable; I15 is not actionable in this goal-review session and will continue in its fresh inquiry session.",
     "evidence_references": [
       "M16",
       "T12",
       "M17",
-      "E66"
+      "E66",
+      "E68"
     ],
-    "human_goal_connection": "The campaign still requires one frozen learned policy achieving at least 196 complete uninterrupted-hold successes out of 200 under the complete official target distribution. I14's result is preserved because the tested controller-distillation route did not produce such a policy.",
-    "inquiry_id": "I14",
-    "next_direction_or_closure": "At goal review, select the next bounded campaign step based on the preserved negative I14 result and the remaining learned-policy gap. This checkpoint makes no new training, measurement, restoration, model-role change, inquiry change, or campaign-conclusion request.",
-    "scientific_commit": "9ab27d0c078b167a6603894ca9b57e714118d010",
-    "session_id": "S34"
+    "human_goal_connection": "The campaign still requires one frozen learned policy achieving at least 196 complete uninterrupted-hold successes out of 200 under the complete official task distribution. I15 is opened because the remaining direct-policy evidence is near threshold but not repeatably qualified.",
+    "inquiry_id": null,
+    "next_direction_or_closure": "The next session should begin the bounded I15 inquiry and determine whether a predeclared training-and-selection protocol can produce a repeatable learned candidate at or above 196/200 on two fresh complete-distribution panels without runtime controller assistance. No training, measurement, model-role change, restoration, inquiry change, or campaign conclusion is requested in this session.",
+    "scientific_commit": "0462b580661b1ffa50b82c3bb2480f9b7c53efbf",
+    "session_id": "S35"
   },
   "schema_version": 6,
   "scientific_model": {
@@ -19729,21 +19867,6 @@
     "path": "research/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "88fbd033-4813-46e7-aca1-6764631d26ec",
-    "id": "S35",
-    "inquiry_id": null,
-    "kind": "goal_review",
-    "objective": "Decide whether to request official assessment, open one bounded goal-linked inquiry, or conclude that no credible route remains.",
-    "operation_ids": [
-      "E68"
-    ],
-    "scientific_parent_commit": "3582abb72c764f78f4c4aefabe20b87ef55c96a6"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }

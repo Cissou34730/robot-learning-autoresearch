@@ -99,3 +99,4 @@
 | E66 | inquiry | I14 | completed |
 | E67 | checkpoint | I14 | checkpointed |
 | E68 | inquiry | I15 | completed |
+| E69 | checkpoint | - | checkpointed |
