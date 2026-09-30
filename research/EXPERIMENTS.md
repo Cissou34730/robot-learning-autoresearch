@@ -105,3 +105,4 @@
 | M18 | measurement | I15 | completed |
 | E71 | inquiry | I15 | completed |
 | E72 | checkpoint | I15 | checkpointed |
+| E73 | campaign_conclusion | - | no_credible_route |

@@ -10297,16 +10297,16 @@
     }
   },
   "counters": {
-    "event": 72,
+    "event": 73,
     "inquiry": 15,
     "measurement": 18,
-    "session": 36,
+    "session": 37,
     "training": 13
   },
   "human_goal": {
     "source": "research/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "no_credible_route",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -20588,9 +20588,62 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-09-30T03:24:45Z",
+      "error": null,
+      "id": "E73",
+      "inquiry_id": null,
+      "kind": "campaign_conclusion",
+      "request": {
+        "action": "no_credible_route",
+        "reason": "Conclude that no credible route remains within the completed campaign toward the learned-policy goal. The current best near-threshold learned candidate, T13:checkpoint-5120, achieved 197/200 and 195/200 on two fresh complete-distribution panels, so it failed the required 196/200 threshold on one panel and cannot support official assessment; no best-known candidate is assigned. The complete evidence records repeated negative or materially degrading results for the tested observation, coverage, reward, phase-aware, residual-interface, branch-factorized, hybrid, teacher-guided, and controller-distillation routes (E13, E18, E27, E37, E41, E47, E56, E60, E66), while the restored direct-policy reference was itself variable and remained below threshold on several fresh panels (E22, E52). The final stabilization attempt did not improve it: T13 was essentially tied with T1 over 400 shared episodes but did not meet the two-panel readiness condition (E70, T13, M18, E71). A model-based controller solved its panel, but its learned distillation failed badly, so it does not satisfy the learned-policy objective. This is a campaign-level conclusion that no credible tested route remains, not a claim that every possible future learning method is impossible."
+      },
+      "result": {
+        "model": null,
+        "status": "no_credible_route"
+      },
+      "session_id": "S37",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "model": null,
+        "reason": "Conclude that no credible route remains within the completed campaign toward the learned-policy goal. The current best near-threshold learned candidate, T13:checkpoint-5120, achieved 197/200 and 195/200 on two fresh complete-distribution panels, so it failed the required 196/200 threshold on one panel and cannot support official assessment; no best-known candidate is assigned. The complete evidence records repeated negative or materially degrading results for the tested observation, coverage, reward, phase-aware, residual-interface, branch-factorized, hybrid, teacher-guided, and controller-distillation routes (E13, E18, E27, E37, E41, E47, E56, E60, E66), while the restored direct-policy reference was itself variable and remained below threshold on several fresh panels (E22, E52). The final stabilization attempt did not improve it: T13 was essentially tied with T1 over 400 shared episodes but did not meet the two-panel readiness condition (E70, T13, M18, E71). A model-based controller solved its panel, but its learned distillation failed badly, so it does not satisfy the learned-policy objective. This is a campaign-level conclusion that no credible tested route remains, not a claim that every possible future learning method is impossible.",
+        "status": "no_credible_route"
+      },
+      "presentation": {
+        "backend_session_id": "cb511992-739e-42b2-95a3-39d9ae2d7563",
+        "campaign_id": "eb19a5f3-14b3-4590-ad74-1b31cf5ae3d5",
+        "campaign_usage": "2h13m | 390.39 AIU | prompt 63.3m (85% cached) | output 361.7k",
+        "session_id": "S37",
+        "session_kind": "goal_review",
+        "session_usage": "47s | 3.70 AIU | prompt 447.4k (75% cached) | output 2k"
+      },
+      "result": {
+        "model": null,
+        "status": "no_credible_route"
+      }
+    },
+    "failure": null,
+    "id": "E73",
+    "inquiry_id": null,
+    "kind": "campaign_conclusion",
+    "progress": "completed",
+    "request": {
+      "campaign_conclusion": {
+        "action": "no_credible_route",
+        "reason": "Conclude that no credible route remains within the completed campaign toward the learned-policy goal. The current best near-threshold learned candidate, T13:checkpoint-5120, achieved 197/200 and 195/200 on two fresh complete-distribution panels, so it failed the required 196/200 threshold on one panel and cannot support official assessment; no best-known candidate is assigned. The complete evidence records repeated negative or materially degrading results for the tested observation, coverage, reward, phase-aware, residual-interface, branch-factorized, hybrid, teacher-guided, and controller-distillation routes (E13, E18, E27, E37, E41, E47, E56, E60, E66), while the restored direct-policy reference was itself variable and remained below threshold on several fresh panels (E22, E52). The final stabilization attempt did not improve it: T13 was essentially tied with T1 over 400 shared episodes but did not meet the two-panel readiness condition (E70, T13, M18, E71). A model-based controller solved its panel, but its learned distillation failed badly, so it does not satisfy the learned-policy objective. This is a campaign-level conclusion that no credible tested route remains, not a claim that every possible future learning method is impossible."
+      }
+    },
+    "request_fingerprint": "9a6b1e0c27aa988b787292e65c63b9f869ba44520777681967298503b89e777a",
+    "session_id": "S37",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No candidate has working, best-known, or retained status. T13:checkpoint-5120 is the selected I15 candidate but failed the two-panel threshold and is not promoted. T1:checkpoint-100352 remains an unassigned reference candidate.",
     "completed_operations": [
@@ -20622,5 +20675,9 @@
     "status": "ready"
   },
   "scientific_session": null,
-  "terminal_state": null
+  "terminal_state": {
+    "model": null,
+    "reason": "Conclude that no credible route remains within the completed campaign toward the learned-policy goal. The current best near-threshold learned candidate, T13:checkpoint-5120, achieved 197/200 and 195/200 on two fresh complete-distribution panels, so it failed the required 196/200 threshold on one panel and cannot support official assessment; no best-known candidate is assigned. The complete evidence records repeated negative or materially degrading results for the tested observation, coverage, reward, phase-aware, residual-interface, branch-factorized, hybrid, teacher-guided, and controller-distillation routes (E13, E18, E27, E37, E41, E47, E56, E60, E66), while the restored direct-policy reference was itself variable and remained below threshold on several fresh panels (E22, E52). The final stabilization attempt did not improve it: T13 was essentially tied with T1 over 400 shared episodes but did not meet the two-panel readiness condition (E70, T13, M18, E71). A model-based controller solved its panel, but its learned distillation failed badly, so it does not satisfy the learned-policy objective. This is a campaign-level conclusion that no credible tested route remains, not a claim that every possible future learning method is impossible.",
+    "status": "no_credible_route"
+  }
 }
