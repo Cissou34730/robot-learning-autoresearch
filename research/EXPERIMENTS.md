@@ -53,3 +53,4 @@
 | M8 | measurement | I8 | completed |
 | E36 | checkpoint | I8 | checkpointed |
 | E37 | inquiry | I8 | completed |
+| E38 | checkpoint | I8 | checkpointed |
