@@ -1,5 +1,13 @@
 {
-  "active_inquiry": null,
+  "active_inquiry": {
+    "closure_condition": "Close when a disjoint official-distribution development measurement of T1:checkpoint-100352 reports success and target-radius-stratified entry, hold, interruption, velocity, and branch diagnostics, and the evidence either identifies a dominant mechanism that selects the next intervention or shows performance sufficient to justify official assessment.",
+    "goal_connection": "Resolving this distinction determines whether the next goal-directed intervention must expand target-radius coverage or improve settling and uninterrupted-hold control, rather than optimizing the narrow-distribution score without evidence toward at least 98% official episode success.",
+    "id": "I1",
+    "opened_in_session": "S2",
+    "question": "Under the official 0.06-0.20 m target distribution, does the strongest baseline fail primarily because it lacks inner-radius geometric coverage, or because residual motion and late entry interrupt the 100-step hold across radii?",
+    "rationale": "T1 reached 0.97 complete-hold success only on the narrowed 0.14-0.20 m training distribution, so training dynamics do not distinguish inner-radius generalization failure from transient hold instability. The scientific model predicts folded configurations, changing Jacobians, and residual-motion exits can separate these causes. Opening this inquiry preserves the human-goal decision frontier and makes the next measurement diagnostic rather than speculative.",
+    "reframes": []
+  },
   "campaign": {
     "base_commit": "1f61b33c995ff304ee74fca3eb821f59721d7484",
     "id": "45b115e7-7eb9-4f84-a3d4-70226aa04758",
@@ -826,16 +834,16 @@
     }
   },
   "counters": {
-    "event": 1,
-    "inquiry": 0,
+    "event": 2,
+    "inquiry": 1,
     "measurement": 0,
-    "session": 1,
+    "session": 2,
     "training": 1
   },
   "human_goal": {
     "source": "research/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -1075,9 +1083,69 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-09-30T17:25:48Z",
+      "error": null,
+      "id": "E2",
+      "inquiry_id": "I1",
+      "kind": "inquiry",
+      "request": {
+        "action": "open",
+        "closure_condition": "Close when a disjoint official-distribution development measurement of T1:checkpoint-100352 reports success and target-radius-stratified entry, hold, interruption, velocity, and branch diagnostics, and the evidence either identifies a dominant mechanism that selects the next intervention or shows performance sufficient to justify official assessment.",
+        "goal_connection": "Resolving this distinction determines whether the next goal-directed intervention must expand target-radius coverage or improve settling and uninterrupted-hold control, rather than optimizing the narrow-distribution score without evidence toward at least 98% official episode success.",
+        "question": "Under the official 0.06-0.20 m target distribution, does the strongest baseline fail primarily because it lacks inner-radius geometric coverage, or because residual motion and late entry interrupt the 100-step hold across radii?",
+        "rationale": "T1 reached 0.97 complete-hold success only on the narrowed 0.14-0.20 m training distribution, so training dynamics do not distinguish inner-radius generalization failure from transient hold instability. The scientific model predicts folded configurations, changing Jacobians, and residual-motion exits can separate these causes. Opening this inquiry preserves the human-goal decision frontier and makes the next measurement diagnostic rather than speculative."
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I1",
+        "status": "completed"
+      },
+      "session_id": "S2",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "open",
+        "inquiry": {
+          "closure_condition": "Close when a disjoint official-distribution development measurement of T1:checkpoint-100352 reports success and target-radius-stratified entry, hold, interruption, velocity, and branch diagnostics, and the evidence either identifies a dominant mechanism that selects the next intervention or shows performance sufficient to justify official assessment.",
+          "goal_connection": "Resolving this distinction determines whether the next goal-directed intervention must expand target-radius coverage or improve settling and uninterrupted-hold control, rather than optimizing the narrow-distribution score without evidence toward at least 98% official episode success.",
+          "id": "I1",
+          "opened_in_session": "S2",
+          "question": "Under the official 0.06-0.20 m target distribution, does the strongest baseline fail primarily because it lacks inner-radius geometric coverage, or because residual motion and late entry interrupt the 100-step hold across radii?",
+          "rationale": "T1 reached 0.97 complete-hold success only on the narrowed 0.14-0.20 m training distribution, so training dynamics do not distinguish inner-radius generalization failure from transient hold instability. The scientific model predicts folded configurations, changing Jacobians, and residual-motion exits can separate these causes. Opening this inquiry preserves the human-goal decision frontier and makes the next measurement diagnostic rather than speculative.",
+          "reframes": []
+        }
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I1",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E2",
+    "inquiry_id": null,
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "open",
+        "closure_condition": "Close when a disjoint official-distribution development measurement of T1:checkpoint-100352 reports success and target-radius-stratified entry, hold, interruption, velocity, and branch diagnostics, and the evidence either identifies a dominant mechanism that selects the next intervention or shows performance sufficient to justify official assessment.",
+        "goal_connection": "Resolving this distinction determines whether the next goal-directed intervention must expand target-radius coverage or improve settling and uninterrupted-hold control, rather than optimizing the narrow-distribution score without evidence toward at least 98% official episode success.",
+        "question": "Under the official 0.06-0.20 m target distribution, does the strongest baseline fail primarily because it lacks inner-radius geometric coverage, or because residual motion and late entry interrupt the 100-step hold across radii?",
+        "rationale": "T1 reached 0.97 complete-hold success only on the narrowed 0.14-0.20 m training distribution, so training dynamics do not distinguish inner-radius generalization failure from transient hold instability. The scientific model predicts folded configurations, changing Jacobians, and residual-motion exits can separate these causes. Opening this inquiry preserves the human-goal decision frontier and makes the next measurement diagnostic rather than speculative."
+      }
+    },
+    "request_fingerprint": "3f4df772df9dfafe220ed45f64b24478f917c2d39eed51131fdd19fdf589ebf4",
+    "session_id": "S2",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No working, best-known, or retained model role is assigned. T1:checkpoint-100352 is the leading measurement candidate by training success, but that ranking is provisional and is not evidence of official-task performance.",
     "completed_operations": [
@@ -1102,6 +1170,21 @@
     "path": "research/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "33ad0c36-0205-4deb-96eb-5b81117e7ab3",
+    "id": "S2",
+    "inquiry_id": null,
+    "kind": "goal_review",
+    "objective": "Decide whether to request official assessment, open one bounded goal-linked inquiry, or conclude that no credible route remains.",
+    "operation_ids": [
+      "E2"
+    ],
+    "scientific_parent_commit": "2df1f80b8dd468bfc46db535b6fdba97b23732d7"
+  },
   "terminal_state": null
 }
