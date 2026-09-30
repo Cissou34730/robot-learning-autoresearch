@@ -84,44 +84,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "open",
-        "inquiry": {
-          "closure_condition": "Close or reframe after a reproducible baseline candidate has a completed fixed-seed development evaluation reporting, for every episode, target radius and angle, first in-tolerance step, maximum uninterrupted held steps, hold interruptions, and minimum and final distance, with results compared between the baseline training distribution and the official development distribution. Late or geometry-correlated first reach failures support a coverage/trajectory direction; early reach followed by short holds and repeated interruptions support a stabilization-aware direction; mixed results require identifying the dominant subgroup.",
-          "goal_connection": "The human goal requires at least 196 successes in the 200-episode official panel. Identifying whether the first policy is limited by reach/coverage or by stabilization determines the next intervention without mistaking geometric reach for complete episode success.",
-          "id": "I1",
-          "opened_in_session": "S2",
-          "question": "In the first learned policy, are episode failures dominated by target acquisition and full-distribution reachability/branch coverage, or by entering the tolerance and then failing the uninterrupted 2-second stabilization hold?",
-          "rationale": "No trained candidate or completed development evidence exists, so the current goal gap is unmeasured. The fixed scientific model makes both bounded-actuation reachability and low-residual-motion stabilization plausible limiting mechanisms, while the narrower training radial distribution creates an independent coverage risk. One bounded inquiry beginning with the maintainer's required 120000-step baseline and a non-overlapping diagnostic evaluation will produce the evidence needed for the next goal-linked decision.",
-          "reframes": []
-        }
-      },
-      "result": {
-        "action": "open",
-        "inquiry_id": "I1",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E2",
-    "inquiry_id": null,
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "open",
-        "closure_condition": "Close or reframe after a reproducible baseline candidate has a completed fixed-seed development evaluation reporting, for every episode, target radius and angle, first in-tolerance step, maximum uninterrupted held steps, hold interruptions, and minimum and final distance, with results compared between the baseline training distribution and the official development distribution. Late or geometry-correlated first reach failures support a coverage/trajectory direction; early reach followed by short holds and repeated interruptions support a stabilization-aware direction; mixed results require identifying the dominant subgroup.",
-        "goal_connection": "The human goal requires at least 196 successes in the 200-episode official panel. Identifying whether the first policy is limited by reach/coverage or by stabilization determines the next intervention without mistaking geometric reach for complete episode success.",
-        "question": "In the first learned policy, are episode failures dominated by target acquisition and full-distribution reachability/branch coverage, or by entering the tolerance and then failing the uninterrupted 2-second stabilization hold?",
-        "rationale": "No trained candidate or completed development evidence exists, so the current goal gap is unmeasured. The fixed scientific model makes both bounded-actuation reachability and low-residual-motion stabilization plausible limiting mechanisms, while the narrower training radial distribution creates an independent coverage risk. One bounded inquiry beginning with the maintainer's required 120000-step baseline and a non-overlapping diagnostic evaluation will produce the evidence needed for the next goal-linked decision."
-      }
-    },
-    "request_fingerprint": "5240b71c30f6713bf2977d9ca6bc8d5c4fbd1259191ac0efe55e050b8bb8c867",
-    "session_id": "S2",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "No candidates exist; working, best-known, and retained roles are empty.",
     "completed_operations": [],
