@@ -1042,38 +1042,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I1",
-        "outcome": "I1 resolved toward acquisition and trajectory selection as the dominant first baseline loss mechanism, with a secondary residual-motion regulation failure mode.",
-        "reason": "T1 and M1 satisfy the closure condition. On the fixed 160-episode development panel, T1 achieved 151/160 successes (94.375%); among 9 failures, 6 never entered tolerance and 3 entered but were interrupted. Entry was common overall (96.25%), but failures concentrated in negative-angle strata, especially -135 to -90 degrees (80.8% success, 84.6% entry) and -180 to -135 degrees (84.0% success, 92.0% entry). Failed interruption events were high-speed exits with saturated actions, while median entry speed was 37.8 cm/s and the maximum was 286.3 cm/s. The evidence supports prioritizing acquisition/branch/trajectory robustness in the next intervention while retaining velocity-aware regulation as a secondary requirement."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I1",
-        "outcome": "I1 resolved toward acquisition and trajectory selection as the dominant first baseline loss mechanism, with a secondary residual-motion regulation failure mode.",
-        "reason": "T1 and M1 satisfy the closure condition. On the fixed 160-episode development panel, T1 achieved 151/160 successes (94.375%); among 9 failures, 6 never entered tolerance and 3 entered but were interrupted. Entry was common overall (96.25%), but failures concentrated in negative-angle strata, especially -135 to -90 degrees (80.8% success, 84.6% entry) and -180 to -135 degrees (84.0% success, 92.0% entry). Failed interruption events were high-speed exits with saturated actions, while median entry speed was 37.8 cm/s and the maximum was 286.3 cm/s. The evidence supports prioritizing acquisition/branch/trajectory robustness in the next intervention while retaining velocity-aware regulation as a secondary requirement.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E4",
-    "inquiry_id": "I1",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "I1 resolved toward acquisition and trajectory selection as the dominant first baseline loss mechanism, with a secondary residual-motion regulation failure mode.",
-        "reason": "T1 and M1 satisfy the closure condition. On the fixed 160-episode development panel, T1 achieved 151/160 successes (94.375%); among 9 failures, 6 never entered tolerance and 3 entered but were interrupted. Entry was common overall (96.25%), but failures concentrated in negative-angle strata, especially -135 to -90 degrees (80.8% success, 84.6% entry) and -180 to -135 degrees (84.0% success, 92.0% entry). Failed interruption events were high-speed exits with saturated actions, while median entry speed was 37.8 cm/s and the maximum was 286.3 cm/s. The evidence supports prioritizing acquisition/branch/trajectory robustness in the next intervention while retaining velocity-aware regulation as a secondary requirement."
-      }
-    },
-    "request_fingerprint": "6f98a3a1e07ebb7919c676b001b8d2fb3ad69bca3389a29fffe2a62b23a365fa",
-    "session_id": "S3",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "No learned candidates exist and no working, best-known, or retained role is assigned.",
     "completed_operations": [
