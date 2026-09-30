@@ -1,5 +1,13 @@
 {
-  "active_inquiry": null,
+  "active_inquiry": {
+    "closure_condition": "Close as a credible route only if a single bounded phase-handoff intervention, evaluated against T1 on the fixed 200-episode development panel with complete-hold and paired subgroup diagnostics, reaches the development objective or materially reduces post-entry failures without reintroducing the diagnosed angular sector failures. Otherwise close or reframe the inquiry using the observed tradeoff.",
+    "goal_connection": "The human goal requires at least 196 complete uninterrupted holds in a 200-episode official panel. T1 is at 189/200, with both angular acquisition failures and post-entry hold failures; the bounded inquiry targets the latter while preserving the strongest known acquisition recipe.",
+    "id": "I5",
+    "opened_in_session": "S10",
+    "question": "Can an acquisition-preserving, state-feedback phase handoff that gates a local low-velocity regulator near the target reduce post-entry hold failures without sacrificing the full-angle acquisition behavior of T1?",
+    "rationale": "T1 demonstrates near-goal full-angle acquisition but still has six angular acquisition failures and five post-entry hold failures. T2 removed the angular-sector failures but worsened post-entry failures to 19, so its coupled acquisition and branch intervention is not a route to the goal. T3's isolated endpoint-speed shaping and T4's added hold-progress observation both collapsed learning, rejecting those specific recipes rather than the broader possibility of stabilization-aware control. The physical model predicts that residual kinetic energy and sampled-data regulation can be addressed by local state feedback, while an explicit handoff can preserve the already effective global acquisition behavior. This distinguishes a missing local regulator from a fundamentally coupled reachability limitation without claiming either explanation in advance.",
+    "reframes": []
+  },
   "campaign": {
     "base_commit": "c02b0d59e8ef397c87d92f70e986ad545e585b95",
     "id": "e8788df6-9f4a-4dac-92b7-48e40477e827",
@@ -3285,16 +3293,16 @@
     }
   },
   "counters": {
-    "event": 17,
-    "inquiry": 4,
+    "event": 18,
+    "inquiry": 5,
     "measurement": 4,
-    "session": 9,
+    "session": 10,
     "training": 4
   },
   "human_goal": {
     "source": "research/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -5619,9 +5627,69 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-09-30T23:07:20Z",
+      "error": null,
+      "id": "E18",
+      "inquiry_id": "I5",
+      "kind": "inquiry",
+      "request": {
+        "action": "open",
+        "closure_condition": "Close as a credible route only if a single bounded phase-handoff intervention, evaluated against T1 on the fixed 200-episode development panel with complete-hold and paired subgroup diagnostics, reaches the development objective or materially reduces post-entry failures without reintroducing the diagnosed angular sector failures. Otherwise close or reframe the inquiry using the observed tradeoff.",
+        "goal_connection": "The human goal requires at least 196 complete uninterrupted holds in a 200-episode official panel. T1 is at 189/200, with both angular acquisition failures and post-entry hold failures; the bounded inquiry targets the latter while preserving the strongest known acquisition recipe.",
+        "question": "Can an acquisition-preserving, state-feedback phase handoff that gates a local low-velocity regulator near the target reduce post-entry hold failures without sacrificing the full-angle acquisition behavior of T1?",
+        "rationale": "T1 demonstrates near-goal full-angle acquisition but still has six angular acquisition failures and five post-entry hold failures. T2 removed the angular-sector failures but worsened post-entry failures to 19, so its coupled acquisition and branch intervention is not a route to the goal. T3's isolated endpoint-speed shaping and T4's added hold-progress observation both collapsed learning, rejecting those specific recipes rather than the broader possibility of stabilization-aware control. The physical model predicts that residual kinetic energy and sampled-data regulation can be addressed by local state feedback, while an explicit handoff can preserve the already effective global acquisition behavior. This distinguishes a missing local regulator from a fundamentally coupled reachability limitation without claiming either explanation in advance."
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I5",
+        "status": "completed"
+      },
+      "session_id": "S10",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "open",
+        "inquiry": {
+          "closure_condition": "Close as a credible route only if a single bounded phase-handoff intervention, evaluated against T1 on the fixed 200-episode development panel with complete-hold and paired subgroup diagnostics, reaches the development objective or materially reduces post-entry failures without reintroducing the diagnosed angular sector failures. Otherwise close or reframe the inquiry using the observed tradeoff.",
+          "goal_connection": "The human goal requires at least 196 complete uninterrupted holds in a 200-episode official panel. T1 is at 189/200, with both angular acquisition failures and post-entry hold failures; the bounded inquiry targets the latter while preserving the strongest known acquisition recipe.",
+          "id": "I5",
+          "opened_in_session": "S10",
+          "question": "Can an acquisition-preserving, state-feedback phase handoff that gates a local low-velocity regulator near the target reduce post-entry hold failures without sacrificing the full-angle acquisition behavior of T1?",
+          "rationale": "T1 demonstrates near-goal full-angle acquisition but still has six angular acquisition failures and five post-entry hold failures. T2 removed the angular-sector failures but worsened post-entry failures to 19, so its coupled acquisition and branch intervention is not a route to the goal. T3's isolated endpoint-speed shaping and T4's added hold-progress observation both collapsed learning, rejecting those specific recipes rather than the broader possibility of stabilization-aware control. The physical model predicts that residual kinetic energy and sampled-data regulation can be addressed by local state feedback, while an explicit handoff can preserve the already effective global acquisition behavior. This distinguishes a missing local regulator from a fundamentally coupled reachability limitation without claiming either explanation in advance.",
+          "reframes": []
+        }
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I5",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E18",
+    "inquiry_id": null,
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "open",
+        "closure_condition": "Close as a credible route only if a single bounded phase-handoff intervention, evaluated against T1 on the fixed 200-episode development panel with complete-hold and paired subgroup diagnostics, reaches the development objective or materially reduces post-entry failures without reintroducing the diagnosed angular sector failures. Otherwise close or reframe the inquiry using the observed tradeoff.",
+        "goal_connection": "The human goal requires at least 196 complete uninterrupted holds in a 200-episode official panel. T1 is at 189/200, with both angular acquisition failures and post-entry hold failures; the bounded inquiry targets the latter while preserving the strongest known acquisition recipe.",
+        "question": "Can an acquisition-preserving, state-feedback phase handoff that gates a local low-velocity regulator near the target reduce post-entry hold failures without sacrificing the full-angle acquisition behavior of T1?",
+        "rationale": "T1 demonstrates near-goal full-angle acquisition but still has six angular acquisition failures and five post-entry hold failures. T2 removed the angular-sector failures but worsened post-entry failures to 19, so its coupled acquisition and branch intervention is not a route to the goal. T3's isolated endpoint-speed shaping and T4's added hold-progress observation both collapsed learning, rejecting those specific recipes rather than the broader possibility of stabilization-aware control. The physical model predicts that residual kinetic energy and sampled-data regulation can be addressed by local state feedback, while an explicit handoff can preserve the already effective global acquisition behavior. This distinguishes a missing local regulator from a fundamentally coupled reachability limitation without claiming either explanation in advance."
+      }
+    },
+    "request_fingerprint": "97d6468556d547cac5173186ce45f93c8fe3e04b39a41856b4fdcce83aaf4e26",
+    "session_id": "S10",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No working, best-known, or retained role is assigned. T1:checkpoint-100352 remains the strongest evidence-backed development reference at 189/200. T2:checkpoint-120832 is insufficient at 176/200, while T3:checkpoint-120832 and T4:checkpoint-120832 have no candidate role after scoring 0/200.",
     "completed_operations": [
@@ -5662,6 +5730,21 @@
     "path": "research/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "d5f8d726-de00-4402-bf28-a2a1c4c0d917",
+    "id": "S10",
+    "inquiry_id": null,
+    "kind": "goal_review",
+    "objective": "Decide whether to request official assessment, open one bounded goal-linked inquiry, or conclude that no credible route remains.",
+    "operation_ids": [
+      "E18"
+    ],
+    "scientific_parent_commit": "5d992b1c227153bec912836c0a6bae0904926c19"
+  },
   "terminal_state": null
 }
