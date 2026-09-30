@@ -17,6 +17,14 @@
     "learning_rate": 0.0003,
     "n_steps": 1024
   },
+  "teacher_initialization": {
+    "samples": 8192,
+    "epochs": 40,
+    "batch_size": 64,
+    "learning_rate": 0.001,
+    "position_gain": 2.5,
+    "velocity_damping": 0.25
+  },
   "training": {
     "checkpoint_every_steps": 5000,
     "n_envs": 1

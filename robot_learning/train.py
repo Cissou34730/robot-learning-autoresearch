@@ -4,6 +4,7 @@ import json
 import shutil
 from pathlib import Path
 
+import numpy as np
 import torch
 from stable_baselines3 import PPO
 from stable_baselines3.common.callbacks import BaseCallback
@@ -11,6 +12,7 @@ from stable_baselines3.common.env_util import make_vec_env
 from stable_baselines3.common.vec_env import DummyVecEnv, SubprocVecEnv, VecNormalize
 
 from robot_learning.policy_runtime import frozen_scientific_modules
+from robot_learning.scenario.teacher import DampedIKTeacher
 from robot_learning.scenario.training_environment import make_training_env
 from robot_learning.scenario.viewer import make_training_viewer_callback
 from robot_learning.training.candidate_checkpoint_callback import (
@@ -80,6 +82,70 @@ def effective_training_config(config: dict) -> dict:
     }
 
 
+def initialize_with_teacher(model, venv, teacher_config: dict) -> None:
+    """Fit the actor mean to teacher actions before ordinary PPO updates."""
+    if int(venv.num_envs) != 1:
+        raise ValueError("teacher initialization currently requires one environment")
+
+    sample_count = int(teacher_config["samples"])
+    epochs = int(teacher_config["epochs"])
+    batch_size = int(teacher_config["batch_size"])
+    learning_rate = float(teacher_config["learning_rate"])
+    if sample_count < 1 or epochs < 1 or batch_size < 1 or learning_rate <= 0.0:
+        raise ValueError("teacher initialization parameters must be positive")
+
+    teacher = DampedIKTeacher(
+        position_gain=float(teacher_config["position_gain"]),
+        velocity_damping=float(teacher_config["velocity_damping"]),
+    )
+    observations: list[np.ndarray] = []
+    actions: list[np.ndarray] = []
+    venv.reset()
+    raw_observation = venv.get_original_obs().copy()
+    env = venv.venv.envs[0].unwrapped
+    teacher.reset(env)
+    while len(observations) < sample_count:
+        observations.append(raw_observation[0].copy())
+        action = teacher.action(env)
+        actions.append(action.copy())
+        _, _, done, _ = venv.step(action.reshape(1, -1))
+        raw_observation = venv.get_original_obs().copy()
+        if bool(done[0]):
+            teacher.reset(env)
+
+    raw_observations = np.asarray(observations, dtype=np.float32)
+    normalized_observations = venv.normalize_obs(raw_observations)
+    observation_tensor = torch.as_tensor(
+        normalized_observations, dtype=torch.float32, device=model.device
+    )
+    action_tensor = torch.as_tensor(
+        np.asarray(actions, dtype=np.float32),
+        dtype=torch.float32,
+        device=model.device,
+    )
+
+    optimizer = torch.optim.Adam(model.policy.parameters(), lr=learning_rate)
+    model.policy.set_training_mode(True)
+    for _ in range(epochs):
+        permutation = torch.randperm(sample_count, device=model.device)
+        for start in range(0, sample_count, batch_size):
+            indices = permutation[start : start + batch_size]
+            distribution = model.policy.get_distribution(observation_tensor[indices])
+            mean = distribution.distribution.mean
+            loss = torch.nn.functional.mse_loss(mean, action_tensor[indices])
+            optimizer.zero_grad()
+            loss.backward()
+            optimizer.step()
+
+    optimizer_defaults = dict(model.policy.optimizer.defaults)
+    optimizer_defaults.pop("lr", None)
+    model.policy.optimizer = torch.optim.Adam(
+        model.policy.parameters(),
+        lr=float(model.learning_rate),
+        **optimizer_defaults,
+    )
+
+
 def main() -> None:
     args = parse_args()
     config = load_experiment_config()
@@ -134,6 +200,10 @@ def main() -> None:
             policy_kwargs=policy_kwargs,
             **params,
         )
+
+    teacher_config = config.get("teacher_initialization")
+    if teacher_config is not None:
+        initialize_with_teacher(model, venv, teacher_config)
 
     training = config["training"]
     checkpoint_callback = CandidateCheckpointCallback(
