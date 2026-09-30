@@ -1,13 +1,5 @@
 {
-  "active_inquiry": {
-    "closure_condition": "Close or redirect this inquiry after one baseline training operation and one diagnostic evaluation have quantified first-entry timing, entry velocity or convergence quality, longest uninterrupted hold, interruption causes, and target-geometry strata sufficiently to select the next goal-linked action.",
-    "goal_connection": "The human goal requires at least 196 of 200 official episodes to complete one uninterrupted 100-step hold. Identifying whether acquisition or regulation is the dominant loss mechanism determines which next intervention can credibly improve official success.",
-    "id": "I1",
-    "opened_in_session": "S2",
-    "question": "For a first learned policy under the official target distribution, are episode failures dominated by escaping the initial singular configuration and selecting a viable trajectory, or by residual velocity and interruptions during the complete 100-step hold?",
-    "rationale": "No learned candidate or development measurement exists, so official assessment is unjustified and no-credible-route is unsupported. The fixed physical model predicts competing acquisition and regulation failures; a baseline plus mechanism-specific diagnostics is the smallest evidence-producing route that can discriminate them without optimizing a proxy disconnected from uninterrupted hold success.",
-    "reframes": []
-  },
+  "active_inquiry": null,
   "campaign": {
     "base_commit": "eabb35c663a2df5b356b05849912e07ba78c15c4",
     "id": "35365763-6aa0-4675-8e86-f8f277558aa4",
@@ -700,7 +692,7 @@
     }
   },
   "counters": {
-    "event": 3,
+    "event": 4,
     "inquiry": 1,
     "measurement": 1,
     "session": 3,
@@ -1025,9 +1017,63 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-09-30T10:28:01Z",
+      "error": null,
+      "id": "E4",
+      "inquiry_id": "I1",
+      "kind": "inquiry",
+      "request": {
+        "action": "close",
+        "outcome": "I1 resolved toward acquisition and trajectory selection as the dominant first baseline loss mechanism, with a secondary residual-motion regulation failure mode.",
+        "reason": "T1 and M1 satisfy the closure condition. On the fixed 160-episode development panel, T1 achieved 151/160 successes (94.375%); among 9 failures, 6 never entered tolerance and 3 entered but were interrupted. Entry was common overall (96.25%), but failures concentrated in negative-angle strata, especially -135 to -90 degrees (80.8% success, 84.6% entry) and -180 to -135 degrees (84.0% success, 92.0% entry). Failed interruption events were high-speed exits with saturated actions, while median entry speed was 37.8 cm/s and the maximum was 286.3 cm/s. The evidence supports prioritizing acquisition/branch/trajectory robustness in the next intervention while retaining velocity-aware regulation as a secondary requirement."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I1",
+        "outcome": "I1 resolved toward acquisition and trajectory selection as the dominant first baseline loss mechanism, with a secondary residual-motion regulation failure mode.",
+        "reason": "T1 and M1 satisfy the closure condition. On the fixed 160-episode development panel, T1 achieved 151/160 successes (94.375%); among 9 failures, 6 never entered tolerance and 3 entered but were interrupted. Entry was common overall (96.25%), but failures concentrated in negative-angle strata, especially -135 to -90 degrees (80.8% success, 84.6% entry) and -180 to -135 degrees (84.0% success, 92.0% entry). Failed interruption events were high-speed exits with saturated actions, while median entry speed was 37.8 cm/s and the maximum was 286.3 cm/s. The evidence supports prioritizing acquisition/branch/trajectory robustness in the next intervention while retaining velocity-aware regulation as a secondary requirement.",
+        "status": "completed"
+      },
+      "session_id": "S3",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "close",
+        "inquiry_id": "I1",
+        "outcome": "I1 resolved toward acquisition and trajectory selection as the dominant first baseline loss mechanism, with a secondary residual-motion regulation failure mode.",
+        "reason": "T1 and M1 satisfy the closure condition. On the fixed 160-episode development panel, T1 achieved 151/160 successes (94.375%); among 9 failures, 6 never entered tolerance and 3 entered but were interrupted. Entry was common overall (96.25%), but failures concentrated in negative-angle strata, especially -135 to -90 degrees (80.8% success, 84.6% entry) and -180 to -135 degrees (84.0% success, 92.0% entry). Failed interruption events were high-speed exits with saturated actions, while median entry speed was 37.8 cm/s and the maximum was 286.3 cm/s. The evidence supports prioritizing acquisition/branch/trajectory robustness in the next intervention while retaining velocity-aware regulation as a secondary requirement."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I1",
+        "outcome": "I1 resolved toward acquisition and trajectory selection as the dominant first baseline loss mechanism, with a secondary residual-motion regulation failure mode.",
+        "reason": "T1 and M1 satisfy the closure condition. On the fixed 160-episode development panel, T1 achieved 151/160 successes (94.375%); among 9 failures, 6 never entered tolerance and 3 entered but were interrupted. Entry was common overall (96.25%), but failures concentrated in negative-angle strata, especially -135 to -90 degrees (80.8% success, 84.6% entry) and -180 to -135 degrees (84.0% success, 92.0% entry). Failed interruption events were high-speed exits with saturated actions, while median entry speed was 37.8 cm/s and the maximum was 286.3 cm/s. The evidence supports prioritizing acquisition/branch/trajectory robustness in the next intervention while retaining velocity-aware regulation as a secondary requirement.",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E4",
+    "inquiry_id": "I1",
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "close",
+        "outcome": "I1 resolved toward acquisition and trajectory selection as the dominant first baseline loss mechanism, with a secondary residual-motion regulation failure mode.",
+        "reason": "T1 and M1 satisfy the closure condition. On the fixed 160-episode development panel, T1 achieved 151/160 successes (94.375%); among 9 failures, 6 never entered tolerance and 3 entered but were interrupted. Entry was common overall (96.25%), but failures concentrated in negative-angle strata, especially -135 to -90 degrees (80.8% success, 84.6% entry) and -180 to -135 degrees (84.0% success, 92.0% entry). Failed interruption events were high-speed exits with saturated actions, while median entry speed was 37.8 cm/s and the maximum was 286.3 cm/s. The evidence supports prioritizing acquisition/branch/trajectory robustness in the next intervention while retaining velocity-aware regulation as a secondary requirement."
+      }
+    },
+    "request_fingerprint": "6f98a3a1e07ebb7919c676b001b8d2fb3ad69bca3389a29fffe2a62b23a365fa",
+    "session_id": "S3",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No learned candidates exist and no working, best-known, or retained role is assigned.",
     "completed_operations": [
@@ -1065,7 +1111,8 @@
     "objective": "Advance I1 toward its closure condition: Close or redirect this inquiry after one baseline training operation and one diagnostic evaluation have quantified first-entry timing, entry velocity or convergence quality, longest uninterrupted hold, interruption causes, and target-geometry strata sufficiently to select the next goal-linked action.",
     "operation_ids": [
       "T1",
-      "M1"
+      "M1",
+      "E4"
     ],
     "scientific_parent_commit": "0562c3712aadf4630d36ddadfc57d5e6408b39c0"
   },
