@@ -535,6 +535,13 @@ separate from harness changes so their outcomes are not conflated.
   training-peak alternative unmeasured, closed I1, and opened a training-shaped
   I2. Neither keeping an inquiry open nor closing it after one evaluation is,
   by itself, evidence of good scientific progression.
+- **Concrete selection trace:** the post-T1 prompt directly supplied both
+  the 97% training-success checkpoint and the 95% terminal checkpoint. The PI
+  nevertheless called the terminal artifact the "canonical fresh baseline"
+  and said training success/reward were not behavioral evidence. Candidate
+  nomination from training-distribution observations must be distinguished
+  from independent development validation; the metadata was available, not
+  hidden by the interface.
 - **Current boundary:** the pre-adjustment scientific guidance is restored.
   The best-known role-permission repair removes a mechanical assessment dead
   end, not the checkpoint-selection or scientific-decision problem; no
