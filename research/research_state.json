@@ -84,44 +84,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "open",
-        "inquiry": {
-          "closure_condition": "Close this inquiry once a fresh 120000-step policy has been evaluated on a deterministic non-protected development panel with episode success, first-entry step, minimum and terminal distance, maximum held streak, hold interruptions, target radius, target bearing, and inverse-kinematic branch, and the evidence supports a route-specific decision between acquisition/coverage work and convergence/stabilization work.",
-          "goal_connection": "The human goal requires at least 196 of 200 official episodes to complete an uninterrupted 100-step hold. Identifying whether acquisition, singularity escape, branch and boundary geometry, or terminal stabilization is the dominant failure mechanism determines which intervention can credibly move a learned policy toward 98% official success.",
-          "id": "I1",
-          "opened_in_session": "S2",
-          "question": "For a first policy trained under the fixed 120000-step allocation, are episode failures dominated by failure to enter the 1 cm target region or by hold interruptions after entry, and how do those mechanisms vary with target radius, bearing, and the selected inverse-kinematic branch?",
-          "rationale": "There is no trained candidate or behavioral evidence, so requesting official assessment or optimizing a reward proxy would be scientifically unjustified. The physical model predicts both initial escape from the fully extended singularity and residual-motion hold failure, with branch and geometry potentially conditioning either mechanism. A baseline policy plus episode-level diagnostic panel is the smallest goal-linked action that can discriminate these explanations and set the next intervention.",
-          "reframes": []
-        }
-      },
-      "result": {
-        "action": "open",
-        "inquiry_id": "I1",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E2",
-    "inquiry_id": null,
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "open",
-        "closure_condition": "Close this inquiry once a fresh 120000-step policy has been evaluated on a deterministic non-protected development panel with episode success, first-entry step, minimum and terminal distance, maximum held streak, hold interruptions, target radius, target bearing, and inverse-kinematic branch, and the evidence supports a route-specific decision between acquisition/coverage work and convergence/stabilization work.",
-        "goal_connection": "The human goal requires at least 196 of 200 official episodes to complete an uninterrupted 100-step hold. Identifying whether acquisition, singularity escape, branch and boundary geometry, or terminal stabilization is the dominant failure mechanism determines which intervention can credibly move a learned policy toward 98% official success.",
-        "question": "For a first policy trained under the fixed 120000-step allocation, are episode failures dominated by failure to enter the 1 cm target region or by hold interruptions after entry, and how do those mechanisms vary with target radius, bearing, and the selected inverse-kinematic branch?",
-        "rationale": "There is no trained candidate or behavioral evidence, so requesting official assessment or optimizing a reward proxy would be scientifically unjustified. The physical model predicts both initial escape from the fully extended singularity and residual-motion hold failure, with branch and geometry potentially conditioning either mechanism. A baseline policy plus episode-level diagnostic panel is the smallest goal-linked action that can discriminate these explanations and set the next intervention."
-      }
-    },
-    "request_fingerprint": "0b864e6dbc3a036baf58324f1f3fb043d750752782cbc2fc48d168acdb950e3c",
-    "session_id": "S2",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "No candidates, working model, best-known model, or retained model exists.",
     "completed_operations": [],
