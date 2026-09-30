@@ -5575,38 +5575,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I4",
-        "outcome": "I4 is insufficient. Adding normalized uninterrupted-hold progress to the T1 observation did not improve complete-hold performance and instead collapsed the candidate.",
-        "reason": "M4 provides decisive paired, same-panel development evidence: T4:checkpoint-120832 achieved 0/200 complete successes while T1:checkpoint-100352 achieved 189/200 (94.5%), with 0 candidate wins and 189 reference wins. The T4 diagnostics show no tolerance entry or uninterrupted hold in any episode, so there is no evidence of reduced post-entry failures or useful phase-dependent stabilization; the candidate also fails the acquisition requirement before hold regulation can be assessed. This closes the specific normalized-progress observation intervention as insufficient, but does not establish that the plant is uncontrollable or that all stabilization-aware mechanisms are ineffective. T1 remains the strongest supported development reference, and the official 98% objective remains unmeasured."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I4",
-        "outcome": "I4 is insufficient. Adding normalized uninterrupted-hold progress to the T1 observation did not improve complete-hold performance and instead collapsed the candidate.",
-        "reason": "M4 provides decisive paired, same-panel development evidence: T4:checkpoint-120832 achieved 0/200 complete successes while T1:checkpoint-100352 achieved 189/200 (94.5%), with 0 candidate wins and 189 reference wins. The T4 diagnostics show no tolerance entry or uninterrupted hold in any episode, so there is no evidence of reduced post-entry failures or useful phase-dependent stabilization; the candidate also fails the acquisition requirement before hold regulation can be assessed. This closes the specific normalized-progress observation intervention as insufficient, but does not establish that the plant is uncontrollable or that all stabilization-aware mechanisms are ineffective. T1 remains the strongest supported development reference, and the official 98% objective remains unmeasured.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E16",
-    "inquiry_id": "I4",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "I4 is insufficient. Adding normalized uninterrupted-hold progress to the T1 observation did not improve complete-hold performance and instead collapsed the candidate.",
-        "reason": "M4 provides decisive paired, same-panel development evidence: T4:checkpoint-120832 achieved 0/200 complete successes while T1:checkpoint-100352 achieved 189/200 (94.5%), with 0 candidate wins and 189 reference wins. The T4 diagnostics show no tolerance entry or uninterrupted hold in any episode, so there is no evidence of reduced post-entry failures or useful phase-dependent stabilization; the candidate also fails the acquisition requirement before hold regulation can be assessed. This closes the specific normalized-progress observation intervention as insufficient, but does not establish that the plant is uncontrollable or that all stabilization-aware mechanisms are ineffective. T1 remains the strongest supported development reference, and the official 98% objective remains unmeasured."
-      }
-    },
-    "request_fingerprint": "f29aec1fc721cce974648860d1f826c00555a65b3e62549ee8041fd1b8741d41",
-    "session_id": "S9",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "No working, best-known, or retained role is assigned. T1:checkpoint-100352 remains the strongest evidence-backed development reference at 189/200. T2:checkpoint-120832 is insufficient at 176/200, and T3:checkpoint-120832 has no role after scoring 0/200.",
     "completed_operations": [
