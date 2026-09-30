@@ -488,3 +488,36 @@ separate from harness changes so their outcomes are not conflated.
 - **Disposition:** the instruction-file portion of `3d6d29e` is withdrawn.
   The maintainer-owned training allocation, robotics/RL inquiry guidance, and
   `AGENTS.md` are unchanged. No campaign operation is executed by this change.
+
+## Restore pre-alignment scientific guidance after campaign failure
+
+- **Implementation commit:** the commit containing this entry,
+  `Restore pre-alignment scientific guidance`.
+- **Failed experiment:** the inquiry-alignment addition in `3d6d29e` did not
+  produce the expected preparation, evidence selection, and scientific
+  progression in campaign `102eeeb6-1f71-4f83-8b93-cb122f526952`.
+- **Startup evidence:** unlike preparation-heavy campaign `15a3cf8a`, this
+  startup performed no measurement. The PI stated that startup permitted only
+  a durable handoff, despite the instrument contract permitting measurement.
+  Its preceding harness search exposed a transition-only no-measurement rule
+  without its condition. The false phase restriction is confirmed; attributing
+  it to that exposure or the new inquiry guidance remains an interpretation.
+- **Checkpoint-selection evidence:** M1 evaluated only the terminal
+  `T1:checkpoint-120832`, obtaining 151/160 successes. It did not compare
+  `T1:checkpoint-100352`, which had the highest recorded training success
+  (97%, versus the terminal checkpoint's 95%). Training success does not prove
+  that the unmeasured checkpoint would have performed better in development.
+- **Progression evidence:** I1 closed after M1, I2 opened, and T2 was accepted
+  without evaluating that alternative checkpoint. This failed the maintainer's
+  expected deliberate evaluation and method development before further training.
+- **Rollback:** restore the pre-adjustment scientific prompt guidance and
+  remove its matching program paragraph. Reinstate the engineering instruction
+  section removed by `c21feef`: withdrawing it did not recover the desired
+  opening. Retain the maintainer-owned 120k allocation, publication fixes, and
+  scientific-model heading-gate removal.
+- **Expected effect and disposition:** inquiry-alignment experiment withdrawn;
+  engineering instructions reinstated. Return to the earlier scientific
+  guidance without imposing a mandatory measurement or forbidding a baseline.
+  The effect on the next campaign remains untested. All campaign code, results,
+  models, checkpoints, and pending work are preserved; the launcher was stopped
+  by the maintainer before this rollback.
