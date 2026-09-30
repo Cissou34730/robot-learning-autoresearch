@@ -795,31 +795,6 @@ function Test-OperationRequest {
     return $true
 }
 
-function Test-ScientificModelRegisters {
-    param([Parameter(Mandatory)][string]$Content)
-
-    $missing = @(
-        "Established facts",
-        "Physical consequences",
-        "Unknowns"
-    ) | Where-Object {
-        $match = [regex]::Match(
-            $Content,
-            "(?ims)^#{1,6}\s+$([regex]::Escape($_))\s*`r?`n(?<body>.*?)(?=^#{1,6}\s+|\z)"
-        )
-        -not $match.Success -or -not $match.Groups["body"].Value.Trim()
-    }
-    if ($missing.Count -gt 0) {
-        $script:ScientificModelValidationFeedback = (
-            "research/scientific_model.md is missing required registers: " +
-            ($missing -join ", ")
-        )
-        return $false
-    }
-    $script:ScientificModelValidationFeedback = ""
-    return $true
-}
-
 function Test-ScientificModelDeliverable {
     Enter-TrustedMutableInvocation
     $validationOutput = @(
@@ -831,8 +806,8 @@ function Test-ScientificModelDeliverable {
         ) -join " "
         return $false
     }
-    $content = Get-Content "research\scientific_model.md" -Raw
-    return Test-ScientificModelRegisters -Content $content
+    $script:ScientificModelValidationFeedback = ""
+    return $true
 }
 
 function Invoke-ScientificModelPhase {

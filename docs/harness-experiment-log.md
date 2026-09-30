@@ -442,3 +442,24 @@ separate from harness changes so their outcomes are not conflated.
   stopped campaign and its artifacts remain unchanged: its accepted 500,000-step
   T2 request is not silently resized or reaccepted and will be refused before
   redispatch under the restored default. No campaign was resumed or reset.
+
+## Remove the scientific-model Markdown heading gate
+
+- **Implementation commit:** the commit containing this entry,
+  `Remove scientific model heading acceptance gate`.
+- **RCA:** the launcher ended a register at any Markdown heading, including
+  nested subsections. The current model placed a morphology subsection
+  immediately after its facts heading, so existing facts were incorrectly
+  reported as missing. This was a formatting rejection, not absent content.
+- **Change:** remove that additional PowerShell gate and its obsolete
+  heading-specific test and helper. Retain the unchanged Python validator for
+  file existence and non-empty content. The three scientific registers remain
+  the PI's content contract; no replacement Markdown parser is introduced.
+- **Expected improvement:** accept valid model layouts without unnecessary
+  PI rewrites, retries, or preparation failures. Scientific adequacy remains
+  the PI's responsibility rather than a heading-template judgment.
+- **Implementation check:** the launcher accepts the existing model without
+  changing its bytes or campaign state. PowerShell parsing and touched-file
+  Ruff passed; no new tests or parser infrastructure were added.
+- **Disposition:** implemented. The scientific model is not rewritten, and
+  no campaign operation is started, resumed, or reset.

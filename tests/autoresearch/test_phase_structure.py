@@ -23,42 +23,6 @@ powershell_only = pytest.mark.skipif(
 )
 
 
-def _scientific_model_registers_valid(tmp_path: Path, content: str) -> bool:
-    content_path = tmp_path / "model.md"
-    content_path.write_text(content, encoding="utf-8")
-    script = tmp_path / "model-registers.ps1"
-    script.write_text(
-        f"""
-$ast = [System.Management.Automation.Language.Parser]::ParseFile(
-    '{SCRIPT_PATH}', [ref]$null, [ref]$null)
-$definition = $ast.FindAll({{
-    param($node)
-    $node -is [System.Management.Automation.Language.FunctionDefinitionAst] -and
-        $node.Name -eq 'Test-ScientificModelRegisters'
-}}, $true) | Select-Object -First 1
-. ([scriptblock]::Create($definition.Extent.Text))
-$content = Get-Content -Raw '{content_path}'
-if (Test-ScientificModelRegisters -Content $content) {{ exit 0 }} else {{ exit 1 }}
-""",
-        encoding="utf-8",
-    )
-    completed = subprocess.run(
-        [
-            POWERSHELL,
-            "-NoProfile",
-            "-NonInteractive",
-            "-ExecutionPolicy",
-            "Bypass",
-            "-File",
-            str(script),
-        ],
-        capture_output=True,
-        text=True,
-        check=False,
-    )
-    return completed.returncode == 0
-
-
 def _run_launcher_trust_script(
     tmp_path: Path, body: str
 ) -> subprocess.CompletedProcess:
@@ -185,30 +149,6 @@ def _trust_test_repository(path: Path) -> None:
     )
     (path / "research" / "evaluations" / "campaign" / "interrupted.json").write_text(
         '{"completed":false}\n', encoding="utf-8"
-    )
-
-
-@powershell_only
-def test_scientific_model_requires_three_substantive_registers(tmp_path):
-    valid = """
-# Scientific model
-
-## Established facts
-The robot has two actuated joints.
-
-## Physical consequences
-The coupled links constrain reachable poses.
-
-## Unknowns
-Closed-loop settling behavior is not established.
-"""
-    assert _scientific_model_registers_valid(tmp_path, valid)
-    assert not _scientific_model_registers_valid(
-        tmp_path,
-        valid.replace(
-            "The coupled links constrain reachable poses.",
-            "",
-        ),
     )
 
 
