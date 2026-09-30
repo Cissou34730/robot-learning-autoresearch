@@ -2,6 +2,3 @@
 
 | Operation | Kind | Inquiry | Result |
 |---|---|---|---|
-| T1 | training | - | completed |
-| E1 | checkpoint | - | checkpointed |
-| E2 | inquiry | I1 | completed |
