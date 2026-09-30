@@ -1201,38 +1201,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I1",
-        "outcome": "I1 is resolved and redirects the campaign toward angle-specific acquisition and branch or joint coordination, with stabilization as a secondary failure mode. In M1, the baseline achieved 189/200 successes (94.5%); failures were concentrated in the target-angle sector -180 to -90 degrees, while radial performance was similar in the official-only inner band (110/116, 94.8%) and the baseline training band (79/84, 94.0%). Of the 11 failures, 6 never entered tolerance and 5 entered but achieved only 1-2 held steps with an interruption. Thus the dominant subgroup is angular reach or trajectory failure, not a general inner-radius coverage deficit, although the short post-entry holds show that stabilization remains consequential.",
-        "reason": "The closure condition is met by the completed fixed-seed M1 development evaluation, whose artifact reports target radius and angle, first in-tolerance step, maximum uninterrupted held steps, hold interruptions, and minimum and final distance for every episode. The evidence discriminates the competing explanations sufficiently for the next decision: radial coverage is not the dominant aggregate gap, the failures are strongly geometry-correlated by angle, and a smaller but real subset fails after entering tolerance. M1 is development evidence only; it does not establish the 98% official objective."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I1",
-        "outcome": "I1 is resolved and redirects the campaign toward angle-specific acquisition and branch or joint coordination, with stabilization as a secondary failure mode. In M1, the baseline achieved 189/200 successes (94.5%); failures were concentrated in the target-angle sector -180 to -90 degrees, while radial performance was similar in the official-only inner band (110/116, 94.8%) and the baseline training band (79/84, 94.0%). Of the 11 failures, 6 never entered tolerance and 5 entered but achieved only 1-2 held steps with an interruption. Thus the dominant subgroup is angular reach or trajectory failure, not a general inner-radius coverage deficit, although the short post-entry holds show that stabilization remains consequential.",
-        "reason": "The closure condition is met by the completed fixed-seed M1 development evaluation, whose artifact reports target radius and angle, first in-tolerance step, maximum uninterrupted held steps, hold interruptions, and minimum and final distance for every episode. The evidence discriminates the competing explanations sufficiently for the next decision: radial coverage is not the dominant aggregate gap, the failures are strongly geometry-correlated by angle, and a smaller but real subset fails after entering tolerance. M1 is development evidence only; it does not establish the 98% official objective.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E4",
-    "inquiry_id": "I1",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "I1 is resolved and redirects the campaign toward angle-specific acquisition and branch or joint coordination, with stabilization as a secondary failure mode. In M1, the baseline achieved 189/200 successes (94.5%); failures were concentrated in the target-angle sector -180 to -90 degrees, while radial performance was similar in the official-only inner band (110/116, 94.8%) and the baseline training band (79/84, 94.0%). Of the 11 failures, 6 never entered tolerance and 5 entered but achieved only 1-2 held steps with an interruption. Thus the dominant subgroup is angular reach or trajectory failure, not a general inner-radius coverage deficit, although the short post-entry holds show that stabilization remains consequential.",
-        "reason": "The closure condition is met by the completed fixed-seed M1 development evaluation, whose artifact reports target radius and angle, first in-tolerance step, maximum uninterrupted held steps, hold interruptions, and minimum and final distance for every episode. The evidence discriminates the competing explanations sufficiently for the next decision: radial coverage is not the dominant aggregate gap, the failures are strongly geometry-correlated by angle, and a smaller but real subset fails after entering tolerance. M1 is development evidence only; it does not establish the 98% official objective."
-      }
-    },
-    "request_fingerprint": "1d89dd2208b6daec3e885c122421f9da4443e65c590b4fa0524b241269bf7095",
-    "session_id": "S3",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "No trained candidates exist; working, best-known, and retained roles are empty.",
     "completed_operations": [
