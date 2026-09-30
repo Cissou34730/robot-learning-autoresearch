@@ -5758,16 +5758,16 @@
     }
   },
   "counters": {
-    "event": 44,
+    "event": 45,
     "inquiry": 10,
     "measurement": 9,
-    "session": 22,
+    "session": 23,
     "training": 7
   },
   "human_goal": {
     "source": "research/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "restored",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -11273,9 +11273,105 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-09-30T00:48:53Z",
+      "error": null,
+      "id": "E45",
+      "inquiry_id": "I10",
+      "kind": "restore_recipe",
+      "request": {
+        "candidate": "T1:checkpoint-100352",
+        "reason": "I10 requires a controlled policy-only test against the proven T1 observation, direct joint-action, reward, and training-distribution recipe. Restore T1 before replacing only the PPO policy representation so prior controller and rehearsal interventions cannot contaminate the comparison."
+      },
+      "result": {
+        "candidate": "T1:checkpoint-100352",
+        "restored_paths": [
+          "robot_learning/scenario/policy_io.py",
+          "robot_learning/scenario/training_environment.py"
+        ],
+        "scientific_commit": "1ccb3241a758ef4d4159df18e15d3d00e16f01d0",
+        "status": "restored"
+      },
+      "session_id": "S23",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "candidate_id": "T1:checkpoint-100352",
+        "parameters": {
+          "algorithm": {
+            "name": "ppo"
+          },
+          "policy": {
+            "activation": "tanh",
+            "net_arch": [
+              64,
+              64
+            ]
+          },
+          "ppo": {
+            "batch_size": 64,
+            "ent_coef": 0.01,
+            "gae_lambda": 0.95,
+            "gamma": 0.99,
+            "learning_rate": 0.0003,
+            "n_steps": 1024
+          },
+          "training": {
+            "checkpoint_every_steps": 5000,
+            "n_envs": 1
+          }
+        },
+        "parent": "1ccb3241a758ef4d4159df18e15d3d00e16f01d0",
+        "remove_created": [],
+        "restore": [
+          "robot_learning/scenario/policy_io.py",
+          "robot_learning/scenario/training_environment.py"
+        ],
+        "session_id": "S23"
+      },
+      "pre_restore_manifest": [
+        {
+          "exists": true,
+          "fingerprint": "629fbf88652e1d22dc1a8cc89f5db96b6d5a4cc3ec16303c1d63fbc55c61b8be",
+          "path": "robot_learning/scenario/policy_io.py"
+        },
+        {
+          "exists": true,
+          "fingerprint": "8419d8187e67e72950e2ca8fcf32a7839c8eb2f5d3801e1b446952b83906bd69",
+          "path": "robot_learning/scenario/training_environment.py"
+        }
+      ],
+      "result": {
+        "candidate": "T1:checkpoint-100352",
+        "restored_paths": [
+          "robot_learning/scenario/policy_io.py",
+          "robot_learning/scenario/training_environment.py"
+        ],
+        "scientific_commit": "1ccb3241a758ef4d4159df18e15d3d00e16f01d0",
+        "status": "restored"
+      }
+    },
+    "failure": null,
+    "id": "E45",
+    "inquiry_id": "I10",
+    "kind": "restore_recipe",
+    "progress": "completed",
+    "request": {
+      "restore_recipe": {
+        "candidate": "T1:checkpoint-100352",
+        "reason": "I10 requires a controlled policy-only test against the proven T1 observation, direct joint-action, reward, and training-distribution recipe. Restore T1 before replacing only the PPO policy representation so prior controller and rehearsal interventions cannot contaminate the comparison."
+      }
+    },
+    "request_fingerprint": "4c5623732116c64ded151ac89174c7f13f30386c487584392d174d43aae012a3",
+    "session_id": "S23",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T1:checkpoint-100352 and T7:checkpoint-120832 remain unassigned measured candidates. T7 is rejected as an I9 route by M9. No candidate has working, best-known, or retained status.",
     "completed_operations": [
@@ -11302,6 +11398,21 @@
     "path": "research/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "8383a5b2-5b93-4904-a84d-d568b76df35e",
+    "id": "S23",
+    "inquiry_id": "I10",
+    "kind": "inquiry",
+    "objective": "Bring I10 to the decision required by its closure condition, and close it as soon as the evidence supplies that decision: Close after one controlled training and fresh shared-seed 200-episode complete-distribution comparison against restored T1: the inquiry is actionable only if the candidate reaches at least 196/200 and retains complete 100-step holds, otherwise record a decision-sufficient negative answer for this policy-only route.",
+    "operation_ids": [
+      "E45"
+    ],
+    "scientific_parent_commit": "1ccb3241a758ef4d4159df18e15d3d00e16f01d0"
+  },
   "terminal_state": null
 }
