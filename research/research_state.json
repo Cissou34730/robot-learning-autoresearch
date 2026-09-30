@@ -7140,44 +7140,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "open",
-        "inquiry": {
-          "closure_condition": "Close as a credible route only if one bounded fresh candidate, trained with the fixed 120000-step allocation and evaluated against T1 on the same 200-episode development panel, reaches at least 196/200 complete uninterrupted successes and has no more than six failures in the -180 to -90 degree sector and no more than five post-entry hold failures. Otherwise close as insufficient or reframe only if the paired diagnostics identify a new decisive mechanism. Evaluation must report complete success, first entry, maximum uninterrupted hold, interruptions, angular subgroup, and paired outcomes; tolerance entry alone is insufficient.",
-          "goal_connection": "The human goal requires at least 196 complete uninterrupted holds in a 200-episode official panel. T1 reaches 189/200 on the matching development panel, with six acquisition failures in the -180 to -90 degree sector and five post-entry hold failures. A globally active reference/residual interface targets the coupled coordination problem directly while preserving complete-hold success as the only episode criterion.",
-          "id": "I6",
-          "opened_in_session": "S12",
-          "question": "Can a globally active, branch-conditioned analytic-IK joint-reference and learned residual-torque interface improve the coupled angular acquisition and uninterrupted stabilization problem, reaching at least 196 complete successes on the fixed development panel without increasing either T1's six angular-sector acquisition failures or five post-entry hold failures?",
-          "rationale": "The scientific model describes a deterministic fully actuated plant whose difficulty is coordinated acquisition, braking, and low-residual regulation under bounded sampled torque. T1's analytic branch observations are informative but leave a repeatable angular-sector gap, while I2's sampling and branch-ordering intervention removed that gap only by creating stabilization failures. I3's stronger speed shaping, I4's hold-progress observation, and I5's local near-target regulator each failed to provide a route and should not be repeated. A branch-conditioned joint-reference scaffold active throughout the motion, with the learned policy providing bounded residual torque, is a distinct mechanism: it supplies globally coherent IK acquisition and braking coordinates while retaining state feedback and learned correction. The fixed-panel complete-hold comparison can distinguish whether the representation resolves the coupled tradeoff without claiming that the plant is uncontrollable if it does not.",
-          "reframes": []
-        }
-      },
-      "result": {
-        "action": "open",
-        "inquiry_id": "I6",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E22",
-    "inquiry_id": null,
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "open",
-        "closure_condition": "Close as a credible route only if one bounded fresh candidate, trained with the fixed 120000-step allocation and evaluated against T1 on the same 200-episode development panel, reaches at least 196/200 complete uninterrupted successes and has no more than six failures in the -180 to -90 degree sector and no more than five post-entry hold failures. Otherwise close as insufficient or reframe only if the paired diagnostics identify a new decisive mechanism. Evaluation must report complete success, first entry, maximum uninterrupted hold, interruptions, angular subgroup, and paired outcomes; tolerance entry alone is insufficient.",
-        "goal_connection": "The human goal requires at least 196 complete uninterrupted holds in a 200-episode official panel. T1 reaches 189/200 on the matching development panel, with six acquisition failures in the -180 to -90 degree sector and five post-entry hold failures. A globally active reference/residual interface targets the coupled coordination problem directly while preserving complete-hold success as the only episode criterion.",
-        "question": "Can a globally active, branch-conditioned analytic-IK joint-reference and learned residual-torque interface improve the coupled angular acquisition and uninterrupted stabilization problem, reaching at least 196 complete successes on the fixed development panel without increasing either T1's six angular-sector acquisition failures or five post-entry hold failures?",
-        "rationale": "The scientific model describes a deterministic fully actuated plant whose difficulty is coordinated acquisition, braking, and low-residual regulation under bounded sampled torque. T1's analytic branch observations are informative but leave a repeatable angular-sector gap, while I2's sampling and branch-ordering intervention removed that gap only by creating stabilization failures. I3's stronger speed shaping, I4's hold-progress observation, and I5's local near-target regulator each failed to provide a route and should not be repeated. A branch-conditioned joint-reference scaffold active throughout the motion, with the learned policy providing bounded residual torque, is a distinct mechanism: it supplies globally coherent IK acquisition and braking coordinates while retaining state feedback and learned correction. The fixed-panel complete-hold comparison can distinguish whether the representation resolves the coupled tradeoff without claiming that the plant is uncontrollable if it does not."
-      }
-    },
-    "request_fingerprint": "ab933e50da3d556162c0ac21e16720ced02a0e635a07fee6ae2c64ff6a40b6d0",
-    "session_id": "S12",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "No working, best-known, or retained role is assigned. T1:checkpoint-100352 remains the strongest evidence-backed development reference at 189/200. T5:checkpoint-35840 is an insufficient phase-handoff intervention at 157/200 and has no candidate role. T2:checkpoint-120832 remains insufficient at 176/200, while T3:checkpoint-120832 and T4:checkpoint-120832 have no candidate role after scoring 0/200.",
     "completed_operations": [
