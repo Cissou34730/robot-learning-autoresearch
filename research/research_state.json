@@ -15690,38 +15690,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I12",
-        "outcome": "Negative answer: the pre-specified hybrid control decomposition did not produce a repeatable policy near the 196/200 objective and materially degraded the restored baseline. The training-only rule selected T10:checkpoint-120832, which achieved 88/200 and 102/200 on two fresh complete-distribution panels, while T1:checkpoint-100352 achieved 189/200 and 195/200 on the paired panels. Across 400 shared-seed episodes the hybrid recorded zero wins, 194 baseline wins, 194 discordant episodes, and a -48.5 percentage-point success difference. The known IK approach guidance therefore did not remove the residual failure tail and did not provide a credible refinement within this decomposition.",
-        "reason": "M12 directly tested I12's pre-specified comparison using the fixed training-only checkpoint-selection rule, fresh complete-distribution 200-episode panels, and shared seeds against the restored baseline. The hybrid failed both the repeatability and 196/200 criteria and was substantially worse than the baseline in both panels. This establishes the inquiry closure condition's negative branch. Remaining uncertainty is limited to other hybrid gains, residual scales, or training recipes not included in the pre-specified decomposition; those are different interventions and cannot change I12's answer."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I12",
-        "outcome": "Negative answer: the pre-specified hybrid control decomposition did not produce a repeatable policy near the 196/200 objective and materially degraded the restored baseline. The training-only rule selected T10:checkpoint-120832, which achieved 88/200 and 102/200 on two fresh complete-distribution panels, while T1:checkpoint-100352 achieved 189/200 and 195/200 on the paired panels. Across 400 shared-seed episodes the hybrid recorded zero wins, 194 baseline wins, 194 discordant episodes, and a -48.5 percentage-point success difference. The known IK approach guidance therefore did not remove the residual failure tail and did not provide a credible refinement within this decomposition.",
-        "reason": "M12 directly tested I12's pre-specified comparison using the fixed training-only checkpoint-selection rule, fresh complete-distribution 200-episode panels, and shared seeds against the restored baseline. The hybrid failed both the repeatability and 196/200 criteria and was substantially worse than the baseline in both panels. This establishes the inquiry closure condition's negative branch. Remaining uncertainty is limited to other hybrid gains, residual scales, or training recipes not included in the pre-specified decomposition; those are different interventions and cannot change I12's answer.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E56",
-    "inquiry_id": "I12",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "Negative answer: the pre-specified hybrid control decomposition did not produce a repeatable policy near the 196/200 objective and materially degraded the restored baseline. The training-only rule selected T10:checkpoint-120832, which achieved 88/200 and 102/200 on two fresh complete-distribution panels, while T1:checkpoint-100352 achieved 189/200 and 195/200 on the paired panels. Across 400 shared-seed episodes the hybrid recorded zero wins, 194 baseline wins, 194 discordant episodes, and a -48.5 percentage-point success difference. The known IK approach guidance therefore did not remove the residual failure tail and did not provide a credible refinement within this decomposition.",
-        "reason": "M12 directly tested I12's pre-specified comparison using the fixed training-only checkpoint-selection rule, fresh complete-distribution 200-episode panels, and shared seeds against the restored baseline. The hybrid failed both the repeatability and 196/200 criteria and was substantially worse than the baseline in both panels. This establishes the inquiry closure condition's negative branch. Remaining uncertainty is limited to other hybrid gains, residual scales, or training recipes not included in the pre-specified decomposition; those are different interventions and cannot change I12's answer."
-      }
-    },
-    "request_fingerprint": "f3f1bc27865751cbf16bb1a4b53ac1f252539799aa77f755d047924689c0997e",
-    "session_id": "S28",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T1:checkpoint-100352 remains the strongest historically measured baseline but is unassigned because its performance was not repeatable. T9:checkpoint-95232 is unassigned after the I11 readiness panels. T8:checkpoint-90112 and T7:checkpoint-120832 remain rejected routes. No candidate has working, best-known, or retained status.",
     "completed_operations": [
