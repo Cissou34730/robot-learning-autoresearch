@@ -673,6 +673,12 @@ function New-ScientificSessionPrompt {
     else {
         "No durable PI synthesis has been recorded yet."
     }
+    $frontier = if ($checkpoint) {
+        [string]$checkpoint.decision_frontier
+    }
+    else {
+        "No scientific decision frontier has been checkpointed yet."
+    }
     $transition = Get-RequiredSessionSummaryTransition -State $State
     $terminalGoalReview = (
         -not $transition -and
@@ -735,9 +741,10 @@ function New-ScientificSessionPrompt {
     else {
         @(
             "Choose the operation whose result would most improve the next decision toward the human goal."
+            "Relate the selected operation to the unresolved scientific distinction or method-development need. The decision frontier records the question and discriminating evidence, not merely a candidate implementation."
             "Existing PI-owned implementations have no privileged status; inspect, modify, or replace them when that is the most credible scientific action before submitting an operation."
             "When evidence resolves or redirects the active inquiry, record that decision explicitly rather than drifting to another question."
-            "When the current line of work reaches a stable decision, preserve the synthesis, supporting evidence, remaining gap, and next direction in a checkpoint."
+            "When the current line of work reaches a stable decision, preserve the synthesis, consequential competing explanations, claim limits, supporting evidence, remaining gap, decision frontier, and next direction in a checkpoint."
             "When ready to act, use the matching contract in research/instruments.md to submit one scientific action."
         )
     }
@@ -746,6 +753,7 @@ function New-ScientificSessionPrompt {
         "Human goal: $goal"
         "Current evidence relative to the goal: $bestEvidence $(Get-LatestSessionResult -State $State)"
         "Current scientific understanding: $synthesis"
+        "Scientific decision frontier: $frontier"
         "Current goal gap: $gap"
         "Active inquiry: $inquiry"
         "Current objective: $objective"

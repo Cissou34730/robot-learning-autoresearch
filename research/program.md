@@ -104,10 +104,27 @@ The checkpoint preserves the human-goal connection, current synthesis,
 supporting evidence, remaining gap, decision frontier, and next direction or
 closure assessment. A later fresh session continues from that durable state.
 
+`current_synthesis` distinguishes observations from interpretations and
+preserves consequential competing explanations, supporting and contradictory
+evidence, and the limits of current claims.
+
+`decision_frontier` records the unresolved scientific distinction or
+method-development question and the evidence that would discriminate or
+redirect it. It is not merely a candidate implementation or a list of changes.
+
+`next_direction_or_closure` records the chosen action or closure decision and
+its connection to that frontier. The PI chooses the instrument; these meanings
+do not require an additional measurement or a prescribed sequence of actions.
+
 ## Evidence and model roles
 
 Only completed operations and their artifacts form the factual campaign
 record.
+
+A useful policy does not establish its proposed cause. A negative recipe
+result or training collapse does not by itself invalidate the broader method.
+Distinguish the tested recipe's outcome from what it establishes about the
+explanation or method it was intended to investigate.
 
 Development measurements support PI judgment but do not declare the official
 goal reached. Working, best-known, and retained roles are explicit,

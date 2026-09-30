@@ -14,13 +14,14 @@ artifacts. Campaign history remains in Git for later maintainer analysis.
 
 ## Current baseline
 
-Scientific-work prompt behavior remains at the winning campaign's final
-reference `f6fea61`, restored in `5fef279`. The post-winning
+The instruction reference is the winning campaign's final `f6fea61`,
+restored in `5fef279`. The post-winning
 closure-strengthening change `b4f1cdf` and scientific-handoff change `c0cfcb6`
 remain removed. The goal-review role-assignment correction below changes only
 operation availability, terminal prerequisites, and the meaning of best-known;
-it is not a new scientific-action-selection or closure experiment.
-The inquiry architecture and independent runtime fixes remain unchanged.
+the scientific-frontier instruction experiment below is now active as a
+separate, untested behavioral hypothesis. The inquiry architecture and
+independent runtime fixes remain unchanged.
 
 The objective under investigation is scientifically justified action selection:
 the PI chooses the action that can resolve a consequential uncertainty rather
@@ -307,6 +308,44 @@ its scientific breadth or achieve its result.
   effectiveness is untested. This does not explain weaker campaign openings
   or solve the remaining scientific-inquiry and method-development problem.
   No campaign was started, resumed, reset, or otherwise modified.
+
+## Scientific-frontier instruction experiment
+
+- **Instruction baseline:** winning-reference prompts plus the goal-review
+  permission correction in `eabb35c`. Campaign
+  `35365763-6aa0-4675-8e86-f8f277558aa4` exercised that baseline before this
+  change; its unfinished M4 transaction and artifacts remain untouched.
+- **Implementation commit:** the commit containing this entry,
+  `Restore scientific frontier guidance across PI sessions`.
+- **RCA:** `6d6d41e` removed explicit causal working-memory guidance and the
+  distinction between a recipe outcome and its proposed cause. Later persona
+  restoration did not fully restore those meanings. The loss predates the
+  winning reference, so textual provenance establishes a weakness, not proof
+  that it caused later campaign behavior.
+- **Change:** define the scientific meanings of the existing
+  `current_synthesis`, `decision_frontier`, and `next_direction_or_closure`
+  fields in `research/program.md`. Restore the cautions against treating a
+  useful policy as causal proof or a failed recipe as broad method
+  invalidation. Inject the saved frontier directly into the session prompt
+  and connect operation choice and checkpoint preservation to it.
+- **Expected effect:** consequential alternatives, claim limits, and the
+  unresolved question survive the handoff rather than becoming only a next
+  recipe plan. The PI remains free to choose training, measurement, local
+  analysis, implementation, or another supported action.
+- **Unchanged:** closure rules, session boundaries, operation permissions,
+  schemas, instrument contracts, and Runner neutrality. No required extra
+  measurement, diagnosis phase, hypothesis registry, scenario-specific hint,
+  or training gate.
+- **Implementation checks:** seven focused behavior cases passed, including
+  rendered frontier transmission into goal-review and inquiry prompts,
+  startup without a checkpoint, and existing startup, protection, and
+  checkpoint-boundary contracts. Touched-file Ruff and launcher PowerShell
+  parsing passed. The context test checks data transmission, not instruction
+  wording.
+- **Disposition:** retained for a future campaign trial; scientific
+  effectiveness is untested. The maintainer confirmed the campaign was
+  stopped before edits. No campaign operation was started, resumed, reset,
+  or modified.
 
 ## Discussed but not implemented
 

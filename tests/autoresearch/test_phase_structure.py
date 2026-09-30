@@ -7,6 +7,7 @@ import json
 import shutil
 import subprocess
 from pathlib import Path
+from uuid import uuid4
 
 import pytest
 
@@ -524,6 +525,94 @@ def test_scientific_model_and_request_paths_remain_protected():
     assert runner_protocol.is_protected_source("research/scientific_model.md")
     assert not runner_protocol.is_researcher_owned("research/scientific_model.md")
     assert repository.is_runner_owned("research/operation_request.json")
+
+
+@powershell_only
+@pytest.mark.parametrize("kind", ["startup", "goal_review", "inquiry"])
+def test_scientific_session_prompt_preserves_checkpoint_frontier(tmp_path, kind):
+    markers = {
+        name: f"{name}-{uuid4().hex}"
+        for name in ("goal", "synthesis", "gap", "frontier", "objective")
+    }
+    state = repository.empty_campaign_state(
+        campaign={"id": "campaign", "started_at": "now", "base_commit": "base"},
+        last_verdict="fresh",
+    )
+    state["human_goal"]["summary"] = markers["goal"]
+    state["scientific_session"] = {
+        "id": "S1",
+        "kind": kind,
+        "objective": markers["objective"],
+        "operation_ids": [],
+    }
+    if kind != "startup":
+        state["pi_checkpoint"] = {
+            "inquiry_id": None,
+            "human_goal_connection": markers["goal"],
+            "current_goal_gap": markers["gap"],
+            "current_synthesis": markers["synthesis"],
+            "evidence_references": [],
+            "decision_frontier": markers["frontier"],
+            "completed_operations": [],
+            "candidates_and_roles": "No roles assigned.",
+            "next_direction_or_closure": "Choose the next scientific action.",
+            "cumulative_resource_use": "No completed operations.",
+        }
+    if kind == "inquiry":
+        state["active_inquiry"] = {
+            "id": "I1",
+            "question": "Resolve a consequential uncertainty.",
+            "goal_connection": markers["goal"],
+            "closure_condition": "Establish the answer's bearing on the next decision.",
+            "opened_in_session": "S0",
+        }
+    state_path = tmp_path / "state.json"
+    state_path.write_text(json.dumps(state), encoding="utf-8")
+    script = tmp_path / "session-context.ps1"
+    script.write_text(
+        f"""
+$ErrorActionPreference = 'Stop'
+$ast = [System.Management.Automation.Language.Parser]::ParseFile(
+    '{SCRIPT_PATH}', [ref]$null, [ref]$null)
+$names = @(
+    'Get-HumanGoalSummary', 'Get-LatestSessionResult',
+    'Get-RequiredSessionSummaryTransition', 'New-ScientificSessionPrompt'
+)
+foreach ($name in $names) {{
+    $definition = $ast.FindAll({{
+        param($node)
+        $node -is [System.Management.Automation.Language.FunctionDefinitionAst] -and
+            $node.Name -eq $name
+    }}, $true) | Select-Object -First 1
+    if (-not $definition) {{ throw "Missing launcher function $name" }}
+    . ([scriptblock]::Create($definition.Extent.Text))
+}}
+$state = Get-Content -Raw -LiteralPath '{state_path}' | ConvertFrom-Json
+New-ScientificSessionPrompt -State $state
+""",
+        encoding="utf-8",
+    )
+    completed = subprocess.run(
+        [
+            POWERSHELL,
+            "-NoProfile",
+            "-NonInteractive",
+            "-ExecutionPolicy",
+            "Bypass",
+            "-File",
+            str(script),
+        ],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert completed.returncode == 0, completed.stderr
+    assert markers["goal"] in completed.stdout
+    assert markers["objective"] in completed.stdout
+    if state["pi_checkpoint"] is not None:
+        assert markers["synthesis"] in completed.stdout
+        assert markers["gap"] in completed.stdout
+        assert markers["frontier"] in completed.stdout
     assert not runner_protocol.is_researcher_owned("research/operation_request.json")
 
 
