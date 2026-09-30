@@ -102,3 +102,4 @@
 | E69 | checkpoint | - | checkpointed |
 | E70 | restore_recipe | I15 | restored |
 | T13 | training | I15 | completed |
+| M18 | measurement | I15 | completed |
