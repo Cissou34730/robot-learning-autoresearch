@@ -9279,7 +9279,7 @@
     }
   },
   "counters": {
-    "event": 63,
+    "event": 64,
     "inquiry": 14,
     "measurement": 16,
     "session": 32,
@@ -9288,7 +9288,7 @@
   "human_goal": {
     "source": "research/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -17929,34 +17929,153 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": "M15"
+    },
+    {
+      "completed_at": "2026-09-30T02:38:25Z",
+      "error": null,
+      "id": "E64",
+      "inquiry_id": "I14",
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "No candidate has working, best-known, or retained status. T1:checkpoint-100352 remains the unassigned measured baseline. T10 and T11 routes remain rejected by their prior evidence.",
+        "completed_operations": [
+          "M16"
+        ],
+        "cumulative_resource_use": "Prior campaign resource use remains eleven completed PPO training runs and the previously recorded measurement history. I14 added one completed 200-episode controller panel and one shared-seed 200-episode baseline panel; M14 and M15 failed before producing evidence. No I14 training or learned-policy assessment has run.",
+        "current_goal_gap": "No learned candidate has best-known status or has met the repeatability requirement. The restored T1 baseline remains unassigned after inconsistent fresh panels. M16 establishes controller capability but not learned-policy capability.",
+        "current_synthesis": "Observed: the pre-specified computed-torque controller, using feasible branch selection, model-based inertia and bias compensation, and closed-loop velocity-damped regulation, achieved 200/200 on a fresh 200-episode complete-distribution panel. Observed: it had zero approach failures, zero settling failures, zero post-settling hold failures, 100-step mean longest uninterrupted holds, and no action saturation. Observed: the restored T1 baseline achieved 194/200 on the shared panel. Therefore the controller hypothesis is supported as a source of successful supervision, but no claim is established about a distilled learned policy.",
+        "decision_frontier": "The direct controller gate is positive: its bounded fresh panel completed every episode, so I14 should proceed to training-only distillation rather than close at the controller stage. The remaining decision is whether a learned policy trained from this controller can meet 196/200 on two fresh shared-seed panels without runtime controller assistance.",
+        "evidence_references": [
+          "M16",
+          "E62"
+        ],
+        "human_goal_connection": "The campaign still seeks one frozen learned policy achieving at least 196 complete uninterrupted-hold successes out of 200 under the complete official target distribution.",
+        "next_direction_or_closure": "Non-binding proposal: implement a training-only computed-torque teacher and full-distribution controller distillation, then use the pre-specified training-only checkpoint rule to select one learned candidate for two fresh 200-episode panels. Close I14 negatively if the selected learned candidate fails either threshold or materially degrades the restored baseline; close positively only if both panels reach at least 196/200 without controller assistance."
+      },
+      "result": {
+        "session_id": "S32",
+        "status": "checkpointed"
+      },
+      "session_id": "S32",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "7d77d63ef145a29b760a4dc8636f986c506bb71d",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "teacher_initialization": {
+          "batch_size": 64,
+          "epochs": 40,
+          "learning_rate": 0.001,
+          "position_gain": 2.5,
+          "samples": 8192,
+          "velocity_damping": 0.25
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "No candidate has working, best-known, or retained status. T1:checkpoint-100352 remains the unassigned measured baseline. T10 and T11 routes remain rejected by their prior evidence.",
+        "completed_operations": [
+          "M16"
+        ],
+        "cumulative_resource_use": "Prior campaign resource use remains eleven completed PPO training runs and the previously recorded measurement history. I14 added one completed 200-episode controller panel and one shared-seed 200-episode baseline panel; M14 and M15 failed before producing evidence. No I14 training or learned-policy assessment has run.",
+        "current_goal_gap": "No learned candidate has best-known status or has met the repeatability requirement. The restored T1 baseline remains unassigned after inconsistent fresh panels. M16 establishes controller capability but not learned-policy capability.",
+        "current_synthesis": "Observed: the pre-specified computed-torque controller, using feasible branch selection, model-based inertia and bias compensation, and closed-loop velocity-damped regulation, achieved 200/200 on a fresh 200-episode complete-distribution panel. Observed: it had zero approach failures, zero settling failures, zero post-settling hold failures, 100-step mean longest uninterrupted holds, and no action saturation. Observed: the restored T1 baseline achieved 194/200 on the shared panel. Therefore the controller hypothesis is supported as a source of successful supervision, but no claim is established about a distilled learned policy.",
+        "decision_frontier": "The direct controller gate is positive: its bounded fresh panel completed every episode, so I14 should proceed to training-only distillation rather than close at the controller stage. The remaining decision is whether a learned policy trained from this controller can meet 196/200 on two fresh shared-seed panels without runtime controller assistance.",
+        "evidence_references": [
+          "M16",
+          "E62"
+        ],
+        "human_goal_connection": "The campaign still seeks one frozen learned policy achieving at least 196 complete uninterrupted-hold successes out of 200 under the complete official target distribution.",
+        "inquiry_id": "I14",
+        "next_direction_or_closure": "Non-binding proposal: implement a training-only computed-torque teacher and full-distribution controller distillation, then use the pre-specified training-only checkpoint rule to select one learned candidate for two fresh 200-episode panels. Close I14 negatively if the selected learned candidate fails either threshold or materially degrades the restored baseline; close positively only if both panels reach at least 196/200 without controller assistance.",
+        "session_id": "S32"
+      },
+      "presentation": {
+        "backend_session_id": "5a9802d5-d2d0-46c0-b2db-e753e33c6605",
+        "campaign_id": "eb19a5f3-14b3-4590-ad74-1b31cf5ae3d5",
+        "campaign_usage": "1h59m | 338.31 AIU | prompt 54.1m (85% cached) | output 321.4k",
+        "session_id": "S32",
+        "session_kind": "inquiry",
+        "session_usage": "4m58s | 15.11 AIU | prompt 3.1m (90% cached) | output 16.5k"
+      },
+      "result": {
+        "session_id": "S32",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "66184012cb2fb9409302f008d622a46ac0d7a33d",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E64",
+    "inquiry_id": "I14",
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "No candidate has working, best-known, or retained status. T1:checkpoint-100352 remains the unassigned measured baseline. T10 and T11 routes remain rejected by their prior evidence.",
+        "completed_operations": [
+          "M16"
+        ],
+        "cumulative_resource_use": "Prior campaign resource use remains eleven completed PPO training runs and the previously recorded measurement history. I14 added one completed 200-episode controller panel and one shared-seed 200-episode baseline panel; M14 and M15 failed before producing evidence. No I14 training or learned-policy assessment has run.",
+        "current_goal_gap": "No learned candidate has best-known status or has met the repeatability requirement. The restored T1 baseline remains unassigned after inconsistent fresh panels. M16 establishes controller capability but not learned-policy capability.",
+        "current_synthesis": "Observed: the pre-specified computed-torque controller, using feasible branch selection, model-based inertia and bias compensation, and closed-loop velocity-damped regulation, achieved 200/200 on a fresh 200-episode complete-distribution panel. Observed: it had zero approach failures, zero settling failures, zero post-settling hold failures, 100-step mean longest uninterrupted holds, and no action saturation. Observed: the restored T1 baseline achieved 194/200 on the shared panel. Therefore the controller hypothesis is supported as a source of successful supervision, but no claim is established about a distilled learned policy.",
+        "decision_frontier": "The direct controller gate is positive: its bounded fresh panel completed every episode, so I14 should proceed to training-only distillation rather than close at the controller stage. The remaining decision is whether a learned policy trained from this controller can meet 196/200 on two fresh shared-seed panels without runtime controller assistance.",
+        "evidence_references": [
+          "M16",
+          "E62"
+        ],
+        "human_goal_connection": "The campaign still seeks one frozen learned policy achieving at least 196 complete uninterrupted-hold successes out of 200 under the complete official target distribution.",
+        "next_direction_or_closure": "Non-binding proposal: implement a training-only computed-torque teacher and full-distribution controller distillation, then use the pre-specified training-only checkpoint rule to select one learned candidate for two fresh 200-episode panels. Close I14 negatively if the selected learned candidate fails either threshold or materially degrades the restored baseline; close positively only if both panels reach at least 196/200 without controller assistance."
+      }
+    },
+    "request_fingerprint": "68f95436604dd5e45f10e40e576b31f17fd687bd9557d9c91a179e0e1387a44d",
+    "session_id": "S32",
+    "supersedes": null
+  },
   "pi_checkpoint": {
-    "candidates_and_roles": "T11:checkpoint-120832 is rejected as the I13 teacher-initialization route. T1:checkpoint-100352 remains unassigned despite being the strongest measured baseline because it did not meet both fresh 196/200 thresholds. T10:checkpoint-120832 remains rejected as the I12 hybrid route. No candidate has working, best-known, or retained status.",
+    "candidates_and_roles": "No candidate has working, best-known, or retained status. T1:checkpoint-100352 remains the unassigned measured baseline. T10 and T11 routes remain rejected by their prior evidence.",
     "completed_operations": [
-      "E62"
+      "M16"
     ],
-    "cumulative_resource_use": "The campaign has completed eleven PPO training runs of up to 120,832 steps each and eight measurement operations, including the two fresh 200-episode I13 panels. I14 has added no training or measurement resource use. No official assessment has run.",
-    "current_goal_gap": "No candidate has best-known status and official assessment remains unjustified. T11:checkpoint-120832 achieved 51/200 and 55/200 on two fresh panels, while restored T1:checkpoint-100352 achieved 195/200 and 187/200. No candidate has met 196/200 on both fresh panels.",
-    "current_synthesis": "Observed: the pre-specified I13 training-only rule selected T11:checkpoint-120832. Observed: T11 materially degraded restored T1 across 400 paired episodes, winning 4 episodes versus 280 baseline wins, and failed both 196/200 thresholds. Observed: the tested teacher-guided initialization therefore did not provide a route to the objective. Hypothesis for the next inquiry: a dynamically stabilizing model-based controller may provide supervision that addresses the approach and settling tail more effectively than parameter initialization alone. This hypothesis is untested and does not establish controller or distilled-policy capability.",
-    "decision_frontier": "I13 is closed negatively: its selected teacher-initialized candidate failed both fresh thresholds and materially degraded the restored baseline. The goal review did not justify official assessment because no candidate is repeatably at 196/200 and no best-known role is assigned. I14 is opened to test whether controller-generated supervision is a distinct, consequential route; it is not actionable until this checkpoint ends.",
+    "cumulative_resource_use": "Prior campaign resource use remains eleven completed PPO training runs and the previously recorded measurement history. I14 added one completed 200-episode controller panel and one shared-seed 200-episode baseline panel; M14 and M15 failed before producing evidence. No I14 training or learned-policy assessment has run.",
+    "current_goal_gap": "No learned candidate has best-known status or has met the repeatability requirement. The restored T1 baseline remains unassigned after inconsistent fresh panels. M16 establishes controller capability but not learned-policy capability.",
+    "current_synthesis": "Observed: the pre-specified computed-torque controller, using feasible branch selection, model-based inertia and bias compensation, and closed-loop velocity-damped regulation, achieved 200/200 on a fresh 200-episode complete-distribution panel. Observed: it had zero approach failures, zero settling failures, zero post-settling hold failures, 100-step mean longest uninterrupted holds, and no action saturation. Observed: the restored T1 baseline achieved 194/200 on the shared panel. Therefore the controller hypothesis is supported as a source of successful supervision, but no claim is established about a distilled learned policy.",
+    "decision_frontier": "The direct controller gate is positive: its bounded fresh panel completed every episode, so I14 should proceed to training-only distillation rather than close at the controller stage. The remaining decision is whether a learned policy trained from this controller can meet 196/200 on two fresh shared-seed panels without runtime controller assistance.",
     "evidence_references": [
-      "T10",
-      "M12",
-      "E56",
-      "E57",
-      "E58",
-      "T11",
-      "M13",
-      "E60",
+      "M16",
       "E62"
     ],
-    "human_goal_connection": "The campaign still seeks one frozen learned policy achieving at least 196 complete successes out of 200 under the full official task distribution, with every success requiring the complete uninterrupted 100-step hold.",
-    "inquiry_id": null,
-    "next_direction_or_closure": "Non-binding proposal: in the fresh I14 session, first test whether a pre-specified model-based controller can reliably complete the full official distribution, then pursue learned-policy distillation only if that controller evidence supports it. Evaluate any selected learned candidate on two fresh shared-seed 200-episode panels and close I14 if its closure condition is met. No success claim or official assessment is supported by the current evidence.",
-    "scientific_commit": "e195b040ea086b3e990cfea12ca1beb558fdeb3e",
-    "session_id": "S31"
+    "human_goal_connection": "The campaign still seeks one frozen learned policy achieving at least 196 complete uninterrupted-hold successes out of 200 under the complete official target distribution.",
+    "inquiry_id": "I14",
+    "next_direction_or_closure": "Non-binding proposal: implement a training-only computed-torque teacher and full-distribution controller distillation, then use the pre-specified training-only checkpoint rule to select one learned candidate for two fresh 200-episode panels. Close I14 negatively if the selected learned candidate fails either threshold or materially degrades the restored baseline; close positively only if both panels reach at least 196/200 without controller assistance.",
+    "scientific_commit": "66184012cb2fb9409302f008d622a46ac0d7a33d",
+    "session_id": "S32"
   },
   "schema_version": 6,
   "scientific_model": {
@@ -17964,21 +18083,6 @@
     "path": "research/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "5a9802d5-d2d0-46c0-b2db-e753e33c6605",
-    "id": "S32",
-    "inquiry_id": "I14",
-    "kind": "inquiry",
-    "objective": "Bring I14 to the decision required by its closure condition, and close it as soon as the evidence supplies that decision: Close when bounded evidence establishes either that a pre-specified model-based controller cannot reliably solve the complete distribution or that a training-only selected distilled policy fails the 196/200 threshold on two fresh shared-seed panels; close positively only if the distilled learned policy reaches at least 196/200 on both fresh panels without runtime controller assistance. If the controller or distillation route materially degrades the restored baseline, reject it as a credible campaign route.",
-    "operation_ids": [
-      "M16"
-    ],
-    "scientific_parent_commit": "7d77d63ef145a29b760a4dc8636f986c506bb71d"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
