@@ -11,7 +11,6 @@ different distribution, tolerance or horizon. The human-defined task is
 enforced only by the protected benchmark in `robot_learning/benchmark/`.
 """
 
-import inspect
 from typing import Any, ClassVar
 
 import gymnasium as gym
@@ -49,9 +48,6 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
         self.frame_skip = frame_skip
         self.target_radius_range = target_radius_range
         self.policy_io = policy_runtime.io if policy_runtime else make_policy_io()
-        self._observation_accepts_hold_progress = (
-            "hold_progress" in inspect.signature(self.policy_io.observe).parameters
-        )
 
         self.model = mujoco.MjModel.from_xml_path(str(TWO_JOINT_ARM_XML_PATH))
         self.data = mujoco.MjData(self.model)
@@ -75,7 +71,6 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
         self._previous_distance = 0.0
         self._held_steps = 0
         self._outside_after_hold = False
-        self._previous_endpoint_position = np.zeros(3, dtype=np.float64)
 
     def _end_effector_position(self) -> np.ndarray:
         return self.data.site("end_effector").xpos.copy()
@@ -102,11 +97,6 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
         ]
 
     def _observation(self) -> np.ndarray:
-        if self._observation_accepts_hold_progress:
-            hold_progress = self._held_steps / self.hold_steps_required
-            return self.policy_io.observe(
-                self.data, hold_progress=float(hold_progress)
-            )
         return self.policy_io.observe(self.data)
 
     def reset(
@@ -127,15 +117,13 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
         self._previous_distance = self._distance_to_target()
         self._held_steps = 0
         self._outside_after_hold = False
-        self._previous_endpoint_position = self._end_effector_position()
         return self._observation(), {}
 
     def step(
         self, action: np.ndarray
     ) -> tuple[np.ndarray, float, bool, bool, dict[str, Any]]:
-        requested_action = np.asarray(self.policy_io.action(action), dtype=np.float64)
         action = np.clip(
-            requested_action,
+            np.asarray(self.policy_io.action(action), dtype=np.float64),
             self.action_space.low,
             self.action_space.high,
         )
@@ -144,13 +132,6 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
             mujoco.mj_step(self.model, self.data)
 
         distance = self._distance_to_target()
-        endpoint_position = self._end_effector_position()
-        control_dt = self.model.opt.timestep * self.frame_skip
-        endpoint_speed = float(
-            np.linalg.norm(endpoint_position - self._previous_endpoint_position)
-            / control_dt
-        )
-        self._previous_endpoint_position = endpoint_position
 
         previous_held_steps = self._held_steps
         if distance <= self.success_threshold:
@@ -170,7 +151,6 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
             previous_held_steps=previous_held_steps,
             hold_steps_required=self.hold_steps_required,
             penalize_outside=self._outside_after_hold,
-            endpoint_speed=endpoint_speed,
         )
         self._previous_distance = distance
 
@@ -181,11 +161,6 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
             "distance": distance,
             "is_success": terminated,
             "held_steps": self._held_steps,
-            "endpoint_speed_mps": endpoint_speed,
-            "action_saturated": bool(
-                np.any(np.abs(requested_action) > np.abs(action) + 1e-7)
-                or np.any(np.isclose(np.abs(action), 1.0, atol=1e-6))
-            ),
             # Arbitrary scenario-owned attribution; the RL algorithm still only
             # ever sees `reward.total`.
             "reward_components": reward.components,
