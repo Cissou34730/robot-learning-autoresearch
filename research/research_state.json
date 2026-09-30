@@ -1107,44 +1107,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "open",
-        "inquiry": {
-          "closure_condition": "Close or redirect this inquiry after a targeted intervention produces a candidate and a shared-panel comparison against T1 that quantifies overall success, negative-angle acquisition and trajectory outcomes, entry velocity, and uninterrupted hold interruptions sufficiently to decide whether the candidate is a credible best-known model or whether the route should change.",
-          "goal_connection": "The human goal requires at least 196 of 200 official episodes to succeed. T1 achieved 151 of 160 development episodes, with six of nine failures caused by no-entry acquisition or trajectory failures and the remaining three caused by high-speed hold interruptions. Improving the limiting negative-angle strata while preserving regulation is the most direct credible route toward the 98% goal.",
-          "id": "I2",
-          "opened_in_session": "S4",
-          "question": "Can a targeted acquisition and elbow-trajectory intervention improve success in the negative-angle target strata from the T1 baseline while preserving low-velocity regulation and uninterrupted 100-step holds?",
-          "rationale": "The baseline evidence rules out treating regulation as the sole first bottleneck but shows it remains a coupled failure mode: every observed interruption combined high exit speed with saturated action. A bounded intervention focused on negative-angle acquisition and branch or trajectory robustness can address the dominant loss mechanism while retaining velocity-aware regulation as a guard against trading no-entry failures for hold failures. The 4.375 percentage-point development gap and resolved failure mechanism support further inquiry; official assessment and no-credible-route are not yet justified.",
-          "reframes": []
-        }
-      },
-      "result": {
-        "action": "open",
-        "inquiry_id": "I2",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E6",
-    "inquiry_id": null,
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "open",
-        "closure_condition": "Close or redirect this inquiry after a targeted intervention produces a candidate and a shared-panel comparison against T1 that quantifies overall success, negative-angle acquisition and trajectory outcomes, entry velocity, and uninterrupted hold interruptions sufficiently to decide whether the candidate is a credible best-known model or whether the route should change.",
-        "goal_connection": "The human goal requires at least 196 of 200 official episodes to succeed. T1 achieved 151 of 160 development episodes, with six of nine failures caused by no-entry acquisition or trajectory failures and the remaining three caused by high-speed hold interruptions. Improving the limiting negative-angle strata while preserving regulation is the most direct credible route toward the 98% goal.",
-        "question": "Can a targeted acquisition and elbow-trajectory intervention improve success in the negative-angle target strata from the T1 baseline while preserving low-velocity regulation and uninterrupted 100-step holds?",
-        "rationale": "The baseline evidence rules out treating regulation as the sole first bottleneck but shows it remains a coupled failure mode: every observed interruption combined high exit speed with saturated action. A bounded intervention focused on negative-angle acquisition and branch or trajectory robustness can address the dominant loss mechanism while retaining velocity-aware regulation as a guard against trading no-entry failures for hold failures. The 4.375 percentage-point development gap and resolved failure mechanism support further inquiry; official assessment and no-credible-route are not yet justified."
-      }
-    },
-    "request_fingerprint": "9fe2d2de90c86f4d6604a3f04b31b052b782ba80b5700090b3ffd82bbb98ce3a",
-    "session_id": "S4",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T1:checkpoint-100352 is the strongest available development candidate at 94.375% on M1, with no working, best-known, or retained role assigned. The other T1 checkpoints have no evaluation evidence.",
     "completed_operations": [
