@@ -1,13 +1,5 @@
 {
-  "active_inquiry": {
-    "closure_condition": "Close after one bounded fresh PPO candidate uses the fixed 120000-step allocation with baseline target sampling and baseline IK-branch observation semantics plus one stabilization-specific intervention, then is evaluated against T1 on the same 200 fixed-seed development panel [4200, 4400) with per-episode angle, first entry, uninterrupted hold streak, interruptions, minimum distance, and final distance. Treat the route as successful only if complete episode success reaches at least 196/200 and post-entry hold failures are no greater than the baseline count of 5; otherwise resolve it as insufficient and retain the strongest evidence-backed candidate without claiming the official objective.",
-    "goal_connection": "The human goal requires at least 196 complete uninterrupted holds in a 200-episode official panel. T1 is seven successes short on the matching development panel, while T2 proved the focused angular subgroup can be acquired but traded those gains for 14 additional post-entry hold failures. Separating stabilization learning from the tested acquisition and branch changes is the remaining evidence-based route before official assessment or campaign closure.",
-    "id": "I3",
-    "opened_in_session": "S6",
-    "question": "Can a decoupled stabilization-aware intervention, while retaining the baseline target distribution and IK-branch representation, recover the -180 to -90 degree acquisition subgroup without increasing post-entry hold failures and reach at least 196 complete successes on the fixed development panel?",
-    "rationale": "M1 identified 11 baseline failures in one angular sector, but five already failed after entering tolerance. M2 showed that the coupled focused-sampling and branch-ordering intervention eliminated the sector failures yet increased post-entry hold failures from 5 to 19 and reduced total success to 176/200. The physical model predicts that residual velocity, sampled-data regulation, and inertial coupling can be improved by a hold-specific learning signal without changing acquisition coverage or branch encoding. A single decoupled candidate, judged by complete success and the protected post-entry subgroup on the paired panel, discriminates whether stabilization can be improved without repeating the prior tradeoff.",
-    "reframes": []
-  },
+  "active_inquiry": null,
   "campaign": {
     "base_commit": "c02b0d59e8ef397c87d92f70e986ad545e585b95",
     "id": "e8788df6-9f4a-4dac-92b7-48e40477e827",
@@ -2474,7 +2466,7 @@
     }
   },
   "counters": {
-    "event": 11,
+    "event": 12,
     "inquiry": 3,
     "measurement": 3,
     "session": 7,
@@ -4097,9 +4089,63 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-09-30T22:45:12Z",
+      "error": null,
+      "id": "E12",
+      "inquiry_id": "I3",
+      "kind": "inquiry",
+      "request": {
+        "action": "close",
+        "outcome": "insufficient",
+        "reason": "I3 closure condition was not met. The decoupled stabilization candidate T3:checkpoint-120832 used the baseline target distribution and IK-branch observation semantics with the endpoint-speed intervention, but achieved 0/200 complete uninterrupted successes on the fixed development panel [4200, 4400), versus the paired T1 reference at 189/200. T3 therefore missed the 196/200 threshold by 196 episodes and cannot support the official 98% objective. The intervention also had zero training success across all checkpoints, so it provides no evidence that stronger endpoint-speed shaping improves stabilization. Retain T1:checkpoint-100352 as the strongest evidence-backed development candidate and do not request official assessment."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I3",
+        "outcome": "insufficient",
+        "reason": "I3 closure condition was not met. The decoupled stabilization candidate T3:checkpoint-120832 used the baseline target distribution and IK-branch observation semantics with the endpoint-speed intervention, but achieved 0/200 complete uninterrupted successes on the fixed development panel [4200, 4400), versus the paired T1 reference at 189/200. T3 therefore missed the 196/200 threshold by 196 episodes and cannot support the official 98% objective. The intervention also had zero training success across all checkpoints, so it provides no evidence that stronger endpoint-speed shaping improves stabilization. Retain T1:checkpoint-100352 as the strongest evidence-backed development candidate and do not request official assessment.",
+        "status": "completed"
+      },
+      "session_id": "S7",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "close",
+        "inquiry_id": "I3",
+        "outcome": "insufficient",
+        "reason": "I3 closure condition was not met. The decoupled stabilization candidate T3:checkpoint-120832 used the baseline target distribution and IK-branch observation semantics with the endpoint-speed intervention, but achieved 0/200 complete uninterrupted successes on the fixed development panel [4200, 4400), versus the paired T1 reference at 189/200. T3 therefore missed the 196/200 threshold by 196 episodes and cannot support the official 98% objective. The intervention also had zero training success across all checkpoints, so it provides no evidence that stronger endpoint-speed shaping improves stabilization. Retain T1:checkpoint-100352 as the strongest evidence-backed development candidate and do not request official assessment."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I3",
+        "outcome": "insufficient",
+        "reason": "I3 closure condition was not met. The decoupled stabilization candidate T3:checkpoint-120832 used the baseline target distribution and IK-branch observation semantics with the endpoint-speed intervention, but achieved 0/200 complete uninterrupted successes on the fixed development panel [4200, 4400), versus the paired T1 reference at 189/200. T3 therefore missed the 196/200 threshold by 196 episodes and cannot support the official 98% objective. The intervention also had zero training success across all checkpoints, so it provides no evidence that stronger endpoint-speed shaping improves stabilization. Retain T1:checkpoint-100352 as the strongest evidence-backed development candidate and do not request official assessment.",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E12",
+    "inquiry_id": "I3",
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "close",
+        "outcome": "insufficient",
+        "reason": "I3 closure condition was not met. The decoupled stabilization candidate T3:checkpoint-120832 used the baseline target distribution and IK-branch observation semantics with the endpoint-speed intervention, but achieved 0/200 complete uninterrupted successes on the fixed development panel [4200, 4400), versus the paired T1 reference at 189/200. T3 therefore missed the 196/200 threshold by 196 episodes and cannot support the official 98% objective. The intervention also had zero training success across all checkpoints, so it provides no evidence that stronger endpoint-speed shaping improves stabilization. Retain T1:checkpoint-100352 as the strongest evidence-backed development candidate and do not request official assessment."
+      }
+    },
+    "request_fingerprint": "d7eb64d0d86dc000b1c962adbeba2e48dbdadc195be71d4a439b0bd268f720c6",
+    "session_id": "S7",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T1:checkpoint-100352 remains the best supported development candidate and baseline reference at 189/200, with archived policy/runtime artifacts and M1/M2 evidence. T2:checkpoint-120832 is retained as a measured but insufficient intervention result at 176/200; it has no working, best-known, or retained model role. No candidate has been assigned a formal model role.",
     "completed_operations": [
@@ -4144,7 +4190,8 @@
     "objective": "Advance I3 toward its closure condition: Close after one bounded fresh PPO candidate uses the fixed 120000-step allocation with baseline target sampling and baseline IK-branch observation semantics plus one stabilization-specific intervention, then is evaluated against T1 on the same 200 fixed-seed development panel [4200, 4400) with per-episode angle, first entry, uninterrupted hold streak, interruptions, minimum distance, and final distance. Treat the route as successful only if complete episode success reaches at least 196/200 and post-entry hold failures are no greater than the baseline count of 5; otherwise resolve it as insufficient and retain the strongest evidence-backed candidate without claiming the official objective.",
     "operation_ids": [
       "T3",
-      "M3"
+      "M3",
+      "E12"
     ],
     "scientific_parent_commit": "2f327141a098fa183866b6a860b63d853e81bf8e"
   },
