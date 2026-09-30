@@ -11,10 +11,11 @@ from robot_learning.robots.two_joint_arm import FOREARM_LENGTH, UPPER_ARM_LENGTH
 OBSERVATION_SIZE = 11
 
 
-def reach_observation(data) -> np.ndarray:
-    def wrap_to_pi(angle: float) -> float:
-        return float((angle + np.pi) % (2.0 * np.pi) - np.pi)
+def _wrap_to_pi(angle: float) -> float:
+    return float((angle + np.pi) % (2.0 * np.pi) - np.pi)
 
+
+def inverse_kinematic_branch_errors(data) -> np.ndarray:
     def shoulder_for_elbow(elbow: float) -> float:
         return float(
             np.arctan2(target_y, target_x)
@@ -33,17 +34,30 @@ def reach_observation(data) -> np.ndarray:
     shoulder_open = shoulder_for_elbow(elbow_open)
     elbow_folded = -elbow_open
     shoulder_folded = shoulder_for_elbow(elbow_folded)
+    return np.asarray(
+        [
+            _wrap_to_pi(shoulder_open - float(data.qpos[0])),
+            _wrap_to_pi(elbow_open - float(data.qpos[1])),
+            _wrap_to_pi(shoulder_folded - float(data.qpos[0])),
+            _wrap_to_pi(elbow_folded - float(data.qpos[1])),
+        ],
+        dtype=np.float64,
+    )
+
+
+def branch_configuration_error(data) -> float:
+    errors = inverse_kinematic_branch_errors(data).reshape(2, 2)
+    return float(min(np.linalg.norm(errors[0]), np.linalg.norm(errors[1])))
+
+
+def reach_observation(data) -> np.ndarray:
+    branch_errors = inverse_kinematic_branch_errors(data)
     end_effector = data.site("end_effector").xpos.copy()
     return np.concatenate(
         [
             data.qpos,
             data.qvel,
             end_effector - data.mocap_pos[0],
-            [
-                wrap_to_pi(shoulder_open - float(data.qpos[0])),
-                wrap_to_pi(elbow_open - float(data.qpos[1])),
-                wrap_to_pi(shoulder_folded - float(data.qpos[0])),
-                wrap_to_pi(elbow_folded - float(data.qpos[1])),
-            ],
+            branch_errors,
         ]
     ).astype(np.float32)
