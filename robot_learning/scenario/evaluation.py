@@ -85,11 +85,19 @@ def evaluate_research_model(
         was_in_tolerance = False
         inverse_kinematic_branch: str | None = None
         first_entry_branch: str | None = None
+        branch_steps = {"elbow_open": 0, "elbow_folded": 0}
+        branch_switches = 0
+        previous_branch: str | None = None
         while not (terminated or truncated):
             action = runtime.predict(obs)
             obs, reward, terminated, truncated, info = env.step(action)
             steps += 1
             reward_total += float(reward)
+            current_branch = _inverse_kinematic_branch(target_position, env.data.qpos)
+            branch_steps[current_branch] += 1
+            if previous_branch is not None and current_branch != previous_branch:
+                branch_switches += 1
+            previous_branch = current_branch
             distance_cm = 100.0 * float(info["distance"])
             held_steps = int(info.get("held_steps", 0))
             is_new_minimum = distance_cm < min_distance_cm
@@ -140,6 +148,9 @@ def evaluate_research_model(
                 "first_reach_step": first_reach_step,
                 "inverse_kinematic_branch": inverse_kinematic_branch,
                 "inverse_kinematic_branch_at_first_entry": first_entry_branch,
+                "inverse_kinematic_branch_steps": branch_steps,
+                "inverse_kinematic_branch_switches": branch_switches,
+                "folded_branch_fraction": branch_steps["elbow_folded"] / steps,
                 "max_held_steps": max_held_steps,
                 "in_tolerance_steps": in_tolerance_steps,
                 "hold_interruptions": hold_interruptions,
@@ -150,7 +161,7 @@ def evaluate_research_model(
 
     successes = sum(episode["success"] for episode in episode_results)
     return {
-        "schema_version": 6,
+        "schema_version": 7,
         "model": str(model_path),
         "episodes": episodes,
         "seed": seed,

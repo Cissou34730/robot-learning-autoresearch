@@ -41,12 +41,18 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
         hold_seconds: float = HOLD_SECONDS,
         frame_skip: int = FRAME_SKIP,
         max_episode_steps: int = MAX_EPISODE_STEPS,
+        singularity_escape_reward_coefficient: float = 0.0,
         policy_runtime=None,
     ) -> None:
         super().__init__()
+        if singularity_escape_reward_coefficient < 0.0:
+            raise ValueError("singularity escape reward coefficient must be non-negative")
         self.max_episode_steps = max_episode_steps
         self.frame_skip = frame_skip
         self.target_radius_range = target_radius_range
+        self.singularity_escape_reward_coefficient = (
+            singularity_escape_reward_coefficient
+        )
         self.policy_io = policy_runtime.io if policy_runtime else make_policy_io()
 
         self.model = mujoco.MjModel.from_xml_path(str(TWO_JOINT_ARM_XML_PATH))
@@ -71,6 +77,7 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
         self._previous_distance = 0.0
         self._held_steps = 0
         self._outside_after_hold = False
+        self._previous_escape_potential = 0.0
 
     def _end_effector_position(self) -> np.ndarray:
         return self.data.site("end_effector").xpos.copy()
@@ -79,6 +86,9 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
         return float(
             np.linalg.norm(self._end_effector_position() - self.data.mocap_pos[0])
         )
+
+    def _singularity_escape_potential(self) -> float:
+        return min(abs(float(self.data.qpos[1])), 0.6)
 
     def _sample_target_position(self) -> None:
         angle = float(self.np_random.uniform(-np.pi, np.pi))
@@ -117,6 +127,7 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
         self._previous_distance = self._distance_to_target()
         self._held_steps = 0
         self._outside_after_hold = False
+        self._previous_escape_potential = self._singularity_escape_potential()
         return self._observation(), {}
 
     def step(
@@ -132,6 +143,13 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
             mujoco.mj_step(self.model, self.data)
 
         distance = self._distance_to_target()
+        current_escape_potential = self._singularity_escape_potential()
+        escape_progress = 0.0
+        if distance > self.success_threshold:
+            escape_progress = max(
+                0.0, current_escape_potential - self._previous_escape_potential
+            )
+        self._previous_escape_potential = current_escape_potential
 
         previous_held_steps = self._held_steps
         if distance <= self.success_threshold:
@@ -151,6 +169,10 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
             previous_held_steps=previous_held_steps,
             hold_steps_required=self.hold_steps_required,
             penalize_outside=self._outside_after_hold,
+            singularity_escape_progress=escape_progress,
+            singularity_escape_reward_coefficient=(
+                self.singularity_escape_reward_coefficient
+            ),
         )
         self._previous_distance = distance
 
