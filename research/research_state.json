@@ -2466,7 +2466,7 @@
     }
   },
   "counters": {
-    "event": 12,
+    "event": 13,
     "inquiry": 3,
     "measurement": 3,
     "session": 7,
@@ -2475,7 +2475,7 @@
   "human_goal": {
     "source": "research/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -4112,18 +4112,171 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-09-30T22:46:56Z",
+      "error": null,
+      "id": "E13",
+      "inquiry_id": "I3",
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "T1:checkpoint-100352 remains the strongest evidence-backed development candidate and baseline reference at 189/200, supported by M1, M2, and M3. T2:checkpoint-120832 remains a measured but insufficient intervention at 176/200 with 19 post-entry hold failures. T3:checkpoint-120832 is a measured failed stabilization recipe at 0/200 and has no role. No candidate has been assigned working, best-known, or retained status.",
+        "completed_operations": [
+          "T3",
+          "M3",
+          "E12"
+        ],
+        "cumulative_resource_use": "Three fresh PPO training operations completed with the maintainer's requested 120000-step allocation, each producing 120832 rollout-boundary steps. M1 evaluated T1 on the 200-episode panel [4200, 4400); M2 evaluated T2 and T1 on that same paired panel; M3 evaluated T3 and T1 on that same paired panel. No official assessment has been run.",
+        "current_goal_gap": "T1:checkpoint-100352 remains the strongest supported development result at 189/200 (94.5%), seven successes below the 196/200 development objective. T2:checkpoint-120832 achieved 176/200 and increased post-entry hold failures from 5 to 19. T3:checkpoint-120832 achieved 0/200, with zero training success across all T3 checkpoints. No candidate supports an official 98% claim.",
+        "current_synthesis": "T1 established a reproducible baseline whose failures were concentrated in the -180 to -90 degree sector: six failures never entered tolerance and five entered but held only 1-2 samples. I2's coupled focused-sampling and compatible-branch intervention eliminated that sector's acquisition failures but traded them for more post-entry hold failures, so complete success remained worse. I3 isolated stabilization by restoring baseline full-angle target sampling and open/folded IK-branch observations while doubling endpoint-speed shaping. T3 failed to learn at every checkpoint and scored 0/200 complete successes, versus T1's reproduced 189/200 on the same paired panel. This resolves the tested stronger speed-shaping recipe as insufficient, but does not prove that all stabilization-aware methods are ineffective. The evidence is development-only; the official objective remains unmeasured.",
+        "decision_frontier": "I3 is resolved as insufficient. At the next fresh goal-review session, decide whether a new bounded, evidence-backed mechanism can address the remaining angular acquisition and complete-hold gap without repeating the tested tradeoffs, or whether no credible route remains. Any future candidate must be judged by complete uninterrupted success and post-entry failures, not tolerance entry alone; official assessment is not justified by the current evidence.",
+        "evidence_references": [
+          "T1",
+          "M1",
+          "E4",
+          "E6",
+          "T2",
+          "M2",
+          "E8",
+          "E10",
+          "T3",
+          "M3",
+          "E12"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 complete uninterrupted holds in a 200-episode official panel. I3 did not establish a route to that goal: T3 achieved 0/200 on the fixed development panel, while the paired T1 reference achieved 189/200. The official-distribution objective remains unmeasured and unclaimed.",
+        "next_direction_or_closure": "This inquiry is closed as insufficient and the session is ending. Return to goal review in a fresh session. Do not request official assessment from the current evidence; first determine whether a scientifically credible new route remains, with T1 preserved as the reference."
+      },
+      "result": {
+        "session_id": "S7",
+        "status": "checkpointed"
+      },
+      "session_id": "S7",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "2f327141a098fa183866b6a860b63d853e81bf8e",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "T1:checkpoint-100352 remains the strongest evidence-backed development candidate and baseline reference at 189/200, supported by M1, M2, and M3. T2:checkpoint-120832 remains a measured but insufficient intervention at 176/200 with 19 post-entry hold failures. T3:checkpoint-120832 is a measured failed stabilization recipe at 0/200 and has no role. No candidate has been assigned working, best-known, or retained status.",
+        "completed_operations": [
+          "T3",
+          "M3",
+          "E12"
+        ],
+        "cumulative_resource_use": "Three fresh PPO training operations completed with the maintainer's requested 120000-step allocation, each producing 120832 rollout-boundary steps. M1 evaluated T1 on the 200-episode panel [4200, 4400); M2 evaluated T2 and T1 on that same paired panel; M3 evaluated T3 and T1 on that same paired panel. No official assessment has been run.",
+        "current_goal_gap": "T1:checkpoint-100352 remains the strongest supported development result at 189/200 (94.5%), seven successes below the 196/200 development objective. T2:checkpoint-120832 achieved 176/200 and increased post-entry hold failures from 5 to 19. T3:checkpoint-120832 achieved 0/200, with zero training success across all T3 checkpoints. No candidate supports an official 98% claim.",
+        "current_synthesis": "T1 established a reproducible baseline whose failures were concentrated in the -180 to -90 degree sector: six failures never entered tolerance and five entered but held only 1-2 samples. I2's coupled focused-sampling and compatible-branch intervention eliminated that sector's acquisition failures but traded them for more post-entry hold failures, so complete success remained worse. I3 isolated stabilization by restoring baseline full-angle target sampling and open/folded IK-branch observations while doubling endpoint-speed shaping. T3 failed to learn at every checkpoint and scored 0/200 complete successes, versus T1's reproduced 189/200 on the same paired panel. This resolves the tested stronger speed-shaping recipe as insufficient, but does not prove that all stabilization-aware methods are ineffective. The evidence is development-only; the official objective remains unmeasured.",
+        "decision_frontier": "I3 is resolved as insufficient. At the next fresh goal-review session, decide whether a new bounded, evidence-backed mechanism can address the remaining angular acquisition and complete-hold gap without repeating the tested tradeoffs, or whether no credible route remains. Any future candidate must be judged by complete uninterrupted success and post-entry failures, not tolerance entry alone; official assessment is not justified by the current evidence.",
+        "evidence_references": [
+          "T1",
+          "M1",
+          "E4",
+          "E6",
+          "T2",
+          "M2",
+          "E8",
+          "E10",
+          "T3",
+          "M3",
+          "E12"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 complete uninterrupted holds in a 200-episode official panel. I3 did not establish a route to that goal: T3 achieved 0/200 on the fixed development panel, while the paired T1 reference achieved 189/200. The official-distribution objective remains unmeasured and unclaimed.",
+        "inquiry_id": "I3",
+        "next_direction_or_closure": "This inquiry is closed as insufficient and the session is ending. Return to goal review in a fresh session. Do not request official assessment from the current evidence; first determine whether a scientifically credible new route remains, with T1 preserved as the reference.",
+        "session_id": "S7"
+      },
+      "presentation": {
+        "backend_session_id": "e3cd52be-0097-405b-a727-7c0fac01dc9e",
+        "campaign_id": "e8788df6-9f4a-4dac-92b7-48e40477e827",
+        "campaign_usage": "26m05s | 67.14 AIU | prompt 10.6m (85% cached) | output 76.3k",
+        "session_id": "S7",
+        "session_kind": "inquiry",
+        "session_usage": "5m37s | 11.47 AIU | prompt 2.4m (91% cached) | output 15.7k"
+      },
+      "result": {
+        "session_id": "S7",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "bda393f335746b658bfe38a3fda1f0d7203e37b0",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E13",
+    "inquiry_id": "I3",
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "T1:checkpoint-100352 remains the strongest evidence-backed development candidate and baseline reference at 189/200, supported by M1, M2, and M3. T2:checkpoint-120832 remains a measured but insufficient intervention at 176/200 with 19 post-entry hold failures. T3:checkpoint-120832 is a measured failed stabilization recipe at 0/200 and has no role. No candidate has been assigned working, best-known, or retained status.",
+        "completed_operations": [
+          "T3",
+          "M3",
+          "E12"
+        ],
+        "cumulative_resource_use": "Three fresh PPO training operations completed with the maintainer's requested 120000-step allocation, each producing 120832 rollout-boundary steps. M1 evaluated T1 on the 200-episode panel [4200, 4400); M2 evaluated T2 and T1 on that same paired panel; M3 evaluated T3 and T1 on that same paired panel. No official assessment has been run.",
+        "current_goal_gap": "T1:checkpoint-100352 remains the strongest supported development result at 189/200 (94.5%), seven successes below the 196/200 development objective. T2:checkpoint-120832 achieved 176/200 and increased post-entry hold failures from 5 to 19. T3:checkpoint-120832 achieved 0/200, with zero training success across all T3 checkpoints. No candidate supports an official 98% claim.",
+        "current_synthesis": "T1 established a reproducible baseline whose failures were concentrated in the -180 to -90 degree sector: six failures never entered tolerance and five entered but held only 1-2 samples. I2's coupled focused-sampling and compatible-branch intervention eliminated that sector's acquisition failures but traded them for more post-entry hold failures, so complete success remained worse. I3 isolated stabilization by restoring baseline full-angle target sampling and open/folded IK-branch observations while doubling endpoint-speed shaping. T3 failed to learn at every checkpoint and scored 0/200 complete successes, versus T1's reproduced 189/200 on the same paired panel. This resolves the tested stronger speed-shaping recipe as insufficient, but does not prove that all stabilization-aware methods are ineffective. The evidence is development-only; the official objective remains unmeasured.",
+        "decision_frontier": "I3 is resolved as insufficient. At the next fresh goal-review session, decide whether a new bounded, evidence-backed mechanism can address the remaining angular acquisition and complete-hold gap without repeating the tested tradeoffs, or whether no credible route remains. Any future candidate must be judged by complete uninterrupted success and post-entry failures, not tolerance entry alone; official assessment is not justified by the current evidence.",
+        "evidence_references": [
+          "T1",
+          "M1",
+          "E4",
+          "E6",
+          "T2",
+          "M2",
+          "E8",
+          "E10",
+          "T3",
+          "M3",
+          "E12"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 complete uninterrupted holds in a 200-episode official panel. I3 did not establish a route to that goal: T3 achieved 0/200 on the fixed development panel, while the paired T1 reference achieved 189/200. The official-distribution objective remains unmeasured and unclaimed.",
+        "next_direction_or_closure": "This inquiry is closed as insufficient and the session is ending. Return to goal review in a fresh session. Do not request official assessment from the current evidence; first determine whether a scientifically credible new route remains, with T1 preserved as the reference."
+      }
+    },
+    "request_fingerprint": "8ad580ebdb01fc760657723d7ac4c48e24cdbbde0584b5aa164b02a2c36bc4fa",
+    "session_id": "S7",
+    "supersedes": null
+  },
   "pi_checkpoint": {
-    "candidates_and_roles": "T1:checkpoint-100352 remains the best supported development candidate and baseline reference at 189/200, with archived policy/runtime artifacts and M1/M2 evidence. T2:checkpoint-120832 is retained as a measured but insufficient intervention result at 176/200; it has no working, best-known, or retained model role. No candidate has been assigned a formal model role.",
+    "candidates_and_roles": "T1:checkpoint-100352 remains the strongest evidence-backed development candidate and baseline reference at 189/200, supported by M1, M2, and M3. T2:checkpoint-120832 remains a measured but insufficient intervention at 176/200 with 19 post-entry hold failures. T3:checkpoint-120832 is a measured failed stabilization recipe at 0/200 and has no role. No candidate has been assigned working, best-known, or retained status.",
     "completed_operations": [
-      "E10"
+      "T3",
+      "M3",
+      "E12"
     ],
-    "cumulative_resource_use": "Two fresh PPO training operations completed with the maintainer's requested 120000-step allocation, producing 120832 rollout-boundary steps each. M1 evaluated the T1 baseline on the 200-episode panel [4200, 4400); M2 evaluated T2 and the T1 reference on that same paired panel with complete-hold diagnostics. E10 opened I3 without consuming training or measurement resources. No official assessment has been run.",
-    "current_goal_gap": "The best supported development result is T1:checkpoint-100352 at 189/200 (94.5%), seven successes below the 196/200 development objective. T2:checkpoint-120832 reached 176/200 (88.0%) on the same panel. T2 eliminated the baseline's 11 failures in the -180 to -90 degree sector, but increased post-entry hold failures from 5 to 19, so the remaining goal gap is a complete-hold stabilization problem under any future acquisition improvement. The official-distribution objective remains unmeasured.",
-    "current_synthesis": "T1 established a reproducible fresh PPO baseline with 120832 completed rollout-boundary steps from the required 120000-step allocation. M1 showed 189/200 successes, with all 11 failures in the -180 to -90 degree sector: six never entered tolerance and five entered but held only 1-2 samples. This supported angle-specific acquisition, branch selection, or joint coordination as the primary baseline mechanism, with stabilization as a secondary risk. I2 tested one coupled intervention: 50% focused sampling of the diagnosed sector and joint-limit-compatible nearest-branch ordering. T2 completed the fixed allocation, and M2 evaluated T2 and T1 on the same 200 fixed-seed panel with paired per-episode diagnostics. T2 achieved 66/66 successes in the focused sector but only 176/200 overall, with 19 post-entry hold failures versus T1's 5. The intervention therefore traded acquisition failures for stabilization failures; entry improvement is not complete episode success. I2 is consequently insufficient, and neither candidate supports the official 98% claim. E10 opened I3 as the bounded next route: retain baseline target sampling and IK-branch observation semantics while testing one stabilization-specific intervention.",
-    "decision_frontier": "I2 is resolved as insufficient. I3 is now the active bounded inquiry, asking whether a decoupled stabilization-aware intervention can recover the -180 to -90 degree acquisition subgroup without increasing post-entry hold failures. Its candidate must be judged by complete uninterrupted success on the fixed development panel, not entry improvement alone, before an official assessment is considered.",
+    "cumulative_resource_use": "Three fresh PPO training operations completed with the maintainer's requested 120000-step allocation, each producing 120832 rollout-boundary steps. M1 evaluated T1 on the 200-episode panel [4200, 4400); M2 evaluated T2 and T1 on that same paired panel; M3 evaluated T3 and T1 on that same paired panel. No official assessment has been run.",
+    "current_goal_gap": "T1:checkpoint-100352 remains the strongest supported development result at 189/200 (94.5%), seven successes below the 196/200 development objective. T2:checkpoint-120832 achieved 176/200 and increased post-entry hold failures from 5 to 19. T3:checkpoint-120832 achieved 0/200, with zero training success across all T3 checkpoints. No candidate supports an official 98% claim.",
+    "current_synthesis": "T1 established a reproducible baseline whose failures were concentrated in the -180 to -90 degree sector: six failures never entered tolerance and five entered but held only 1-2 samples. I2's coupled focused-sampling and compatible-branch intervention eliminated that sector's acquisition failures but traded them for more post-entry hold failures, so complete success remained worse. I3 isolated stabilization by restoring baseline full-angle target sampling and open/folded IK-branch observations while doubling endpoint-speed shaping. T3 failed to learn at every checkpoint and scored 0/200 complete successes, versus T1's reproduced 189/200 on the same paired panel. This resolves the tested stronger speed-shaping recipe as insufficient, but does not prove that all stabilization-aware methods are ineffective. The evidence is development-only; the official objective remains unmeasured.",
+    "decision_frontier": "I3 is resolved as insufficient. At the next fresh goal-review session, decide whether a new bounded, evidence-backed mechanism can address the remaining angular acquisition and complete-hold gap without repeating the tested tradeoffs, or whether no credible route remains. Any future candidate must be judged by complete uninterrupted success and post-entry failures, not tolerance entry alone; official assessment is not justified by the current evidence.",
     "evidence_references": [
       "T1",
       "M1",
@@ -4132,13 +4285,16 @@
       "T2",
       "M2",
       "E8",
-      "E10"
+      "E10",
+      "T3",
+      "M3",
+      "E12"
     ],
-    "human_goal_connection": "The human goal requires at least 196 successes in a 200-episode official panel, with every success completing the uninterrupted 100-sample hold. I2 did not close this gap: T1:checkpoint-100352 remains at 189/200 on the matching development panel, while the coupled T2 intervention achieved 176/200. No official assessment has been run and the 98% objective is not established.",
-    "inquiry_id": null,
-    "next_direction_or_closure": "The goal-review session is complete. Begin a fresh I3 inquiry session before requesting training or measurement. In that session, use the already defined closure condition: one fresh PPO candidate with the fixed 120000-step allocation, baseline target sampling and IK-branch semantics, and one stabilization-specific intervention; evaluate it against T1 on the same 200 fixed-seed panel with complete-hold diagnostics. Treat I3 as successful only at least 196/200 complete successes with no more than five post-entry hold failures; otherwise resolve it as insufficient and retain the strongest evidence-backed candidate without claiming the official objective.",
-    "scientific_commit": "3d4ab5693d81fb39227533bcff688609f53b031f",
-    "session_id": "S6"
+    "human_goal_connection": "The human goal requires at least 196 complete uninterrupted holds in a 200-episode official panel. I3 did not establish a route to that goal: T3 achieved 0/200 on the fixed development panel, while the paired T1 reference achieved 189/200. The official-distribution objective remains unmeasured and unclaimed.",
+    "inquiry_id": "I3",
+    "next_direction_or_closure": "This inquiry is closed as insufficient and the session is ending. Return to goal review in a fresh session. Do not request official assessment from the current evidence; first determine whether a scientifically credible new route remains, with T1 preserved as the reference.",
+    "scientific_commit": "bda393f335746b658bfe38a3fda1f0d7203e37b0",
+    "session_id": "S7"
   },
   "schema_version": 6,
   "scientific_model": {
@@ -4146,23 +4302,6 @@
     "path": "research/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "e3cd52be-0097-405b-a727-7c0fac01dc9e",
-    "id": "S7",
-    "inquiry_id": "I3",
-    "kind": "inquiry",
-    "objective": "Advance I3 toward its closure condition: Close after one bounded fresh PPO candidate uses the fixed 120000-step allocation with baseline target sampling and baseline IK-branch observation semantics plus one stabilization-specific intervention, then is evaluated against T1 on the same 200 fixed-seed development panel [4200, 4400) with per-episode angle, first entry, uninterrupted hold streak, interruptions, minimum distance, and final distance. Treat the route as successful only if complete episode success reaches at least 196/200 and post-entry hold failures are no greater than the baseline count of 5; otherwise resolve it as insufficient and retain the strongest evidence-backed candidate without claiming the official objective.",
-    "operation_ids": [
-      "T3",
-      "M3",
-      "E12"
-    ],
-    "scientific_parent_commit": "2f327141a098fa183866b6a860b63d853e81bf8e"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
