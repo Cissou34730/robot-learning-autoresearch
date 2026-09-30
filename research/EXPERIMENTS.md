@@ -61,3 +61,4 @@
 | E41 | inquiry | I9 | completed |
 | E42 | checkpoint | I9 | checkpointed |
 | E43 | inquiry | I10 | completed |
+| E44 | checkpoint | - | checkpointed |
