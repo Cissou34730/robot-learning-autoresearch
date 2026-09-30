@@ -521,3 +521,33 @@ separate from harness changes so their outcomes are not conflated.
   The effect on the next campaign remains untested. All campaign code, results,
   models, checkpoints, and pending work are preserved; the launcher was stopped
   by the maintainer before this rollback.
+
+## Outstanding: evidence selection and scientific progression after startup
+
+- **Issue:** a substantive startup does not by itself ensure that later work
+  selects informative policy artifacts, resolves a bounded scientific question,
+  or chooses the next operation from the remaining uncertainty rather than
+  defaulting to another training recipe.
+- **Observed evidence:** the winning campaign achieved the goal while I1
+  remained the research container. The later preparation-heavy campaign
+  investigated control feasibility before training but continued I1 into T2.
+  The stopped campaign evaluated only the terminal T1 checkpoint, left its
+  training-peak alternative unmeasured, closed I1, and opened a training-shaped
+  I2. Neither keeping an inquiry open nor closing it after one evaluation is,
+  by itself, evidence of good scientific progression.
+- **Current boundary:** the pre-adjustment scientific guidance is restored.
+  The best-known role-permission repair removes a mechanical assessment dead
+  end, not the checkpoint-selection or scientific-decision problem; no
+  model-role operation has been recorded in the stopped campaign.
+- **Limits:** an unmeasured training peak is not a proven better development
+  policy. The startup's false phase inference and excess browsing do not
+  establish a read-perimeter defect as the cause of the regression.
+- **Desired improvement:** checkpoint selection should use the available
+  learning trajectory and the inquiry's evidence needs; conclusions should
+  preserve what remains untested; continuation, closure, and new operations
+  should follow the resulting campaign-relevant decision. This does not require
+  evaluating every checkpoint, proving every cause, or inserting compulsory
+  diagnostic rounds before training.
+- **Disposition:** outstanding. Restoring earlier guidance does not establish
+  that this problem is solved; further changes require a bounded proposal and
+  maintainer approval.
