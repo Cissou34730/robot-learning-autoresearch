@@ -82,3 +82,4 @@
 | E56 | inquiry | I12 | completed |
 | E57 | checkpoint | I12 | checkpointed |
 | E58 | inquiry | I13 | completed |
+| E59 | checkpoint | - | checkpointed |
