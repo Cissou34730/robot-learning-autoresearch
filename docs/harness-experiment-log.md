@@ -14,12 +14,13 @@ artifacts. Campaign history remains in Git for later maintainer analysis.
 
 ## Current baseline
 
-The three restored harness files match the winning campaign's final reference
-`f6fea61`: `run_research.ps1`, `research/program.md`, and
-`research/build_research_brief.py`. The post-winning closure-strengthening
-change `b4f1cdf` and scientific-handoff change `c0cfcb6` are removed.
+Scientific-work prompt behavior remains at the winning campaign's final
+reference `f6fea61`, restored in `5fef279`. The post-winning
+closure-strengthening change `b4f1cdf` and scientific-handoff change `c0cfcb6`
+remain removed. The goal-review role-assignment correction below changes only
+operation availability, terminal prerequisites, and the meaning of best-known;
+it is not a new scientific-action-selection or closure experiment.
 The inquiry architecture and independent runtime fixes remain unchanged.
-No post-winning prompt experiment is active.
 
 The objective under investigation is scientifically justified action selection:
 the PI chooses the action that can resolve a consequential uncertainty rather
@@ -275,6 +276,37 @@ its scientific breadth or achieve its result.
   reproduced the permission failure. No tests or filesystem permissions were
   changed to bypass it. These checks cannot validate scientific effectiveness.
   No campaign was started or resumed to validate this restoration.
+
+## Goal-review model-role correction
+
+- **Baseline:** winning scientific-work prompts restored in `5fef279`.
+- **Implementation commit:** the commit containing this entry,
+  `Fix goal-review model-role assignment`.
+- **Defect:** goal review could request official assessment only for an
+  explicitly assigned best-known candidate, but could not assign any model
+  role. When the inquiry cap prevented another inquiry and all roles were
+  empty, this made assessment mechanically unreachable. The completed
+  I1-I15 campaign ended in that configuration at `6f0da24`.
+- **Change:** permit model-role operations during goal review using the
+  existing completed-evidence and candidate-integrity requirements. Terminal
+  launcher guidance states the best-known prerequisite and permitted role
+  assignment. The program defines best-known as a relative evidence-backed
+  selection, not certification that the human goal has been reached.
+  Instruments document the updated operation availability.
+- **Unchanged:** no automatic promotion or assessment, score threshold,
+  inquiry-cap change, scientific-action-selection rewrite, or checkpoint
+  bypass. Opening an inquiry still requires checkpointing into a fresh
+  inquiry session before any model-role operation.
+- **Implementation checks:** eleven selected behavior tests passed, covering
+  role assignment and assessment requests at the cap, unchanged inquiry and
+  training counters, absence of automatic assessment, rejection of empty,
+  unknown, or failed evidence, and the inquiry-opening checkpoint boundary.
+  Touched-file Ruff and launcher PowerShell parsing passed. The assessment
+  tests record requests only; they do not execute protected evaluation.
+- **Disposition:** retained as a permission-correctness fix. Scientific
+  effectiveness is untested. This does not explain weaker campaign openings
+  or solve the remaining scientific-inquiry and method-development problem.
+  No campaign was started, resumed, reset, or otherwise modified.
 
 ## Discussed but not implemented
 

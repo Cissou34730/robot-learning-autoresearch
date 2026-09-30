@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import hashlib
 import json
 import shutil
 import subprocess
@@ -9,7 +10,7 @@ from pathlib import Path
 
 import pytest
 
-from research import reset_campaign, runner_protocol
+from research import reset_campaign, run_experiment, runner_paths, runner_protocol
 from research import runner_repository as repository
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -524,3 +525,248 @@ def test_scientific_model_and_request_paths_remain_protected():
     assert not runner_protocol.is_researcher_owned("research/scientific_model.md")
     assert repository.is_runner_owned("research/operation_request.json")
     assert not runner_protocol.is_researcher_owned("research/operation_request.json")
+
+
+def _goal_review_candidate(
+    monkeypatch, tmp_path: Path, *, at_cap: bool = True
+) -> tuple[dict, dict]:
+    research = tmp_path / "research"
+    research.mkdir()
+    for name, value in {
+        "ROOT": tmp_path,
+        "RESEARCH_DIR": research,
+        "STATE_PATH": research / "research_state.json",
+        "RESULTS_PATH": research / "results.jsonl",
+        "LOG_PATH": research / "EXPERIMENTS.md",
+        "OPERATION_REQUEST_PATH": research / "operation_request.json",
+    }.items():
+        monkeypatch.setattr(runner_paths, name, value)
+    monkeypatch.setattr(
+        runner_paths,
+        "campaign_retained_root",
+        lambda campaign_id: research / "checkpoints" / "retained" / campaign_id,
+    )
+    monkeypatch.setattr(repository, "git", lambda *args: "a" * 40 + "\n")
+    monkeypatch.setattr(repository, "scientific_delta", lambda _parent: [])
+    monkeypatch.setattr(repository, "campaign_lab_manifest", list)
+    monkeypatch.setattr(
+        repository, "publish_scientific_recipe", lambda *_args: "a" * 40
+    )
+    monkeypatch.setattr(
+        runner_protocol, "require_trusted_assessment_runtime", lambda _path: None
+    )
+    state = repository.empty_campaign_state(
+        campaign={"id": "campaign", "started_at": "now", "base_commit": "base"},
+        last_verdict="fresh",
+    )
+    state["scientific_model"] = {
+        "status": "ready",
+        "path": "research/scientific_model.md",
+        "commit": "a" * 40,
+    }
+    if at_cap:
+        state["counters"]["inquiry"] = state["campaign"]["max_inquiries"]
+    repository.start_scientific_session(
+        state,
+        kind="goal_review",
+        objective="Choose the campaign decision from completed evidence.",
+        backend_adapter="copilot",
+        backend_model="gpt-5.6-luna",
+        backend_reasoning="high",
+    )
+    artifact = tmp_path / "archive" / "candidate"
+    artifact.mkdir(parents=True)
+    (artifact / "model.zip").write_bytes(b"model")
+    (artifact / "artifact.json").write_text("{}", encoding="utf-8")
+    (artifact / "policy_runtime.pkl").write_bytes(b"runtime")
+    candidate = {
+        "id": "T1:checkpoint-10",
+        "artifact": repository.repo_relative_path(artifact),
+        "fingerprint": repository.artifact_fingerprint(artifact),
+        "origin_operation": "T1",
+        "name": "checkpoint-10",
+        "parameters": {},
+        "scientific_commit": "b" * 40,
+        "training_steps": 10,
+        "evaluation_artifacts": [],
+    }
+    state["candidates"][candidate["id"]] = candidate
+    evidence = research / "evaluations" / "campaign" / "evidence.json"
+    evidence.parent.mkdir(parents=True)
+    evidence.write_text("{}", encoding="utf-8")
+    state["operation_events"].append(
+        {
+            "id": "M1",
+            "kind": "measurement",
+            "session_id": "S0",
+            "inquiry_id": None,
+            "request": {
+                "description": "Measure the available candidate.",
+                "rationale": "Support a model-role decision.",
+                "measurements": [
+                    {
+                        "instrument": "research_evaluation",
+                        "candidate": candidate["id"],
+                        "episodes": 1,
+                        "seed": 1,
+                    }
+                ],
+            },
+            "result": {
+                "status": "completed",
+                "measurements": [
+                    {
+                        "instrument": "research_evaluation",
+                        "candidate": candidate["id"],
+                        "candidate_id": candidate["id"],
+                        "label": "recorded evidence",
+                        "metrics": {
+                            "episodes": 1,
+                            "successes": 0,
+                            "success_percent": 0.0,
+                            "evaluation_artifact": repository.repo_relative_path(
+                                evidence
+                            ),
+                            "evaluation_artifact_fingerprint": hashlib.sha256(
+                                evidence.read_bytes()
+                            ).hexdigest(),
+                            "model_fingerprint": candidate["fingerprint"],
+                        },
+                    }
+                ],
+                "paired_comparisons": [],
+                "tool_provenance": None,
+            },
+            "status": "completed",
+            "error": None,
+            "supersedes": None,
+            "superseded_by": None,
+            "completed_at": "now",
+        }
+    )
+    repository.write_state(state)
+    return state, candidate
+
+
+def _best_known_request(candidate: dict) -> dict:
+    return {
+        "model_role": {
+            "action": "set_best_known",
+            "candidate": candidate["id"],
+            "reason": "Select the strongest available evidence-backed candidate.",
+            "evidence": ["M1"],
+        }
+    }
+
+
+def _open_inquiry_request() -> dict:
+    return {
+        "inquiry": {
+            "action": "open",
+            "question": "Which method addresses the remaining uncertainty?",
+            "goal_connection": "The answer determines the next campaign direction.",
+            "closure_condition": "Resolve the method decision.",
+            "rationale": "The current evidence leaves a consequential uncertainty.",
+        }
+    }
+
+
+def test_goal_review_assigns_best_known_and_requests_assessment_at_cap(
+    monkeypatch, tmp_path
+):
+    state, candidate = _goal_review_candidate(monkeypatch, tmp_path)
+    assessment = {
+        "campaign_conclusion": {
+            "action": "request_official_assessment",
+            "reason": "The PI chooses to assess its explicitly selected candidate.",
+        }
+    }
+    with pytest.raises(ValueError, match="best-known"):
+        runner_protocol.validate_operation_request(assessment, state)
+    with pytest.raises(ValueError, match="cap"):
+        runner_protocol.validate_operation_request(_open_inquiry_request(), state)
+
+    training_count = state["counters"]["training"]
+    run_experiment.accept_operation(_best_known_request(candidate), state)
+    assert run_experiment.execute_pending_operation() == 0
+    assigned = repository.read_state()
+    assert assigned["model_roles"]["best_known"] == candidate["id"]
+    assert assigned["terminal_state"] is None
+    assert assigned["official_assessment"] is None
+    assert assigned["counters"]["inquiry"] == state["campaign"]["max_inquiries"]
+    assert assigned["counters"]["training"] == training_count
+    run_experiment.accept_operation(assessment, assigned)
+    assert run_experiment.execute_pending_operation() == 0
+    persisted = repository.read_state()
+    assert persisted["terminal_state"]["status"] == "official_assessment_requested"
+    assert persisted["terminal_state"]["model"] == candidate["id"]
+    assert persisted["official_assessment"] is None
+    assert persisted["counters"]["inquiry"] == state["campaign"]["max_inquiries"]
+    assert persisted["counters"]["training"] == training_count
+
+
+@pytest.mark.parametrize("action", ["set_working", "retain"])
+def test_goal_review_permits_other_model_roles_at_cap(monkeypatch, tmp_path, action):
+    state, candidate = _goal_review_candidate(monkeypatch, tmp_path)
+    request = _best_known_request(candidate)
+    request["model_role"]["action"] = action
+    if action == "retain":
+        request["model_role"]["label"] = "reference"
+    assert runner_protocol.validate_operation_request(request, state) == "model_role"
+
+
+@pytest.mark.parametrize("evidence", [[], ["M404"], ["M1"]])
+def test_goal_review_role_requires_completed_evidence(monkeypatch, tmp_path, evidence):
+    state, candidate = _goal_review_candidate(monkeypatch, tmp_path)
+    state["operation_events"][0].update(
+        status="failed",
+        result={"status": "failed", "error": "implementation failure"},
+        error="implementation failure",
+    )
+    request = _best_known_request(candidate)
+    request["model_role"]["evidence"] = evidence
+    with pytest.raises(ValueError, match="evidence"):
+        runner_protocol.validate_operation_request(request, state)
+
+
+def test_goal_review_role_cannot_bypass_open_inquiry_checkpoint(monkeypatch, tmp_path):
+    state, candidate = _goal_review_candidate(monkeypatch, tmp_path, at_cap=False)
+    run_experiment.accept_operation(_open_inquiry_request(), state)
+    assert run_experiment.execute_pending_operation() == 0
+    opened = repository.read_state()
+    with pytest.raises(ValueError, match="checkpoint"):
+        runner_protocol.validate_operation_request(
+            _best_known_request(candidate), opened
+        )
+    checkpoint = {
+        "checkpoint": {
+            "human_goal_connection": "The inquiry addresses a current task gap.",
+            "current_goal_gap": "The candidate has not established goal success.",
+            "current_synthesis": "An evidence-linked inquiry has been opened.",
+            "evidence_references": list(opened["scientific_session"]["operation_ids"]),
+            "decision_frontier": "Resolve the method question in its fresh session.",
+            "completed_operations": list(opened["scientific_session"]["operation_ids"]),
+            "candidates_and_roles": "The candidate remains available.",
+            "next_direction_or_closure": "Begin the fresh inquiry session.",
+            "cumulative_resource_use": "One inquiry opening.",
+        }
+    }
+    run_experiment.accept_operation(checkpoint, opened)
+    assert run_experiment.execute_pending_operation() == 0
+    checkpointed = repository.read_state()
+    assert checkpointed["scientific_session"] is None
+    assert checkpointed["active_inquiry"] is not None
+    repository.start_scientific_session(
+        checkpointed,
+        kind="inquiry",
+        objective="Resolve the method question.",
+        backend_adapter="copilot",
+        backend_model="gpt-5.6-luna",
+        backend_reasoning="high",
+    )
+    assert (
+        runner_protocol.validate_operation_request(
+            _best_known_request(candidate), checkpointed
+        )
+        == "model_role"
+    )

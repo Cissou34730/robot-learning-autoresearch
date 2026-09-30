@@ -65,7 +65,9 @@ campaign-level decisions:
 Opening an inquiry records its question, connection to the human goal, closure
 condition, and rationale. The opening goal-review session then ends at a
 durable checkpoint, and a fresh inquiry session continues from that state.
-Goal review permits only inquiry opening, campaign conclusion, and checkpoint.
+Goal review permits model-role assignment, inquiry opening, campaign conclusion,
+and checkpoint. Model roles may be assigned before the campaign-level decision,
+including when no further inquiry can be opened.
 
 ## Inquiry work
 
@@ -110,6 +112,10 @@ record.
 Development measurements support PI judgment but do not declare the official
 goal reached. Working, best-known, and retained roles are explicit,
 evidence-backed operations. Training never changes a role implicitly.
+
+Best-known denotes the strongest evidence-backed candidate available to the PI,
+not necessarily a candidate that already meets the human goal. Assigning that
+role neither declares success nor obliges the PI to request official assessment.
 
 The PI alone decides whether the evidence justifies requesting the official
 assessment. The protected assessment then returns the recorded pass or fail

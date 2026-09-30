@@ -698,7 +698,7 @@ function New-ScientificSessionPrompt {
         "The inquiry has closed. Preserve its outcome and the resulting campaign decision."
     }
     elseif ($terminalGoalReview) {
-        "None. Decide whether the evidence supports official assessment or a conclusion that no credible route remains."
+        "None. Candidate roles may be assigned from completed evidence before deciding whether to request official assessment or conclude that no credible route remains."
     }
     else {
         "None. Decide whether the evidence supports official assessment, a bounded goal-linked inquiry, or a conclusion that no credible route remains."
@@ -726,6 +726,8 @@ function New-ScientificSessionPrompt {
     elseif ($terminalGoalReview) {
         @(
             "Make the terminal goal-level decision supported by the complete campaign evidence."
+            "Goal review permits evidence-backed model-role operations. Use the model-role contract in research/instruments.md to select or update the best-known candidate when justified."
+            "Official assessment requires an explicitly assigned best-known candidate; assigning that role neither establishes goal success nor requires assessment."
             "Use the campaign-conclusion contract in research/instruments.md to request official assessment or conclude that no credible route remains."
             "Do not request another inquiry."
         )
@@ -1056,7 +1058,7 @@ try {
                 [int]$state.counters.inquiry -ge
                     [int]$state.campaign.max_inquiries
             ) {
-                "Decide whether to request official assessment or conclude that no credible route remains from the complete campaign evidence."
+                "Assign candidate roles when justified by completed evidence, then decide whether to request official assessment for the explicit best-known candidate or conclude that no credible route remains."
             }
             elseif ($kind -eq "goal_review") {
                 "Decide whether to request official assessment, open one bounded goal-linked inquiry, or conclude that no credible route remains."

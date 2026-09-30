@@ -125,7 +125,7 @@ SCIENTIFIC_OPERATION_KINDS = {
 }
 SESSION_OPERATION_MATRIX = {
     "startup": {*SCIENTIFIC_OPERATION_KINDS, "checkpoint"},
-    "goal_review": {"inquiry", "campaign_conclusion", "checkpoint"},
+    "goal_review": {"model_role", "inquiry", "campaign_conclusion", "checkpoint"},
     "inquiry": {*SCIENTIFIC_OPERATION_KINDS, "inquiry", "checkpoint"},
 }
 TRUSTED_RUNTIME_PATHS = {
