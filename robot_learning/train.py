@@ -4,7 +4,6 @@ import json
 import shutil
 from pathlib import Path
 
-import numpy as np
 import torch
 from stable_baselines3 import PPO
 from stable_baselines3.common.callbacks import BaseCallback
@@ -12,7 +11,6 @@ from stable_baselines3.common.env_util import make_vec_env
 from stable_baselines3.common.vec_env import DummyVecEnv, SubprocVecEnv, VecNormalize
 
 from robot_learning.policy_runtime import frozen_scientific_modules
-from robot_learning.scenario.teacher import ComputedTorqueTeacher
 from robot_learning.scenario.training_environment import make_training_env
 from robot_learning.scenario.viewer import make_training_viewer_callback
 from robot_learning.training.candidate_checkpoint_callback import (
@@ -82,124 +80,6 @@ def effective_training_config(config: dict) -> dict:
     }
 
 
-def collect_teacher_dataset(venv, teacher_config: dict) -> tuple[np.ndarray, np.ndarray]:
-    """Collect raw observations and actions from the training-only controller."""
-    if int(venv.num_envs) != 1:
-        raise ValueError("teacher distillation requires one environment")
-
-    sample_count = int(teacher_config["samples"])
-    if sample_count < 1:
-        raise ValueError("teacher sample count must be positive")
-    teacher = ComputedTorqueTeacher(
-        position_gain=float(teacher_config["position_gain"]),
-        velocity_gain=float(teacher_config["velocity_gain"]),
-        acceleration_limit=float(teacher_config["acceleration_limit"]),
-    )
-    observations: list[np.ndarray] = []
-    actions: list[np.ndarray] = []
-    venv.reset()
-    raw_observation = venv.get_original_obs().copy()
-    env = venv.venv.envs[0].unwrapped
-    teacher.reset(env)
-    while len(observations) < sample_count:
-        observations.append(raw_observation[0].copy())
-        action = teacher.action(env)
-        actions.append(action.copy())
-        _, _, done, _ = venv.step(action.reshape(1, -1))
-        raw_observation = venv.get_original_obs().copy()
-        if bool(done[0]):
-            teacher.reset(env)
-
-    return (
-        np.asarray(observations, dtype=np.float32),
-        np.asarray(actions, dtype=np.float32),
-    )
-
-
-def distill_teacher_actions(
-    model,
-    venv,
-    raw_observations: np.ndarray,
-    actions: np.ndarray,
-    *,
-    epochs: int,
-    batch_size: int,
-    learning_rate: float,
-) -> None:
-    """Fit the actor to controller actions; this is never used at runtime."""
-    if epochs < 1 or batch_size < 1 or learning_rate <= 0.0:
-        raise ValueError("teacher distillation parameters must be positive")
-    normalized_observations = venv.normalize_obs(raw_observations)
-    observation_tensor = torch.as_tensor(
-        normalized_observations, dtype=torch.float32, device=model.device
-    )
-    action_tensor = torch.as_tensor(
-        actions,
-        dtype=torch.float32,
-        device=model.device,
-    )
-
-    optimizer = torch.optim.Adam(model.policy.parameters(), lr=learning_rate)
-    model.policy.set_training_mode(True)
-    sample_count = len(raw_observations)
-    for _ in range(epochs):
-        permutation = torch.randperm(sample_count, device=model.device)
-        for start in range(0, sample_count, batch_size):
-            indices = permutation[start : start + batch_size]
-            distribution = model.policy.get_distribution(observation_tensor[indices])
-            mean = distribution.distribution.mean
-            loss = torch.nn.functional.mse_loss(mean, action_tensor[indices])
-            optimizer.zero_grad()
-            loss.backward()
-            optimizer.step()
-
-    optimizer_defaults = dict(model.policy.optimizer.defaults)
-    optimizer_defaults.pop("lr", None)
-    model.policy.optimizer = torch.optim.Adam(
-        model.policy.parameters(),
-        lr=float(model.learning_rate),
-        **optimizer_defaults,
-    )
-
-
-class TeacherDistillationCallback(BaseCallback):
-    """Keep PPO updates anchored to the successful controller behavior."""
-
-    def __init__(
-        self,
-        venv,
-        raw_observations: np.ndarray,
-        actions: np.ndarray,
-        *,
-        epochs: int,
-        batch_size: int,
-        learning_rate: float,
-    ) -> None:
-        super().__init__()
-        self.venv = venv
-        self.raw_observations = raw_observations
-        self.actions = actions
-        self.epochs = epochs
-        self.batch_size = batch_size
-        self.learning_rate = learning_rate
-
-    def _on_step(self) -> bool:
-        return True
-
-    def _on_rollout_start(self) -> None:
-        if self.num_timesteps == 0:
-            return
-        distill_teacher_actions(
-            self.model,
-            self.venv,
-            self.raw_observations,
-            self.actions,
-            epochs=self.epochs,
-            batch_size=self.batch_size,
-            learning_rate=self.learning_rate,
-        )
-
-
 def main() -> None:
     args = parse_args()
     config = load_experiment_config()
@@ -255,39 +135,12 @@ def main() -> None:
             **params,
         )
 
-    teacher_config = config.get("teacher_distillation")
-    teacher_distillation_callback = None
-    if teacher_config is not None:
-        raw_observations, teacher_actions = collect_teacher_dataset(
-            venv, teacher_config
-        )
-        distill_teacher_actions(
-            model,
-            venv,
-            raw_observations,
-            teacher_actions,
-            epochs=int(teacher_config["epochs"]),
-            batch_size=int(teacher_config["batch_size"]),
-            learning_rate=float(teacher_config["learning_rate"]),
-        )
-        teacher_distillation_callback = TeacherDistillationCallback(
-            venv,
-            raw_observations,
-            teacher_actions,
-            epochs=int(teacher_config["epochs_per_update"]),
-            batch_size=int(teacher_config["batch_size"]),
-            learning_rate=float(teacher_config["learning_rate"]),
-        )
-
     training = config["training"]
     checkpoint_callback = CandidateCheckpointCallback(
         output_dir=args.output_dir,
         every_steps=int(training["checkpoint_every_steps"]),
     )
-    callbacks: list[BaseCallback] = []
-    if teacher_distillation_callback is not None:
-        callbacks.append(teacher_distillation_callback)
-    callbacks.append(checkpoint_callback)
+    callbacks: list[BaseCallback] = [checkpoint_callback]
     if args.view:
         callbacks.append(make_training_viewer_callback(speed=args.speed))
 
