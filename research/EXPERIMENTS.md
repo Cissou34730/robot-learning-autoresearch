@@ -90,3 +90,4 @@
 | E62 | inquiry | I14 | completed |
 | E63 | checkpoint | - | checkpointed |
 | M14 | measurement | I14 | failed |
+| M15 | measurement | I14 | failed |

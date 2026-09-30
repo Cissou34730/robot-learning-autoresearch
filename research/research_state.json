@@ -9280,7 +9280,7 @@
   "counters": {
     "event": 63,
     "inquiry": 14,
-    "measurement": 15,
+    "measurement": 16,
     "session": 32,
     "training": 11
   },
@@ -17735,6 +17735,48 @@
       "status": "failed",
       "superseded_by": "M15",
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-09-30T02:35:17Z",
+      "error": "research.lab.i14_controller failed:\n\nTraceback (most recent call last):\n  File \"<frozen runpy>\", line 198, in _run_module_as_main\n  File \"<frozen runpy>\", line 88, in _run_code\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\research\\lab\\i14_controller.py\", line 217, in <module>\n    main()\n    ~~~~^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\research\\lab\\i14_controller.py\", line 196, in main\n    records = [_run_episode(env, args.seed + episode) for episode in range(args.episodes)]\n               ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\research\\lab\\i14_controller.py\", line 122, in _run_episode\n    action = controller.action()\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\research\\lab\\i14_controller.py\", line 93, in action\n    mujoco.mj_fullM(self.env.model, mass_matrix, self.env.data.M)\n    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nTypeError: mj_fullM(): incompatible function arguments. The following argument types are supported:\n    1. (m: mujoco._structs.MjModel, d: mujoco._structs.MjData, dst: typing.Annotated[numpy.typing.NDArray[numpy.float64], \"[m, n]\", \"flags.writeable\", \"flags.c_contiguous\"]) -> None\n\nInvoked with: <mujoco._structs.MjModel object at 0x000001A0A5CBF7F0>, array([[0., 0.],\n       [0., 0.]]), array([0.01210221, 0.00050715, 0.01019229])\n",
+      "id": "M15",
+      "inquiry_id": "I14",
+      "kind": "measurement",
+      "request": {
+        "description": "I14 direct full-distribution test of a fixed computed-torque model-based controller, with phase diagnostics and a fresh baseline panel on the same episode seeds.",
+        "measurements": [
+          {
+            "args": [
+              "--episodes",
+              "200",
+              "--seed",
+              "22200",
+              "--output",
+              "research/evaluations/eb19a5f3-14b3-4590-ad74-1b31cf5ae3d5/i14_controller.json"
+            ],
+            "artifact": "research/evaluations/eb19a5f3-14b3-4590-ad74-1b31cf5ae3d5/i14_controller.json",
+            "instrument": "python_module",
+            "label": "I14 fixed controller full-distribution panel",
+            "module": "research.lab.i14_controller"
+          },
+          {
+            "candidate": "T1:checkpoint-100352",
+            "episodes": 200,
+            "instrument": "research_evaluation",
+            "label": "I14 restored baseline shared-seed panel",
+            "seed": 22200
+          }
+        ],
+        "rationale": "M14 failed before execution because the controller referenced the legacy qM field rather than native MuJoCo 3.12 data.M. This resubmission preserves the pre-specified controller, panel, seed, and baseline comparison; it changes only the native mass-matrix API access and does not alter the scientific intervention."
+      },
+      "result": {
+        "error": "research.lab.i14_controller failed:\n\nTraceback (most recent call last):\n  File \"<frozen runpy>\", line 198, in _run_module_as_main\n  File \"<frozen runpy>\", line 88, in _run_code\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\research\\lab\\i14_controller.py\", line 217, in <module>\n    main()\n    ~~~~^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\research\\lab\\i14_controller.py\", line 196, in main\n    records = [_run_episode(env, args.seed + episode) for episode in range(args.episodes)]\n               ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\research\\lab\\i14_controller.py\", line 122, in _run_episode\n    action = controller.action()\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\research\\lab\\i14_controller.py\", line 93, in action\n    mujoco.mj_fullM(self.env.model, mass_matrix, self.env.data.M)\n    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nTypeError: mj_fullM(): incompatible function arguments. The following argument types are supported:\n    1. (m: mujoco._structs.MjModel, d: mujoco._structs.MjData, dst: typing.Annotated[numpy.typing.NDArray[numpy.float64], \"[m, n]\", \"flags.writeable\", \"flags.c_contiguous\"]) -> None\n\nInvoked with: <mujoco._structs.MjModel object at 0x000001A0A5CBF7F0>, array([[0., 0.],\n       [0., 0.]]), array([0.01210221, 0.00050715, 0.01019229])\n",
+        "status": "failed"
+      },
+      "session_id": "S32",
+      "status": "failed",
+      "superseded_by": "M16",
+      "supersedes": "M14"
     }
   ],
   "pending_operation": {
@@ -17769,7 +17811,7 @@
       "module_provenance": {
         "campaign_lab_manifest": [
           {
-            "fingerprint": "9d82b586e46936ee39c46956bfa6f2552251e7a37e984b2e615e182e362105df",
+            "fingerprint": "b9fff0842c2330fa34175570832a4ec1358972b1d03a6e266835b0f8080eac62",
             "path": "research/lab/i14_controller.py"
           },
           {
@@ -17814,7 +17856,7 @@
         "module_manifest": [
           {
             "exists": true,
-            "fingerprint": "9d82b586e46936ee39c46956bfa6f2552251e7a37e984b2e615e182e362105df",
+            "fingerprint": "b9fff0842c2330fa34175570832a4ec1358972b1d03a6e266835b0f8080eac62",
             "path": "research/lab/i14_controller.py"
           }
         ],
@@ -17831,7 +17873,7 @@
       "task_reference_contract": null
     },
     "failure": null,
-    "id": "M15",
+    "id": "M16",
     "inquiry_id": "I14",
     "kind": "measurement",
     "progress": "accepted",
@@ -17861,12 +17903,12 @@
             "seed": 22200
           }
         ],
-        "rationale": "M14 failed before execution because the controller referenced the legacy qM field rather than native MuJoCo 3.12 data.M. This resubmission preserves the pre-specified controller, panel, seed, and baseline comparison; it changes only the native mass-matrix API access and does not alter the scientific intervention."
+        "rationale": "M15 failed before execution because the native MuJoCo 3.12 mj_fullM call requires (model, data, destination), not the previously used argument order. This resubmission preserves the pre-specified controller, panel, seed, and baseline comparison and changes only that API call order."
       }
     },
-    "request_fingerprint": "242f228a2ba7c221ec3924d6e2efa975927104bd232b6405e84dab4d628a723b",
+    "request_fingerprint": "59fad3244d69cfa538592faca88616dd0496c9a674a76b5ee490649be090caf3",
     "session_id": "S32",
-    "supersedes": "M14"
+    "supersedes": "M15"
   },
   "pi_checkpoint": {
     "candidates_and_roles": "T11:checkpoint-120832 is rejected as the I13 teacher-initialization route. T1:checkpoint-100352 remains unassigned despite being the strongest measured baseline because it did not meet both fresh 196/200 thresholds. T10:checkpoint-120832 remains rejected as the I12 hybrid route. No candidate has working, best-known, or retained status.",
