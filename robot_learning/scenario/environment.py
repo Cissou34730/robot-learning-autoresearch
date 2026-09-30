@@ -41,12 +41,32 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
         hold_seconds: float = HOLD_SECONDS,
         frame_skip: int = FRAME_SKIP,
         max_episode_steps: int = MAX_EPISODE_STEPS,
+        target_angle_focus: tuple[float, float] | None = None,
+        target_angle_focus_probability: float = 0.0,
         policy_runtime=None,
     ) -> None:
         super().__init__()
         self.max_episode_steps = max_episode_steps
         self.frame_skip = frame_skip
         self.target_radius_range = target_radius_range
+        if target_angle_focus is not None:
+            if (
+                len(target_angle_focus) != 2
+                or target_angle_focus[0] >= target_angle_focus[1]
+            ):
+                raise ValueError(
+                    "target_angle_focus must be an increasing angle range"
+                )
+            if not -np.pi <= target_angle_focus[0] < target_angle_focus[1] <= np.pi:
+                raise ValueError("target_angle_focus must lie within [-pi, pi]")
+        if not 0.0 <= target_angle_focus_probability <= 1.0:
+            raise ValueError("target_angle_focus_probability must be in [0, 1]")
+        if target_angle_focus is None and target_angle_focus_probability:
+            raise ValueError(
+                "target_angle_focus_probability requires target_angle_focus"
+            )
+        self.target_angle_focus = target_angle_focus
+        self.target_angle_focus_probability = target_angle_focus_probability
         self.policy_io = policy_runtime.io if policy_runtime else make_policy_io()
 
         self.model = mujoco.MjModel.from_xml_path(str(TWO_JOINT_ARM_XML_PATH))
@@ -81,7 +101,17 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
         )
 
     def _sample_target_position(self) -> None:
-        angle = float(self.np_random.uniform(-np.pi, np.pi))
+        if (
+            self.target_angle_focus is not None
+            and self.np_random.random() < self.target_angle_focus_probability
+        ):
+            angle = float(
+                self.np_random.uniform(
+                    self.target_angle_focus[0], self.target_angle_focus[1]
+                )
+            )
+        else:
+            angle = float(self.np_random.uniform(-np.pi, np.pi))
         radius = float(
             self.np_random.uniform(
                 self.target_radius_range[0], self.target_radius_range[1]

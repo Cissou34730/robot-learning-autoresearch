@@ -9,6 +9,7 @@ import numpy as np
 from robot_learning.robots.two_joint_arm import FOREARM_LENGTH, UPPER_ARM_LENGTH
 
 OBSERVATION_SIZE = 11
+JOINT_LIMIT_RADIANS = float(np.deg2rad(170.0))
 
 
 def reach_observation(data) -> np.ndarray:
@@ -33,6 +34,25 @@ def reach_observation(data) -> np.ndarray:
     shoulder_open = shoulder_for_elbow(elbow_open)
     elbow_folded = -elbow_open
     shoulder_folded = shoulder_for_elbow(elbow_folded)
+    branches = [
+        np.asarray([wrap_to_pi(shoulder_open), elbow_open], dtype=np.float64),
+        np.asarray([wrap_to_pi(shoulder_folded), elbow_folded], dtype=np.float64),
+    ]
+    compatible = [
+        branch
+        for branch in branches
+        if np.all(np.abs(branch) <= JOINT_LIMIT_RADIANS)
+    ]
+    candidates = compatible or branches
+    preferred = min(
+        candidates,
+        key=lambda branch: float(
+            np.sum((np.asarray(data.qpos) - branch) ** 2)
+        ),
+    )
+    alternate = next(
+        branch for branch in branches if not np.array_equal(branch, preferred)
+    )
     end_effector = data.site("end_effector").xpos.copy()
     return np.concatenate(
         [
@@ -40,10 +60,10 @@ def reach_observation(data) -> np.ndarray:
             data.qvel,
             end_effector - data.mocap_pos[0],
             [
-                wrap_to_pi(shoulder_open - float(data.qpos[0])),
-                wrap_to_pi(elbow_open - float(data.qpos[1])),
-                wrap_to_pi(shoulder_folded - float(data.qpos[0])),
-                wrap_to_pi(elbow_folded - float(data.qpos[1])),
+                wrap_to_pi(preferred[0] - float(data.qpos[0])),
+                wrap_to_pi(preferred[1] - float(data.qpos[1])),
+                wrap_to_pi(alternate[0] - float(data.qpos[0])),
+                wrap_to_pi(alternate[1] - float(data.qpos[1])),
             ],
         ]
     ).astype(np.float32)
