@@ -9,23 +9,27 @@ tests does not establish that a harness change improves scientific decisions.
 An untested change is not a failed experiment, and a retained change is not
 automatically a successful one. Superseded and reverted entries remain here.
 
+A harness rollback does not reset or revert a campaign or its scientific
+artifacts. Campaign history remains in Git for later maintainer analysis.
+
 ## Current baseline
 
-The reference baseline is `b4f1cdf`: the winning campaign's harness plus the
-inquiry-closure correction, restored in `4a48da9`. Only harness files were
-restored; the subsequent campaign's scientific recipes and artifacts were not
-rewound.
-
-The active experiment is the reduced scientific handoff below. It is a single
-prompt-only bundle on this reference baseline; its campaign effect is untested.
+The three restored harness files match the winning campaign's final reference
+`f6fea61`: `run_research.ps1`, `research/program.md`, and
+`research/build_research_brief.py`. The post-winning closure-strengthening
+change `b4f1cdf` and scientific-handoff change `c0cfcb6` are removed.
+The inquiry architecture and independent runtime fixes remain unchanged.
+No post-winning prompt experiment is active.
 
 The objective under investigation is scientifically justified action selection:
 the PI chooses the action that can resolve a consequential uncertainty rather
 than automatically turning each plausible explanation into another training
 intervention. The objective is not simply fewer training runs.
 
-The closure correction is retained for lifecycle correctness. No post-win
-correction has yet demonstrated a solution to training-first behavior.
+This restoration is not a demonstrated solution to training-first behavior.
+The reference campaign's closure and efficiency limitations remain known;
+restoring its prompts does not guarantee that a future opening will repeat
+its scientific breadth or achieve its result.
 
 ## 2026-09-29 reference: winning campaign
 
@@ -52,8 +56,10 @@ correction has yet demonstrated a solution to training-first behavior.
 - **Campaign observation:** I1-I4 closed after decisive measurements in campaign
   `7f551163-bae6-40bc-9b0b-a960be607ffb`. That campaign also contained the
   subsequent active-inquiry prompt change, so the effect was not isolated.
-- **Disposition / lesson:** retained for correctness. Working closure does not
-  by itself improve the choice of the next inquiry or instrument.
+- **Disposition / lesson:** initially retained for correctness, then removed in
+  the 2026-09-30 winning-prompt restoration after the I15 campaign. Working
+  closure did not establish better inquiry selection or method development;
+  the combination with the later handoff change remained trial-centered.
 
 ## 2026-09-29: broad Meta-Prompting rollout and reversal
 
@@ -135,11 +141,12 @@ correction has yet demonstrated a solution to training-first behavior.
 - **Result:** a simpler, understood baseline, not a solution to training-first
   behavior. No campaign was launched or reset for this rollback.
 
-## 2026-09-29: reduced scientific handoff - active, campaign-untested
+## 2026-09-29: reduced scientific handoff - reverted after the I15 campaign
 
-- **Baseline / scope:** `4a48da9`, whose harness matches `b4f1cdf`.
+- **Commit / baseline / scope:** `c0cfcb6` on `4a48da9`, whose harness matches
+  `b4f1cdf`.
   `run_research.ps1` and `research/build_research_brief.py`; this log records
-  the change. The experiment is introduced by the commit updating this entry.
+  the change.
 - **Rationale:** the failed campaign promoted a conjectured explanation into
   the next intervention inquiry. Once the inquiry required a trained
   correction, action selection within it was already committed to training.
@@ -175,8 +182,99 @@ correction has yet demonstrated a solution to training-first behavior.
   unresolved explanation into another trained intervention, the bundle has
   not solved the problem. Fewer training runs alone do not establish success;
   successful wording checks also do not establish success.
-- **Campaign observation / disposition:** none yet. Active as one tracked
-  experiment, not a validated improvement. No campaign was started or resumed.
+- **Campaign observation / disposition:** exercised by campaign
+  `eb19a5f3-14b3-4590-ad74-1b31cf5ae3d5` through I15. Thirteen inquiries each
+  contained one training operation, and none was reframed. The intended
+  improvement in sustained scientific investigation was not demonstrated.
+  Removed together with the closure-strengthening change in the 2026-09-30
+  restoration. Their individual causal effects were not isolated.
+
+## 2026-09-30: restore winning prompts and preserve the I15 evidence
+
+- **Decision / scope:** remove `b4f1cdf` and `c0cfcb6` from the active prompt
+  configuration. Restore only the three harness files named in the current
+  baseline to `f6fea61`, and update this maintainer log. Do not revert campaign
+  commits, restore scientific recipes, reset a campaign, or create a separate
+  archive. No work on `reports/` is part of this change.
+- **Preserved campaign:** `eb19a5f3-14b3-4590-ad74-1b31cf5ae3d5`, final commit
+  `6f0da24`, ended at E73 with `no_credible_route`. All scientific source,
+  operation history, evaluation artifacts, and archived learned models remain
+  in the campaign's existing Git history. No official assessment ran, and no
+  working, best-known, or retained role was assigned.
+- **Observed process:** 15 inquiry openings and 15 closures, no reframes, and
+  exactly one training operation in each of 13 inquiries. I2 and I5 used
+  measurement without training. I14 included a standalone controller
+  measurement before distillation; the campaign was not devoid of science.
+  Nevertheless, most inquiry conditions turned a method question into a
+  pre-specified candidate trial, often judged against the entire 196/200
+  campaign threshold.
+- **Resources:** 13 completed training operations consumed 1,449,984 effective
+  PPO steps. Sixteen measurement rounds completed; two other attempts failed
+  during implementation repair. Completed measurements executed 7,720
+  standard development episodes, plus the 138-target I2 grid and 200-episode
+  I14 controller panel. The PI used 107 invocations and 390.386 AIU, versus
+  36 invocations and 129.114 AIU in the winning reference. Costs do not
+  establish scientific inadequacy by themselves.
+- **Opening evidence:** M1 repeated all 160 winning-baseline episode outcome
+  records exactly, but lacked the winning measurement's branch, joint-state,
+  joint-limit, conditioning, and velocity diagnostics. The narrowed
+  coverage-versus-hold question appeared in startup synthesis. Actual startup
+  prompts were identical between the winning and first closure-only campaign;
+  the changed shared program was read in startup and goal review. This
+  identifies a possible cross-phase influence, not a controlled attribution
+  of the initial narrowing to one sentence.
+- **Interpretation:** the strongest observed failure mode is local
+  completion-driven framing. An inquiry selects a prototype, scores it,
+  closes negatively, and relegates unexplained collapse or other training
+  formulations to a different question. Literal closure became more salient
+  than sustained method development. The two retained prompt changes are
+  removed as an unsuccessful combined harness experiment, not because every
+  negative candidate result was invalid or all inquiry cycles are harmful.
+- **Broader scientific evidence retained for later analysis:**
+  - I3 tested T2's 17-element representation and obtained 129/200 versus
+    T1's 192/200 in M3. Its frozen source at `22748ed` computes feasibility
+    from an unwrapped shoulder angle. A 6 cm target at -165 degrees produces
+    a raw shoulder angle of -221.25 degrees but a legal equivalent of
+    +138.75 degrees; the feature incorrectly marks that branch infeasible.
+    This confounds the claimed test of correct feasibility features and does
+    not establish that the defect alone caused the performance loss.
+  - I6's velocity-sensitive reward candidate achieved 0/200 in M6 and the
+    inquiry closed. That is a failed recipe, not an explanation of its
+    learning collapse or a rejection of all velocity-sensitive rewards.
+  - I14's M14 and M15 were MuJoCo API implementation failures, not scientific
+    evidence. The same PI session S32 repaired the call for native MuJoCo
+    3.12.0; M16's fixed computed-torque controller then achieved 200/200.
+    Controller success alone does not satisfy the learned-policy objective.
+  - I14's selected distilled learner achieved 47/200 and 40/200 in M17.
+    The frozen training implementation at `9ba48a2` receives the teacher
+    configuration and normalizes its fitting inputs, but records no
+    imitation-loss diagnostic and no isolated pre-PPO learned-policy
+    evaluation. The records do not distinguish failure to imitate from
+    subsequent PPO damage; the candidate failure does not resolve that
+    method-development question.
+  - The unchanged T1 reference was measured on 19 non-overlapping panels:
+    3,600 successes in 3,720 episodes, approximately 96.77%. Those fresh
+    observations add reliability information beyond inquiry-closure behavior.
+  - I15's T13 candidate achieved 197/200 and 195/200 in M18; the reference
+    achieved 198/200 and 195/200. The candidate had zero paired wins and one
+    paired loss. It failed the PI-added requirement of 196 successes on
+    each panel. Its pooled 392/400 is 98%, but is neither an official result
+    nor proof of a reliability ceiling. E71 and E73 preserve the actual
+    negative decision rather than rewriting it.
+- **Evidence limits:** the campaign regenerated its physical model and made
+  different scientific implementations, seed choices, and measurement
+  decisions. Its behavior supports rejecting the combined prompt experiment;
+  it does not isolate the causal contribution of either prompt change or
+  prove that restoring the winning prompts will repair scientific decisions.
+- **Implementation checks:** the three restored files exactly match
+  `f6fea61`; four-file scope, whitespace, PowerShell parsing, and touched-file
+  Ruff checks passed. Eight rendered phase, transition, and validation-feedback
+  probes match the reference. Eight existing brief/phase tests passed; twelve
+  trust-gate tests were blocked before their assertions because Git could not
+  access their temporary fixture directories. A repository-local rerun
+  reproduced the permission failure. No tests or filesystem permissions were
+  changed to bypass it. These checks cannot validate scientific effectiveness.
+  No campaign was started or resumed to validate this restoration.
 
 ## Discussed but not implemented
 

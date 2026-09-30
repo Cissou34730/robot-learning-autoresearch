@@ -92,16 +92,6 @@ campaign, the question is no longer a credible route, or it has produced the
 actionable result for which it was opened. After the closing session
 checkpoints its decision, the campaign returns to goal review.
 
-Inquiry closure is independent of campaign completion. Before choosing another
-scientific action, the PI compares the completed evidence with the inquiry's
-own question and closure condition. The positive closure criterion is
-decision-sufficient evidence: a supported answer or actionable result at the
-resolution the inquiry was opened to provide. Exhaustive certainty is not
-required; remaining uncertainty is recorded when it cannot change that
-decision. Once this criterion is established, the PI closes the inquiry and
-returns to goal review, which decides whether the remaining human-goal gap
-warrants a new inquiry, official assessment, or campaign conclusion.
-
 ## Bounded scientific sessions
 
 A scientific session is bounded by one coherent objective rather than by an

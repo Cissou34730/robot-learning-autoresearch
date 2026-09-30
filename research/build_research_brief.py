@@ -28,19 +28,15 @@ def _markdown_section(text: str, heading: str) -> str:
 
 def _human_goal(state: dict) -> str:
     summary = state["human_goal"].get("summary")
-    scope = (
-        "This goal applies across the complete official task distribution "
-        "in research/scenario.md."
-    )
     if isinstance(summary, str) and summary.strip():
-        return f"{summary.strip()} {scope}"
+        return summary.strip()
     scenario_path = RESEARCH_DIR / "scenario.md"
     if scenario_path.is_file():
         success = _markdown_section(
             scenario_path.read_text(encoding="utf-8"), "Success criterion"
         )
         if success:
-            return f"{success} {scope}"
+            return success
     return f"Defined by `{state['human_goal']['source']}`."
 
 
@@ -251,10 +247,7 @@ def _checkpoint_lines(state: dict) -> list[str]:
             else "none"
         ),
         f"- Candidates and roles: {checkpoint['candidates_and_roles']}",
-        (
-            "- Next direction or closure (non-binding proposal): "
-            f"{checkpoint['next_direction_or_closure']}"
-        ),
+        f"- Next direction or closure: {checkpoint['next_direction_or_closure']}",
         f"- Cumulative resource use: {checkpoint['cumulative_resource_use']}",
     ]
 
