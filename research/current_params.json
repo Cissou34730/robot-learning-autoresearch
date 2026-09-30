@@ -11,19 +11,21 @@
   },
   "ppo": {
     "batch_size": 64,
-    "ent_coef": 0.01,
+    "ent_coef": 0.0,
     "gae_lambda": 0.95,
     "gamma": 0.99,
-    "learning_rate": 0.0003,
-    "n_steps": 1024
+    "learning_rate": 0.00003,
+    "n_steps": 2048
   },
-  "teacher_initialization": {
+  "teacher_distillation": {
+    "acceleration_limit": 160.0,
     "samples": 8192,
-    "epochs": 40,
     "batch_size": 64,
+    "epochs": 80,
+    "epochs_per_update": 1,
     "learning_rate": 0.001,
-    "position_gain": 2.5,
-    "velocity_damping": 0.25
+    "position_gain": 36.0,
+    "velocity_gain": 12.0
   },
   "training": {
     "checkpoint_every_steps": 5000,
