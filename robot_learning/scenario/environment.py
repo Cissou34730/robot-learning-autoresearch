@@ -41,32 +41,12 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
         hold_seconds: float = HOLD_SECONDS,
         frame_skip: int = FRAME_SKIP,
         max_episode_steps: int = MAX_EPISODE_STEPS,
-        target_angle_focus: tuple[float, float] | None = None,
-        target_angle_focus_probability: float = 0.0,
         policy_runtime=None,
     ) -> None:
         super().__init__()
         self.max_episode_steps = max_episode_steps
         self.frame_skip = frame_skip
         self.target_radius_range = target_radius_range
-        if target_angle_focus is not None:
-            if (
-                len(target_angle_focus) != 2
-                or target_angle_focus[0] >= target_angle_focus[1]
-            ):
-                raise ValueError(
-                    "target_angle_focus must be an increasing angle range"
-                )
-            if not -np.pi <= target_angle_focus[0] < target_angle_focus[1] <= np.pi:
-                raise ValueError("target_angle_focus must lie within [-pi, pi]")
-        if not 0.0 <= target_angle_focus_probability <= 1.0:
-            raise ValueError("target_angle_focus_probability must be in [0, 1]")
-        if target_angle_focus is None and target_angle_focus_probability:
-            raise ValueError(
-                "target_angle_focus_probability requires target_angle_focus"
-            )
-        self.target_angle_focus = target_angle_focus
-        self.target_angle_focus_probability = target_angle_focus_probability
         self.policy_io = policy_runtime.io if policy_runtime else make_policy_io()
 
         self.model = mujoco.MjModel.from_xml_path(str(TWO_JOINT_ARM_XML_PATH))
@@ -91,6 +71,7 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
         self._previous_distance = 0.0
         self._held_steps = 0
         self._outside_after_hold = False
+        self._previous_endpoint_position = np.zeros(3, dtype=np.float64)
 
     def _end_effector_position(self) -> np.ndarray:
         return self.data.site("end_effector").xpos.copy()
@@ -101,17 +82,7 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
         )
 
     def _sample_target_position(self) -> None:
-        if (
-            self.target_angle_focus is not None
-            and self.np_random.random() < self.target_angle_focus_probability
-        ):
-            angle = float(
-                self.np_random.uniform(
-                    self.target_angle_focus[0], self.target_angle_focus[1]
-                )
-            )
-        else:
-            angle = float(self.np_random.uniform(-np.pi, np.pi))
+        angle = float(self.np_random.uniform(-np.pi, np.pi))
         radius = float(
             self.np_random.uniform(
                 self.target_radius_range[0], self.target_radius_range[1]
@@ -147,13 +118,15 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
         self._previous_distance = self._distance_to_target()
         self._held_steps = 0
         self._outside_after_hold = False
+        self._previous_endpoint_position = self._end_effector_position()
         return self._observation(), {}
 
     def step(
         self, action: np.ndarray
     ) -> tuple[np.ndarray, float, bool, bool, dict[str, Any]]:
+        requested_action = np.asarray(self.policy_io.action(action), dtype=np.float64)
         action = np.clip(
-            np.asarray(self.policy_io.action(action), dtype=np.float64),
+            requested_action,
             self.action_space.low,
             self.action_space.high,
         )
@@ -162,6 +135,13 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
             mujoco.mj_step(self.model, self.data)
 
         distance = self._distance_to_target()
+        endpoint_position = self._end_effector_position()
+        control_dt = self.model.opt.timestep * self.frame_skip
+        endpoint_speed = float(
+            np.linalg.norm(endpoint_position - self._previous_endpoint_position)
+            / control_dt
+        )
+        self._previous_endpoint_position = endpoint_position
 
         previous_held_steps = self._held_steps
         if distance <= self.success_threshold:
@@ -181,6 +161,7 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
             previous_held_steps=previous_held_steps,
             hold_steps_required=self.hold_steps_required,
             penalize_outside=self._outside_after_hold,
+            endpoint_speed=endpoint_speed,
         )
         self._previous_distance = distance
 
@@ -191,6 +172,11 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
             "distance": distance,
             "is_success": terminated,
             "held_steps": self._held_steps,
+            "endpoint_speed_mps": endpoint_speed,
+            "action_saturated": bool(
+                np.any(np.abs(requested_action) > np.abs(action) + 1e-7)
+                or np.any(np.isclose(np.abs(action), 1.0, atol=1e-6))
+            ),
             # Arbitrary scenario-owned attribution; the RL algorithm still only
             # ever sees `reward.total`.
             "reward_components": reward.components,
