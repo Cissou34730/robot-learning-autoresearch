@@ -17,14 +17,9 @@ PROGRESS_COEFFICIENT = 10.0
 CLOSENESS_COEFFICIENT = 4.0
 CLOSENESS_LENGTH_SCALE = 0.05
 ACTION_COST_COEFFICIENT = 0.01
-BRANCH_PROGRESS_COEFFICIENT = 0.5
-VELOCITY_PENALTY_COEFFICIENT = 0.01
-VELOCITY_PENALTY_DISTANCE = 0.05
-SATURATION_PENALTY_COEFFICIENT = 0.2
-SATURATION_ACTION_THRESHOLD = 0.8
 HOLD_PROGRESS_BONUS = 50.0
 HOLD_PROGRESS_EXPONENT = 1.0
-HOLD_EXIT_FORFEIT_FRACTION = 1.0
+HOLD_EXIT_FORFEIT_FRACTION = 0.0
 OUTSIDE_BAND_WIDTH = 0.01
 OUTSIDE_BAND_PENALTY = 0.1
 HOLD_COMPLETE_BONUS = 50.0
@@ -58,9 +53,6 @@ def reach_reward(
     previous_held_steps: int = 0,
     hold_steps_required: int = 100,
     penalize_outside: bool = False,
-    previous_branch_error: float | None = None,
-    current_branch_error: float | None = None,
-    joint_velocity: np.ndarray | None = None,
 ) -> RewardResult:
     progress = PROGRESS_COEFFICIENT * (previous_distance - current_distance)
     reward = progress
@@ -69,13 +61,6 @@ def reach_reward(
         previous_distance
     )
     reward += closeness
-
-    branch_progress = 0.0
-    if previous_branch_error is not None and current_branch_error is not None:
-        branch_progress = BRANCH_PROGRESS_COEFFICIENT * (
-            previous_branch_error - current_branch_error
-        )
-        reward += branch_progress
 
     current_hold_capital = _hold_progress_potential(held_steps, hold_steps_required)
     previous_hold_capital = _hold_progress_potential(
@@ -110,36 +95,14 @@ def reach_reward(
         action_cost = -(ACTION_COST_COEFFICIENT * float(np.sum(np.square(action))))
     reward += action_cost
 
-    velocity_penalty = 0.0
-    if joint_velocity is not None and current_distance <= VELOCITY_PENALTY_DISTANCE:
-        velocity_penalty = -(
-            VELOCITY_PENALTY_COEFFICIENT
-            * float(np.sum(np.square(np.asarray(joint_velocity, dtype=np.float64))))
-        )
-        reward += velocity_penalty
-
-    saturation_penalty = 0.0
-    if action is not None and current_distance <= VELOCITY_PENALTY_DISTANCE:
-        excess = np.maximum(
-            np.abs(np.asarray(action, dtype=np.float64)) - SATURATION_ACTION_THRESHOLD,
-            0.0,
-        )
-        saturation_penalty = -(
-            SATURATION_PENALTY_COEFFICIENT * float(np.sum(excess))
-        )
-        reward += saturation_penalty
-
     return RewardResult(
         total=float(reward),
         components={
             "progress": float(progress),
             "closeness": float(closeness),
-            "branch_progress": float(branch_progress),
             "hold_progress": float(hold_progress),
             "outside_band": float(outside_band),
             "hold_complete": float(hold_complete),
             "action_cost": float(action_cost),
-            "velocity_penalty": float(velocity_penalty),
-            "saturation_penalty": float(saturation_penalty),
         },
     )

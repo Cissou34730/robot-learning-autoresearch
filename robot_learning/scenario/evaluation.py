@@ -20,82 +20,7 @@ from robot_learning.policy_runtime import load_runtime
 from robot_learning.scenario.environment import make_evaluation_env
 
 # Bumped when the meaning of a scenario evaluation summary changes.
-RESEARCH_EVALUATION_SUMMARY_VERSION = 5
-HIGH_EXIT_SPEED_CM_PER_SECOND = 5.0
-ACTION_SATURATION_THRESHOLD = 0.95
-RADIUS_BINS_CM = ((6.0, 10.0), (10.0, 14.0), (14.0, 18.0), (18.0, 20.0))
-ANGLE_SECTORS = 8
-
-
-def _summary(values: list[float]) -> dict[str, float | int | None]:
-    if not values:
-        return {"count": 0, "mean": None, "median": None, "max": None}
-    array = np.asarray(values, dtype=np.float64)
-    return {
-        "count": len(values),
-        "mean": float(np.mean(array)),
-        "median": float(np.median(array)),
-        "max": float(np.max(array)),
-    }
-
-
-def _radius_bin(radius_cm: float) -> str:
-    for lower, upper in RADIUS_BINS_CM:
-        if lower <= radius_cm < upper or (
-            radius_cm == upper and upper == RADIUS_BINS_CM[-1][1]
-        ):
-            return f"{lower:g}-{upper:g}cm"
-    raise ValueError(f"radius outside evaluation bins: {radius_cm}")
-
-
-def _angle_sector(angle_degrees: float) -> str:
-    sector = int(np.floor((angle_degrees + 180.0) / 45.0)) % ANGLE_SECTORS
-    lower = -180 + sector * 45
-    upper = lower + 45
-    return f"{lower}to{upper}deg"
-
-
-def _geometry_summary(diagnostics: list[dict]) -> dict[str, dict]:
-    strata: dict[str, list[dict]] = {}
-    for item in diagnostics:
-        radius_key = str(item["target_radius_bin"])
-        angle_key = str(item["target_angle_sector"])
-        strata.setdefault(f"radius:{radius_key}", []).append(item)
-        strata.setdefault(f"angle:{angle_key}", []).append(item)
-
-    result: dict[str, dict] = {}
-    for stratum, items in strata.items():
-        entries = [item for item in items if item["first_reach_step"] is not None]
-        successful = sum(bool(item["success"]) for item in items)
-        result[stratum] = {
-            "episodes": len(items),
-            "successes": successful,
-            "success_percent": 100.0 * successful / len(items),
-            "entry_percent": 100.0 * len(entries) / len(items),
-            "first_entry_step": _summary(
-                [float(item["first_reach_step"]) for item in entries]
-            ),
-            "entry_speed_cm_per_second": _summary(
-                [float(item["entry_speed_cm_per_second"]) for item in entries]
-            ),
-            "longest_hold_steps": _summary(
-                [float(item["max_held_steps"]) for item in items]
-            ),
-            "hold_interruptions": sum(
-                int(item["hold_interruptions"]) for item in items
-            ),
-        }
-    return result
-
-
-def _failure_phase(item: dict) -> str:
-    if item["success"]:
-        return "success"
-    if item["first_reach_step"] is None:
-        return "no_entry"
-    if item["hold_interruptions"] > 0:
-        return "hold_interrupted"
-    return "entry_without_hold"
+RESEARCH_EVALUATION_SUMMARY_VERSION = 4
 
 
 def evaluate_research_model(
@@ -118,10 +43,6 @@ def evaluate_research_model(
         obs, _ = env.reset(seed=seed + episode)
         runtime.reset()
         target_position = np.asarray(env.data.mocap_pos[0], dtype=np.float64)
-        control_dt_seconds = float(env.model.opt.timestep * env.frame_skip)
-        previous_position = np.asarray(
-            env.data.site("end_effector").xpos, dtype=np.float64
-        ).copy()
         reward_total = 0.0
         steps = 0
         success = False
@@ -134,106 +55,26 @@ def evaluate_research_model(
         in_tolerance_steps = 0
         hold_interruptions = 0
         was_in_tolerance = False
-        previous_held_steps = 0
-        entry_speed_cm_per_second: float | None = None
-        entry_joint_speed_rad_per_second: float | None = None
-        interruption_events: list[dict] = []
-        hold_cartesian_speeds: list[float] = []
-        hold_joint_speeds: list[float] = []
-        hold_action_magnitudes: list[float] = []
         while not (terminated or truncated):
             action = runtime.predict(obs)
             obs, reward, terminated, truncated, info = env.step(action)
             steps += 1
             reward_total += float(reward)
-            current_position = np.asarray(
-                env.data.site("end_effector").xpos, dtype=np.float64
-            ).copy()
-            cartesian_speed_cm_per_second = (
-                100.0
-                * float(np.linalg.norm(current_position - previous_position))
-                / control_dt_seconds
-            )
-            joint_speed_rad_per_second = float(
-                np.linalg.norm(np.asarray(env.data.qvel, dtype=np.float64))
-            )
             distance_cm = 100.0 * float(info["distance"])
             held_steps = int(info.get("held_steps", 0))
-            action_magnitude = float(np.max(np.abs(np.asarray(action))))
             min_distance_cm = min(min_distance_cm, distance_cm)
             final_distance_cm = distance_cm
             max_held_steps = max(max_held_steps, held_steps)
             if held_steps > 0:
                 in_tolerance_steps += 1
-                hold_cartesian_speeds.append(cartesian_speed_cm_per_second)
-                hold_joint_speeds.append(joint_speed_rad_per_second)
-                hold_action_magnitudes.append(action_magnitude)
                 if first_reach_step is None:
                     first_reach_step = steps
-                    entry_speed_cm_per_second = cartesian_speed_cm_per_second
-                    entry_joint_speed_rad_per_second = joint_speed_rad_per_second
             elif was_in_tolerance:
                 hold_interruptions += 1
-                interruption_events.append(
-                    {
-                        "step": steps,
-                        "distance_cm": distance_cm,
-                        "cartesian_speed_cm_per_second": cartesian_speed_cm_per_second,
-                        "joint_speed_rad_per_second": joint_speed_rad_per_second,
-                        "action_max_abs": action_magnitude,
-                        "previous_held_steps": previous_held_steps,
-                        "signatures": [
-                            (
-                                "high_exit_speed"
-                                if cartesian_speed_cm_per_second
-                                >= HIGH_EXIT_SPEED_CM_PER_SECOND
-                                else "low_exit_speed"
-                            ),
-                            *(
-                                ["saturated_action"]
-                                if action_magnitude >= ACTION_SATURATION_THRESHOLD
-                                else []
-                            ),
-                        ],
-                    }
-                )
             was_in_tolerance = held_steps > 0
-            previous_held_steps = held_steps
-            previous_position = current_position
             if "is_success" in info:
                 success = bool(info["is_success"])
 
-        target_radius_cm = float(
-            np.hypot(target_position[0], target_position[1]) * 100.0
-        )
-        target_angle_degrees = float(
-            np.degrees(np.arctan2(target_position[1], target_position[0]))
-        )
-        diagnostic = {
-            "episode": episode,
-            "episode_seed": seed + episode,
-            "success": success,
-            "target_radius_cm": target_radius_cm,
-            "target_radius_bin": _radius_bin(target_radius_cm),
-            "target_angle_degrees": target_angle_degrees,
-            "target_angle_sector": _angle_sector(target_angle_degrees),
-            "min_distance_cm": min_distance_cm,
-            "final_distance_cm": final_distance_cm,
-            "first_reach_step": first_reach_step,
-            "entry_speed_cm_per_second": entry_speed_cm_per_second,
-            "entry_joint_speed_rad_per_second": entry_joint_speed_rad_per_second,
-            "max_held_steps": max_held_steps,
-            "in_tolerance_steps": in_tolerance_steps,
-            "hold_interruptions": hold_interruptions,
-            "interruption_events": interruption_events,
-            "hold_cartesian_speed_cm_per_second": _summary(hold_cartesian_speeds),
-            "hold_joint_speed_rad_per_second": _summary(hold_joint_speeds),
-            "hold_action_max_abs": _summary(hold_action_magnitudes),
-            "hold_saturated_action_steps": sum(
-                magnitude >= ACTION_SATURATION_THRESHOLD
-                for magnitude in hold_action_magnitudes
-            ),
-        }
         episode_results.append(
             {
                 "episode": episode,
@@ -246,24 +87,28 @@ def evaluate_research_model(
                 "truncated": bool(truncated),
             }
         )
-        episode_diagnostics.append(diagnostic)
+        episode_diagnostics.append(
+            {
+                "episode": episode,
+                "episode_seed": seed + episode,
+                "target_radius_cm": float(
+                    np.hypot(target_position[0], target_position[1]) * 100.0
+                ),
+                "target_angle_degrees": float(
+                    np.degrees(np.arctan2(target_position[1], target_position[0]))
+                ),
+                "min_distance_cm": min_distance_cm,
+                "final_distance_cm": final_distance_cm,
+                "first_reach_step": first_reach_step,
+                "max_held_steps": max_held_steps,
+                "in_tolerance_steps": in_tolerance_steps,
+                "hold_interruptions": hold_interruptions,
+            }
+        )
         if progress_callback is not None:
             progress_callback(episode + 1, episodes)
 
     successes = sum(episode["success"] for episode in episode_results)
-    failure_phases: dict[str, int] = {}
-    interruption_signatures: dict[str, int] = {}
-    for diagnostic in episode_diagnostics:
-        phase = _failure_phase(diagnostic)
-        failure_phases[phase] = failure_phases.get(phase, 0) + 1
-        for event in diagnostic["interruption_events"]:
-            for signature in event["signatures"]:
-                interruption_signatures[signature] = (
-                    interruption_signatures.get(signature, 0) + 1
-                )
-    entries = [
-        item for item in episode_diagnostics if item["first_reach_step"] is not None
-    ]
     return {
         "schema_version": 5,
         "model": str(model_path),
@@ -276,67 +121,7 @@ def evaluate_research_model(
         # failures and checking whether performance varies by target geometry.
         "research_evidence": {
             "episode_diagnostics": episode_diagnostics,
-            "aggregate": {
-                "failure_phases": failure_phases,
-                "interruption_signatures": interruption_signatures,
-                "entry_percent": 100.0 * len(entries) / episodes,
-                "first_entry_step": _summary(
-                    [float(item["first_reach_step"]) for item in entries]
-                ),
-                "entry_speed_cm_per_second": _summary(
-                    [float(item["entry_speed_cm_per_second"]) for item in entries]
-                ),
-                "entry_joint_speed_rad_per_second": _summary(
-                    [
-                        float(item["entry_joint_speed_rad_per_second"])
-                        for item in entries
-                    ]
-                ),
-                "longest_hold_steps": _summary(
-                    [float(item["max_held_steps"]) for item in episode_diagnostics]
-                ),
-                "hold_cartesian_speed_cm_per_second": _summary(
-                    [
-                        float(speed)
-                        for item in episode_diagnostics
-                        for speed in [
-                            item["hold_cartesian_speed_cm_per_second"]["mean"]
-                        ]
-                        if speed is not None
-                    ]
-                ),
-                "hold_joint_speed_rad_per_second": _summary(
-                    [
-                        float(speed)
-                        for item in episode_diagnostics
-                        for speed in [
-                            item["hold_joint_speed_rad_per_second"]["mean"]
-                        ]
-                        if speed is not None
-                    ]
-                ),
-                "hold_saturated_action_steps": sum(
-                    int(item["hold_saturated_action_steps"])
-                    for item in episode_diagnostics
-                ),
-                "hold_steps_observed": sum(
-                    int(item["in_tolerance_steps"]) for item in episode_diagnostics
-                ),
-                "geometry_strata": _geometry_summary(episode_diagnostics),
-            },
-            "measurement_definitions": {
-                "distance": "cm",
-                "time": "control_steps",
-                "control_dt_seconds": control_dt_seconds,
-                "entry_speed": "finite difference of end-effector position at control boundaries",
-                "hold_cartesian_speed": "finite-difference end-effector speed at in-tolerance control boundaries",
-                "hold_joint_speed": "joint velocity norm at in-tolerance control boundaries",
-                "high_exit_speed_cm_per_second": HIGH_EXIT_SPEED_CM_PER_SECOND,
-                "action_saturation_threshold": ACTION_SATURATION_THRESHOLD,
-                "hold_saturated_action_steps": "in-tolerance control boundaries whose maximum action magnitude reaches the saturation threshold",
-                "radius_bins_cm": RADIUS_BINS_CM,
-                "angle_sectors": ANGLE_SECTORS,
-            },
+            "units": {"distance": "cm", "time": "control_steps"},
         },
     }
 
