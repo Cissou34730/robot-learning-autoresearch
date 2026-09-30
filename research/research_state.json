@@ -17587,38 +17587,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I13",
-        "outcome": "Negative answer: teacher-guided initialization of the direct joint-torque policy did not produce repeatable complete-task success at or above 196/200 and materially degraded the restored baseline.",
-        "reason": "The pre-specified training-only rule selected T11:checkpoint-120832. On two fresh shared-seed 200-episode complete-distribution panels, it achieved 51/200 (25.5%) and 55/200 (27.5%), while restored T1:checkpoint-100352 achieved 195/200 (97.5%) and 187/200 (93.5%). Across 400 paired episodes, T11 won 4 and T1 won 280, for a -69.0 percentage-point candidate difference. The candidate therefore failed both 196/200 thresholds and materially degraded T1; the closure condition is met without needing to resolve whether its limited successful episodes preserved hold behavior. The result rejects this teacher-initialization route under the tested recipe as a credible path to the campaign goal. It does not establish that every possible initialization or learning formulation fails, but that uncertainty belongs to a distinct future question and cannot change I13's negative decision."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I13",
-        "outcome": "Negative answer: teacher-guided initialization of the direct joint-torque policy did not produce repeatable complete-task success at or above 196/200 and materially degraded the restored baseline.",
-        "reason": "The pre-specified training-only rule selected T11:checkpoint-120832. On two fresh shared-seed 200-episode complete-distribution panels, it achieved 51/200 (25.5%) and 55/200 (27.5%), while restored T1:checkpoint-100352 achieved 195/200 (97.5%) and 187/200 (93.5%). Across 400 paired episodes, T11 won 4 and T1 won 280, for a -69.0 percentage-point candidate difference. The candidate therefore failed both 196/200 thresholds and materially degraded T1; the closure condition is met without needing to resolve whether its limited successful episodes preserved hold behavior. The result rejects this teacher-initialization route under the tested recipe as a credible path to the campaign goal. It does not establish that every possible initialization or learning formulation fails, but that uncertainty belongs to a distinct future question and cannot change I13's negative decision.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E60",
-    "inquiry_id": "I13",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "Negative answer: teacher-guided initialization of the direct joint-torque policy did not produce repeatable complete-task success at or above 196/200 and materially degraded the restored baseline.",
-        "reason": "The pre-specified training-only rule selected T11:checkpoint-120832. On two fresh shared-seed 200-episode complete-distribution panels, it achieved 51/200 (25.5%) and 55/200 (27.5%), while restored T1:checkpoint-100352 achieved 195/200 (97.5%) and 187/200 (93.5%). Across 400 paired episodes, T11 won 4 and T1 won 280, for a -69.0 percentage-point candidate difference. The candidate therefore failed both 196/200 thresholds and materially degraded T1; the closure condition is met without needing to resolve whether its limited successful episodes preserved hold behavior. The result rejects this teacher-initialization route under the tested recipe as a credible path to the campaign goal. It does not establish that every possible initialization or learning formulation fails, but that uncertainty belongs to a distinct future question and cannot change I13's negative decision."
-      }
-    },
-    "request_fingerprint": "c36ae971880fc79abea00015591271953a04e9e9cd1460b401cebac70a7a4318",
-    "session_id": "S30",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T10:checkpoint-120832 is rejected as the I12 hybrid route after M12. T1:checkpoint-100352 remains the strongest historically measured baseline but is unassigned because its performance is not repeatable and remains below 196/200 on the fresh I12 panels. T9:checkpoint-95232, T8:checkpoint-90112, and T7:checkpoint-120832 remain rejected or unassigned routes. I13 has produced no candidate. No candidate has working, best-known, or retained status.",
     "completed_operations": [
