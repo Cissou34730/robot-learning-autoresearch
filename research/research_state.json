@@ -4939,7 +4939,7 @@
     }
   },
   "counters": {
-    "event": 39,
+    "event": 40,
     "inquiry": 9,
     "measurement": 8,
     "session": 20,
@@ -4948,7 +4948,7 @@
   "human_goal": {
     "source": "research/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -9801,28 +9801,153 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-09-30T00:24:55Z",
+      "error": null,
+      "id": "E40",
+      "inquiry_id": null,
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "T6:checkpoint-45056, T6:checkpoint-50176, T6:checkpoint-70656, and T1:checkpoint-100352 remain unassigned measured candidates. No candidate has working, best-known, or retained status. I9 has no candidate yet.",
+        "completed_operations": [
+          "E39"
+        ],
+        "cumulative_resource_use": "The campaign has used six PPO training runs of 120,832 completed steps each, six 160-episode development panels, one 138-target diagnostic grid, six 200-episode development panels including the M8 four-candidate paired panel, and one paired three-candidate M7 panel. I8 added one phase-aware control formulation before T6. E39 opened I9 but added no training, measurement, or evaluation resources. No official assessment has run.",
+        "current_goal_gap": "The fresh M8 panel measured the restored T1 baseline at 192/200 (96.0%), while the phase-aware T6 candidates measured 180/200, 191/200, and 188/200. No candidate reached 196/200 or preserved the baseline strongly enough to justify official assessment.",
+        "current_synthesis": "Observed: M8 measured all three phase-aware T6 candidates below the 196/200 threshold on the same fresh shared-seed complete-distribution panel as T1. Observed: T6:checkpoint-45056 lost to T1 by 6 to 18 wins with a -6.0 percentage-point outcome difference; T6:checkpoint-50176 was closest, with 8 to 9 wins, 17 discordant episodes, and a -0.5 percentage-point difference; T6:checkpoint-70656 lost by 8 to 12 wins with a -2.0 percentage-point difference. Observed: the tested phase-aware formulation did not provide a credible improvement over the baseline complete-task result or a route to 196/200. Observed: the measured T6 policies still reached 100-step uninterrupted holds in successful episodes, so the panel does not establish a new loss of hold capability after settling; the measured shortfall remains before or during successful settling. Hypothesis: the tested phase-aware command split is too intrusive or mismatched to the learned policy and does not resolve the residual negative-bearing approach and settling tail. This does not establish that every possible temporal formulation is ineffective. Observed: E39 opened I9 to test one materially different, continuous model-informed residual torque interface while preserving the baseline observation representation and complete uninterrupted-hold semantics. No implementation, training, measurement, or candidate result has yet been produced for I9.",
+        "decision_frontier": "Official assessment remains unjustified because no candidate has reached 196/200 or been assigned best-known status. The goal-review decision was to open I9 rather than request assessment or conclude that no credible route remains. This goal-review session now ends; I9 is actionable only in its fresh inquiry session.",
+        "evidence_references": [
+          "T6",
+          "M8",
+          "E37",
+          "E39"
+        ],
+        "human_goal_connection": "The campaign still targets a learned policy with at least 196 successes out of 200 under the complete official task distribution, where every success requires the complete uninterrupted 100-step hold. I9 was opened because the current best result remains below that threshold and the observed shortfall is concentrated before or during settling.",
+        "next_direction_or_closure": "The next session should conduct the bounded I9 inquiry. It must preserve the complete uninterrupted-hold criterion and resolve whether the continuous model-informed residual torque interface can address the observed negative-bearing approach and settling shortfall without degrading the baseline complete-task outcome. Closure requires either evidence supporting a candidate at or above 196/200 with preserved post-settling hold behavior, or evidence that the interface cannot preserve the baseline or provide a credible route to the goal."
+      },
+      "result": {
+        "session_id": "S20",
+        "status": "checkpointed"
+      },
+      "session_id": "S20",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "714558d5fbb296c94b5462295c030475f026d3ee",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "T6:checkpoint-45056, T6:checkpoint-50176, T6:checkpoint-70656, and T1:checkpoint-100352 remain unassigned measured candidates. No candidate has working, best-known, or retained status. I9 has no candidate yet.",
+        "completed_operations": [
+          "E39"
+        ],
+        "cumulative_resource_use": "The campaign has used six PPO training runs of 120,832 completed steps each, six 160-episode development panels, one 138-target diagnostic grid, six 200-episode development panels including the M8 four-candidate paired panel, and one paired three-candidate M7 panel. I8 added one phase-aware control formulation before T6. E39 opened I9 but added no training, measurement, or evaluation resources. No official assessment has run.",
+        "current_goal_gap": "The fresh M8 panel measured the restored T1 baseline at 192/200 (96.0%), while the phase-aware T6 candidates measured 180/200, 191/200, and 188/200. No candidate reached 196/200 or preserved the baseline strongly enough to justify official assessment.",
+        "current_synthesis": "Observed: M8 measured all three phase-aware T6 candidates below the 196/200 threshold on the same fresh shared-seed complete-distribution panel as T1. Observed: T6:checkpoint-45056 lost to T1 by 6 to 18 wins with a -6.0 percentage-point outcome difference; T6:checkpoint-50176 was closest, with 8 to 9 wins, 17 discordant episodes, and a -0.5 percentage-point difference; T6:checkpoint-70656 lost by 8 to 12 wins with a -2.0 percentage-point difference. Observed: the tested phase-aware formulation did not provide a credible improvement over the baseline complete-task result or a route to 196/200. Observed: the measured T6 policies still reached 100-step uninterrupted holds in successful episodes, so the panel does not establish a new loss of hold capability after settling; the measured shortfall remains before or during successful settling. Hypothesis: the tested phase-aware command split is too intrusive or mismatched to the learned policy and does not resolve the residual negative-bearing approach and settling tail. This does not establish that every possible temporal formulation is ineffective. Observed: E39 opened I9 to test one materially different, continuous model-informed residual torque interface while preserving the baseline observation representation and complete uninterrupted-hold semantics. No implementation, training, measurement, or candidate result has yet been produced for I9.",
+        "decision_frontier": "Official assessment remains unjustified because no candidate has reached 196/200 or been assigned best-known status. The goal-review decision was to open I9 rather than request assessment or conclude that no credible route remains. This goal-review session now ends; I9 is actionable only in its fresh inquiry session.",
+        "evidence_references": [
+          "T6",
+          "M8",
+          "E37",
+          "E39"
+        ],
+        "human_goal_connection": "The campaign still targets a learned policy with at least 196 successes out of 200 under the complete official task distribution, where every success requires the complete uninterrupted 100-step hold. I9 was opened because the current best result remains below that threshold and the observed shortfall is concentrated before or during settling.",
+        "inquiry_id": null,
+        "next_direction_or_closure": "The next session should conduct the bounded I9 inquiry. It must preserve the complete uninterrupted-hold criterion and resolve whether the continuous model-informed residual torque interface can address the observed negative-bearing approach and settling shortfall without degrading the baseline complete-task outcome. Closure requires either evidence supporting a candidate at or above 196/200 with preserved post-settling hold behavior, or evidence that the interface cannot preserve the baseline or provide a credible route to the goal.",
+        "session_id": "S20"
+      },
+      "presentation": {
+        "backend_session_id": "d2a87dcd-5982-4e4c-b0ef-1de7d6737119",
+        "campaign_id": "eb19a5f3-14b3-4590-ad74-1b31cf5ae3d5",
+        "campaign_usage": "1h16m | 194.90 AIU | prompt 30.1m (84% cached) | output 203.4k",
+        "session_id": "S20",
+        "session_kind": "goal_review",
+        "session_usage": "2m24s | 9.22 AIU | prompt 1m (74% cached) | output 7.8k"
+      },
+      "result": {
+        "session_id": "S20",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "140e104be5ea2654f56438a98a879c2079eb6af8",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E40",
+    "inquiry_id": null,
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "T6:checkpoint-45056, T6:checkpoint-50176, T6:checkpoint-70656, and T1:checkpoint-100352 remain unassigned measured candidates. No candidate has working, best-known, or retained status. I9 has no candidate yet.",
+        "completed_operations": [
+          "E39"
+        ],
+        "cumulative_resource_use": "The campaign has used six PPO training runs of 120,832 completed steps each, six 160-episode development panels, one 138-target diagnostic grid, six 200-episode development panels including the M8 four-candidate paired panel, and one paired three-candidate M7 panel. I8 added one phase-aware control formulation before T6. E39 opened I9 but added no training, measurement, or evaluation resources. No official assessment has run.",
+        "current_goal_gap": "The fresh M8 panel measured the restored T1 baseline at 192/200 (96.0%), while the phase-aware T6 candidates measured 180/200, 191/200, and 188/200. No candidate reached 196/200 or preserved the baseline strongly enough to justify official assessment.",
+        "current_synthesis": "Observed: M8 measured all three phase-aware T6 candidates below the 196/200 threshold on the same fresh shared-seed complete-distribution panel as T1. Observed: T6:checkpoint-45056 lost to T1 by 6 to 18 wins with a -6.0 percentage-point outcome difference; T6:checkpoint-50176 was closest, with 8 to 9 wins, 17 discordant episodes, and a -0.5 percentage-point difference; T6:checkpoint-70656 lost by 8 to 12 wins with a -2.0 percentage-point difference. Observed: the tested phase-aware formulation did not provide a credible improvement over the baseline complete-task result or a route to 196/200. Observed: the measured T6 policies still reached 100-step uninterrupted holds in successful episodes, so the panel does not establish a new loss of hold capability after settling; the measured shortfall remains before or during successful settling. Hypothesis: the tested phase-aware command split is too intrusive or mismatched to the learned policy and does not resolve the residual negative-bearing approach and settling tail. This does not establish that every possible temporal formulation is ineffective. Observed: E39 opened I9 to test one materially different, continuous model-informed residual torque interface while preserving the baseline observation representation and complete uninterrupted-hold semantics. No implementation, training, measurement, or candidate result has yet been produced for I9.",
+        "decision_frontier": "Official assessment remains unjustified because no candidate has reached 196/200 or been assigned best-known status. The goal-review decision was to open I9 rather than request assessment or conclude that no credible route remains. This goal-review session now ends; I9 is actionable only in its fresh inquiry session.",
+        "evidence_references": [
+          "T6",
+          "M8",
+          "E37",
+          "E39"
+        ],
+        "human_goal_connection": "The campaign still targets a learned policy with at least 196 successes out of 200 under the complete official task distribution, where every success requires the complete uninterrupted 100-step hold. I9 was opened because the current best result remains below that threshold and the observed shortfall is concentrated before or during settling.",
+        "next_direction_or_closure": "The next session should conduct the bounded I9 inquiry. It must preserve the complete uninterrupted-hold criterion and resolve whether the continuous model-informed residual torque interface can address the observed negative-bearing approach and settling shortfall without degrading the baseline complete-task outcome. Closure requires either evidence supporting a candidate at or above 196/200 with preserved post-settling hold behavior, or evidence that the interface cannot preserve the baseline or provide a credible route to the goal."
+      }
+    },
+    "request_fingerprint": "c699f879f85c533c382bec9fcea1fd1f1cb16336d63e501d70f89dacb18619dd",
+    "session_id": "S20",
+    "supersedes": null
+  },
   "pi_checkpoint": {
-    "candidates_and_roles": "T6:checkpoint-45056, T6:checkpoint-50176, and T6:checkpoint-70656 remain unassigned measured inquiry candidates. T1:checkpoint-100352 remains unassigned after the M8 baseline panel. No candidate has working, best-known, or retained status.",
+    "candidates_and_roles": "T6:checkpoint-45056, T6:checkpoint-50176, T6:checkpoint-70656, and T1:checkpoint-100352 remain unassigned measured candidates. No candidate has working, best-known, or retained status. I9 has no candidate yet.",
     "completed_operations": [
-      "E37"
+      "E39"
     ],
-    "cumulative_resource_use": "The campaign has used six PPO training runs of 120,832 completed steps each, six 160-episode development panels, one 138-target diagnostic grid, six 200-episode development panels including the M8 four-candidate paired panel, and one paired three-candidate M7 panel. I8 added one phase-aware control formulation in robot_learning/scenario/policy_io.py before T6. No official assessment has run.",
-    "current_goal_gap": "The fresh M8 panel measured the restored T1 baseline at 192/200 (96.0%). The phase-aware T6 candidates measured 180/200 (90.0%), 191/200 (95.5%), and 188/200 (94.0%). No candidate reached 196/200, and no candidate improved on or preserved the baseline result strongly enough to justify official assessment.",
-    "current_synthesis": "Observed: M8 measured all three phase-aware T6 candidates below the 196/200 threshold on the same fresh shared-seed complete-distribution panel as T1. Observed: T6:checkpoint-45056 lost to T1 by 6 to 18 wins with a -6.0 percentage-point outcome difference; T6:checkpoint-50176 was closest, with 8 to 9 wins, 17 discordant episodes, and a -0.5 percentage-point difference; T6:checkpoint-70656 lost by 8 to 12 wins with a -2.0 percentage-point difference. Observed: the tested phase-aware formulation did not provide a credible improvement over the baseline complete-task result or a route to 196/200. Observed: the measured T6 policies still reached 100-step uninterrupted holds in successful episodes, so the panel does not establish a new loss of hold capability after settling; the measured shortfall remains before or during successful settling. Hypothesis: the tested phase-aware command split is too intrusive or mismatched to the learned policy and does not resolve the residual negative-bearing approach and settling tail. This does not establish that every possible temporal formulation is ineffective.",
-    "decision_frontier": "I8 is closed with a negative answer. M8 supplies the required controlled fresh shared-seed panel and shows that the tested phase-aware temporal route failed the 196/200 criterion and did not preserve or improve baseline complete-task behavior. The route is rejected; official assessment remains unjustified because no candidate has reached the threshold or been assigned best-known status.",
+    "cumulative_resource_use": "The campaign has used six PPO training runs of 120,832 completed steps each, six 160-episode development panels, one 138-target diagnostic grid, six 200-episode development panels including the M8 four-candidate paired panel, and one paired three-candidate M7 panel. I8 added one phase-aware control formulation before T6. E39 opened I9 but added no training, measurement, or evaluation resources. No official assessment has run.",
+    "current_goal_gap": "The fresh M8 panel measured the restored T1 baseline at 192/200 (96.0%), while the phase-aware T6 candidates measured 180/200, 191/200, and 188/200. No candidate reached 196/200 or preserved the baseline strongly enough to justify official assessment.",
+    "current_synthesis": "Observed: M8 measured all three phase-aware T6 candidates below the 196/200 threshold on the same fresh shared-seed complete-distribution panel as T1. Observed: T6:checkpoint-45056 lost to T1 by 6 to 18 wins with a -6.0 percentage-point outcome difference; T6:checkpoint-50176 was closest, with 8 to 9 wins, 17 discordant episodes, and a -0.5 percentage-point difference; T6:checkpoint-70656 lost by 8 to 12 wins with a -2.0 percentage-point difference. Observed: the tested phase-aware formulation did not provide a credible improvement over the baseline complete-task result or a route to 196/200. Observed: the measured T6 policies still reached 100-step uninterrupted holds in successful episodes, so the panel does not establish a new loss of hold capability after settling; the measured shortfall remains before or during successful settling. Hypothesis: the tested phase-aware command split is too intrusive or mismatched to the learned policy and does not resolve the residual negative-bearing approach and settling tail. This does not establish that every possible temporal formulation is ineffective. Observed: E39 opened I9 to test one materially different, continuous model-informed residual torque interface while preserving the baseline observation representation and complete uninterrupted-hold semantics. No implementation, training, measurement, or candidate result has yet been produced for I9.",
+    "decision_frontier": "Official assessment remains unjustified because no candidate has reached 196/200 or been assigned best-known status. The goal-review decision was to open I9 rather than request assessment or conclude that no credible route remains. This goal-review session now ends; I9 is actionable only in its fresh inquiry session.",
     "evidence_references": [
       "T6",
       "M8",
-      "E37"
+      "E37",
+      "E39"
     ],
-    "human_goal_connection": "I8 tested whether a phase-aware temporal control formulation could improve the residual negative-bearing approach and settling failures while preserving complete uninterrupted-hold behavior, with the human-goal threshold of at least 196 successes out of 200 under the complete official task distribution.",
-    "inquiry_id": "I8",
-    "next_direction_or_closure": "This checkpoint ends the I8 evidence session and returns the campaign to goal review. The next session should choose whether a materially different, consequential mechanism remains credible; any proposal must preserve the complete uninterrupted-hold criterion and address the observed approach and settling shortfall without treating the rejected phase-aware formulation as evidence of success.",
-    "scientific_commit": "3eed24febfa1a0f9be6574cf4b90786094165438",
-    "session_id": "S19"
+    "human_goal_connection": "The campaign still targets a learned policy with at least 196 successes out of 200 under the complete official task distribution, where every success requires the complete uninterrupted 100-step hold. I9 was opened because the current best result remains below that threshold and the observed shortfall is concentrated before or during settling.",
+    "inquiry_id": null,
+    "next_direction_or_closure": "The next session should conduct the bounded I9 inquiry. It must preserve the complete uninterrupted-hold criterion and resolve whether the continuous model-informed residual torque interface can address the observed negative-bearing approach and settling shortfall without degrading the baseline complete-task outcome. Closure requires either evidence supporting a candidate at or above 196/200 with preserved post-settling hold behavior, or evidence that the interface cannot preserve the baseline or provide a credible route to the goal.",
+    "scientific_commit": "140e104be5ea2654f56438a98a879c2079eb6af8",
+    "session_id": "S20"
   },
   "schema_version": 6,
   "scientific_model": {
@@ -9830,21 +9955,6 @@
     "path": "research/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "d2a87dcd-5982-4e4c-b0ef-1de7d6737119",
-    "id": "S20",
-    "inquiry_id": null,
-    "kind": "goal_review",
-    "objective": "Decide whether to request official assessment, open one bounded goal-linked inquiry, or conclude that no credible route remains.",
-    "operation_ids": [
-      "E39"
-    ],
-    "scientific_parent_commit": "714558d5fbb296c94b5462295c030475f026d3ee"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
