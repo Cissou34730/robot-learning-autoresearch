@@ -85,6 +85,19 @@ Measurement and training are peer instruments. Either returns factual results
 to the same active bounded session without implying a required successor
 action.
 
+The inquiry's question, goal connection, and closure condition express the
+same campaign-relevant robotics or reinforcement-learning decision, grounded
+in the robot-and-task scientific model and available evidence. After substantive
+new evidence, briefly explain what changes for that decision, what remains
+unresolved, and how the next operation addresses it. Continue within the same
+question or use the existing close/reframe and checkpoint flow when the question
+is answered or changes. Another recipe or potential score improvement alone
+does not establish that connection.
+
+The maintainer controls the per-run training allocation through the launcher's
+`-Timesteps` option, which defaults to 120,000 steps. The PI uses the allocation
+shown in its context; neither the PI nor the Runner may independently change it.
+
 An inquiry reframe is a scientific-session boundary: after recording the
 reframe, the PI checkpoints before any further operation and resumes the
 reframed inquiry in a fresh bounded session.

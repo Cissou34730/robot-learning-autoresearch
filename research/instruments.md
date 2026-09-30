@@ -162,14 +162,23 @@ and paired-comparison integrity facts remain attached to the result.
 ```
 
 `initialization` is `fresh` or `transfer`. `seed`, `steps`, `description`, and
-`rationale` are required. The seed is non-negative, the step count is positive,
-and the strings are non-empty. `parent` is required and non-empty for transfer
+`rationale` are required. The seed is non-negative, and the strings are
+non-empty. `steps` must equal the maintainer's current allocation, shown in the
+phase prompt; it is not a PI-selected budget. The maintainer configures it with
+launcher `-Timesteps` or Runner `--timesteps`. A different request allocation is
+rejected at validation, acceptance, and before training dispatch.
+`parent` is required and non-empty for transfer
 training and is omitted for fresh training.
 
 The operation validates PI-owned changed sources and active parameters,
-executes the requested seed and step count, archives all produced candidates,
-and records the parent, scientific recipe, and learning-dynamics facts.
+executes the requested seed with the maintainer-owned allocation, archives all
+produced candidates, and records the parent, scientific recipe, and
+learning-dynamics facts.
 Completion does not assign working, best-known, or retained roles.
+Actual completed steps may round up to the learning algorithm's rollout
+boundary; that does not authorize a different allocation. An already accepted
+training request must still match the allocation before dispatch; completed
+results can finish publication without a new training allocation.
 
 ## Durable checkpoint
 

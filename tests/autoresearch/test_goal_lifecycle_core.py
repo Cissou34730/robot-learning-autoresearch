@@ -35,6 +35,7 @@ def _configure(monkeypatch, tmp_path: Path) -> dict:
         monkeypatch.setattr(paths, name, value)
     monkeypatch.setattr(repository, "git", lambda *args: "a" * 40 + "\n")
     monkeypatch.setattr(repository, "scientific_delta", lambda _parent: [])
+    monkeypatch.setattr(run_experiment, "TIMESTEPS", 10)
     monkeypatch.setattr(repository, "campaign_lab_manifest", list)
     monkeypatch.setattr(
         run_experiment, "_protected_panel_overlap", lambda *_args: False
@@ -1146,6 +1147,7 @@ def test_active_nonfailed_operation_cannot_be_replaced(monkeypatch, tmp_path):
 
 def test_transfer_parent_is_explicit_and_frozen(monkeypatch, tmp_path):
     state = _configure(monkeypatch, tmp_path)
+    monkeypatch.setattr(run_experiment, "TIMESTEPS", 20)
     _start_session(state, "startup", "Train from a selected candidate.")
     artifact = _artifact(tmp_path / "archive" / "candidate")
     candidate = _candidate("T1:checkpoint-10", artifact)

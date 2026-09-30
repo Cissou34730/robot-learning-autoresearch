@@ -13,6 +13,9 @@ param(
     [ValidateRange(1, [int]::MaxValue)]
     [int]$MaxInquiries = 15,
 
+    [ValidateRange(1, [int]::MaxValue)]
+    [int]$Timesteps = 120000,
+
     [string]$StopRequestPath,
 
     [ValidateRange(1, 3600)]
@@ -177,7 +180,9 @@ function Invoke-Runner {
     Enter-TrustedMutableInvocation
     $uv = Get-Command uv -CommandType Application -ErrorAction Stop |
         Select-Object -First 1
-    $runnerArguments = @("run", "python", "research/run_experiment.py")
+    $runnerArguments = @(
+        "run", "python", "research/run_experiment.py", "--timesteps", "$Timesteps"
+    )
     $runnerArguments += $Arguments
     $exitCode = Invoke-CooperativeProcess -FilePath $uv.Source `
         -ArgumentList $runnerArguments -Operation "research runner"
@@ -743,7 +748,9 @@ function New-ScientificSessionPrompt {
             "Choose the operation whose result would most improve the next decision toward the human goal."
             "Relate the selected operation to the unresolved scientific distinction or method-development need. The decision frontier records the question and discriminating evidence, not merely a candidate implementation."
             "Existing PI-owned implementations have no privileged status; inspect, modify, or replace them when that is the most credible scientific action before submitting an operation."
-            "When evidence resolves or redirects the active inquiry, record that decision explicitly rather than drifting to another question."
+            "Use the active inquiry to resolve a consequential robotics or reinforcement-learning question that affects the campaign's route toward the human goal. Ground that question in the robot-and-task scientific model and available behavioral, training, or evaluation evidence. Its question, goal connection, and closure condition must express the same campaign-relevant decision."
+            "After substantive new evidence, briefly explain what it changes for that decision and what remains unresolved. Continue the inquiry when the next operation addresses that remaining question. Close or reframe it when the question has been answered or the campaign now needs a different question, preserving the result through the existing inquiry and checkpoint contracts."
+            "Before submitting the next operation, make its connection to that updated decision explicit. Another recipe or a potential score improvement is not, by itself, that explanation."
             "When the current line of work reaches a stable decision, preserve the synthesis, consequential competing explanations, claim limits, supporting evidence, remaining gap, decision frontier, and next direction in a checkpoint."
             "When ready to act, use the matching contract in research/instruments.md to submit one scientific action."
         )
@@ -757,6 +764,7 @@ function New-ScientificSessionPrompt {
         "Current goal gap: $gap"
         "Active inquiry: $inquiry"
         "Current objective: $objective"
+        "Maintainer training allocation: $Timesteps steps per run. Training requests must match this allocation; neither the PI nor the Runner may independently change it."
         $correction
         $piPersona
         $scientificModelUseGuidance
@@ -770,7 +778,7 @@ function New-ScientificSessionPrompt {
 function Test-OperationRequest {
     Enter-TrustedMutableInvocation
     $validationOutput = @(
-        uv run python research/run_experiment.py --check-operation 2>&1
+        uv run python research/run_experiment.py --timesteps $Timesteps --check-operation 2>&1
     )
     $exitCode = $LASTEXITCODE
     $script:OperationValidationFeedback = (

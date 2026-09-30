@@ -31,6 +31,7 @@ PROPOSAL_ERRORS = (
 )
 ACCEPTED_REQUEST_KEY = "_runner_accepted_operation"
 ACCEPTED_REQUEST_VERSION = 1
+TIMESTEPS = 120_000
 
 
 class FrozenOperationMismatch(ValueError):
@@ -353,6 +354,18 @@ def _validate_new_operation_scientific_delta(state: dict) -> None:
     )
 
 
+def _training_allocation(request: dict) -> int:
+    allocation = execution.training_budget(
+        TIMESTEPS, request["initialization"], False, 0
+    )
+    if request["steps"] != allocation:
+        raise ValueError(
+            f"training allocation is maintainer-owned: steps must equal "
+            f"{allocation:,}, not {request['steps']!r}"
+        )
+    return allocation
+
+
 def _new_pending_operation(
     request: dict,
     state: dict,
@@ -360,6 +373,8 @@ def _new_pending_operation(
     supersedes: str | None = None,
 ) -> dict:
     kind = protocol.validate_operation_request(request, state)
+    if kind == "training":
+        _training_allocation(request["training"])
     _validate_new_operation_scientific_delta(state)
     identifier = protocol.allocate_operation_id(kind, state)
     session = protocol.require_active_session(state)
@@ -1285,6 +1300,7 @@ def _ensure_candidate_keys_available(state: dict, candidates: list[dict]) -> Non
 def execute_training(state: dict, pending: dict) -> int:
     data = pending["data"]
     request = pending["request"]["training"]
+    timesteps = int(request["steps"])
     parent_commit = str(data["code_parent_commit"])
     campaign_id = repository.current_campaign_id(state)
     operation_id = pending["id"]
@@ -1334,13 +1350,14 @@ def execute_training(state: dict, pending: dict) -> int:
                 if bool(metadata.get("completed", True)):
                     execution.validate_reusable_candidate(
                         candidate_dir,
-                        timesteps=int(request["steps"]),
+                        timesteps=timesteps,
                         seed=int(request["seed"]),
                         resume=resume,
                         config=config,
                     )
                     completed = True
             if not completed:
+                timesteps = _training_allocation(request)
                 if candidate_dir.exists():
                     execution.remove_candidate_dir(candidate_dir)
                 pending["progress"] = "training_dispatched"
@@ -1348,7 +1365,7 @@ def execute_training(state: dict, pending: dict) -> int:
                 attempt = _training_log_attempt(operation_id, campaign_id)
                 execution.train_candidate(
                     candidate_dir,
-                    int(request["steps"]),
+                    timesteps,
                     int(request["seed"]),
                     resume,
                     paths.training_log_path(
@@ -1394,7 +1411,7 @@ def execute_training(state: dict, pending: dict) -> int:
         "initialization": request["initialization"],
         "parent": parent["id"] if isinstance(parent, dict) else None,
         "seed": int(request["seed"]),
-        "requested_steps": int(request["steps"]),
+        "requested_steps": timesteps,
         "completed_steps": completed_steps,
         "scientific_commit": data["scientific_commit"],
         "mechanical_provenance": {
@@ -1666,6 +1683,12 @@ def execute_pending_operation() -> int:
     request = pending["request"]
     if _canonical_fingerprint(request) != pending["request_fingerprint"]:
         raise FrozenOperationMismatch("accepted operation request changed")
+    if pending["kind"] == "training" and pending["progress"] in {
+        "accepted",
+        "recipe_published",
+        "training_dispatched",
+    }:
+        _training_allocation(request["training"])
     _write_accepted_request_handoff(pending)
     subject = _operation_subject(pending)
     detail = _operation_request_detail(pending)
@@ -1737,6 +1760,8 @@ def check_operation() -> int:
             pending = _new_pending_operation(request, working)
             repository.validate_research_state(working, allow_missing_artifact=True)
             kind = str(pending["kind"])
+        if kind == "training":
+            _training_allocation(request["training"])
     except PROPOSAL_ERRORS as error:
         print(f"OPERATION_INVALID: {error}")
         return 1
@@ -1897,6 +1922,7 @@ def run_official_assessment() -> int:
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
+    parser.add_argument("--timesteps", type=int, default=TIMESTEPS)
     parser.add_argument("--check-operation", action="store_true")
     parser.add_argument("--execute-pending", action="store_true")
     parser.add_argument(
@@ -1914,11 +1940,16 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--mark-scientific-model-ready", action="store_true")
     parser.add_argument("--reaccept-pending", action="store_true")
     parser.add_argument("--run-official-assessment", action="store_true")
-    return parser.parse_args()
+    args = parser.parse_args()
+    if args.timesteps <= 0:
+        parser.error("--timesteps must be positive")
+    return args
 
 
 def main() -> int:
+    global TIMESTEPS
     args = parse_args()
+    TIMESTEPS = args.timesteps
     if args.validate_session_backend:
         if not all(
             (

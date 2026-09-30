@@ -31,6 +31,7 @@ def _configure(monkeypatch, tmp_path: Path, *, session_kind: str = "startup") ->
         monkeypatch.setattr(paths, name, value)
     monkeypatch.setattr(repository, "git", lambda *args: "a" * 40 + "\n")
     monkeypatch.setattr(repository, "scientific_delta", lambda _parent: [])
+    monkeypatch.setattr(run_experiment, "TIMESTEPS", 10)
     state = repository.empty_campaign_state(
         campaign={"id": "campaign", "started_at": "now", "base_commit": "base"},
         last_verdict="fresh",
@@ -66,6 +67,47 @@ def _training() -> dict:
 
 def _write_request(request: dict) -> None:
     paths.OPERATION_REQUEST_PATH.write_text(json.dumps(request), encoding="utf-8")
+
+
+def test_training_allocation_default_and_maintainer_override(monkeypatch):
+    monkeypatch.setattr(sys, "argv", ["run_experiment.py"])
+    assert run_experiment.parse_args().timesteps == 120_000
+    monkeypatch.setattr(sys, "argv", ["run_experiment.py", "--timesteps", "60000"])
+    assert run_experiment.parse_args().timesteps == 60_000
+
+
+def test_pi_cannot_change_the_maintainer_training_allocation(monkeypatch, tmp_path):
+    state = _configure(monkeypatch, tmp_path)
+    monkeypatch.setattr(run_experiment, "TIMESTEPS", 120_000)
+    request = _training()
+    request["training"]["steps"] = 500_000
+    _write_request(request)
+    before = repository.read_state()
+
+    assert run_experiment.check_operation() == 1
+    with pytest.raises(ValueError, match="maintainer-owned"):
+        run_experiment.accept_operation(request, state)
+    assert repository.read_state() == before
+    assert state == before
+
+    request["training"]["steps"] = 120_000
+    assert run_experiment.accept_operation(request, state)["request"] == request
+
+
+def test_changed_maintainer_allocation_refuses_pending_training_without_mutation(
+    monkeypatch, tmp_path
+):
+    state = _configure(monkeypatch, tmp_path)
+    monkeypatch.setattr(run_experiment, "TIMESTEPS", 500_000)
+    request = _training()
+    request["training"]["steps"] = 500_000
+    run_experiment.accept_operation(request, state)
+    before = repository.read_state()
+    monkeypatch.setattr(run_experiment, "TIMESTEPS", 120_000)
+
+    with pytest.raises(ValueError, match="maintainer-owned"):
+        run_experiment.execute_pending_operation()
+    assert repository.read_state() == before
 
 
 def test_protected_files_are_rejected_from_training_delta(monkeypatch, tmp_path):
@@ -347,6 +389,7 @@ def test_completed_training_transaction_retries_publication_without_retraining(
     monkeypatch.setattr(execution, "validate_active_configuration", dict)
 
     def train(*_args, **_kwargs):
+        assert _args[1] == run_experiment.TIMESTEPS
         calls["training"] += 1
         return 1.0
 

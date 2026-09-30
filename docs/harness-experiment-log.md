@@ -399,28 +399,46 @@ and the retain/remove/supersede decision. If no campaign has exercised the
 change, record it as untested. Keep automated scientific-recipe changes
 separate from harness changes so their outcomes are not conflated.
 
-## TODO: restore the maintainer-owned training allocation
+## Maintainer allocation, engineering scope, and robotics inquiry alignment
 
-- [ ] Restore the 120,000-step per-run training allocation, configurable only
-  by the maintainer. Neither the PI nor the Runner may independently change it.
-  Preserve that boundary in request validation and execution, and cover it with
-  targeted behavior tests.
-- **Provenance:** `034daed` replaced the Runner's maintainer-controlled
-  `--timesteps` allocation (default `120_000`) with PI-authored `steps` checked
-  only for positivity. This transferred budget authority rather than merely
-  removing an illustrative number from a PI-visible contract.
-- **Status:** pending implementation. This entry does not change or interrupt
-  the current training operation.
-
-## TODO: add strict-scope guidance to Copilot instruction files
-
-- [ ] Add the agreed guidance to Copilot instruction files, not `AGENTS.md`.
-  Treat approved scope as a strict boundary and make the smallest complete
-  change. Require explicit approval before adjacent fixes, refactors,
-  abstractions, agents, speculative tests, or new test infrastructure.
-  Validate proportionally with existing targeted checks or a minimal
-  reproduction. Report unrelated environment blockers and stop rather than
-  expanding into another investigation or repair. Once the requested change
-  is complete, commit and push when required, then stop.
-- **Status:** pending implementation. This is a backlog entry only; no
-  instruction file or `AGENTS.md` is changed by it.
+- **Implementation commit:** the commit containing this entry,
+  `Restore maintainer training allocation and inquiry alignment`.
+- **Approved scope:** the two approved backlog items and the agreed prompt
+  adjustment. No lifecycle, schema, scientific implementation, or test
+  infrastructure redesign.
+- **Training allocation RCA:** `034daed` replaced the maintainer-controlled
+  allocation with PI-authored `steps` checked only for positivity. The stopped
+  campaign consequently requested 500,000 steps for both T1 and T2.
+- **Allocation change and expected improvement:** restore the 120,000-step
+  default through launcher `-Timesteps` and Runner `--timesteps`. A request's
+  `steps` remains a checked assertion of that allocation, not PI authority to
+  choose it. Validation, acceptance, and dispatch reject a different value.
+  The prompt exposes the actual allocation. This restores predictable,
+  maintainer-controlled training expenditure without changing scientific
+  operation identities or the learning algorithm's rollout rounding.
+- **Engineering scope change and expected improvement:** put the agreed
+  strict-scope instructions in `.github/copilot-instructions.md` only, as
+  selected by the maintainer. Require approval before expanding an engineering
+  task, use proportional existing checks, report unrelated validation blockers,
+  and stop after requested delivery. Expected benefit is less unapproved work,
+  latency, and resource waste. This does not narrow PI scientific authority;
+  `AGENTS.md` and user-wide instructions are unchanged.
+- **Inquiry alignment change and expected improvement:** replace the generic
+  resolution sentence in the phase prompt with the approved robotics/RL-grounded
+  guidance and align `research/program.md`. Question, goal connection, and
+  closure describe one campaign-relevant decision. New evidence must clarify
+  what changes for that decision and why the next action addresses its remaining
+  question. Expected benefit is an explicit, coherent continuation or transition,
+  rather than another recipe justified by score improvement alone. No mandatory
+  extra measurement, automatic closure, or Runner scientific judgment is added.
+- **Implementation checks:** ten focused cases passed for budget defaults and
+  overrides, refusal of PI changes, preservation of a mismatched pending
+  request, frozen training, transfer, and publication-only recovery. Touched-file
+  Ruff passed. PowerShell parsing and a mocked-process probe confirmed that the
+  launcher forwards the maintainer allocation. No prompt-wording tests, native
+  Git fixtures, campaign replay, or full suite were added or run.
+- **Disposition:** both backlog items are implemented. Expected PI behavior
+  and engineering cost improvement remain untested in subsequent work. The
+  stopped campaign and its artifacts remain unchanged: its accepted 500,000-step
+  T2 request is not silently resized or reaccepted and will be refused before
+  redispatch under the restored default. No campaign was resumed or reset.
