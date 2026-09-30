@@ -1,13 +1,5 @@
 {
-  "active_inquiry": {
-    "closure_condition": "Close this inquiry once a fresh 120000-step policy has been evaluated on a deterministic non-protected development panel with episode success, first-entry step, minimum and terminal distance, maximum held streak, hold interruptions, target radius, target bearing, and inverse-kinematic branch, and the evidence supports a route-specific decision between acquisition/coverage work and convergence/stabilization work.",
-    "goal_connection": "The human goal requires at least 196 of 200 official episodes to complete an uninterrupted 100-step hold. Identifying whether acquisition, singularity escape, branch and boundary geometry, or terminal stabilization is the dominant failure mechanism determines which intervention can credibly move a learned policy toward 98% official success.",
-    "id": "I1",
-    "opened_in_session": "S2",
-    "question": "For a first policy trained under the fixed 120000-step allocation, are episode failures dominated by failure to enter the 1 cm target region or by hold interruptions after entry, and how do those mechanisms vary with target radius, bearing, and the selected inverse-kinematic branch?",
-    "rationale": "There is no trained candidate or behavioral evidence, so requesting official assessment or optimizing a reward proxy would be scientifically unjustified. The physical model predicts both initial escape from the fully extended singularity and residual-motion hold failure, with branch and geometry potentially conditioning either mechanism. A baseline policy plus episode-level diagnostic panel is the smallest goal-linked action that can discriminate these explanations and set the next intervention.",
-    "reframes": []
-  },
+  "active_inquiry": null,
   "campaign": {
     "base_commit": "c21feefe41ca2b187469b307cdbed7e4c0acba5f",
     "id": "102eeeb6-1f71-4f83-8b93-cb122f526952",
@@ -836,7 +828,7 @@
     }
   },
   "counters": {
-    "event": 3,
+    "event": 4,
     "inquiry": 1,
     "measurement": 1,
     "session": 3,
@@ -1189,9 +1181,63 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-09-30T20:05:09Z",
+      "error": null,
+      "id": "E4",
+      "inquiry_id": "I1",
+      "kind": "inquiry",
+      "request": {
+        "action": "close",
+        "outcome": "M1 closed I1's baseline failure-decomposition question. On the deterministic 160-episode development panel, T1:checkpoint-120832 achieved 151/160 successes (94.375%). Of the 9 failures, 7 never entered the 1 cm region (first_reach_step null, max_held_steps 0) and 2 entered at step 17 but held only 1 step before interruption. The acquisition/coverage route is therefore dominant for this baseline; failures were concentrated at negative target bearings from about -119 to -151 degrees, while mean failure radius (13.234 cm) was not materially different from success radius (13.164 cm). All 160 episodes were classified as elbow_open, so branch-dependent variation remains untested rather than absent.",
+        "reason": "The closure condition is met: a fresh 120000-step allocation produced a deterministic non-protected diagnostic panel containing success, first-entry, minimum and terminal distance, maximum held streak, interruptions, target geometry, and branch fields, and the evidence supports a route-specific decision. The next intervention should prioritize acquisition, singularity escape, and negative-bearing coverage; the two post-entry interruptions remain a secondary stabilization risk. The all-open-branch policy means a later inquiry may need explicit branch coverage before claiming branch invariance."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I1",
+        "outcome": "M1 closed I1's baseline failure-decomposition question. On the deterministic 160-episode development panel, T1:checkpoint-120832 achieved 151/160 successes (94.375%). Of the 9 failures, 7 never entered the 1 cm region (first_reach_step null, max_held_steps 0) and 2 entered at step 17 but held only 1 step before interruption. The acquisition/coverage route is therefore dominant for this baseline; failures were concentrated at negative target bearings from about -119 to -151 degrees, while mean failure radius (13.234 cm) was not materially different from success radius (13.164 cm). All 160 episodes were classified as elbow_open, so branch-dependent variation remains untested rather than absent.",
+        "reason": "The closure condition is met: a fresh 120000-step allocation produced a deterministic non-protected diagnostic panel containing success, first-entry, minimum and terminal distance, maximum held streak, interruptions, target geometry, and branch fields, and the evidence supports a route-specific decision. The next intervention should prioritize acquisition, singularity escape, and negative-bearing coverage; the two post-entry interruptions remain a secondary stabilization risk. The all-open-branch policy means a later inquiry may need explicit branch coverage before claiming branch invariance.",
+        "status": "completed"
+      },
+      "session_id": "S3",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "close",
+        "inquiry_id": "I1",
+        "outcome": "M1 closed I1's baseline failure-decomposition question. On the deterministic 160-episode development panel, T1:checkpoint-120832 achieved 151/160 successes (94.375%). Of the 9 failures, 7 never entered the 1 cm region (first_reach_step null, max_held_steps 0) and 2 entered at step 17 but held only 1 step before interruption. The acquisition/coverage route is therefore dominant for this baseline; failures were concentrated at negative target bearings from about -119 to -151 degrees, while mean failure radius (13.234 cm) was not materially different from success radius (13.164 cm). All 160 episodes were classified as elbow_open, so branch-dependent variation remains untested rather than absent.",
+        "reason": "The closure condition is met: a fresh 120000-step allocation produced a deterministic non-protected diagnostic panel containing success, first-entry, minimum and terminal distance, maximum held streak, interruptions, target geometry, and branch fields, and the evidence supports a route-specific decision. The next intervention should prioritize acquisition, singularity escape, and negative-bearing coverage; the two post-entry interruptions remain a secondary stabilization risk. The all-open-branch policy means a later inquiry may need explicit branch coverage before claiming branch invariance."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I1",
+        "outcome": "M1 closed I1's baseline failure-decomposition question. On the deterministic 160-episode development panel, T1:checkpoint-120832 achieved 151/160 successes (94.375%). Of the 9 failures, 7 never entered the 1 cm region (first_reach_step null, max_held_steps 0) and 2 entered at step 17 but held only 1 step before interruption. The acquisition/coverage route is therefore dominant for this baseline; failures were concentrated at negative target bearings from about -119 to -151 degrees, while mean failure radius (13.234 cm) was not materially different from success radius (13.164 cm). All 160 episodes were classified as elbow_open, so branch-dependent variation remains untested rather than absent.",
+        "reason": "The closure condition is met: a fresh 120000-step allocation produced a deterministic non-protected diagnostic panel containing success, first-entry, minimum and terminal distance, maximum held streak, interruptions, target geometry, and branch fields, and the evidence supports a route-specific decision. The next intervention should prioritize acquisition, singularity escape, and negative-bearing coverage; the two post-entry interruptions remain a secondary stabilization risk. The all-open-branch policy means a later inquiry may need explicit branch coverage before claiming branch invariance.",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E4",
+    "inquiry_id": "I1",
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "close",
+        "outcome": "M1 closed I1's baseline failure-decomposition question. On the deterministic 160-episode development panel, T1:checkpoint-120832 achieved 151/160 successes (94.375%). Of the 9 failures, 7 never entered the 1 cm region (first_reach_step null, max_held_steps 0) and 2 entered at step 17 but held only 1 step before interruption. The acquisition/coverage route is therefore dominant for this baseline; failures were concentrated at negative target bearings from about -119 to -151 degrees, while mean failure radius (13.234 cm) was not materially different from success radius (13.164 cm). All 160 episodes were classified as elbow_open, so branch-dependent variation remains untested rather than absent.",
+        "reason": "The closure condition is met: a fresh 120000-step allocation produced a deterministic non-protected diagnostic panel containing success, first-entry, minimum and terminal distance, maximum held streak, interruptions, target geometry, and branch fields, and the evidence supports a route-specific decision. The next intervention should prioritize acquisition, singularity escape, and negative-bearing coverage; the two post-entry interruptions remain a secondary stabilization risk. The all-open-branch policy means a later inquiry may need explicit branch coverage before claiming branch invariance."
+      }
+    },
+    "request_fingerprint": "9ef1c3188a8d6079389c139a80a964e25d1825249beb418fd65963f8fc6f2541",
+    "session_id": "S3",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No candidates, working model, best-known model, or retained model exists.",
     "completed_operations": [
@@ -1229,7 +1275,8 @@
     "objective": "Advance I1 toward its closure condition: Close this inquiry once a fresh 120000-step policy has been evaluated on a deterministic non-protected development panel with episode success, first-entry step, minimum and terminal distance, maximum held streak, hold interruptions, target radius, target bearing, and inverse-kinematic branch, and the evidence supports a route-specific decision between acquisition/coverage work and convergence/stabilization work.",
     "operation_ids": [
       "T1",
-      "M1"
+      "M1",
+      "E4"
     ],
     "scientific_parent_commit": "01d0e797a5a67aecd8b3f8c80464612292a5e68d"
   },
