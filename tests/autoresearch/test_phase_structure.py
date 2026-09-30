@@ -507,6 +507,110 @@ finally {{
     assert completed.returncode == 0, completed.stderr
 
 
+@powershell_only
+@pytest.mark.parametrize("progress", ["result_ready", "completed"])
+def test_pending_publication_failure_stops_without_pi_repair(tmp_path, progress):
+    root = tmp_path / "repo"
+    (root / "research").mkdir(parents=True)
+    operation_id = f"T-{uuid4().hex}"
+    state = {
+        "pending_operation": {
+            "id": operation_id,
+            "progress": progress,
+            "failure": None,
+        }
+    }
+    (root / "research" / "research_state.json").write_text(
+        json.dumps(state), encoding="utf-8"
+    )
+    completed = _run_launcher_trust_script(
+        tmp_path,
+        f"""
+$ast = [System.Management.Automation.Language.Parser]::ParseFile(
+    '{SCRIPT_PATH}', [ref]$null, [ref]$null)
+$definitions = $ast.FindAll({{
+    param($node)
+    $node -is [System.Management.Automation.Language.FunctionDefinitionAst] -and
+        $node.Name -in @('Stop-OnPublicationFailure', 'Invoke-PendingOperation')
+}}, $true)
+foreach ($definition in $definitions) {{
+    . ([scriptblock]::Create($definition.Extent.Text))
+}}
+$script:runnerCalls = 0
+$script:piCalls = 0
+function Invoke-Runner {{
+    param($Arguments)
+    $script:runnerCalls += 1
+    return 1
+}}
+function Invoke-PISession {{
+    $script:piCalls += 1
+    throw 'Scientific repair must not run for publication failures.'
+}}
+function Test-StopAfterOperation {{ return $false }}
+Push-Location '{root}'
+try {{
+    $state = Get-Content 'research\\research_state.json' -Raw | ConvertFrom-Json
+    try {{
+        [void](Invoke-PendingOperation -State $state)
+        $stopped = $false
+        $message = ''
+    }}
+    catch {{
+        $stopped = $true
+        $message = $_.Exception.Message
+    }}
+    [pscustomobject]@{{
+        stopped = $stopped
+        message = $message
+        runner_calls = $script:runnerCalls
+        pi_calls = $script:piCalls
+    }} | ConvertTo-Json -Compress
+}}
+finally {{ Pop-Location }}
+""",
+    )
+    assert completed.returncode == 0, completed.stderr
+    result = json.loads(completed.stdout)
+    assert result["stopped"]
+    assert operation_id in result["message"]
+    assert result["runner_calls"] == 1
+    assert result["pi_calls"] == 0
+    assert (
+        json.loads(
+            (root / "research" / "research_state.json").read_text(encoding="utf-8")
+        )
+        == state
+    )
+
+
+@powershell_only
+@pytest.mark.parametrize("progress", [None, "training_dispatched"])
+def test_publication_failure_guard_preserves_other_recovery_routes(tmp_path, progress):
+    pending = (
+        {"id": "T1", "progress": progress, "failure": "execution error"}
+        if progress is not None
+        else None
+    )
+    state_json = json.dumps({"pending_operation": pending})
+    completed = _run_launcher_trust_script(
+        tmp_path,
+        f"""
+$ast = [System.Management.Automation.Language.Parser]::ParseFile(
+    '{SCRIPT_PATH}', [ref]$null, [ref]$null)
+$definition = $ast.FindAll({{
+    param($node)
+    $node -is [System.Management.Automation.Language.FunctionDefinitionAst] -and
+        $node.Name -eq 'Stop-OnPublicationFailure'
+}}, $true) | Select-Object -First 1
+. ([scriptblock]::Create($definition.Extent.Text))
+$state = '{state_json}' | ConvertFrom-Json
+Stop-OnPublicationFailure -State $state
+""",
+    )
+    assert completed.returncode == 0, completed.stderr
+
+
 def test_schema6_state_and_model_are_the_only_fresh_start_contract():
     assert "research/operation_request.json" in reset_campaign.CAMPAIGN_PATHS
     state = repository.empty_campaign_state(

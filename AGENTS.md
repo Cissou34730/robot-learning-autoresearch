@@ -124,6 +124,13 @@ remain in the scenario and training surface.
 
 Do not run repository-wide lint or format passes. Format only touched files.
 
+Keep validation proportional to the change. Every test or check must cover
+changed behavior or a directly affected regression risk. Prefer existing
+targeted tests or a minimal reproduction; do not add speculative, redundant,
+or unrelated cases or build new test infrastructure for a minor fix.
+If an unrelated environment problem blocks validation, report it instead of
+expanding the task into a test-environment repair.
+
 Tests cover executable behavior and explicit machine-readable contracts, never
 documentation wording, headings, labels, source fragments, ordering, or
 enumeration counts.

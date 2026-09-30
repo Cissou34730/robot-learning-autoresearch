@@ -872,6 +872,20 @@ function Invoke-ScientificModelPhase {
     return 0
 }
 
+function Stop-OnPublicationFailure {
+    param([Parameter(Mandatory)]$State)
+
+    $pending = $State.pending_operation
+    if ($pending -and $pending.progress -in @("result_ready", "completed")) {
+        throw (
+            "Execution completed for $($pending.id), but publication failed. " +
+            "Its artifacts and pending transaction are preserved. Correct the " +
+            "publication error, then resume this campaign; do not reaccept " +
+            "the operation or retrain."
+        )
+    }
+}
+
 function Invoke-PendingOperation {
     param([Parameter(Mandatory)]$State)
 
@@ -945,6 +959,7 @@ function Invoke-PendingOperation {
     }
     if ($exitCode -ne 0) {
         $failed = Get-Content "research\research_state.json" -Raw | ConvertFrom-Json
+        Stop-OnPublicationFailure -State $failed
         if ($failed.pending_operation.failure) {
             return 1
         }
@@ -1124,6 +1139,7 @@ try {
             }
             $failed = Get-Content "research\research_state.json" -Raw |
                 ConvertFrom-Json
+            Stop-OnPublicationFailure -State $failed
             if ($failed.pending_operation.failure) {
                 continue
             }
@@ -1161,6 +1177,7 @@ try {
         }
         if ($exitCode -ne 0) {
             $failed = Get-Content "research\research_state.json" -Raw | ConvertFrom-Json
+            Stop-OnPublicationFailure -State $failed
             if (-not $failed.pending_operation.failure) {
                 throw "The Runner operation failed without recoverable pending state."
             }

@@ -347,6 +347,42 @@ its scientific breadth or achieve its result.
   stopped before edits. No campaign operation was started, resumed, reset,
   or modified.
 
+## Large-scope Git publication and completed-operation recovery
+
+- **Implementation commit:** the commit containing this entry,
+  `Fix large Runner Git publication`.
+- **RCA and campaign evidence:** campaign
+  `15a3cf8a-0cdf-4c03-88fe-f9a832863e8e` completed T1 at 500,736 steps and
+  archived 100 checkpoints. Its 405 changed Runner-memory paths produced a
+  42,185-character staging command, exceeding Windows' 32,767-unit process
+  command limit. The longest actual file path was 178 characters. The failure
+  was argument expansion during publication, not training or filesystem path
+  length.
+- **Change:** scoped staging and commits use temporary, NUL-delimited literal
+  pathspec files instead of expanded argument lists. Scoped staged-diff checks
+  use batches bounded by the Windows command limit, including quoting, UTF-16
+  units, and the terminating NUL. Unrelated staged changes remain outside the
+  campaign commit, and temporary pathspec files are removed on success or error.
+- **Recovery:** completed execution awaiting result publication or finalization
+  is reported as a publication failure. A failed resume is caught and reported
+  consistently. The launcher stops with the preserved transaction identified,
+  rather than claiming no recoverable state or inviting PI scientific repair.
+  Resume continues publication without retraining, reacceptance, a new
+  operation, duplicate evidence, or a change to accepted intent.
+- **Implementation checks:** 18 focused publication and recovery cases passed,
+  including native Git publication above the Windows argument limit, literal
+  file and directory scopes, deletion, unrelated staged changes, temporary-file
+  cleanup, and training recovery through initial and repeated publication
+  failures. Touched-file Ruff and PowerShell parsing passed. The older
+  native-Git trust-snapshot fixture remains blocked by Windows pytest-directory
+  permissions; the new native-Git checks use isolated test repositories and
+  process-local, exact-directory trust without changing ACLs or global Git
+  settings.
+- **Disposition:** implemented; the publication/recovery backlog item is
+  resolved. Campaign files and trained artifacts were preserved. No campaign
+  operation was started, resumed, reset, or finalized during implementation.
+  This infrastructure correction establishes no scientific improvement.
+
 ## Discussed but not implemented
 
 Hypothesis registries, premise-status fields, mandatory reasoning checklists,
@@ -362,3 +398,16 @@ affected surfaces, implementation checks, campaign evidence and its limits,
 and the retain/remove/supersede decision. If no campaign has exercised the
 change, record it as untested. Keep automated scientific-recipe changes
 separate from harness changes so their outcomes are not conflated.
+
+## TODO: restore the maintainer-owned training allocation
+
+- [ ] Restore the 120,000-step per-run training allocation, configurable only
+  by the maintainer. Neither the PI nor the Runner may independently change it.
+  Preserve that boundary in request validation and execution, and cover it with
+  targeted behavior tests.
+- **Provenance:** `034daed` replaced the Runner's maintainer-controlled
+  `--timesteps` allocation (default `120_000`) with PI-authored `steps` checked
+  only for positivity. This transferred budget authority rather than merely
+  removing an illustrative number from a PI-visible contract.
+- **Status:** pending implementation. This entry does not change or interrupt
+  the current training operation.

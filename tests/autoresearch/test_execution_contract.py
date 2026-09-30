@@ -307,12 +307,22 @@ def test_transfer_parent_is_revalidated_at_execution(monkeypatch, tmp_path):
         run_experiment.execute_training(repository.read_state(), pending)
 
 
+@pytest.mark.parametrize(
+    "failure_point",
+    [
+        "result_record",
+        "completion_commit",
+        "finalization_commit",
+        "resumed_finalization",
+    ],
+)
 def test_completed_training_transaction_retries_publication_without_retraining(
-    monkeypatch, tmp_path
+    monkeypatch, tmp_path, failure_point, capsys
 ):
     state = _configure(monkeypatch, tmp_path)
     monkeypatch.setattr(run_experiment.research_config, "load_experiment_config", dict)
-    run_experiment.accept_operation(_training(), state)
+    request = _training()
+    run_experiment.accept_operation(request, state)
     artifact = tmp_path / "archive"
     artifact.mkdir()
     (artifact / "model.zip").write_bytes(b"model")
@@ -330,7 +340,7 @@ def test_completed_training_transaction_retries_publication_without_retraining(
             "ep_rew_mean": 1.0,
         }
     ]
-    calls = {"training": 0, "history": 0}
+    calls = {"training": 0, "history": 0, "commit_failures": 0}
     monkeypatch.setattr(
         repository, "publish_scientific_recipe", lambda *_args: "b" * 40
     )
@@ -354,24 +364,49 @@ def test_completed_training_transaction_retries_publication_without_retraining(
 
     def fail_once(event):
         calls["history"] += 1
-        if calls["history"] == 1:
+        if failure_point == "result_record" and calls["history"] == 1:
             raise OSError("injected publication failure")
         original(event)
 
+    def commit(message):
+        failed_messages = {
+            "completion_commit": {"complete T1 training"},
+            "finalization_commit": {"finalize T1"},
+            "resumed_finalization": {"complete T1 training", "finalize T1"},
+        }.get(failure_point, set())
+        failures = 2 if failure_point == "resumed_finalization" else 1
+        if message in failed_messages and calls["commit_failures"] < failures:
+            calls["commit_failures"] += 1
+            raise OSError("injected publication failure")
+        return True
+
     monkeypatch.setattr(repository, "upsert_operation_event", fail_once)
+    monkeypatch.setattr(repository, "commit_runner_memory", commit)
     with pytest.raises(OSError, match="publication failure"):
         run_experiment.execute_pending_operation()
     interrupted = repository.read_state()
-    assert interrupted["pending_operation"]["progress"] == "result_ready"
+    assert interrupted["pending_operation"]["progress"] == (
+        "result_ready" if failure_point == "result_record" else "completed"
+    )
     assert interrupted["pending_operation"]["failure"] is None
+    assert interrupted["pending_operation"]["request"] == request
     assert interrupted["pending_operation"]["data"]["archived_candidates"] == archived
+    assert "PUBLICATION FAILED" in capsys.readouterr().out
+
+    if failure_point == "resumed_finalization":
+        with pytest.raises(OSError, match="publication failure"):
+            run_experiment.execute_pending_operation()
+        assert repository.read_state() == interrupted
+        assert "PUBLICATION FAILED" in capsys.readouterr().out
 
     assert run_experiment.execute_pending_operation() == 0
     assert calls["training"] == 1
     completed = repository.read_state()
     assert completed["pending_operation"] is None
+    assert completed["counters"] == interrupted["counters"]
     assert [event["id"] for event in completed["operation_events"]] == ["T1"]
     assert [event["id"] for event in repository.history_records()] == ["T1"]
+    assert repository.history_records()[0]["request"] == request["training"]
 
 
 def test_completed_result_retries_memory_publication_without_reacceptance(

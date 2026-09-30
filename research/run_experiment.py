@@ -1452,14 +1452,11 @@ def _scientific_delta_lines(pending: dict) -> list[str]:
     provenance = data.get("module_provenance")
     if not isinstance(provenance, dict):
         provenance = {}
-    paths_to_report = data.get("scientific_paths") or provenance.get(
-        "scientific_paths"
-    )
+    paths_to_report = data.get("scientific_paths") or provenance.get("scientific_paths")
     if not isinstance(paths_to_report, list) or not paths_to_report:
         return []
     return [
-        f"Scientific file changed: "
-        f"{repository.resolve_repo_path(str(relative_value))}"
+        f"Scientific file changed: {repository.resolve_repo_path(str(relative_value))}"
         for relative_value in paths_to_report
     ]
 
@@ -1675,13 +1672,13 @@ def execute_pending_operation() -> int:
     presentation = _completion_presentation(state, pending)
     action = "REQUEST" if pending["progress"] == "accepted" else "RESUME"
     console.boundary("operation", action, subject, detail)
-    if pending["progress"] == "completed":
-        _finalize_operation(state, pending)
-        _announce_completed_operation(presentation)
-        return 0
     kind = pending["kind"]
-    console.boundary("operation", "START", subject)
     try:
+        if pending["progress"] == "completed":
+            _finalize_operation(state, pending)
+            _announce_completed_operation(presentation)
+            return 0
+        console.boundary("operation", "START", subject)
         if kind == "measurement":
             exit_code = execute_measurement(state, pending)
         elif kind == "training":
@@ -1699,10 +1696,16 @@ def execute_pending_operation() -> int:
         else:
             raise RuntimeError(f"unsupported pending operation kind: {kind}")
     except Exception as error:
-        if pending["progress"] not in {"result_ready", "completed"}:
+        publication_failure = pending["progress"] in {"result_ready", "completed"}
+        if not publication_failure:
             pending["failure"] = str(error)
             repository.write_state(state)
-        console.boundary("error", "OPERATION FAILED", subject, str(error))
+        console.boundary(
+            "error",
+            "PUBLICATION FAILED" if publication_failure else "OPERATION FAILED",
+            subject,
+            str(error),
+        )
         raise
     if exit_code == 130:
         console.boundary("warning", "OPERATION PAUSED", subject)

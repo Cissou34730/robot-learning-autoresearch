@@ -11,14 +11,17 @@ import re
 import shutil
 import signal
 import subprocess
+import tempfile
 import time
 import uuid
+from collections.abc import Iterator
 from pathlib import Path, PureWindowsPath
 
 from research import runner_paths as paths
 
 STATE_SCHEMA_VERSION = 6
 DEFAULT_MAX_INQUIRIES = 15
+WINDOWS_COMMAND_LINE_LIMIT = 32_767
 
 RUNNER_CONTROL_PATHS = {
     "research/operation_request.json",
@@ -397,14 +400,58 @@ def recipe_paths_match_commit(plan: dict) -> bool:
     )
 
 
+def git_with_pathspecs(*args: str, scope: list[str] | tuple[str, ...]) -> str:
+    descriptor, pathspec = tempfile.mkstemp(prefix="robot-learning-git-")
+    try:
+        with os.fdopen(descriptor, "wb") as stream:
+            stream.write(b"".join(path.encode("utf-8") + b"\0" for path in scope))
+        return git(
+            "--literal-pathspecs",
+            *args,
+            f"--pathspec-from-file={pathspec}",
+            "--pathspec-file-nul",
+        )
+    finally:
+        Path(pathspec).unlink()
+
+
+def _git_pathspec_batches(
+    args: tuple[str, ...], scope: list[str]
+) -> Iterator[tuple[str, ...]]:
+    prefix_size = (
+        len(subprocess.list2cmdline(["git", *args]).encode("utf-16-le")) // 2 + 1
+    )
+    size = prefix_size
+    batch: list[str] = []
+    for path in scope:
+        path_size = len(subprocess.list2cmdline([path]).encode("utf-16-le")) // 2 + 1
+        if batch and size + path_size > WINDOWS_COMMAND_LINE_LIMIT:
+            yield tuple(batch)
+            batch = []
+            size = prefix_size
+        if size + path_size > WINDOWS_COMMAND_LINE_LIMIT:
+            raise ValueError(f"Git path exceeds the process-command limit: {path!r}")
+        batch.append(path)
+        size += path_size
+    if batch:
+        yield tuple(batch)
+
+
+def has_staged_changes(scope: list[str]) -> bool:
+    # Git diff does not support --pathspec-from-file.
+    args = ("--literal-pathspecs", "diff", "--cached", "--name-only", "-z", "--")
+    return any(git(*args, *batch) for batch in _git_pathspec_batches(args, scope))
+
+
 def stage_existing_or_tracked(candidates: list[str]) -> list[str]:
     stageable = [
         path
         for path in dict.fromkeys(candidates)
-        if (paths.ROOT / path).exists() or git("ls-files", "--", path).strip()
+        if (paths.ROOT / path).exists()
+        or git("--literal-pathspecs", "ls-files", "--", path).strip()
     ]
     if stageable:
-        git("add", "-A", "--", *stageable)
+        git_with_pathspecs("add", "-A", scope=stageable)
     return stageable
 
 
@@ -422,7 +469,10 @@ def campaign_commit_message(message: str) -> str:
 
 
 def commit_and_push(message: str, scope: tuple[str, ...] = ()) -> None:
-    git("commit", "-m", message, *(("--", *scope) if scope else ()))
+    if scope:
+        git_with_pathspecs("commit", "-m", message, scope=scope)
+    else:
+        git("commit", "-m", message)
     push_head()
 
 
@@ -430,7 +480,7 @@ def commit_paths(message: str, scope: list[str]) -> bool:
     stageable = stage_existing_or_tracked(scope)
     if not stageable:
         return False
-    if not git("diff", "--cached", "--name-only", "--", *stageable).strip():
+    if not has_staged_changes(stageable):
         return False
     commit_and_push(message, tuple(stageable))
     return True
