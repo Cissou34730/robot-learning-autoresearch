@@ -1,5 +1,13 @@
 {
-  "active_inquiry": null,
+  "active_inquiry": {
+    "closure_condition": "Close the inquiry after shared-seed development measurements compare the intervention with T2:checkpoint-65536 and T2:checkpoint-75776 on overall success, no-entry failures, hold interruptions, entry velocity, residual or Cartesian velocity during the hold, and saturation signatures. Treat it as actionable only if it improves hold regulation without materially degrading acquisition and provides a credible measured path toward at least 196/200; otherwise close it as a non-route and return to goal review.",
+    "goal_connection": "The strongest development result is 153/160, leaving at least three failures beyond the 98% objective when scaled to the official 200-episode assessment. The intervention targets the unresolved regulation gap while preserving the official plant, action semantics, target distribution, and uninterrupted-hold success criterion.",
+    "id": "I4",
+    "opened_in_session": "S8",
+    "question": "Can adding explicit task-aligned regulation state\u2014end-effector velocity, radial and tangential target-relative velocity, and local Jacobian conditioning\u2014let a policy preserve T2's acquisition performance while reducing residual-motion and hold-interruption failures under the fixed 20 ms direct-torque interface?",
+    "rationale": "I3 showed that reward penalties changed the acquisition/regulation balance but did not remove the actuator-level failure or improve success. The fixed plant has direct joint velocity and target-relative position available, but the policy is not given task-aligned Cartesian velocity or local conditioning, the quantities that determine whether residual motion carries the end effector across the 1 cm boundary during the 20 ms zero-order hold. This inquiry is bounded to an observation/interface intervention and uses shared-seed failure-class measurements to discriminate regulation improvement from another acquisition-regulation tradeoff.",
+    "reframes": []
+  },
   "campaign": {
     "base_commit": "eabb35c663a2df5b356b05849912e07ba78c15c4",
     "id": "35365763-6aa0-4675-8e86-f8f277558aa4",
@@ -2064,16 +2072,16 @@
     }
   },
   "counters": {
-    "event": 13,
-    "inquiry": 3,
+    "event": 14,
+    "inquiry": 4,
     "measurement": 3,
-    "session": 7,
+    "session": 8,
     "training": 3
   },
   "human_goal": {
     "source": "research/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -4777,9 +4785,69 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-09-30T11:16:30Z",
+      "error": null,
+      "id": "E14",
+      "inquiry_id": "I4",
+      "kind": "inquiry",
+      "request": {
+        "action": "open",
+        "closure_condition": "Close the inquiry after shared-seed development measurements compare the intervention with T2:checkpoint-65536 and T2:checkpoint-75776 on overall success, no-entry failures, hold interruptions, entry velocity, residual or Cartesian velocity during the hold, and saturation signatures. Treat it as actionable only if it improves hold regulation without materially degrading acquisition and provides a credible measured path toward at least 196/200; otherwise close it as a non-route and return to goal review.",
+        "goal_connection": "The strongest development result is 153/160, leaving at least three failures beyond the 98% objective when scaled to the official 200-episode assessment. The intervention targets the unresolved regulation gap while preserving the official plant, action semantics, target distribution, and uninterrupted-hold success criterion.",
+        "question": "Can adding explicit task-aligned regulation state\u2014end-effector velocity, radial and tangential target-relative velocity, and local Jacobian conditioning\u2014let a policy preserve T2's acquisition performance while reducing residual-motion and hold-interruption failures under the fixed 20 ms direct-torque interface?",
+        "rationale": "I3 showed that reward penalties changed the acquisition/regulation balance but did not remove the actuator-level failure or improve success. The fixed plant has direct joint velocity and target-relative position available, but the policy is not given task-aligned Cartesian velocity or local conditioning, the quantities that determine whether residual motion carries the end effector across the 1 cm boundary during the 20 ms zero-order hold. This inquiry is bounded to an observation/interface intervention and uses shared-seed failure-class measurements to discriminate regulation improvement from another acquisition-regulation tradeoff."
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I4",
+        "status": "completed"
+      },
+      "session_id": "S8",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "open",
+        "inquiry": {
+          "closure_condition": "Close the inquiry after shared-seed development measurements compare the intervention with T2:checkpoint-65536 and T2:checkpoint-75776 on overall success, no-entry failures, hold interruptions, entry velocity, residual or Cartesian velocity during the hold, and saturation signatures. Treat it as actionable only if it improves hold regulation without materially degrading acquisition and provides a credible measured path toward at least 196/200; otherwise close it as a non-route and return to goal review.",
+          "goal_connection": "The strongest development result is 153/160, leaving at least three failures beyond the 98% objective when scaled to the official 200-episode assessment. The intervention targets the unresolved regulation gap while preserving the official plant, action semantics, target distribution, and uninterrupted-hold success criterion.",
+          "id": "I4",
+          "opened_in_session": "S8",
+          "question": "Can adding explicit task-aligned regulation state\u2014end-effector velocity, radial and tangential target-relative velocity, and local Jacobian conditioning\u2014let a policy preserve T2's acquisition performance while reducing residual-motion and hold-interruption failures under the fixed 20 ms direct-torque interface?",
+          "rationale": "I3 showed that reward penalties changed the acquisition/regulation balance but did not remove the actuator-level failure or improve success. The fixed plant has direct joint velocity and target-relative position available, but the policy is not given task-aligned Cartesian velocity or local conditioning, the quantities that determine whether residual motion carries the end effector across the 1 cm boundary during the 20 ms zero-order hold. This inquiry is bounded to an observation/interface intervention and uses shared-seed failure-class measurements to discriminate regulation improvement from another acquisition-regulation tradeoff.",
+          "reframes": []
+        }
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I4",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E14",
+    "inquiry_id": null,
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "open",
+        "closure_condition": "Close the inquiry after shared-seed development measurements compare the intervention with T2:checkpoint-65536 and T2:checkpoint-75776 on overall success, no-entry failures, hold interruptions, entry velocity, residual or Cartesian velocity during the hold, and saturation signatures. Treat it as actionable only if it improves hold regulation without materially degrading acquisition and provides a credible measured path toward at least 196/200; otherwise close it as a non-route and return to goal review.",
+        "goal_connection": "The strongest development result is 153/160, leaving at least three failures beyond the 98% objective when scaled to the official 200-episode assessment. The intervention targets the unresolved regulation gap while preserving the official plant, action semantics, target distribution, and uninterrupted-hold success criterion.",
+        "question": "Can adding explicit task-aligned regulation state\u2014end-effector velocity, radial and tangential target-relative velocity, and local Jacobian conditioning\u2014let a policy preserve T2's acquisition performance while reducing residual-motion and hold-interruption failures under the fixed 20 ms direct-torque interface?",
+        "rationale": "I3 showed that reward penalties changed the acquisition/regulation balance but did not remove the actuator-level failure or improve success. The fixed plant has direct joint velocity and target-relative position available, but the policy is not given task-aligned Cartesian velocity or local conditioning, the quantities that determine whether residual motion carries the end effector across the 1 cm boundary during the 20 ms zero-order hold. This inquiry is bounded to an observation/interface intervention and uses shared-seed failure-class measurements to discriminate regulation improvement from another acquisition-regulation tradeoff."
+      }
+    },
+    "request_fingerprint": "9c07174a5e4f2441d7b9337db87713891774ce282c4c68b19072fd77fb6c9b17",
+    "session_id": "S8",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No candidate has working, best-known, or retained status. T2:checkpoint-65536 remains the strongest provisional reference at 153/160 with the lower T2 entry speed; T2:checkpoint-75776 also reached 153/160. T3:checkpoint-5120 reached 153/160 but was behaviorally tied with T2, and T3:checkpoint-70656 reached 152/160 and was inferior to both T2 references in paired comparisons.",
     "completed_operations": [
@@ -4816,6 +4884,21 @@
     "path": "research/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "82b58b50-aa6f-4984-8180-49d4a7af05a8",
+    "id": "S8",
+    "inquiry_id": null,
+    "kind": "goal_review",
+    "objective": "Decide whether to request official assessment, open one bounded goal-linked inquiry, or conclude that no credible route remains.",
+    "operation_ids": [
+      "E14"
+    ],
+    "scientific_parent_commit": "03a53dea8427eabd895c04b8d86f393c371443de"
+  },
   "terminal_state": null
 }
