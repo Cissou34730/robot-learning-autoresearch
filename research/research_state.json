@@ -6625,7 +6625,7 @@
     }
   },
   "counters": {
-    "event": 45,
+    "event": 46,
     "inquiry": 10,
     "measurement": 10,
     "session": 23,
@@ -6634,7 +6634,7 @@
   "human_goal": {
     "source": "research/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -12687,28 +12687,159 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-09-30T01:05:11Z",
+      "error": null,
+      "id": "E46",
+      "inquiry_id": "I10",
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "T1:checkpoint-100352 remains the strongest measured baseline but is unassigned. T8:checkpoint-90112 is rejected as an I10 route after M10. T7:checkpoint-120832 remains rejected by M9. No candidate has working, best-known, or retained status.",
+        "completed_operations": [
+          "E45",
+          "T8",
+          "M10"
+        ],
+        "cumulative_resource_use": "The campaign has used eight PPO training runs of up to 120,832 completed steps each, six 160-episode development panels, one 138-target diagnostic grid, eight 200-episode development panels including M10, and one paired three-candidate M7 panel. I10 added one branch-factorized policy-only training run and one fresh paired complete-distribution measurement. No official assessment has run.",
+        "current_goal_gap": "M10 measured T8:checkpoint-90112 at 22/200 successes (11.0%) and restored T1:checkpoint-100352 at 193/200 (96.5%) on the same fresh shared-seed panel. T8 remains far below the 196/200 threshold; no candidate has best-known status and official assessment remains unjustified.",
+        "current_synthesis": "Observed: T8 was trained with the branch-factorized policy representation while preserving T1's 11-element observation, direct joint-action mapping, reward, target distribution, and PPO settings. Observed: all recorded T8 checkpoints had zero training success, and the selected checkpoint-90112 achieved only 22/200 complete successes in M10 versus 193/200 for T1. Observed: the paired comparison recorded 0 T8 wins, 171 discordant episodes, and a -85.5 percentage-point T8 difference. Observed: T8's successful episodes reached the required 100-step hold, but its failures included widespread approach or settling loss and hold interruptions; preserving the hold on the small set of successes did not compensate for the complete-task failure rate. The branch-factorized policy-only representation therefore materially degraded the baseline and is not a credible route to 196/200. This negative result addresses I10's stated policy-only route; remaining uncertainty about other formulations cannot change that decision.",
+        "decision_frontier": "M10 establishes the I10 closure condition's negative branch: the single controlled policy-only training and fresh shared-seed comparison did not reach at least 196/200 and materially degraded T1. Close I10 in the next operation, then return to goal review rather than requesting official assessment.",
+        "evidence_references": [
+          "E45",
+          "T8",
+          "M10"
+        ],
+        "human_goal_connection": "I10 remains directly tied to the campaign objective of at least 196 complete successes out of 200 under the official task distribution, where every success requires the uninterrupted 100-step hold.",
+        "next_direction_or_closure": "Close I10 negatively: the branch-factorized PPO policy-only formulation did not provide an actionable route to the 98% objective. Record that successful T8 episodes retained complete 100-step holds, while the decisive shortfall was complete episode success before or during settling and intermittent hold maintenance. Goal review should then decide whether a different consequential uncertainty warrants another inquiry."
+      },
+      "result": {
+        "session_id": "S23",
+        "status": "checkpointed"
+      },
+      "session_id": "S23",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "b32fd690a699f104c048b63d3db0d7dc08753b8f",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "branch_hidden_size": 32,
+          "net_arch": [
+            64,
+            64
+          ],
+          "representation": "branch_factorized"
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "T1:checkpoint-100352 remains the strongest measured baseline but is unassigned. T8:checkpoint-90112 is rejected as an I10 route after M10. T7:checkpoint-120832 remains rejected by M9. No candidate has working, best-known, or retained status.",
+        "completed_operations": [
+          "E45",
+          "T8",
+          "M10"
+        ],
+        "cumulative_resource_use": "The campaign has used eight PPO training runs of up to 120,832 completed steps each, six 160-episode development panels, one 138-target diagnostic grid, eight 200-episode development panels including M10, and one paired three-candidate M7 panel. I10 added one branch-factorized policy-only training run and one fresh paired complete-distribution measurement. No official assessment has run.",
+        "current_goal_gap": "M10 measured T8:checkpoint-90112 at 22/200 successes (11.0%) and restored T1:checkpoint-100352 at 193/200 (96.5%) on the same fresh shared-seed panel. T8 remains far below the 196/200 threshold; no candidate has best-known status and official assessment remains unjustified.",
+        "current_synthesis": "Observed: T8 was trained with the branch-factorized policy representation while preserving T1's 11-element observation, direct joint-action mapping, reward, target distribution, and PPO settings. Observed: all recorded T8 checkpoints had zero training success, and the selected checkpoint-90112 achieved only 22/200 complete successes in M10 versus 193/200 for T1. Observed: the paired comparison recorded 0 T8 wins, 171 discordant episodes, and a -85.5 percentage-point T8 difference. Observed: T8's successful episodes reached the required 100-step hold, but its failures included widespread approach or settling loss and hold interruptions; preserving the hold on the small set of successes did not compensate for the complete-task failure rate. The branch-factorized policy-only representation therefore materially degraded the baseline and is not a credible route to 196/200. This negative result addresses I10's stated policy-only route; remaining uncertainty about other formulations cannot change that decision.",
+        "decision_frontier": "M10 establishes the I10 closure condition's negative branch: the single controlled policy-only training and fresh shared-seed comparison did not reach at least 196/200 and materially degraded T1. Close I10 in the next operation, then return to goal review rather than requesting official assessment.",
+        "evidence_references": [
+          "E45",
+          "T8",
+          "M10"
+        ],
+        "human_goal_connection": "I10 remains directly tied to the campaign objective of at least 196 complete successes out of 200 under the official task distribution, where every success requires the uninterrupted 100-step hold.",
+        "inquiry_id": "I10",
+        "next_direction_or_closure": "Close I10 negatively: the branch-factorized PPO policy-only formulation did not provide an actionable route to the 98% objective. Record that successful T8 episodes retained complete 100-step holds, while the decisive shortfall was complete episode success before or during settling and intermittent hold maintenance. Goal review should then decide whether a different consequential uncertainty warrants another inquiry.",
+        "session_id": "S23"
+      },
+      "presentation": {
+        "backend_session_id": "8383a5b2-5b93-4904-a84d-d568b76df35e",
+        "campaign_id": "eb19a5f3-14b3-4590-ad74-1b31cf5ae3d5",
+        "campaign_usage": "1h28m | 233.81 AIU | prompt 36.8m (84% cached) | output 237.1k",
+        "session_id": "S23",
+        "session_kind": "inquiry",
+        "session_usage": "4m17s | 12.41 AIU | prompt 2.5m (89% cached) | output 11.4k"
+      },
+      "result": {
+        "session_id": "S23",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "8b3a40fc30e7393ebff79b02da5cc493e66364da",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E46",
+    "inquiry_id": "I10",
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "T1:checkpoint-100352 remains the strongest measured baseline but is unassigned. T8:checkpoint-90112 is rejected as an I10 route after M10. T7:checkpoint-120832 remains rejected by M9. No candidate has working, best-known, or retained status.",
+        "completed_operations": [
+          "E45",
+          "T8",
+          "M10"
+        ],
+        "cumulative_resource_use": "The campaign has used eight PPO training runs of up to 120,832 completed steps each, six 160-episode development panels, one 138-target diagnostic grid, eight 200-episode development panels including M10, and one paired three-candidate M7 panel. I10 added one branch-factorized policy-only training run and one fresh paired complete-distribution measurement. No official assessment has run.",
+        "current_goal_gap": "M10 measured T8:checkpoint-90112 at 22/200 successes (11.0%) and restored T1:checkpoint-100352 at 193/200 (96.5%) on the same fresh shared-seed panel. T8 remains far below the 196/200 threshold; no candidate has best-known status and official assessment remains unjustified.",
+        "current_synthesis": "Observed: T8 was trained with the branch-factorized policy representation while preserving T1's 11-element observation, direct joint-action mapping, reward, target distribution, and PPO settings. Observed: all recorded T8 checkpoints had zero training success, and the selected checkpoint-90112 achieved only 22/200 complete successes in M10 versus 193/200 for T1. Observed: the paired comparison recorded 0 T8 wins, 171 discordant episodes, and a -85.5 percentage-point T8 difference. Observed: T8's successful episodes reached the required 100-step hold, but its failures included widespread approach or settling loss and hold interruptions; preserving the hold on the small set of successes did not compensate for the complete-task failure rate. The branch-factorized policy-only representation therefore materially degraded the baseline and is not a credible route to 196/200. This negative result addresses I10's stated policy-only route; remaining uncertainty about other formulations cannot change that decision.",
+        "decision_frontier": "M10 establishes the I10 closure condition's negative branch: the single controlled policy-only training and fresh shared-seed comparison did not reach at least 196/200 and materially degraded T1. Close I10 in the next operation, then return to goal review rather than requesting official assessment.",
+        "evidence_references": [
+          "E45",
+          "T8",
+          "M10"
+        ],
+        "human_goal_connection": "I10 remains directly tied to the campaign objective of at least 196 complete successes out of 200 under the official task distribution, where every success requires the uninterrupted 100-step hold.",
+        "next_direction_or_closure": "Close I10 negatively: the branch-factorized PPO policy-only formulation did not provide an actionable route to the 98% objective. Record that successful T8 episodes retained complete 100-step holds, while the decisive shortfall was complete episode success before or during settling and intermittent hold maintenance. Goal review should then decide whether a different consequential uncertainty warrants another inquiry."
+      }
+    },
+    "request_fingerprint": "ad9eae126e6aa93eb7f560b9c86cced08b6433e3dfb2a29f36647c19e1c939ea",
+    "session_id": "S23",
+    "supersedes": null
+  },
   "pi_checkpoint": {
-    "candidates_and_roles": "T1:checkpoint-100352 and T7:checkpoint-120832 remain unassigned measured candidates. T7 is rejected as an I9 route by M9. No candidate has working, best-known, or retained status.",
+    "candidates_and_roles": "T1:checkpoint-100352 remains the strongest measured baseline but is unassigned. T8:checkpoint-90112 is rejected as an I10 route after M10. T7:checkpoint-120832 remains rejected by M9. No candidate has working, best-known, or retained status.",
     "completed_operations": [
-      "E43"
+      "E45",
+      "T8",
+      "M10"
     ],
-    "cumulative_resource_use": "The campaign has used seven PPO training runs of 120,832 completed steps each, six 160-episode development panels, one 138-target diagnostic grid, seven 200-episode development panels including the M9 paired I9 panel, and one paired three-candidate M7 panel. I9 added one continuous residual control formulation, one fresh training run, and one fresh paired complete-distribution measurement. Goal review opened I10; no official assessment has run.",
-    "current_goal_gap": "M9 measured the restored T1 baseline at 194/200 (97.0%), two successes below the 196/200 threshold. I9 T7 achieved 137/200 (68.5%) and is rejected. No candidate has best-known status, so official assessment remains unjustified.",
-    "current_synthesis": "Observed: M9 measured T1 at 194/200 and T7:checkpoint-120832 at 137/200 on the same fresh shared-seed complete-distribution panel. Observed: the paired comparison recorded 63 T1 wins, 6 T7 wins, 69 discordant episodes, and a -28.5 percentage-point T7 difference. Observed: successful T7 episodes that completed the task reached the required uninterrupted 100-step hold, while the candidate's shortfall was concentrated in reaching or maintaining the target before complete success. The tested continuous feasible-IK target-configuration reference, latched branch selection, velocity damping, and bounded learned residual therefore materially degraded the baseline and did not provide a credible route to 196/200. Remaining uncertainty concerns other interfaces or training formulations; I10 addresses one bounded policy-only formulation without assuming it will succeed.",
-    "decision_frontier": "Goal review opened I10 rather than requesting official assessment or concluding that no credible route remains. I10 is not actionable in this ended goal-review session; its fresh inquiry session must begin before any training or measurement is requested.",
+    "cumulative_resource_use": "The campaign has used eight PPO training runs of up to 120,832 completed steps each, six 160-episode development panels, one 138-target diagnostic grid, eight 200-episode development panels including M10, and one paired three-candidate M7 panel. I10 added one branch-factorized policy-only training run and one fresh paired complete-distribution measurement. No official assessment has run.",
+    "current_goal_gap": "M10 measured T8:checkpoint-90112 at 22/200 successes (11.0%) and restored T1:checkpoint-100352 at 193/200 (96.5%) on the same fresh shared-seed panel. T8 remains far below the 196/200 threshold; no candidate has best-known status and official assessment remains unjustified.",
+    "current_synthesis": "Observed: T8 was trained with the branch-factorized policy representation while preserving T1's 11-element observation, direct joint-action mapping, reward, target distribution, and PPO settings. Observed: all recorded T8 checkpoints had zero training success, and the selected checkpoint-90112 achieved only 22/200 complete successes in M10 versus 193/200 for T1. Observed: the paired comparison recorded 0 T8 wins, 171 discordant episodes, and a -85.5 percentage-point T8 difference. Observed: T8's successful episodes reached the required 100-step hold, but its failures included widespread approach or settling loss and hold interruptions; preserving the hold on the small set of successes did not compensate for the complete-task failure rate. The branch-factorized policy-only representation therefore materially degraded the baseline and is not a credible route to 196/200. This negative result addresses I10's stated policy-only route; remaining uncertainty about other formulations cannot change that decision.",
+    "decision_frontier": "M10 establishes the I10 closure condition's negative branch: the single controlled policy-only training and fresh shared-seed comparison did not reach at least 196/200 and materially degraded T1. Close I10 in the next operation, then return to goal review rather than requesting official assessment.",
     "evidence_references": [
-      "T7",
-      "M9",
-      "E41"
+      "E45",
+      "T8",
+      "M10"
     ],
-    "human_goal_connection": "The campaign continues to target a learned policy achieving at least 196 successes out of 200 under the complete official task distribution. Every counted success must include the complete uninterrupted 100-step hold; partial reaches and isolated holds remain insufficient.",
-    "inquiry_id": null,
-    "next_direction_or_closure": "This checkpoint ends the goal-review session and transitions to the fresh I10 inquiry session. The non-binding next direction is to test whether a policy-only, branch-factorized PPO formulation preserving T1's 11-element observation and direct joint-action interface can reach at least 196/200 complete successes without degrading the uninterrupted hold. The inquiry closes negatively if its controlled training and fresh shared-seed comparison against restored T1 do not provide a decision-sufficient route to that threshold.",
-    "scientific_commit": "f9b850dd4df4725debb0e85397fd862bd8bda73e",
-    "session_id": "S22"
+    "human_goal_connection": "I10 remains directly tied to the campaign objective of at least 196 complete successes out of 200 under the official task distribution, where every success requires the uninterrupted 100-step hold.",
+    "inquiry_id": "I10",
+    "next_direction_or_closure": "Close I10 negatively: the branch-factorized PPO policy-only formulation did not provide an actionable route to the 98% objective. Record that successful T8 episodes retained complete 100-step holds, while the decisive shortfall was complete episode success before or during settling and intermittent hold maintenance. Goal review should then decide whether a different consequential uncertainty warrants another inquiry.",
+    "scientific_commit": "8b3a40fc30e7393ebff79b02da5cc493e66364da",
+    "session_id": "S23"
   },
   "schema_version": 6,
   "scientific_model": {
@@ -12716,23 +12847,6 @@
     "path": "research/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "8383a5b2-5b93-4904-a84d-d568b76df35e",
-    "id": "S23",
-    "inquiry_id": "I10",
-    "kind": "inquiry",
-    "objective": "Bring I10 to the decision required by its closure condition, and close it as soon as the evidence supplies that decision: Close after one controlled training and fresh shared-seed 200-episode complete-distribution comparison against restored T1: the inquiry is actionable only if the candidate reaches at least 196/200 and retains complete 100-step holds, otherwise record a decision-sufficient negative answer for this policy-only route.",
-    "operation_ids": [
-      "E45",
-      "T8",
-      "M10"
-    ],
-    "scientific_parent_commit": "b32fd690a699f104c048b63d3db0d7dc08753b8f"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
