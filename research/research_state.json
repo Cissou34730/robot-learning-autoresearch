@@ -4923,7 +4923,7 @@
     }
   },
   "counters": {
-    "event": 24,
+    "event": 25,
     "inquiry": 6,
     "measurement": 6,
     "session": 13,
@@ -4932,7 +4932,7 @@
   "human_goal": {
     "source": "research/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -8535,18 +8535,213 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-09-30T23:45:52Z",
+      "error": null,
+      "id": "E25",
+      "inquiry_id": "I6",
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "No working, best-known, or retained role is assigned. T1:checkpoint-100352 remains the strongest evidence-backed development reference at 189/200. T6:checkpoint-100352 is an insufficient I6 candidate at 138/200 and is not assigned a model role.",
+        "completed_operations": [
+          "T6",
+          "M6",
+          "E24"
+        ],
+        "cumulative_resource_use": "Six fresh PPO training operations were completed with the maintainer's 120000-step allocation, each producing 120832 rollout-boundary steps. M1 through M6 evaluated candidates and paired T1 references on the fixed 200-episode development panel [4200, 4400). I6 consumed one training operation and one paired measurement; E24 closed I6 as insufficient. No official assessment has been run.",
+        "current_goal_gap": "I6 failed its closure condition. T6:checkpoint-100352 achieved 138/200 complete successes (69.0%), which is 58 below the 196-success development objective. It had 43 failures in the -180 to -90 degree subgroup versus the allowed maximum of six, despite only three post-entry failures versus T1's five. T6 won zero discordant paired episodes while T1 won all 51; the dominant deficit was broad acquisition failure rather than a new stabilization mechanism.",
+        "current_synthesis": "T1 shows that full-angle sampling and open/folded IK-branch observations can produce a reproducible near-goal policy, but residual failures couple angular acquisition, braking, and uninterrupted stabilization. I2, I3, I4, and I5 rejected tested acquisition, endpoint-speed, hold-progress, and local phase-handoff mechanisms through failure or tradeoff. I6 tested a globally active, branch-conditioned analytic-IK joint-reference scaffold with learned residual torque. Its paired result was substantially worse than T1 and its detailed traces showed frequent failure to reach tolerance across negative-angle targets. This rejects the tested I6 representation as a credible route, but does not establish that the plant is uncontrollable or that all future mechanisms are ineffective.",
+        "decision_frontier": "I6 is resolved as insufficient. The globally active analytic-IK reference and learned residual-torque interface did not improve the coupled acquisition and stabilization problem and introduced broad acquisition failures. The campaign still lacks a candidate meeting 196/200 complete uninterrupted successes; official assessment remains unjustified. A future session must choose a distinct, mechanistically justified route rather than repeat I6 or infer controllability failure from this result.",
+        "evidence_references": [
+          "T1",
+          "M1",
+          "E4",
+          "E6",
+          "T2",
+          "M2",
+          "E8",
+          "E10",
+          "T3",
+          "M3",
+          "E12",
+          "E14",
+          "T4",
+          "M4",
+          "E16",
+          "E18",
+          "T5",
+          "M5",
+          "E20",
+          "E21",
+          "E22",
+          "E23",
+          "T6",
+          "M6",
+          "E24"
+        ],
+        "human_goal_connection": "The campaign seeks a learned policy with at least 196 complete uninterrupted successes in a 200-episode development panel, corresponding to the 98% human objective under the official task distribution. T1:checkpoint-100352 remains the strongest reference at 189/200 (94.5%), so no official assessment is justified.",
+        "next_direction_or_closure": "Close the I6 inquiry session with this checkpoint. The next scientific work belongs to a fresh session after this summary; it must preserve T1 as the development reference, retain the complete uninterrupted hold as the sole success criterion, and identify a distinct route only if its mechanism is supported by the established failure evidence. Do not claim official 98% performance."
+      },
+      "result": {
+        "session_id": "S13",
+        "status": "checkpointed"
+      },
+      "session_id": "S13",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "2bc0e8eb057e46e4fe9b5ab20ac60f823e3c1593",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "No working, best-known, or retained role is assigned. T1:checkpoint-100352 remains the strongest evidence-backed development reference at 189/200. T6:checkpoint-100352 is an insufficient I6 candidate at 138/200 and is not assigned a model role.",
+        "completed_operations": [
+          "T6",
+          "M6",
+          "E24"
+        ],
+        "cumulative_resource_use": "Six fresh PPO training operations were completed with the maintainer's 120000-step allocation, each producing 120832 rollout-boundary steps. M1 through M6 evaluated candidates and paired T1 references on the fixed 200-episode development panel [4200, 4400). I6 consumed one training operation and one paired measurement; E24 closed I6 as insufficient. No official assessment has been run.",
+        "current_goal_gap": "I6 failed its closure condition. T6:checkpoint-100352 achieved 138/200 complete successes (69.0%), which is 58 below the 196-success development objective. It had 43 failures in the -180 to -90 degree subgroup versus the allowed maximum of six, despite only three post-entry failures versus T1's five. T6 won zero discordant paired episodes while T1 won all 51; the dominant deficit was broad acquisition failure rather than a new stabilization mechanism.",
+        "current_synthesis": "T1 shows that full-angle sampling and open/folded IK-branch observations can produce a reproducible near-goal policy, but residual failures couple angular acquisition, braking, and uninterrupted stabilization. I2, I3, I4, and I5 rejected tested acquisition, endpoint-speed, hold-progress, and local phase-handoff mechanisms through failure or tradeoff. I6 tested a globally active, branch-conditioned analytic-IK joint-reference scaffold with learned residual torque. Its paired result was substantially worse than T1 and its detailed traces showed frequent failure to reach tolerance across negative-angle targets. This rejects the tested I6 representation as a credible route, but does not establish that the plant is uncontrollable or that all future mechanisms are ineffective.",
+        "decision_frontier": "I6 is resolved as insufficient. The globally active analytic-IK reference and learned residual-torque interface did not improve the coupled acquisition and stabilization problem and introduced broad acquisition failures. The campaign still lacks a candidate meeting 196/200 complete uninterrupted successes; official assessment remains unjustified. A future session must choose a distinct, mechanistically justified route rather than repeat I6 or infer controllability failure from this result.",
+        "evidence_references": [
+          "T1",
+          "M1",
+          "E4",
+          "E6",
+          "T2",
+          "M2",
+          "E8",
+          "E10",
+          "T3",
+          "M3",
+          "E12",
+          "E14",
+          "T4",
+          "M4",
+          "E16",
+          "E18",
+          "T5",
+          "M5",
+          "E20",
+          "E21",
+          "E22",
+          "E23",
+          "T6",
+          "M6",
+          "E24"
+        ],
+        "human_goal_connection": "The campaign seeks a learned policy with at least 196 complete uninterrupted successes in a 200-episode development panel, corresponding to the 98% human objective under the official task distribution. T1:checkpoint-100352 remains the strongest reference at 189/200 (94.5%), so no official assessment is justified.",
+        "inquiry_id": "I6",
+        "next_direction_or_closure": "Close the I6 inquiry session with this checkpoint. The next scientific work belongs to a fresh session after this summary; it must preserve T1 as the development reference, retain the complete uninterrupted hold as the sole success criterion, and identify a distinct route only if its mechanism is supported by the established failure evidence. Do not claim official 98% performance.",
+        "session_id": "S13"
+      },
+      "presentation": {
+        "backend_session_id": "bd2286ef-986a-4034-b0d7-3ff8b49395cf",
+        "campaign_id": "e8788df6-9f4a-4dac-92b7-48e40477e827",
+        "campaign_usage": "48m46s | 156.83 AIU | prompt 24.7m (84% cached) | output 146.4k",
+        "session_id": "S13",
+        "session_kind": "inquiry",
+        "session_usage": "6m23s | 21.49 AIU | prompt 3.3m (84% cached) | output 17.9k"
+      },
+      "result": {
+        "session_id": "S13",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "96828278ff3103ad2a83d2b291a80895622f0cd0",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E25",
+    "inquiry_id": "I6",
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "No working, best-known, or retained role is assigned. T1:checkpoint-100352 remains the strongest evidence-backed development reference at 189/200. T6:checkpoint-100352 is an insufficient I6 candidate at 138/200 and is not assigned a model role.",
+        "completed_operations": [
+          "T6",
+          "M6",
+          "E24"
+        ],
+        "cumulative_resource_use": "Six fresh PPO training operations were completed with the maintainer's 120000-step allocation, each producing 120832 rollout-boundary steps. M1 through M6 evaluated candidates and paired T1 references on the fixed 200-episode development panel [4200, 4400). I6 consumed one training operation and one paired measurement; E24 closed I6 as insufficient. No official assessment has been run.",
+        "current_goal_gap": "I6 failed its closure condition. T6:checkpoint-100352 achieved 138/200 complete successes (69.0%), which is 58 below the 196-success development objective. It had 43 failures in the -180 to -90 degree subgroup versus the allowed maximum of six, despite only three post-entry failures versus T1's five. T6 won zero discordant paired episodes while T1 won all 51; the dominant deficit was broad acquisition failure rather than a new stabilization mechanism.",
+        "current_synthesis": "T1 shows that full-angle sampling and open/folded IK-branch observations can produce a reproducible near-goal policy, but residual failures couple angular acquisition, braking, and uninterrupted stabilization. I2, I3, I4, and I5 rejected tested acquisition, endpoint-speed, hold-progress, and local phase-handoff mechanisms through failure or tradeoff. I6 tested a globally active, branch-conditioned analytic-IK joint-reference scaffold with learned residual torque. Its paired result was substantially worse than T1 and its detailed traces showed frequent failure to reach tolerance across negative-angle targets. This rejects the tested I6 representation as a credible route, but does not establish that the plant is uncontrollable or that all future mechanisms are ineffective.",
+        "decision_frontier": "I6 is resolved as insufficient. The globally active analytic-IK reference and learned residual-torque interface did not improve the coupled acquisition and stabilization problem and introduced broad acquisition failures. The campaign still lacks a candidate meeting 196/200 complete uninterrupted successes; official assessment remains unjustified. A future session must choose a distinct, mechanistically justified route rather than repeat I6 or infer controllability failure from this result.",
+        "evidence_references": [
+          "T1",
+          "M1",
+          "E4",
+          "E6",
+          "T2",
+          "M2",
+          "E8",
+          "E10",
+          "T3",
+          "M3",
+          "E12",
+          "E14",
+          "T4",
+          "M4",
+          "E16",
+          "E18",
+          "T5",
+          "M5",
+          "E20",
+          "E21",
+          "E22",
+          "E23",
+          "T6",
+          "M6",
+          "E24"
+        ],
+        "human_goal_connection": "The campaign seeks a learned policy with at least 196 complete uninterrupted successes in a 200-episode development panel, corresponding to the 98% human objective under the official task distribution. T1:checkpoint-100352 remains the strongest reference at 189/200 (94.5%), so no official assessment is justified.",
+        "next_direction_or_closure": "Close the I6 inquiry session with this checkpoint. The next scientific work belongs to a fresh session after this summary; it must preserve T1 as the development reference, retain the complete uninterrupted hold as the sole success criterion, and identify a distinct route only if its mechanism is supported by the established failure evidence. Do not claim official 98% performance."
+      }
+    },
+    "request_fingerprint": "8358d7d932bef456aed24a647a010e7c70d6e04d5ef47e62179d718581c4b2eb",
+    "session_id": "S13",
+    "supersedes": null
+  },
   "pi_checkpoint": {
-    "candidates_and_roles": "No working, best-known, or retained role is assigned. T1:checkpoint-100352 remains the strongest evidence-backed development reference at 189/200. T5:checkpoint-35840 is an insufficient phase-handoff intervention at 157/200; T2:checkpoint-120832 is insufficient at 176/200; T3:checkpoint-120832 and T4:checkpoint-120832 scored 0/200. I6 has no candidate yet.",
+    "candidates_and_roles": "No working, best-known, or retained role is assigned. T1:checkpoint-100352 remains the strongest evidence-backed development reference at 189/200. T6:checkpoint-100352 is an insufficient I6 candidate at 138/200 and is not assigned a model role.",
     "completed_operations": [
-      "E22"
+      "T6",
+      "M6",
+      "E24"
     ],
-    "cumulative_resource_use": "Five fresh PPO training operations completed with the maintainer's 120000-step allocation, each producing 120832 rollout-boundary steps. M1 evaluated T1; M2 evaluated T2 and T1; M3 evaluated T3 and T1; M4 evaluated T4 and T1; and M5 evaluated T5 and T1 on the same 200-episode development panel [4200, 4400). No official assessment has been run. E22 opened I6 without consuming training or measurement resources.",
-    "current_goal_gap": "T1 remains seven complete successes below the 196/200 development objective. Its failures include six angular acquisition failures in the -180 to -90 degree sector and five post-entry hold failures. T5 achieved 157/200 with 30 failures in that sector and two post-entry failures; T2 achieved 176/200 with 19 post-entry failures; T3 and T4 achieved 0/200. No candidate supports an official 98% claim.",
-    "current_synthesis": "T1 demonstrates that full-angle sampling and open/folded IK-branch observations can produce a reproducible near-goal policy, but the remaining failures couple angular acquisition, braking, and uninterrupted stabilization. I2 removed the diagnosed acquisition-sector failures only by increasing post-entry failures. I3's stronger endpoint-speed shaping failed to learn, I4's normalized hold-progress observation collapsed learning, and I5's local phase-handoff regulator reduced post-entry failures from five to two but increased the diagnosed angular-sector failures from 11 to 30 and reduced total success to 157/200. These results reject the tested mechanisms and their tradeoffs, but do not establish that the deterministic plant is uncontrollable or that all future methods are ineffective. E22 selected I6 as a bounded route that changes the globally active control representation rather than repeating those interventions.",
-    "decision_frontier": "I5 is resolved as insufficient. The next discriminating question is whether a globally active, branch-conditioned analytic-IK joint-reference scaffold with learned residual torque can address acquisition and low-residual regulation together, without repeating the acquisition-versus-stabilization tradeoff. I6 must be evaluated on the fixed 200-episode development panel against T1 using complete uninterrupted success, first entry, maximum uninterrupted hold, interruptions, angular-sector failures, post-entry failures, and paired outcomes. Tolerance entry alone is insufficient, and official assessment remains unjustified.",
+    "cumulative_resource_use": "Six fresh PPO training operations were completed with the maintainer's 120000-step allocation, each producing 120832 rollout-boundary steps. M1 through M6 evaluated candidates and paired T1 references on the fixed 200-episode development panel [4200, 4400). I6 consumed one training operation and one paired measurement; E24 closed I6 as insufficient. No official assessment has been run.",
+    "current_goal_gap": "I6 failed its closure condition. T6:checkpoint-100352 achieved 138/200 complete successes (69.0%), which is 58 below the 196-success development objective. It had 43 failures in the -180 to -90 degree subgroup versus the allowed maximum of six, despite only three post-entry failures versus T1's five. T6 won zero discordant paired episodes while T1 won all 51; the dominant deficit was broad acquisition failure rather than a new stabilization mechanism.",
+    "current_synthesis": "T1 shows that full-angle sampling and open/folded IK-branch observations can produce a reproducible near-goal policy, but residual failures couple angular acquisition, braking, and uninterrupted stabilization. I2, I3, I4, and I5 rejected tested acquisition, endpoint-speed, hold-progress, and local phase-handoff mechanisms through failure or tradeoff. I6 tested a globally active, branch-conditioned analytic-IK joint-reference scaffold with learned residual torque. Its paired result was substantially worse than T1 and its detailed traces showed frequent failure to reach tolerance across negative-angle targets. This rejects the tested I6 representation as a credible route, but does not establish that the plant is uncontrollable or that all future mechanisms are ineffective.",
+    "decision_frontier": "I6 is resolved as insufficient. The globally active analytic-IK reference and learned residual-torque interface did not improve the coupled acquisition and stabilization problem and introduced broad acquisition failures. The campaign still lacks a candidate meeting 196/200 complete uninterrupted successes; official assessment remains unjustified. A future session must choose a distinct, mechanistically justified route rather than repeat I6 or infer controllability failure from this result.",
     "evidence_references": [
       "T1",
       "M1",
@@ -8568,13 +8763,17 @@
       "M5",
       "E20",
       "E21",
-      "E22"
+      "E22",
+      "E23",
+      "T6",
+      "M6",
+      "E24"
     ],
-    "human_goal_connection": "The campaign targets at least 196 complete uninterrupted holds in the 200-episode official panel, corresponding to at least 98% success under the official task distribution. The strongest development reference, T1:checkpoint-100352, achieves 189/200 (94.5%) and does not justify official assessment. Goal-review operation E22 opened I6 to test one distinct globally active analytic-IK reference and learned residual-torque mechanism.",
-    "inquiry_id": null,
-    "next_direction_or_closure": "End this goal-review session with the checkpoint. Begin the fresh I6 inquiry session before any further scientific operation. In I6, implement and train exactly one bounded fresh candidate with the maintainer's 120000-step allocation, then compare it with T1 on the same fixed development panel under the stated complete-hold and subgroup closure conditions. Do not request training, measurement, model-role changes, restoration, another inquiry change, or campaign conclusion from this session.",
-    "scientific_commit": "6d3b677d067ea099c87441d8fd307b483075bb0b",
-    "session_id": "S12"
+    "human_goal_connection": "The campaign seeks a learned policy with at least 196 complete uninterrupted successes in a 200-episode development panel, corresponding to the 98% human objective under the official task distribution. T1:checkpoint-100352 remains the strongest reference at 189/200 (94.5%), so no official assessment is justified.",
+    "inquiry_id": "I6",
+    "next_direction_or_closure": "Close the I6 inquiry session with this checkpoint. The next scientific work belongs to a fresh session after this summary; it must preserve T1 as the development reference, retain the complete uninterrupted hold as the sole success criterion, and identify a distinct route only if its mechanism is supported by the established failure evidence. Do not claim official 98% performance.",
+    "scientific_commit": "96828278ff3103ad2a83d2b291a80895622f0cd0",
+    "session_id": "S13"
   },
   "schema_version": 6,
   "scientific_model": {
@@ -8582,23 +8781,6 @@
     "path": "research/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "bd2286ef-986a-4034-b0d7-3ff8b49395cf",
-    "id": "S13",
-    "inquiry_id": "I6",
-    "kind": "inquiry",
-    "objective": "Advance I6 toward its closure condition: Close as a credible route only if one bounded fresh candidate, trained with the fixed 120000-step allocation and evaluated against T1 on the same 200-episode development panel, reaches at least 196/200 complete uninterrupted successes and has no more than six failures in the -180 to -90 degree sector and no more than five post-entry hold failures. Otherwise close as insufficient or reframe only if the paired diagnostics identify a new decisive mechanism. Evaluation must report complete success, first entry, maximum uninterrupted hold, interruptions, angular subgroup, and paired outcomes; tolerance entry alone is insufficient.",
-    "operation_ids": [
-      "T6",
-      "M6",
-      "E24"
-    ],
-    "scientific_parent_commit": "2bc0e8eb057e46e4fe9b5ab20ac60f823e3c1593"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
