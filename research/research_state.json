@@ -1,98 +1,27 @@
 {
-  "active_inquiry": {
-    "id": 1,
-    "status": "active"
-  },
-  "best_known_designation_counter": 1,
-  "best_known_lineage": {
-    "artifact": "research/checkpoints/retained/1a939de2-8d9d-42c0-a475-dc59a9a5e55c/e1-cada55eb5-72f7de66732eca151d3f97216d7be46e13398ca1c1f0c515f5ba150d8114ee56",
-    "candidate": "checkpoint-100352",
-    "designation_ordinal": 1,
-    "evaluation_artifacts": [
-      "research/evaluations/1a939de2-8d9d-42c0-a475-dc59a9a5e55c/evaluation-1a939de2-8d9d-42c0-a475-dc59a9a5e55c-experiment-1-checkpoint-100352-160ep-seed4200-48e4acc98c39.json",
-      "research/evaluations/1a939de2-8d9d-42c0-a475-dc59a9a5e55c/task-reference-1a939de2-8d9d-42c0-a475-dc59a9a5e55c-experiment-1-checkpoint-100352-task-reference-v1.json"
-    ],
-    "fingerprint": "72f7de66732eca151d3f97216d7be46e13398ca1c1f0c515f5ba150d8114ee56",
-    "origin_experiment": 1,
-    "parameters": {
-      "algorithm": {
-        "name": "ppo"
-      },
-      "policy": {
-        "activation": "tanh",
-        "net_arch": [
-          64,
-          64
-        ]
-      },
-      "ppo": {
-        "batch_size": 64,
-        "ent_coef": 0.01,
-        "gae_lambda": 0.95,
-        "gamma": 0.99,
-        "learning_rate": 0.0003,
-        "n_steps": 1024
-      },
-      "training": {
-        "checkpoint_every_steps": 5000,
-        "n_envs": 1
-      }
-    },
-    "reason": "It has recorded complete-hold measurements of 151/160 on the disjoint research panel and 196/200 on the protected task-reference panel, the best observed task-reference result among the measured checkpoints.",
-    "scientific_commit": "4e14562bc5a75f8abf665189251385a39deb0cad",
-    "selected_panels": [
-      {
-        "episodes": 160,
-        "instrument": "research_evaluation",
-        "seed": 4200
-      },
-      {
-        "episodes": 200,
-        "instrument": "task_reference",
-        "panel": "task-reference-v1",
-        "panel_version": 1,
-        "seed": 7300
-      },
-      {
-        "episodes": 160,
-        "instrument": "research_evaluation",
-        "seed": 10000
-      }
-    ],
-    "training_steps": 100352
-  },
+  "active_inquiry": null,
+  "best_known_lineage": null,
   "campaign": {
-    "base_commit": "475faff014c966a03b2ee8d5d780b58c79014ead",
-    "id": "1a939de2-8d9d-42c0-a475-dc59a9a5e55c",
+    "base_commit": "c406c67c73a22b8920aa962fe82289a572c2b993",
+    "id": "0ec81d9e-94bc-4193-b9ae-3f49f606edeb",
     "recipe_source_commit": "9fbe544002f73f9b50ded6986a6a6b6db90fea40",
-    "started_at": "2026-09-26T12:38:55.362501+00:00"
+    "started_at": "2026-09-30T12:39:15.682592+00:00"
   },
   "campaign_conclusion": null,
   "campaign_experiment_counters": {
-    "1a939de2-8d9d-42c0-a475-dc59a9a5e55c": 5
+    "0ec81d9e-94bc-4193-b9ae-3f49f606edeb": 0
   },
   "campaign_inquiry_counters": {
-    "1a939de2-8d9d-42c0-a475-dc59a9a5e55c": 1
+    "0ec81d9e-94bc-4193-b9ae-3f49f606edeb": 0
   },
   "campaign_lab": null,
   "inquiry_lineage": null,
-  "last_allocated_experiment": 5,
-  "last_allocated_inquiry": 1,
-  "last_experiment": 5,
+  "last_allocated_experiment": 0,
+  "last_allocated_inquiry": 0,
+  "last_experiment": 0,
   "last_inquiry": 0,
-  "last_lineage_decision": {
-    "best_known": "working",
-    "code": {
-      "action": "restore",
-      "reason": "Restore the complete recipe associated with working so the tested reward changes are not carried into the next inquiry."
-    },
-    "code_parent_commit": "c5e013d4ed03489f1cd7fc5acbdbb48f52035adf",
-    "continue_from": "working",
-    "developing_method": null,
-    "experiment": 5,
-    "reason": "The continuity-aware reward candidates lost broadly to working on the fresh paired panel: the late checkpoint scored 146/160 with 13 paired losses and no wins, and the final scored 135/160 with 24 losses and no wins. Neither candidate provides evidence of improved hold regulation or a defensible replacement for the established working lineage."
-  },
-  "last_verdict": "researcher selected working as working",
+  "last_lineage_decision": null,
+  "last_verdict": "fresh baseline pending after research reset",
   "official_benchmark_model": null,
   "official_benchmark_verdict": null,
   "official_metrics": null,
@@ -103,246 +32,12 @@
   "pending_final_benchmark": null,
   "pending_inquiry_operation": null,
   "pending_researcher_decision": null,
-  "pending_scientific_commit": {
-    "code_parent_commit": "c5e013d4ed03489f1cd7fc5acbdbb48f52035adf",
-    "experiment": 5,
-    "scientific_commit": "dbe4818e56d9a1fb629f3e72f80a28c3501facd2"
-  },
   "pending_scientific_parent": null,
   "pending_training_operation": null,
   "preparation_conclusion_only": null,
-  "preparation_measurement": null,
-  "principal_investigator_session": {
-    "campaign_id": "1a939de2-8d9d-42c0-a475-dc59a9a5e55c",
-    "id": "d7e33c36-f94e-4d58-b0c6-3bcedaaeabc0",
-    "role": "principal_investigator",
-    "status": "started"
-  },
-  "retained_lineages": [
-    {
-      "artifact": "research/checkpoints/retained/1a939de2-8d9d-42c0-a475-dc59a9a5e55c/e1-c8cf701d5-c0de581ca00202105ee3f5a2241db92719db67509c484dd5b6fd9147d4b7876d",
-      "candidate": "checkpoint-120832",
-      "evaluation_artifacts": [
-        "research/evaluations/1a939de2-8d9d-42c0-a475-dc59a9a5e55c/evaluation-1a939de2-8d9d-42c0-a475-dc59a9a5e55c-experiment-1-checkpoint-120832-160ep-seed4200-48e4acc98c39.json"
-      ],
-      "fingerprint": "c0de581ca00202105ee3f5a2241db92719db67509c484dd5b6fd9147d4b7876d",
-      "id": "baseline-final-120832",
-      "origin_experiment": 1,
-      "parameters": {
-        "algorithm": {
-          "name": "ppo"
-        },
-        "policy": {
-          "activation": "tanh",
-          "net_arch": [
-            64,
-            64
-          ]
-        },
-        "ppo": {
-          "batch_size": 64,
-          "ent_coef": 0.01,
-          "gae_lambda": 0.95,
-          "gamma": 0.99,
-          "learning_rate": 0.0003,
-          "n_steps": 1024
-        },
-        "training": {
-          "checkpoint_every_steps": 5000,
-          "n_envs": 1
-        }
-      },
-      "reason": "Retain the final checkpoint as a reusable close alternative because it matches the working checkpoint at 151/160 on the research panel and remains strong at 194/200 on the protected panel, allowing future transfer or comparison without confusing it with the current best-known designation.",
-      "scientific_commit": "4e14562bc5a75f8abf665189251385a39deb0cad",
-      "selected_panels": [
-        {
-          "episodes": 160,
-          "instrument": "research_evaluation",
-          "seed": 4200
-        },
-        {
-          "episodes": 200,
-          "instrument": "task_reference",
-          "panel": "task-reference-v1",
-          "panel_version": 1,
-          "seed": 7300
-        }
-      ],
-      "training_steps": 120832
-    },
-    {
-      "artifact": "research/checkpoints/retained/1a939de2-8d9d-42c0-a475-dc59a9a5e55c/e2-c8cf701d5-737b0a6a48f697314d18fc6766306da6559f0625b3f82f05aad75c21f741b45d",
-      "candidate": "checkpoint-120832",
-      "evaluation_artifacts": [
-        "research/evaluations/1a939de2-8d9d-42c0-a475-dc59a9a5e55c/evaluation-1a939de2-8d9d-42c0-a475-dc59a9a5e55c-experiment-2-checkpoint-120832-160ep-seed6000-11164cc6e93a.json"
-      ],
-      "fingerprint": "737b0a6a48f697314d18fc6766306da6559f0625b3f82f05aad75c21f741b45d",
-      "id": "exp2-full-range-final",
-      "origin_experiment": 2,
-      "parameters": {
-        "algorithm": {
-          "name": "ppo"
-        },
-        "policy": {
-          "activation": "tanh",
-          "net_arch": [
-            64,
-            64
-          ]
-        },
-        "ppo": {
-          "batch_size": 64,
-          "ent_coef": 0.01,
-          "gae_lambda": 0.95,
-          "gamma": 0.99,
-          "learning_rate": 0.0003,
-          "n_steps": 1024
-        },
-        "training": {
-          "checkpoint_every_steps": 5000,
-          "n_envs": 1
-        }
-      },
-      "reason": "Retain the final full-range candidate as a comparison lineage because it matches working on the fresh research panel and scored 197/200 on the reused task-reference panel, while not treating that one-episode development difference as a promotion.",
-      "scientific_commit": "90c20fc93c59064bb386b79c09c52076da3cf056",
-      "selected_panels": [
-        {
-          "episodes": 160,
-          "instrument": "research_evaluation",
-          "seed": 6000
-        },
-        {
-          "episodes": 200,
-          "instrument": "task_reference",
-          "panel": "task-reference-v1",
-          "panel_version": 1,
-          "seed": 7300
-        }
-      ],
-      "training_steps": 221184
-    },
-    {
-      "artifact": "research/checkpoints/retained/1a939de2-8d9d-42c0-a475-dc59a9a5e55c/e4-c8cf701d5-027cf1206aa8c081dbe1b122c29603cbc30f936e0b8d87508842985e1c080b88",
-      "candidate": "checkpoint-120832",
-      "evaluation_artifacts": [
-        "research/evaluations/1a939de2-8d9d-42c0-a475-dc59a9a5e55c/evaluation-1a939de2-8d9d-42c0-a475-dc59a9a5e55c-experiment-4-checkpoint-120832-160ep-seed8000-45477ff9ffed.json"
-      ],
-      "fingerprint": "027cf1206aa8c081dbe1b122c29603cbc30f936e0b8d87508842985e1c080b88",
-      "id": "exp4-angular-oversampling-final",
-      "origin_experiment": 4,
-      "parameters": {
-        "algorithm": {
-          "name": "ppo"
-        },
-        "policy": {
-          "activation": "tanh",
-          "net_arch": [
-            64,
-            64
-          ]
-        },
-        "ppo": {
-          "batch_size": 64,
-          "ent_coef": 0.01,
-          "gae_lambda": 0.95,
-          "gamma": 0.99,
-          "learning_rate": 0.0003,
-          "n_steps": 1024
-        },
-        "training": {
-          "checkpoint_every_steps": 5000,
-          "n_envs": 1
-        }
-      },
-      "reason": "The final candidate is behaviorally close to working, tied on the fresh paired panel, and slightly better on the reused task-reference panel. Preserve it as a comparison and possible transfer alternative without promoting it or treating the reused-panel difference as independent confirmation.",
-      "scientific_commit": "b34992542142f21b6026436889f8847909e3d8e1",
-      "selected_panels": [
-        {
-          "episodes": 160,
-          "instrument": "research_evaluation",
-          "seed": 8000
-        },
-        {
-          "episodes": 200,
-          "instrument": "task_reference",
-          "panel": "task-reference-v1",
-          "panel_version": 1,
-          "seed": 7300
-        }
-      ],
-      "training_steps": 342016
-    }
-  ],
+  "principal_investigator_session": null,
+  "retained_lineages": [],
   "schema_version": 4,
   "terminal_campaign_status": null,
-  "working_lineage": {
-    "artifact": "research/checkpoints/retained/1a939de2-8d9d-42c0-a475-dc59a9a5e55c/e1-cada55eb5-72f7de66732eca151d3f97216d7be46e13398ca1c1f0c515f5ba150d8114ee56",
-    "candidate": "checkpoint-100352",
-    "evaluation_artifacts": [
-      "research/evaluations/1a939de2-8d9d-42c0-a475-dc59a9a5e55c/evaluation-1a939de2-8d9d-42c0-a475-dc59a9a5e55c-experiment-1-checkpoint-100352-160ep-seed4200-48e4acc98c39.json"
-    ],
-    "fingerprint": "72f7de66732eca151d3f97216d7be46e13398ca1c1f0c515f5ba150d8114ee56",
-    "origin_experiment": 1,
-    "parameters": {
-      "algorithm": {
-        "name": "ppo"
-      },
-      "policy": {
-        "activation": "tanh",
-        "net_arch": [
-          64,
-          64
-        ]
-      },
-      "ppo": {
-        "batch_size": 64,
-        "ent_coef": 0.01,
-        "gae_lambda": 0.95,
-        "gamma": 0.99,
-        "learning_rate": 0.0003,
-        "n_steps": 1024
-      },
-      "training": {
-        "checkpoint_every_steps": 5000,
-        "n_envs": 1
-      }
-    },
-    "reason": "The continuity-aware reward candidates lost broadly to working on the fresh paired panel: the late checkpoint scored 146/160 with 13 paired losses and no wins, and the final scored 135/160 with 24 losses and no wins. Neither candidate provides evidence of improved hold regulation or a defensible replacement for the established working lineage.",
-    "scientific_commit": "4e14562bc5a75f8abf665189251385a39deb0cad",
-    "selected_panels": [
-      {
-        "episodes": 160,
-        "instrument": "research_evaluation",
-        "seed": 4200
-      },
-      {
-        "episodes": 200,
-        "instrument": "task_reference",
-        "panel": "task-reference-v1",
-        "panel_version": 1,
-        "seed": 7300
-      },
-      {
-        "episodes": 160,
-        "instrument": "research_evaluation",
-        "seed": 6000
-      },
-      {
-        "episodes": 160,
-        "instrument": "research_evaluation",
-        "seed": 7000
-      },
-      {
-        "episodes": 160,
-        "instrument": "research_evaluation",
-        "seed": 8000
-      },
-      {
-        "episodes": 160,
-        "instrument": "research_evaluation",
-        "seed": 10000
-      }
-    ],
-    "training_steps": 100352
-  }
+  "working_lineage": null
 }
