@@ -91,3 +91,4 @@
 | E63 | checkpoint | - | checkpointed |
 | M14 | measurement | I14 | failed |
 | M15 | measurement | I14 | failed |
+| M16 | measurement | I14 | completed |

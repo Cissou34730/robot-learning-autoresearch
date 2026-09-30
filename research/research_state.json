@@ -1862,7 +1862,8 @@
         "research/evaluations/eb19a5f3-14b3-4590-ad74-1b31cf5ae3d5/evaluation-eb19a5f3-14b3-4590-ad74-1b31cf5ae3d5-m12-T1-checkpoint-100352-200ep-seed18200-48e4acc98c39.json",
         "research/evaluations/eb19a5f3-14b3-4590-ad74-1b31cf5ae3d5/evaluation-eb19a5f3-14b3-4590-ad74-1b31cf5ae3d5-m12-T1-checkpoint-100352-200ep-seed19200-48e4acc98c39.json",
         "research/evaluations/eb19a5f3-14b3-4590-ad74-1b31cf5ae3d5/evaluation-eb19a5f3-14b3-4590-ad74-1b31cf5ae3d5-m13-T1-checkpoint-100352-200ep-seed20200-f1d0bafa9b02.json",
-        "research/evaluations/eb19a5f3-14b3-4590-ad74-1b31cf5ae3d5/evaluation-eb19a5f3-14b3-4590-ad74-1b31cf5ae3d5-m13-T1-checkpoint-100352-200ep-seed21200-f1d0bafa9b02.json"
+        "research/evaluations/eb19a5f3-14b3-4590-ad74-1b31cf5ae3d5/evaluation-eb19a5f3-14b3-4590-ad74-1b31cf5ae3d5-m13-T1-checkpoint-100352-200ep-seed21200-f1d0bafa9b02.json",
+        "research/evaluations/eb19a5f3-14b3-4590-ad74-1b31cf5ae3d5/evaluation-eb19a5f3-14b3-4590-ad74-1b31cf5ae3d5-m16-T1-checkpoint-100352-200ep-seed22200-f1d0bafa9b02.json"
       ],
       "fingerprint": "c9b24fc4281c7ce6457bdcbbe47fe313deeffddf58e8b4e9e9d2a5f0e9609067",
       "id": "T1:checkpoint-100352",
@@ -9287,7 +9288,7 @@
   "human_goal": {
     "source": "research/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -17777,6 +17778,157 @@
       "status": "failed",
       "superseded_by": "M16",
       "supersedes": "M14"
+    },
+    {
+      "completed_at": "2026-09-30T02:36:25Z",
+      "error": null,
+      "id": "M16",
+      "inquiry_id": "I14",
+      "kind": "measurement",
+      "request": {
+        "description": "I14 direct full-distribution test of a fixed computed-torque model-based controller, with phase diagnostics and a fresh baseline panel on the same episode seeds.",
+        "measurements": [
+          {
+            "args": [
+              "--episodes",
+              "200",
+              "--seed",
+              "22200",
+              "--output",
+              "research/evaluations/eb19a5f3-14b3-4590-ad74-1b31cf5ae3d5/i14_controller.json"
+            ],
+            "artifact": "research/evaluations/eb19a5f3-14b3-4590-ad74-1b31cf5ae3d5/i14_controller.json",
+            "instrument": "python_module",
+            "label": "I14 fixed controller full-distribution panel",
+            "module": "research.lab.i14_controller"
+          },
+          {
+            "candidate": "T1:checkpoint-100352",
+            "episodes": 200,
+            "instrument": "research_evaluation",
+            "label": "I14 restored baseline shared-seed panel",
+            "seed": 22200
+          }
+        ],
+        "rationale": "M15 failed before execution because the native MuJoCo 3.12 mj_fullM call requires (model, data, destination), not the previously used argument order. This resubmission preserves the pre-specified controller, panel, seed, and baseline comparison and changes only that API call order."
+      },
+      "result": {
+        "measurements": [
+          {
+            "args": [
+              "--episodes",
+              "200",
+              "--seed",
+              "22200",
+              "--output",
+              "research/evaluations/eb19a5f3-14b3-4590-ad74-1b31cf5ae3d5/i14_controller.json"
+            ],
+            "instrument": "python_module",
+            "label": "I14 fixed controller full-distribution panel",
+            "metrics": {
+              "evaluation_artifact": "research/evaluations/eb19a5f3-14b3-4590-ad74-1b31cf5ae3d5/python-module-M16-1-i14_controller.json",
+              "evaluation_artifact_fingerprint": "014f8cfca712b5e35f5d95eb70a04b4cc54dccc67b26e8afb3820cd9c15c4bcc"
+            },
+            "module": "research.lab.i14_controller"
+          },
+          {
+            "candidate": "T1:checkpoint-100352",
+            "candidate_id": "T1:checkpoint-100352",
+            "instrument": "research_evaluation",
+            "label": "I14 restored baseline shared-seed panel",
+            "metrics": {
+              "episodes": 200,
+              "evaluation_artifact": "research/evaluations/eb19a5f3-14b3-4590-ad74-1b31cf5ae3d5/evaluation-eb19a5f3-14b3-4590-ad74-1b31cf5ae3d5-m16-T1-checkpoint-100352-200ep-seed22200-f1d0bafa9b02.json",
+              "evaluation_artifact_fingerprint": "1518dafc945d5bedbee0d9033c3613e4fe8abfa972279a3bdc1d8c4a1a80aeab",
+              "evaluation_semantics": "f1d0bafa9b02",
+              "model_fingerprint": "c9b24fc4281c7ce6457bdcbbe47fe313deeffddf58e8b4e9e9d2a5f0e9609067",
+              "official_benchmark": false,
+              "schema_version": 5,
+              "seed": 22200,
+              "success_percent": 97.0,
+              "successes": 194
+            }
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": {
+          "campaign_lab_manifest": [
+            {
+              "fingerprint": "b9fff0842c2330fa34175570832a4ec1358972b1d03a6e266835b0f8080eac62",
+              "path": "research/lab/i14_controller.py"
+            },
+            {
+              "fingerprint": "7df60e1d421c7123371f51bbec039a789e90414fe6490ac074585e422e79e679",
+              "path": "research/lab/i2_mechanism.py"
+            }
+          ],
+          "campaign_lab_publication": {
+            "commit": "f10243b14b337876d41022d2b4a7fc9bdf988517",
+            "fingerprint": "6e828ab4fd8b497102aa4f8022fbc99d2c8147e8c556d1556f2b915cd075c7b0",
+            "manifest": [
+              {
+                "fingerprint": "b9fff0842c2330fa34175570832a4ec1358972b1d03a6e266835b0f8080eac62",
+                "path": "research/lab/i14_controller.py"
+              },
+              {
+                "fingerprint": "7df60e1d421c7123371f51bbec039a789e90414fe6490ac074585e422e79e679",
+                "path": "research/lab/i2_mechanism.py"
+              }
+            ]
+          },
+          "code_parent_commit": "7d77d63ef145a29b760a4dc8636f986c506bb71d",
+          "effective_parameters": {
+            "algorithm": {
+              "name": "ppo"
+            },
+            "policy": {
+              "activation": "tanh",
+              "net_arch": [
+                64,
+                64
+              ]
+            },
+            "ppo": {
+              "batch_size": 64,
+              "ent_coef": 0.01,
+              "gae_lambda": 0.95,
+              "gamma": 0.99,
+              "learning_rate": 0.0003,
+              "n_steps": 1024
+            },
+            "teacher_initialization": {
+              "batch_size": 64,
+              "epochs": 40,
+              "learning_rate": 0.001,
+              "position_gain": 2.5,
+              "samples": 8192,
+              "velocity_damping": 0.25
+            },
+            "training": {
+              "checkpoint_every_steps": 5000,
+              "n_envs": 1
+            }
+          },
+          "module_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "b9fff0842c2330fa34175570832a4ec1358972b1d03a6e266835b0f8080eac62",
+              "path": "research/lab/i14_controller.py"
+            }
+          ],
+          "module_paths": [
+            "research/lab/i14_controller.py"
+          ],
+          "scientific_commit": null,
+          "scientific_manifest": [],
+          "scientific_paths": []
+        }
+      },
+      "session_id": "S32",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": "M15"
     }
   ],
   "pending_operation": {
@@ -17819,7 +17971,20 @@
             "path": "research/lab/i2_mechanism.py"
           }
         ],
-        "campaign_lab_publication": null,
+        "campaign_lab_publication": {
+          "commit": "f10243b14b337876d41022d2b4a7fc9bdf988517",
+          "fingerprint": "6e828ab4fd8b497102aa4f8022fbc99d2c8147e8c556d1556f2b915cd075c7b0",
+          "manifest": [
+            {
+              "fingerprint": "b9fff0842c2330fa34175570832a4ec1358972b1d03a6e266835b0f8080eac62",
+              "path": "research/lab/i14_controller.py"
+            },
+            {
+              "fingerprint": "7df60e1d421c7123371f51bbec039a789e90414fe6490ac074585e422e79e679",
+              "path": "research/lab/i2_mechanism.py"
+            }
+          ]
+        },
         "code_parent_commit": "7d77d63ef145a29b760a4dc8636f986c506bb71d",
         "effective_parameters": {
           "algorithm": {
@@ -17868,15 +18033,163 @@
         "scientific_paths": []
       },
       "paired_comparisons": [],
-      "partial_results": [],
-      "result": null,
+      "partial_results": [
+        {
+          "args": [
+            "--episodes",
+            "200",
+            "--seed",
+            "22200",
+            "--output",
+            "research/evaluations/eb19a5f3-14b3-4590-ad74-1b31cf5ae3d5/i14_controller.json"
+          ],
+          "instrument": "python_module",
+          "label": "I14 fixed controller full-distribution panel",
+          "metrics": {
+            "evaluation_artifact": "research/evaluations/eb19a5f3-14b3-4590-ad74-1b31cf5ae3d5/python-module-M16-1-i14_controller.json",
+            "evaluation_artifact_fingerprint": "014f8cfca712b5e35f5d95eb70a04b4cc54dccc67b26e8afb3820cd9c15c4bcc"
+          },
+          "module": "research.lab.i14_controller"
+        },
+        {
+          "candidate": "T1:checkpoint-100352",
+          "candidate_id": "T1:checkpoint-100352",
+          "instrument": "research_evaluation",
+          "label": "I14 restored baseline shared-seed panel",
+          "metrics": {
+            "episodes": 200,
+            "evaluation_artifact": "research/evaluations/eb19a5f3-14b3-4590-ad74-1b31cf5ae3d5/evaluation-eb19a5f3-14b3-4590-ad74-1b31cf5ae3d5-m16-T1-checkpoint-100352-200ep-seed22200-f1d0bafa9b02.json",
+            "evaluation_artifact_fingerprint": "1518dafc945d5bedbee0d9033c3613e4fe8abfa972279a3bdc1d8c4a1a80aeab",
+            "evaluation_semantics": "f1d0bafa9b02",
+            "model_fingerprint": "c9b24fc4281c7ce6457bdcbbe47fe313deeffddf58e8b4e9e9d2a5f0e9609067",
+            "official_benchmark": false,
+            "schema_version": 5,
+            "seed": 22200,
+            "success_percent": 97.0,
+            "successes": 194
+          }
+        }
+      ],
+      "result": {
+        "measurements": [
+          {
+            "args": [
+              "--episodes",
+              "200",
+              "--seed",
+              "22200",
+              "--output",
+              "research/evaluations/eb19a5f3-14b3-4590-ad74-1b31cf5ae3d5/i14_controller.json"
+            ],
+            "instrument": "python_module",
+            "label": "I14 fixed controller full-distribution panel",
+            "metrics": {
+              "evaluation_artifact": "research/evaluations/eb19a5f3-14b3-4590-ad74-1b31cf5ae3d5/python-module-M16-1-i14_controller.json",
+              "evaluation_artifact_fingerprint": "014f8cfca712b5e35f5d95eb70a04b4cc54dccc67b26e8afb3820cd9c15c4bcc"
+            },
+            "module": "research.lab.i14_controller"
+          },
+          {
+            "candidate": "T1:checkpoint-100352",
+            "candidate_id": "T1:checkpoint-100352",
+            "instrument": "research_evaluation",
+            "label": "I14 restored baseline shared-seed panel",
+            "metrics": {
+              "episodes": 200,
+              "evaluation_artifact": "research/evaluations/eb19a5f3-14b3-4590-ad74-1b31cf5ae3d5/evaluation-eb19a5f3-14b3-4590-ad74-1b31cf5ae3d5-m16-T1-checkpoint-100352-200ep-seed22200-f1d0bafa9b02.json",
+              "evaluation_artifact_fingerprint": "1518dafc945d5bedbee0d9033c3613e4fe8abfa972279a3bdc1d8c4a1a80aeab",
+              "evaluation_semantics": "f1d0bafa9b02",
+              "model_fingerprint": "c9b24fc4281c7ce6457bdcbbe47fe313deeffddf58e8b4e9e9d2a5f0e9609067",
+              "official_benchmark": false,
+              "schema_version": 5,
+              "seed": 22200,
+              "success_percent": 97.0,
+              "successes": 194
+            }
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": {
+          "campaign_lab_manifest": [
+            {
+              "fingerprint": "b9fff0842c2330fa34175570832a4ec1358972b1d03a6e266835b0f8080eac62",
+              "path": "research/lab/i14_controller.py"
+            },
+            {
+              "fingerprint": "7df60e1d421c7123371f51bbec039a789e90414fe6490ac074585e422e79e679",
+              "path": "research/lab/i2_mechanism.py"
+            }
+          ],
+          "campaign_lab_publication": {
+            "commit": "f10243b14b337876d41022d2b4a7fc9bdf988517",
+            "fingerprint": "6e828ab4fd8b497102aa4f8022fbc99d2c8147e8c556d1556f2b915cd075c7b0",
+            "manifest": [
+              {
+                "fingerprint": "b9fff0842c2330fa34175570832a4ec1358972b1d03a6e266835b0f8080eac62",
+                "path": "research/lab/i14_controller.py"
+              },
+              {
+                "fingerprint": "7df60e1d421c7123371f51bbec039a789e90414fe6490ac074585e422e79e679",
+                "path": "research/lab/i2_mechanism.py"
+              }
+            ]
+          },
+          "code_parent_commit": "7d77d63ef145a29b760a4dc8636f986c506bb71d",
+          "effective_parameters": {
+            "algorithm": {
+              "name": "ppo"
+            },
+            "policy": {
+              "activation": "tanh",
+              "net_arch": [
+                64,
+                64
+              ]
+            },
+            "ppo": {
+              "batch_size": 64,
+              "ent_coef": 0.01,
+              "gae_lambda": 0.95,
+              "gamma": 0.99,
+              "learning_rate": 0.0003,
+              "n_steps": 1024
+            },
+            "teacher_initialization": {
+              "batch_size": 64,
+              "epochs": 40,
+              "learning_rate": 0.001,
+              "position_gain": 2.5,
+              "samples": 8192,
+              "velocity_damping": 0.25
+            },
+            "training": {
+              "checkpoint_every_steps": 5000,
+              "n_envs": 1
+            }
+          },
+          "module_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "b9fff0842c2330fa34175570832a4ec1358972b1d03a6e266835b0f8080eac62",
+              "path": "research/lab/i14_controller.py"
+            }
+          ],
+          "module_paths": [
+            "research/lab/i14_controller.py"
+          ],
+          "scientific_commit": null,
+          "scientific_manifest": [],
+          "scientific_paths": []
+        }
+      },
       "task_reference_contract": null
     },
     "failure": null,
     "id": "M16",
     "inquiry_id": "I14",
     "kind": "measurement",
-    "progress": "accepted",
+    "progress": "completed",
     "request": {
       "measurement": {
         "description": "I14 direct full-distribution test of a fixed computed-torque model-based controller, with phase diagnostics and a fresh baseline panel on the same episode seeds.",
@@ -17953,7 +18266,9 @@
     "inquiry_id": "I14",
     "kind": "inquiry",
     "objective": "Bring I14 to the decision required by its closure condition, and close it as soon as the evidence supplies that decision: Close when bounded evidence establishes either that a pre-specified model-based controller cannot reliably solve the complete distribution or that a training-only selected distilled policy fails the 196/200 threshold on two fresh shared-seed panels; close positively only if the distilled learned policy reaches at least 196/200 on both fresh panels without runtime controller assistance. If the controller or distillation route materially degrades the restored baseline, reject it as a credible campaign route.",
-    "operation_ids": [],
+    "operation_ids": [
+      "M16"
+    ],
     "scientific_parent_commit": "7d77d63ef145a29b760a4dc8636f986c506bb71d"
   },
   "terminal_state": null
