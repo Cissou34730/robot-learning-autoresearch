@@ -15755,44 +15755,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "open",
-        "inquiry": {
-          "closure_condition": "Close after one pre-specified teacher-guided training run uses the direct baseline observation, action, task, and evaluation semantics, selects its checkpoint by a training-only rule, and is compared with restored T1 on two fresh shared-seed 200-episode complete-distribution panels. Close negatively if the selected candidate fails to reach at least 196/200 on both panels, materially degrades T1, or loses the established uninterrupted-hold behavior. A candidate reaching at least 196/200 on both panels with preserved post-settling hold behavior supports best-known consideration; no success claim is made before protected official assessment.",
-          "goal_connection": "The campaign still requires one frozen learned policy with at least 196 complete successes out of 200 under the full official target distribution, where every success includes the uninterrupted 100-step hold. The restored direct-action baseline has repeatedly approached but not repeatably reached the threshold, while the tested runtime hybrid guidance materially degraded it. A teacher used only during policy initialization could address optimization and exploration variability without imposing the failed hybrid controller during evaluation.",
-          "id": "I13",
-          "opened_in_session": "S29",
-          "question": "Can teacher-guided initialization of the direct joint-torque policy, using a deterministic feasible-branch approach and damped settling controller only to reduce PPO exploration burden before the learned policy is fine-tuned and evaluated without runtime guidance, produce repeatable complete-task success at or above 196/200 while preserving the uninterrupted hold?",
-          "rationale": "Observed evidence shows a variable residual negative-bearing approach and settling tail in the direct baseline, with successful episodes generally retaining the complete hold. The tested runtime IK-plus-residual decomposition instead caused a large approach and settling degradation, so it does not justify further runtime guidance refinement. The authored deterministic plant has analytically feasible branches and state-derived observations, making a branch-aware damped controller a mechanically grounded source of training targets. Using that controller only to initialize the policy, then removing it before fine-tuning and evaluation, tests whether PPO optimization and exploration rather than the direct action interface are the consequential bottleneck. This is a distinct, bounded route that preserves the learned direct-control policy at deployment.",
-          "reframes": []
-        }
-      },
-      "result": {
-        "action": "open",
-        "inquiry_id": "I13",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E58",
-    "inquiry_id": null,
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "open",
-        "closure_condition": "Close after one pre-specified teacher-guided training run uses the direct baseline observation, action, task, and evaluation semantics, selects its checkpoint by a training-only rule, and is compared with restored T1 on two fresh shared-seed 200-episode complete-distribution panels. Close negatively if the selected candidate fails to reach at least 196/200 on both panels, materially degrades T1, or loses the established uninterrupted-hold behavior. A candidate reaching at least 196/200 on both panels with preserved post-settling hold behavior supports best-known consideration; no success claim is made before protected official assessment.",
-        "goal_connection": "The campaign still requires one frozen learned policy with at least 196 complete successes out of 200 under the full official target distribution, where every success includes the uninterrupted 100-step hold. The restored direct-action baseline has repeatedly approached but not repeatably reached the threshold, while the tested runtime hybrid guidance materially degraded it. A teacher used only during policy initialization could address optimization and exploration variability without imposing the failed hybrid controller during evaluation.",
-        "question": "Can teacher-guided initialization of the direct joint-torque policy, using a deterministic feasible-branch approach and damped settling controller only to reduce PPO exploration burden before the learned policy is fine-tuned and evaluated without runtime guidance, produce repeatable complete-task success at or above 196/200 while preserving the uninterrupted hold?",
-        "rationale": "Observed evidence shows a variable residual negative-bearing approach and settling tail in the direct baseline, with successful episodes generally retaining the complete hold. The tested runtime IK-plus-residual decomposition instead caused a large approach and settling degradation, so it does not justify further runtime guidance refinement. The authored deterministic plant has analytically feasible branches and state-derived observations, making a branch-aware damped controller a mechanically grounded source of training targets. Using that controller only to initialize the policy, then removing it before fine-tuning and evaluation, tests whether PPO optimization and exploration rather than the direct action interface are the consequential bottleneck. This is a distinct, bounded route that preserves the learned direct-control policy at deployment."
-      }
-    },
-    "request_fingerprint": "477e98f9d8358b3802012fb2f8c7d71633133561b4f470b331858e54d536f958",
-    "session_id": "S29",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T10:checkpoint-120832 was the pre-selected hybrid candidate and is rejected by M12 after achieving 88/200 and 102/200. T1:checkpoint-100352 remains the strongest historically measured baseline but is unassigned because its performance is not repeatable and remains below 196/200 on the fresh I12 panels. T9:checkpoint-95232, T8:checkpoint-90112, and T7:checkpoint-120832 remain rejected or unassigned routes. No candidate has working, best-known, or retained status.",
     "completed_operations": [
