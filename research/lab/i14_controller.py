@@ -90,7 +90,7 @@ class ComputedTorqueController:
 
         mujoco.mj_forward(self.env.model, self.env.data)
         mass_matrix = np.zeros((2, 2), dtype=np.float64)
-        mujoco.mj_fullM(self.env.model, mass_matrix, self.env.data.qM)
+        mujoco.mj_fullM(self.env.model, mass_matrix, self.env.data.M)
         torque = (
             mass_matrix @ desired_acceleration
             + np.asarray(self.env.data.qfrc_bias[:2], dtype=np.float64)
