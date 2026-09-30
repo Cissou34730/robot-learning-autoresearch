@@ -692,7 +692,7 @@
     }
   },
   "counters": {
-    "event": 4,
+    "event": 5,
     "inquiry": 1,
     "measurement": 1,
     "session": 3,
@@ -701,7 +701,7 @@
   "human_goal": {
     "source": "research/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -1040,26 +1040,157 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-09-30T10:29:58Z",
+      "error": null,
+      "id": "E5",
+      "inquiry_id": "I1",
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "T1:checkpoint-100352 is the strongest available development candidate at 94.375% on M1, with no working, best-known, or retained role assigned. The other T1 checkpoints have no evaluation evidence.",
+        "completed_operations": [
+          "T1",
+          "M1",
+          "E4"
+        ],
+        "cumulative_resource_use": "One fresh PPO training operation completed at 100352 simulator control steps, producing the T1 candidate pool, followed by one 160-episode fixed-distribution research evaluation on T1:checkpoint-100352. No official assessment has run.",
+        "current_goal_gap": "The best available candidate is below the 98% goal on the development panel and has no explicit working or best-known role. Six of nine baseline failures were no-entry acquisition or trajectory failures, and three were high-speed hold interruptions; the remaining gap is to improve negative-angle acquisition and trajectory robustness while preserving stable low-velocity regulation.",
+        "current_synthesis": "The initial competing explanations were discriminated by T1 and M1. Acquisition and trajectory selection dominate the first baseline losses: 6 of 9 failures never entered tolerance, with success concentrated at 80.8% for -135 to -90 degrees and 84.0% for -180 to -135 degrees. Regulation remains consequential but secondary: 3 failures entered and were interrupted, and all observed interruption events combined high exit speed with saturated action. The baseline therefore reaches many targets but is not yet robust across the full target geometry.",
+        "decision_frontier": "At goal review, open a new goal-linked inquiry focused on improving acquisition and branch or trajectory selection in the negative-angle strata, with velocity-aware regulation retained as a guard against trading entry failures for hold interruptions. Compare the next candidate against T1 on shared development episodes before considering model-role assignment or official assessment.",
+        "evidence_references": [
+          "T1",
+          "M1",
+          "E4"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 of 200 official episodes to complete one uninterrupted 100-step hold. The baseline candidate reached 151 of 160 development episodes (94.375%), so the campaign has identified a concrete loss mechanism but has not established goal attainment or justified official assessment.",
+        "next_direction_or_closure": "The I1 closure is recorded. After this checkpoint ends the session, return to goal review and open a new inquiry for a targeted acquisition and negative-angle trajectory intervention; do not request official assessment until a candidate is explicitly assigned best-known and its evidence supports that decision."
+      },
+      "result": {
+        "session_id": "S3",
+        "status": "checkpointed"
+      },
+      "session_id": "S3",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "0562c3712aadf4630d36ddadfc57d5e6408b39c0",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "T1:checkpoint-100352 is the strongest available development candidate at 94.375% on M1, with no working, best-known, or retained role assigned. The other T1 checkpoints have no evaluation evidence.",
+        "completed_operations": [
+          "T1",
+          "M1",
+          "E4"
+        ],
+        "cumulative_resource_use": "One fresh PPO training operation completed at 100352 simulator control steps, producing the T1 candidate pool, followed by one 160-episode fixed-distribution research evaluation on T1:checkpoint-100352. No official assessment has run.",
+        "current_goal_gap": "The best available candidate is below the 98% goal on the development panel and has no explicit working or best-known role. Six of nine baseline failures were no-entry acquisition or trajectory failures, and three were high-speed hold interruptions; the remaining gap is to improve negative-angle acquisition and trajectory robustness while preserving stable low-velocity regulation.",
+        "current_synthesis": "The initial competing explanations were discriminated by T1 and M1. Acquisition and trajectory selection dominate the first baseline losses: 6 of 9 failures never entered tolerance, with success concentrated at 80.8% for -135 to -90 degrees and 84.0% for -180 to -135 degrees. Regulation remains consequential but secondary: 3 failures entered and were interrupted, and all observed interruption events combined high exit speed with saturated action. The baseline therefore reaches many targets but is not yet robust across the full target geometry.",
+        "decision_frontier": "At goal review, open a new goal-linked inquiry focused on improving acquisition and branch or trajectory selection in the negative-angle strata, with velocity-aware regulation retained as a guard against trading entry failures for hold interruptions. Compare the next candidate against T1 on shared development episodes before considering model-role assignment or official assessment.",
+        "evidence_references": [
+          "T1",
+          "M1",
+          "E4"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 of 200 official episodes to complete one uninterrupted 100-step hold. The baseline candidate reached 151 of 160 development episodes (94.375%), so the campaign has identified a concrete loss mechanism but has not established goal attainment or justified official assessment.",
+        "inquiry_id": "I1",
+        "next_direction_or_closure": "The I1 closure is recorded. After this checkpoint ends the session, return to goal review and open a new inquiry for a targeted acquisition and negative-angle trajectory intervention; do not request official assessment until a candidate is explicitly assigned best-known and its evidence supports that decision.",
+        "session_id": "S3"
+      },
+      "presentation": {
+        "backend_session_id": "4c09eb25-9218-411f-8f85-1caa535203e9",
+        "campaign_id": "35365763-6aa0-4675-8e86-f8f277558aa4",
+        "campaign_usage": "11m31s | 18.97 AIU | prompt 3.1m (87% cached) | output 30.1k",
+        "session_id": "S3",
+        "session_kind": "inquiry",
+        "session_usage": "5m32s | 13.76 AIU | prompt 2.6m (89% cached) | output 14.6k"
+      },
+      "result": {
+        "session_id": "S3",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "aded2c2f18bd37011a8d4414ce0de98343013c05",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E5",
+    "inquiry_id": "I1",
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "T1:checkpoint-100352 is the strongest available development candidate at 94.375% on M1, with no working, best-known, or retained role assigned. The other T1 checkpoints have no evaluation evidence.",
+        "completed_operations": [
+          "T1",
+          "M1",
+          "E4"
+        ],
+        "cumulative_resource_use": "One fresh PPO training operation completed at 100352 simulator control steps, producing the T1 candidate pool, followed by one 160-episode fixed-distribution research evaluation on T1:checkpoint-100352. No official assessment has run.",
+        "current_goal_gap": "The best available candidate is below the 98% goal on the development panel and has no explicit working or best-known role. Six of nine baseline failures were no-entry acquisition or trajectory failures, and three were high-speed hold interruptions; the remaining gap is to improve negative-angle acquisition and trajectory robustness while preserving stable low-velocity regulation.",
+        "current_synthesis": "The initial competing explanations were discriminated by T1 and M1. Acquisition and trajectory selection dominate the first baseline losses: 6 of 9 failures never entered tolerance, with success concentrated at 80.8% for -135 to -90 degrees and 84.0% for -180 to -135 degrees. Regulation remains consequential but secondary: 3 failures entered and were interrupted, and all observed interruption events combined high exit speed with saturated action. The baseline therefore reaches many targets but is not yet robust across the full target geometry.",
+        "decision_frontier": "At goal review, open a new goal-linked inquiry focused on improving acquisition and branch or trajectory selection in the negative-angle strata, with velocity-aware regulation retained as a guard against trading entry failures for hold interruptions. Compare the next candidate against T1 on shared development episodes before considering model-role assignment or official assessment.",
+        "evidence_references": [
+          "T1",
+          "M1",
+          "E4"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 of 200 official episodes to complete one uninterrupted 100-step hold. The baseline candidate reached 151 of 160 development episodes (94.375%), so the campaign has identified a concrete loss mechanism but has not established goal attainment or justified official assessment.",
+        "next_direction_or_closure": "The I1 closure is recorded. After this checkpoint ends the session, return to goal review and open a new inquiry for a targeted acquisition and negative-angle trajectory intervention; do not request official assessment until a candidate is explicitly assigned best-known and its evidence supports that decision."
+      }
+    },
+    "request_fingerprint": "db6667c4d51a8eb0456031ff6416db553eaa4480adb4b5fd0cb681a553542881",
+    "session_id": "S3",
+    "supersedes": null
+  },
   "pi_checkpoint": {
-    "candidates_and_roles": "No learned candidates exist and no working, best-known, or retained role is assigned.",
+    "candidates_and_roles": "T1:checkpoint-100352 is the strongest available development candidate at 94.375% on M1, with no working, best-known, or retained role assigned. The other T1 checkpoints have no evaluation evidence.",
     "completed_operations": [
-      "E2"
+      "T1",
+      "M1",
+      "E4"
     ],
-    "cumulative_resource_use": "No training, evaluation, or other resource-consuming operation has completed; the campaign has only recorded the inquiry opening.",
-    "current_goal_gap": "No learned candidate or development measurement exists, so the campaign has no evidence about whether official-success losses are dominated by initial singularity escape, elbow-trajectory selection, residual velocity at arrival, or interruptions during the complete hold.",
-    "current_synthesis": "The initial physical model supports two competing consequential explanations: acquisition and trajectory selection may prevent entry into the tolerance, while residual motion and unstable feedback may cause failures after entry. The arm starts fully extended at a singularity, actions are held for 20 ms, and success depends on every one of 100 consecutive in-tolerance observations. A baseline policy and mechanism-specific diagnostics are therefore more credible than optimizing a local distance or cumulative in-tolerance proxy.",
-    "decision_frontier": "In the fresh I1 inquiry session, perform one baseline training operation and one diagnostic evaluation under the official target distribution. Compare first-entry timing, entry velocity or convergence quality, longest uninterrupted hold, interruption causes, and target-radius/angle strata. If failures occur before reliable entry, investigate acquisition and branch/trajectory selection; if entry is common but 100-step holds fail, investigate regulation and velocity shaping; if geometry stratifies failures, focus the next intervention on the limiting basin or configuration.",
+    "cumulative_resource_use": "One fresh PPO training operation completed at 100352 simulator control steps, producing the T1 candidate pool, followed by one 160-episode fixed-distribution research evaluation on T1:checkpoint-100352. No official assessment has run.",
+    "current_goal_gap": "The best available candidate is below the 98% goal on the development panel and has no explicit working or best-known role. Six of nine baseline failures were no-entry acquisition or trajectory failures, and three were high-speed hold interruptions; the remaining gap is to improve negative-angle acquisition and trajectory robustness while preserving stable low-velocity regulation.",
+    "current_synthesis": "The initial competing explanations were discriminated by T1 and M1. Acquisition and trajectory selection dominate the first baseline losses: 6 of 9 failures never entered tolerance, with success concentrated at 80.8% for -135 to -90 degrees and 84.0% for -180 to -135 degrees. Regulation remains consequential but secondary: 3 failures entered and were interrupted, and all observed interruption events combined high exit speed with saturated action. The baseline therefore reaches many targets but is not yet robust across the full target geometry.",
+    "decision_frontier": "At goal review, open a new goal-linked inquiry focused on improving acquisition and branch or trajectory selection in the negative-angle strata, with velocity-aware regulation retained as a guard against trading entry failures for hold interruptions. Compare the next candidate against T1 on shared development episodes before considering model-role assignment or official assessment.",
     "evidence_references": [
-      "E2"
+      "T1",
+      "M1",
+      "E4"
     ],
-    "human_goal_connection": "The human goal requires at least 196 of 200 official episodes to complete one uninterrupted 100-step hold. The next inquiry must therefore distinguish failures of reaching and trajectory selection from failures of low-velocity convergence and sustained regulation before selecting a policy or reward intervention.",
-    "inquiry_id": null,
-    "next_direction_or_closure": "The goal-review transition is complete. Continue in a fresh I1 inquiry session with the bounded baseline-training and diagnostic-evaluation sequence; do not request official assessment until an explicit best-known candidate exists and its evidence supports that decision.",
-    "scientific_commit": "28f6bebbd123f7589449713dff15ea363268d4e1",
-    "session_id": "S2"
+    "human_goal_connection": "The human goal requires at least 196 of 200 official episodes to complete one uninterrupted 100-step hold. The baseline candidate reached 151 of 160 development episodes (94.375%), so the campaign has identified a concrete loss mechanism but has not established goal attainment or justified official assessment.",
+    "inquiry_id": "I1",
+    "next_direction_or_closure": "The I1 closure is recorded. After this checkpoint ends the session, return to goal review and open a new inquiry for a targeted acquisition and negative-angle trajectory intervention; do not request official assessment until a candidate is explicitly assigned best-known and its evidence supports that decision.",
+    "scientific_commit": "aded2c2f18bd37011a8d4414ce0de98343013c05",
+    "session_id": "S3"
   },
   "schema_version": 6,
   "scientific_model": {
@@ -1067,23 +1198,6 @@
     "path": "research/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "4c09eb25-9218-411f-8f85-1caa535203e9",
-    "id": "S3",
-    "inquiry_id": "I1",
-    "kind": "inquiry",
-    "objective": "Advance I1 toward its closure condition: Close or redirect this inquiry after one baseline training operation and one diagnostic evaluation have quantified first-entry timing, entry velocity or convergence quality, longest uninterrupted hold, interruption causes, and target-geometry strata sufficiently to select the next goal-linked action.",
-    "operation_ids": [
-      "T1",
-      "M1",
-      "E4"
-    ],
-    "scientific_parent_commit": "0562c3712aadf4630d36ddadfc57d5e6408b39c0"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
