@@ -1,5 +1,13 @@
 {
-  "active_inquiry": null,
+  "active_inquiry": {
+    "closure_condition": "Close positively only if the bounded work produces one frozen learned candidate, without runtime controller assistance, that reaches at least 196/200 on each of two fresh shared-seed complete-distribution panels and does not materially degrade the restored T1 reference. Close negatively if the predeclared training-and-selection protocol fails to produce that result, or if its candidate materially degrades the restored reference; in either case record whether the evidence supports official assessment or campaign conclusion.",
+    "goal_connection": "The campaign still needs a learned policy with at least 196 complete uninterrupted-hold successes out of 200 under the official task distribution. T1 reached 196/200 and 194/200 on the latest shared panels but is not repeatably qualified, while no learned candidate has best-known status. Resolving whether this near-threshold behavior can be made repeatable directly determines whether official assessment is justified or whether no credible learned route remains.",
+    "id": "I15",
+    "opened_in_session": "S35",
+    "question": "Can a bounded training-and-selection protocol recover and stabilize the near-threshold direct-policy behavior already observed in T1, yielding one frozen learned policy that reaches at least 196/200 on two fresh complete-distribution panels without runtime controller assistance, or do the observed 192-196 results represent a reliability ceiling for the remaining direct-policy route?",
+    "rationale": "Observed evidence supports the model-based controller as a physical solution in M16 but decisively rejects the tested controller-distillation route in M17. The remaining learned evidence is the restored direct-policy formulation, whose fresh results span 192/200 to 196/200 and whose selected retraining route in I11 failed substantially. This leaves a consequential distinction unresolved: whether the learned closed-loop behavior exists but is not reproducibly selected, or whether the near-threshold panels are the practical ceiling of this route. A bounded inquiry is warranted because a repeatable candidate would change the campaign decision, while failure would justify concluding that no credible learned route remains; it does not reopen I14 or assume a particular correction.",
+    "reframes": []
+  },
   "campaign": {
     "base_commit": "8ac206f76ce0bd7fb8f098b4fe6dceac2a2a311f",
     "id": "eb19a5f3-14b3-4590-ad74-1b31cf5ae3d5",
@@ -10156,16 +10164,16 @@
     }
   },
   "counters": {
-    "event": 67,
-    "inquiry": 14,
+    "event": 68,
+    "inquiry": 15,
     "measurement": 17,
-    "session": 34,
+    "session": 35,
     "training": 12
   },
   "human_goal": {
     "source": "research/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -19668,9 +19676,69 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-09-30T03:04:09Z",
+      "error": null,
+      "id": "E68",
+      "inquiry_id": "I15",
+      "kind": "inquiry",
+      "request": {
+        "action": "open",
+        "closure_condition": "Close positively only if the bounded work produces one frozen learned candidate, without runtime controller assistance, that reaches at least 196/200 on each of two fresh shared-seed complete-distribution panels and does not materially degrade the restored T1 reference. Close negatively if the predeclared training-and-selection protocol fails to produce that result, or if its candidate materially degrades the restored reference; in either case record whether the evidence supports official assessment or campaign conclusion.",
+        "goal_connection": "The campaign still needs a learned policy with at least 196 complete uninterrupted-hold successes out of 200 under the official task distribution. T1 reached 196/200 and 194/200 on the latest shared panels but is not repeatably qualified, while no learned candidate has best-known status. Resolving whether this near-threshold behavior can be made repeatable directly determines whether official assessment is justified or whether no credible learned route remains.",
+        "question": "Can a bounded training-and-selection protocol recover and stabilize the near-threshold direct-policy behavior already observed in T1, yielding one frozen learned policy that reaches at least 196/200 on two fresh complete-distribution panels without runtime controller assistance, or do the observed 192-196 results represent a reliability ceiling for the remaining direct-policy route?",
+        "rationale": "Observed evidence supports the model-based controller as a physical solution in M16 but decisively rejects the tested controller-distillation route in M17. The remaining learned evidence is the restored direct-policy formulation, whose fresh results span 192/200 to 196/200 and whose selected retraining route in I11 failed substantially. This leaves a consequential distinction unresolved: whether the learned closed-loop behavior exists but is not reproducibly selected, or whether the near-threshold panels are the practical ceiling of this route. A bounded inquiry is warranted because a repeatable candidate would change the campaign decision, while failure would justify concluding that no credible learned route remains; it does not reopen I14 or assume a particular correction."
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I15",
+        "status": "completed"
+      },
+      "session_id": "S35",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "open",
+        "inquiry": {
+          "closure_condition": "Close positively only if the bounded work produces one frozen learned candidate, without runtime controller assistance, that reaches at least 196/200 on each of two fresh shared-seed complete-distribution panels and does not materially degrade the restored T1 reference. Close negatively if the predeclared training-and-selection protocol fails to produce that result, or if its candidate materially degrades the restored reference; in either case record whether the evidence supports official assessment or campaign conclusion.",
+          "goal_connection": "The campaign still needs a learned policy with at least 196 complete uninterrupted-hold successes out of 200 under the official task distribution. T1 reached 196/200 and 194/200 on the latest shared panels but is not repeatably qualified, while no learned candidate has best-known status. Resolving whether this near-threshold behavior can be made repeatable directly determines whether official assessment is justified or whether no credible learned route remains.",
+          "id": "I15",
+          "opened_in_session": "S35",
+          "question": "Can a bounded training-and-selection protocol recover and stabilize the near-threshold direct-policy behavior already observed in T1, yielding one frozen learned policy that reaches at least 196/200 on two fresh complete-distribution panels without runtime controller assistance, or do the observed 192-196 results represent a reliability ceiling for the remaining direct-policy route?",
+          "rationale": "Observed evidence supports the model-based controller as a physical solution in M16 but decisively rejects the tested controller-distillation route in M17. The remaining learned evidence is the restored direct-policy formulation, whose fresh results span 192/200 to 196/200 and whose selected retraining route in I11 failed substantially. This leaves a consequential distinction unresolved: whether the learned closed-loop behavior exists but is not reproducibly selected, or whether the near-threshold panels are the practical ceiling of this route. A bounded inquiry is warranted because a repeatable candidate would change the campaign decision, while failure would justify concluding that no credible learned route remains; it does not reopen I14 or assume a particular correction.",
+          "reframes": []
+        }
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I15",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E68",
+    "inquiry_id": null,
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "open",
+        "closure_condition": "Close positively only if the bounded work produces one frozen learned candidate, without runtime controller assistance, that reaches at least 196/200 on each of two fresh shared-seed complete-distribution panels and does not materially degrade the restored T1 reference. Close negatively if the predeclared training-and-selection protocol fails to produce that result, or if its candidate materially degrades the restored reference; in either case record whether the evidence supports official assessment or campaign conclusion.",
+        "goal_connection": "The campaign still needs a learned policy with at least 196 complete uninterrupted-hold successes out of 200 under the official task distribution. T1 reached 196/200 and 194/200 on the latest shared panels but is not repeatably qualified, while no learned candidate has best-known status. Resolving whether this near-threshold behavior can be made repeatable directly determines whether official assessment is justified or whether no credible learned route remains.",
+        "question": "Can a bounded training-and-selection protocol recover and stabilize the near-threshold direct-policy behavior already observed in T1, yielding one frozen learned policy that reaches at least 196/200 on two fresh complete-distribution panels without runtime controller assistance, or do the observed 192-196 results represent a reliability ceiling for the remaining direct-policy route?",
+        "rationale": "Observed evidence supports the model-based controller as a physical solution in M16 but decisively rejects the tested controller-distillation route in M17. The remaining learned evidence is the restored direct-policy formulation, whose fresh results span 192/200 to 196/200 and whose selected retraining route in I11 failed substantially. This leaves a consequential distinction unresolved: whether the learned closed-loop behavior exists but is not reproducibly selected, or whether the near-threshold panels are the practical ceiling of this route. A bounded inquiry is warranted because a repeatable candidate would change the campaign decision, while failure would justify concluding that no credible learned route remains; it does not reopen I14 or assume a particular correction."
+      }
+    },
+    "request_fingerprint": "5768bd4a3614b2dfe667cfd7788a68fa345b3b696629cfb46718645c48488885",
+    "session_id": "S35",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No candidate has working, best-known, or retained status. T12:checkpoint-6144 is rejected as an I14 route by M17. T1:checkpoint-100352 remains an unassigned reference candidate and is not promoted by this checkpoint.",
     "completed_operations": [
@@ -19698,6 +19766,21 @@
     "path": "research/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "88fbd033-4813-46e7-aca1-6764631d26ec",
+    "id": "S35",
+    "inquiry_id": null,
+    "kind": "goal_review",
+    "objective": "Decide whether to request official assessment, open one bounded goal-linked inquiry, or conclude that no credible route remains.",
+    "operation_ids": [
+      "E68"
+    ],
+    "scientific_parent_commit": "3582abb72c764f78f4c4aefabe20b87ef55c96a6"
+  },
   "terminal_state": null
 }
