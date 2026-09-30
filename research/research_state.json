@@ -7407,7 +7407,10 @@
     },
     "T9:checkpoint-95232": {
       "artifact": "research/checkpoints/candidates/eb19a5f3-14b3-4590-ad74-1b31cf5ae3d5/t9/checkpoint-95232",
-      "evaluation_artifacts": [],
+      "evaluation_artifacts": [
+        "research/evaluations/eb19a5f3-14b3-4590-ad74-1b31cf5ae3d5/evaluation-eb19a5f3-14b3-4590-ad74-1b31cf5ae3d5-m11-T9-checkpoint-95232-200ep-seed16200-48e4acc98c39.json",
+        "research/evaluations/eb19a5f3-14b3-4590-ad74-1b31cf5ae3d5/evaluation-eb19a5f3-14b3-4590-ad74-1b31cf5ae3d5-m11-T9-checkpoint-95232-200ep-seed17200-48e4acc98c39.json"
+      ],
       "fingerprint": "78813b5187a7bbb426c197c18f8d879cbacc0d1dbc0569ff0956dbf43e8dedca",
       "id": "T9:checkpoint-95232",
       "name": "checkpoint-95232",
@@ -7443,7 +7446,7 @@
   "counters": {
     "event": 51,
     "inquiry": 11,
-    "measurement": 10,
+    "measurement": 11,
     "session": 26,
     "training": 9
   },
@@ -13889,9 +13892,223 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-09-30T01:28:17Z",
+      "error": null,
+      "id": "M11",
+      "inquiry_id": "I11",
+      "kind": "measurement",
+      "request": {
+        "description": "Evaluate the pre-selected frozen T9 baseline checkpoint on two fresh complete official-distribution panels.",
+        "measurements": [
+          {
+            "candidate": "T9:checkpoint-95232",
+            "episodes": 200,
+            "instrument": "research_evaluation",
+            "label": "I11 pre-selected T9 readiness panel A",
+            "seed": 16200
+          },
+          {
+            "candidate": "T9:checkpoint-95232",
+            "episodes": 200,
+            "instrument": "research_evaluation",
+            "label": "I11 pre-selected T9 readiness panel B",
+            "seed": 17200
+          }
+        ],
+        "rationale": "The I11 checkpoint-selection rule was fixed before evaluation: among the late-window T9 checkpoints, maximum recorded training success selects T9:checkpoint-95232 and the tie with T9:checkpoint-120832 is broken by higher recorded episode reward. Evaluate this frozen choice on two new non-overlapping 200-episode panels to test whether it reaches and repeats at least 196/200 complete uninterrupted-hold successes. No checkpoint may be selected or discarded using these evaluation results."
+      },
+      "result": {
+        "measurements": [
+          {
+            "candidate": "T9:checkpoint-95232",
+            "candidate_id": "T9:checkpoint-95232",
+            "instrument": "research_evaluation",
+            "label": "I11 pre-selected T9 readiness panel A",
+            "metrics": {
+              "episodes": 200,
+              "evaluation_artifact": "research/evaluations/eb19a5f3-14b3-4590-ad74-1b31cf5ae3d5/evaluation-eb19a5f3-14b3-4590-ad74-1b31cf5ae3d5-m11-T9-checkpoint-95232-200ep-seed16200-48e4acc98c39.json",
+              "evaluation_artifact_fingerprint": "f0975bd48440dfbb9269d1d4521d3b54f4a2b1a371172855164b2e55249dd49e",
+              "evaluation_semantics": "48e4acc98c39",
+              "model_fingerprint": "78813b5187a7bbb426c197c18f8d879cbacc0d1dbc0569ff0956dbf43e8dedca",
+              "official_benchmark": false,
+              "schema_version": 5,
+              "seed": 16200,
+              "success_percent": 79.5,
+              "successes": 159
+            }
+          },
+          {
+            "candidate": "T9:checkpoint-95232",
+            "candidate_id": "T9:checkpoint-95232",
+            "instrument": "research_evaluation",
+            "label": "I11 pre-selected T9 readiness panel B",
+            "metrics": {
+              "episodes": 200,
+              "evaluation_artifact": "research/evaluations/eb19a5f3-14b3-4590-ad74-1b31cf5ae3d5/evaluation-eb19a5f3-14b3-4590-ad74-1b31cf5ae3d5-m11-T9-checkpoint-95232-200ep-seed17200-48e4acc98c39.json",
+              "evaluation_artifact_fingerprint": "404641535177ef9db2b98cb40c48198c8bdc716078a219a16a82a039239f649d",
+              "evaluation_semantics": "48e4acc98c39",
+              "model_fingerprint": "78813b5187a7bbb426c197c18f8d879cbacc0d1dbc0569ff0956dbf43e8dedca",
+              "official_benchmark": false,
+              "schema_version": 5,
+              "seed": 17200,
+              "success_percent": 83.5,
+              "successes": 167
+            }
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": null
+      },
+      "session_id": "S26",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "evaluation_semantics": "48e4acc98c39",
+      "measurements": [
+        {
+          "artifact": "research/checkpoints/candidates/eb19a5f3-14b3-4590-ad74-1b31cf5ae3d5/t9/checkpoint-95232",
+          "candidate": "T9:checkpoint-95232",
+          "candidate_id": "T9:checkpoint-95232",
+          "episodes": 200,
+          "instrument": "research_evaluation",
+          "label": "I11 pre-selected T9 readiness panel A",
+          "model_fingerprint": "78813b5187a7bbb426c197c18f8d879cbacc0d1dbc0569ff0956dbf43e8dedca",
+          "seed": 16200
+        },
+        {
+          "artifact": "research/checkpoints/candidates/eb19a5f3-14b3-4590-ad74-1b31cf5ae3d5/t9/checkpoint-95232",
+          "candidate": "T9:checkpoint-95232",
+          "candidate_id": "T9:checkpoint-95232",
+          "episodes": 200,
+          "instrument": "research_evaluation",
+          "label": "I11 pre-selected T9 readiness panel B",
+          "model_fingerprint": "78813b5187a7bbb426c197c18f8d879cbacc0d1dbc0569ff0956dbf43e8dedca",
+          "seed": 17200
+        }
+      ],
+      "module_provenance": null,
+      "paired_comparisons": [],
+      "partial_results": [
+        {
+          "candidate": "T9:checkpoint-95232",
+          "candidate_id": "T9:checkpoint-95232",
+          "instrument": "research_evaluation",
+          "label": "I11 pre-selected T9 readiness panel A",
+          "metrics": {
+            "episodes": 200,
+            "evaluation_artifact": "research/evaluations/eb19a5f3-14b3-4590-ad74-1b31cf5ae3d5/evaluation-eb19a5f3-14b3-4590-ad74-1b31cf5ae3d5-m11-T9-checkpoint-95232-200ep-seed16200-48e4acc98c39.json",
+            "evaluation_artifact_fingerprint": "f0975bd48440dfbb9269d1d4521d3b54f4a2b1a371172855164b2e55249dd49e",
+            "evaluation_semantics": "48e4acc98c39",
+            "model_fingerprint": "78813b5187a7bbb426c197c18f8d879cbacc0d1dbc0569ff0956dbf43e8dedca",
+            "official_benchmark": false,
+            "schema_version": 5,
+            "seed": 16200,
+            "success_percent": 79.5,
+            "successes": 159
+          }
+        },
+        {
+          "candidate": "T9:checkpoint-95232",
+          "candidate_id": "T9:checkpoint-95232",
+          "instrument": "research_evaluation",
+          "label": "I11 pre-selected T9 readiness panel B",
+          "metrics": {
+            "episodes": 200,
+            "evaluation_artifact": "research/evaluations/eb19a5f3-14b3-4590-ad74-1b31cf5ae3d5/evaluation-eb19a5f3-14b3-4590-ad74-1b31cf5ae3d5-m11-T9-checkpoint-95232-200ep-seed17200-48e4acc98c39.json",
+            "evaluation_artifact_fingerprint": "404641535177ef9db2b98cb40c48198c8bdc716078a219a16a82a039239f649d",
+            "evaluation_semantics": "48e4acc98c39",
+            "model_fingerprint": "78813b5187a7bbb426c197c18f8d879cbacc0d1dbc0569ff0956dbf43e8dedca",
+            "official_benchmark": false,
+            "schema_version": 5,
+            "seed": 17200,
+            "success_percent": 83.5,
+            "successes": 167
+          }
+        }
+      ],
+      "result": {
+        "measurements": [
+          {
+            "candidate": "T9:checkpoint-95232",
+            "candidate_id": "T9:checkpoint-95232",
+            "instrument": "research_evaluation",
+            "label": "I11 pre-selected T9 readiness panel A",
+            "metrics": {
+              "episodes": 200,
+              "evaluation_artifact": "research/evaluations/eb19a5f3-14b3-4590-ad74-1b31cf5ae3d5/evaluation-eb19a5f3-14b3-4590-ad74-1b31cf5ae3d5-m11-T9-checkpoint-95232-200ep-seed16200-48e4acc98c39.json",
+              "evaluation_artifact_fingerprint": "f0975bd48440dfbb9269d1d4521d3b54f4a2b1a371172855164b2e55249dd49e",
+              "evaluation_semantics": "48e4acc98c39",
+              "model_fingerprint": "78813b5187a7bbb426c197c18f8d879cbacc0d1dbc0569ff0956dbf43e8dedca",
+              "official_benchmark": false,
+              "schema_version": 5,
+              "seed": 16200,
+              "success_percent": 79.5,
+              "successes": 159
+            }
+          },
+          {
+            "candidate": "T9:checkpoint-95232",
+            "candidate_id": "T9:checkpoint-95232",
+            "instrument": "research_evaluation",
+            "label": "I11 pre-selected T9 readiness panel B",
+            "metrics": {
+              "episodes": 200,
+              "evaluation_artifact": "research/evaluations/eb19a5f3-14b3-4590-ad74-1b31cf5ae3d5/evaluation-eb19a5f3-14b3-4590-ad74-1b31cf5ae3d5-m11-T9-checkpoint-95232-200ep-seed17200-48e4acc98c39.json",
+              "evaluation_artifact_fingerprint": "404641535177ef9db2b98cb40c48198c8bdc716078a219a16a82a039239f649d",
+              "evaluation_semantics": "48e4acc98c39",
+              "model_fingerprint": "78813b5187a7bbb426c197c18f8d879cbacc0d1dbc0569ff0956dbf43e8dedca",
+              "official_benchmark": false,
+              "schema_version": 5,
+              "seed": 17200,
+              "success_percent": 83.5,
+              "successes": 167
+            }
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": null
+      },
+      "task_reference_contract": null
+    },
+    "failure": null,
+    "id": "M11",
+    "inquiry_id": "I11",
+    "kind": "measurement",
+    "progress": "completed",
+    "request": {
+      "measurement": {
+        "description": "Evaluate the pre-selected frozen T9 baseline checkpoint on two fresh complete official-distribution panels.",
+        "measurements": [
+          {
+            "candidate": "T9:checkpoint-95232",
+            "episodes": 200,
+            "instrument": "research_evaluation",
+            "label": "I11 pre-selected T9 readiness panel A",
+            "seed": 16200
+          },
+          {
+            "candidate": "T9:checkpoint-95232",
+            "episodes": 200,
+            "instrument": "research_evaluation",
+            "label": "I11 pre-selected T9 readiness panel B",
+            "seed": 17200
+          }
+        ],
+        "rationale": "The I11 checkpoint-selection rule was fixed before evaluation: among the late-window T9 checkpoints, maximum recorded training success selects T9:checkpoint-95232 and the tie with T9:checkpoint-120832 is broken by higher recorded episode reward. Evaluate this frozen choice on two new non-overlapping 200-episode panels to test whether it reaches and repeats at least 196/200 complete uninterrupted-hold successes. No checkpoint may be selected or discarded using these evaluation results."
+      }
+    },
+    "request_fingerprint": "684405e6647026c88f62a68669141d97adfe74935b00f309f1013af75377babf",
+    "session_id": "S26",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T1:checkpoint-100352 remains the strongest measured baseline but is unassigned; its repeated fresh-panel results are the subject of I11. T8:checkpoint-90112 is rejected as an I10 route after M10. T7:checkpoint-120832 remains rejected by M9. No candidate has working, best-known, or retained status.",
     "completed_operations": [
@@ -13933,7 +14150,8 @@
     "objective": "Bring I11 to the decision required by its closure condition, and close it as soon as the evidence supplies that decision: Close when the pre-specified fresh assessment-readiness protocol produces a candidate with at least 196/200 and evidence sufficient to assign it best-known status, or when controlled evidence shows that the restored baseline formulation and justified checkpoint-selection or training-reliability measures cannot reach or repeat 196/200, leaving no credible route to the goal.",
     "operation_ids": [
       "E51",
-      "T9"
+      "T9",
+      "M11"
     ],
     "scientific_parent_commit": "c371060bd17b1d4d7162b893a3e4aabc7f4ce568"
   },

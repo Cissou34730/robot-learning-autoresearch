@@ -72,3 +72,4 @@
 | E50 | checkpoint | - | checkpointed |
 | E51 | restore_recipe | I11 | restored |
 | T9 | training | I11 | completed |
+| M11 | measurement | I11 | completed |
