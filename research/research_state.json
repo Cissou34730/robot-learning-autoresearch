@@ -17,7 +17,7 @@
   },
   "candidates": {},
   "counters": {
-    "event": 2,
+    "event": 3,
     "inquiry": 1,
     "measurement": 2,
     "session": 2,
@@ -26,7 +26,7 @@
   "human_goal": {
     "source": "research/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -219,26 +219,145 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-09-30T13:11:52Z",
+      "error": null,
+      "id": "E3",
+      "inquiry_id": null,
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "No training candidate exists. Working, best-known, and retained roles are empty. M2 is a development measurement and E2 records the inquiry opening; neither establishes the human goal.",
+        "completed_operations": [
+          "E2"
+        ],
+        "cumulative_resource_use": "One completed scientific measurement (M2) evaluated 576 deterministic grid cases: three controller gain settings, six radii, sixteen angles, and two inverse-kinematic branches. E2 opened I1 and consumed no training or official-assessment resource. No learned candidate or official assessment has been produced.",
+        "current_goal_gap": "There is no candidate or success evidence. M2 produced 0 complete holds in 552 admissible grid cases across three fixed-gain joint-space PD settings, with peak action saturation and no tolerance entry. This constrains those controllers only; it does not establish that the official task is infeasible or that learning cannot succeed.",
+        "current_synthesis": "The established model predicts difficulty from the reset singularity, coupled inertia, torque saturation, branch geometry, and the 100-observation hold requirement. M2 compiled masses [0.2011, 0.0990, 0.0525, 0.0072] kg, 0.01 armature, 0.5 damping, 5.0 actuator gear, and a 20 ms control interval, then found universal failure among the tested joint-space PD cases. The consequential explanations remain that learned state feedback and phase-aware braking may overcome the fixed-gain limitation, or that the 20 ms torque-limited transient is broadly unreachable. M2 did not discriminate these because it used no learned policy, Cartesian/model-based control, or full-annulus training. E2 therefore opened I1 rather than treating M2 as either goal evidence or proof of infeasibility.",
+        "decision_frontier": "Can a fresh learned policy trained on the complete official 0.06-0.20 m radius annulus and rewarded for low endpoint speed and uninterrupted hold continuity discover feasible braking and settling where the tested saturated joint-space PD controllers do not? The discriminating result must include complete hold outcomes resolved by target radius and angle, first-entry timing, endpoint-speed or equivalent transient evidence at entry, interruptions, and action saturation. Broad failure would redirect toward structured control or a stronger physical-feasibility concern; credible broad holds would justify progressing the candidate toward the human goal.",
+        "evidence_references": [
+          "M2",
+          "E2"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 of 200 official episodes to complete the full 100-step uninterrupted in-tolerance hold. No learned candidate exists, so the campaign cannot justify official assessment. M2 established that fixed-gain joint-space controllers fail under severe saturation, while E2 opened I1 to test whether learned state feedback trained across the complete official annulus can discover better braking and stabilization.",
+        "next_direction_or_closure": "End this goal-review session with this checkpoint and begin the fresh I1 inquiry session. The first bounded action should be a fresh learned-policy training run whose target distribution covers the official 0.06-0.20 m annulus, using transient-aware hold-continuity pressure and evaluation instrumentation that distinguishes reach failure, late-braking failure, and hold interruption. Do not request official assessment or conclude that no credible route remains before that discriminator is run."
+      },
+      "result": {
+        "session_id": "S2",
+        "status": "checkpointed"
+      },
+      "session_id": "S2",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
-  "pi_checkpoint": {
-    "candidates_and_roles": "No training candidate exists. Working, best-known, and retained roles are empty. M2 is a development measurement only and does not establish the human goal.",
-    "completed_operations": [
-      "M2"
-    ],
-    "cumulative_resource_use": "One completed scientific measurement (M2) evaluated 576 deterministic grid cases: three controller gain settings, six radii, sixteen angles, and two inverse-kinematic branches. One earlier instrumentation attempt (M1) failed and is execution history only; it was superseded by M2. No training or official assessment resource has been used.",
-    "current_goal_gap": "There is no learned candidate or success evidence. In M2, 0 of 552 admissible grid cases completed the hold across three joint-space PD gain settings; every admissible case reached peak action saturation and none entered the 1 cm tolerance. This is evidence of a severe saturated transient for those controllers, not proof that the official loop is physically infeasible or that learning cannot discover a better trajectory.",
-    "current_synthesis": "Established model consequences predict difficulty from the reset singularity, coupled inertia, torque saturation, branch geometry, and the need for 100 consecutive sampled observations. M2 compiled the model and found body masses [0.2011, 0.0990, 0.0525, 0.0072] kg, 0.01 armature, 0.5 damping, 5.0 actuator gear, and the expected 20 ms control interval. Across 576 radius-angle-branch cases, 24 were joint-limit inadmissible and all 552 admissible cases failed under conservative, balanced, and aggressive joint-space PD controllers; no case entered tolerance, and all three controller families saturated. The competing explanations remain: (1) a learned policy can exploit state feedback and phase its braking better than these fixed-gain controllers, especially if trained on the complete annulus; or (2) the 20 ms action hold and torque limit create a broadly unreachable transient for the hardest targets. M2 does not discriminate these fully because it tested one controller family, used no Cartesian or model-based control, and did not measure a learned policy. It does, however, make a narrow proximity-only or outer-radius-only learning direction scientifically weak.",
-    "decision_frontier": "Can a learned policy, trained on the complete official radius distribution and rewarded for low endpoint speed and uninterrupted hold continuity, discover a feasible braking-and-settling trajectory where saturated fixed-gain joint-space PD does not? Discriminating evidence is a fresh policy artifact evaluated on target-radius and angle-resolved hold outcomes, entry timing, endpoint speed at entry, interruptions, and action saturation; widespread failure despite improved transient-aware learning would redirect the campaign toward a more structured control representation or establish a stronger physical feasibility concern.",
-    "evidence_references": [
-      "M2"
-    ],
-    "human_goal_connection": "The human goal requires 196 of 200 official episodes to complete a 100-step uninterrupted in-tolerance hold. M2 shows that reaching and stabilizing this hold is a transient control problem over the full annulus, so the first learned-policy direction must improve both broad target acquisition and post-entry braking rather than optimize proximity alone.",
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "7e7bf1e466d94f2d808b9c99a5dad5579997fff5",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "No training candidate exists. Working, best-known, and retained roles are empty. M2 is a development measurement and E2 records the inquiry opening; neither establishes the human goal.",
+        "completed_operations": [
+          "E2"
+        ],
+        "cumulative_resource_use": "One completed scientific measurement (M2) evaluated 576 deterministic grid cases: three controller gain settings, six radii, sixteen angles, and two inverse-kinematic branches. E2 opened I1 and consumed no training or official-assessment resource. No learned candidate or official assessment has been produced.",
+        "current_goal_gap": "There is no candidate or success evidence. M2 produced 0 complete holds in 552 admissible grid cases across three fixed-gain joint-space PD settings, with peak action saturation and no tolerance entry. This constrains those controllers only; it does not establish that the official task is infeasible or that learning cannot succeed.",
+        "current_synthesis": "The established model predicts difficulty from the reset singularity, coupled inertia, torque saturation, branch geometry, and the 100-observation hold requirement. M2 compiled masses [0.2011, 0.0990, 0.0525, 0.0072] kg, 0.01 armature, 0.5 damping, 5.0 actuator gear, and a 20 ms control interval, then found universal failure among the tested joint-space PD cases. The consequential explanations remain that learned state feedback and phase-aware braking may overcome the fixed-gain limitation, or that the 20 ms torque-limited transient is broadly unreachable. M2 did not discriminate these because it used no learned policy, Cartesian/model-based control, or full-annulus training. E2 therefore opened I1 rather than treating M2 as either goal evidence or proof of infeasibility.",
+        "decision_frontier": "Can a fresh learned policy trained on the complete official 0.06-0.20 m radius annulus and rewarded for low endpoint speed and uninterrupted hold continuity discover feasible braking and settling where the tested saturated joint-space PD controllers do not? The discriminating result must include complete hold outcomes resolved by target radius and angle, first-entry timing, endpoint-speed or equivalent transient evidence at entry, interruptions, and action saturation. Broad failure would redirect toward structured control or a stronger physical-feasibility concern; credible broad holds would justify progressing the candidate toward the human goal.",
+        "evidence_references": [
+          "M2",
+          "E2"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 of 200 official episodes to complete the full 100-step uninterrupted in-tolerance hold. No learned candidate exists, so the campaign cannot justify official assessment. M2 established that fixed-gain joint-space controllers fail under severe saturation, while E2 opened I1 to test whether learned state feedback trained across the complete official annulus can discover better braking and stabilization.",
+        "inquiry_id": null,
+        "next_direction_or_closure": "End this goal-review session with this checkpoint and begin the fresh I1 inquiry session. The first bounded action should be a fresh learned-policy training run whose target distribution covers the official 0.06-0.20 m annulus, using transient-aware hold-continuity pressure and evaluation instrumentation that distinguishes reach failure, late-braking failure, and hold interruption. Do not request official assessment or conclude that no credible route remains before that discriminator is run.",
+        "session_id": "S2"
+      },
+      "presentation": {
+        "backend_session_id": "a355ce4d-a735-4bf9-978c-21c10e3c85f1",
+        "campaign_id": "15a3cf8a-0cdf-4c03-88fe-f9a832863e8e",
+        "campaign_usage": "9m29s | 15.32 AIU | prompt 2.2m (86% cached) | output 28k",
+        "session_id": "S2",
+        "session_kind": "goal_review",
+        "session_usage": "2m02s | 3.45 AIU | prompt 448.8k (81% cached) | output 5.2k"
+      },
+      "result": {
+        "session_id": "S2",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "e0f19c33a3be22d5d6dadb40380e486e9ef68e58",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E3",
     "inquiry_id": null,
-    "next_direction_or_closure": "Checkpoint the startup synthesis, return to goal review, and open one inquiry on learned transient reachability and stabilization. The first inquiry operation should use a fresh learned-policy training run whose training distribution covers the official 0.06-0.20 m annulus rather than the current outer-radius-only training range, with evaluation instrumentation preserving the distinction between reach failure, late braking failure, and hold interruption.",
-    "scientific_commit": "868eaf3a305488e98939f7e14561505409f1b961",
-    "session_id": "S1"
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "No training candidate exists. Working, best-known, and retained roles are empty. M2 is a development measurement and E2 records the inquiry opening; neither establishes the human goal.",
+        "completed_operations": [
+          "E2"
+        ],
+        "cumulative_resource_use": "One completed scientific measurement (M2) evaluated 576 deterministic grid cases: three controller gain settings, six radii, sixteen angles, and two inverse-kinematic branches. E2 opened I1 and consumed no training or official-assessment resource. No learned candidate or official assessment has been produced.",
+        "current_goal_gap": "There is no candidate or success evidence. M2 produced 0 complete holds in 552 admissible grid cases across three fixed-gain joint-space PD settings, with peak action saturation and no tolerance entry. This constrains those controllers only; it does not establish that the official task is infeasible or that learning cannot succeed.",
+        "current_synthesis": "The established model predicts difficulty from the reset singularity, coupled inertia, torque saturation, branch geometry, and the 100-observation hold requirement. M2 compiled masses [0.2011, 0.0990, 0.0525, 0.0072] kg, 0.01 armature, 0.5 damping, 5.0 actuator gear, and a 20 ms control interval, then found universal failure among the tested joint-space PD cases. The consequential explanations remain that learned state feedback and phase-aware braking may overcome the fixed-gain limitation, or that the 20 ms torque-limited transient is broadly unreachable. M2 did not discriminate these because it used no learned policy, Cartesian/model-based control, or full-annulus training. E2 therefore opened I1 rather than treating M2 as either goal evidence or proof of infeasibility.",
+        "decision_frontier": "Can a fresh learned policy trained on the complete official 0.06-0.20 m radius annulus and rewarded for low endpoint speed and uninterrupted hold continuity discover feasible braking and settling where the tested saturated joint-space PD controllers do not? The discriminating result must include complete hold outcomes resolved by target radius and angle, first-entry timing, endpoint-speed or equivalent transient evidence at entry, interruptions, and action saturation. Broad failure would redirect toward structured control or a stronger physical-feasibility concern; credible broad holds would justify progressing the candidate toward the human goal.",
+        "evidence_references": [
+          "M2",
+          "E2"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 of 200 official episodes to complete the full 100-step uninterrupted in-tolerance hold. No learned candidate exists, so the campaign cannot justify official assessment. M2 established that fixed-gain joint-space controllers fail under severe saturation, while E2 opened I1 to test whether learned state feedback trained across the complete official annulus can discover better braking and stabilization.",
+        "next_direction_or_closure": "End this goal-review session with this checkpoint and begin the fresh I1 inquiry session. The first bounded action should be a fresh learned-policy training run whose target distribution covers the official 0.06-0.20 m annulus, using transient-aware hold-continuity pressure and evaluation instrumentation that distinguishes reach failure, late-braking failure, and hold interruption. Do not request official assessment or conclude that no credible route remains before that discriminator is run."
+      }
+    },
+    "request_fingerprint": "7d750581bc0c95fae25a166a18d7235ec62b713a6f471579c92e11d2a03c7674",
+    "session_id": "S2",
+    "supersedes": null
+  },
+  "pi_checkpoint": {
+    "candidates_and_roles": "No training candidate exists. Working, best-known, and retained roles are empty. M2 is a development measurement and E2 records the inquiry opening; neither establishes the human goal.",
+    "completed_operations": [
+      "E2"
+    ],
+    "cumulative_resource_use": "One completed scientific measurement (M2) evaluated 576 deterministic grid cases: three controller gain settings, six radii, sixteen angles, and two inverse-kinematic branches. E2 opened I1 and consumed no training or official-assessment resource. No learned candidate or official assessment has been produced.",
+    "current_goal_gap": "There is no candidate or success evidence. M2 produced 0 complete holds in 552 admissible grid cases across three fixed-gain joint-space PD settings, with peak action saturation and no tolerance entry. This constrains those controllers only; it does not establish that the official task is infeasible or that learning cannot succeed.",
+    "current_synthesis": "The established model predicts difficulty from the reset singularity, coupled inertia, torque saturation, branch geometry, and the 100-observation hold requirement. M2 compiled masses [0.2011, 0.0990, 0.0525, 0.0072] kg, 0.01 armature, 0.5 damping, 5.0 actuator gear, and a 20 ms control interval, then found universal failure among the tested joint-space PD cases. The consequential explanations remain that learned state feedback and phase-aware braking may overcome the fixed-gain limitation, or that the 20 ms torque-limited transient is broadly unreachable. M2 did not discriminate these because it used no learned policy, Cartesian/model-based control, or full-annulus training. E2 therefore opened I1 rather than treating M2 as either goal evidence or proof of infeasibility.",
+    "decision_frontier": "Can a fresh learned policy trained on the complete official 0.06-0.20 m radius annulus and rewarded for low endpoint speed and uninterrupted hold continuity discover feasible braking and settling where the tested saturated joint-space PD controllers do not? The discriminating result must include complete hold outcomes resolved by target radius and angle, first-entry timing, endpoint-speed or equivalent transient evidence at entry, interruptions, and action saturation. Broad failure would redirect toward structured control or a stronger physical-feasibility concern; credible broad holds would justify progressing the candidate toward the human goal.",
+    "evidence_references": [
+      "M2",
+      "E2"
+    ],
+    "human_goal_connection": "The human goal requires at least 196 of 200 official episodes to complete the full 100-step uninterrupted in-tolerance hold. No learned candidate exists, so the campaign cannot justify official assessment. M2 established that fixed-gain joint-space controllers fail under severe saturation, while E2 opened I1 to test whether learned state feedback trained across the complete official annulus can discover better braking and stabilization.",
+    "inquiry_id": null,
+    "next_direction_or_closure": "End this goal-review session with this checkpoint and begin the fresh I1 inquiry session. The first bounded action should be a fresh learned-policy training run whose target distribution covers the official 0.06-0.20 m annulus, using transient-aware hold-continuity pressure and evaluation instrumentation that distinguishes reach failure, late-braking failure, and hold interruption. Do not request official assessment or conclude that no credible route remains before that discriminator is run.",
+    "scientific_commit": "e0f19c33a3be22d5d6dadb40380e486e9ef68e58",
+    "session_id": "S2"
   },
   "schema_version": 6,
   "scientific_model": {
@@ -246,21 +365,6 @@
     "path": "research/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "a355ce4d-a735-4bf9-978c-21c10e3c85f1",
-    "id": "S2",
-    "inquiry_id": null,
-    "kind": "goal_review",
-    "objective": "Decide whether to request official assessment, open one bounded goal-linked inquiry, or conclude that no credible route remains.",
-    "operation_ids": [
-      "E2"
-    ],
-    "scientific_parent_commit": "7e7bf1e466d94f2d808b9c99a5dad5579997fff5"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
