@@ -2474,7 +2474,7 @@
     }
   },
   "counters": {
-    "event": 14,
+    "event": 15,
     "inquiry": 4,
     "measurement": 3,
     "session": 8,
@@ -2483,7 +2483,7 @@
   "human_goal": {
     "source": "research/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -4185,20 +4185,166 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-09-30T22:50:43Z",
+      "error": null,
+      "id": "E15",
+      "inquiry_id": null,
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "No working, best-known, or retained role is assigned. T1:checkpoint-100352 remains the strongest evidence-backed development reference at 189/200. T2:checkpoint-120832 is insufficient at 176/200, and T3:checkpoint-120832 has no role after scoring 0/200.",
+        "completed_operations": [
+          "E14"
+        ],
+        "cumulative_resource_use": "Three fresh PPO training operations completed with the maintainer's 120000-step allocation, each producing 120832 rollout-boundary steps. M1 evaluated T1, M2 evaluated T2 and T1, and M3 evaluated T3 and T1 on the same development panel [4200, 4400). No official assessment has been run. E14 opened I4 without consuming training or evaluation resources.",
+        "current_goal_gap": "T1:checkpoint-100352 remains the strongest supported development candidate at 189/200, seven successes below 196/200. Its failures comprise six angular acquisition failures in the -180 to -90 degree sector and five post-entry hold failures. T2 achieved 176/200 and increased post-entry hold failures to 19; T3 achieved 0/200 at every checkpoint. Official assessment is not justified.",
+        "current_synthesis": "T1 shows that full-angle sampling and open/folded IK-branch observations can produce a reproducible near-goal policy, but residual failures combine angular acquisition with incomplete stabilization. I2 eliminated the diagnosed acquisition sector failures only by trading them for substantially more post-entry failures, so that coupled intervention is insufficient. I3's isolated stronger endpoint-speed shaping failed to learn and does not establish that all stabilization-aware mechanisms are ineffective. A consequential competing explanation remains: the plant may be controllable from the existing state, but a memoryless policy lacks explicit temporal phase information needed to condition its regulation during a 100-sample uninterrupted hold. I4 tests that explanation while preserving T1's acquisition recipe. All evidence remains development-only and does not establish official performance.",
+        "decision_frontier": "I3 is resolved as insufficient. The next decision is whether normalized uninterrupted-hold progress gives the policy useful phase-dependent stabilization without regressing angular acquisition. The discriminating evidence is one fresh 120000-step I4 candidate evaluated against T1 on the same 200-episode development panel, using complete success, post-entry failures, and the -180 to -90 degree acquisition subgroup rather than tolerance entry alone.",
+        "evidence_references": [
+          "T1",
+          "M1",
+          "E4",
+          "E6",
+          "T2",
+          "M2",
+          "E8",
+          "E10",
+          "T3",
+          "M3",
+          "E12",
+          "E14"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 complete uninterrupted holds in the 200-episode official panel. Current evidence is development-only: T1 reaches 189/200 (94.5%) and no candidate supports an official 98% claim. I4 is opened to test a direct temporal-observability route toward the seven-success development gap.",
+        "next_direction_or_closure": "The goal-review session ends with I4 opened. In a fresh I4 inquiry session, implement and train the bounded normalized hold-progress observation intervention while preserving T1's full-angle distribution, branch observations, reward, and 120000-step allocation, then use paired complete-hold diagnostics to close or redirect the inquiry. Do not request official assessment from the current evidence."
+      },
+      "result": {
+        "session_id": "S8",
+        "status": "checkpointed"
+      },
+      "session_id": "S8",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "fb6f8786b05093e03bd19f8ad2480ca94533dde1",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "No working, best-known, or retained role is assigned. T1:checkpoint-100352 remains the strongest evidence-backed development reference at 189/200. T2:checkpoint-120832 is insufficient at 176/200, and T3:checkpoint-120832 has no role after scoring 0/200.",
+        "completed_operations": [
+          "E14"
+        ],
+        "cumulative_resource_use": "Three fresh PPO training operations completed with the maintainer's 120000-step allocation, each producing 120832 rollout-boundary steps. M1 evaluated T1, M2 evaluated T2 and T1, and M3 evaluated T3 and T1 on the same development panel [4200, 4400). No official assessment has been run. E14 opened I4 without consuming training or evaluation resources.",
+        "current_goal_gap": "T1:checkpoint-100352 remains the strongest supported development candidate at 189/200, seven successes below 196/200. Its failures comprise six angular acquisition failures in the -180 to -90 degree sector and five post-entry hold failures. T2 achieved 176/200 and increased post-entry hold failures to 19; T3 achieved 0/200 at every checkpoint. Official assessment is not justified.",
+        "current_synthesis": "T1 shows that full-angle sampling and open/folded IK-branch observations can produce a reproducible near-goal policy, but residual failures combine angular acquisition with incomplete stabilization. I2 eliminated the diagnosed acquisition sector failures only by trading them for substantially more post-entry failures, so that coupled intervention is insufficient. I3's isolated stronger endpoint-speed shaping failed to learn and does not establish that all stabilization-aware mechanisms are ineffective. A consequential competing explanation remains: the plant may be controllable from the existing state, but a memoryless policy lacks explicit temporal phase information needed to condition its regulation during a 100-sample uninterrupted hold. I4 tests that explanation while preserving T1's acquisition recipe. All evidence remains development-only and does not establish official performance.",
+        "decision_frontier": "I3 is resolved as insufficient. The next decision is whether normalized uninterrupted-hold progress gives the policy useful phase-dependent stabilization without regressing angular acquisition. The discriminating evidence is one fresh 120000-step I4 candidate evaluated against T1 on the same 200-episode development panel, using complete success, post-entry failures, and the -180 to -90 degree acquisition subgroup rather than tolerance entry alone.",
+        "evidence_references": [
+          "T1",
+          "M1",
+          "E4",
+          "E6",
+          "T2",
+          "M2",
+          "E8",
+          "E10",
+          "T3",
+          "M3",
+          "E12",
+          "E14"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 complete uninterrupted holds in the 200-episode official panel. Current evidence is development-only: T1 reaches 189/200 (94.5%) and no candidate supports an official 98% claim. I4 is opened to test a direct temporal-observability route toward the seven-success development gap.",
+        "inquiry_id": null,
+        "next_direction_or_closure": "The goal-review session ends with I4 opened. In a fresh I4 inquiry session, implement and train the bounded normalized hold-progress observation intervention while preserving T1's full-angle distribution, branch observations, reward, and 120000-step allocation, then use paired complete-hold diagnostics to close or redirect the inquiry. Do not request official assessment from the current evidence.",
+        "session_id": "S8"
+      },
+      "presentation": {
+        "backend_session_id": "29803932-e5a5-4e43-9fd4-dff5a7fe8804",
+        "campaign_id": "e8788df6-9f4a-4dac-92b7-48e40477e827",
+        "campaign_usage": "28m10s | 76.98 AIU | prompt 11.7m (84% cached) | output 82.4k",
+        "session_id": "S8",
+        "session_kind": "goal_review",
+        "session_usage": "2m05s | 9.84 AIU | prompt 1m (70% cached) | output 6.1k"
+      },
+      "result": {
+        "session_id": "S8",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "0f537590e25f6831218e7d985b356748b362b13d",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E15",
+    "inquiry_id": null,
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "No working, best-known, or retained role is assigned. T1:checkpoint-100352 remains the strongest evidence-backed development reference at 189/200. T2:checkpoint-120832 is insufficient at 176/200, and T3:checkpoint-120832 has no role after scoring 0/200.",
+        "completed_operations": [
+          "E14"
+        ],
+        "cumulative_resource_use": "Three fresh PPO training operations completed with the maintainer's 120000-step allocation, each producing 120832 rollout-boundary steps. M1 evaluated T1, M2 evaluated T2 and T1, and M3 evaluated T3 and T1 on the same development panel [4200, 4400). No official assessment has been run. E14 opened I4 without consuming training or evaluation resources.",
+        "current_goal_gap": "T1:checkpoint-100352 remains the strongest supported development candidate at 189/200, seven successes below 196/200. Its failures comprise six angular acquisition failures in the -180 to -90 degree sector and five post-entry hold failures. T2 achieved 176/200 and increased post-entry hold failures to 19; T3 achieved 0/200 at every checkpoint. Official assessment is not justified.",
+        "current_synthesis": "T1 shows that full-angle sampling and open/folded IK-branch observations can produce a reproducible near-goal policy, but residual failures combine angular acquisition with incomplete stabilization. I2 eliminated the diagnosed acquisition sector failures only by trading them for substantially more post-entry failures, so that coupled intervention is insufficient. I3's isolated stronger endpoint-speed shaping failed to learn and does not establish that all stabilization-aware mechanisms are ineffective. A consequential competing explanation remains: the plant may be controllable from the existing state, but a memoryless policy lacks explicit temporal phase information needed to condition its regulation during a 100-sample uninterrupted hold. I4 tests that explanation while preserving T1's acquisition recipe. All evidence remains development-only and does not establish official performance.",
+        "decision_frontier": "I3 is resolved as insufficient. The next decision is whether normalized uninterrupted-hold progress gives the policy useful phase-dependent stabilization without regressing angular acquisition. The discriminating evidence is one fresh 120000-step I4 candidate evaluated against T1 on the same 200-episode development panel, using complete success, post-entry failures, and the -180 to -90 degree acquisition subgroup rather than tolerance entry alone.",
+        "evidence_references": [
+          "T1",
+          "M1",
+          "E4",
+          "E6",
+          "T2",
+          "M2",
+          "E8",
+          "E10",
+          "T3",
+          "M3",
+          "E12",
+          "E14"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 complete uninterrupted holds in the 200-episode official panel. Current evidence is development-only: T1 reaches 189/200 (94.5%) and no candidate supports an official 98% claim. I4 is opened to test a direct temporal-observability route toward the seven-success development gap.",
+        "next_direction_or_closure": "The goal-review session ends with I4 opened. In a fresh I4 inquiry session, implement and train the bounded normalized hold-progress observation intervention while preserving T1's full-angle distribution, branch observations, reward, and 120000-step allocation, then use paired complete-hold diagnostics to close or redirect the inquiry. Do not request official assessment from the current evidence."
+      }
+    },
+    "request_fingerprint": "749dc91f82d1f9668196e111ff24439e94ad80cf6159bb5e50e191a2d7ad8932",
+    "session_id": "S8",
+    "supersedes": null
+  },
   "pi_checkpoint": {
-    "candidates_and_roles": "T1:checkpoint-100352 remains the strongest evidence-backed development candidate and baseline reference at 189/200, supported by M1, M2, and M3. T2:checkpoint-120832 remains a measured but insufficient intervention at 176/200 with 19 post-entry hold failures. T3:checkpoint-120832 is a measured failed stabilization recipe at 0/200 and has no role. No candidate has been assigned working, best-known, or retained status.",
+    "candidates_and_roles": "No working, best-known, or retained role is assigned. T1:checkpoint-100352 remains the strongest evidence-backed development reference at 189/200. T2:checkpoint-120832 is insufficient at 176/200, and T3:checkpoint-120832 has no role after scoring 0/200.",
     "completed_operations": [
-      "T3",
-      "M3",
-      "E12"
+      "E14"
     ],
-    "cumulative_resource_use": "Three fresh PPO training operations completed with the maintainer's requested 120000-step allocation, each producing 120832 rollout-boundary steps. M1 evaluated T1 on the 200-episode panel [4200, 4400); M2 evaluated T2 and T1 on that same paired panel; M3 evaluated T3 and T1 on that same paired panel. No official assessment has been run.",
-    "current_goal_gap": "T1:checkpoint-100352 remains the strongest supported development result at 189/200 (94.5%), seven successes below the 196/200 development objective. T2:checkpoint-120832 achieved 176/200 and increased post-entry hold failures from 5 to 19. T3:checkpoint-120832 achieved 0/200, with zero training success across all T3 checkpoints. No candidate supports an official 98% claim.",
-    "current_synthesis": "T1 established a reproducible baseline whose failures were concentrated in the -180 to -90 degree sector: six failures never entered tolerance and five entered but held only 1-2 samples. I2's coupled focused-sampling and compatible-branch intervention eliminated that sector's acquisition failures but traded them for more post-entry hold failures, so complete success remained worse. I3 isolated stabilization by restoring baseline full-angle target sampling and open/folded IK-branch observations while doubling endpoint-speed shaping. T3 failed to learn at every checkpoint and scored 0/200 complete successes, versus T1's reproduced 189/200 on the same paired panel. This resolves the tested stronger speed-shaping recipe as insufficient, but does not prove that all stabilization-aware methods are ineffective. The evidence is development-only; the official objective remains unmeasured.",
-    "decision_frontier": "I3 is resolved as insufficient. At the next fresh goal-review session, decide whether a new bounded, evidence-backed mechanism can address the remaining angular acquisition and complete-hold gap without repeating the tested tradeoffs, or whether no credible route remains. Any future candidate must be judged by complete uninterrupted success and post-entry failures, not tolerance entry alone; official assessment is not justified by the current evidence.",
+    "cumulative_resource_use": "Three fresh PPO training operations completed with the maintainer's 120000-step allocation, each producing 120832 rollout-boundary steps. M1 evaluated T1, M2 evaluated T2 and T1, and M3 evaluated T3 and T1 on the same development panel [4200, 4400). No official assessment has been run. E14 opened I4 without consuming training or evaluation resources.",
+    "current_goal_gap": "T1:checkpoint-100352 remains the strongest supported development candidate at 189/200, seven successes below 196/200. Its failures comprise six angular acquisition failures in the -180 to -90 degree sector and five post-entry hold failures. T2 achieved 176/200 and increased post-entry hold failures to 19; T3 achieved 0/200 at every checkpoint. Official assessment is not justified.",
+    "current_synthesis": "T1 shows that full-angle sampling and open/folded IK-branch observations can produce a reproducible near-goal policy, but residual failures combine angular acquisition with incomplete stabilization. I2 eliminated the diagnosed acquisition sector failures only by trading them for substantially more post-entry failures, so that coupled intervention is insufficient. I3's isolated stronger endpoint-speed shaping failed to learn and does not establish that all stabilization-aware mechanisms are ineffective. A consequential competing explanation remains: the plant may be controllable from the existing state, but a memoryless policy lacks explicit temporal phase information needed to condition its regulation during a 100-sample uninterrupted hold. I4 tests that explanation while preserving T1's acquisition recipe. All evidence remains development-only and does not establish official performance.",
+    "decision_frontier": "I3 is resolved as insufficient. The next decision is whether normalized uninterrupted-hold progress gives the policy useful phase-dependent stabilization without regressing angular acquisition. The discriminating evidence is one fresh 120000-step I4 candidate evaluated against T1 on the same 200-episode development panel, using complete success, post-entry failures, and the -180 to -90 degree acquisition subgroup rather than tolerance entry alone.",
     "evidence_references": [
       "T1",
       "M1",
@@ -4210,13 +4356,14 @@
       "E10",
       "T3",
       "M3",
-      "E12"
+      "E12",
+      "E14"
     ],
-    "human_goal_connection": "The human goal requires at least 196 complete uninterrupted holds in a 200-episode official panel. I3 did not establish a route to that goal: T3 achieved 0/200 on the fixed development panel, while the paired T1 reference achieved 189/200. The official-distribution objective remains unmeasured and unclaimed.",
-    "inquiry_id": "I3",
-    "next_direction_or_closure": "This inquiry is closed as insufficient and the session is ending. Return to goal review in a fresh session. Do not request official assessment from the current evidence; first determine whether a scientifically credible new route remains, with T1 preserved as the reference.",
-    "scientific_commit": "bda393f335746b658bfe38a3fda1f0d7203e37b0",
-    "session_id": "S7"
+    "human_goal_connection": "The human goal requires at least 196 complete uninterrupted holds in the 200-episode official panel. Current evidence is development-only: T1 reaches 189/200 (94.5%) and no candidate supports an official 98% claim. I4 is opened to test a direct temporal-observability route toward the seven-success development gap.",
+    "inquiry_id": null,
+    "next_direction_or_closure": "The goal-review session ends with I4 opened. In a fresh I4 inquiry session, implement and train the bounded normalized hold-progress observation intervention while preserving T1's full-angle distribution, branch observations, reward, and 120000-step allocation, then use paired complete-hold diagnostics to close or redirect the inquiry. Do not request official assessment from the current evidence.",
+    "scientific_commit": "0f537590e25f6831218e7d985b356748b362b13d",
+    "session_id": "S8"
   },
   "schema_version": 6,
   "scientific_model": {
@@ -4224,21 +4371,6 @@
     "path": "research/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "29803932-e5a5-4e43-9fd4-dff5a7fe8804",
-    "id": "S8",
-    "inquiry_id": null,
-    "kind": "goal_review",
-    "objective": "Decide whether to request official assessment, open one bounded goal-linked inquiry, or conclude that no credible route remains.",
-    "operation_ids": [
-      "E14"
-    ],
-    "scientific_parent_commit": "fb6f8786b05093e03bd19f8ad2480ca94533dde1"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
