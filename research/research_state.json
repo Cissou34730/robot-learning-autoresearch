@@ -17657,44 +17657,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "open",
-        "inquiry": {
-          "closure_condition": "Close when bounded evidence establishes either that a pre-specified model-based controller cannot reliably solve the complete distribution or that a training-only selected distilled policy fails the 196/200 threshold on two fresh shared-seed panels; close positively only if the distilled learned policy reaches at least 196/200 on both fresh panels without runtime controller assistance. If the controller or distillation route materially degrades the restored baseline, reject it as a credible campaign route.",
-          "goal_connection": "The campaign needs a frozen learned policy that succeeds on at least 196 of 200 episodes across the complete official target distribution. The remaining observed failures are concentrated in approach and settling, while the authored plant is deterministic and its geometry and dynamics are known. A learned policy that captures a controller with explicit branch choice, velocity damping, and closed-loop stabilization could change the objective decision if it reaches the threshold repeatably.",
-          "id": "I14",
-          "opened_in_session": "S31",
-          "question": "Can a learned policy distilled from a dynamically stabilizing, full-distribution model-based controller provide repeatable complete-task success at or above 196/200, rather than merely receiving a teacher-based parameter initialization?",
-          "rationale": "Observed baseline failures are primarily pre-settling and localized by bearing, and prior interventions changed observations, training support, reward, temporal formulation, control decomposition, policy factorization, or PPO initialization but did not test whether a robust dynamic controller can first establish the required behavior and then be distilled into the deployable learned policy. I13 rules out the tested initialization recipe, not the broader question of whether controller-generated supervision can resolve the approach and settling tail. This inquiry is bounded by a direct full-distribution controller test followed, only if warranted, by learned-policy distillation and fresh repeatability panels.",
-          "reframes": []
-        }
-      },
-      "result": {
-        "action": "open",
-        "inquiry_id": "I14",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E62",
-    "inquiry_id": null,
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "open",
-        "closure_condition": "Close when bounded evidence establishes either that a pre-specified model-based controller cannot reliably solve the complete distribution or that a training-only selected distilled policy fails the 196/200 threshold on two fresh shared-seed panels; close positively only if the distilled learned policy reaches at least 196/200 on both fresh panels without runtime controller assistance. If the controller or distillation route materially degrades the restored baseline, reject it as a credible campaign route.",
-        "goal_connection": "The campaign needs a frozen learned policy that succeeds on at least 196 of 200 episodes across the complete official target distribution. The remaining observed failures are concentrated in approach and settling, while the authored plant is deterministic and its geometry and dynamics are known. A learned policy that captures a controller with explicit branch choice, velocity damping, and closed-loop stabilization could change the objective decision if it reaches the threshold repeatably.",
-        "question": "Can a learned policy distilled from a dynamically stabilizing, full-distribution model-based controller provide repeatable complete-task success at or above 196/200, rather than merely receiving a teacher-based parameter initialization?",
-        "rationale": "Observed baseline failures are primarily pre-settling and localized by bearing, and prior interventions changed observations, training support, reward, temporal formulation, control decomposition, policy factorization, or PPO initialization but did not test whether a robust dynamic controller can first establish the required behavior and then be distilled into the deployable learned policy. I13 rules out the tested initialization recipe, not the broader question of whether controller-generated supervision can resolve the approach and settling tail. This inquiry is bounded by a direct full-distribution controller test followed, only if warranted, by learned-policy distillation and fresh repeatability panels."
-      }
-    },
-    "request_fingerprint": "5aedbc3bf0c285a42cc7d260f00ad61d6cf1f6c8a440156e1da5b57632016039",
-    "session_id": "S31",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T11:checkpoint-120832 is rejected as the I13 teacher-initialization route after M13 and E60. T1:checkpoint-100352 remains unassigned: it is the strongest measured baseline but did not reach 196/200 on both I13 panels. T10:checkpoint-120832 remains rejected as the I12 hybrid route. No candidate has working, best-known, or retained status.",
     "completed_operations": [
