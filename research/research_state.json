@@ -1,13 +1,5 @@
 {
-  "active_inquiry": {
-    "closure_condition": "Close or redirect this inquiry after a targeted intervention produces a candidate and a shared-panel comparison against T1 that quantifies overall success, negative-angle acquisition and trajectory outcomes, entry velocity, and uninterrupted hold interruptions sufficiently to decide whether the candidate is a credible best-known model or whether the route should change.",
-    "goal_connection": "The human goal requires at least 196 of 200 official episodes to succeed. T1 achieved 151 of 160 development episodes, with six of nine failures caused by no-entry acquisition or trajectory failures and the remaining three caused by high-speed hold interruptions. Improving the limiting negative-angle strata while preserving regulation is the most direct credible route toward the 98% goal.",
-    "id": "I2",
-    "opened_in_session": "S4",
-    "question": "Can a targeted acquisition and elbow-trajectory intervention improve success in the negative-angle target strata from the T1 baseline while preserving low-velocity regulation and uninterrupted 100-step holds?",
-    "rationale": "The baseline evidence rules out treating regulation as the sole first bottleneck but shows it remains a coupled failure mode: every observed interruption combined high exit speed with saturated action. A bounded intervention focused on negative-angle acquisition and branch or trajectory robustness can address the dominant loss mechanism while retaining velocity-aware regulation as a guard against trading no-entry failures for hold failures. The 4.375 percentage-point development gap and resolved failure mechanism support further inquiry; official assessment and no-credible-route are not yet justified.",
-    "reframes": []
-  },
+  "active_inquiry": null,
   "campaign": {
     "base_commit": "eabb35c663a2df5b356b05849912e07ba78c15c4",
     "id": "35365763-6aa0-4675-8e86-f8f277558aa4",
@@ -1385,7 +1377,7 @@
     }
   },
   "counters": {
-    "event": 7,
+    "event": 8,
     "inquiry": 2,
     "measurement": 2,
     "session": 5,
@@ -2486,9 +2478,63 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-09-30T10:50:59Z",
+      "error": null,
+      "id": "E8",
+      "inquiry_id": "I2",
+      "kind": "inquiry",
+      "request": {
+        "action": "close",
+        "outcome": "I2 resolved as a qualified acquisition improvement that does not yet solve the coupled regulation problem. T2 improved shared-panel success from 151/160 (94.375%) to 153/160 (95.625%) and reduced no-entry failures from 6 to 4. The limiting -135 to -90 degree stratum improved from 21/26 successes (80.77%) and 22/26 entries (84.62%) to 23/26 successes and entries (88.46%), while the -180 to -135 degree stratum improved entry from 23/25 (92.0%) to 24/25 (96.0%) without improving success. Both T2 checkpoints retained three hold-interrupted episodes; entry speed increased from T1 median 37.76 cm/s to 65.51 cm/s for checkpoint 65536 and 71.98 cm/s for checkpoint 75776. T2 checkpoint 65536 is the stronger provisional candidate because it has lower entry speed than checkpoint 75776 at equal success, but neither is goal-ready.",
+        "reason": "M2 satisfies I2's closure condition by providing shared-seed outcome, negative-angle acquisition and trajectory, entry-velocity, hold, and interruption comparisons. The intervention supports the acquisition/trajectory hypothesis, but the velocity-aware regulation guard did not preserve low-velocity arrival: T2's median and mean entry speeds rose materially, and hold interruptions remained at three episodes. The evidence therefore warrants a route change rather than treating T2 as a solution: retain the full-radius and negative-angle acquisition gains, but make convergence and saturated-action avoidance the primary next intervention."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I2",
+        "outcome": "I2 resolved as a qualified acquisition improvement that does not yet solve the coupled regulation problem. T2 improved shared-panel success from 151/160 (94.375%) to 153/160 (95.625%) and reduced no-entry failures from 6 to 4. The limiting -135 to -90 degree stratum improved from 21/26 successes (80.77%) and 22/26 entries (84.62%) to 23/26 successes and entries (88.46%), while the -180 to -135 degree stratum improved entry from 23/25 (92.0%) to 24/25 (96.0%) without improving success. Both T2 checkpoints retained three hold-interrupted episodes; entry speed increased from T1 median 37.76 cm/s to 65.51 cm/s for checkpoint 65536 and 71.98 cm/s for checkpoint 75776. T2 checkpoint 65536 is the stronger provisional candidate because it has lower entry speed than checkpoint 75776 at equal success, but neither is goal-ready.",
+        "reason": "M2 satisfies I2's closure condition by providing shared-seed outcome, negative-angle acquisition and trajectory, entry-velocity, hold, and interruption comparisons. The intervention supports the acquisition/trajectory hypothesis, but the velocity-aware regulation guard did not preserve low-velocity arrival: T2's median and mean entry speeds rose materially, and hold interruptions remained at three episodes. The evidence therefore warrants a route change rather than treating T2 as a solution: retain the full-radius and negative-angle acquisition gains, but make convergence and saturated-action avoidance the primary next intervention.",
+        "status": "completed"
+      },
+      "session_id": "S5",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "close",
+        "inquiry_id": "I2",
+        "outcome": "I2 resolved as a qualified acquisition improvement that does not yet solve the coupled regulation problem. T2 improved shared-panel success from 151/160 (94.375%) to 153/160 (95.625%) and reduced no-entry failures from 6 to 4. The limiting -135 to -90 degree stratum improved from 21/26 successes (80.77%) and 22/26 entries (84.62%) to 23/26 successes and entries (88.46%), while the -180 to -135 degree stratum improved entry from 23/25 (92.0%) to 24/25 (96.0%) without improving success. Both T2 checkpoints retained three hold-interrupted episodes; entry speed increased from T1 median 37.76 cm/s to 65.51 cm/s for checkpoint 65536 and 71.98 cm/s for checkpoint 75776. T2 checkpoint 65536 is the stronger provisional candidate because it has lower entry speed than checkpoint 75776 at equal success, but neither is goal-ready.",
+        "reason": "M2 satisfies I2's closure condition by providing shared-seed outcome, negative-angle acquisition and trajectory, entry-velocity, hold, and interruption comparisons. The intervention supports the acquisition/trajectory hypothesis, but the velocity-aware regulation guard did not preserve low-velocity arrival: T2's median and mean entry speeds rose materially, and hold interruptions remained at three episodes. The evidence therefore warrants a route change rather than treating T2 as a solution: retain the full-radius and negative-angle acquisition gains, but make convergence and saturated-action avoidance the primary next intervention."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I2",
+        "outcome": "I2 resolved as a qualified acquisition improvement that does not yet solve the coupled regulation problem. T2 improved shared-panel success from 151/160 (94.375%) to 153/160 (95.625%) and reduced no-entry failures from 6 to 4. The limiting -135 to -90 degree stratum improved from 21/26 successes (80.77%) and 22/26 entries (84.62%) to 23/26 successes and entries (88.46%), while the -180 to -135 degree stratum improved entry from 23/25 (92.0%) to 24/25 (96.0%) without improving success. Both T2 checkpoints retained three hold-interrupted episodes; entry speed increased from T1 median 37.76 cm/s to 65.51 cm/s for checkpoint 65536 and 71.98 cm/s for checkpoint 75776. T2 checkpoint 65536 is the stronger provisional candidate because it has lower entry speed than checkpoint 75776 at equal success, but neither is goal-ready.",
+        "reason": "M2 satisfies I2's closure condition by providing shared-seed outcome, negative-angle acquisition and trajectory, entry-velocity, hold, and interruption comparisons. The intervention supports the acquisition/trajectory hypothesis, but the velocity-aware regulation guard did not preserve low-velocity arrival: T2's median and mean entry speeds rose materially, and hold interruptions remained at three episodes. The evidence therefore warrants a route change rather than treating T2 as a solution: retain the full-radius and negative-angle acquisition gains, but make convergence and saturated-action avoidance the primary next intervention.",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E8",
+    "inquiry_id": "I2",
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "close",
+        "outcome": "I2 resolved as a qualified acquisition improvement that does not yet solve the coupled regulation problem. T2 improved shared-panel success from 151/160 (94.375%) to 153/160 (95.625%) and reduced no-entry failures from 6 to 4. The limiting -135 to -90 degree stratum improved from 21/26 successes (80.77%) and 22/26 entries (84.62%) to 23/26 successes and entries (88.46%), while the -180 to -135 degree stratum improved entry from 23/25 (92.0%) to 24/25 (96.0%) without improving success. Both T2 checkpoints retained three hold-interrupted episodes; entry speed increased from T1 median 37.76 cm/s to 65.51 cm/s for checkpoint 65536 and 71.98 cm/s for checkpoint 75776. T2 checkpoint 65536 is the stronger provisional candidate because it has lower entry speed than checkpoint 75776 at equal success, but neither is goal-ready.",
+        "reason": "M2 satisfies I2's closure condition by providing shared-seed outcome, negative-angle acquisition and trajectory, entry-velocity, hold, and interruption comparisons. The intervention supports the acquisition/trajectory hypothesis, but the velocity-aware regulation guard did not preserve low-velocity arrival: T2's median and mean entry speeds rose materially, and hold interruptions remained at three episodes. The evidence therefore warrants a route change rather than treating T2 as a solution: retain the full-radius and negative-angle acquisition gains, but make convergence and saturated-action avoidance the primary next intervention."
+      }
+    },
+    "request_fingerprint": "41d4840f655da93c4071906b9e2ae9c0ce87e2d656e8d54cbd1b015720db4c9a",
+    "session_id": "S5",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T1:checkpoint-100352 remains the strongest available development candidate at 94.375% on M1, with no working, best-known, or retained role assigned. No new candidate was produced in the goal-review session.",
     "completed_operations": [
@@ -2529,7 +2575,8 @@
     "objective": "Advance I2 toward its closure condition: Close or redirect this inquiry after a targeted intervention produces a candidate and a shared-panel comparison against T1 that quantifies overall success, negative-angle acquisition and trajectory outcomes, entry velocity, and uninterrupted hold interruptions sufficiently to decide whether the candidate is a credible best-known model or whether the route should change.",
     "operation_ids": [
       "T2",
-      "M2"
+      "M2",
+      "E8"
     ],
     "scientific_parent_commit": "03eeb17cba69d9c25b0a38c6a0274d1f285ef53e"
   },
