@@ -391,6 +391,15 @@ protection of the old protocol log were not introduced by these changes.
 Analysis proposals are not part of the active harness unless a commit and
 disposition are recorded.
 
+**TODO: restrict PI reads of maintainer-facing files.** The PI was observed
+reading `README.md`, `run_research.ps1`, and `researcher_session.ps1` instead of
+staying within its scientific concerns. Investigate SDK file-access controls
+or tool-policy enforcement to prevent these reads, including indirect access
+through search and shell tools, rather than relying only on prompt wording.
+Preserve access to the scientific corpus, robot/task/benchmark contracts, and
+PI-owned implementations and tools. This is pending investigation and
+implementation; no SDK capability or restriction is assumed to exist yet.
+
 ## Future entries
 
 For each change, record the baseline and commit, the specific expected effect,
