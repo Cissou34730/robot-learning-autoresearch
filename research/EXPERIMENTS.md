@@ -67,3 +67,4 @@
 | M10 | measurement | I10 | completed |
 | E46 | checkpoint | I10 | checkpointed |
 | E47 | inquiry | I10 | completed |
+| E48 | checkpoint | I10 | checkpointed |
