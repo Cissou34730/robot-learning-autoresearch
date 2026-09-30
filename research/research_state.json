@@ -4737,38 +4737,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I3",
-        "outcome": "I3 resolved negatively: the velocity-first reward intervention did not improve overall success or uninterrupted holds over T2 and cannot plausibly close the 196-of-200 gap in its tested form.",
-        "reason": "M3 evaluated two T2-derived T3 windows on the shared 160-episode panel. T3 checkpoint 5120 matched T2 at 153/160 but shifted the failure balance to five no-entry and two hold-interrupted episodes, with median entry speed 65.10 cm/s and ten saturated-action signatures. T3 checkpoint 70656 improved entry to 159/160 and lowered median entry speed to 60.25 cm/s, but success fell to 152/160 because hold interruptions rose to seven; saturated-action signatures again remained ten. Paired comparisons were tied with T2 at checkpoint 5120 and favored T2 at checkpoint 70656. The intervention therefore did not eliminate the predicted actuator-level regulation failure, and its non-monotonic learning curve provides no credible route to 196/200. Preserve T2:checkpoint-65536 as the strongest development reference without assigning it a goal-achieving role. Redirect the next inquiry toward changing the control interface or regulation observability/capacity, not further scaling of this reward penalty."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I3",
-        "outcome": "I3 resolved negatively: the velocity-first reward intervention did not improve overall success or uninterrupted holds over T2 and cannot plausibly close the 196-of-200 gap in its tested form.",
-        "reason": "M3 evaluated two T2-derived T3 windows on the shared 160-episode panel. T3 checkpoint 5120 matched T2 at 153/160 but shifted the failure balance to five no-entry and two hold-interrupted episodes, with median entry speed 65.10 cm/s and ten saturated-action signatures. T3 checkpoint 70656 improved entry to 159/160 and lowered median entry speed to 60.25 cm/s, but success fell to 152/160 because hold interruptions rose to seven; saturated-action signatures again remained ten. Paired comparisons were tied with T2 at checkpoint 5120 and favored T2 at checkpoint 70656. The intervention therefore did not eliminate the predicted actuator-level regulation failure, and its non-monotonic learning curve provides no credible route to 196/200. Preserve T2:checkpoint-65536 as the strongest development reference without assigning it a goal-achieving role. Redirect the next inquiry toward changing the control interface or regulation observability/capacity, not further scaling of this reward penalty.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E12",
-    "inquiry_id": "I3",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "I3 resolved negatively: the velocity-first reward intervention did not improve overall success or uninterrupted holds over T2 and cannot plausibly close the 196-of-200 gap in its tested form.",
-        "reason": "M3 evaluated two T2-derived T3 windows on the shared 160-episode panel. T3 checkpoint 5120 matched T2 at 153/160 but shifted the failure balance to five no-entry and two hold-interrupted episodes, with median entry speed 65.10 cm/s and ten saturated-action signatures. T3 checkpoint 70656 improved entry to 159/160 and lowered median entry speed to 60.25 cm/s, but success fell to 152/160 because hold interruptions rose to seven; saturated-action signatures again remained ten. Paired comparisons were tied with T2 at checkpoint 5120 and favored T2 at checkpoint 70656. The intervention therefore did not eliminate the predicted actuator-level regulation failure, and its non-monotonic learning curve provides no credible route to 196/200. Preserve T2:checkpoint-65536 as the strongest development reference without assigning it a goal-achieving role. Redirect the next inquiry toward changing the control interface or regulation observability/capacity, not further scaling of this reward penalty."
-      }
-    },
-    "request_fingerprint": "bd52133d7ec4b0a0039f555a2a78144502bd91e76b3c0de227d596d5bbf88eb5",
-    "session_id": "S7",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T1:checkpoint-100352 remains the reference at 151/160 (94.375%). T2:checkpoint-65536 and T2:checkpoint-75776 each reached 153/160 (95.625%) on the shared panel; checkpoint 65536 is the stronger provisional candidate because its median entry speed was lower. No working, best-known, or retained role is assigned.",
     "completed_operations": [
