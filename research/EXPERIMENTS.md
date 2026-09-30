@@ -56,3 +56,4 @@
 | E38 | checkpoint | I8 | checkpointed |
 | E39 | inquiry | I9 | completed |
 | E40 | checkpoint | - | checkpointed |
+| T7 | training | I9 | completed |
