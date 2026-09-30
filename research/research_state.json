@@ -8257,7 +8257,7 @@
     }
   },
   "counters": {
-    "event": 56,
+    "event": 57,
     "inquiry": 12,
     "measurement": 12,
     "session": 28,
@@ -8266,7 +8266,7 @@
   "human_goal": {
     "source": "research/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -15688,35 +15688,157 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-09-30T01:54:54Z",
+      "error": null,
+      "id": "E57",
+      "inquiry_id": "I12",
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "T10:checkpoint-120832 was the pre-selected hybrid candidate and is rejected by M12 after achieving 88/200 and 102/200. T1:checkpoint-100352 remains the strongest historically measured baseline but is unassigned because its performance is not repeatable and remains below 196/200 on the fresh I12 panels. T9:checkpoint-95232, T8:checkpoint-90112, and T7:checkpoint-120832 remain rejected or unassigned routes. No candidate has working, best-known, or retained status.",
+        "completed_operations": [
+          "T10",
+          "M12",
+          "E56"
+        ],
+        "cumulative_resource_use": "The campaign has used ten PPO training runs of up to 120,832 completed steps each, seven fresh or development measurement operations including the two fresh 200-episode I12 panels, one 138-target diagnostic grid, one paired three-candidate panel, and two fresh 200-episode I11 readiness panels. I12 added one 120,832-step hybrid training run and two paired 200-episode complete-distribution panels. No official assessment has run.",
+        "current_goal_gap": "No candidate has best-known status and official assessment remains unjustified. The restored baseline T1:checkpoint-100352 achieved 189/200 and 195/200 on the two fresh I12 paired panels, while the pre-selected hybrid T10:checkpoint-120832 achieved 88/200 and 102/200. The campaign therefore has no repeatable candidate meeting 196/200.",
+        "current_synthesis": "Observed: on two fresh complete-distribution panels, the pre-selected hybrid T10:checkpoint-120832 achieved 88/200 and 102/200, while the paired restored baseline achieved 189/200 and 195/200. Observed: across 400 shared-seed episodes, the hybrid recorded zero wins and the baseline recorded 194 wins, with a -48.5 percentage-point hybrid difference. These results show that the tested deterministic IK approach guidance plus learned residual control materially degraded complete-task success and did not remove the residual failure tail. Hypothesis: other control decompositions or learning formulations could behave differently, but they were not tested by I12.",
+        "decision_frontier": "I12 is closed with a supported negative answer. Its pre-specified closure condition is met: the frozen hybrid candidate failed both repeatability and 196/200 criteria and materially underperformed the restored baseline, while no mechanically supported refinement remains within this tested decomposition. The inquiry session ends and the campaign returns to goal review; official assessment remains unjustified because no candidate is best-known.",
+        "evidence_references": [
+          "T10",
+          "M12",
+          "E56"
+        ],
+        "human_goal_connection": "The campaign still seeks one frozen learned policy achieving at least 196 complete successes out of 200 under the official task distribution, with every success requiring the complete uninterrupted 100-step hold. I12 tested whether deterministic inverse-kinematic approach guidance combined with learned residual control could produce such a policy.",
+        "next_direction_or_closure": "The next session is goal review. It should decide whether a named consequential uncertainty supports another bounded inquiry toward the human goal, whether any candidate can justifiably be assigned a role, or whether no credible route remains. No specific intervention is selected by this checkpoint."
+      },
+      "result": {
+        "session_id": "S28",
+        "status": "checkpointed"
+      },
+      "session_id": "S28",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "0450a434ccc7272149f1de4cd8536af174a8609d",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "T10:checkpoint-120832 was the pre-selected hybrid candidate and is rejected by M12 after achieving 88/200 and 102/200. T1:checkpoint-100352 remains the strongest historically measured baseline but is unassigned because its performance is not repeatable and remains below 196/200 on the fresh I12 panels. T9:checkpoint-95232, T8:checkpoint-90112, and T7:checkpoint-120832 remain rejected or unassigned routes. No candidate has working, best-known, or retained status.",
+        "completed_operations": [
+          "T10",
+          "M12",
+          "E56"
+        ],
+        "cumulative_resource_use": "The campaign has used ten PPO training runs of up to 120,832 completed steps each, seven fresh or development measurement operations including the two fresh 200-episode I12 panels, one 138-target diagnostic grid, one paired three-candidate panel, and two fresh 200-episode I11 readiness panels. I12 added one 120,832-step hybrid training run and two paired 200-episode complete-distribution panels. No official assessment has run.",
+        "current_goal_gap": "No candidate has best-known status and official assessment remains unjustified. The restored baseline T1:checkpoint-100352 achieved 189/200 and 195/200 on the two fresh I12 paired panels, while the pre-selected hybrid T10:checkpoint-120832 achieved 88/200 and 102/200. The campaign therefore has no repeatable candidate meeting 196/200.",
+        "current_synthesis": "Observed: on two fresh complete-distribution panels, the pre-selected hybrid T10:checkpoint-120832 achieved 88/200 and 102/200, while the paired restored baseline achieved 189/200 and 195/200. Observed: across 400 shared-seed episodes, the hybrid recorded zero wins and the baseline recorded 194 wins, with a -48.5 percentage-point hybrid difference. These results show that the tested deterministic IK approach guidance plus learned residual control materially degraded complete-task success and did not remove the residual failure tail. Hypothesis: other control decompositions or learning formulations could behave differently, but they were not tested by I12.",
+        "decision_frontier": "I12 is closed with a supported negative answer. Its pre-specified closure condition is met: the frozen hybrid candidate failed both repeatability and 196/200 criteria and materially underperformed the restored baseline, while no mechanically supported refinement remains within this tested decomposition. The inquiry session ends and the campaign returns to goal review; official assessment remains unjustified because no candidate is best-known.",
+        "evidence_references": [
+          "T10",
+          "M12",
+          "E56"
+        ],
+        "human_goal_connection": "The campaign still seeks one frozen learned policy achieving at least 196 complete successes out of 200 under the official task distribution, with every success requiring the complete uninterrupted 100-step hold. I12 tested whether deterministic inverse-kinematic approach guidance combined with learned residual control could produce such a policy.",
+        "inquiry_id": "I12",
+        "next_direction_or_closure": "The next session is goal review. It should decide whether a named consequential uncertainty supports another bounded inquiry toward the human goal, whether any candidate can justifiably be assigned a role, or whether no credible route remains. No specific intervention is selected by this checkpoint.",
+        "session_id": "S28"
+      },
+      "presentation": {
+        "backend_session_id": "de141fa3-9d98-42c3-b600-24b80df20e11",
+        "campaign_id": "eb19a5f3-14b3-4590-ad74-1b31cf5ae3d5",
+        "campaign_usage": "1h44m | 291.41 AIU | prompt 44.9m (84% cached) | output 276.5k",
+        "session_id": "S28",
+        "session_kind": "inquiry",
+        "session_usage": "4m58s | 15.73 AIU | prompt 3.2m (89% cached) | output 12.5k"
+      },
+      "result": {
+        "session_id": "S28",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "81d49b9a834fc7341f0950ca9c5e7f2136af415f",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E57",
+    "inquiry_id": "I12",
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "T10:checkpoint-120832 was the pre-selected hybrid candidate and is rejected by M12 after achieving 88/200 and 102/200. T1:checkpoint-100352 remains the strongest historically measured baseline but is unassigned because its performance is not repeatable and remains below 196/200 on the fresh I12 panels. T9:checkpoint-95232, T8:checkpoint-90112, and T7:checkpoint-120832 remain rejected or unassigned routes. No candidate has working, best-known, or retained status.",
+        "completed_operations": [
+          "T10",
+          "M12",
+          "E56"
+        ],
+        "cumulative_resource_use": "The campaign has used ten PPO training runs of up to 120,832 completed steps each, seven fresh or development measurement operations including the two fresh 200-episode I12 panels, one 138-target diagnostic grid, one paired three-candidate panel, and two fresh 200-episode I11 readiness panels. I12 added one 120,832-step hybrid training run and two paired 200-episode complete-distribution panels. No official assessment has run.",
+        "current_goal_gap": "No candidate has best-known status and official assessment remains unjustified. The restored baseline T1:checkpoint-100352 achieved 189/200 and 195/200 on the two fresh I12 paired panels, while the pre-selected hybrid T10:checkpoint-120832 achieved 88/200 and 102/200. The campaign therefore has no repeatable candidate meeting 196/200.",
+        "current_synthesis": "Observed: on two fresh complete-distribution panels, the pre-selected hybrid T10:checkpoint-120832 achieved 88/200 and 102/200, while the paired restored baseline achieved 189/200 and 195/200. Observed: across 400 shared-seed episodes, the hybrid recorded zero wins and the baseline recorded 194 wins, with a -48.5 percentage-point hybrid difference. These results show that the tested deterministic IK approach guidance plus learned residual control materially degraded complete-task success and did not remove the residual failure tail. Hypothesis: other control decompositions or learning formulations could behave differently, but they were not tested by I12.",
+        "decision_frontier": "I12 is closed with a supported negative answer. Its pre-specified closure condition is met: the frozen hybrid candidate failed both repeatability and 196/200 criteria and materially underperformed the restored baseline, while no mechanically supported refinement remains within this tested decomposition. The inquiry session ends and the campaign returns to goal review; official assessment remains unjustified because no candidate is best-known.",
+        "evidence_references": [
+          "T10",
+          "M12",
+          "E56"
+        ],
+        "human_goal_connection": "The campaign still seeks one frozen learned policy achieving at least 196 complete successes out of 200 under the official task distribution, with every success requiring the complete uninterrupted 100-step hold. I12 tested whether deterministic inverse-kinematic approach guidance combined with learned residual control could produce such a policy.",
+        "next_direction_or_closure": "The next session is goal review. It should decide whether a named consequential uncertainty supports another bounded inquiry toward the human goal, whether any candidate can justifiably be assigned a role, or whether no credible route remains. No specific intervention is selected by this checkpoint."
+      }
+    },
+    "request_fingerprint": "f2a264159b54d6f31be90062547c2cc3546b1473824f1c6c3874cb045910a84e",
+    "session_id": "S28",
+    "supersedes": null
+  },
   "pi_checkpoint": {
-    "candidates_and_roles": "T1:checkpoint-100352 remains the strongest historically measured baseline but is unassigned because its performance was not repeatable. T9:checkpoint-95232 is unassigned after the I11 readiness panels. T8:checkpoint-90112 and T7:checkpoint-120832 remain rejected routes. No candidate has working, best-known, or retained status.",
+    "candidates_and_roles": "T10:checkpoint-120832 was the pre-selected hybrid candidate and is rejected by M12 after achieving 88/200 and 102/200. T1:checkpoint-100352 remains the strongest historically measured baseline but is unassigned because its performance is not repeatable and remains below 196/200 on the fresh I12 panels. T9:checkpoint-95232, T8:checkpoint-90112, and T7:checkpoint-120832 remain rejected or unassigned routes. No candidate has working, best-known, or retained status.",
     "completed_operations": [
-      "E54"
+      "T10",
+      "M12",
+      "E56"
     ],
-    "cumulative_resource_use": "The campaign has used nine PPO training runs of up to 120,832 completed steps each, six 160-episode development panels, one 138-target diagnostic grid, ten prior 200-episode development panels through M10, one paired three-candidate M7 panel, and two fresh 200-episode I11 readiness panels in M11. I11 added one fresh restored-baseline training run and two fresh evaluations. E54 opened I12 without consuming training or evaluation resources. No official assessment has run.",
-    "current_goal_gap": "No candidate has best-known status and official assessment remains unjustified. The restored baseline achieved 196/200 once but later achieved 194/200, 192/200, 192/200, 194/200, and 193/200; the pre-selected T9:checkpoint-95232 then achieved 159/200 and 167/200 on two fresh panels.",
-    "current_synthesis": "Observed: the fixed training-only rule selected T9:checkpoint-95232 before evaluation, but the frozen checkpoint failed both fresh readiness panels at 159/200 and 167/200. Observed: the earlier T1 baseline also varied around the threshold, with only one 196/200 result. These findings establish that the restored baseline formulation and its justified checkpoint-selection protocol did not produce repeatable assessment readiness. Hypothesis: a deterministic hybrid controller that supplies known geometric approach and leaves coupled dynamic correction and settling to learning may reduce the unresolved learning burden, but this has not yet been tested and is not evidence of capability.",
-    "decision_frontier": "The goal-review session rejects official assessment because no candidate is best-known and the strongest baseline evidence is non-repeatable. It does not conclude that no credible route remains because the model-supported hybrid control-decomposition question is untested. E54 opened I12; this checkpoint ends goal review, and no I12 operation is selected or authorized in this session.",
+    "cumulative_resource_use": "The campaign has used ten PPO training runs of up to 120,832 completed steps each, seven fresh or development measurement operations including the two fresh 200-episode I12 panels, one 138-target diagnostic grid, one paired three-candidate panel, and two fresh 200-episode I11 readiness panels. I12 added one 120,832-step hybrid training run and two paired 200-episode complete-distribution panels. No official assessment has run.",
+    "current_goal_gap": "No candidate has best-known status and official assessment remains unjustified. The restored baseline T1:checkpoint-100352 achieved 189/200 and 195/200 on the two fresh I12 paired panels, while the pre-selected hybrid T10:checkpoint-120832 achieved 88/200 and 102/200. The campaign therefore has no repeatable candidate meeting 196/200.",
+    "current_synthesis": "Observed: on two fresh complete-distribution panels, the pre-selected hybrid T10:checkpoint-120832 achieved 88/200 and 102/200, while the paired restored baseline achieved 189/200 and 195/200. Observed: across 400 shared-seed episodes, the hybrid recorded zero wins and the baseline recorded 194 wins, with a -48.5 percentage-point hybrid difference. These results show that the tested deterministic IK approach guidance plus learned residual control materially degraded complete-task success and did not remove the residual failure tail. Hypothesis: other control decompositions or learning formulations could behave differently, but they were not tested by I12.",
+    "decision_frontier": "I12 is closed with a supported negative answer. Its pre-specified closure condition is met: the frozen hybrid candidate failed both repeatability and 196/200 criteria and materially underperformed the restored baseline, while no mechanically supported refinement remains within this tested decomposition. The inquiry session ends and the campaign returns to goal review; official assessment remains unjustified because no candidate is best-known.",
     "evidence_references": [
-      "E45",
-      "T8",
-      "M10",
-      "E47",
-      "E49",
-      "E51",
-      "T9",
-      "M11",
-      "E52",
-      "E54"
+      "T10",
+      "M12",
+      "E56"
     ],
-    "human_goal_connection": "The campaign still seeks one frozen learned policy achieving at least 196 complete successes out of 200 under the official task distribution, with every success requiring the complete uninterrupted 100-step hold. Goal review opened I12 to test a distinct control-decomposition route toward that objective.",
-    "inquiry_id": null,
-    "next_direction_or_closure": "The non-binding next direction is to begin the fresh I12 inquiry session and determine, using its pre-specified hybrid control-decomposition comparison, whether known geometric approach plus learned dynamic regulation can produce a repeatable assessment-ready policy. No training, measurement, role assignment, restoration, official assessment, or campaign conclusion is selected here.",
-    "scientific_commit": "fe85ce6cbbde5cf96f3d3d751c8df7dfb65e9306",
-    "session_id": "S27"
+    "human_goal_connection": "The campaign still seeks one frozen learned policy achieving at least 196 complete successes out of 200 under the official task distribution, with every success requiring the complete uninterrupted 100-step hold. I12 tested whether deterministic inverse-kinematic approach guidance combined with learned residual control could produce such a policy.",
+    "inquiry_id": "I12",
+    "next_direction_or_closure": "The next session is goal review. It should decide whether a named consequential uncertainty supports another bounded inquiry toward the human goal, whether any candidate can justifiably be assigned a role, or whether no credible route remains. No specific intervention is selected by this checkpoint.",
+    "scientific_commit": "81d49b9a834fc7341f0950ca9c5e7f2136af415f",
+    "session_id": "S28"
   },
   "schema_version": 6,
   "scientific_model": {
@@ -15724,23 +15846,6 @@
     "path": "research/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "de141fa3-9d98-42c3-b600-24b80df20e11",
-    "id": "S28",
-    "inquiry_id": "I12",
-    "kind": "inquiry",
-    "objective": "Bring I12 to the decision required by its closure condition, and close it as soon as the evidence supplies that decision: Close after a pre-specified hybrid control-decomposition comparison on fresh complete-distribution panels either produces a frozen candidate reaching at least 196/200 with repeatable evidence sufficient for best-known consideration, or fails to materially improve the restored-baseline reliability and provides no mechanically supported refinement within this decomposition.",
-    "operation_ids": [
-      "T10",
-      "M12",
-      "E56"
-    ],
-    "scientific_parent_commit": "0450a434ccc7272149f1de4cd8536af174a8609d"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
