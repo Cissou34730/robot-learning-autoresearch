@@ -1,13 +1,5 @@
 {
-  "active_inquiry": {
-    "closure_condition": "Close when shared-seed measurements of a T2-derived candidate and the strongest T1/T2 references establish whether velocity-first convergence and regulation improve overall success and uninterrupted holds without materially sacrificing acquisition, or when the measurements show that this route cannot plausibly reach the 196-of-200 requirement.",
-    "goal_connection": "The human goal requires at least 196 of 200 official episodes to complete one uninterrupted 100-step hold. T2 reaches only 153 of 160 on the shared development panel, with four no-entry failures and three hold interruptions, so the inquiry directly targets the remaining success gap.",
-    "id": "I3",
-    "opened_in_session": "S6",
-    "question": "Can a velocity-first convergence and regulation intervention retain T2's acquisition and negative-angle gains while eliminating the residual-speed, saturated-action, and hold-interruption failures that prevent a 98% official success policy?",
-    "rationale": "Official assessment is premature because no candidate has established the 98% goal or an explicit best-known role. A credible route remains: T2 improved acquisition from 151/160 to 153/160 and reduced no-entry failures, while its higher entry velocity and unchanged hold interruptions identify a specific coupled control failure consistent with the physical model. The next session should preserve T2's full-radius and negative-angle training recipe and make residual velocity and saturated-action avoidance the primary scientific test.",
-    "reframes": []
-  },
+  "active_inquiry": null,
   "campaign": {
     "base_commit": "eabb35c663a2df5b356b05849912e07ba78c15c4",
     "id": "35365763-6aa0-4675-8e86-f8f277558aa4",
@@ -2072,7 +2064,7 @@
     }
   },
   "counters": {
-    "event": 11,
+    "event": 12,
     "inquiry": 3,
     "measurement": 3,
     "session": 7,
@@ -4720,9 +4712,63 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-09-30T11:12:24Z",
+      "error": null,
+      "id": "E12",
+      "inquiry_id": "I3",
+      "kind": "inquiry",
+      "request": {
+        "action": "close",
+        "outcome": "I3 resolved negatively: the velocity-first reward intervention did not improve overall success or uninterrupted holds over T2 and cannot plausibly close the 196-of-200 gap in its tested form.",
+        "reason": "M3 evaluated two T2-derived T3 windows on the shared 160-episode panel. T3 checkpoint 5120 matched T2 at 153/160 but shifted the failure balance to five no-entry and two hold-interrupted episodes, with median entry speed 65.10 cm/s and ten saturated-action signatures. T3 checkpoint 70656 improved entry to 159/160 and lowered median entry speed to 60.25 cm/s, but success fell to 152/160 because hold interruptions rose to seven; saturated-action signatures again remained ten. Paired comparisons were tied with T2 at checkpoint 5120 and favored T2 at checkpoint 70656. The intervention therefore did not eliminate the predicted actuator-level regulation failure, and its non-monotonic learning curve provides no credible route to 196/200. Preserve T2:checkpoint-65536 as the strongest development reference without assigning it a goal-achieving role. Redirect the next inquiry toward changing the control interface or regulation observability/capacity, not further scaling of this reward penalty."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I3",
+        "outcome": "I3 resolved negatively: the velocity-first reward intervention did not improve overall success or uninterrupted holds over T2 and cannot plausibly close the 196-of-200 gap in its tested form.",
+        "reason": "M3 evaluated two T2-derived T3 windows on the shared 160-episode panel. T3 checkpoint 5120 matched T2 at 153/160 but shifted the failure balance to five no-entry and two hold-interrupted episodes, with median entry speed 65.10 cm/s and ten saturated-action signatures. T3 checkpoint 70656 improved entry to 159/160 and lowered median entry speed to 60.25 cm/s, but success fell to 152/160 because hold interruptions rose to seven; saturated-action signatures again remained ten. Paired comparisons were tied with T2 at checkpoint 5120 and favored T2 at checkpoint 70656. The intervention therefore did not eliminate the predicted actuator-level regulation failure, and its non-monotonic learning curve provides no credible route to 196/200. Preserve T2:checkpoint-65536 as the strongest development reference without assigning it a goal-achieving role. Redirect the next inquiry toward changing the control interface or regulation observability/capacity, not further scaling of this reward penalty.",
+        "status": "completed"
+      },
+      "session_id": "S7",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "close",
+        "inquiry_id": "I3",
+        "outcome": "I3 resolved negatively: the velocity-first reward intervention did not improve overall success or uninterrupted holds over T2 and cannot plausibly close the 196-of-200 gap in its tested form.",
+        "reason": "M3 evaluated two T2-derived T3 windows on the shared 160-episode panel. T3 checkpoint 5120 matched T2 at 153/160 but shifted the failure balance to five no-entry and two hold-interrupted episodes, with median entry speed 65.10 cm/s and ten saturated-action signatures. T3 checkpoint 70656 improved entry to 159/160 and lowered median entry speed to 60.25 cm/s, but success fell to 152/160 because hold interruptions rose to seven; saturated-action signatures again remained ten. Paired comparisons were tied with T2 at checkpoint 5120 and favored T2 at checkpoint 70656. The intervention therefore did not eliminate the predicted actuator-level regulation failure, and its non-monotonic learning curve provides no credible route to 196/200. Preserve T2:checkpoint-65536 as the strongest development reference without assigning it a goal-achieving role. Redirect the next inquiry toward changing the control interface or regulation observability/capacity, not further scaling of this reward penalty."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I3",
+        "outcome": "I3 resolved negatively: the velocity-first reward intervention did not improve overall success or uninterrupted holds over T2 and cannot plausibly close the 196-of-200 gap in its tested form.",
+        "reason": "M3 evaluated two T2-derived T3 windows on the shared 160-episode panel. T3 checkpoint 5120 matched T2 at 153/160 but shifted the failure balance to five no-entry and two hold-interrupted episodes, with median entry speed 65.10 cm/s and ten saturated-action signatures. T3 checkpoint 70656 improved entry to 159/160 and lowered median entry speed to 60.25 cm/s, but success fell to 152/160 because hold interruptions rose to seven; saturated-action signatures again remained ten. Paired comparisons were tied with T2 at checkpoint 5120 and favored T2 at checkpoint 70656. The intervention therefore did not eliminate the predicted actuator-level regulation failure, and its non-monotonic learning curve provides no credible route to 196/200. Preserve T2:checkpoint-65536 as the strongest development reference without assigning it a goal-achieving role. Redirect the next inquiry toward changing the control interface or regulation observability/capacity, not further scaling of this reward penalty.",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E12",
+    "inquiry_id": "I3",
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "close",
+        "outcome": "I3 resolved negatively: the velocity-first reward intervention did not improve overall success or uninterrupted holds over T2 and cannot plausibly close the 196-of-200 gap in its tested form.",
+        "reason": "M3 evaluated two T2-derived T3 windows on the shared 160-episode panel. T3 checkpoint 5120 matched T2 at 153/160 but shifted the failure balance to five no-entry and two hold-interrupted episodes, with median entry speed 65.10 cm/s and ten saturated-action signatures. T3 checkpoint 70656 improved entry to 159/160 and lowered median entry speed to 60.25 cm/s, but success fell to 152/160 because hold interruptions rose to seven; saturated-action signatures again remained ten. Paired comparisons were tied with T2 at checkpoint 5120 and favored T2 at checkpoint 70656. The intervention therefore did not eliminate the predicted actuator-level regulation failure, and its non-monotonic learning curve provides no credible route to 196/200. Preserve T2:checkpoint-65536 as the strongest development reference without assigning it a goal-achieving role. Redirect the next inquiry toward changing the control interface or regulation observability/capacity, not further scaling of this reward penalty."
+      }
+    },
+    "request_fingerprint": "bd52133d7ec4b0a0039f555a2a78144502bd91e76b3c0de227d596d5bbf88eb5",
+    "session_id": "S7",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T1:checkpoint-100352 remains the reference at 151/160 (94.375%). T2:checkpoint-65536 and T2:checkpoint-75776 each reached 153/160 (95.625%) on the shared panel; checkpoint 65536 is the stronger provisional candidate because its median entry speed was lower. No working, best-known, or retained role is assigned.",
     "completed_operations": [
@@ -4767,7 +4813,8 @@
     "objective": "Advance I3 toward its closure condition: Close when shared-seed measurements of a T2-derived candidate and the strongest T1/T2 references establish whether velocity-first convergence and regulation improve overall success and uninterrupted holds without materially sacrificing acquisition, or when the measurements show that this route cannot plausibly reach the 196-of-200 requirement.",
     "operation_ids": [
       "T3",
-      "M3"
+      "M3",
+      "E12"
     ],
     "scientific_parent_commit": "179a6f9ddaa4ca2b68c0f49711536813a657f672"
   },
