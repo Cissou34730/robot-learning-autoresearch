@@ -17,7 +17,7 @@
   },
   "candidates": {},
   "counters": {
-    "event": 2,
+    "event": 3,
     "inquiry": 1,
     "measurement": 0,
     "session": 2,
@@ -26,7 +26,7 @@
   "human_goal": {
     "source": "research/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -82,22 +82,141 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-09-30T19:49:10Z",
+      "error": null,
+      "id": "E3",
+      "inquiry_id": null,
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "No candidates, working model, best-known model, or retained model exists.",
+        "completed_operations": [
+          "E2"
+        ],
+        "cumulative_resource_use": "No training, evaluation, or other campaign operation has completed; cumulative scientific resource use remains zero.",
+        "current_goal_gap": "There is still no trained candidate, behavioral evidence, or best-known model, so the gap to 98% success remains unquantified. The next inquiry session must obtain a fresh 120000-step baseline and deterministic development diagnostics before any claim about policy quality or route viability is justified.",
+        "current_synthesis": "The scientific model establishes a fully extended q2=0 reset, 20 ms effort control, a 1 cm tolerance, and a required uninterrupted 100-step hold. It also establishes competing possible mechanisms: initial singularity escape and reorientation, branch or boundary geometry, and residual-motion overshoot or stabilization failure. Operation E2 opened inquiry I1 but produced no behavioral evidence; therefore these explanations remain unresolved and no learnability or reward-value claim is supported.",
+        "decision_frontier": "For a first policy trained under the fixed 120000-step allocation, do failures occur mainly before first entry into the 1 cm region or after entry through hold interruptions, and how do those mechanisms vary with target radius, bearing, and inverse-kinematic branch? Episode-level success, first-entry step, minimum and terminal distance, maximum held streak, interruptions, and target geometry will discriminate the routes: acquisition/coverage work if pre-entry failures dominate, or convergence/stabilization work if post-entry failures dominate.",
+        "evidence_references": [
+          "E2"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 of 200 official episodes to complete an uninterrupted 100-control-step hold. The campaign must first identify the dominant failure mechanism so that subsequent learning changes address the mechanism that limits progress toward 98% official success rather than optimize an unvalidated proxy.",
+        "next_direction_or_closure": "The goal-review transition is complete: continue inquiry I1 in a fresh inquiry session. The first operation there should train a fresh policy with exactly the maintainer's 120000-step allocation, followed by a deterministic non-protected development measurement using the diagnostic fields in the inquiry closure condition. Do not request official assessment until a candidate has evidence-backed best-known status and the failure mechanism has been addressed."
+      },
+      "result": {
+        "session_id": "S2",
+        "status": "checkpointed"
+      },
+      "session_id": "S2",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "7f8d90bbd2276547f658e726f91e02b8dde06704",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "No candidates, working model, best-known model, or retained model exists.",
+        "completed_operations": [
+          "E2"
+        ],
+        "cumulative_resource_use": "No training, evaluation, or other campaign operation has completed; cumulative scientific resource use remains zero.",
+        "current_goal_gap": "There is still no trained candidate, behavioral evidence, or best-known model, so the gap to 98% success remains unquantified. The next inquiry session must obtain a fresh 120000-step baseline and deterministic development diagnostics before any claim about policy quality or route viability is justified.",
+        "current_synthesis": "The scientific model establishes a fully extended q2=0 reset, 20 ms effort control, a 1 cm tolerance, and a required uninterrupted 100-step hold. It also establishes competing possible mechanisms: initial singularity escape and reorientation, branch or boundary geometry, and residual-motion overshoot or stabilization failure. Operation E2 opened inquiry I1 but produced no behavioral evidence; therefore these explanations remain unresolved and no learnability or reward-value claim is supported.",
+        "decision_frontier": "For a first policy trained under the fixed 120000-step allocation, do failures occur mainly before first entry into the 1 cm region or after entry through hold interruptions, and how do those mechanisms vary with target radius, bearing, and inverse-kinematic branch? Episode-level success, first-entry step, minimum and terminal distance, maximum held streak, interruptions, and target geometry will discriminate the routes: acquisition/coverage work if pre-entry failures dominate, or convergence/stabilization work if post-entry failures dominate.",
+        "evidence_references": [
+          "E2"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 of 200 official episodes to complete an uninterrupted 100-control-step hold. The campaign must first identify the dominant failure mechanism so that subsequent learning changes address the mechanism that limits progress toward 98% official success rather than optimize an unvalidated proxy.",
+        "inquiry_id": null,
+        "next_direction_or_closure": "The goal-review transition is complete: continue inquiry I1 in a fresh inquiry session. The first operation there should train a fresh policy with exactly the maintainer's 120000-step allocation, followed by a deterministic non-protected development measurement using the diagnostic fields in the inquiry closure condition. Do not request official assessment until a candidate has evidence-backed best-known status and the failure mechanism has been addressed.",
+        "session_id": "S2"
+      },
+      "presentation": {
+        "backend_session_id": "b1260f95-5ae9-423e-b623-312a8c4b8965",
+        "campaign_id": "102eeeb6-1f71-4f83-8b93-cb122f526952",
+        "campaign_usage": "6m19s | 10.44 AIU | prompt 1.5m (85% cached) | output 16.7k",
+        "session_id": "S2",
+        "session_kind": "goal_review",
+        "session_usage": "1m39s | 1.95 AIU | prompt 205.3k (74% cached) | output 2.7k"
+      },
+      "result": {
+        "session_id": "S2",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "78d7d5da0828a80560554bb88b45634867104a72",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E3",
+    "inquiry_id": null,
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "No candidates, working model, best-known model, or retained model exists.",
+        "completed_operations": [
+          "E2"
+        ],
+        "cumulative_resource_use": "No training, evaluation, or other campaign operation has completed; cumulative scientific resource use remains zero.",
+        "current_goal_gap": "There is still no trained candidate, behavioral evidence, or best-known model, so the gap to 98% success remains unquantified. The next inquiry session must obtain a fresh 120000-step baseline and deterministic development diagnostics before any claim about policy quality or route viability is justified.",
+        "current_synthesis": "The scientific model establishes a fully extended q2=0 reset, 20 ms effort control, a 1 cm tolerance, and a required uninterrupted 100-step hold. It also establishes competing possible mechanisms: initial singularity escape and reorientation, branch or boundary geometry, and residual-motion overshoot or stabilization failure. Operation E2 opened inquiry I1 but produced no behavioral evidence; therefore these explanations remain unresolved and no learnability or reward-value claim is supported.",
+        "decision_frontier": "For a first policy trained under the fixed 120000-step allocation, do failures occur mainly before first entry into the 1 cm region or after entry through hold interruptions, and how do those mechanisms vary with target radius, bearing, and inverse-kinematic branch? Episode-level success, first-entry step, minimum and terminal distance, maximum held streak, interruptions, and target geometry will discriminate the routes: acquisition/coverage work if pre-entry failures dominate, or convergence/stabilization work if post-entry failures dominate.",
+        "evidence_references": [
+          "E2"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 of 200 official episodes to complete an uninterrupted 100-control-step hold. The campaign must first identify the dominant failure mechanism so that subsequent learning changes address the mechanism that limits progress toward 98% official success rather than optimize an unvalidated proxy.",
+        "next_direction_or_closure": "The goal-review transition is complete: continue inquiry I1 in a fresh inquiry session. The first operation there should train a fresh policy with exactly the maintainer's 120000-step allocation, followed by a deterministic non-protected development measurement using the diagnostic fields in the inquiry closure condition. Do not request official assessment until a candidate has evidence-backed best-known status and the failure mechanism has been addressed."
+      }
+    },
+    "request_fingerprint": "c7353ec9cf14534f32f3284aaf6aaff74e9cffc76314df7cffbaa2a8e6d0d155",
+    "session_id": "S2",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No candidates, working model, best-known model, or retained model exists.",
-    "completed_operations": [],
-    "cumulative_resource_use": "No training, evaluation, or other campaign operation has completed; cumulative scientific resource use is zero.",
-    "current_goal_gap": "There is no trained candidate or behavioral evidence yet, so the gap to 98% success is unquantified. The physical model predicts that both initial escape from the fully extended singularity and terminal velocity regulation may be consequential, with branch and target-geometry effects potentially conditioning either failure mode.",
-    "current_synthesis": "Established by the scientific model: the arm starts fully extended at q2=0, receives effort commands only every 20 ms, and must remain within 1 cm for 100 consecutive control steps. Two feasible inverse-kinematic branches can produce the same target position but different leverage and joint-limit margins. No campaign observation yet distinguishes the competing explanations that failure is dominated by initial singularity escape/reorientation, by branch or boundary geometry, or by overshoot and stabilization after first entry. Consequently no claim about learnability, policy quality, or the value of the current reward is justified.",
-    "decision_frontier": "Does a first trained policy fail mainly before entering the 1 cm region, or after entry because residual motion causes hold interruptions, and how do those mechanisms vary with target radius, bearing, and inverse-kinematic branch? A deterministic development panel with episode-level success, first-entry step, minimum and terminal distance, maximum held streak, interruptions, and target geometry will discriminate these explanations. If pre-entry failures dominate, the route should address acquisition, singularity escape, or branch/geometry coverage; if post-entry failures dominate, it should address convergence and stabilization under the 20 ms effort loop.",
-    "evidence_references": [],
-    "human_goal_connection": "The human goal requires at least 196 of 200 official episodes to complete an uninterrupted 100-control-step hold. The first scientific direction is therefore to characterize and then remove the dominant failure mechanism across the full target distribution, rather than optimize a reach-only proxy.",
+    "completed_operations": [
+      "E2"
+    ],
+    "cumulative_resource_use": "No training, evaluation, or other campaign operation has completed; cumulative scientific resource use remains zero.",
+    "current_goal_gap": "There is still no trained candidate, behavioral evidence, or best-known model, so the gap to 98% success remains unquantified. The next inquiry session must obtain a fresh 120000-step baseline and deterministic development diagnostics before any claim about policy quality or route viability is justified.",
+    "current_synthesis": "The scientific model establishes a fully extended q2=0 reset, 20 ms effort control, a 1 cm tolerance, and a required uninterrupted 100-step hold. It also establishes competing possible mechanisms: initial singularity escape and reorientation, branch or boundary geometry, and residual-motion overshoot or stabilization failure. Operation E2 opened inquiry I1 but produced no behavioral evidence; therefore these explanations remain unresolved and no learnability or reward-value claim is supported.",
+    "decision_frontier": "For a first policy trained under the fixed 120000-step allocation, do failures occur mainly before first entry into the 1 cm region or after entry through hold interruptions, and how do those mechanisms vary with target radius, bearing, and inverse-kinematic branch? Episode-level success, first-entry step, minimum and terminal distance, maximum held streak, interruptions, and target geometry will discriminate the routes: acquisition/coverage work if pre-entry failures dominate, or convergence/stabilization work if post-entry failures dominate.",
+    "evidence_references": [
+      "E2"
+    ],
+    "human_goal_connection": "The human goal requires at least 196 of 200 official episodes to complete an uninterrupted 100-control-step hold. The campaign must first identify the dominant failure mechanism so that subsequent learning changes address the mechanism that limits progress toward 98% official success rather than optimize an unvalidated proxy.",
     "inquiry_id": null,
-    "next_direction_or_closure": "Enter goal review and open one bounded inquiry on baseline failure decomposition. The first inquiry should train a fresh policy with the fixed 120000-step allocation and measure its available checkpoints on a non-protected deterministic panel using the diagnostic fields above; the result will decide whether the campaign first needs acquisition/coverage work or hold-stabilization work.",
-    "scientific_commit": "b03b2933405563057badb9e15cfc272dabd0fcdf",
-    "session_id": "S1"
+    "next_direction_or_closure": "The goal-review transition is complete: continue inquiry I1 in a fresh inquiry session. The first operation there should train a fresh policy with exactly the maintainer's 120000-step allocation, followed by a deterministic non-protected development measurement using the diagnostic fields in the inquiry closure condition. Do not request official assessment until a candidate has evidence-backed best-known status and the failure mechanism has been addressed.",
+    "scientific_commit": "78d7d5da0828a80560554bb88b45634867104a72",
+    "session_id": "S2"
   },
   "schema_version": 6,
   "scientific_model": {
@@ -105,21 +224,6 @@
     "path": "research/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "b1260f95-5ae9-423e-b623-312a8c4b8965",
-    "id": "S2",
-    "inquiry_id": null,
-    "kind": "goal_review",
-    "objective": "Decide whether to request official assessment, open one bounded goal-linked inquiry, or conclude that no credible route remains.",
-    "operation_ids": [
-      "E2"
-    ],
-    "scientific_parent_commit": "7f8d90bbd2276547f658e726f91e02b8dde06704"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
