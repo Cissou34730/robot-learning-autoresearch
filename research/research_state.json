@@ -84,44 +84,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "open",
-        "inquiry": {
-          "closure_condition": "Close or redirect this inquiry after one baseline training operation and one diagnostic evaluation have quantified first-entry timing, entry velocity or convergence quality, longest uninterrupted hold, interruption causes, and target-geometry strata sufficiently to select the next goal-linked action.",
-          "goal_connection": "The human goal requires at least 196 of 200 official episodes to complete one uninterrupted 100-step hold. Identifying whether acquisition or regulation is the dominant loss mechanism determines which next intervention can credibly improve official success.",
-          "id": "I1",
-          "opened_in_session": "S2",
-          "question": "For a first learned policy under the official target distribution, are episode failures dominated by escaping the initial singular configuration and selecting a viable trajectory, or by residual velocity and interruptions during the complete 100-step hold?",
-          "rationale": "No learned candidate or development measurement exists, so official assessment is unjustified and no-credible-route is unsupported. The fixed physical model predicts competing acquisition and regulation failures; a baseline plus mechanism-specific diagnostics is the smallest evidence-producing route that can discriminate them without optimizing a proxy disconnected from uninterrupted hold success.",
-          "reframes": []
-        }
-      },
-      "result": {
-        "action": "open",
-        "inquiry_id": "I1",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E2",
-    "inquiry_id": null,
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "open",
-        "closure_condition": "Close or redirect this inquiry after one baseline training operation and one diagnostic evaluation have quantified first-entry timing, entry velocity or convergence quality, longest uninterrupted hold, interruption causes, and target-geometry strata sufficiently to select the next goal-linked action.",
-        "goal_connection": "The human goal requires at least 196 of 200 official episodes to complete one uninterrupted 100-step hold. Identifying whether acquisition or regulation is the dominant loss mechanism determines which next intervention can credibly improve official success.",
-        "question": "For a first learned policy under the official target distribution, are episode failures dominated by escaping the initial singular configuration and selecting a viable trajectory, or by residual velocity and interruptions during the complete 100-step hold?",
-        "rationale": "No learned candidate or development measurement exists, so official assessment is unjustified and no-credible-route is unsupported. The fixed physical model predicts competing acquisition and regulation failures; a baseline plus mechanism-specific diagnostics is the smallest evidence-producing route that can discriminate them without optimizing a proxy disconnected from uninterrupted hold success."
-      }
-    },
-    "request_fingerprint": "345d8f1481bb56108c112840955e69425fd9930fa41d79fb6bc7bf0d8c74b7d2",
-    "session_id": "S2",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "No candidates exist and no working, best-known, or retained role is assigned.",
     "completed_operations": [],
