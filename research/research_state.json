@@ -13983,38 +13983,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I11",
-        "outcome": "Negative decision: the restored T1 baseline formulation did not produce an assessment-ready frozen policy under the pre-specified checkpoint-selection and training-reliability protocol. The rule selected T9:checkpoint-95232 before evaluation, but its two fresh complete-distribution panels achieved only 159/200 (79.5%) and 167/200 (83.5%), both below the 196/200 threshold. Combined with the prior T1 results of 196/200 once followed by 194/200, 192/200, 192/200, 194/200, and 193/200, the restored baseline route cannot be treated as repeatable or best-known.",
-        "reason": "M11 directly tests I11's stated protocol without checkpoint-selection leakage: T9:checkpoint-95232 was fixed from training trajectory evidence, then evaluated on two fresh non-overlapping 200-episode panels using the complete uninterrupted-hold criterion. It failed to reach 196/200 on either panel and was substantially below the threshold on both. The controlled result resolves the consequential uncertainty opened by I11: justified checkpoint selection and a fresh baseline training run do not yield assessment readiness. Remaining uncertainty about untested formulations or learning methods belongs to a future goal-review decision and cannot change I11's negative answer."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I11",
-        "outcome": "Negative decision: the restored T1 baseline formulation did not produce an assessment-ready frozen policy under the pre-specified checkpoint-selection and training-reliability protocol. The rule selected T9:checkpoint-95232 before evaluation, but its two fresh complete-distribution panels achieved only 159/200 (79.5%) and 167/200 (83.5%), both below the 196/200 threshold. Combined with the prior T1 results of 196/200 once followed by 194/200, 192/200, 192/200, 194/200, and 193/200, the restored baseline route cannot be treated as repeatable or best-known.",
-        "reason": "M11 directly tests I11's stated protocol without checkpoint-selection leakage: T9:checkpoint-95232 was fixed from training trajectory evidence, then evaluated on two fresh non-overlapping 200-episode panels using the complete uninterrupted-hold criterion. It failed to reach 196/200 on either panel and was substantially below the threshold on both. The controlled result resolves the consequential uncertainty opened by I11: justified checkpoint selection and a fresh baseline training run do not yield assessment readiness. Remaining uncertainty about untested formulations or learning methods belongs to a future goal-review decision and cannot change I11's negative answer.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E52",
-    "inquiry_id": "I11",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "Negative decision: the restored T1 baseline formulation did not produce an assessment-ready frozen policy under the pre-specified checkpoint-selection and training-reliability protocol. The rule selected T9:checkpoint-95232 before evaluation, but its two fresh complete-distribution panels achieved only 159/200 (79.5%) and 167/200 (83.5%), both below the 196/200 threshold. Combined with the prior T1 results of 196/200 once followed by 194/200, 192/200, 192/200, 194/200, and 193/200, the restored baseline route cannot be treated as repeatable or best-known.",
-        "reason": "M11 directly tests I11's stated protocol without checkpoint-selection leakage: T9:checkpoint-95232 was fixed from training trajectory evidence, then evaluated on two fresh non-overlapping 200-episode panels using the complete uninterrupted-hold criterion. It failed to reach 196/200 on either panel and was substantially below the threshold on both. The controlled result resolves the consequential uncertainty opened by I11: justified checkpoint selection and a fresh baseline training run do not yield assessment readiness. Remaining uncertainty about untested formulations or learning methods belongs to a future goal-review decision and cannot change I11's negative answer."
-      }
-    },
-    "request_fingerprint": "17e23150442a0753c27ad697eff073f6d9db810b20828c66071474a6e78b7697",
-    "session_id": "S26",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T1:checkpoint-100352 remains the strongest measured baseline but is unassigned; its repeated fresh-panel results are the subject of I11. T8:checkpoint-90112 is rejected as an I10 route after M10. T7:checkpoint-120832 remains rejected by M9. No candidate has working, best-known, or retained status.",
     "completed_operations": [
