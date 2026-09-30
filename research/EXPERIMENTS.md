@@ -100,3 +100,4 @@
 | E67 | checkpoint | I14 | checkpointed |
 | E68 | inquiry | I15 | completed |
 | E69 | checkpoint | - | checkpointed |
+| E70 | restore_recipe | I15 | restored |
