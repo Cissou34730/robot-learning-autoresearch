@@ -8,7 +8,7 @@ import numpy as np
 
 from robot_learning.robots.two_joint_arm import FOREARM_LENGTH, UPPER_ARM_LENGTH
 
-OBSERVATION_SIZE = 11
+OBSERVATION_SIZE = 17
 
 
 def _wrap_to_pi(angle: float) -> float:
@@ -50,6 +50,64 @@ def branch_configuration_error(data) -> float:
     return float(min(np.linalg.norm(errors[0]), np.linalg.norm(errors[1])))
 
 
+def _planar_jacobian(data) -> np.ndarray:
+    q1, q2 = np.asarray(data.qpos[:2], dtype=np.float64)
+    q12 = q1 + q2
+    return np.asarray(
+        [
+            [
+                -UPPER_ARM_LENGTH * np.sin(q1) - FOREARM_LENGTH * np.sin(q12),
+                -FOREARM_LENGTH * np.sin(q12),
+            ],
+            [
+                UPPER_ARM_LENGTH * np.cos(q1) + FOREARM_LENGTH * np.cos(q12),
+                FOREARM_LENGTH * np.cos(q12),
+            ],
+        ],
+        dtype=np.float64,
+    )
+
+
+def task_aligned_regulation_state(data) -> np.ndarray:
+    end_effector = np.asarray(data.site("end_effector").xpos, dtype=np.float64)
+    target_relative = end_effector - np.asarray(
+        data.mocap_pos[0], dtype=np.float64
+    )
+    planar_jacobian = _planar_jacobian(data)
+    planar_velocity = planar_jacobian @ np.asarray(data.qvel[:2], dtype=np.float64)
+    end_effector_velocity = np.asarray(
+        [planar_velocity[0], planar_velocity[1], 0.0], dtype=np.float64
+    )
+
+    radial_distance = float(np.linalg.norm(target_relative[:2]))
+    if radial_distance > np.finfo(np.float64).eps:
+        radial_direction = target_relative[:2] / radial_distance
+        tangential_direction = np.asarray(
+            [-radial_direction[1], radial_direction[0]], dtype=np.float64
+        )
+        radial_velocity = float(np.dot(planar_velocity, radial_direction))
+        tangential_velocity = float(
+            np.dot(planar_velocity, tangential_direction)
+        )
+    else:
+        radial_velocity = 0.0
+        tangential_velocity = 0.0
+
+    singular_values = np.linalg.svd(planar_jacobian, compute_uv=False)
+    jacobian_conditioning = float(
+        singular_values[-1] / max(singular_values[0], np.finfo(np.float64).eps)
+    )
+    return np.concatenate(
+        [
+            end_effector_velocity,
+            np.asarray(
+                [radial_velocity, tangential_velocity, jacobian_conditioning],
+                dtype=np.float64,
+            ),
+        ]
+    )
+
+
 def reach_observation(data) -> np.ndarray:
     branch_errors = inverse_kinematic_branch_errors(data)
     end_effector = data.site("end_effector").xpos.copy()
@@ -59,5 +117,6 @@ def reach_observation(data) -> np.ndarray:
             data.qvel,
             end_effector - data.mocap_pos[0],
             branch_errors,
+            task_aligned_regulation_state(data),
         ]
     ).astype(np.float32)

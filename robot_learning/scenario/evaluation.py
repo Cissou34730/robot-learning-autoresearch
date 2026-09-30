@@ -20,7 +20,7 @@ from robot_learning.policy_runtime import load_runtime
 from robot_learning.scenario.environment import make_evaluation_env
 
 # Bumped when the meaning of a scenario evaluation summary changes.
-RESEARCH_EVALUATION_SUMMARY_VERSION = 4
+RESEARCH_EVALUATION_SUMMARY_VERSION = 5
 HIGH_EXIT_SPEED_CM_PER_SECOND = 5.0
 ACTION_SATURATION_THRESHOLD = 0.95
 RADIUS_BINS_CM = ((6.0, 10.0), (10.0, 14.0), (14.0, 18.0), (18.0, 20.0))
@@ -138,6 +138,9 @@ def evaluate_research_model(
         entry_speed_cm_per_second: float | None = None
         entry_joint_speed_rad_per_second: float | None = None
         interruption_events: list[dict] = []
+        hold_cartesian_speeds: list[float] = []
+        hold_joint_speeds: list[float] = []
+        hold_action_magnitudes: list[float] = []
         while not (terminated or truncated):
             action = runtime.predict(obs)
             obs, reward, terminated, truncated, info = env.step(action)
@@ -156,18 +159,21 @@ def evaluate_research_model(
             )
             distance_cm = 100.0 * float(info["distance"])
             held_steps = int(info.get("held_steps", 0))
+            action_magnitude = float(np.max(np.abs(np.asarray(action))))
             min_distance_cm = min(min_distance_cm, distance_cm)
             final_distance_cm = distance_cm
             max_held_steps = max(max_held_steps, held_steps)
             if held_steps > 0:
                 in_tolerance_steps += 1
+                hold_cartesian_speeds.append(cartesian_speed_cm_per_second)
+                hold_joint_speeds.append(joint_speed_rad_per_second)
+                hold_action_magnitudes.append(action_magnitude)
                 if first_reach_step is None:
                     first_reach_step = steps
                     entry_speed_cm_per_second = cartesian_speed_cm_per_second
                     entry_joint_speed_rad_per_second = joint_speed_rad_per_second
             elif was_in_tolerance:
                 hold_interruptions += 1
-                action_magnitude = float(np.max(np.abs(np.asarray(action))))
                 interruption_events.append(
                     {
                         "step": steps,
@@ -220,6 +226,13 @@ def evaluate_research_model(
             "in_tolerance_steps": in_tolerance_steps,
             "hold_interruptions": hold_interruptions,
             "interruption_events": interruption_events,
+            "hold_cartesian_speed_cm_per_second": _summary(hold_cartesian_speeds),
+            "hold_joint_speed_rad_per_second": _summary(hold_joint_speeds),
+            "hold_action_max_abs": _summary(hold_action_magnitudes),
+            "hold_saturated_action_steps": sum(
+                magnitude >= ACTION_SATURATION_THRESHOLD
+                for magnitude in hold_action_magnitudes
+            ),
         }
         episode_results.append(
             {
@@ -282,6 +295,33 @@ def evaluate_research_model(
                 "longest_hold_steps": _summary(
                     [float(item["max_held_steps"]) for item in episode_diagnostics]
                 ),
+                "hold_cartesian_speed_cm_per_second": _summary(
+                    [
+                        float(speed)
+                        for item in episode_diagnostics
+                        for speed in [
+                            item["hold_cartesian_speed_cm_per_second"]["mean"]
+                        ]
+                        if speed is not None
+                    ]
+                ),
+                "hold_joint_speed_rad_per_second": _summary(
+                    [
+                        float(speed)
+                        for item in episode_diagnostics
+                        for speed in [
+                            item["hold_joint_speed_rad_per_second"]["mean"]
+                        ]
+                        if speed is not None
+                    ]
+                ),
+                "hold_saturated_action_steps": sum(
+                    int(item["hold_saturated_action_steps"])
+                    for item in episode_diagnostics
+                ),
+                "hold_steps_observed": sum(
+                    int(item["in_tolerance_steps"]) for item in episode_diagnostics
+                ),
                 "geometry_strata": _geometry_summary(episode_diagnostics),
             },
             "measurement_definitions": {
@@ -289,8 +329,11 @@ def evaluate_research_model(
                 "time": "control_steps",
                 "control_dt_seconds": control_dt_seconds,
                 "entry_speed": "finite difference of end-effector position at control boundaries",
+                "hold_cartesian_speed": "finite-difference end-effector speed at in-tolerance control boundaries",
+                "hold_joint_speed": "joint velocity norm at in-tolerance control boundaries",
                 "high_exit_speed_cm_per_second": HIGH_EXIT_SPEED_CM_PER_SECOND,
                 "action_saturation_threshold": ACTION_SATURATION_THRESHOLD,
+                "hold_saturated_action_steps": "in-tolerance control boundaries whose maximum action magnitude reaches the saturation threshold",
                 "radius_bins_cm": RADIUS_BINS_CM,
                 "angle_sectors": ANGLE_SECTORS,
             },
