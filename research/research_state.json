@@ -11243,44 +11243,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "open",
-        "inquiry": {
-          "closure_condition": "Close after one controlled training and fresh shared-seed 200-episode complete-distribution comparison against restored T1: the inquiry is actionable only if the candidate reaches at least 196/200 and retains complete 100-step holds, otherwise record a decision-sufficient negative answer for this policy-only route.",
-          "goal_connection": "A positive result would provide a candidate capable of meeting the 98% complete-distribution objective while preserving the proven baseline action interface; a negative result would determine whether this remaining two-success gap is not credibly addressable by policy representation and optimization alone.",
-          "id": "I10",
-          "opened_in_session": "S22",
-          "question": "Can a policy-only, branch-factorized PPO formulation that preserves T1's 11-element observation and direct joint-action interface improve the rare complete-task failures from 194/200 to at least 196/200 without degrading the uninterrupted hold?",
-          "rationale": "Observed M9 places the restored T1 baseline at 194/200, with failures concentrated before or during successful settling, while the tested observation, reward, phase-control, and continuous-residual interventions materially degraded complete-task success. No completed operation has tested whether a policy representation that allocates separate learned approach behavior by feasible branch or target sector can address that tail while leaving the baseline observation and direct-action interfaces unchanged. This is the remaining consequential uncertainty before concluding that no credible route remains.",
-          "reframes": []
-        }
-      },
-      "result": {
-        "action": "open",
-        "inquiry_id": "I10",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E43",
-    "inquiry_id": null,
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "open",
-        "closure_condition": "Close after one controlled training and fresh shared-seed 200-episode complete-distribution comparison against restored T1: the inquiry is actionable only if the candidate reaches at least 196/200 and retains complete 100-step holds, otherwise record a decision-sufficient negative answer for this policy-only route.",
-        "goal_connection": "A positive result would provide a candidate capable of meeting the 98% complete-distribution objective while preserving the proven baseline action interface; a negative result would determine whether this remaining two-success gap is not credibly addressable by policy representation and optimization alone.",
-        "question": "Can a policy-only, branch-factorized PPO formulation that preserves T1's 11-element observation and direct joint-action interface improve the rare complete-task failures from 194/200 to at least 196/200 without degrading the uninterrupted hold?",
-        "rationale": "Observed M9 places the restored T1 baseline at 194/200, with failures concentrated before or during successful settling, while the tested observation, reward, phase-control, and continuous-residual interventions materially degraded complete-task success. No completed operation has tested whether a policy representation that allocates separate learned approach behavior by feasible branch or target sector can address that tail while leaving the baseline observation and direct-action interfaces unchanged. This is the remaining consequential uncertainty before concluding that no credible route remains."
-      }
-    },
-    "request_fingerprint": "b661ff4a0a1760603ca18f4072b04999fc96f143f3d4067a10404e87176a68cb",
-    "session_id": "S22",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T1:checkpoint-100352 and T7:checkpoint-120832 remain unassigned measured candidates. T7 is rejected as an I9 route by M9; no candidate has working, best-known, or retained status.",
     "completed_operations": [
