@@ -63,6 +63,11 @@ def _run_case(
     gains: dict[str, float],
     hold_steps_required: int,
 ) -> dict:
+    site_id = mujoco.mj_name2id(
+        model, mujoco.mjtObj.mjOBJ_SITE, "end_effector"
+    )
+    site_jacobian = np.zeros((3, model.nv), dtype=np.float64)
+    rotational_jacobian = np.zeros((3, model.nv), dtype=np.float64)
     mujoco.mj_resetData(model, data)
     data.qpos[:] = 0.0
     data.qvel[:] = 0.0
@@ -98,7 +103,10 @@ def _run_case(
         distance = float(np.linalg.norm(endpoint - data.mocap_pos[0]))
         minimum_distance = min(minimum_distance, distance)
         in_tolerance = distance <= SUCCESS_THRESHOLD
-        speed = float(np.linalg.norm(data.site("end_effector").xvelp))
+        mujoco.mj_jacSite(
+            model, data, site_jacobian, rotational_jacobian, site_id
+        )
+        speed = float(np.linalg.norm(site_jacobian @ data.qvel))
         if in_tolerance:
             if first_entry is None:
                 first_entry = step
