@@ -29,3 +29,4 @@
 | E17 | checkpoint | I4 | checkpointed |
 | E18 | inquiry | I5 | completed |
 | E19 | checkpoint | - | checkpointed |
+| T5 | training | I5 | completed |
