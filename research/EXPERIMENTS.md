@@ -51,3 +51,4 @@
 | E35 | checkpoint | - | checkpointed |
 | T6 | training | I8 | completed |
 | M8 | measurement | I8 | completed |
+| E36 | checkpoint | I8 | checkpointed |
