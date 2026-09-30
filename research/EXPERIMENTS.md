@@ -50,3 +50,4 @@
 | E34 | inquiry | I8 | completed |
 | E35 | checkpoint | - | checkpointed |
 | T6 | training | I8 | completed |
+| M8 | measurement | I8 | completed |
