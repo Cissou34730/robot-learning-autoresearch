@@ -826,7 +826,7 @@
     }
   },
   "counters": {
-    "event": 0,
+    "event": 1,
     "inquiry": 0,
     "measurement": 0,
     "session": 1,
@@ -835,7 +835,7 @@
   "human_goal": {
     "source": "research/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -1045,31 +1045,148 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-09-30T17:24:13Z",
+      "error": null,
+      "id": "E1",
+      "inquiry_id": null,
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "No working, best-known, or retained model role is assigned. T1:checkpoint-100352 is the leading measurement candidate by training success, but that ranking is provisional and is not evidence of official-task performance.",
+        "completed_operations": [
+          "T1"
+        ],
+        "cumulative_resource_use": "One completed fresh training run, T1, with 120000 requested steps and 120832 actual optimizer steps due to rollout-boundary completion; no measurements, role assignments, or official assessment.",
+        "current_goal_gap": "There is no official-distribution development measurement yet. The strongest training evidence is 0.97 success for T1:checkpoint-100352 on the narrower training distribution, with later checkpoints fluctuating between 0.93 and 0.95; this leaves both generalization to inner radii and the cause of any incomplete holds unresolved.",
+        "current_synthesis": "Observed: T1 learned from zero to high complete-hold success, reaching 0.97 at checkpoint-100352 by 100352 steps, then fluctuating or regressing through 120832 steps. This establishes learnability of the current state-based PPO recipe on the outer-radius training distribution, not attainment of the human goal. Competing explanations remain: (1) the principal gap is distributional, because the policy never trains on official inner-radius targets where folded configurations and different Jacobians apply; (2) the principal gap is transient control, where reach or deceleration leaves residual velocity and interrupts the 100-step hold even on familiar geometry. The training dynamics alone cannot distinguish these explanations, and no claim about official success or branch preference is justified.",
+        "decision_frontier": "Does the baseline fail the official task primarily because it has not learned the inner-radius geometry, or because its learned motion does not settle and remain inside the tolerance band? A disjoint official-distribution research measurement of the strongest baseline candidate, retaining target radius and hold/entry/interruption diagnostics, will discriminate these explanations: inner-radius concentration supports a coverage/generalization intervention; broad-radius failures dominated by late entry or interrupted holds support a stabilization/control or hold-learning intervention.",
+        "evidence_references": [
+          "T1"
+        ],
+        "human_goal_connection": "T1 demonstrates that the current PPO policy and reward can learn complete uninterrupted holds on the narrowed 0.14-0.20 m training distribution, but it does not establish the required 98% success over the official 0.06-0.20 m distribution. The next scientific action must identify and remove the dominant official-task failure mechanism rather than optimize the in-training score.",
+        "next_direction_or_closure": "At goal review, open an inquiry on official-distribution baseline generalization versus uninterrupted-hold stability, then measure T1:checkpoint-100352 on a disjoint development panel with the existing task mechanics and diagnostics before selecting a training intervention."
+      },
+      "result": {
+        "session_id": "S1",
+        "status": "checkpointed"
+      },
+      "session_id": "S1",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
-  "pi_checkpoint": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "8ac4e8ca1b0e94634333ab2d5c777509a50d9fa6",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "No working, best-known, or retained model role is assigned. T1:checkpoint-100352 is the leading measurement candidate by training success, but that ranking is provisional and is not evidence of official-task performance.",
+        "completed_operations": [
+          "T1"
+        ],
+        "cumulative_resource_use": "One completed fresh training run, T1, with 120000 requested steps and 120832 actual optimizer steps due to rollout-boundary completion; no measurements, role assignments, or official assessment.",
+        "current_goal_gap": "There is no official-distribution development measurement yet. The strongest training evidence is 0.97 success for T1:checkpoint-100352 on the narrower training distribution, with later checkpoints fluctuating between 0.93 and 0.95; this leaves both generalization to inner radii and the cause of any incomplete holds unresolved.",
+        "current_synthesis": "Observed: T1 learned from zero to high complete-hold success, reaching 0.97 at checkpoint-100352 by 100352 steps, then fluctuating or regressing through 120832 steps. This establishes learnability of the current state-based PPO recipe on the outer-radius training distribution, not attainment of the human goal. Competing explanations remain: (1) the principal gap is distributional, because the policy never trains on official inner-radius targets where folded configurations and different Jacobians apply; (2) the principal gap is transient control, where reach or deceleration leaves residual velocity and interrupts the 100-step hold even on familiar geometry. The training dynamics alone cannot distinguish these explanations, and no claim about official success or branch preference is justified.",
+        "decision_frontier": "Does the baseline fail the official task primarily because it has not learned the inner-radius geometry, or because its learned motion does not settle and remain inside the tolerance band? A disjoint official-distribution research measurement of the strongest baseline candidate, retaining target radius and hold/entry/interruption diagnostics, will discriminate these explanations: inner-radius concentration supports a coverage/generalization intervention; broad-radius failures dominated by late entry or interrupted holds support a stabilization/control or hold-learning intervention.",
+        "evidence_references": [
+          "T1"
+        ],
+        "human_goal_connection": "T1 demonstrates that the current PPO policy and reward can learn complete uninterrupted holds on the narrowed 0.14-0.20 m training distribution, but it does not establish the required 98% success over the official 0.06-0.20 m distribution. The next scientific action must identify and remove the dominant official-task failure mechanism rather than optimize the in-training score.",
+        "inquiry_id": null,
+        "next_direction_or_closure": "At goal review, open an inquiry on official-distribution baseline generalization versus uninterrupted-hold stability, then measure T1:checkpoint-100352 on a disjoint development panel with the existing task mechanics and diagnostics before selecting a training intervention.",
+        "session_id": "S1"
+      },
+      "presentation": {
+        "backend_session_id": "3031bb43-84d4-4a12-ac96-607d9562c968",
+        "campaign_id": "45b115e7-7eb9-4f84-a3d4-70226aa04758",
+        "campaign_usage": "9m08s | 10.66 AIU | prompt 1.2m (83% cached) | output 26.7k",
+        "session_id": "S1",
+        "session_kind": "startup",
+        "session_usage": "2m17s | 4.14 AIU | prompt 505.1k (79% cached) | output 5.7k"
+      },
+      "result": {
+        "session_id": "S1",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "a39f4a1f5c538b598e6dac6a18d390842a4a333e",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E1",
+    "inquiry_id": null,
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "No working, best-known, or retained model role is assigned. T1:checkpoint-100352 is the leading measurement candidate by training success, but that ranking is provisional and is not evidence of official-task performance.",
+        "completed_operations": [
+          "T1"
+        ],
+        "cumulative_resource_use": "One completed fresh training run, T1, with 120000 requested steps and 120832 actual optimizer steps due to rollout-boundary completion; no measurements, role assignments, or official assessment.",
+        "current_goal_gap": "There is no official-distribution development measurement yet. The strongest training evidence is 0.97 success for T1:checkpoint-100352 on the narrower training distribution, with later checkpoints fluctuating between 0.93 and 0.95; this leaves both generalization to inner radii and the cause of any incomplete holds unresolved.",
+        "current_synthesis": "Observed: T1 learned from zero to high complete-hold success, reaching 0.97 at checkpoint-100352 by 100352 steps, then fluctuating or regressing through 120832 steps. This establishes learnability of the current state-based PPO recipe on the outer-radius training distribution, not attainment of the human goal. Competing explanations remain: (1) the principal gap is distributional, because the policy never trains on official inner-radius targets where folded configurations and different Jacobians apply; (2) the principal gap is transient control, where reach or deceleration leaves residual velocity and interrupts the 100-step hold even on familiar geometry. The training dynamics alone cannot distinguish these explanations, and no claim about official success or branch preference is justified.",
+        "decision_frontier": "Does the baseline fail the official task primarily because it has not learned the inner-radius geometry, or because its learned motion does not settle and remain inside the tolerance band? A disjoint official-distribution research measurement of the strongest baseline candidate, retaining target radius and hold/entry/interruption diagnostics, will discriminate these explanations: inner-radius concentration supports a coverage/generalization intervention; broad-radius failures dominated by late entry or interrupted holds support a stabilization/control or hold-learning intervention.",
+        "evidence_references": [
+          "T1"
+        ],
+        "human_goal_connection": "T1 demonstrates that the current PPO policy and reward can learn complete uninterrupted holds on the narrowed 0.14-0.20 m training distribution, but it does not establish the required 98% success over the official 0.06-0.20 m distribution. The next scientific action must identify and remove the dominant official-task failure mechanism rather than optimize the in-training score.",
+        "next_direction_or_closure": "At goal review, open an inquiry on official-distribution baseline generalization versus uninterrupted-hold stability, then measure T1:checkpoint-100352 on a disjoint development panel with the existing task mechanics and diagnostics before selecting a training intervention."
+      }
+    },
+    "request_fingerprint": "3c4599204734271a4a1fcf1f8f4a59322b100534eb5f9b8f439728708cce7f0d",
+    "session_id": "S1",
+    "supersedes": null
+  },
+  "pi_checkpoint": {
+    "candidates_and_roles": "No working, best-known, or retained model role is assigned. T1:checkpoint-100352 is the leading measurement candidate by training success, but that ranking is provisional and is not evidence of official-task performance.",
+    "completed_operations": [
+      "T1"
+    ],
+    "cumulative_resource_use": "One completed fresh training run, T1, with 120000 requested steps and 120832 actual optimizer steps due to rollout-boundary completion; no measurements, role assignments, or official assessment.",
+    "current_goal_gap": "There is no official-distribution development measurement yet. The strongest training evidence is 0.97 success for T1:checkpoint-100352 on the narrower training distribution, with later checkpoints fluctuating between 0.93 and 0.95; this leaves both generalization to inner radii and the cause of any incomplete holds unresolved.",
+    "current_synthesis": "Observed: T1 learned from zero to high complete-hold success, reaching 0.97 at checkpoint-100352 by 100352 steps, then fluctuating or regressing through 120832 steps. This establishes learnability of the current state-based PPO recipe on the outer-radius training distribution, not attainment of the human goal. Competing explanations remain: (1) the principal gap is distributional, because the policy never trains on official inner-radius targets where folded configurations and different Jacobians apply; (2) the principal gap is transient control, where reach or deceleration leaves residual velocity and interrupts the 100-step hold even on familiar geometry. The training dynamics alone cannot distinguish these explanations, and no claim about official success or branch preference is justified.",
+    "decision_frontier": "Does the baseline fail the official task primarily because it has not learned the inner-radius geometry, or because its learned motion does not settle and remain inside the tolerance band? A disjoint official-distribution research measurement of the strongest baseline candidate, retaining target radius and hold/entry/interruption diagnostics, will discriminate these explanations: inner-radius concentration supports a coverage/generalization intervention; broad-radius failures dominated by late entry or interrupted holds support a stabilization/control or hold-learning intervention.",
+    "evidence_references": [
+      "T1"
+    ],
+    "human_goal_connection": "T1 demonstrates that the current PPO policy and reward can learn complete uninterrupted holds on the narrowed 0.14-0.20 m training distribution, but it does not establish the required 98% success over the official 0.06-0.20 m distribution. The next scientific action must identify and remove the dominant official-task failure mechanism rather than optimize the in-training score.",
+    "inquiry_id": null,
+    "next_direction_or_closure": "At goal review, open an inquiry on official-distribution baseline generalization versus uninterrupted-hold stability, then measure T1:checkpoint-100352 on a disjoint development panel with the existing task mechanics and diagnostics before selecting a training intervention.",
+    "scientific_commit": "a39f4a1f5c538b598e6dac6a18d390842a4a333e",
+    "session_id": "S1"
+  },
   "schema_version": 6,
   "scientific_model": {
     "commit": "c53cd39574737a58c70a673f33da690e59757c27",
     "path": "research/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "3031bb43-84d4-4a12-ac96-607d9562c968",
-    "id": "S1",
-    "inquiry_id": null,
-    "kind": "startup",
-    "objective": "Establish and checkpoint the most credible first scientific direction toward the human goal from the scientific model and evidence produced in this session; inquiry selection follows in goal review.",
-    "operation_ids": [
-      "T1"
-    ],
-    "scientific_parent_commit": "8ac4e8ca1b0e94634333ab2d5c777509a50d9fa6"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
