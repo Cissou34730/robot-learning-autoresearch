@@ -1,13 +1,5 @@
 {
-  "active_inquiry": {
-    "closure_condition": "Close when controlled evidence on a fresh shared-seed complete-distribution panel, using the established phase and uninterrupted-hold diagnostics, determines whether a temporally structured policy or control formulation preserves baseline complete-task behavior and reaches at least 196/200. If it fails to reach the threshold or materially degrades complete-task success or hold behavior, reject this route and return to goal review.",
-    "goal_connection": "The latest controlled fresh complete-distribution panel measured the strongest baseline and both hard-negative rehearsal candidates at 192/200, four successes below the 196/200 threshold. Official assessment is therefore not justified. The human goal requires complete uninterrupted holds, so any route must improve the rare approach and settling failures without trading away the demonstrated hold capability.",
-    "id": "I8",
-    "opened_in_session": "S17",
-    "question": "Can a materially different temporal policy or control formulation that separates high-energy approach from low-velocity settling and hold improve the residual negative-bearing approach and settling failures, while preserving complete uninterrupted-hold behavior, or do those failures persist despite changing the policy's temporal organization?",
-    "rationale": "Observed evidence rejects angular representation, broader radius training, velocity-sensitive reward, and hard-negative rehearsal within the existing feed-forward PPO recipe, but does not test whether the single policy's temporal organization and credit assignment are the limiting mechanism. The scientific model predicts distinct coupled phases: coordinated approach, motion shedding, settling, and 100-sample regulation. A bounded inquiry into a materially different phase-aware policy or control formulation can discriminate whether the residual tail is an optimization and temporal-organization limitation rather than a plant or observation limitation, while retaining the immutable task, action interface, and complete hold criterion.",
-    "reframes": []
-  },
+  "active_inquiry": null,
   "campaign": {
     "base_commit": "8ac206f76ce0bd7fb8f098b4fe6dceac2a2a311f",
     "id": "eb19a5f3-14b3-4590-ad74-1b31cf5ae3d5",
@@ -4939,16 +4931,16 @@
     }
   },
   "counters": {
-    "event": 36,
+    "event": 37,
     "inquiry": 8,
     "measurement": 8,
-    "session": 18,
+    "session": 19,
     "training": 6
   },
   "human_goal": {
     "source": "research/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -9723,9 +9715,63 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-09-30T00:18:30Z",
+      "error": null,
+      "id": "E37",
+      "inquiry_id": "I8",
+      "kind": "inquiry",
+      "request": {
+        "action": "close",
+        "outcome": "Negative answer: the tested phase-aware temporal control formulation did not preserve the baseline complete-task result or reach the 196/200 threshold. On the fresh shared-seed 200-episode complete-distribution panel, the baseline achieved 192/200 (96.0%), while the phase-aware candidates achieved 180/200 (90.0%), 191/200 (95.5%), and 188/200 (94.0%). The candidates still reached 100-step uninterrupted holds in successful episodes, so the measured shortfall remains concentrated before or during successful settling rather than demonstrating a new loss of hold capability after settling.",
+        "reason": "M8 supplies the controlled evidence required by I8's closure condition. T6:checkpoint-45056, T6:checkpoint-50176, and T6:checkpoint-70656 all failed to reach 196/200, and none preserved or improved the restored T1 baseline on the same fresh panel. The tested temporal organization therefore is rejected as a credible route to the human goal. Remaining uncertainty concerns untested temporal formulations, which does not change this inquiry's decision."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I8",
+        "outcome": "Negative answer: the tested phase-aware temporal control formulation did not preserve the baseline complete-task result or reach the 196/200 threshold. On the fresh shared-seed 200-episode complete-distribution panel, the baseline achieved 192/200 (96.0%), while the phase-aware candidates achieved 180/200 (90.0%), 191/200 (95.5%), and 188/200 (94.0%). The candidates still reached 100-step uninterrupted holds in successful episodes, so the measured shortfall remains concentrated before or during successful settling rather than demonstrating a new loss of hold capability after settling.",
+        "reason": "M8 supplies the controlled evidence required by I8's closure condition. T6:checkpoint-45056, T6:checkpoint-50176, and T6:checkpoint-70656 all failed to reach 196/200, and none preserved or improved the restored T1 baseline on the same fresh panel. The tested temporal organization therefore is rejected as a credible route to the human goal. Remaining uncertainty concerns untested temporal formulations, which does not change this inquiry's decision.",
+        "status": "completed"
+      },
+      "session_id": "S19",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "close",
+        "inquiry_id": "I8",
+        "outcome": "Negative answer: the tested phase-aware temporal control formulation did not preserve the baseline complete-task result or reach the 196/200 threshold. On the fresh shared-seed 200-episode complete-distribution panel, the baseline achieved 192/200 (96.0%), while the phase-aware candidates achieved 180/200 (90.0%), 191/200 (95.5%), and 188/200 (94.0%). The candidates still reached 100-step uninterrupted holds in successful episodes, so the measured shortfall remains concentrated before or during successful settling rather than demonstrating a new loss of hold capability after settling.",
+        "reason": "M8 supplies the controlled evidence required by I8's closure condition. T6:checkpoint-45056, T6:checkpoint-50176, and T6:checkpoint-70656 all failed to reach 196/200, and none preserved or improved the restored T1 baseline on the same fresh panel. The tested temporal organization therefore is rejected as a credible route to the human goal. Remaining uncertainty concerns untested temporal formulations, which does not change this inquiry's decision."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I8",
+        "outcome": "Negative answer: the tested phase-aware temporal control formulation did not preserve the baseline complete-task result or reach the 196/200 threshold. On the fresh shared-seed 200-episode complete-distribution panel, the baseline achieved 192/200 (96.0%), while the phase-aware candidates achieved 180/200 (90.0%), 191/200 (95.5%), and 188/200 (94.0%). The candidates still reached 100-step uninterrupted holds in successful episodes, so the measured shortfall remains concentrated before or during successful settling rather than demonstrating a new loss of hold capability after settling.",
+        "reason": "M8 supplies the controlled evidence required by I8's closure condition. T6:checkpoint-45056, T6:checkpoint-50176, and T6:checkpoint-70656 all failed to reach 196/200, and none preserved or improved the restored T1 baseline on the same fresh panel. The tested temporal organization therefore is rejected as a credible route to the human goal. Remaining uncertainty concerns untested temporal formulations, which does not change this inquiry's decision.",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E37",
+    "inquiry_id": "I8",
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "close",
+        "outcome": "Negative answer: the tested phase-aware temporal control formulation did not preserve the baseline complete-task result or reach the 196/200 threshold. On the fresh shared-seed 200-episode complete-distribution panel, the baseline achieved 192/200 (96.0%), while the phase-aware candidates achieved 180/200 (90.0%), 191/200 (95.5%), and 188/200 (94.0%). The candidates still reached 100-step uninterrupted holds in successful episodes, so the measured shortfall remains concentrated before or during successful settling rather than demonstrating a new loss of hold capability after settling.",
+        "reason": "M8 supplies the controlled evidence required by I8's closure condition. T6:checkpoint-45056, T6:checkpoint-50176, and T6:checkpoint-70656 all failed to reach 196/200, and none preserved or improved the restored T1 baseline on the same fresh panel. The tested temporal organization therefore is rejected as a credible route to the human goal. Remaining uncertainty concerns untested temporal formulations, which does not change this inquiry's decision."
+      }
+    },
+    "request_fingerprint": "451e29cea60162f5ce536d85555b1552b4e64e4d50b221529f6ed45e2551c8e4",
+    "session_id": "S19",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T6:checkpoint-45056, T6:checkpoint-50176, and T6:checkpoint-70656 are measured inquiry candidates and remain unassigned. T1:checkpoint-100352 remains unassigned after the M8 baseline panel. No candidate has working, best-known, or retained status.",
     "completed_operations": [
@@ -9752,6 +9798,21 @@
     "path": "research/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "f7de80f5-9878-426f-8168-ac13f6131668",
+    "id": "S19",
+    "inquiry_id": "I8",
+    "kind": "inquiry",
+    "objective": "Bring I8 to the decision required by its closure condition, and close it as soon as the evidence supplies that decision: Close when controlled evidence on a fresh shared-seed complete-distribution panel, using the established phase and uninterrupted-hold diagnostics, determines whether a temporally structured policy or control formulation preserves baseline complete-task behavior and reaches at least 196/200. If it fails to reach the threshold or materially degrades complete-task success or hold behavior, reject this route and return to goal review.",
+    "operation_ids": [
+      "E37"
+    ],
+    "scientific_parent_commit": "6285c132e5188caf13c0eef323c54186e9ffda64"
+  },
   "terminal_state": null
 }
