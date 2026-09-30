@@ -1266,44 +1266,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "open",
-        "inquiry": {
-          "closure_condition": "Close after one bounded coupled intervention is trained under the fixed 120000-step allocation and evaluated against the baseline on the same 200 fixed-seed official-distribution development panel, with per-episode angle, first entry, uninterrupted hold streak, interruptions, minimum distance, and final distance reported. Treat the route as successful only if the candidate reaches at least 196/200 and does not worsen the baseline's post-entry hold-failure count; otherwise resolve the inquiry as insufficient and retain the best supported candidate without claiming the official objective.",
-          "goal_connection": "The human goal requires at least 196 successes in a 200-episode official panel. The baseline is 189/200 on the matching development distribution, with all failures in the -180 to -90 degree sector and a smaller subgroup that enters tolerance but fails the uninterrupted 100-sample hold. Resolving whether angular acquisition can be improved without sacrificing complete holds is the next direct route toward the goal.",
-          "id": "I2",
-          "opened_in_session": "S4",
-          "question": "Can one coupled intervention focused on acquisition and branch or joint coordination for targets in the -180 to -90 degree sector, while preserving stabilization-aware complete-hold behavior, raise the baseline from 189/200 to at least 196/200 on the same full official-distribution development panel without increasing the post-entry hold-failure subgroup?",
-          "rationale": "M1 separates the dominant failure mode from a secondary one: six of eleven failures never entered tolerance, all eleven are in the -180 to -90 degree sector, and five entered but held only 1-2 samples before interruption. Similar inner-band and training-band radial success rates argue against broad radial coverage as the main cause. A coupled, angle-focused intervention is therefore more discriminating than an isolated stabilization change, while the complete uninterrupted hold and post-entry subgroup remain explicit safeguards against trading acquisition for superficial entry.",
-          "reframes": []
-        }
-      },
-      "result": {
-        "action": "open",
-        "inquiry_id": "I2",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E6",
-    "inquiry_id": null,
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "open",
-        "closure_condition": "Close after one bounded coupled intervention is trained under the fixed 120000-step allocation and evaluated against the baseline on the same 200 fixed-seed official-distribution development panel, with per-episode angle, first entry, uninterrupted hold streak, interruptions, minimum distance, and final distance reported. Treat the route as successful only if the candidate reaches at least 196/200 and does not worsen the baseline's post-entry hold-failure count; otherwise resolve the inquiry as insufficient and retain the best supported candidate without claiming the official objective.",
-        "goal_connection": "The human goal requires at least 196 successes in a 200-episode official panel. The baseline is 189/200 on the matching development distribution, with all failures in the -180 to -90 degree sector and a smaller subgroup that enters tolerance but fails the uninterrupted 100-sample hold. Resolving whether angular acquisition can be improved without sacrificing complete holds is the next direct route toward the goal.",
-        "question": "Can one coupled intervention focused on acquisition and branch or joint coordination for targets in the -180 to -90 degree sector, while preserving stabilization-aware complete-hold behavior, raise the baseline from 189/200 to at least 196/200 on the same full official-distribution development panel without increasing the post-entry hold-failure subgroup?",
-        "rationale": "M1 separates the dominant failure mode from a secondary one: six of eleven failures never entered tolerance, all eleven are in the -180 to -90 degree sector, and five entered but held only 1-2 samples before interruption. Similar inner-band and training-band radial success rates argue against broad radial coverage as the main cause. A coupled, angle-focused intervention is therefore more discriminating than an isolated stabilization change, while the complete uninterrupted hold and post-entry subgroup remain explicit safeguards against trading acquisition for superficial entry."
-      }
-    },
-    "request_fingerprint": "658767965da80eb66629a52b0b671e4bdb87d2e6573bb596d3908b81983908cc",
-    "session_id": "S4",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T1 produced available candidates, including T1:checkpoint-100352 with its archived policy/runtime artifact and M1 evaluation evidence. No working, best-known, or retained role has been assigned.",
     "completed_operations": [
