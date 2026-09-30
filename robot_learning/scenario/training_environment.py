@@ -8,42 +8,12 @@ excluded from the research-evaluation semantics fingerprint.
 """
 
 import gymnasium as gym
-import numpy as np
 
 from robot_learning.scenario.environment import TwoJointArmReachEnv
 
 TRAINING_TARGET_RADIUS_RANGE = (0.14, 0.20)
-HARD_NEGATIVE_BEARING_RANGE = (np.deg2rad(-155.0), np.deg2rad(-110.0))
-HARD_NEGATIVE_TARGET_PROBABILITY = 0.25
-
-
-class HardNegativeRehearsalEnv(TwoJointArmReachEnv):
-    """Preserve baseline radius support while rehearsing the failure sector."""
-
-    def _sample_target_position(self) -> None:
-        if self.np_random.random() < HARD_NEGATIVE_TARGET_PROBABILITY:
-            angle = float(
-                self.np_random.uniform(
-                    HARD_NEGATIVE_BEARING_RANGE[0],
-                    HARD_NEGATIVE_BEARING_RANGE[1],
-                )
-            )
-        else:
-            angle = float(self.np_random.uniform(-np.pi, np.pi))
-        radius = float(
-            self.np_random.uniform(
-                TRAINING_TARGET_RADIUS_RANGE[0],
-                TRAINING_TARGET_RADIUS_RANGE[1],
-            )
-        )
-        target_z = float(self._end_effector_position()[2])
-        self.data.mocap_pos[0] = (
-            radius * np.cos(angle),
-            radius * np.sin(angle),
-            target_z,
-        )
 
 
 def make_training_env() -> gym.Env:
     """Build the Gymnasium environment used for training this scenario."""
-    return HardNegativeRehearsalEnv(target_radius_range=TRAINING_TARGET_RADIUS_RANGE)
+    return TwoJointArmReachEnv(target_radius_range=TRAINING_TARGET_RADIUS_RANGE)

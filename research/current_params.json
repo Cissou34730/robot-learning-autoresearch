@@ -7,7 +7,9 @@
     "net_arch": [
       64,
       64
-    ]
+    ],
+    "representation": "branch_factorized",
+    "branch_hidden_size": 32
   },
   "ppo": {
     "batch_size": 64,
