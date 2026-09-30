@@ -19637,38 +19637,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I14",
-        "outcome": "Negative: the pre-specified model-based controller solved 200/200 episodes in M16, but the training-only selected distilled policy failed the required 196/200 threshold on both fresh complete-distribution panels in M17, achieving 47/200 and 40/200 without runtime controller assistance. The paired comparison over 400 shared episodes recorded 3 distilled-policy wins versus 306 restored-reference wins, a -75.75 percentage-point success delta, and material degradation relative to the restored baseline. This establishes that the tested controller-distillation route is not a credible route to the campaign goal.",
-        "reason": "Observed evidence satisfies I14's negative closure condition: controller capability was supported by M16, while M17's predeclared training-only selection and two fresh panels decisively rejected repeatable learned-policy success at 196/200. The result is consistent with the hypothesis that the tested distillation training process did not preserve the controller's closed-loop behavior; it does not establish that every possible distillation method is impossible. Remaining uncertainty about alternative training recipes cannot change I14's decision because the bounded question was the specified route's repeatable threshold performance, and that route materially degraded the restored reference."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I14",
-        "outcome": "Negative: the pre-specified model-based controller solved 200/200 episodes in M16, but the training-only selected distilled policy failed the required 196/200 threshold on both fresh complete-distribution panels in M17, achieving 47/200 and 40/200 without runtime controller assistance. The paired comparison over 400 shared episodes recorded 3 distilled-policy wins versus 306 restored-reference wins, a -75.75 percentage-point success delta, and material degradation relative to the restored baseline. This establishes that the tested controller-distillation route is not a credible route to the campaign goal.",
-        "reason": "Observed evidence satisfies I14's negative closure condition: controller capability was supported by M16, while M17's predeclared training-only selection and two fresh panels decisively rejected repeatable learned-policy success at 196/200. The result is consistent with the hypothesis that the tested distillation training process did not preserve the controller's closed-loop behavior; it does not establish that every possible distillation method is impossible. Remaining uncertainty about alternative training recipes cannot change I14's decision because the bounded question was the specified route's repeatable threshold performance, and that route materially degraded the restored reference.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E66",
-    "inquiry_id": "I14",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "Negative: the pre-specified model-based controller solved 200/200 episodes in M16, but the training-only selected distilled policy failed the required 196/200 threshold on both fresh complete-distribution panels in M17, achieving 47/200 and 40/200 without runtime controller assistance. The paired comparison over 400 shared episodes recorded 3 distilled-policy wins versus 306 restored-reference wins, a -75.75 percentage-point success delta, and material degradation relative to the restored baseline. This establishes that the tested controller-distillation route is not a credible route to the campaign goal.",
-        "reason": "Observed evidence satisfies I14's negative closure condition: controller capability was supported by M16, while M17's predeclared training-only selection and two fresh panels decisively rejected repeatable learned-policy success at 196/200. The result is consistent with the hypothesis that the tested distillation training process did not preserve the controller's closed-loop behavior; it does not establish that every possible distillation method is impossible. Remaining uncertainty about alternative training recipes cannot change I14's decision because the bounded question was the specified route's repeatable threshold performance, and that route materially degraded the restored reference."
-      }
-    },
-    "request_fingerprint": "70372f542d05559eeea29b47398f7a102d6f0e3ccfb5159166487c6a6bbe3171",
-    "session_id": "S34",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "No candidate has working, best-known, or retained status. T12:checkpoint-6144 is rejected as a credible I14 route by M17. T1:checkpoint-100352 remains an unassigned reference candidate and is not promoted by this checkpoint.",
     "completed_operations": [
