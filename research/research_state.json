@@ -1,5 +1,13 @@
 {
-  "active_inquiry": null,
+  "active_inquiry": {
+    "closure_condition": "Close when the pre-specified fresh assessment-readiness protocol produces a candidate with at least 196/200 and evidence sufficient to assign it best-known status, or when controlled evidence shows that the restored baseline formulation and justified checkpoint-selection or training-reliability measures cannot reach or repeat 196/200, leaving no credible route to the goal.",
+    "goal_connection": "The human goal requires one frozen policy to achieve at least 196/200 complete uninterrupted-hold successes under the official task distribution. T1:checkpoint-100352 reached 196/200 once but then recorded 194/200, 192/200, and 193/200 on later fresh panels, so no candidate has best-known status and official assessment is not justified. Resolving whether this near-threshold route can be made repeatable directly determines whether the campaign can advance to official assessment.",
+    "id": "I11",
+    "opened_in_session": "S25",
+    "question": "Can the restored baseline formulation produce an assessment-ready frozen policy at least 196/200 through a pre-specified checkpoint-selection and training-reliability protocol, rather than relying on one favorable development panel?",
+    "rationale": "Observed evidence shows a baseline close to the threshold but not reliably above it, while I1-I10 tested and rejected representation, coverage, reward, temporal, and policy-interface routes, including the closed I10 branch-factorized formulation. The M4 196/200 result is consequential but isolated against later 192-195/200 panels. The unresolved reliability and checkpoint question can change the campaign-level decision without reopening any rejected intervention, so it is the one bounded goal-linked inquiry still justified.",
+    "reframes": []
+  },
   "campaign": {
     "base_commit": "8ac206f76ce0bd7fb8f098b4fe6dceac2a2a311f",
     "id": "eb19a5f3-14b3-4590-ad74-1b31cf5ae3d5",
@@ -6617,16 +6625,16 @@
     }
   },
   "counters": {
-    "event": 48,
-    "inquiry": 10,
+    "event": 49,
+    "inquiry": 11,
     "measurement": 10,
-    "session": 24,
+    "session": 25,
     "training": 8
   },
   "human_goal": {
     "source": "research/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -12769,9 +12777,69 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-09-30T01:11:59Z",
+      "error": null,
+      "id": "E49",
+      "inquiry_id": "I11",
+      "kind": "inquiry",
+      "request": {
+        "action": "open",
+        "closure_condition": "Close when the pre-specified fresh assessment-readiness protocol produces a candidate with at least 196/200 and evidence sufficient to assign it best-known status, or when controlled evidence shows that the restored baseline formulation and justified checkpoint-selection or training-reliability measures cannot reach or repeat 196/200, leaving no credible route to the goal.",
+        "goal_connection": "The human goal requires one frozen policy to achieve at least 196/200 complete uninterrupted-hold successes under the official task distribution. T1:checkpoint-100352 reached 196/200 once but then recorded 194/200, 192/200, and 193/200 on later fresh panels, so no candidate has best-known status and official assessment is not justified. Resolving whether this near-threshold route can be made repeatable directly determines whether the campaign can advance to official assessment.",
+        "question": "Can the restored baseline formulation produce an assessment-ready frozen policy at least 196/200 through a pre-specified checkpoint-selection and training-reliability protocol, rather than relying on one favorable development panel?",
+        "rationale": "Observed evidence shows a baseline close to the threshold but not reliably above it, while I1-I10 tested and rejected representation, coverage, reward, temporal, and policy-interface routes, including the closed I10 branch-factorized formulation. The M4 196/200 result is consequential but isolated against later 192-195/200 panels. The unresolved reliability and checkpoint question can change the campaign-level decision without reopening any rejected intervention, so it is the one bounded goal-linked inquiry still justified."
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I11",
+        "status": "completed"
+      },
+      "session_id": "S25",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "open",
+        "inquiry": {
+          "closure_condition": "Close when the pre-specified fresh assessment-readiness protocol produces a candidate with at least 196/200 and evidence sufficient to assign it best-known status, or when controlled evidence shows that the restored baseline formulation and justified checkpoint-selection or training-reliability measures cannot reach or repeat 196/200, leaving no credible route to the goal.",
+          "goal_connection": "The human goal requires one frozen policy to achieve at least 196/200 complete uninterrupted-hold successes under the official task distribution. T1:checkpoint-100352 reached 196/200 once but then recorded 194/200, 192/200, and 193/200 on later fresh panels, so no candidate has best-known status and official assessment is not justified. Resolving whether this near-threshold route can be made repeatable directly determines whether the campaign can advance to official assessment.",
+          "id": "I11",
+          "opened_in_session": "S25",
+          "question": "Can the restored baseline formulation produce an assessment-ready frozen policy at least 196/200 through a pre-specified checkpoint-selection and training-reliability protocol, rather than relying on one favorable development panel?",
+          "rationale": "Observed evidence shows a baseline close to the threshold but not reliably above it, while I1-I10 tested and rejected representation, coverage, reward, temporal, and policy-interface routes, including the closed I10 branch-factorized formulation. The M4 196/200 result is consequential but isolated against later 192-195/200 panels. The unresolved reliability and checkpoint question can change the campaign-level decision without reopening any rejected intervention, so it is the one bounded goal-linked inquiry still justified.",
+          "reframes": []
+        }
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I11",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E49",
+    "inquiry_id": null,
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "open",
+        "closure_condition": "Close when the pre-specified fresh assessment-readiness protocol produces a candidate with at least 196/200 and evidence sufficient to assign it best-known status, or when controlled evidence shows that the restored baseline formulation and justified checkpoint-selection or training-reliability measures cannot reach or repeat 196/200, leaving no credible route to the goal.",
+        "goal_connection": "The human goal requires one frozen policy to achieve at least 196/200 complete uninterrupted-hold successes under the official task distribution. T1:checkpoint-100352 reached 196/200 once but then recorded 194/200, 192/200, and 193/200 on later fresh panels, so no candidate has best-known status and official assessment is not justified. Resolving whether this near-threshold route can be made repeatable directly determines whether the campaign can advance to official assessment.",
+        "question": "Can the restored baseline formulation produce an assessment-ready frozen policy at least 196/200 through a pre-specified checkpoint-selection and training-reliability protocol, rather than relying on one favorable development panel?",
+        "rationale": "Observed evidence shows a baseline close to the threshold but not reliably above it, while I1-I10 tested and rejected representation, coverage, reward, temporal, and policy-interface routes, including the closed I10 branch-factorized formulation. The M4 196/200 result is consequential but isolated against later 192-195/200 panels. The unresolved reliability and checkpoint question can change the campaign-level decision without reopening any rejected intervention, so it is the one bounded goal-linked inquiry still justified."
+      }
+    },
+    "request_fingerprint": "5cac860d75838d9da91617870b37face1a80f527d714ab22fd9b29571aadda75",
+    "session_id": "S25",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T1:checkpoint-100352 remains the strongest measured baseline but is unassigned. T8:checkpoint-90112 is rejected as an I10 route after M10. T7:checkpoint-120832 remains rejected by M9. No candidate has working, best-known, or retained status.",
     "completed_operations": [
@@ -12799,6 +12867,21 @@
     "path": "research/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "a8924bbb-4854-4646-8619-bf8cfd04b153",
+    "id": "S25",
+    "inquiry_id": null,
+    "kind": "goal_review",
+    "objective": "Decide whether to request official assessment, open one bounded goal-linked inquiry, or conclude that no credible route remains.",
+    "operation_ids": [
+      "E49"
+    ],
+    "scientific_parent_commit": "b088ffd64c08068287247a91f9da008ea9ddb4de"
+  },
   "terminal_state": null
 }
