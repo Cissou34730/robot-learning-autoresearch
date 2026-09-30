@@ -20554,38 +20554,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I15",
-        "outcome": "negative",
-        "reason": "M18 resolves I15 negatively. The predeclared selected frozen direct-policy candidate T13:checkpoint-5120, evaluated without runtime controller assistance, achieved 197/200 on fresh panel A and 195/200 on fresh panel B, so it missed the required 196/200 threshold on one of the two panels. The restored T1 reference achieved 198/200 and 195/200 on the same panels. The paired comparison over 400 shared-seed episodes recorded 0 candidate wins versus 1 reference win, with a -0.25 percentage-point candidate delta, so the candidate did not materially degrade the restored reference; nevertheless, the closure condition requires both candidate panels to reach at least 196/200 and is not met. The bounded direct-policy stabilization protocol therefore does not justify official assessment. The result supports a reliability ceiling for this tested route at the required decision threshold, while not proving that every possible learned method is impossible; remaining uncertainty cannot change I15's negative answer."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I15",
-        "outcome": "negative",
-        "reason": "M18 resolves I15 negatively. The predeclared selected frozen direct-policy candidate T13:checkpoint-5120, evaluated without runtime controller assistance, achieved 197/200 on fresh panel A and 195/200 on fresh panel B, so it missed the required 196/200 threshold on one of the two panels. The restored T1 reference achieved 198/200 and 195/200 on the same panels. The paired comparison over 400 shared-seed episodes recorded 0 candidate wins versus 1 reference win, with a -0.25 percentage-point candidate delta, so the candidate did not materially degrade the restored reference; nevertheless, the closure condition requires both candidate panels to reach at least 196/200 and is not met. The bounded direct-policy stabilization protocol therefore does not justify official assessment. The result supports a reliability ceiling for this tested route at the required decision threshold, while not proving that every possible learned method is impossible; remaining uncertainty cannot change I15's negative answer.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E71",
-    "inquiry_id": "I15",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "negative",
-        "reason": "M18 resolves I15 negatively. The predeclared selected frozen direct-policy candidate T13:checkpoint-5120, evaluated without runtime controller assistance, achieved 197/200 on fresh panel A and 195/200 on fresh panel B, so it missed the required 196/200 threshold on one of the two panels. The restored T1 reference achieved 198/200 and 195/200 on the same panels. The paired comparison over 400 shared-seed episodes recorded 0 candidate wins versus 1 reference win, with a -0.25 percentage-point candidate delta, so the candidate did not materially degrade the restored reference; nevertheless, the closure condition requires both candidate panels to reach at least 196/200 and is not met. The bounded direct-policy stabilization protocol therefore does not justify official assessment. The result supports a reliability ceiling for this tested route at the required decision threshold, while not proving that every possible learned method is impossible; remaining uncertainty cannot change I15's negative answer."
-      }
-    },
-    "request_fingerprint": "45667bfc0460e5e0d0db960dd746acf25d5f59f9f62c39c34abc3abc1391ab18",
-    "session_id": "S36",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "No candidate has working, best-known, or retained status. T12:checkpoint-6144 is rejected as an I14 route by M17. T1:checkpoint-100352 remains an unassigned reference candidate and is not promoted by this checkpoint.",
     "completed_operations": [
