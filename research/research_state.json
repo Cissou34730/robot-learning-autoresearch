@@ -1377,7 +1377,7 @@
     }
   },
   "counters": {
-    "event": 8,
+    "event": 9,
     "inquiry": 2,
     "measurement": 2,
     "session": 5,
@@ -1386,7 +1386,7 @@
   "human_goal": {
     "source": "research/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -2501,29 +2501,173 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-09-30T10:52:46Z",
+      "error": null,
+      "id": "E9",
+      "inquiry_id": "I2",
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "T1:checkpoint-100352 remains the reference at 151/160 (94.375%). T2:checkpoint-65536 and T2:checkpoint-75776 each reached 153/160 (95.625%) on the shared panel; checkpoint 65536 is the stronger provisional candidate because its median entry speed was lower. No working, best-known, or retained role is assigned.",
+        "completed_operations": [
+          "T2",
+          "M2",
+          "E8"
+        ],
+        "cumulative_resource_use": "T1 consumed 100352 fresh training steps and one 160-episode diagnostic panel. T2 consumed 100352 transfer-training steps and M2 evaluated two T2 checkpoints plus T1 on a shared 160-episode panel. No official assessment has run and no model role has been assigned.",
+        "current_goal_gap": "T2 reduced no-entry failures and improved the limiting negative-angle acquisition strata, but both evaluated checkpoints still had three hold-interrupted episodes and substantially higher entry velocity than T1. The remaining gap is to retain the acquisition gains while reducing residual-speed and saturated-action failures during the uninterrupted hold.",
+        "current_synthesis": "T1/M1 established acquisition and trajectory selection as the dominant baseline loss, with secondary high-speed regulation failures. T2/M2 supports that mechanism: shared-panel success rose from 151/160 to 153/160, no-entry failures fell from 6 to 4, and the -135 to -90 degree stratum rose from 21/26 to 23/26 successes. However, T2's median entry speed increased from 37.76 cm/s to 65.51 cm/s at checkpoint 65536 and 71.98 cm/s at checkpoint 75776, while hold interruptions remained at three. The intervention is therefore a qualified acquisition improvement, not a goal-ready policy.",
+        "decision_frontier": "In the fresh post-I2 inquiry session, preserve T2's full-radius and negative-angle acquisition recipe while making convergence and saturated-action avoidance the primary intervention. Evaluate the resulting candidate against the strongest T1/T2 references on shared seeds, quantifying overall success, negative-angle outcomes, entry velocity, and uninterrupted hold interruptions before assigning any model role.",
+        "evidence_references": [
+          "T1",
+          "M1",
+          "E4",
+          "E6",
+          "T2",
+          "M2",
+          "E8"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 of 200 official episodes to complete one uninterrupted 100-step hold. T2 improved the shared development result to 153/160 (95.625%), but no candidate has yet established the 98% goal or justified official assessment.",
+        "next_direction_or_closure": "I2 is closed. Begin a fresh inquiry focused on velocity-first convergence and regulation while retaining the demonstrated acquisition and negative-angle improvements. Do not request official assessment until a candidate is explicitly assigned best-known with evidence supporting the decision."
+      },
+      "result": {
+        "session_id": "S5",
+        "status": "checkpointed"
+      },
+      "session_id": "S5",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "03eeb17cba69d9c25b0a38c6a0274d1f285ef53e",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "T1:checkpoint-100352 remains the reference at 151/160 (94.375%). T2:checkpoint-65536 and T2:checkpoint-75776 each reached 153/160 (95.625%) on the shared panel; checkpoint 65536 is the stronger provisional candidate because its median entry speed was lower. No working, best-known, or retained role is assigned.",
+        "completed_operations": [
+          "T2",
+          "M2",
+          "E8"
+        ],
+        "cumulative_resource_use": "T1 consumed 100352 fresh training steps and one 160-episode diagnostic panel. T2 consumed 100352 transfer-training steps and M2 evaluated two T2 checkpoints plus T1 on a shared 160-episode panel. No official assessment has run and no model role has been assigned.",
+        "current_goal_gap": "T2 reduced no-entry failures and improved the limiting negative-angle acquisition strata, but both evaluated checkpoints still had three hold-interrupted episodes and substantially higher entry velocity than T1. The remaining gap is to retain the acquisition gains while reducing residual-speed and saturated-action failures during the uninterrupted hold.",
+        "current_synthesis": "T1/M1 established acquisition and trajectory selection as the dominant baseline loss, with secondary high-speed regulation failures. T2/M2 supports that mechanism: shared-panel success rose from 151/160 to 153/160, no-entry failures fell from 6 to 4, and the -135 to -90 degree stratum rose from 21/26 to 23/26 successes. However, T2's median entry speed increased from 37.76 cm/s to 65.51 cm/s at checkpoint 65536 and 71.98 cm/s at checkpoint 75776, while hold interruptions remained at three. The intervention is therefore a qualified acquisition improvement, not a goal-ready policy.",
+        "decision_frontier": "In the fresh post-I2 inquiry session, preserve T2's full-radius and negative-angle acquisition recipe while making convergence and saturated-action avoidance the primary intervention. Evaluate the resulting candidate against the strongest T1/T2 references on shared seeds, quantifying overall success, negative-angle outcomes, entry velocity, and uninterrupted hold interruptions before assigning any model role.",
+        "evidence_references": [
+          "T1",
+          "M1",
+          "E4",
+          "E6",
+          "T2",
+          "M2",
+          "E8"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 of 200 official episodes to complete one uninterrupted 100-step hold. T2 improved the shared development result to 153/160 (95.625%), but no candidate has yet established the 98% goal or justified official assessment.",
+        "inquiry_id": "I2",
+        "next_direction_or_closure": "I2 is closed. Begin a fresh inquiry focused on velocity-first convergence and regulation while retaining the demonstrated acquisition and negative-angle improvements. Do not request official assessment until a candidate is explicitly assigned best-known with evidence supporting the decision.",
+        "session_id": "S5"
+      },
+      "presentation": {
+        "backend_session_id": "b1547129-a482-42c5-89be-c678f9fc9387",
+        "campaign_id": "35365763-6aa0-4675-8e86-f8f277558aa4",
+        "campaign_usage": "19m35s | 31.75 AIU | prompt 5.1m (86% cached) | output 47.1k",
+        "session_id": "S5",
+        "session_kind": "inquiry",
+        "session_usage": "6m22s | 10.30 AIU | prompt 1.7m (87% cached) | output 14.2k"
+      },
+      "result": {
+        "session_id": "S5",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "524d531d680336fb5cc02a68ca03d72c8fa1478a",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E9",
+    "inquiry_id": "I2",
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "T1:checkpoint-100352 remains the reference at 151/160 (94.375%). T2:checkpoint-65536 and T2:checkpoint-75776 each reached 153/160 (95.625%) on the shared panel; checkpoint 65536 is the stronger provisional candidate because its median entry speed was lower. No working, best-known, or retained role is assigned.",
+        "completed_operations": [
+          "T2",
+          "M2",
+          "E8"
+        ],
+        "cumulative_resource_use": "T1 consumed 100352 fresh training steps and one 160-episode diagnostic panel. T2 consumed 100352 transfer-training steps and M2 evaluated two T2 checkpoints plus T1 on a shared 160-episode panel. No official assessment has run and no model role has been assigned.",
+        "current_goal_gap": "T2 reduced no-entry failures and improved the limiting negative-angle acquisition strata, but both evaluated checkpoints still had three hold-interrupted episodes and substantially higher entry velocity than T1. The remaining gap is to retain the acquisition gains while reducing residual-speed and saturated-action failures during the uninterrupted hold.",
+        "current_synthesis": "T1/M1 established acquisition and trajectory selection as the dominant baseline loss, with secondary high-speed regulation failures. T2/M2 supports that mechanism: shared-panel success rose from 151/160 to 153/160, no-entry failures fell from 6 to 4, and the -135 to -90 degree stratum rose from 21/26 to 23/26 successes. However, T2's median entry speed increased from 37.76 cm/s to 65.51 cm/s at checkpoint 65536 and 71.98 cm/s at checkpoint 75776, while hold interruptions remained at three. The intervention is therefore a qualified acquisition improvement, not a goal-ready policy.",
+        "decision_frontier": "In the fresh post-I2 inquiry session, preserve T2's full-radius and negative-angle acquisition recipe while making convergence and saturated-action avoidance the primary intervention. Evaluate the resulting candidate against the strongest T1/T2 references on shared seeds, quantifying overall success, negative-angle outcomes, entry velocity, and uninterrupted hold interruptions before assigning any model role.",
+        "evidence_references": [
+          "T1",
+          "M1",
+          "E4",
+          "E6",
+          "T2",
+          "M2",
+          "E8"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 of 200 official episodes to complete one uninterrupted 100-step hold. T2 improved the shared development result to 153/160 (95.625%), but no candidate has yet established the 98% goal or justified official assessment.",
+        "next_direction_or_closure": "I2 is closed. Begin a fresh inquiry focused on velocity-first convergence and regulation while retaining the demonstrated acquisition and negative-angle improvements. Do not request official assessment until a candidate is explicitly assigned best-known with evidence supporting the decision."
+      }
+    },
+    "request_fingerprint": "d23982b99671d56413f48b5efef4725b62b6bd5942dcd180a6719a5aa9a82f3a",
+    "session_id": "S5",
+    "supersedes": null
+  },
   "pi_checkpoint": {
-    "candidates_and_roles": "T1:checkpoint-100352 remains the strongest available development candidate at 94.375% on M1, with no working, best-known, or retained role assigned. No new candidate was produced in the goal-review session.",
+    "candidates_and_roles": "T1:checkpoint-100352 remains the reference at 151/160 (94.375%). T2:checkpoint-65536 and T2:checkpoint-75776 each reached 153/160 (95.625%) on the shared panel; checkpoint 65536 is the stronger provisional candidate because its median entry speed was lower. No working, best-known, or retained role is assigned.",
     "completed_operations": [
-      "E6"
+      "T2",
+      "M2",
+      "E8"
     ],
-    "cumulative_resource_use": "One fresh PPO training operation completed at 100352 simulator control steps, producing the T1 candidate pool, followed by one 160-episode fixed-distribution research evaluation. I2 was opened without consuming additional training or evaluation resources; no official assessment has run.",
-    "current_goal_gap": "The strongest available candidate, T1:checkpoint-100352, remains below the 98% goal and has no working or best-known role. Six of nine baseline failures were no-entry acquisition or trajectory failures concentrated in negative-angle strata, while three were high-speed hold interruptions. The remaining gap is to improve negative-angle acquisition and trajectory robustness without sacrificing stable low-velocity regulation.",
-    "current_synthesis": "T1 and M1 discriminated the initial competing explanations: acquisition and trajectory selection dominate the first baseline losses, while regulation remains a secondary but coupled failure mode. The baseline reached 96.25% entry overall, but only 151 of 160 episodes completed the uninterrupted hold; the negative-angle strata were weakest, and every observed interruption combined high exit speed with saturated action. E6 therefore opens I2 around a targeted acquisition and elbow-trajectory intervention while retaining velocity-aware regulation as a guard against trading no-entry failures for hold interruptions.",
-    "decision_frontier": "After this checkpoint, continue in the fresh I2 inquiry session. Implement or select one bounded acquisition and elbow-trajectory intervention, then produce a candidate and compare it with T1 on shared development episodes. The comparison must quantify overall success, negative-angle acquisition and trajectory outcomes, entry velocity, and uninterrupted hold interruptions before assigning a model role or considering official assessment.",
+    "cumulative_resource_use": "T1 consumed 100352 fresh training steps and one 160-episode diagnostic panel. T2 consumed 100352 transfer-training steps and M2 evaluated two T2 checkpoints plus T1 on a shared 160-episode panel. No official assessment has run and no model role has been assigned.",
+    "current_goal_gap": "T2 reduced no-entry failures and improved the limiting negative-angle acquisition strata, but both evaluated checkpoints still had three hold-interrupted episodes and substantially higher entry velocity than T1. The remaining gap is to retain the acquisition gains while reducing residual-speed and saturated-action failures during the uninterrupted hold.",
+    "current_synthesis": "T1/M1 established acquisition and trajectory selection as the dominant baseline loss, with secondary high-speed regulation failures. T2/M2 supports that mechanism: shared-panel success rose from 151/160 to 153/160, no-entry failures fell from 6 to 4, and the -135 to -90 degree stratum rose from 21/26 to 23/26 successes. However, T2's median entry speed increased from 37.76 cm/s to 65.51 cm/s at checkpoint 65536 and 71.98 cm/s at checkpoint 75776, while hold interruptions remained at three. The intervention is therefore a qualified acquisition improvement, not a goal-ready policy.",
+    "decision_frontier": "In the fresh post-I2 inquiry session, preserve T2's full-radius and negative-angle acquisition recipe while making convergence and saturated-action avoidance the primary intervention. Evaluate the resulting candidate against the strongest T1/T2 references on shared seeds, quantifying overall success, negative-angle outcomes, entry velocity, and uninterrupted hold interruptions before assigning any model role.",
     "evidence_references": [
       "T1",
       "M1",
       "E4",
-      "E6"
+      "E6",
+      "T2",
+      "M2",
+      "E8"
     ],
-    "human_goal_connection": "The human goal requires at least 196 of 200 official episodes to complete one uninterrupted 100-step hold. T1 reached 151 of 160 development episodes (94.375%), so the campaign has not established goal attainment or justified official assessment. I2 is opened to test a targeted route toward the missing success margin.",
-    "inquiry_id": null,
-    "next_direction_or_closure": "The goal-review transition is complete. Continue with I2 in a fresh inquiry session; do not request training, measurement, model-role changes, restoration, another inquiry change, or campaign conclusion until that session is active. Do not request official assessment until an explicitly assigned best-known candidate has evidence supporting the decision.",
-    "scientific_commit": "906a8083107a88ca69320c9fe8abc0ab45839335",
-    "session_id": "S4"
+    "human_goal_connection": "The human goal requires at least 196 of 200 official episodes to complete one uninterrupted 100-step hold. T2 improved the shared development result to 153/160 (95.625%), but no candidate has yet established the 98% goal or justified official assessment.",
+    "inquiry_id": "I2",
+    "next_direction_or_closure": "I2 is closed. Begin a fresh inquiry focused on velocity-first convergence and regulation while retaining the demonstrated acquisition and negative-angle improvements. Do not request official assessment until a candidate is explicitly assigned best-known with evidence supporting the decision.",
+    "scientific_commit": "524d531d680336fb5cc02a68ca03d72c8fa1478a",
+    "session_id": "S5"
   },
   "schema_version": 6,
   "scientific_model": {
@@ -2531,23 +2675,6 @@
     "path": "research/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "b1547129-a482-42c5-89be-c678f9fc9387",
-    "id": "S5",
-    "inquiry_id": "I2",
-    "kind": "inquiry",
-    "objective": "Advance I2 toward its closure condition: Close or redirect this inquiry after a targeted intervention produces a candidate and a shared-panel comparison against T1 that quantifies overall success, negative-angle acquisition and trajectory outcomes, entry velocity, and uninterrupted hold interruptions sufficiently to decide whether the candidate is a credible best-known model or whether the route should change.",
-    "operation_ids": [
-      "T2",
-      "M2",
-      "E8"
-    ],
-    "scientific_parent_commit": "03eeb17cba69d9c25b0a38c6a0274d1f285ef53e"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
