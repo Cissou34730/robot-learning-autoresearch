@@ -12738,38 +12738,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I10",
-        "outcome": "Negative decision: the branch-factorized policy-only PPO formulation is not an actionable route to the 98% objective.",
-        "reason": "The required controlled training and fresh shared-seed complete-distribution comparison are complete. M10 measured T8:checkpoint-90112 at 22/200 successes (11.0%) versus restored T1:checkpoint-100352 at 193/200 (96.5%), with 0 candidate wins and 171 discordant episodes. Successful T8 episodes did reach the required uninterrupted 100-step hold, but failures were widespread before or during settling and included hold interruptions; preserving hold behavior on successful episodes did not offset the complete-task degradation. Therefore I10's negative closure condition is established. Remaining uncertainty concerns other formulations outside this policy-only route and cannot change this decision."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I10",
-        "outcome": "Negative decision: the branch-factorized policy-only PPO formulation is not an actionable route to the 98% objective.",
-        "reason": "The required controlled training and fresh shared-seed complete-distribution comparison are complete. M10 measured T8:checkpoint-90112 at 22/200 successes (11.0%) versus restored T1:checkpoint-100352 at 193/200 (96.5%), with 0 candidate wins and 171 discordant episodes. Successful T8 episodes did reach the required uninterrupted 100-step hold, but failures were widespread before or during settling and included hold interruptions; preserving hold behavior on successful episodes did not offset the complete-task degradation. Therefore I10's negative closure condition is established. Remaining uncertainty concerns other formulations outside this policy-only route and cannot change this decision.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E47",
-    "inquiry_id": "I10",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "Negative decision: the branch-factorized policy-only PPO formulation is not an actionable route to the 98% objective.",
-        "reason": "The required controlled training and fresh shared-seed complete-distribution comparison are complete. M10 measured T8:checkpoint-90112 at 22/200 successes (11.0%) versus restored T1:checkpoint-100352 at 193/200 (96.5%), with 0 candidate wins and 171 discordant episodes. Successful T8 episodes did reach the required uninterrupted 100-step hold, but failures were widespread before or during settling and included hold interruptions; preserving hold behavior on successful episodes did not offset the complete-task degradation. Therefore I10's negative closure condition is established. Remaining uncertainty concerns other formulations outside this policy-only route and cannot change this decision."
-      }
-    },
-    "request_fingerprint": "b6ff9416429a7a70c79583b5f1db0fdec66b00550ee15abb62bf21cb7fc13044",
-    "session_id": "S24",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T1:checkpoint-100352 remains the strongest measured baseline but is unassigned. T8:checkpoint-90112 is rejected as an I10 route after M10. T7:checkpoint-120832 remains rejected by M9. No candidate has working, best-known, or retained status.",
     "completed_operations": [
