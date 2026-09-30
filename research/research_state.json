@@ -2729,6 +2729,142 @@
       "scientific_commit": "9ba48a2a06acf8f9ff0c857325b88542dbe2731e",
       "training_steps": 96256
     },
+    "T13:checkpoint-10240": {
+      "artifact": "research/checkpoints/candidates/eb19a5f3-14b3-4590-ad74-1b31cf5ae3d5/t13/checkpoint-10240",
+      "evaluation_artifacts": [],
+      "fingerprint": "0bcbd6f046b5d3f5aeb71010b83143dfd481e009b82cff4b959c28b9748535d6",
+      "id": "T13:checkpoint-10240",
+      "name": "checkpoint-10240",
+      "origin_operation": "T13",
+      "parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "scientific_commit": "1dc1a8155c2b0b17601597337116d48832e58f16",
+      "training_steps": 10240
+    },
+    "T13:checkpoint-15360": {
+      "artifact": "research/checkpoints/candidates/eb19a5f3-14b3-4590-ad74-1b31cf5ae3d5/t13/checkpoint-15360",
+      "evaluation_artifacts": [],
+      "fingerprint": "4057116e8dbddd20fddb6185ce6b61eb6c39a59df788ce8b820c3f2567f1825b",
+      "id": "T13:checkpoint-15360",
+      "name": "checkpoint-15360",
+      "origin_operation": "T13",
+      "parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "scientific_commit": "1dc1a8155c2b0b17601597337116d48832e58f16",
+      "training_steps": 15360
+    },
+    "T13:checkpoint-20480": {
+      "artifact": "research/checkpoints/candidates/eb19a5f3-14b3-4590-ad74-1b31cf5ae3d5/t13/checkpoint-20480",
+      "evaluation_artifacts": [],
+      "fingerprint": "3bc856ddc67e72c5be64dec22bd904f1ac6c2e8237bae022650ced82100f5aa5",
+      "id": "T13:checkpoint-20480",
+      "name": "checkpoint-20480",
+      "origin_operation": "T13",
+      "parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "scientific_commit": "1dc1a8155c2b0b17601597337116d48832e58f16",
+      "training_steps": 20480
+    },
+    "T13:checkpoint-5120": {
+      "artifact": "research/checkpoints/candidates/eb19a5f3-14b3-4590-ad74-1b31cf5ae3d5/t13/checkpoint-5120",
+      "evaluation_artifacts": [],
+      "fingerprint": "b1ffde013b7acb03e02c44389d0ab229ed947d74471e68ba868f52adb52b8144",
+      "id": "T13:checkpoint-5120",
+      "name": "checkpoint-5120",
+      "origin_operation": "T13",
+      "parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "scientific_commit": "1dc1a8155c2b0b17601597337116d48832e58f16",
+      "training_steps": 5120
+    },
     "T1:checkpoint-100352": {
       "artifact": "research/checkpoints/candidates/eb19a5f3-14b3-4590-ad74-1b31cf5ae3d5/t1/checkpoint-100352",
       "evaluation_artifacts": [
@@ -10168,12 +10304,12 @@
     "inquiry": 15,
     "measurement": 17,
     "session": 36,
-    "training": 12
+    "training": 13
   },
   "human_goal": {
     "source": "research/scenario.md"
   },
-  "last_verdict": "restored",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -19760,9 +19896,302 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-09-30T03:12:31Z",
+      "error": null,
+      "id": "T13",
+      "inquiry_id": "I15",
+      "kind": "training",
+      "request": {
+        "description": "Continue the restored direct joint-torque PPO policy for a bounded 20,480-step stabilization run, retaining every emitted checkpoint for predeclared selection before evaluation.",
+        "initialization": "transfer",
+        "parent": "T1:checkpoint-100352",
+        "rationale": "T1 demonstrated near-threshold learned behavior but was not repeatably qualified, while the later direct-policy retraining route regressed. A transfer continuation from the strongest T1 checkpoint tests whether that behavior can be stabilized without changing the observation/action interface or adding runtime controller assistance. Selection is fixed before fresh measurement: among this run's checkpoints, choose the earliest checkpoint attaining the highest recorded training success, then evaluate that frozen candidate on two fresh shared-seed complete-distribution panels against the restored T1 reference; failure of either 196/200 threshold or material paired degradation closes I15 negatively.",
+        "seed": 23001,
+        "steps": 20480
+      },
+      "result": {
+        "candidates": [
+          "T13:checkpoint-10240",
+          "T13:checkpoint-15360",
+          "T13:checkpoint-20480",
+          "T13:checkpoint-5120"
+        ],
+        "completed_steps": 20480,
+        "initialization": "transfer",
+        "learning_dynamics": [
+          {
+            "candidate": "T13:checkpoint-10240",
+            "ep_rew_mean": 114.95060624675324,
+            "training_steps": 10240,
+            "training_success": 1.0
+          },
+          {
+            "candidate": "T13:checkpoint-15360",
+            "ep_rew_mean": 116.63939449,
+            "training_steps": 15360,
+            "training_success": 1.0
+          },
+          {
+            "candidate": "T13:checkpoint-20480",
+            "ep_rew_mean": 114.46204906000001,
+            "training_steps": 20480,
+            "training_success": 1.0
+          },
+          {
+            "candidate": "T13:checkpoint-5120",
+            "ep_rew_mean": 115.26652789473684,
+            "training_steps": 5120,
+            "training_success": 1.0
+          }
+        ],
+        "mechanical_provenance": {
+          "changed_files": [
+            {
+              "exists": true,
+              "fingerprint": "61a062a86ebf730e906a0b9e4432b10427d89d61309592ba9204b6bb6abdbfdf",
+              "path": "robot_learning/scenario/policy_io.py"
+            },
+            {
+              "exists": false,
+              "fingerprint": null,
+              "path": "robot_learning/scenario/teacher.py"
+            },
+            {
+              "exists": true,
+              "fingerprint": "fd3e9a7dd4bfe690dfde0d143664d5d847077d47e1b4cd4ba22969a828a26d2d",
+              "path": "robot_learning/scenario/training_environment.py"
+            },
+            {
+              "exists": true,
+              "fingerprint": "28eeb77fc485e84fb763664dfd027b163a803ee7ce308f6bbc94bbb3f5b015a5",
+              "path": "robot_learning/train.py"
+            }
+          ],
+          "code_parent_commit": "1ccb3241a758ef4d4159df18e15d3d00e16f01d0"
+        },
+        "parent": "T1:checkpoint-100352",
+        "requested_steps": 20480,
+        "scientific_commit": "1dc1a8155c2b0b17601597337116d48832e58f16",
+        "seed": 23001,
+        "status": "completed"
+      },
+      "session_id": "S36",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "archived_candidates": [
+        {
+          "artifact": "research/checkpoints/candidates/eb19a5f3-14b3-4590-ad74-1b31cf5ae3d5/t13/checkpoint-10240",
+          "ep_rew_mean": 114.95060624675324,
+          "fingerprint": "0bcbd6f046b5d3f5aeb71010b83143dfd481e009b82cff4b959c28b9748535d6",
+          "name": "checkpoint-10240",
+          "timesteps": 10240,
+          "training_success": 1.0
+        },
+        {
+          "artifact": "research/checkpoints/candidates/eb19a5f3-14b3-4590-ad74-1b31cf5ae3d5/t13/checkpoint-15360",
+          "ep_rew_mean": 116.63939449,
+          "fingerprint": "4057116e8dbddd20fddb6185ce6b61eb6c39a59df788ce8b820c3f2567f1825b",
+          "name": "checkpoint-15360",
+          "timesteps": 15360,
+          "training_success": 1.0
+        },
+        {
+          "artifact": "research/checkpoints/candidates/eb19a5f3-14b3-4590-ad74-1b31cf5ae3d5/t13/checkpoint-20480",
+          "ep_rew_mean": 114.46204906000001,
+          "fingerprint": "3bc856ddc67e72c5be64dec22bd904f1ac6c2e8237bae022650ced82100f5aa5",
+          "name": "checkpoint-20480",
+          "timesteps": 20480,
+          "training_success": 1.0
+        },
+        {
+          "artifact": "research/checkpoints/candidates/eb19a5f3-14b3-4590-ad74-1b31cf5ae3d5/t13/checkpoint-5120",
+          "ep_rew_mean": 115.26652789473684,
+          "fingerprint": "b1ffde013b7acb03e02c44389d0ab229ed947d74471e68ba868f52adb52b8144",
+          "name": "checkpoint-5120",
+          "timesteps": 5120,
+          "training_success": 1.0
+        }
+      ],
+      "candidate_dir": "models/candidates/eb19a5f3-14b3-4590-ad74-1b31cf5ae3d5/t13",
+      "code_parent_commit": "1ccb3241a758ef4d4159df18e15d3d00e16f01d0",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "parent": {
+        "artifact": "research/checkpoints/candidates/eb19a5f3-14b3-4590-ad74-1b31cf5ae3d5/t1/checkpoint-100352",
+        "fingerprint": "c9b24fc4281c7ce6457bdcbbe47fe313deeffddf58e8b4e9e9d2a5f0e9609067",
+        "id": "T1:checkpoint-100352",
+        "parameters": {
+          "algorithm": {
+            "name": "ppo"
+          },
+          "policy": {
+            "activation": "tanh",
+            "net_arch": [
+              64,
+              64
+            ]
+          },
+          "ppo": {
+            "batch_size": 64,
+            "ent_coef": 0.01,
+            "gae_lambda": 0.95,
+            "gamma": 0.99,
+            "learning_rate": 0.0003,
+            "n_steps": 1024
+          },
+          "training": {
+            "checkpoint_every_steps": 5000,
+            "n_envs": 1
+          }
+        },
+        "scientific_commit": "1ccb3241a758ef4d4159df18e15d3d00e16f01d0",
+        "training_steps": 100352
+      },
+      "result": {
+        "candidates": [
+          "T13:checkpoint-10240",
+          "T13:checkpoint-15360",
+          "T13:checkpoint-20480",
+          "T13:checkpoint-5120"
+        ],
+        "completed_steps": 20480,
+        "initialization": "transfer",
+        "learning_dynamics": [
+          {
+            "candidate": "T13:checkpoint-10240",
+            "ep_rew_mean": 114.95060624675324,
+            "training_steps": 10240,
+            "training_success": 1.0
+          },
+          {
+            "candidate": "T13:checkpoint-15360",
+            "ep_rew_mean": 116.63939449,
+            "training_steps": 15360,
+            "training_success": 1.0
+          },
+          {
+            "candidate": "T13:checkpoint-20480",
+            "ep_rew_mean": 114.46204906000001,
+            "training_steps": 20480,
+            "training_success": 1.0
+          },
+          {
+            "candidate": "T13:checkpoint-5120",
+            "ep_rew_mean": 115.26652789473684,
+            "training_steps": 5120,
+            "training_success": 1.0
+          }
+        ],
+        "mechanical_provenance": {
+          "changed_files": [
+            {
+              "exists": true,
+              "fingerprint": "61a062a86ebf730e906a0b9e4432b10427d89d61309592ba9204b6bb6abdbfdf",
+              "path": "robot_learning/scenario/policy_io.py"
+            },
+            {
+              "exists": false,
+              "fingerprint": null,
+              "path": "robot_learning/scenario/teacher.py"
+            },
+            {
+              "exists": true,
+              "fingerprint": "fd3e9a7dd4bfe690dfde0d143664d5d847077d47e1b4cd4ba22969a828a26d2d",
+              "path": "robot_learning/scenario/training_environment.py"
+            },
+            {
+              "exists": true,
+              "fingerprint": "28eeb77fc485e84fb763664dfd027b163a803ee7ce308f6bbc94bbb3f5b015a5",
+              "path": "robot_learning/train.py"
+            }
+          ],
+          "code_parent_commit": "1ccb3241a758ef4d4159df18e15d3d00e16f01d0"
+        },
+        "parent": "T1:checkpoint-100352",
+        "requested_steps": 20480,
+        "scientific_commit": "1dc1a8155c2b0b17601597337116d48832e58f16",
+        "seed": 23001,
+        "status": "completed"
+      },
+      "scientific_commit": "1dc1a8155c2b0b17601597337116d48832e58f16",
+      "scientific_manifest": [
+        {
+          "exists": true,
+          "fingerprint": "61a062a86ebf730e906a0b9e4432b10427d89d61309592ba9204b6bb6abdbfdf",
+          "path": "robot_learning/scenario/policy_io.py"
+        },
+        {
+          "exists": false,
+          "fingerprint": null,
+          "path": "robot_learning/scenario/teacher.py"
+        },
+        {
+          "exists": true,
+          "fingerprint": "fd3e9a7dd4bfe690dfde0d143664d5d847077d47e1b4cd4ba22969a828a26d2d",
+          "path": "robot_learning/scenario/training_environment.py"
+        },
+        {
+          "exists": true,
+          "fingerprint": "28eeb77fc485e84fb763664dfd027b163a803ee7ce308f6bbc94bbb3f5b015a5",
+          "path": "robot_learning/train.py"
+        }
+      ],
+      "scientific_paths": [
+        "research/current_params.json",
+        "robot_learning/scenario/policy_io.py",
+        "robot_learning/scenario/teacher.py",
+        "robot_learning/scenario/training_environment.py",
+        "robot_learning/train.py"
+      ]
+    },
+    "failure": null,
+    "id": "T13",
+    "inquiry_id": "I15",
+    "kind": "training",
+    "progress": "completed",
+    "request": {
+      "training": {
+        "description": "Continue the restored direct joint-torque PPO policy for a bounded 20,480-step stabilization run, retaining every emitted checkpoint for predeclared selection before evaluation.",
+        "initialization": "transfer",
+        "parent": "T1:checkpoint-100352",
+        "rationale": "T1 demonstrated near-threshold learned behavior but was not repeatably qualified, while the later direct-policy retraining route regressed. A transfer continuation from the strongest T1 checkpoint tests whether that behavior can be stabilized without changing the observation/action interface or adding runtime controller assistance. Selection is fixed before fresh measurement: among this run's checkpoints, choose the earliest checkpoint attaining the highest recorded training success, then evaluate that frozen candidate on two fresh shared-seed complete-distribution panels against the restored T1 reference; failure of either 196/200 threshold or material paired degradation closes I15 negatively.",
+        "seed": 23001,
+        "steps": 20480
+      }
+    },
+    "request_fingerprint": "9a106714a48ae43fd86a5d3c0171c176ab3dfc46e2f04f6ede8f6df91c511356",
+    "session_id": "S36",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No candidate has working, best-known, or retained status. T12:checkpoint-6144 is rejected as an I14 route by M17. T1:checkpoint-100352 remains an unassigned reference candidate and is not promoted by this checkpoint.",
     "completed_operations": [
@@ -19803,9 +20232,10 @@
     "kind": "inquiry",
     "objective": "Bring I15 to the decision required by its closure condition, and close it as soon as the evidence supplies that decision: Close positively only if the bounded work produces one frozen learned candidate, without runtime controller assistance, that reaches at least 196/200 on each of two fresh shared-seed complete-distribution panels and does not materially degrade the restored T1 reference. Close negatively if the predeclared training-and-selection protocol fails to produce that result, or if its candidate materially degrades the restored reference; in either case record whether the evidence supports official assessment or campaign conclusion.",
     "operation_ids": [
-      "E70"
+      "E70",
+      "T13"
     ],
-    "scientific_parent_commit": "1ccb3241a758ef4d4159df18e15d3d00e16f01d0"
+    "scientific_parent_commit": "1dc1a8155c2b0b17601597337116d48832e58f16"
   },
   "terminal_state": null
 }
