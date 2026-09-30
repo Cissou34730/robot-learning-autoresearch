@@ -69,3 +69,4 @@
 | E47 | inquiry | I10 | completed |
 | E48 | checkpoint | I10 | checkpointed |
 | E49 | inquiry | I11 | completed |
+| E50 | checkpoint | - | checkpointed |
