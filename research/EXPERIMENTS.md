@@ -18,3 +18,4 @@
 | E10 | inquiry | I3 | completed |
 | E11 | checkpoint | - | checkpointed |
 | T3 | training | I3 | completed |
+| M3 | measurement | I3 | completed |
