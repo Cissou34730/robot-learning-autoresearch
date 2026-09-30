@@ -4114,38 +4114,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I3",
-        "outcome": "insufficient",
-        "reason": "I3 closure condition was not met. The decoupled stabilization candidate T3:checkpoint-120832 used the baseline target distribution and IK-branch observation semantics with the endpoint-speed intervention, but achieved 0/200 complete uninterrupted successes on the fixed development panel [4200, 4400), versus the paired T1 reference at 189/200. T3 therefore missed the 196/200 threshold by 196 episodes and cannot support the official 98% objective. The intervention also had zero training success across all checkpoints, so it provides no evidence that stronger endpoint-speed shaping improves stabilization. Retain T1:checkpoint-100352 as the strongest evidence-backed development candidate and do not request official assessment."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I3",
-        "outcome": "insufficient",
-        "reason": "I3 closure condition was not met. The decoupled stabilization candidate T3:checkpoint-120832 used the baseline target distribution and IK-branch observation semantics with the endpoint-speed intervention, but achieved 0/200 complete uninterrupted successes on the fixed development panel [4200, 4400), versus the paired T1 reference at 189/200. T3 therefore missed the 196/200 threshold by 196 episodes and cannot support the official 98% objective. The intervention also had zero training success across all checkpoints, so it provides no evidence that stronger endpoint-speed shaping improves stabilization. Retain T1:checkpoint-100352 as the strongest evidence-backed development candidate and do not request official assessment.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E12",
-    "inquiry_id": "I3",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "insufficient",
-        "reason": "I3 closure condition was not met. The decoupled stabilization candidate T3:checkpoint-120832 used the baseline target distribution and IK-branch observation semantics with the endpoint-speed intervention, but achieved 0/200 complete uninterrupted successes on the fixed development panel [4200, 4400), versus the paired T1 reference at 189/200. T3 therefore missed the 196/200 threshold by 196 episodes and cannot support the official 98% objective. The intervention also had zero training success across all checkpoints, so it provides no evidence that stronger endpoint-speed shaping improves stabilization. Retain T1:checkpoint-100352 as the strongest evidence-backed development candidate and do not request official assessment."
-      }
-    },
-    "request_fingerprint": "d7eb64d0d86dc000b1c962adbeba2e48dbdadc195be71d4a439b0bd268f720c6",
-    "session_id": "S7",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T1:checkpoint-100352 remains the best supported development candidate and baseline reference at 189/200, with archived policy/runtime artifacts and M1/M2 evidence. T2:checkpoint-120832 is retained as a measured but insufficient intervention result at 176/200; it has no working, best-known, or retained model role. No candidate has been assigned a formal model role.",
     "completed_operations": [
