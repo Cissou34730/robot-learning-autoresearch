@@ -53,8 +53,6 @@ def reach_reward(
     previous_held_steps: int = 0,
     hold_steps_required: int = 100,
     penalize_outside: bool = False,
-    singularity_escape_progress: float = 0.0,
-    singularity_escape_reward_coefficient: float = 0.0,
 ) -> RewardResult:
     progress = PROGRESS_COEFFICIENT * (previous_distance - current_distance)
     reward = progress
@@ -92,15 +90,6 @@ def reach_reward(
         hold_complete = HOLD_COMPLETE_BONUS
     reward += hold_complete
 
-    if singularity_escape_progress < 0.0:
-        raise ValueError("singularity_escape_progress must be non-negative")
-    if singularity_escape_reward_coefficient < 0.0:
-        raise ValueError("singularity escape reward coefficient must be non-negative")
-    singularity_escape = (
-        singularity_escape_progress * singularity_escape_reward_coefficient
-    )
-    reward += singularity_escape
-
     action_cost = 0.0
     if action is not None:
         action_cost = -(ACTION_COST_COEFFICIENT * float(np.sum(np.square(action))))
@@ -114,7 +103,6 @@ def reach_reward(
             "hold_progress": float(hold_progress),
             "outside_band": float(outside_band),
             "hold_complete": float(hold_complete),
-            "singularity_escape": float(singularity_escape),
             "action_cost": float(action_cost),
         },
     )

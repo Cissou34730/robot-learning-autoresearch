@@ -17,38 +17,10 @@ import numpy as np
 
 from robot_learning.paired_evidence import episode_outcomes
 from robot_learning.policy_runtime import load_runtime
-from robot_learning.robots.two_joint_arm import FOREARM_LENGTH, UPPER_ARM_LENGTH
 from robot_learning.scenario.environment import make_evaluation_env
 
 # Bumped when the meaning of a scenario evaluation summary changes.
 RESEARCH_EVALUATION_SUMMARY_VERSION = 4
-
-
-def _inverse_kinematic_branch(target_position: np.ndarray, qpos: np.ndarray) -> str:
-    target_x, target_y = target_position[:2]
-    cos_elbow = (
-        target_x**2 + target_y**2 - UPPER_ARM_LENGTH**2 - FOREARM_LENGTH**2
-    ) / (2.0 * UPPER_ARM_LENGTH * FOREARM_LENGTH)
-    elbow_open = float(np.arccos(np.clip(cos_elbow, -1.0, 1.0)))
-    target_angle = float(np.arctan2(target_y, target_x))
-
-    def shoulder_for_elbow(elbow: float) -> float:
-        return target_angle - float(
-            np.arctan2(
-                FOREARM_LENGTH * np.sin(elbow),
-                UPPER_ARM_LENGTH + FOREARM_LENGTH * np.cos(elbow),
-            )
-        )
-
-    def branch_residual(elbow: float) -> float:
-        shoulder = shoulder_for_elbow(elbow)
-        residual = (qpos - np.array([shoulder, elbow])) % (2.0 * np.pi)
-        residual = (residual + np.pi) % (2.0 * np.pi) - np.pi
-        return float(np.sum(residual**2))
-
-    return "elbow_open" if branch_residual(elbow_open) <= branch_residual(
-        -elbow_open
-    ) else "elbow_folded"
 
 
 def evaluate_research_model(
@@ -83,38 +55,20 @@ def evaluate_research_model(
         in_tolerance_steps = 0
         hold_interruptions = 0
         was_in_tolerance = False
-        inverse_kinematic_branch: str | None = None
-        first_entry_branch: str | None = None
-        branch_steps = {"elbow_open": 0, "elbow_folded": 0}
-        branch_switches = 0
-        previous_branch: str | None = None
         while not (terminated or truncated):
             action = runtime.predict(obs)
             obs, reward, terminated, truncated, info = env.step(action)
             steps += 1
             reward_total += float(reward)
-            current_branch = _inverse_kinematic_branch(target_position, env.data.qpos)
-            branch_steps[current_branch] += 1
-            if previous_branch is not None and current_branch != previous_branch:
-                branch_switches += 1
-            previous_branch = current_branch
             distance_cm = 100.0 * float(info["distance"])
             held_steps = int(info.get("held_steps", 0))
-            is_new_minimum = distance_cm < min_distance_cm
             min_distance_cm = min(min_distance_cm, distance_cm)
             final_distance_cm = distance_cm
             max_held_steps = max(max_held_steps, held_steps)
-            if is_new_minimum:
-                inverse_kinematic_branch = _inverse_kinematic_branch(
-                    target_position, env.data.qpos
-                )
             if held_steps > 0:
                 in_tolerance_steps += 1
                 if first_reach_step is None:
                     first_reach_step = steps
-                    first_entry_branch = _inverse_kinematic_branch(
-                        target_position, env.data.qpos
-                    )
             elif was_in_tolerance:
                 hold_interruptions += 1
             was_in_tolerance = held_steps > 0
@@ -146,11 +100,6 @@ def evaluate_research_model(
                 "min_distance_cm": min_distance_cm,
                 "final_distance_cm": final_distance_cm,
                 "first_reach_step": first_reach_step,
-                "inverse_kinematic_branch": inverse_kinematic_branch,
-                "inverse_kinematic_branch_at_first_entry": first_entry_branch,
-                "inverse_kinematic_branch_steps": branch_steps,
-                "inverse_kinematic_branch_switches": branch_switches,
-                "folded_branch_fraction": branch_steps["elbow_folded"] / steps,
                 "max_held_steps": max_held_steps,
                 "in_tolerance_steps": in_tolerance_steps,
                 "hold_interruptions": hold_interruptions,
@@ -161,7 +110,7 @@ def evaluate_research_model(
 
     successes = sum(episode["success"] for episode in episode_results)
     return {
-        "schema_version": 7,
+        "schema_version": 5,
         "model": str(model_path),
         "episodes": episodes,
         "seed": seed,
