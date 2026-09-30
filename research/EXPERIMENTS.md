@@ -96,3 +96,4 @@
 | T12 | training | I14 | completed |
 | M17 | measurement | I14 | completed |
 | E65 | checkpoint | I14 | checkpointed |
+| E66 | inquiry | I14 | completed |
