@@ -23,6 +23,8 @@ HOLD_EXIT_FORFEIT_FRACTION = 0.0
 OUTSIDE_BAND_WIDTH = 0.01
 OUTSIDE_BAND_PENALTY = 0.1
 HOLD_COMPLETE_BONUS = 50.0
+ENDPOINT_SPEED_COEFFICIENT = 0.5
+SPEED_SHAPING_RADIUS_MULTIPLIER = 2.0
 
 
 @dataclass(frozen=True)
@@ -53,6 +55,7 @@ def reach_reward(
     previous_held_steps: int = 0,
     hold_steps_required: int = 100,
     penalize_outside: bool = False,
+    endpoint_speed: float = 0.0,
 ) -> RewardResult:
     progress = PROGRESS_COEFFICIENT * (previous_distance - current_distance)
     reward = progress
@@ -85,6 +88,17 @@ def reach_reward(
         outside_band = -(OUTSIDE_BAND_PENALTY * outside_fraction)
     reward += outside_band
 
+    speed_shaping_radius = SPEED_SHAPING_RADIUS_MULTIPLIER * success_threshold
+    speed_fraction = np.clip(
+        (speed_shaping_radius - current_distance) / success_threshold,
+        0.0,
+        1.0,
+    )
+    endpoint_speed_penalty = -(
+        ENDPOINT_SPEED_COEFFICIENT * float(endpoint_speed) * speed_fraction
+    )
+    reward += endpoint_speed_penalty
+
     hold_complete = 0.0
     if held_steps >= hold_steps_required and previous_held_steps < hold_steps_required:
         hold_complete = HOLD_COMPLETE_BONUS
@@ -102,6 +116,7 @@ def reach_reward(
             "closeness": float(closeness),
             "hold_progress": float(hold_progress),
             "outside_band": float(outside_band),
+            "endpoint_speed_penalty": float(endpoint_speed_penalty),
             "hold_complete": float(hold_complete),
             "action_cost": float(action_cost),
         },

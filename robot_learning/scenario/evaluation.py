@@ -55,6 +55,9 @@ def evaluate_research_model(
         in_tolerance_steps = 0
         hold_interruptions = 0
         was_in_tolerance = False
+        first_entry_endpoint_speed_mps: float | None = None
+        max_endpoint_speed_mps = 0.0
+        action_saturation_steps = 0
         while not (terminated or truncated):
             action = runtime.predict(obs)
             obs, reward, terminated, truncated, info = env.step(action)
@@ -65,10 +68,15 @@ def evaluate_research_model(
             min_distance_cm = min(min_distance_cm, distance_cm)
             final_distance_cm = distance_cm
             max_held_steps = max(max_held_steps, held_steps)
+            endpoint_speed_mps = float(info["endpoint_speed_mps"])
+            max_endpoint_speed_mps = max(max_endpoint_speed_mps, endpoint_speed_mps)
+            if bool(info["action_saturated"]):
+                action_saturation_steps += 1
             if held_steps > 0:
                 in_tolerance_steps += 1
                 if first_reach_step is None:
                     first_reach_step = steps
+                    first_entry_endpoint_speed_mps = endpoint_speed_mps
             elif was_in_tolerance:
                 hold_interruptions += 1
             was_in_tolerance = held_steps > 0
@@ -103,6 +111,10 @@ def evaluate_research_model(
                 "max_held_steps": max_held_steps,
                 "in_tolerance_steps": in_tolerance_steps,
                 "hold_interruptions": hold_interruptions,
+                "first_entry_endpoint_speed_mps": first_entry_endpoint_speed_mps,
+                "max_endpoint_speed_mps": max_endpoint_speed_mps,
+                "action_saturation_steps": action_saturation_steps,
+                "action_saturation_fraction": action_saturation_steps / steps,
             }
         )
         if progress_callback is not None:
