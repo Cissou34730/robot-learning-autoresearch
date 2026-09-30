@@ -828,7 +828,7 @@
     }
   },
   "counters": {
-    "event": 4,
+    "event": 5,
     "inquiry": 1,
     "measurement": 1,
     "session": 3,
@@ -837,7 +837,7 @@
   "human_goal": {
     "source": "research/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -1204,26 +1204,157 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-09-30T20:07:30Z",
+      "error": null,
+      "id": "E5",
+      "inquiry_id": "I1",
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "T1 produced 24 archived checkpoint candidates. T1:checkpoint-120832 has the completed M1 diagnostic artifact, but no candidate is assigned working, best-known, or retained status because development evidence is below the human goal and branch coverage is incomplete.",
+        "completed_operations": [
+          "T1",
+          "M1",
+          "E4"
+        ],
+        "cumulative_resource_use": "One fresh training operation using the maintainer's 120000-step allocation completed with 120832 rollout steps, and one 160-episode non-protected development measurement completed. No official assessment has been requested.",
+        "current_goal_gap": "The fresh baseline reached 94.375% on a 160-episode non-protected development panel, below the 98% goal and not an official assessment. No candidate has been assigned working or best-known status, and no official success claim is justified. The remaining gap is to raise robust success toward at least 196 of 200 while testing the unobserved folded IK branch.",
+        "current_synthesis": "M1 provides the first behavioral evidence. T1:checkpoint-120832 succeeded in 151/160 episodes (94.375%). Nine episodes failed: seven never entered the 1 cm region, while two entered at step 17 and held for only one step before interruption. Failures clustered at negative target bearings around -119 to -151 degrees, with similar mean radius to successes, supporting acquisition, singularity escape, or bearing-coverage limitations as the dominant baseline mechanism. The two post-entry failures leave a secondary stabilization risk. Every panel episode was classified as elbow_open; therefore branch-dependent behavior remains unresolved and the evidence does not support branch invariance. Training reward and training success are learning-dynamics facts, not proof of official task success.",
+        "decision_frontier": "For the next policy intervention, does targeted acquisition and negative-bearing coverage improve the dominant pre-entry failure without sacrificing hold stability, and can the policy be made to use or robustly handle the folded IK branch? A fresh fixed-allocation candidate followed by deterministic diagnostics should compare pre-entry versus post-entry failures, negative-bearing performance, and branch occupancy before any official assessment or best-known claim.",
+        "evidence_references": [
+          "T1",
+          "M1",
+          "E4"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 of 200 official episodes to complete an uninterrupted 100-control-step hold. The completed baseline identifies the dominant route-limiting mechanism, allowing the next intervention to target acquisition and coverage rather than optimize an unvalidated reward proxy.",
+        "next_direction_or_closure": "The I1 closure decision is preserved: acquisition, singularity escape, and negative-bearing coverage are the primary route, with stabilization secondary and folded-branch behavior unresolved. After this checkpoint, enter goal review and open a fresh inquiry focused on that route and branch-coverage distinction; do not request official assessment yet."
+      },
+      "result": {
+        "session_id": "S3",
+        "status": "checkpointed"
+      },
+      "session_id": "S3",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "01d0e797a5a67aecd8b3f8c80464612292a5e68d",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "T1 produced 24 archived checkpoint candidates. T1:checkpoint-120832 has the completed M1 diagnostic artifact, but no candidate is assigned working, best-known, or retained status because development evidence is below the human goal and branch coverage is incomplete.",
+        "completed_operations": [
+          "T1",
+          "M1",
+          "E4"
+        ],
+        "cumulative_resource_use": "One fresh training operation using the maintainer's 120000-step allocation completed with 120832 rollout steps, and one 160-episode non-protected development measurement completed. No official assessment has been requested.",
+        "current_goal_gap": "The fresh baseline reached 94.375% on a 160-episode non-protected development panel, below the 98% goal and not an official assessment. No candidate has been assigned working or best-known status, and no official success claim is justified. The remaining gap is to raise robust success toward at least 196 of 200 while testing the unobserved folded IK branch.",
+        "current_synthesis": "M1 provides the first behavioral evidence. T1:checkpoint-120832 succeeded in 151/160 episodes (94.375%). Nine episodes failed: seven never entered the 1 cm region, while two entered at step 17 and held for only one step before interruption. Failures clustered at negative target bearings around -119 to -151 degrees, with similar mean radius to successes, supporting acquisition, singularity escape, or bearing-coverage limitations as the dominant baseline mechanism. The two post-entry failures leave a secondary stabilization risk. Every panel episode was classified as elbow_open; therefore branch-dependent behavior remains unresolved and the evidence does not support branch invariance. Training reward and training success are learning-dynamics facts, not proof of official task success.",
+        "decision_frontier": "For the next policy intervention, does targeted acquisition and negative-bearing coverage improve the dominant pre-entry failure without sacrificing hold stability, and can the policy be made to use or robustly handle the folded IK branch? A fresh fixed-allocation candidate followed by deterministic diagnostics should compare pre-entry versus post-entry failures, negative-bearing performance, and branch occupancy before any official assessment or best-known claim.",
+        "evidence_references": [
+          "T1",
+          "M1",
+          "E4"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 of 200 official episodes to complete an uninterrupted 100-control-step hold. The completed baseline identifies the dominant route-limiting mechanism, allowing the next intervention to target acquisition and coverage rather than optimize an unvalidated reward proxy.",
+        "inquiry_id": "I1",
+        "next_direction_or_closure": "The I1 closure decision is preserved: acquisition, singularity escape, and negative-bearing coverage are the primary route, with stabilization secondary and folded-branch behavior unresolved. After this checkpoint, enter goal review and open a fresh inquiry focused on that route and branch-coverage distinction; do not request official assessment yet.",
+        "session_id": "S3"
+      },
+      "presentation": {
+        "backend_session_id": "c0ee09f3-be1c-4410-8e3c-c4c3c0f3daf4",
+        "campaign_id": "102eeeb6-1f71-4f83-8b93-cb122f526952",
+        "campaign_usage": "10m59s | 24.10 AIU | prompt 4m (86% cached) | output 28.3k",
+        "session_id": "S3",
+        "session_kind": "inquiry",
+        "session_usage": "4m40s | 13.66 AIU | prompt 2.5m (87% cached) | output 11.6k"
+      },
+      "result": {
+        "session_id": "S3",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "0925ded0b28e8cd9552f9219eec7a08b6d4a9489",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E5",
+    "inquiry_id": "I1",
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "T1 produced 24 archived checkpoint candidates. T1:checkpoint-120832 has the completed M1 diagnostic artifact, but no candidate is assigned working, best-known, or retained status because development evidence is below the human goal and branch coverage is incomplete.",
+        "completed_operations": [
+          "T1",
+          "M1",
+          "E4"
+        ],
+        "cumulative_resource_use": "One fresh training operation using the maintainer's 120000-step allocation completed with 120832 rollout steps, and one 160-episode non-protected development measurement completed. No official assessment has been requested.",
+        "current_goal_gap": "The fresh baseline reached 94.375% on a 160-episode non-protected development panel, below the 98% goal and not an official assessment. No candidate has been assigned working or best-known status, and no official success claim is justified. The remaining gap is to raise robust success toward at least 196 of 200 while testing the unobserved folded IK branch.",
+        "current_synthesis": "M1 provides the first behavioral evidence. T1:checkpoint-120832 succeeded in 151/160 episodes (94.375%). Nine episodes failed: seven never entered the 1 cm region, while two entered at step 17 and held for only one step before interruption. Failures clustered at negative target bearings around -119 to -151 degrees, with similar mean radius to successes, supporting acquisition, singularity escape, or bearing-coverage limitations as the dominant baseline mechanism. The two post-entry failures leave a secondary stabilization risk. Every panel episode was classified as elbow_open; therefore branch-dependent behavior remains unresolved and the evidence does not support branch invariance. Training reward and training success are learning-dynamics facts, not proof of official task success.",
+        "decision_frontier": "For the next policy intervention, does targeted acquisition and negative-bearing coverage improve the dominant pre-entry failure without sacrificing hold stability, and can the policy be made to use or robustly handle the folded IK branch? A fresh fixed-allocation candidate followed by deterministic diagnostics should compare pre-entry versus post-entry failures, negative-bearing performance, and branch occupancy before any official assessment or best-known claim.",
+        "evidence_references": [
+          "T1",
+          "M1",
+          "E4"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 of 200 official episodes to complete an uninterrupted 100-control-step hold. The completed baseline identifies the dominant route-limiting mechanism, allowing the next intervention to target acquisition and coverage rather than optimize an unvalidated reward proxy.",
+        "next_direction_or_closure": "The I1 closure decision is preserved: acquisition, singularity escape, and negative-bearing coverage are the primary route, with stabilization secondary and folded-branch behavior unresolved. After this checkpoint, enter goal review and open a fresh inquiry focused on that route and branch-coverage distinction; do not request official assessment yet."
+      }
+    },
+    "request_fingerprint": "544793b42b91f86d8cc87772d19e4bede5f2a03ae35194a075eaa70e67d23413",
+    "session_id": "S3",
+    "supersedes": null
+  },
   "pi_checkpoint": {
-    "candidates_and_roles": "No candidates, working model, best-known model, or retained model exists.",
+    "candidates_and_roles": "T1 produced 24 archived checkpoint candidates. T1:checkpoint-120832 has the completed M1 diagnostic artifact, but no candidate is assigned working, best-known, or retained status because development evidence is below the human goal and branch coverage is incomplete.",
     "completed_operations": [
-      "E2"
+      "T1",
+      "M1",
+      "E4"
     ],
-    "cumulative_resource_use": "No training, evaluation, or other campaign operation has completed; cumulative scientific resource use remains zero.",
-    "current_goal_gap": "There is still no trained candidate, behavioral evidence, or best-known model, so the gap to 98% success remains unquantified. The next inquiry session must obtain a fresh 120000-step baseline and deterministic development diagnostics before any claim about policy quality or route viability is justified.",
-    "current_synthesis": "The scientific model establishes a fully extended q2=0 reset, 20 ms effort control, a 1 cm tolerance, and a required uninterrupted 100-step hold. It also establishes competing possible mechanisms: initial singularity escape and reorientation, branch or boundary geometry, and residual-motion overshoot or stabilization failure. Operation E2 opened inquiry I1 but produced no behavioral evidence; therefore these explanations remain unresolved and no learnability or reward-value claim is supported.",
-    "decision_frontier": "For a first policy trained under the fixed 120000-step allocation, do failures occur mainly before first entry into the 1 cm region or after entry through hold interruptions, and how do those mechanisms vary with target radius, bearing, and inverse-kinematic branch? Episode-level success, first-entry step, minimum and terminal distance, maximum held streak, interruptions, and target geometry will discriminate the routes: acquisition/coverage work if pre-entry failures dominate, or convergence/stabilization work if post-entry failures dominate.",
+    "cumulative_resource_use": "One fresh training operation using the maintainer's 120000-step allocation completed with 120832 rollout steps, and one 160-episode non-protected development measurement completed. No official assessment has been requested.",
+    "current_goal_gap": "The fresh baseline reached 94.375% on a 160-episode non-protected development panel, below the 98% goal and not an official assessment. No candidate has been assigned working or best-known status, and no official success claim is justified. The remaining gap is to raise robust success toward at least 196 of 200 while testing the unobserved folded IK branch.",
+    "current_synthesis": "M1 provides the first behavioral evidence. T1:checkpoint-120832 succeeded in 151/160 episodes (94.375%). Nine episodes failed: seven never entered the 1 cm region, while two entered at step 17 and held for only one step before interruption. Failures clustered at negative target bearings around -119 to -151 degrees, with similar mean radius to successes, supporting acquisition, singularity escape, or bearing-coverage limitations as the dominant baseline mechanism. The two post-entry failures leave a secondary stabilization risk. Every panel episode was classified as elbow_open; therefore branch-dependent behavior remains unresolved and the evidence does not support branch invariance. Training reward and training success are learning-dynamics facts, not proof of official task success.",
+    "decision_frontier": "For the next policy intervention, does targeted acquisition and negative-bearing coverage improve the dominant pre-entry failure without sacrificing hold stability, and can the policy be made to use or robustly handle the folded IK branch? A fresh fixed-allocation candidate followed by deterministic diagnostics should compare pre-entry versus post-entry failures, negative-bearing performance, and branch occupancy before any official assessment or best-known claim.",
     "evidence_references": [
-      "E2"
+      "T1",
+      "M1",
+      "E4"
     ],
-    "human_goal_connection": "The human goal requires at least 196 of 200 official episodes to complete an uninterrupted 100-control-step hold. The campaign must first identify the dominant failure mechanism so that subsequent learning changes address the mechanism that limits progress toward 98% official success rather than optimize an unvalidated proxy.",
-    "inquiry_id": null,
-    "next_direction_or_closure": "The goal-review transition is complete: continue inquiry I1 in a fresh inquiry session. The first operation there should train a fresh policy with exactly the maintainer's 120000-step allocation, followed by a deterministic non-protected development measurement using the diagnostic fields in the inquiry closure condition. Do not request official assessment until a candidate has evidence-backed best-known status and the failure mechanism has been addressed.",
-    "scientific_commit": "78d7d5da0828a80560554bb88b45634867104a72",
-    "session_id": "S2"
+    "human_goal_connection": "The human goal requires at least 196 of 200 official episodes to complete an uninterrupted 100-control-step hold. The completed baseline identifies the dominant route-limiting mechanism, allowing the next intervention to target acquisition and coverage rather than optimize an unvalidated reward proxy.",
+    "inquiry_id": "I1",
+    "next_direction_or_closure": "The I1 closure decision is preserved: acquisition, singularity escape, and negative-bearing coverage are the primary route, with stabilization secondary and folded-branch behavior unresolved. After this checkpoint, enter goal review and open a fresh inquiry focused on that route and branch-coverage distinction; do not request official assessment yet.",
+    "scientific_commit": "0925ded0b28e8cd9552f9219eec7a08b6d4a9489",
+    "session_id": "S3"
   },
   "schema_version": 6,
   "scientific_model": {
@@ -1231,23 +1362,6 @@
     "path": "research/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "c0ee09f3-be1c-4410-8e3c-c4c3c0f3daf4",
-    "id": "S3",
-    "inquiry_id": "I1",
-    "kind": "inquiry",
-    "objective": "Advance I1 toward its closure condition: Close this inquiry once a fresh 120000-step policy has been evaluated on a deterministic non-protected development panel with episode success, first-entry step, minimum and terminal distance, maximum held streak, hold interruptions, target radius, target bearing, and inverse-kinematic branch, and the evidence supports a route-specific decision between acquisition/coverage work and convergence/stabilization work.",
-    "operation_ids": [
-      "T1",
-      "M1",
-      "E4"
-    ],
-    "scientific_parent_commit": "01d0e797a5a67aecd8b3f8c80464612292a5e68d"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
