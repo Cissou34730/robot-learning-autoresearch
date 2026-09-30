@@ -7436,7 +7436,7 @@
     }
   },
   "counters": {
-    "event": 52,
+    "event": 53,
     "inquiry": 11,
     "measurement": 11,
     "session": 26,
@@ -7445,7 +7445,7 @@
   "human_goal": {
     "source": "research/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -13981,30 +13981,185 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-09-30T01:32:01Z",
+      "error": null,
+      "id": "E53",
+      "inquiry_id": "I11",
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "T1:checkpoint-100352 remains the strongest historically measured baseline but is unassigned because its performance was not repeatable. T9:checkpoint-95232 is unassigned after the I11 readiness panels. T8:checkpoint-90112 and T7:checkpoint-120832 remain rejected routes. No candidate has working, best-known, or retained status.",
+        "completed_operations": [
+          "E51",
+          "T9",
+          "M11",
+          "E52"
+        ],
+        "cumulative_resource_use": "The campaign has used nine PPO training runs of up to 120,832 completed steps each, six 160-episode development panels, one 138-target diagnostic grid, ten prior 200-episode development panels through M10, one paired three-candidate M7 panel, and two fresh 200-episode I11 readiness panels in M11. I11 added one fresh restored-baseline training run and two fresh evaluations. No official assessment has run.",
+        "current_goal_gap": "No candidate has best-known status and official assessment remains unjustified. The restored baseline previously measured 196/200 once but later measured 194/200, 192/200, 192/200, 194/200, and 193/200. Under the pre-specified I11 protocol, T9:checkpoint-95232 measured 159/200 and 167/200 on two fresh panels, leaving the campaign below the 196/200 objective.",
+        "current_synthesis": "Observed: the fixed training-only rule selected T9:checkpoint-95232 before evaluation from the late-window T9 checkpoints. Observed: this frozen checkpoint achieved 159/200 and 167/200 on two fresh non-overlapping complete-distribution panels, failing the 196/200 threshold on both. Observed: the earlier T1 panels likewise varied around the threshold, with only one 196/200 result. These findings establish that the restored baseline formulation plus justified checkpoint selection did not produce repeatable assessment readiness. The remaining explanation is not resolved for untested learning methods or formulations; those are future goal-review questions, not evidence against this closure decision.",
+        "decision_frontier": "I11 is closed negatively: M11 showed that the pre-specified fresh training and checkpoint-selection protocol did not reach or repeat 196/200, so T9:checkpoint-95232 cannot receive best-known status and official assessment remains withheld. The campaign now returns to goal review; I10 remains closed and is not reopened.",
+        "evidence_references": [
+          "E45",
+          "T8",
+          "M10",
+          "E47",
+          "E49",
+          "E51",
+          "T9",
+          "M11",
+          "E52"
+        ],
+        "human_goal_connection": "The campaign still targets one frozen learned policy achieving at least 196 complete successes out of 200 under the official task distribution, with every success requiring the complete uninterrupted 100-step hold. I11 tested whether restored-baseline reliability and checkpoint selection could produce that assessment-ready policy.",
+        "next_direction_or_closure": "This checkpoint ends the I11 inquiry session and returns the campaign to goal review. The non-binding next direction is to decide whether a new named consequential uncertainty and credible route remain for the human-goal gap, or whether campaign conclusion is justified. No new intervention, training run, measurement, role assignment, or official assessment is selected here."
+      },
+      "result": {
+        "session_id": "S26",
+        "status": "checkpointed"
+      },
+      "session_id": "S26",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "c371060bd17b1d4d7162b893a3e4aabc7f4ce568",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "T1:checkpoint-100352 remains the strongest historically measured baseline but is unassigned because its performance was not repeatable. T9:checkpoint-95232 is unassigned after the I11 readiness panels. T8:checkpoint-90112 and T7:checkpoint-120832 remain rejected routes. No candidate has working, best-known, or retained status.",
+        "completed_operations": [
+          "E51",
+          "T9",
+          "M11",
+          "E52"
+        ],
+        "cumulative_resource_use": "The campaign has used nine PPO training runs of up to 120,832 completed steps each, six 160-episode development panels, one 138-target diagnostic grid, ten prior 200-episode development panels through M10, one paired three-candidate M7 panel, and two fresh 200-episode I11 readiness panels in M11. I11 added one fresh restored-baseline training run and two fresh evaluations. No official assessment has run.",
+        "current_goal_gap": "No candidate has best-known status and official assessment remains unjustified. The restored baseline previously measured 196/200 once but later measured 194/200, 192/200, 192/200, 194/200, and 193/200. Under the pre-specified I11 protocol, T9:checkpoint-95232 measured 159/200 and 167/200 on two fresh panels, leaving the campaign below the 196/200 objective.",
+        "current_synthesis": "Observed: the fixed training-only rule selected T9:checkpoint-95232 before evaluation from the late-window T9 checkpoints. Observed: this frozen checkpoint achieved 159/200 and 167/200 on two fresh non-overlapping complete-distribution panels, failing the 196/200 threshold on both. Observed: the earlier T1 panels likewise varied around the threshold, with only one 196/200 result. These findings establish that the restored baseline formulation plus justified checkpoint selection did not produce repeatable assessment readiness. The remaining explanation is not resolved for untested learning methods or formulations; those are future goal-review questions, not evidence against this closure decision.",
+        "decision_frontier": "I11 is closed negatively: M11 showed that the pre-specified fresh training and checkpoint-selection protocol did not reach or repeat 196/200, so T9:checkpoint-95232 cannot receive best-known status and official assessment remains withheld. The campaign now returns to goal review; I10 remains closed and is not reopened.",
+        "evidence_references": [
+          "E45",
+          "T8",
+          "M10",
+          "E47",
+          "E49",
+          "E51",
+          "T9",
+          "M11",
+          "E52"
+        ],
+        "human_goal_connection": "The campaign still targets one frozen learned policy achieving at least 196 complete successes out of 200 under the official task distribution, with every success requiring the complete uninterrupted 100-step hold. I11 tested whether restored-baseline reliability and checkpoint selection could produce that assessment-ready policy.",
+        "inquiry_id": "I11",
+        "next_direction_or_closure": "This checkpoint ends the I11 inquiry session and returns the campaign to goal review. The non-binding next direction is to decide whether a new named consequential uncertainty and credible route remain for the human-goal gap, or whether campaign conclusion is justified. No new intervention, training run, measurement, role assignment, or official assessment is selected here.",
+        "session_id": "S26"
+      },
+      "presentation": {
+        "backend_session_id": "c867ebb4-1303-4839-8995-08dada9bf051",
+        "campaign_id": "eb19a5f3-14b3-4590-ad74-1b31cf5ae3d5",
+        "campaign_usage": "1h37m | 269.09 AIU | prompt 40.8m (83% cached) | output 258.9k",
+        "session_id": "S26",
+        "session_kind": "inquiry",
+        "session_usage": "4m25s | 13.63 AIU | prompt 1.7m (77% cached) | output 7.5k"
+      },
+      "result": {
+        "session_id": "S26",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "f74ce3647680f077d2e7fdfb4824f834903bc9d3",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E53",
+    "inquiry_id": "I11",
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "T1:checkpoint-100352 remains the strongest historically measured baseline but is unassigned because its performance was not repeatable. T9:checkpoint-95232 is unassigned after the I11 readiness panels. T8:checkpoint-90112 and T7:checkpoint-120832 remain rejected routes. No candidate has working, best-known, or retained status.",
+        "completed_operations": [
+          "E51",
+          "T9",
+          "M11",
+          "E52"
+        ],
+        "cumulative_resource_use": "The campaign has used nine PPO training runs of up to 120,832 completed steps each, six 160-episode development panels, one 138-target diagnostic grid, ten prior 200-episode development panels through M10, one paired three-candidate M7 panel, and two fresh 200-episode I11 readiness panels in M11. I11 added one fresh restored-baseline training run and two fresh evaluations. No official assessment has run.",
+        "current_goal_gap": "No candidate has best-known status and official assessment remains unjustified. The restored baseline previously measured 196/200 once but later measured 194/200, 192/200, 192/200, 194/200, and 193/200. Under the pre-specified I11 protocol, T9:checkpoint-95232 measured 159/200 and 167/200 on two fresh panels, leaving the campaign below the 196/200 objective.",
+        "current_synthesis": "Observed: the fixed training-only rule selected T9:checkpoint-95232 before evaluation from the late-window T9 checkpoints. Observed: this frozen checkpoint achieved 159/200 and 167/200 on two fresh non-overlapping complete-distribution panels, failing the 196/200 threshold on both. Observed: the earlier T1 panels likewise varied around the threshold, with only one 196/200 result. These findings establish that the restored baseline formulation plus justified checkpoint selection did not produce repeatable assessment readiness. The remaining explanation is not resolved for untested learning methods or formulations; those are future goal-review questions, not evidence against this closure decision.",
+        "decision_frontier": "I11 is closed negatively: M11 showed that the pre-specified fresh training and checkpoint-selection protocol did not reach or repeat 196/200, so T9:checkpoint-95232 cannot receive best-known status and official assessment remains withheld. The campaign now returns to goal review; I10 remains closed and is not reopened.",
+        "evidence_references": [
+          "E45",
+          "T8",
+          "M10",
+          "E47",
+          "E49",
+          "E51",
+          "T9",
+          "M11",
+          "E52"
+        ],
+        "human_goal_connection": "The campaign still targets one frozen learned policy achieving at least 196 complete successes out of 200 under the official task distribution, with every success requiring the complete uninterrupted 100-step hold. I11 tested whether restored-baseline reliability and checkpoint selection could produce that assessment-ready policy.",
+        "next_direction_or_closure": "This checkpoint ends the I11 inquiry session and returns the campaign to goal review. The non-binding next direction is to decide whether a new named consequential uncertainty and credible route remain for the human-goal gap, or whether campaign conclusion is justified. No new intervention, training run, measurement, role assignment, or official assessment is selected here."
+      }
+    },
+    "request_fingerprint": "74b9165bb381b664692a744991e1e3b9004911ecd775637bc2052ca214166392",
+    "session_id": "S26",
+    "supersedes": null
+  },
   "pi_checkpoint": {
-    "candidates_and_roles": "T1:checkpoint-100352 remains the strongest measured baseline but is unassigned; its repeated fresh-panel results are the subject of I11. T8:checkpoint-90112 is rejected as an I10 route after M10. T7:checkpoint-120832 remains rejected by M9. No candidate has working, best-known, or retained status.",
+    "candidates_and_roles": "T1:checkpoint-100352 remains the strongest historically measured baseline but is unassigned because its performance was not repeatable. T9:checkpoint-95232 is unassigned after the I11 readiness panels. T8:checkpoint-90112 and T7:checkpoint-120832 remain rejected routes. No candidate has working, best-known, or retained status.",
     "completed_operations": [
-      "E49"
+      "E51",
+      "T9",
+      "M11",
+      "E52"
     ],
-    "cumulative_resource_use": "The campaign has used eight PPO training runs of up to 120,832 completed steps each, six 160-episode development panels, one 138-target diagnostic grid, eight 200-episode development panels including M10, and one paired three-candidate M7 panel. I10 added one branch-factorized policy-only training run and one fresh paired complete-distribution measurement. I11 has been opened but has not yet consumed training or measurement resources. No official assessment has run.",
-    "current_goal_gap": "M10 measured T8:checkpoint-90112 at 22/200 successes (11.0%) and restored T1:checkpoint-100352 at 193/200 (96.5%) on the same fresh shared-seed panel. T8 remains far below the 196/200 threshold; T1 has also recorded 196/200 once but later 194/200, 192/200, and 193/200, so no candidate has best-known status and official assessment remains unjustified.",
-    "current_synthesis": "Observed: T8 preserved T1's 11-element observation, direct joint-action mapping, reward, target distribution, and PPO settings while using a branch-factorized policy representation. Observed: all recorded T8 checkpoints had zero training success, and checkpoint-90112 achieved 22/200 complete successes in M10 versus 193/200 for T1. Observed: the paired comparison recorded 0 T8 wins, 171 discordant episodes, and a -85.5 percentage-point T8 difference. Observed: T8 successes reached the required uninterrupted 100-step hold, but failures included widespread approach or settling loss and hold interruptions. These observations support the negative decision that this policy-only representation materially degraded the complete task and is not a credible route to 196/200. The remaining consequential uncertainty is whether the restored baseline formulation can produce repeatable assessment readiness through justified checkpoint-selection and training-reliability evidence; this is a bounded inquiry and does not reopen I10.",
-    "decision_frontier": "I10 is closed negatively because its required controlled training and fresh shared-seed comparison failed the 196/200 threshold and materially degraded the restored baseline. Goal review opened I11 as one bounded goal-linked inquiry after E49; this goal-review session now ends, and I11's fresh inquiry session must begin before any training or measurement is requested. Official assessment remains unjustified because no candidate has best-known status.",
+    "cumulative_resource_use": "The campaign has used nine PPO training runs of up to 120,832 completed steps each, six 160-episode development panels, one 138-target diagnostic grid, ten prior 200-episode development panels through M10, one paired three-candidate M7 panel, and two fresh 200-episode I11 readiness panels in M11. I11 added one fresh restored-baseline training run and two fresh evaluations. No official assessment has run.",
+    "current_goal_gap": "No candidate has best-known status and official assessment remains unjustified. The restored baseline previously measured 196/200 once but later measured 194/200, 192/200, 192/200, 194/200, and 193/200. Under the pre-specified I11 protocol, T9:checkpoint-95232 measured 159/200 and 167/200 on two fresh panels, leaving the campaign below the 196/200 objective.",
+    "current_synthesis": "Observed: the fixed training-only rule selected T9:checkpoint-95232 before evaluation from the late-window T9 checkpoints. Observed: this frozen checkpoint achieved 159/200 and 167/200 on two fresh non-overlapping complete-distribution panels, failing the 196/200 threshold on both. Observed: the earlier T1 panels likewise varied around the threshold, with only one 196/200 result. These findings establish that the restored baseline formulation plus justified checkpoint selection did not produce repeatable assessment readiness. The remaining explanation is not resolved for untested learning methods or formulations; those are future goal-review questions, not evidence against this closure decision.",
+    "decision_frontier": "I11 is closed negatively: M11 showed that the pre-specified fresh training and checkpoint-selection protocol did not reach or repeat 196/200, so T9:checkpoint-95232 cannot receive best-known status and official assessment remains withheld. The campaign now returns to goal review; I10 remains closed and is not reopened.",
     "evidence_references": [
       "E45",
       "T8",
       "M10",
       "E47",
-      "E49"
+      "E49",
+      "E51",
+      "T9",
+      "M11",
+      "E52"
     ],
-    "human_goal_connection": "The campaign continues to target a learned policy achieving at least 196 complete successes out of 200 under the complete official task distribution. Every counted success must include the complete uninterrupted 100-step hold. I11 is directly tied to this goal because it asks whether the near-threshold restored baseline can become assessment-ready without relying on one favorable development panel.",
-    "inquiry_id": null,
-    "next_direction_or_closure": "This checkpoint ends the goal-review session and transitions to the fresh I11 inquiry session. The non-binding next direction is to apply the pre-specified assessment-readiness and training-reliability protocol to the restored baseline route. I11 should close when that protocol either produces a candidate with at least 196/200 and evidence sufficient for best-known assignment, or shows that the baseline route and justified reliability measures cannot reach or repeat 196/200, leaving no credible route to the goal.",
-    "scientific_commit": "f3e6e3612c2d563164344feeb8ae5530dacb5df4",
-    "session_id": "S25"
+    "human_goal_connection": "The campaign still targets one frozen learned policy achieving at least 196 complete successes out of 200 under the official task distribution, with every success requiring the complete uninterrupted 100-step hold. I11 tested whether restored-baseline reliability and checkpoint selection could produce that assessment-ready policy.",
+    "inquiry_id": "I11",
+    "next_direction_or_closure": "This checkpoint ends the I11 inquiry session and returns the campaign to goal review. The non-binding next direction is to decide whether a new named consequential uncertainty and credible route remain for the human-goal gap, or whether campaign conclusion is justified. No new intervention, training run, measurement, role assignment, or official assessment is selected here.",
+    "scientific_commit": "f74ce3647680f077d2e7fdfb4824f834903bc9d3",
+    "session_id": "S26"
   },
   "schema_version": 6,
   "scientific_model": {
@@ -14012,24 +14167,6 @@
     "path": "research/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "c867ebb4-1303-4839-8995-08dada9bf051",
-    "id": "S26",
-    "inquiry_id": "I11",
-    "kind": "inquiry",
-    "objective": "Bring I11 to the decision required by its closure condition, and close it as soon as the evidence supplies that decision: Close when the pre-specified fresh assessment-readiness protocol produces a candidate with at least 196/200 and evidence sufficient to assign it best-known status, or when controlled evidence shows that the restored baseline formulation and justified checkpoint-selection or training-reliability measures cannot reach or repeat 196/200, leaving no credible route to the goal.",
-    "operation_ids": [
-      "E51",
-      "T9",
-      "M11",
-      "E52"
-    ],
-    "scientific_parent_commit": "c371060bd17b1d4d7162b893a3e4aabc7f4ce568"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
