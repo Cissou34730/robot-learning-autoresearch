@@ -2651,38 +2651,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I2",
-        "outcome": "I2 is insufficient. The coupled angle-focused acquisition and compatible-branch intervention improved the diagnosed angular acquisition subgroup but failed the complete-hold closure criterion: T2:checkpoint-120832 achieved 176/200 successes (88.0%) versus T1:checkpoint-100352 at 189/200 (94.5%) on the same fixed panel. T2 had 66/66 successes in the -180 to -90 degree sector, eliminating the baseline's 11 sector failures, but increased post-entry hold failures from 5 to 19. The intervention therefore traded acquisition failures for stabilization failures and does not support the human objective.",
-        "reason": "M2 provides paired, same-panel development evidence with the required per-episode angle, first entry, uninterrupted hold streak, interruptions, minimum distance, and final distance diagnostics. The candidate missed the 196/200 threshold by 20 episodes, had 24 total failures versus the baseline's 11, and worsened the protected post-entry subgroup by 14 episodes. The result resolves I2 in favor of a coupled-intervention tradeoff explanation: the angle-focused sampler and branch ordering can improve acquisition in the target sector, but under the tested recipe they destabilize complete holds across the panel. Retain T1:checkpoint-100352 as the best supported development candidate; neither candidate establishes the official 98% objective."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I2",
-        "outcome": "I2 is insufficient. The coupled angle-focused acquisition and compatible-branch intervention improved the diagnosed angular acquisition subgroup but failed the complete-hold closure criterion: T2:checkpoint-120832 achieved 176/200 successes (88.0%) versus T1:checkpoint-100352 at 189/200 (94.5%) on the same fixed panel. T2 had 66/66 successes in the -180 to -90 degree sector, eliminating the baseline's 11 sector failures, but increased post-entry hold failures from 5 to 19. The intervention therefore traded acquisition failures for stabilization failures and does not support the human objective.",
-        "reason": "M2 provides paired, same-panel development evidence with the required per-episode angle, first entry, uninterrupted hold streak, interruptions, minimum distance, and final distance diagnostics. The candidate missed the 196/200 threshold by 20 episodes, had 24 total failures versus the baseline's 11, and worsened the protected post-entry subgroup by 14 episodes. The result resolves I2 in favor of a coupled-intervention tradeoff explanation: the angle-focused sampler and branch ordering can improve acquisition in the target sector, but under the tested recipe they destabilize complete holds across the panel. Retain T1:checkpoint-100352 as the best supported development candidate; neither candidate establishes the official 98% objective.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E8",
-    "inquiry_id": "I2",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "I2 is insufficient. The coupled angle-focused acquisition and compatible-branch intervention improved the diagnosed angular acquisition subgroup but failed the complete-hold closure criterion: T2:checkpoint-120832 achieved 176/200 successes (88.0%) versus T1:checkpoint-100352 at 189/200 (94.5%) on the same fixed panel. T2 had 66/66 successes in the -180 to -90 degree sector, eliminating the baseline's 11 sector failures, but increased post-entry hold failures from 5 to 19. The intervention therefore traded acquisition failures for stabilization failures and does not support the human objective.",
-        "reason": "M2 provides paired, same-panel development evidence with the required per-episode angle, first entry, uninterrupted hold streak, interruptions, minimum distance, and final distance diagnostics. The candidate missed the 196/200 threshold by 20 episodes, had 24 total failures versus the baseline's 11, and worsened the protected post-entry subgroup by 14 episodes. The result resolves I2 in favor of a coupled-intervention tradeoff explanation: the angle-focused sampler and branch ordering can improve acquisition in the target sector, but under the tested recipe they destabilize complete holds across the panel. Retain T1:checkpoint-100352 as the best supported development candidate; neither candidate establishes the official 98% objective."
-      }
-    },
-    "request_fingerprint": "b1694bd36443d0327f8dff0696f9a1d0b26d0e8d6a094ab7166545cb97df1999",
-    "session_id": "S5",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T1:checkpoint-100352 remains the best measured development candidate and baseline reference, with its archived policy/runtime artifact and M1 evidence. No candidate has been assigned working, best-known, or retained status.",
     "completed_operations": [
