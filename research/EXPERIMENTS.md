@@ -54,3 +54,4 @@
 | E36 | checkpoint | I8 | checkpointed |
 | E37 | inquiry | I8 | completed |
 | E38 | checkpoint | I8 | checkpointed |
+| E39 | inquiry | I9 | completed |
