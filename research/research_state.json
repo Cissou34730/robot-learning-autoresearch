@@ -1271,44 +1271,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "open",
-        "inquiry": {
-          "closure_condition": "Close this inquiry when a fresh 120000-step candidate and deterministic diagnostics establish either that full-range, acquisition-focused training materially improves pre-entry and negative-bearing failures without degrading the 100-step hold and characterizes folded-branch occupancy, or that it does not and the resulting failure mechanism redirects the campaign to a different credible route.",
-          "goal_connection": "The current candidate achieves only 151/160 successes (94.375%) on a development panel, with seven failures before first entry concentrated at negative bearings, and its training distribution begins at 14 cm while the official distribution begins at 6 cm. A bounded intervention must close the pre-entry gap toward at least 196/200 without trading it for hold failures and must establish whether the unobserved folded branch limits official robustness.",
-          "id": "I2",
-          "opened_in_session": "S4",
-          "question": "Can broadening training coverage to the full official radius range and explicitly improving singularity escape and negative-bearing acquisition produce a policy that preserves uninterrupted hold stability while using or robustly handling the folded inverse-kinematic branch?",
-          "rationale": "The baseline evidence supports acquisition, singularity escape, or bearing coverage as the dominant route-limiting mechanism, but the current training radius range omits 6-14 cm targets whose physical model requires more folded configurations. This inquiry tests the consequential distribution-and-branch explanation against the hold-stability alternative before assigning a role or requesting official assessment.",
-          "reframes": []
-        }
-      },
-      "result": {
-        "action": "open",
-        "inquiry_id": "I2",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E6",
-    "inquiry_id": null,
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "open",
-        "closure_condition": "Close this inquiry when a fresh 120000-step candidate and deterministic diagnostics establish either that full-range, acquisition-focused training materially improves pre-entry and negative-bearing failures without degrading the 100-step hold and characterizes folded-branch occupancy, or that it does not and the resulting failure mechanism redirects the campaign to a different credible route.",
-        "goal_connection": "The current candidate achieves only 151/160 successes (94.375%) on a development panel, with seven failures before first entry concentrated at negative bearings, and its training distribution begins at 14 cm while the official distribution begins at 6 cm. A bounded intervention must close the pre-entry gap toward at least 196/200 without trading it for hold failures and must establish whether the unobserved folded branch limits official robustness.",
-        "question": "Can broadening training coverage to the full official radius range and explicitly improving singularity escape and negative-bearing acquisition produce a policy that preserves uninterrupted hold stability while using or robustly handling the folded inverse-kinematic branch?",
-        "rationale": "The baseline evidence supports acquisition, singularity escape, or bearing coverage as the dominant route-limiting mechanism, but the current training radius range omits 6-14 cm targets whose physical model requires more folded configurations. This inquiry tests the consequential distribution-and-branch explanation against the hold-stability alternative before assigning a role or requesting official assessment."
-      }
-    },
-    "request_fingerprint": "634d2bb035c4519e154eec8645f6aeff18d94ef920acc64638c2dbbe5359b803",
-    "session_id": "S4",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T1 produced 24 archived checkpoint candidates. T1:checkpoint-120832 has the completed M1 diagnostic artifact, but no candidate is assigned working, best-known, or retained status because development evidence is below the human goal and branch coverage is incomplete.",
     "completed_operations": [
