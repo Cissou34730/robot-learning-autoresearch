@@ -9803,44 +9803,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "open",
-        "inquiry": {
-          "closure_condition": "Close when bounded implementation, training, and controlled shared-seed complete-distribution measurements establish either a candidate with at least 196/200 successes and preserved post-settling uninterrupted-hold behavior sufficient to justify explicit best-known assignment, or that the interface cannot preserve the baseline complete-task outcome or cannot provide a credible route to 196/200. Do not treat partial reach, minimum distance, or isolated hold traces as sufficient closure evidence.",
-          "goal_connection": "The current best fresh shared-seed result is 192/200 (96.0%), four successes short of the 196/200 threshold required for the human goal. This inquiry targets the observed pre- or during-settling shortfall across the complete official task distribution and must produce a learned policy that still succeeds only through the full uninterrupted 100-step hold.",
-          "id": "I9",
-          "opened_in_session": "S20",
-          "question": "Can a continuous model-informed residual torque interface, built around a feasible inverse-kinematic target-pose and velocity-damping reference while preserving the baseline observation representation and complete uninterrupted-hold semantics, resolve the residual negative-bearing approach and settling failures without degrading the learned policy's existing hold capability?",
-          "rationale": "E37/M8 rejected the tested phase-aware command split: its candidates scored 180/200, 191/200, and 188/200 against the restored baseline's 192/200, although successful episodes still completed 100-step holds. Earlier evidence localized the recurring gap to negative-bearing approach and settling (E4, E9, E32), while representation, radius-support, reward, rehearsal, and the rejected temporal blend each failed to preserve the baseline (E13, E18, E27, E32, E37). The fixed deterministic plant and analytic branch geometry leave a consequential unresolved mechanism: raw learned torques must discover feasible configuration and velocity regulation near difficult branches. A continuous reference-plus-residual action interface tests that mechanism directly, differs from the rejected phase switch, and can preserve the baseline observation and hold contract instead of changing the official task.",
-          "reframes": []
-        }
-      },
-      "result": {
-        "action": "open",
-        "inquiry_id": "I9",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E39",
-    "inquiry_id": null,
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "open",
-        "closure_condition": "Close when bounded implementation, training, and controlled shared-seed complete-distribution measurements establish either a candidate with at least 196/200 successes and preserved post-settling uninterrupted-hold behavior sufficient to justify explicit best-known assignment, or that the interface cannot preserve the baseline complete-task outcome or cannot provide a credible route to 196/200. Do not treat partial reach, minimum distance, or isolated hold traces as sufficient closure evidence.",
-        "goal_connection": "The current best fresh shared-seed result is 192/200 (96.0%), four successes short of the 196/200 threshold required for the human goal. This inquiry targets the observed pre- or during-settling shortfall across the complete official task distribution and must produce a learned policy that still succeeds only through the full uninterrupted 100-step hold.",
-        "question": "Can a continuous model-informed residual torque interface, built around a feasible inverse-kinematic target-pose and velocity-damping reference while preserving the baseline observation representation and complete uninterrupted-hold semantics, resolve the residual negative-bearing approach and settling failures without degrading the learned policy's existing hold capability?",
-        "rationale": "E37/M8 rejected the tested phase-aware command split: its candidates scored 180/200, 191/200, and 188/200 against the restored baseline's 192/200, although successful episodes still completed 100-step holds. Earlier evidence localized the recurring gap to negative-bearing approach and settling (E4, E9, E32), while representation, radius-support, reward, rehearsal, and the rejected temporal blend each failed to preserve the baseline (E13, E18, E27, E32, E37). The fixed deterministic plant and analytic branch geometry leave a consequential unresolved mechanism: raw learned torques must discover feasible configuration and velocity regulation near difficult branches. A continuous reference-plus-residual action interface tests that mechanism directly, differs from the rejected phase switch, and can preserve the baseline observation and hold contract instead of changing the official task."
-      }
-    },
-    "request_fingerprint": "530edeb67f1a8dbbc4a69f3275f5ca9a49e72a2236b5e02f8a7f1efae46647a3",
-    "session_id": "S20",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T6:checkpoint-45056, T6:checkpoint-50176, and T6:checkpoint-70656 remain unassigned measured inquiry candidates. T1:checkpoint-100352 remains unassigned after the M8 baseline panel. No candidate has working, best-known, or retained status.",
     "completed_operations": [
