@@ -7059,38 +7059,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I5",
-        "outcome": "I5 is insufficient: the acquisition-preserving phase-handoff intervention did not provide a credible route to the human goal.",
-        "reason": "M5 provides paired, same-panel development evidence on [4200, 4400) using complete uninterrupted success. T5:checkpoint-35840 achieved 157/200 successes (78.5%) versus T1:checkpoint-100352 at 189/200 (94.5%), with 2 candidate wins and 34 reference wins across 36 discordant episodes for a net -32 paired result. The local handoff reduced post-entry failures from 5 to 2, but it introduced 30 failures in the -180 to -90 degree sector where T1 had 11, and T5 had 43 total failures. Thus the intervention materially worsened full-angle acquisition while only modestly reducing post-entry failures, missed the 196/200 development objective by 39 episodes, and did not satisfy I5's no-regression closure condition. T1 remains the strongest development reference; no official 98% claim is justified."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I5",
-        "outcome": "I5 is insufficient: the acquisition-preserving phase-handoff intervention did not provide a credible route to the human goal.",
-        "reason": "M5 provides paired, same-panel development evidence on [4200, 4400) using complete uninterrupted success. T5:checkpoint-35840 achieved 157/200 successes (78.5%) versus T1:checkpoint-100352 at 189/200 (94.5%), with 2 candidate wins and 34 reference wins across 36 discordant episodes for a net -32 paired result. The local handoff reduced post-entry failures from 5 to 2, but it introduced 30 failures in the -180 to -90 degree sector where T1 had 11, and T5 had 43 total failures. Thus the intervention materially worsened full-angle acquisition while only modestly reducing post-entry failures, missed the 196/200 development objective by 39 episodes, and did not satisfy I5's no-regression closure condition. T1 remains the strongest development reference; no official 98% claim is justified.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E20",
-    "inquiry_id": "I5",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "I5 is insufficient: the acquisition-preserving phase-handoff intervention did not provide a credible route to the human goal.",
-        "reason": "M5 provides paired, same-panel development evidence on [4200, 4400) using complete uninterrupted success. T5:checkpoint-35840 achieved 157/200 successes (78.5%) versus T1:checkpoint-100352 at 189/200 (94.5%), with 2 candidate wins and 34 reference wins across 36 discordant episodes for a net -32 paired result. The local handoff reduced post-entry failures from 5 to 2, but it introduced 30 failures in the -180 to -90 degree sector where T1 had 11, and T5 had 43 total failures. Thus the intervention materially worsened full-angle acquisition while only modestly reducing post-entry failures, missed the 196/200 development objective by 39 episodes, and did not satisfy I5's no-regression closure condition. T1 remains the strongest development reference; no official 98% claim is justified."
-      }
-    },
-    "request_fingerprint": "0adb2d6980b0c0905a883ca2feb078703f92b3eb93c081c075f2f10ae69f804c",
-    "session_id": "S11",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "No working, best-known, or retained role is assigned. T1:checkpoint-100352 remains the strongest evidence-backed development reference at 189/200. T2:checkpoint-120832 is insufficient at 176/200, while T3:checkpoint-120832 and T4:checkpoint-120832 have no candidate role after scoring 0/200.",
     "completed_operations": [
