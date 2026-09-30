@@ -1,13 +1,5 @@
 {
-  "active_inquiry": {
-    "closure_condition": "Close after one pre-specified teacher-guided training run uses the direct baseline observation, action, task, and evaluation semantics, selects its checkpoint by a training-only rule, and is compared with restored T1 on two fresh shared-seed 200-episode complete-distribution panels. Close negatively if the selected candidate fails to reach at least 196/200 on both panels, materially degrades T1, or loses the established uninterrupted-hold behavior. A candidate reaching at least 196/200 on both panels with preserved post-settling hold behavior supports best-known consideration; no success claim is made before protected official assessment.",
-    "goal_connection": "The campaign still requires one frozen learned policy with at least 196 complete successes out of 200 under the full official target distribution, where every success includes the uninterrupted 100-step hold. The restored direct-action baseline has repeatedly approached but not repeatably reached the threshold, while the tested runtime hybrid guidance materially degraded it. A teacher used only during policy initialization could address optimization and exploration variability without imposing the failed hybrid controller during evaluation.",
-    "id": "I13",
-    "opened_in_session": "S29",
-    "question": "Can teacher-guided initialization of the direct joint-torque policy, using a deterministic feasible-branch approach and damped settling controller only to reduce PPO exploration burden before the learned policy is fine-tuned and evaluated without runtime guidance, produce repeatable complete-task success at or above 196/200 while preserving the uninterrupted hold?",
-    "rationale": "Observed evidence shows a variable residual negative-bearing approach and settling tail in the direct baseline, with successful episodes generally retaining the complete hold. The tested runtime IK-plus-residual decomposition instead caused a large approach and settling degradation, so it does not justify further runtime guidance refinement. The authored deterministic plant has analytically feasible branches and state-derived observations, making a branch-aware damped controller a mechanically grounded source of training targets. Using that controller only to initialize the policy, then removing it before fine-tuning and evaluation, tests whether PPO optimization and exploration rather than the direct action interface are the consequential bottleneck. This is a distinct, bounded route that preserves the learned direct-control policy at deployment.",
-    "reframes": []
-  },
+  "active_inquiry": null,
   "campaign": {
     "base_commit": "8ac206f76ce0bd7fb8f098b4fe6dceac2a2a311f",
     "id": "eb19a5f3-14b3-4590-ad74-1b31cf5ae3d5",
@@ -9278,7 +9270,7 @@
     }
   },
   "counters": {
-    "event": 59,
+    "event": 60,
     "inquiry": 13,
     "measurement": 13,
     "session": 30,
@@ -17570,9 +17562,63 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-09-30T02:19:26Z",
+      "error": null,
+      "id": "E60",
+      "inquiry_id": "I13",
+      "kind": "inquiry",
+      "request": {
+        "action": "close",
+        "outcome": "Negative answer: teacher-guided initialization of the direct joint-torque policy did not produce repeatable complete-task success at or above 196/200 and materially degraded the restored baseline.",
+        "reason": "The pre-specified training-only rule selected T11:checkpoint-120832. On two fresh shared-seed 200-episode complete-distribution panels, it achieved 51/200 (25.5%) and 55/200 (27.5%), while restored T1:checkpoint-100352 achieved 195/200 (97.5%) and 187/200 (93.5%). Across 400 paired episodes, T11 won 4 and T1 won 280, for a -69.0 percentage-point candidate difference. The candidate therefore failed both 196/200 thresholds and materially degraded T1; the closure condition is met without needing to resolve whether its limited successful episodes preserved hold behavior. The result rejects this teacher-initialization route under the tested recipe as a credible path to the campaign goal. It does not establish that every possible initialization or learning formulation fails, but that uncertainty belongs to a distinct future question and cannot change I13's negative decision."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I13",
+        "outcome": "Negative answer: teacher-guided initialization of the direct joint-torque policy did not produce repeatable complete-task success at or above 196/200 and materially degraded the restored baseline.",
+        "reason": "The pre-specified training-only rule selected T11:checkpoint-120832. On two fresh shared-seed 200-episode complete-distribution panels, it achieved 51/200 (25.5%) and 55/200 (27.5%), while restored T1:checkpoint-100352 achieved 195/200 (97.5%) and 187/200 (93.5%). Across 400 paired episodes, T11 won 4 and T1 won 280, for a -69.0 percentage-point candidate difference. The candidate therefore failed both 196/200 thresholds and materially degraded T1; the closure condition is met without needing to resolve whether its limited successful episodes preserved hold behavior. The result rejects this teacher-initialization route under the tested recipe as a credible path to the campaign goal. It does not establish that every possible initialization or learning formulation fails, but that uncertainty belongs to a distinct future question and cannot change I13's negative decision.",
+        "status": "completed"
+      },
+      "session_id": "S30",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "close",
+        "inquiry_id": "I13",
+        "outcome": "Negative answer: teacher-guided initialization of the direct joint-torque policy did not produce repeatable complete-task success at or above 196/200 and materially degraded the restored baseline.",
+        "reason": "The pre-specified training-only rule selected T11:checkpoint-120832. On two fresh shared-seed 200-episode complete-distribution panels, it achieved 51/200 (25.5%) and 55/200 (27.5%), while restored T1:checkpoint-100352 achieved 195/200 (97.5%) and 187/200 (93.5%). Across 400 paired episodes, T11 won 4 and T1 won 280, for a -69.0 percentage-point candidate difference. The candidate therefore failed both 196/200 thresholds and materially degraded T1; the closure condition is met without needing to resolve whether its limited successful episodes preserved hold behavior. The result rejects this teacher-initialization route under the tested recipe as a credible path to the campaign goal. It does not establish that every possible initialization or learning formulation fails, but that uncertainty belongs to a distinct future question and cannot change I13's negative decision."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I13",
+        "outcome": "Negative answer: teacher-guided initialization of the direct joint-torque policy did not produce repeatable complete-task success at or above 196/200 and materially degraded the restored baseline.",
+        "reason": "The pre-specified training-only rule selected T11:checkpoint-120832. On two fresh shared-seed 200-episode complete-distribution panels, it achieved 51/200 (25.5%) and 55/200 (27.5%), while restored T1:checkpoint-100352 achieved 195/200 (97.5%) and 187/200 (93.5%). Across 400 paired episodes, T11 won 4 and T1 won 280, for a -69.0 percentage-point candidate difference. The candidate therefore failed both 196/200 thresholds and materially degraded T1; the closure condition is met without needing to resolve whether its limited successful episodes preserved hold behavior. The result rejects this teacher-initialization route under the tested recipe as a credible path to the campaign goal. It does not establish that every possible initialization or learning formulation fails, but that uncertainty belongs to a distinct future question and cannot change I13's negative decision.",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E60",
+    "inquiry_id": "I13",
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "close",
+        "outcome": "Negative answer: teacher-guided initialization of the direct joint-torque policy did not produce repeatable complete-task success at or above 196/200 and materially degraded the restored baseline.",
+        "reason": "The pre-specified training-only rule selected T11:checkpoint-120832. On two fresh shared-seed 200-episode complete-distribution panels, it achieved 51/200 (25.5%) and 55/200 (27.5%), while restored T1:checkpoint-100352 achieved 195/200 (97.5%) and 187/200 (93.5%). Across 400 paired episodes, T11 won 4 and T1 won 280, for a -69.0 percentage-point candidate difference. The candidate therefore failed both 196/200 thresholds and materially degraded T1; the closure condition is met without needing to resolve whether its limited successful episodes preserved hold behavior. The result rejects this teacher-initialization route under the tested recipe as a credible path to the campaign goal. It does not establish that every possible initialization or learning formulation fails, but that uncertainty belongs to a distinct future question and cannot change I13's negative decision."
+      }
+    },
+    "request_fingerprint": "c36ae971880fc79abea00015591271953a04e9e9cd1460b401cebac70a7a4318",
+    "session_id": "S30",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T10:checkpoint-120832 is rejected as the I12 hybrid route after M12. T1:checkpoint-100352 remains the strongest historically measured baseline but is unassigned because its performance is not repeatable and remains below 196/200 on the fresh I12 panels. T9:checkpoint-95232, T8:checkpoint-90112, and T7:checkpoint-120832 remain rejected or unassigned routes. I13 has produced no candidate. No candidate has working, best-known, or retained status.",
     "completed_operations": [
@@ -17614,7 +17660,8 @@
     "objective": "Bring I13 to the decision required by its closure condition, and close it as soon as the evidence supplies that decision: Close after one pre-specified teacher-guided training run uses the direct baseline observation, action, task, and evaluation semantics, selects its checkpoint by a training-only rule, and is compared with restored T1 on two fresh shared-seed 200-episode complete-distribution panels. Close negatively if the selected candidate fails to reach at least 196/200 on both panels, materially degrades T1, or loses the established uninterrupted-hold behavior. A candidate reaching at least 196/200 on both panels with preserved post-settling hold behavior supports best-known consideration; no success claim is made before protected official assessment.",
     "operation_ids": [
       "T11",
-      "M13"
+      "M13",
+      "E60"
     ],
     "scientific_parent_commit": "8e8f67c17700774190a47506691af107a44106d0"
   },

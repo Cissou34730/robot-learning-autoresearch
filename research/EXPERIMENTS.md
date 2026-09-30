@@ -85,3 +85,4 @@
 | E59 | checkpoint | - | checkpointed |
 | T11 | training | I13 | completed |
 | M13 | measurement | I13 | completed |
+| E60 | inquiry | I13 | completed |
