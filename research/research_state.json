@@ -221,44 +221,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "open",
-        "inquiry": {
-          "closure_condition": "Close after a fresh full-annulus learned-policy candidate has been evaluated with target-radius and angle-resolved outcomes, first-entry timing, endpoint speed or equivalent transient diagnostics at entry, hold interruptions, and action saturation. Close with a route-forward result if the candidate shows credible broad hold completion and retain the inquiry for method development if it fails broadly; redirect toward structured control or a stronger feasibility concern if transient-aware learning cannot produce meaningful complete holds.",
-          "goal_connection": "The human goal requires at least 196 complete successes in the protected 200-episode assessment. No candidate exists, and M2 tested only fixed-gain joint-space control; this inquiry directly tests whether learning can overcome the observed transient limitation rather than optimizing proximity on the narrower outer-radius training range.",
-          "id": "I1",
-          "opened_in_session": "S2",
-          "question": "Can a learned policy trained on the complete official 0.06-0.20 m radius annulus, with reward pressure for low endpoint speed and uninterrupted 100-step hold continuity, discover a feasible braking-and-settling trajectory across the official angular distribution despite the saturated joint-space PD failures?",
-          "rationale": "M2 establishes severe saturation and zero complete holds for three fixed-gain joint-space PD settings but does not test state-feedback learning, full-distribution training, or phase-aware braking. A bounded learned-policy experiment is the highest-value discriminator because it can separate a recoverable policy/training limitation from a broadly unreachable 20 ms torque-limited transient while preserving the official uninterrupted-hold criterion.",
-          "reframes": []
-        }
-      },
-      "result": {
-        "action": "open",
-        "inquiry_id": "I1",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E2",
-    "inquiry_id": null,
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "open",
-        "closure_condition": "Close after a fresh full-annulus learned-policy candidate has been evaluated with target-radius and angle-resolved outcomes, first-entry timing, endpoint speed or equivalent transient diagnostics at entry, hold interruptions, and action saturation. Close with a route-forward result if the candidate shows credible broad hold completion and retain the inquiry for method development if it fails broadly; redirect toward structured control or a stronger feasibility concern if transient-aware learning cannot produce meaningful complete holds.",
-        "goal_connection": "The human goal requires at least 196 complete successes in the protected 200-episode assessment. No candidate exists, and M2 tested only fixed-gain joint-space control; this inquiry directly tests whether learning can overcome the observed transient limitation rather than optimizing proximity on the narrower outer-radius training range.",
-        "question": "Can a learned policy trained on the complete official 0.06-0.20 m radius annulus, with reward pressure for low endpoint speed and uninterrupted 100-step hold continuity, discover a feasible braking-and-settling trajectory across the official angular distribution despite the saturated joint-space PD failures?",
-        "rationale": "M2 establishes severe saturation and zero complete holds for three fixed-gain joint-space PD settings but does not test state-feedback learning, full-distribution training, or phase-aware braking. A bounded learned-policy experiment is the highest-value discriminator because it can separate a recoverable policy/training limitation from a broadly unreachable 20 ms torque-limited transient while preserving the official uninterrupted-hold criterion."
-      }
-    },
-    "request_fingerprint": "d20d8eb5bd4b46d22d4e8ee356634a35d11187f8b6c1b7446d3e0983cfd6df5b",
-    "session_id": "S2",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "No training candidate exists. Working, best-known, and retained roles are empty. M2 is a development measurement only and does not establish the human goal.",
     "completed_operations": [
