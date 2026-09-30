@@ -1,5 +1,13 @@
 {
-  "active_inquiry": null,
+  "active_inquiry": {
+    "closure_condition": "Close after one bounded fresh PPO candidate uses the fixed 120000-step allocation with baseline target sampling and baseline IK-branch observation semantics plus one stabilization-specific intervention, then is evaluated against T1 on the same 200 fixed-seed development panel [4200, 4400) with per-episode angle, first entry, uninterrupted hold streak, interruptions, minimum distance, and final distance. Treat the route as successful only if complete episode success reaches at least 196/200 and post-entry hold failures are no greater than the baseline count of 5; otherwise resolve it as insufficient and retain the strongest evidence-backed candidate without claiming the official objective.",
+    "goal_connection": "The human goal requires at least 196 complete uninterrupted holds in a 200-episode official panel. T1 is seven successes short on the matching development panel, while T2 proved the focused angular subgroup can be acquired but traded those gains for 14 additional post-entry hold failures. Separating stabilization learning from the tested acquisition and branch changes is the remaining evidence-based route before official assessment or campaign closure.",
+    "id": "I3",
+    "opened_in_session": "S6",
+    "question": "Can a decoupled stabilization-aware intervention, while retaining the baseline target distribution and IK-branch representation, recover the -180 to -90 degree acquisition subgroup without increasing post-entry hold failures and reach at least 196 complete successes on the fixed development panel?",
+    "rationale": "M1 identified 11 baseline failures in one angular sector, but five already failed after entering tolerance. M2 showed that the coupled focused-sampling and branch-ordering intervention eliminated the sector failures yet increased post-entry hold failures from 5 to 19 and reduced total success to 176/200. The physical model predicts that residual velocity, sampled-data regulation, and inertial coupling can be improved by a hold-specific learning signal without changing acquisition coverage or branch encoding. A single decoupled candidate, judged by complete success and the protected post-entry subgroup on the paired panel, discriminates whether stabilization can be improved without repeating the prior tradeoff.",
+    "reframes": []
+  },
   "campaign": {
     "base_commit": "c02b0d59e8ef397c87d92f70e986ad545e585b95",
     "id": "e8788df6-9f4a-4dac-92b7-48e40477e827",
@@ -1647,16 +1655,16 @@
     }
   },
   "counters": {
-    "event": 9,
-    "inquiry": 2,
+    "event": 10,
+    "inquiry": 3,
     "measurement": 2,
-    "session": 5,
+    "session": 6,
     "training": 2
   },
   "human_goal": {
     "source": "research/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -2687,9 +2695,69 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-09-30T22:28:29Z",
+      "error": null,
+      "id": "E10",
+      "inquiry_id": "I3",
+      "kind": "inquiry",
+      "request": {
+        "action": "open",
+        "closure_condition": "Close after one bounded fresh PPO candidate uses the fixed 120000-step allocation with baseline target sampling and baseline IK-branch observation semantics plus one stabilization-specific intervention, then is evaluated against T1 on the same 200 fixed-seed development panel [4200, 4400) with per-episode angle, first entry, uninterrupted hold streak, interruptions, minimum distance, and final distance. Treat the route as successful only if complete episode success reaches at least 196/200 and post-entry hold failures are no greater than the baseline count of 5; otherwise resolve it as insufficient and retain the strongest evidence-backed candidate without claiming the official objective.",
+        "goal_connection": "The human goal requires at least 196 complete uninterrupted holds in a 200-episode official panel. T1 is seven successes short on the matching development panel, while T2 proved the focused angular subgroup can be acquired but traded those gains for 14 additional post-entry hold failures. Separating stabilization learning from the tested acquisition and branch changes is the remaining evidence-based route before official assessment or campaign closure.",
+        "question": "Can a decoupled stabilization-aware intervention, while retaining the baseline target distribution and IK-branch representation, recover the -180 to -90 degree acquisition subgroup without increasing post-entry hold failures and reach at least 196 complete successes on the fixed development panel?",
+        "rationale": "M1 identified 11 baseline failures in one angular sector, but five already failed after entering tolerance. M2 showed that the coupled focused-sampling and branch-ordering intervention eliminated the sector failures yet increased post-entry hold failures from 5 to 19 and reduced total success to 176/200. The physical model predicts that residual velocity, sampled-data regulation, and inertial coupling can be improved by a hold-specific learning signal without changing acquisition coverage or branch encoding. A single decoupled candidate, judged by complete success and the protected post-entry subgroup on the paired panel, discriminates whether stabilization can be improved without repeating the prior tradeoff."
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I3",
+        "status": "completed"
+      },
+      "session_id": "S6",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "open",
+        "inquiry": {
+          "closure_condition": "Close after one bounded fresh PPO candidate uses the fixed 120000-step allocation with baseline target sampling and baseline IK-branch observation semantics plus one stabilization-specific intervention, then is evaluated against T1 on the same 200 fixed-seed development panel [4200, 4400) with per-episode angle, first entry, uninterrupted hold streak, interruptions, minimum distance, and final distance. Treat the route as successful only if complete episode success reaches at least 196/200 and post-entry hold failures are no greater than the baseline count of 5; otherwise resolve it as insufficient and retain the strongest evidence-backed candidate without claiming the official objective.",
+          "goal_connection": "The human goal requires at least 196 complete uninterrupted holds in a 200-episode official panel. T1 is seven successes short on the matching development panel, while T2 proved the focused angular subgroup can be acquired but traded those gains for 14 additional post-entry hold failures. Separating stabilization learning from the tested acquisition and branch changes is the remaining evidence-based route before official assessment or campaign closure.",
+          "id": "I3",
+          "opened_in_session": "S6",
+          "question": "Can a decoupled stabilization-aware intervention, while retaining the baseline target distribution and IK-branch representation, recover the -180 to -90 degree acquisition subgroup without increasing post-entry hold failures and reach at least 196 complete successes on the fixed development panel?",
+          "rationale": "M1 identified 11 baseline failures in one angular sector, but five already failed after entering tolerance. M2 showed that the coupled focused-sampling and branch-ordering intervention eliminated the sector failures yet increased post-entry hold failures from 5 to 19 and reduced total success to 176/200. The physical model predicts that residual velocity, sampled-data regulation, and inertial coupling can be improved by a hold-specific learning signal without changing acquisition coverage or branch encoding. A single decoupled candidate, judged by complete success and the protected post-entry subgroup on the paired panel, discriminates whether stabilization can be improved without repeating the prior tradeoff.",
+          "reframes": []
+        }
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I3",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E10",
+    "inquiry_id": null,
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "open",
+        "closure_condition": "Close after one bounded fresh PPO candidate uses the fixed 120000-step allocation with baseline target sampling and baseline IK-branch observation semantics plus one stabilization-specific intervention, then is evaluated against T1 on the same 200 fixed-seed development panel [4200, 4400) with per-episode angle, first entry, uninterrupted hold streak, interruptions, minimum distance, and final distance. Treat the route as successful only if complete episode success reaches at least 196/200 and post-entry hold failures are no greater than the baseline count of 5; otherwise resolve it as insufficient and retain the strongest evidence-backed candidate without claiming the official objective.",
+        "goal_connection": "The human goal requires at least 196 complete uninterrupted holds in a 200-episode official panel. T1 is seven successes short on the matching development panel, while T2 proved the focused angular subgroup can be acquired but traded those gains for 14 additional post-entry hold failures. Separating stabilization learning from the tested acquisition and branch changes is the remaining evidence-based route before official assessment or campaign closure.",
+        "question": "Can a decoupled stabilization-aware intervention, while retaining the baseline target distribution and IK-branch representation, recover the -180 to -90 degree acquisition subgroup without increasing post-entry hold failures and reach at least 196 complete successes on the fixed development panel?",
+        "rationale": "M1 identified 11 baseline failures in one angular sector, but five already failed after entering tolerance. M2 showed that the coupled focused-sampling and branch-ordering intervention eliminated the sector failures yet increased post-entry hold failures from 5 to 19 and reduced total success to 176/200. The physical model predicts that residual velocity, sampled-data regulation, and inertial coupling can be improved by a hold-specific learning signal without changing acquisition coverage or branch encoding. A single decoupled candidate, judged by complete success and the protected post-entry subgroup on the paired panel, discriminates whether stabilization can be improved without repeating the prior tradeoff."
+      }
+    },
+    "request_fingerprint": "96351acb8f108f293caf778b039de00b32de8c42c34a423068ca5af412cefcd2",
+    "session_id": "S6",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T1:checkpoint-100352 remains the best supported development candidate and baseline reference at 189/200, with archived policy/runtime artifacts and M1/M2 evidence. T2:checkpoint-120832 is retained as a measured but insufficient intervention result at 176/200; it has no working, best-known, or retained model role. No candidate has been assigned a formal model role.",
     "completed_operations": [
@@ -2722,6 +2790,21 @@
     "path": "research/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "4637627e-3392-42a3-a6bb-97ecaf8253e3",
+    "id": "S6",
+    "inquiry_id": null,
+    "kind": "goal_review",
+    "objective": "Decide whether to request official assessment, open one bounded goal-linked inquiry, or conclude that no credible route remains.",
+    "operation_ids": [
+      "E10"
+    ],
+    "scientific_parent_commit": "e601e54dba2ae8c64fb15be0c1557d413cc19a51"
+  },
   "terminal_state": null
 }
