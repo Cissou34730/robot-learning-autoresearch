@@ -11178,38 +11178,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I9",
-        "outcome": "Negative answer: the continuous model-informed residual torque interface did not preserve the baseline complete-task outcome or provide a credible route to the 196/200 goal. On the fresh shared-seed 200-episode complete-distribution panel, T1 achieved 194/200 successes (97.0%) while T7 achieved 137/200 (68.5%); the paired comparison recorded 63 baseline wins, 6 candidate wins, 69 discordant episodes, and a -28.5 percentage-point candidate difference. T7 successes that completed the criterion still used the required uninterrupted 100-step hold, but the candidate's failures were concentrated in reaching or maintaining the target before complete success, so partial reaches and isolated holds do not alter the negative decision.",
-        "reason": "T7:checkpoint-120832 was the strongest I9 training candidate by recorded training success, and M9 measured it against T1 on the same fresh complete-distribution panel. It failed to reach 196/200 and materially degraded the restored baseline by 57 net paired wins. This establishes that the tested continuous feasible-IK reference, latched branch selection, velocity damping, and bounded residual formulation cannot preserve the baseline under the tested learning recipe and is not a credible route to the goal. Remaining uncertainty concerns other controller interfaces or training formulations, not this I9 formulation."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I9",
-        "outcome": "Negative answer: the continuous model-informed residual torque interface did not preserve the baseline complete-task outcome or provide a credible route to the 196/200 goal. On the fresh shared-seed 200-episode complete-distribution panel, T1 achieved 194/200 successes (97.0%) while T7 achieved 137/200 (68.5%); the paired comparison recorded 63 baseline wins, 6 candidate wins, 69 discordant episodes, and a -28.5 percentage-point candidate difference. T7 successes that completed the criterion still used the required uninterrupted 100-step hold, but the candidate's failures were concentrated in reaching or maintaining the target before complete success, so partial reaches and isolated holds do not alter the negative decision.",
-        "reason": "T7:checkpoint-120832 was the strongest I9 training candidate by recorded training success, and M9 measured it against T1 on the same fresh complete-distribution panel. It failed to reach 196/200 and materially degraded the restored baseline by 57 net paired wins. This establishes that the tested continuous feasible-IK reference, latched branch selection, velocity damping, and bounded residual formulation cannot preserve the baseline under the tested learning recipe and is not a credible route to the goal. Remaining uncertainty concerns other controller interfaces or training formulations, not this I9 formulation.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E41",
-    "inquiry_id": "I9",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "Negative answer: the continuous model-informed residual torque interface did not preserve the baseline complete-task outcome or provide a credible route to the 196/200 goal. On the fresh shared-seed 200-episode complete-distribution panel, T1 achieved 194/200 successes (97.0%) while T7 achieved 137/200 (68.5%); the paired comparison recorded 63 baseline wins, 6 candidate wins, 69 discordant episodes, and a -28.5 percentage-point candidate difference. T7 successes that completed the criterion still used the required uninterrupted 100-step hold, but the candidate's failures were concentrated in reaching or maintaining the target before complete success, so partial reaches and isolated holds do not alter the negative decision.",
-        "reason": "T7:checkpoint-120832 was the strongest I9 training candidate by recorded training success, and M9 measured it against T1 on the same fresh complete-distribution panel. It failed to reach 196/200 and materially degraded the restored baseline by 57 net paired wins. This establishes that the tested continuous feasible-IK reference, latched branch selection, velocity damping, and bounded residual formulation cannot preserve the baseline under the tested learning recipe and is not a credible route to the goal. Remaining uncertainty concerns other controller interfaces or training formulations, not this I9 formulation."
-      }
-    },
-    "request_fingerprint": "e8133c05f07eeae74619bcc264e7b6cd5cf2dbbd4782a6f0858bdf302984ec30",
-    "session_id": "S21",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T6:checkpoint-45056, T6:checkpoint-50176, T6:checkpoint-70656, and T1:checkpoint-100352 remain unassigned measured candidates. No candidate has working, best-known, or retained status. I9 has no candidate yet.",
     "completed_operations": [
