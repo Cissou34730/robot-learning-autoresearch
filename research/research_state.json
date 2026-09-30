@@ -6625,16 +6625,16 @@
     }
   },
   "counters": {
-    "event": 50,
+    "event": 51,
     "inquiry": 11,
     "measurement": 10,
-    "session": 25,
+    "session": 26,
     "training": 8
   },
   "human_goal": {
     "source": "research/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "restored",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -12834,9 +12834,114 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-09-30T01:17:24Z",
+      "error": null,
+      "id": "E51",
+      "inquiry_id": "I11",
+      "kind": "restore_recipe",
+      "request": {
+        "candidate": "T1:checkpoint-100352",
+        "reason": "I11 requires the restored T1 baseline formulation before any fresh training-reliability or checkpoint-selection evidence. Restore the recorded baseline recipe so the active branch-factorized T8 residue is removed and subsequent evidence tests only baseline repeatability rather than a contaminated configuration."
+      },
+      "result": {
+        "candidate": "T1:checkpoint-100352",
+        "restored_paths": [
+          "research/current_params.json",
+          "robot_learning/train.py",
+          "robot_learning/training/policy.py"
+        ],
+        "scientific_commit": "1ccb3241a758ef4d4159df18e15d3d00e16f01d0",
+        "status": "restored"
+      },
+      "session_id": "S26",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "candidate_id": "T1:checkpoint-100352",
+        "parameters": {
+          "algorithm": {
+            "name": "ppo"
+          },
+          "policy": {
+            "activation": "tanh",
+            "net_arch": [
+              64,
+              64
+            ]
+          },
+          "ppo": {
+            "batch_size": 64,
+            "ent_coef": 0.01,
+            "gae_lambda": 0.95,
+            "gamma": 0.99,
+            "learning_rate": 0.0003,
+            "n_steps": 1024
+          },
+          "training": {
+            "checkpoint_every_steps": 5000,
+            "n_envs": 1
+          }
+        },
+        "parent": "1ccb3241a758ef4d4159df18e15d3d00e16f01d0",
+        "remove_created": [
+          "robot_learning/training/policy.py"
+        ],
+        "restore": [
+          "research/current_params.json",
+          "robot_learning/train.py"
+        ],
+        "session_id": "S26"
+      },
+      "pre_restore_manifest": [
+        {
+          "exists": true,
+          "fingerprint": "8777a87f2b19792673b9c967f21238e729faa395c84e1299798c31ba62d679d9",
+          "path": "research/current_params.json"
+        },
+        {
+          "exists": true,
+          "fingerprint": "3f378c9b04c0b9567412fd5c2af025e50efc6db159278f45047bfe4b001159ae",
+          "path": "robot_learning/train.py"
+        },
+        {
+          "exists": true,
+          "fingerprint": "8498dd4d62ddffafe035c7d51176abc902e2d07a697d032f4bcdd3f9dd906023",
+          "path": "robot_learning/training/policy.py"
+        }
+      ],
+      "result": {
+        "candidate": "T1:checkpoint-100352",
+        "restored_paths": [
+          "research/current_params.json",
+          "robot_learning/train.py",
+          "robot_learning/training/policy.py"
+        ],
+        "scientific_commit": "1ccb3241a758ef4d4159df18e15d3d00e16f01d0",
+        "status": "restored"
+      }
+    },
+    "failure": null,
+    "id": "E51",
+    "inquiry_id": "I11",
+    "kind": "restore_recipe",
+    "progress": "completed",
+    "request": {
+      "restore_recipe": {
+        "candidate": "T1:checkpoint-100352",
+        "reason": "I11 requires the restored T1 baseline formulation before any fresh training-reliability or checkpoint-selection evidence. Restore the recorded baseline recipe so the active branch-factorized T8 residue is removed and subsequent evidence tests only baseline repeatability rather than a contaminated configuration."
+      }
+    },
+    "request_fingerprint": "8ac7a23f60498a0104b8f6e4502b13dc8a2e003125b1f2e3ece169b101e764cb",
+    "session_id": "S26",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T1:checkpoint-100352 remains the strongest measured baseline but is unassigned; its repeated fresh-panel results are the subject of I11. T8:checkpoint-90112 is rejected as an I10 route after M10. T7:checkpoint-120832 remains rejected by M9. No candidate has working, best-known, or retained status.",
     "completed_operations": [
@@ -12865,6 +12970,21 @@
     "path": "research/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "c867ebb4-1303-4839-8995-08dada9bf051",
+    "id": "S26",
+    "inquiry_id": "I11",
+    "kind": "inquiry",
+    "objective": "Bring I11 to the decision required by its closure condition, and close it as soon as the evidence supplies that decision: Close when the pre-specified fresh assessment-readiness protocol produces a candidate with at least 196/200 and evidence sufficient to assign it best-known status, or when controlled evidence shows that the restored baseline formulation and justified checkpoint-selection or training-reliability measures cannot reach or repeat 196/200, leaving no credible route to the goal.",
+    "operation_ids": [
+      "E51"
+    ],
+    "scientific_parent_commit": "1ccb3241a758ef4d4159df18e15d3d00e16f01d0"
+  },
   "terminal_state": null
 }
