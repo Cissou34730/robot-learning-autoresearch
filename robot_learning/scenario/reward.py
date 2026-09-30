@@ -18,11 +18,13 @@ CLOSENESS_COEFFICIENT = 4.0
 CLOSENESS_LENGTH_SCALE = 0.05
 ACTION_COST_COEFFICIENT = 0.01
 BRANCH_PROGRESS_COEFFICIENT = 0.5
-VELOCITY_PENALTY_COEFFICIENT = 0.0025
-VELOCITY_PENALTY_DISTANCE = 0.03
+VELOCITY_PENALTY_COEFFICIENT = 0.01
+VELOCITY_PENALTY_DISTANCE = 0.05
+SATURATION_PENALTY_COEFFICIENT = 0.2
+SATURATION_ACTION_THRESHOLD = 0.8
 HOLD_PROGRESS_BONUS = 50.0
 HOLD_PROGRESS_EXPONENT = 1.0
-HOLD_EXIT_FORFEIT_FRACTION = 0.0
+HOLD_EXIT_FORFEIT_FRACTION = 1.0
 OUTSIDE_BAND_WIDTH = 0.01
 OUTSIDE_BAND_PENALTY = 0.1
 HOLD_COMPLETE_BONUS = 50.0
@@ -116,6 +118,17 @@ def reach_reward(
         )
         reward += velocity_penalty
 
+    saturation_penalty = 0.0
+    if action is not None and current_distance <= VELOCITY_PENALTY_DISTANCE:
+        excess = np.maximum(
+            np.abs(np.asarray(action, dtype=np.float64)) - SATURATION_ACTION_THRESHOLD,
+            0.0,
+        )
+        saturation_penalty = -(
+            SATURATION_PENALTY_COEFFICIENT * float(np.sum(excess))
+        )
+        reward += saturation_penalty
+
     return RewardResult(
         total=float(reward),
         components={
@@ -127,5 +140,6 @@ def reach_reward(
             "hold_complete": float(hold_complete),
             "action_cost": float(action_cost),
             "velocity_penalty": float(velocity_penalty),
+            "saturation_penalty": float(saturation_penalty),
         },
     )
