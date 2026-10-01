@@ -1,5 +1,13 @@
 {
-  "active_inquiry": null,
+  "active_inquiry": {
+    "closure_condition": "Close this inquiry after one bounded 120000-step training operation and paired held-out evaluation against T1:checkpoint-120832 on shared seeds. Continue only if the intervention materially improves the 14-20 cm success and no-entry profile while retaining small-radius performance and reducing post-entry hold exits; reframe or close if it collapses the small-radius regime, leaves large-radius no-entry failures essentially unchanged, or provides evidence sufficient to select a candidate for official assessment.",
+    "goal_connection": "The human goal requires at least 196 of 200 complete uninterrupted holds across the full 6-20 cm official annulus. The current candidate reaches only 98 of 160 development episodes, with the dominant deficit concentrated in no-entry failures at large radii. Improving target-geometry representation and approach-to-settling credit assignment directly targets that deficit without changing the official task.",
+    "id": "I2",
+    "opened_in_session": "S4",
+    "question": "Can a geometry-aware policy interface and phase-sensitive training signal improve coordinated approach and settling for the 14-20 cm targets, while preserving the existing small-radius successes and reducing post-entry hold exits, under unchanged official task and hold semantics?",
+    "rationale": "The current evidence favors radius-dependent approach/control-authority failure, but cannot distinguish physical authority limits from a policy-interface and credit-assignment limitation. The existing observation exposes redundant wrapped inverse-kinematic errors and does not explicitly provide a smooth radial/tangential target representation; the reward supplies progress and hold capital but no distinct settling incentive. A single geometry-aware, phase-sensitive recipe is a bounded method test of whether the learner can use the available authority and settle within the 500-step horizon. The official distribution, dynamics, action bounds, success threshold, and hold duration remain unchanged.",
+    "reframes": []
+  },
   "campaign": {
     "base_commit": "c2abfc7efc60be52b98a1f4189e022d759e006b2",
     "id": "010714c2-5abd-4836-96bd-364caaf82042",
@@ -829,16 +837,16 @@
     }
   },
   "counters": {
-    "event": 5,
-    "inquiry": 1,
+    "event": 6,
+    "inquiry": 2,
     "measurement": 2,
-    "session": 3,
+    "session": 4,
     "training": 1
   },
   "human_goal": {
     "source": "research/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -1596,9 +1604,69 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-01T21:50:55Z",
+      "error": null,
+      "id": "E6",
+      "inquiry_id": "I2",
+      "kind": "inquiry",
+      "request": {
+        "action": "open",
+        "closure_condition": "Close this inquiry after one bounded 120000-step training operation and paired held-out evaluation against T1:checkpoint-120832 on shared seeds. Continue only if the intervention materially improves the 14-20 cm success and no-entry profile while retaining small-radius performance and reducing post-entry hold exits; reframe or close if it collapses the small-radius regime, leaves large-radius no-entry failures essentially unchanged, or provides evidence sufficient to select a candidate for official assessment.",
+        "goal_connection": "The human goal requires at least 196 of 200 complete uninterrupted holds across the full 6-20 cm official annulus. The current candidate reaches only 98 of 160 development episodes, with the dominant deficit concentrated in no-entry failures at large radii. Improving target-geometry representation and approach-to-settling credit assignment directly targets that deficit without changing the official task.",
+        "question": "Can a geometry-aware policy interface and phase-sensitive training signal improve coordinated approach and settling for the 14-20 cm targets, while preserving the existing small-radius successes and reducing post-entry hold exits, under unchanged official task and hold semantics?",
+        "rationale": "The current evidence favors radius-dependent approach/control-authority failure, but cannot distinguish physical authority limits from a policy-interface and credit-assignment limitation. The existing observation exposes redundant wrapped inverse-kinematic errors and does not explicitly provide a smooth radial/tangential target representation; the reward supplies progress and hold capital but no distinct settling incentive. A single geometry-aware, phase-sensitive recipe is a bounded method test of whether the learner can use the available authority and settle within the 500-step horizon. The official distribution, dynamics, action bounds, success threshold, and hold duration remain unchanged."
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I2",
+        "status": "completed"
+      },
+      "session_id": "S4",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "open",
+        "inquiry": {
+          "closure_condition": "Close this inquiry after one bounded 120000-step training operation and paired held-out evaluation against T1:checkpoint-120832 on shared seeds. Continue only if the intervention materially improves the 14-20 cm success and no-entry profile while retaining small-radius performance and reducing post-entry hold exits; reframe or close if it collapses the small-radius regime, leaves large-radius no-entry failures essentially unchanged, or provides evidence sufficient to select a candidate for official assessment.",
+          "goal_connection": "The human goal requires at least 196 of 200 complete uninterrupted holds across the full 6-20 cm official annulus. The current candidate reaches only 98 of 160 development episodes, with the dominant deficit concentrated in no-entry failures at large radii. Improving target-geometry representation and approach-to-settling credit assignment directly targets that deficit without changing the official task.",
+          "id": "I2",
+          "opened_in_session": "S4",
+          "question": "Can a geometry-aware policy interface and phase-sensitive training signal improve coordinated approach and settling for the 14-20 cm targets, while preserving the existing small-radius successes and reducing post-entry hold exits, under unchanged official task and hold semantics?",
+          "rationale": "The current evidence favors radius-dependent approach/control-authority failure, but cannot distinguish physical authority limits from a policy-interface and credit-assignment limitation. The existing observation exposes redundant wrapped inverse-kinematic errors and does not explicitly provide a smooth radial/tangential target representation; the reward supplies progress and hold capital but no distinct settling incentive. A single geometry-aware, phase-sensitive recipe is a bounded method test of whether the learner can use the available authority and settle within the 500-step horizon. The official distribution, dynamics, action bounds, success threshold, and hold duration remain unchanged.",
+          "reframes": []
+        }
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I2",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E6",
+    "inquiry_id": null,
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "open",
+        "closure_condition": "Close this inquiry after one bounded 120000-step training operation and paired held-out evaluation against T1:checkpoint-120832 on shared seeds. Continue only if the intervention materially improves the 14-20 cm success and no-entry profile while retaining small-radius performance and reducing post-entry hold exits; reframe or close if it collapses the small-radius regime, leaves large-radius no-entry failures essentially unchanged, or provides evidence sufficient to select a candidate for official assessment.",
+        "goal_connection": "The human goal requires at least 196 of 200 complete uninterrupted holds across the full 6-20 cm official annulus. The current candidate reaches only 98 of 160 development episodes, with the dominant deficit concentrated in no-entry failures at large radii. Improving target-geometry representation and approach-to-settling credit assignment directly targets that deficit without changing the official task.",
+        "question": "Can a geometry-aware policy interface and phase-sensitive training signal improve coordinated approach and settling for the 14-20 cm targets, while preserving the existing small-radius successes and reducing post-entry hold exits, under unchanged official task and hold semantics?",
+        "rationale": "The current evidence favors radius-dependent approach/control-authority failure, but cannot distinguish physical authority limits from a policy-interface and credit-assignment limitation. The existing observation exposes redundant wrapped inverse-kinematic errors and does not explicitly provide a smooth radial/tangential target representation; the reward supplies progress and hold capital but no distinct settling incentive. A single geometry-aware, phase-sensitive recipe is a bounded method test of whether the learner can use the available authority and settle within the 500-step horizon. The official distribution, dynamics, action bounds, success threshold, and hold duration remain unchanged."
+      }
+    },
+    "request_fingerprint": "f58d439cdd8ea41ae3bab5f245c4c1671536a67f9b42dd92926dd2233c4af3ac",
+    "session_id": "S4",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T1 produced 24 disposable checkpoint candidates. T1:checkpoint-120832 is the strongest available candidate by training-stream success and has M2 development evidence at 61.25%, but no working, best-known, or retained role is assigned and no candidate is close to the official 98% requirement.",
     "completed_operations": [
@@ -1626,6 +1694,21 @@
     "path": "research/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "a936f1d0-d913-45bf-a9b5-2b9dd033a69a",
+    "id": "S4",
+    "inquiry_id": null,
+    "kind": "goal_review",
+    "objective": "Reassess the scientific direction toward the human goal using completed evidence. You may request measurements to resolve an uncertainty or develop the method before committing to an inquiry. Decide whether to request official assessment, open one bounded goal-linked inquiry, or conclude that no credible route remains.",
+    "operation_ids": [
+      "E6"
+    ],
+    "scientific_parent_commit": "8e2327f4cbe2b00a2fa2fa2e9785ec949177f7a5"
+  },
   "terminal_state": null
 }
