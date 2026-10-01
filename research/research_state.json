@@ -10061,55 +10061,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "set_best_known",
-        "candidate_id": "T7:checkpoint-120832",
-        "evidence": [
-          "E18",
-          "T7",
-          "M8"
-        ],
-        "reason": "T7 is the strongest evidence-backed candidate: it achieved 156/160 (97.5%) on the shared held-out panel, improved every hard directional bin over T1, and had only 4 hold interruptions. This assigns the best-known role without claiming the 98% objective or treating the residual 90-180 degree failures as resolved; official assessment readiness remains a separate decision."
-      },
-      "publication": {
-        "destination": "research/checkpoints/retained/010714c2-5abd-4836-96bd-364caaf82042/t7-c8cf701d5-5d660f10062d0173f6c08a60c486aacd23a7d2f30ab60eff8b6e44a30b65a1ce",
-        "fingerprint": "5d660f10062d0173f6c08a60c486aacd23a7d2f30ab60eff8b6e44a30b65a1ce",
-        "source": "research/checkpoints/candidates/010714c2-5abd-4836-96bd-364caaf82042/t7/checkpoint-120832"
-      },
-      "result": {
-        "action": "set_best_known",
-        "candidate": "T7:checkpoint-120832",
-        "evidence": [
-          "E18",
-          "T7",
-          "M8"
-        ],
-        "status": "assigned"
-      }
-    },
-    "failure": null,
-    "id": "E20",
-    "inquiry_id": null,
-    "kind": "model_role",
-    "progress": "completed",
-    "request": {
-      "model_role": {
-        "action": "set_best_known",
-        "candidate": "T7:checkpoint-120832",
-        "evidence": [
-          "E18",
-          "T7",
-          "M8"
-        ],
-        "reason": "T7 is the strongest evidence-backed candidate: it achieved 156/160 (97.5%) on the shared held-out panel, improved every hard directional bin over T1, and had only 4 hold interruptions. This assigns the best-known role without claiming the 98% objective or treating the residual 90-180 degree failures as resolved; official assessment readiness remains a separate decision."
-      }
-    },
-    "request_fingerprint": "cc82c57967f6c0f4acf45f01e33472663b422dc771f5f0bcdbef338cda802988",
-    "session_id": "S11",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T1:checkpoint-120832 remains the prior evidence-backed baseline at 89/160 on the M8 shared panel. T6:checkpoint-120832 reached 151/160 with 23 hold interruptions and has no role. T7:checkpoint-120832 reached 156/160 with 4 hold interruptions and is the strongest I4 candidate, but has no role. No candidate has official evidence; working, best-known, and retained roles are unset.",
     "completed_operations": [
