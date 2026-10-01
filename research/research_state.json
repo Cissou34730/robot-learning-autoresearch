@@ -21746,38 +21746,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I15",
-        "outcome": "I15 is insufficient.",
-        "reason": "M15 decisively fails I15's closure condition. On the fixed 200-episode development panel, T15:checkpoint-120832 achieved 0/200 complete uninterrupted successes (0.0%), while the paired T9:checkpoint-120832 reference achieved 190/200 (95.0%). T15 lost all 190 discordant episodes, with 0 candidate wins and 190 reference wins. The isolated proximity-gated joint-velocity braking reward therefore caused a complete acquisition collapse rather than reducing post-entry failures while preserving T9's route. The tested braking intervention and recipe are rejected; this does not establish that the plant is uncontrollable or that all future stabilization or direct-torque methods are impossible. No candidate meets the 196/200 development gate, so official assessment remains unjustified."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I15",
-        "outcome": "I15 is insufficient.",
-        "reason": "M15 decisively fails I15's closure condition. On the fixed 200-episode development panel, T15:checkpoint-120832 achieved 0/200 complete uninterrupted successes (0.0%), while the paired T9:checkpoint-120832 reference achieved 190/200 (95.0%). T15 lost all 190 discordant episodes, with 0 candidate wins and 190 reference wins. The isolated proximity-gated joint-velocity braking reward therefore caused a complete acquisition collapse rather than reducing post-entry failures while preserving T9's route. The tested braking intervention and recipe are rejected; this does not establish that the plant is uncontrollable or that all future stabilization or direct-torque methods are impossible. No candidate meets the 196/200 development gate, so official assessment remains unjustified.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E60",
-    "inquiry_id": "I15",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "I15 is insufficient.",
-        "reason": "M15 decisively fails I15's closure condition. On the fixed 200-episode development panel, T15:checkpoint-120832 achieved 0/200 complete uninterrupted successes (0.0%), while the paired T9:checkpoint-120832 reference achieved 190/200 (95.0%). T15 lost all 190 discordant episodes, with 0 candidate wins and 190 reference wins. The isolated proximity-gated joint-velocity braking reward therefore caused a complete acquisition collapse rather than reducing post-entry failures while preserving T9's route. The tested braking intervention and recipe are rejected; this does not establish that the plant is uncontrollable or that all future stabilization or direct-torque methods are impossible. No candidate meets the 196/200 development gate, so official assessment remains unjustified."
-      }
-    },
-    "request_fingerprint": "e3bdffb57c0cb16e052874647ccde32a0afa00f1cb126fa7f7d36002d35a19a6",
-    "session_id": "S31",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "No working, best-known, or retained role is assigned. T9:checkpoint-120832 remains the strongest measured development candidate at 190/200 and will be the paired reference for I15. T14:checkpoint-120832 is rejected for I14 at 62/200.",
     "completed_operations": [
