@@ -4931,7 +4931,7 @@
     }
   },
   "counters": {
-    "event": 16,
+    "event": 17,
     "inquiry": 4,
     "measurement": 8,
     "session": 9,
@@ -4940,7 +4940,7 @@
   "human_goal": {
     "source": "research/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -9945,41 +9945,161 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-01T23:16:41Z",
+      "error": null,
+      "id": "E17",
+      "inquiry_id": "I4",
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "T1:checkpoint-120832 remains the prior evidence-backed baseline at 89/160 on the shared M8 panel. T6:checkpoint-120832 reached 151/160 but had 23 hold interruptions and has no role. T7:checkpoint-120832 reached 156/160 with 4 hold interruptions and is the strongest I4 candidate, but has no role until a separate model-role operation. No candidate has official evidence.",
+        "completed_operations": [
+          "T6",
+          "T7",
+          "M8"
+        ],
+        "cumulative_resource_use": "This I4 session used two fresh maintainer-sized 120000-step training operations (T6 and T7), one shared 160-episode paired held-out measurement (M8) evaluating T6, T7, and T1, and no official assessment.",
+        "current_goal_gap": "No candidate has official assessment evidence and the strongest I4 held-out result is 156/160 (97.5%), still below the 98% campaign objective and not sufficient to claim official success. The remaining development failures are concentrated in T7's 90-180 degree bins and require a final candidate-selection decision before any official assessment.",
+        "current_synthesis": "M8 provides reproducible held-out support for the continuous directional and inverse-kinematic branch representation: T6 achieved 151/160 (94.375%) and T7 achieved 156/160 (97.5%) on shared seeds, versus 89/160 (55.625%) for T1. Both fresh runs improved every hard directional bin over T1; T7 reached 17/17 in -180 to -135 degrees and 13/16 in 135 to 180 degrees. Hold interruptions did not increase for T7 (4 versus T1's 5), while T6 showed a material increase (23 versus 5), so the representation route is credible but its stabilization benefit is seed-dependent. The evidence supports the wrapped-angle discontinuity as a material cause of the prior no-entry deficit, but does not establish a 98% official policy or eliminate residual high-angle failures.",
+        "decision_frontier": "I4's representation question is resolved in favor of the continuous sine-cosine branch encoding as a credible route: two fresh 120000-step runs produced large shared-panel gains over T1, and the stronger run improved hard directional bins without increasing hold interruptions. The remaining decision is method selection and official-goal readiness: determine whether T7:checkpoint-120832 is sufficiently reliable for explicit best-known assignment and whether its residual 90-180 degree failures can be accepted for protected assessment; no official assessment should be requested without a deliberate role decision.",
+        "evidence_references": [
+          "E15",
+          "T6",
+          "T7",
+          "M8"
+        ],
+        "human_goal_connection": "The campaign still seeks at least 196 successes in the protected 200-episode official panel, with every success requiring the complete uninterrupted 100-step hold across the official 0.06-0.20 m target annulus. I4 directly addressed the dominant learned-policy deficit in directional acquisition while preserving the official task mechanics and hold semantics.",
+        "next_direction_or_closure": "The next session should close I4 explicitly as a credible representation route, citing the T6/T7 reproducibility and the T6 stabilization caveat. Then assign T7 a deliberate best-known or working role only if the role decision is justified by M8; official assessment remains premature unless the campaign accepts the residual high-angle failures against the 98% threshold."
+      },
+      "result": {
+        "session_id": "S9",
+        "status": "checkpointed"
+      },
+      "session_id": "S9",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "b553057e99a201dd34b553b382a2491ebd610d78",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "T1:checkpoint-120832 remains the prior evidence-backed baseline at 89/160 on the shared M8 panel. T6:checkpoint-120832 reached 151/160 but had 23 hold interruptions and has no role. T7:checkpoint-120832 reached 156/160 with 4 hold interruptions and is the strongest I4 candidate, but has no role until a separate model-role operation. No candidate has official evidence.",
+        "completed_operations": [
+          "T6",
+          "T7",
+          "M8"
+        ],
+        "cumulative_resource_use": "This I4 session used two fresh maintainer-sized 120000-step training operations (T6 and T7), one shared 160-episode paired held-out measurement (M8) evaluating T6, T7, and T1, and no official assessment.",
+        "current_goal_gap": "No candidate has official assessment evidence and the strongest I4 held-out result is 156/160 (97.5%), still below the 98% campaign objective and not sufficient to claim official success. The remaining development failures are concentrated in T7's 90-180 degree bins and require a final candidate-selection decision before any official assessment.",
+        "current_synthesis": "M8 provides reproducible held-out support for the continuous directional and inverse-kinematic branch representation: T6 achieved 151/160 (94.375%) and T7 achieved 156/160 (97.5%) on shared seeds, versus 89/160 (55.625%) for T1. Both fresh runs improved every hard directional bin over T1; T7 reached 17/17 in -180 to -135 degrees and 13/16 in 135 to 180 degrees. Hold interruptions did not increase for T7 (4 versus T1's 5), while T6 showed a material increase (23 versus 5), so the representation route is credible but its stabilization benefit is seed-dependent. The evidence supports the wrapped-angle discontinuity as a material cause of the prior no-entry deficit, but does not establish a 98% official policy or eliminate residual high-angle failures.",
+        "decision_frontier": "I4's representation question is resolved in favor of the continuous sine-cosine branch encoding as a credible route: two fresh 120000-step runs produced large shared-panel gains over T1, and the stronger run improved hard directional bins without increasing hold interruptions. The remaining decision is method selection and official-goal readiness: determine whether T7:checkpoint-120832 is sufficiently reliable for explicit best-known assignment and whether its residual 90-180 degree failures can be accepted for protected assessment; no official assessment should be requested without a deliberate role decision.",
+        "evidence_references": [
+          "E15",
+          "T6",
+          "T7",
+          "M8"
+        ],
+        "human_goal_connection": "The campaign still seeks at least 196 successes in the protected 200-episode official panel, with every success requiring the complete uninterrupted 100-step hold across the official 0.06-0.20 m target annulus. I4 directly addressed the dominant learned-policy deficit in directional acquisition while preserving the official task mechanics and hold semantics.",
+        "inquiry_id": "I4",
+        "next_direction_or_closure": "The next session should close I4 explicitly as a credible representation route, citing the T6/T7 reproducibility and the T6 stabilization caveat. Then assign T7 a deliberate best-known or working role only if the role decision is justified by M8; official assessment remains premature unless the campaign accepts the residual high-angle failures against the 98% threshold.",
+        "session_id": "S9"
+      },
+      "presentation": {
+        "backend_session_id": "ce31c1bd-9b89-4903-bc7a-0a6628793cfe",
+        "campaign_id": "010714c2-5abd-4836-96bd-364caaf82042",
+        "campaign_usage": "41m45s | 104.02 AIU | prompt 17.7m (87% cached) | output 120.4k",
+        "session_id": "S9",
+        "session_kind": "inquiry",
+        "session_usage": "3m51s | 10.39 AIU | prompt 1.7m (85% cached) | output 9.3k"
+      },
+      "result": {
+        "session_id": "S9",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "753120b991b533a0f194479bdc1feba2420ccbb6",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E17",
+    "inquiry_id": "I4",
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "T1:checkpoint-120832 remains the prior evidence-backed baseline at 89/160 on the shared M8 panel. T6:checkpoint-120832 reached 151/160 but had 23 hold interruptions and has no role. T7:checkpoint-120832 reached 156/160 with 4 hold interruptions and is the strongest I4 candidate, but has no role until a separate model-role operation. No candidate has official evidence.",
+        "completed_operations": [
+          "T6",
+          "T7",
+          "M8"
+        ],
+        "cumulative_resource_use": "This I4 session used two fresh maintainer-sized 120000-step training operations (T6 and T7), one shared 160-episode paired held-out measurement (M8) evaluating T6, T7, and T1, and no official assessment.",
+        "current_goal_gap": "No candidate has official assessment evidence and the strongest I4 held-out result is 156/160 (97.5%), still below the 98% campaign objective and not sufficient to claim official success. The remaining development failures are concentrated in T7's 90-180 degree bins and require a final candidate-selection decision before any official assessment.",
+        "current_synthesis": "M8 provides reproducible held-out support for the continuous directional and inverse-kinematic branch representation: T6 achieved 151/160 (94.375%) and T7 achieved 156/160 (97.5%) on shared seeds, versus 89/160 (55.625%) for T1. Both fresh runs improved every hard directional bin over T1; T7 reached 17/17 in -180 to -135 degrees and 13/16 in 135 to 180 degrees. Hold interruptions did not increase for T7 (4 versus T1's 5), while T6 showed a material increase (23 versus 5), so the representation route is credible but its stabilization benefit is seed-dependent. The evidence supports the wrapped-angle discontinuity as a material cause of the prior no-entry deficit, but does not establish a 98% official policy or eliminate residual high-angle failures.",
+        "decision_frontier": "I4's representation question is resolved in favor of the continuous sine-cosine branch encoding as a credible route: two fresh 120000-step runs produced large shared-panel gains over T1, and the stronger run improved hard directional bins without increasing hold interruptions. The remaining decision is method selection and official-goal readiness: determine whether T7:checkpoint-120832 is sufficiently reliable for explicit best-known assignment and whether its residual 90-180 degree failures can be accepted for protected assessment; no official assessment should be requested without a deliberate role decision.",
+        "evidence_references": [
+          "E15",
+          "T6",
+          "T7",
+          "M8"
+        ],
+        "human_goal_connection": "The campaign still seeks at least 196 successes in the protected 200-episode official panel, with every success requiring the complete uninterrupted 100-step hold across the official 0.06-0.20 m target annulus. I4 directly addressed the dominant learned-policy deficit in directional acquisition while preserving the official task mechanics and hold semantics.",
+        "next_direction_or_closure": "The next session should close I4 explicitly as a credible representation route, citing the T6/T7 reproducibility and the T6 stabilization caveat. Then assign T7 a deliberate best-known or working role only if the role decision is justified by M8; official assessment remains premature unless the campaign accepts the residual high-angle failures against the 98% threshold."
+      }
+    },
+    "request_fingerprint": "4f6ed0736e99e395f5316022837ffc0a71571b0bfbef44f8276d2d1083334ab4",
+    "session_id": "S9",
+    "supersedes": null
+  },
   "pi_checkpoint": {
-    "candidates_and_roles": "T1:checkpoint-120832 remains the strongest evidence-backed learned baseline at 98/160 development success. T4's 115/160 result is the highest observed learned result but is not reproducible and has no model role. T5, T2, and all other candidates have no model role. No candidate has official evidence.",
+    "candidates_and_roles": "T1:checkpoint-120832 remains the prior evidence-backed baseline at 89/160 on the shared M8 panel. T6:checkpoint-120832 reached 151/160 but had 23 hold interruptions and has no role. T7:checkpoint-120832 reached 156/160 with 4 hold interruptions and is the strongest I4 candidate, but has no role until a separate model-role operation. No candidate has official evidence.",
     "completed_operations": [
-      "E15"
+      "T6",
+      "T7",
+      "M8"
     ],
-    "cumulative_resource_use": "This goal-review session used one inquiry-opening operation, E15, and no training, measurement, restoration, model-role, or official-assessment resources. It transitions the campaign from closed I3 into the fresh I4 inquiry session.",
-    "current_goal_gap": "No learned candidate approaches the 98% goal. T1 remains at 98/160 (61.25%) on held-out development seeds; T4 reached 115/160 once and T5 reached 91/160 under the same attenuation recipe. The remaining deficit is dominated by no-entry failures, especially beyond 135 degrees, and the evidence is not official assessment.",
-    "current_synthesis": "I3 is closed. Fixed 0.5 action attenuation removed action saturation and post-entry exits in one run, but the improvement was not reproduced: T4 reached 115/160 while T5 reached 91/160 and still had 0/24 success in the 135-180 degree angle bin. This rejects fixed attenuation as a reliable route under that recipe but does not rule out action conditioning or representation changes. The physical model identifies wrapped inverse-kinematic angle errors as a representation discontinuity. Successful entries generally hold reliably, so the consequential unresolved mechanism is acquisition of difficult directional motions rather than broad hold stabilization. E15 opened I4 to test that representation hypothesis; this checkpoint records the transition and does not claim that the hypothesis is established.",
-    "decision_frontier": "The unresolved distinction is whether the severe directional no-entry deficit is materially caused by the wrapped branch-angle observation representation, rather than by the rejected fixed attenuation recipe or irreducible acquisition variance. The discriminating evidence is reproducible held-out paired performance from at least two fresh maintainer-sized runs using a continuous directional and branch representation, with unchanged official evaluation mechanics and hold semantics: improvement in the hard directional bins and overall success without a material increase in hold interruptions supports the route; failure to reproduce improvement rejects or redirects it.",
+    "cumulative_resource_use": "This I4 session used two fresh maintainer-sized 120000-step training operations (T6 and T7), one shared 160-episode paired held-out measurement (M8) evaluating T6, T7, and T1, and no official assessment.",
+    "current_goal_gap": "No candidate has official assessment evidence and the strongest I4 held-out result is 156/160 (97.5%), still below the 98% campaign objective and not sufficient to claim official success. The remaining development failures are concentrated in T7's 90-180 degree bins and require a final candidate-selection decision before any official assessment.",
+    "current_synthesis": "M8 provides reproducible held-out support for the continuous directional and inverse-kinematic branch representation: T6 achieved 151/160 (94.375%) and T7 achieved 156/160 (97.5%) on shared seeds, versus 89/160 (55.625%) for T1. Both fresh runs improved every hard directional bin over T1; T7 reached 17/17 in -180 to -135 degrees and 13/16 in 135 to 180 degrees. Hold interruptions did not increase for T7 (4 versus T1's 5), while T6 showed a material increase (23 versus 5), so the representation route is credible but its stabilization benefit is seed-dependent. The evidence supports the wrapped-angle discontinuity as a material cause of the prior no-entry deficit, but does not establish a 98% official policy or eliminate residual high-angle failures.",
+    "decision_frontier": "I4's representation question is resolved in favor of the continuous sine-cosine branch encoding as a credible route: two fresh 120000-step runs produced large shared-panel gains over T1, and the stronger run improved hard directional bins without increasing hold interruptions. The remaining decision is method selection and official-goal readiness: determine whether T7:checkpoint-120832 is sufficiently reliable for explicit best-known assignment and whether its residual 90-180 degree failures can be accepted for protected assessment; no official assessment should be requested without a deliberate role decision.",
     "evidence_references": [
-      "M2",
-      "E4",
-      "E6",
-      "T2",
-      "M3",
-      "E8",
-      "M4",
-      "M5",
-      "E10",
-      "E12",
-      "T4",
-      "M6",
-      "T5",
-      "M7",
-      "E13",
-      "E15"
+      "E15",
+      "T6",
+      "T7",
+      "M8"
     ],
-    "human_goal_connection": "The campaign still seeks at least 196 successes in the protected 200-episode official panel, with every success requiring the complete uninterrupted 100-step hold across the official 0.06-0.20 m target annulus. I4 is directed at the dominant learned-policy gap: reproducible no-entry failures in difficult target directions.",
-    "inquiry_id": null,
-    "next_direction_or_closure": "I4 is open and this goal-review checkpoint ends the current session. In the fresh I4 session, implement the continuous directional and inverse-kinematic branch representation without changing official task mechanics or hold semantics, then require two fresh 120000-step training runs and unchanged-semantics held-out paired measurements before closing or redirecting the inquiry. Do not request official assessment until reproducible evidence is substantially closer to the 98% goal.",
-    "scientific_commit": "8ae7174c2197dd8602c31a48a593429d7063e998",
-    "session_id": "S8"
+    "human_goal_connection": "The campaign still seeks at least 196 successes in the protected 200-episode official panel, with every success requiring the complete uninterrupted 100-step hold across the official 0.06-0.20 m target annulus. I4 directly addressed the dominant learned-policy deficit in directional acquisition while preserving the official task mechanics and hold semantics.",
+    "inquiry_id": "I4",
+    "next_direction_or_closure": "The next session should close I4 explicitly as a credible representation route, citing the T6/T7 reproducibility and the T6 stabilization caveat. Then assign T7 a deliberate best-known or working role only if the role decision is justified by M8; official assessment remains premature unless the campaign accepts the residual high-angle failures against the 98% threshold.",
+    "scientific_commit": "753120b991b533a0f194479bdc1feba2420ccbb6",
+    "session_id": "S9"
   },
   "schema_version": 6,
   "scientific_model": {
@@ -9987,23 +10107,6 @@
     "path": "research/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "ce31c1bd-9b89-4903-bc7a-0a6628793cfe",
-    "id": "S9",
-    "inquiry_id": "I4",
-    "kind": "inquiry",
-    "objective": "Advance I4 toward its closure condition: Close or redirect the inquiry after the continuous representation has been implemented and evaluated through at least two fresh maintainer-sized training runs on the unchanged official evaluation semantics. Treat it as a credible route only if the held-out paired evidence reproducibly improves the hard directional bins and overall success over the T1 baseline without introducing a material increase in hold interruptions; otherwise reject this route.",
-    "operation_ids": [
-      "T6",
-      "T7",
-      "M8"
-    ],
-    "scientific_parent_commit": "b553057e99a201dd34b553b382a2491ebd610d78"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
