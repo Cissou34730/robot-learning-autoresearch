@@ -1,13 +1,5 @@
 {
-  "active_inquiry": {
-    "closure_condition": "Close the inquiry after a fixed-120000-step temporal-context recipe is compared with T1 on the same 200-episode development panel: success at or above 196/200 with no material broad acquisition regression supports continuation toward official assessment, while failure to improve the coupled acquisition/hold gap or a regression at least as severe as T8 redirects or closes this route.",
-    "goal_connection": "The strongest reference reaches 189/200 complete uninterrupted successes, seven below the 196-success development threshold. A credible route must improve both angle-dependent acquisition and the 2-second hold; temporal context is a distinct method for separating approach from stabilization without changing the official task or success semantics.",
-    "id": "I9",
-    "opened_in_session": "S18",
-    "question": "Can short temporal context in the policy preserve T1's broad acquisition while reducing the residual post-entry interruptions that remain invisible to a memoryless observation, without reproducing T8's broad never-entry regression?",
-    "rationale": "The physical model identifies sampled-data regulation and unobserved hold history as consequential unknowns: T1 already exposes configuration, velocity, target error, and IK alternatives, while T8's task-space velocity augmentation fixed the critical negative-angle sector but increased broad never-entry failures and did not close hold failures. I2-I5 tested explicit branch, endpoint-speed, hold-progress, and phase-handoff mechanisms, but not temporal policy context; the evidence therefore supports discriminating whether the missing capability is memory of recent motion/hold state rather than another instantaneous feature.",
-    "reframes": []
-  },
+  "active_inquiry": null,
   "campaign": {
     "base_commit": "c02b0d59e8ef397c87d92f70e986ad545e585b95",
     "id": "e8788df6-9f4a-4dac-92b7-48e40477e827",
@@ -7388,7 +7380,7 @@
     }
   },
   "counters": {
-    "event": 35,
+    "event": 36,
     "inquiry": 9,
     "measurement": 9,
     "session": 19,
@@ -13011,9 +13003,63 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-01T00:41:30Z",
+      "error": null,
+      "id": "E36",
+      "inquiry_id": "I9",
+      "kind": "inquiry",
+      "request": {
+        "action": "close",
+        "outcome": "I9 is insufficient and closes the short temporal-context route. On the same 200-episode development panel, the fixed-120000-step T9 temporal-context candidate achieved 190/200 complete uninterrupted successes versus 189/200 for T1. T9 preserved broad acquisition with six never-entry failures, reduced the negative-angle sector failures from 11 to 10, and reduced post-entry failures from 5 to 4, but it remains six successes below the 196/200 development threshold. The modest paired improvement does not establish a route to the human goal or justify official assessment.",
+        "reason": "M9 provides the required same-panel paired evidence under identical complete-hold semantics: T9 won 2 episodes and T1 won 1, with three discordant episodes and a net one-success gain for T9. The candidate did not reproduce T8's broad never-entry regression, but it also did not deliver the closure-condition threshold or a material reduction in post-entry interruptions. This resolves the tested short temporal-context recipe as insufficient rather than disproving temporal information as a broader control mechanism. No new decisive mechanism emerged that would justify reframing I9; preserve T1 as the baseline reference and carry T9's 190/200 result into goal review without claiming the official 98% objective."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I9",
+        "outcome": "I9 is insufficient and closes the short temporal-context route. On the same 200-episode development panel, the fixed-120000-step T9 temporal-context candidate achieved 190/200 complete uninterrupted successes versus 189/200 for T1. T9 preserved broad acquisition with six never-entry failures, reduced the negative-angle sector failures from 11 to 10, and reduced post-entry failures from 5 to 4, but it remains six successes below the 196/200 development threshold. The modest paired improvement does not establish a route to the human goal or justify official assessment.",
+        "reason": "M9 provides the required same-panel paired evidence under identical complete-hold semantics: T9 won 2 episodes and T1 won 1, with three discordant episodes and a net one-success gain for T9. The candidate did not reproduce T8's broad never-entry regression, but it also did not deliver the closure-condition threshold or a material reduction in post-entry interruptions. This resolves the tested short temporal-context recipe as insufficient rather than disproving temporal information as a broader control mechanism. No new decisive mechanism emerged that would justify reframing I9; preserve T1 as the baseline reference and carry T9's 190/200 result into goal review without claiming the official 98% objective.",
+        "status": "completed"
+      },
+      "session_id": "S19",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "close",
+        "inquiry_id": "I9",
+        "outcome": "I9 is insufficient and closes the short temporal-context route. On the same 200-episode development panel, the fixed-120000-step T9 temporal-context candidate achieved 190/200 complete uninterrupted successes versus 189/200 for T1. T9 preserved broad acquisition with six never-entry failures, reduced the negative-angle sector failures from 11 to 10, and reduced post-entry failures from 5 to 4, but it remains six successes below the 196/200 development threshold. The modest paired improvement does not establish a route to the human goal or justify official assessment.",
+        "reason": "M9 provides the required same-panel paired evidence under identical complete-hold semantics: T9 won 2 episodes and T1 won 1, with three discordant episodes and a net one-success gain for T9. The candidate did not reproduce T8's broad never-entry regression, but it also did not deliver the closure-condition threshold or a material reduction in post-entry interruptions. This resolves the tested short temporal-context recipe as insufficient rather than disproving temporal information as a broader control mechanism. No new decisive mechanism emerged that would justify reframing I9; preserve T1 as the baseline reference and carry T9's 190/200 result into goal review without claiming the official 98% objective."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I9",
+        "outcome": "I9 is insufficient and closes the short temporal-context route. On the same 200-episode development panel, the fixed-120000-step T9 temporal-context candidate achieved 190/200 complete uninterrupted successes versus 189/200 for T1. T9 preserved broad acquisition with six never-entry failures, reduced the negative-angle sector failures from 11 to 10, and reduced post-entry failures from 5 to 4, but it remains six successes below the 196/200 development threshold. The modest paired improvement does not establish a route to the human goal or justify official assessment.",
+        "reason": "M9 provides the required same-panel paired evidence under identical complete-hold semantics: T9 won 2 episodes and T1 won 1, with three discordant episodes and a net one-success gain for T9. The candidate did not reproduce T8's broad never-entry regression, but it also did not deliver the closure-condition threshold or a material reduction in post-entry interruptions. This resolves the tested short temporal-context recipe as insufficient rather than disproving temporal information as a broader control mechanism. No new decisive mechanism emerged that would justify reframing I9; preserve T1 as the baseline reference and carry T9's 190/200 result into goal review without claiming the official 98% objective.",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E36",
+    "inquiry_id": "I9",
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "close",
+        "outcome": "I9 is insufficient and closes the short temporal-context route. On the same 200-episode development panel, the fixed-120000-step T9 temporal-context candidate achieved 190/200 complete uninterrupted successes versus 189/200 for T1. T9 preserved broad acquisition with six never-entry failures, reduced the negative-angle sector failures from 11 to 10, and reduced post-entry failures from 5 to 4, but it remains six successes below the 196/200 development threshold. The modest paired improvement does not establish a route to the human goal or justify official assessment.",
+        "reason": "M9 provides the required same-panel paired evidence under identical complete-hold semantics: T9 won 2 episodes and T1 won 1, with three discordant episodes and a net one-success gain for T9. The candidate did not reproduce T8's broad never-entry regression, but it also did not deliver the closure-condition threshold or a material reduction in post-entry interruptions. This resolves the tested short temporal-context recipe as insufficient rather than disproving temporal information as a broader control mechanism. No new decisive mechanism emerged that would justify reframing I9; preserve T1 as the baseline reference and carry T9's 190/200 result into goal review without claiming the official 98% objective."
+      }
+    },
+    "request_fingerprint": "4885ef0a40f5b6fdb99416fd5f89b36275842d0c2a2de5c9c73fcdfea7e183a5",
+    "session_id": "S19",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No working, best-known, or retained role is assigned. T1:checkpoint-100352 remains the strongest evidence-backed development reference at 189/200; T8:checkpoint-120832 is insufficient and has no role.",
     "completed_operations": [
@@ -13084,7 +13130,8 @@
     "objective": "Advance I9 toward its closure condition: Close the inquiry after a fixed-120000-step temporal-context recipe is compared with T1 on the same 200-episode development panel: success at or above 196/200 with no material broad acquisition regression supports continuation toward official assessment, while failure to improve the coupled acquisition/hold gap or a regression at least as severe as T8 redirects or closes this route.",
     "operation_ids": [
       "T9",
-      "M9"
+      "M9",
+      "E36"
     ],
     "scientific_parent_commit": "7b3ce9a51c01d0f3348adfdaa9d7061a1571aea6"
   },
