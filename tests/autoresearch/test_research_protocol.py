@@ -218,6 +218,51 @@ def test_measurement_artifact_fingerprint_detects_replacement(monkeypatch, tmp_p
         repository.measurement_evidence(record)
 
 
+def test_artifact_contents_describe_actual_sections_without_measurement_values():
+    evidence = {
+        "trace/series~": {"rows": [{"first": None}, {"later": "raw-only-value"}]},
+        "enabled": True,
+        "empty": [],
+    }
+    original = json.dumps(evidence)
+    contents = repository.measurement_artifact_contents(evidence)
+    sections = {section["path"]: section for section in contents["sections"]}
+    rows = evidence["trace/series~"]["rows"]
+    dataset = sections["/trace~1series~0/rows"]
+    assert contents["scope"] == "structure_only"
+    assert not contents["truncated"]
+    assert dataset["entries"] == len(rows)
+    assert dataset["field_names"] == sorted({key for row in rows for key in row})
+    assert sections["/enabled"]["type"] == "boolean"
+    assert sections["/empty"]["entries"] == len(evidence["empty"])
+    assert "field_names" not in sections["/empty"]
+    assert "raw-only-value" not in json.dumps(contents)
+    assert json.dumps(evidence) == original
+
+
+def test_artifact_contents_explicitly_limit_large_structures_and_field_lists():
+    evidence = {
+        "bulk": [{f"column-{i}-" + "x" * 100: i for i in range(64)}],
+        **{f"section-{i}": {"leaf": i} for i in range(80)},
+    }
+    contents = repository.measurement_artifact_contents(evidence)
+    sections = {section["path"]: section for section in contents["sections"]}
+    assert contents["truncated"]
+    assert (
+        len(json.dumps(contents, separators=(",", ":")).encode("utf-8"))
+        <= repository.ARTIFACT_CONTENTS_MAX_BYTES
+    )
+    assert sections["/bulk"]["entries"] == len(evidence["bulk"])
+    assert sections["/bulk"]["fields_omitted"]
+    assert sections["/bulk"]["field_count"] == len(evidence["bulk"][0])
+    assert "field_names" not in sections["/bulk"]
+
+
+def test_artifact_contents_require_the_measurement_object_contract():
+    with pytest.raises(TypeError, match="JSON object"):
+        repository.measurement_artifact_contents([])
+
+
 def test_measurement_protocol_validates_invocation_not_scientific_content():
     protocol.validate_measurement_request(
         {

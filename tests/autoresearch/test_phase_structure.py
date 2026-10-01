@@ -588,8 +588,34 @@ def test_scientific_session_prompt_preserves_checkpoint_frontier(tmp_path, kind)
         "id": "S1",
         "kind": kind,
         "objective": markers["objective"],
-        "operation_ids": [],
+        "operation_ids": ["M1"],
     }
+    section_name = f"section-{uuid4().hex}"
+    field_name = f"field-{uuid4().hex}"
+    raw_value = f"raw-value-{uuid4().hex}"
+    contents = repository.measurement_artifact_contents(
+        {section_name: [{"first": None}, {field_name: raw_value}]}
+    )
+    state["operation_events"] = [
+        {
+            "id": "M1",
+            "kind": "measurement",
+            "status": "completed",
+            "result": {
+                "measurements": [
+                    {
+                        "label": "instrument result",
+                        "metrics": {
+                            "episodes": 2,
+                            "evaluation_artifact": "research/evaluations/panel.json",
+                            "evaluation_artifact_contents": contents,
+                        },
+                    }
+                ],
+                "paired_comparisons": [],
+            },
+        }
+    ]
     if kind != "startup":
         state["pi_checkpoint"] = {
             "inquiry_id": None,
@@ -654,6 +680,9 @@ New-ScientificSessionPrompt -State $state
     assert completed.returncode == 0, completed.stderr
     assert markers["goal"] in completed.stdout
     assert markers["objective"] in completed.stdout
+    assert "/" + section_name in completed.stdout
+    assert field_name in completed.stdout
+    assert raw_value not in completed.stdout
     if state["pi_checkpoint"] is not None:
         assert markers["synthesis"] in completed.stdout
         assert markers["gap"] in completed.stdout

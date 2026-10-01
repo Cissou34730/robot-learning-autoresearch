@@ -790,6 +790,9 @@ def _measurement_result(
     record = repository.measurement_record(metrics)
     record["evaluation_artifact"] = repository.repo_relative_path(output_path)
     record["evaluation_artifact_fingerprint"] = repository.file_fingerprint(output_path)
+    record["evaluation_artifact_contents"] = repository.measurement_artifact_contents(
+        _json_object_artifact(output_path, "measurement artifact")
+    )
     record["model_fingerprint"] = spec["model_fingerprint"]
     if semantics is not None:
         record["evaluation_semantics"] = semantics
@@ -1042,7 +1045,7 @@ def execute_measurement(state: dict, pending: dict) -> int:
             if spec["instrument"] == "python_module":
                 archived_path = _python_module_archive_path(state, pending, spec, index)
                 if archived_path.is_file():
-                    _json_object_artifact(
+                    evidence = _json_object_artifact(
                         archived_path,
                         "sealed python_module measurement artifact",
                     )
@@ -1060,7 +1063,7 @@ def execute_measurement(state: dict, pending: dict) -> int:
                         "python_module measurement artifact",
                     )
                     _seal_python_module_artifact(output_path, archived_path)
-                    _json_object_artifact(
+                    evidence = _json_object_artifact(
                         archived_path,
                         "sealed python_module measurement artifact",
                     )
@@ -1076,6 +1079,9 @@ def execute_measurement(state: dict, pending: dict) -> int:
                             ),
                             "evaluation_artifact_fingerprint": (
                                 repository.file_fingerprint(archived_path)
+                            ),
+                            "evaluation_artifact_contents": (
+                                repository.measurement_artifact_contents(evidence)
                             ),
                         },
                     }

@@ -484,6 +484,47 @@ def test_research_evaluation_rejects_semantics_changes_after_acceptance(
         run_experiment.execute_pending_operation()
 
 
+@pytest.mark.parametrize("instrument", ["research_evaluation", "task_reference"])
+def test_evaluation_result_indexes_the_actual_artifact_without_modifying_it(
+    monkeypatch, tmp_path, instrument
+):
+    monkeypatch.setattr(paths, "ROOT", tmp_path)
+    evidence = {
+        "episodes": 2,
+        "seed": 10,
+        "success_percent": 50.0,
+        "episode_results": [{"success": True}, {"success": False}],
+        "research_evidence": {"custom_rows": [{"first": None}, {"later": 2}]},
+    }
+    artifact = tmp_path / "measurement.json"
+    artifact.write_text(json.dumps(evidence), encoding="utf-8")
+    fingerprint = repository.file_fingerprint(artifact)
+    spec = {
+        "instrument": instrument,
+        "candidate": "T1:checkpoint-10",
+        "candidate_id": "T1:checkpoint-10",
+        "label": "current measurement",
+        "model_fingerprint": "model-fingerprint",
+    }
+    result = run_experiment._measurement_result(
+        spec,
+        repository.measurement_record(evidence),
+        artifact,
+        semantics="semantics" if instrument == "research_evaluation" else None,
+    )
+    metrics = result["metrics"]
+    assert metrics["evaluation_artifact_contents"] == (
+        repository.measurement_artifact_contents(evidence)
+    )
+    assert metrics["evaluation_artifact_fingerprint"] == fingerprint
+    assert repository.file_fingerprint(artifact) == fingerprint
+    assert (
+        repository.measurement_evidence(metrics)["research_evidence"]
+        == (evidence["research_evidence"])
+    )
+    assert "research_evidence" not in metrics
+
+
 def test_python_module_uses_frozen_module_manifest_not_evaluation_semantics(
     monkeypatch, tmp_path
 ):
@@ -559,6 +600,15 @@ def test_generic_measurement_executes_pi_owned_tool_and_records_artifact(
     metrics = event["result"]["measurements"][0]["metrics"]
     assert "data" not in metrics
     assert repository.measurement_evidence(metrics)["observation"] == 3
+    assert metrics["evaluation_artifact_contents"] == (
+        repository.measurement_artifact_contents(
+            json.loads(
+                repository.resolve_repo_path(metrics["evaluation_artifact"]).read_text(
+                    encoding="utf-8"
+                )
+            )
+        )
+    )
     assert (
         event["result"]["tool_provenance"]["campaign_lab_publication"]["commit"]
         == "c" * 40

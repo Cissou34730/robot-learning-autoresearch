@@ -109,6 +109,12 @@ def test_brief_leads_with_goal_evidence_gap_inquiry_and_checkpoint(
 
 
 def test_operation_feedback_is_factual_and_operation_specific():
+    raw_value = "raw-measurement-value"
+    evidence = {
+        "episode_results": [{"success": True, "private_value": raw_value}],
+        "arbitrary_lab_section": {"series": [{"first": None}, {"later": raw_value}]},
+    }
+    contents = repository.measurement_artifact_contents(evidence)
     measurement = {
         "kind": "measurement",
         "result": {
@@ -120,7 +126,8 @@ def test_operation_feedback_is_factual_and_operation_specific():
                         "evaluation_artifact": "research/evaluations/panel.json",
                         "success_percent": 97.5,
                         "episodes": 200,
-                        "episode_results": [{"success": True}],
+                        "episode_results": evidence["episode_results"],
+                        "evaluation_artifact_contents": contents,
                     },
                 }
             ],
@@ -150,7 +157,9 @@ def test_operation_feedback_is_factual_and_operation_specific():
     assert "research/evaluations/panel.json" in measurement_lines
     assert "success_percent=97.5" in measurement_lines
     assert "Paired comparisons" in measurement_lines
-    assert "episode_results" not in measurement_lines
+    assert json.dumps(contents, sort_keys=True) in measurement_lines
+    assert "/arbitrary_lab_section/series" in measurement_lines
+    assert raw_value not in measurement_lines
 
     training_lines = "\n".join(brief._event_detail_lines(training))
     assert "T2:checkpoint-10" in training_lines

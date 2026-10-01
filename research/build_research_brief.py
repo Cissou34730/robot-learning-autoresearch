@@ -116,18 +116,43 @@ def _event_detail_lines(event: dict) -> list[str]:
             )
             lines.append(
                 f"  - {measurement.get('label') or measurement.get('instrument')}: "
-                f"artifact {_artifact(artifact)}; metrics "
+                f"artifact {_artifact(artifact)}; "
+                "result summary (not the complete artifact): "
                 + _measurement_facts(
                     metrics,
                     omitted={
                         "episode_results",
                         "evaluation_artifact",
                         "evaluation_artifact_fingerprint",
+                        "evaluation_artifact_contents",
                         "model_fingerprint",
                     },
                 )
                 + "."
             )
+            contents = (
+                metrics.get("evaluation_artifact_contents")
+                if isinstance(metrics, dict)
+                else None
+            )
+            if contents is None:
+                lines.append(
+                    "    Artifact contents: no inventory recorded; "
+                    "contents remain in the referenced artifact."
+                )
+            else:
+                if not isinstance(contents, dict):
+                    raise TypeError("measurement artifact contents must be an object")
+                scope = (
+                    "limited structure-only inventory"
+                    if contents["truncated"]
+                    else "structure-only inventory; no measurement values"
+                )
+                lines.append(
+                    f"    Artifact contents ({scope}): "
+                    + json.dumps(contents, sort_keys=True)
+                    + "."
+                )
         comparisons = result.get("paired_comparisons") or []
         if comparisons:
             lines.append(

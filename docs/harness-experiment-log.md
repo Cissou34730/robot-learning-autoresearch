@@ -24,7 +24,10 @@ campaign observations and no isolated causal attribution. The ordinary
 goal-review measurement experiment below is active; its first completed
 campaign did not exercise the new measurement permission, and its causal
 effect remains unestablished. The inquiry architecture and independent runtime
-fixes remain unchanged.
+fixes remain unchanged. The measurement-evidence handoff now distinguishes
+reduced result summaries from full artifacts and exposes bounded structural
+inventories. This is a data-presentation change, not new scientific-action
+guidance; its effect on PI inspection remains to be assessed in a campaign.
 
 The objective under investigation is scientifically justified action selection:
 the PI chooses the action that can resolve a consequential uncertainty rather
@@ -388,13 +391,26 @@ its scientific breadth or achieve its result.
 
 ## Discussed but not implemented
 
+### Current backlog (2026-10-01)
+
+| Item | Status / boundary |
+|---|---|
+| Reliable measurement-evidence inspection | Approved handoff implementation below; campaign effectiveness remains unassessed. |
+| Context flooding | Open, separate work; tool-output offloading thresholds are unchanged. |
+| Training-shaped inquiry commitments and scientific continuity | Main progression issue remains open; latest campaign showed improvement, not a general resolution. |
+| Checkpoint nomination and evidence selection | Deferred behind progression; available training facts are not proof of development performance. |
+| Operation-submission handoff clarification | Still unimplemented. |
+| Explicit protection of the old protocol log | Still unimplemented; read-access policy is a separate decision. |
+| Console clarity and maintainer-file read controls | Separate deferred work; read restrictions are not the established remedy for the present evidence-inspection failure. |
+| Publication/recovery, maintainer training allocation, and goal-review role availability | Implemented; not active repair items. |
+
 Hypothesis registries, premise-status fields, mandatory reasoning checklists,
 reference-panel reuse, submission-handoff clarification, and explicit
 protection of the old protocol log were not introduced by these changes.
 Analysis proposals are not part of the active harness unless a commit and
 disposition are recorded.
 
-**TODO: restrict PI reads of maintainer-facing files.** The PI was observed
+**Deferred: restrict PI reads of maintainer-facing files.** The PI was observed
 reading `README.md`, `run_research.ps1`, and `researcher_session.ps1` instead of
 staying within its scientific concerns. Investigate SDK file-access controls
 or tool-policy enforcement to prevent these reads, including indirect access
@@ -402,6 +418,8 @@ through search and shell tools, rather than relying only on prompt wording.
 Preserve access to the scientific corpus, robot/task/benchmark contracts, and
 PI-owned implementations and tools. This is pending investigation and
 implementation; no SDK capability or restriction is assumed to exist yet.
+This is not an approved next intervention or an established explanation for
+the current scientific regression.
 
 ## Future entries
 
@@ -684,3 +702,57 @@ separate from harness changes so their outcomes are not conflated.
   method. The causal effect remains unestablished, and the I1 evidence-reading
   error remains a recorded finding. No further prompt, instrument, or runtime
   change is introduced by this entry.
+
+## 2026-10-01: generic measurement-evidence handoff
+
+- **Implementation commit:** the commit containing this entry,
+  `Expose measurement artifact contents`.
+- **RCA / generalization:** M3's artifact contained 160 custom diagnostic rows,
+  but the returned record excluded `research_evidence`. The PI inspected only
+  lines 1-80 and falsely asserted that those diagnostics were absent; their
+  section began at line 1450. The reduced result presentation advertised the
+  artifact path without its contents or the scope of the summary. The same
+  exposure exists beyond M3: M1's laboratory result exposed only a reference,
+  M2 omitted custom evidence, and M4 omitted even the PI-produced compact
+  radius-stratified summaries. Those other measurements were used successfully,
+  so the visibility gap is a general risk, not a sufficient explanation for
+  every interpretation error.
+- **Approved change:** derive neutral artifact-contents metadata from the
+  actual JSON artifact for all three measurement instruments. It lists JSON
+  Pointer locations, types, container sizes, and the union of field names in
+  actual object rows. Breadth-first object traversal surfaces top-level
+  sections before deeper details. Array values are not copied or individually
+  expanded. No scientific field name or interpretation is built in.
+- **Bounded presentation:** the structural inventory has a 4096-byte compact
+  metadata budget. Omitted sections or field lists are explicitly marked;
+  omitted array columns retain their field count when that descriptor fits.
+  This is not a change to the SDK tool-output threshold. A complete structural
+  overview is still not the complete evidence.
+- **Integrity / persistence:** store the inventory with the existing artifact
+  reference metadata, derived from the recorded artifact rather than the
+  reduced metric dictionary. Preserve full artifacts, their existing
+  fingerprints, operation envelopes, and schema-6 lifecycle. The laboratory
+  branch indexes its sealed copy and preserves existing recovery behavior.
+- **Feedback:** live result feedback and the generated brief distinguish
+  reduced result summaries from artifact contents. Limited inventories and
+  records without an inventory are explicit rather than implying absent data.
+  The instrument contract documents only the metadata's mechanical meaning.
+- **Expected improvement / limits:** expose available evidence without
+  duplicating its bulk values into the PI context, enabling targeted reads.
+  This can address discoverability and clarify inspection scope. It does not
+  ensure correct interpretation, nominate a checkpoint, judge a scientific
+  claim, require exhaustive reading, or resolve training-shaped commitments.
+- **Preserved boundaries:** no scenario or training code, scientific gates,
+  inspection checklist, phase objectives, training guidance, model choice,
+  context-limit change, dependency, new fingerprint, or campaign operation.
+- **Implementation checks:** 17 targeted behavior cases passed, covering
+  neutral structure discovery, heterogeneous row fields, pointer escaping,
+  bounded and explicitly limited inventories, all three instrument paths,
+  immutable artifacts, recovery, and live/brief data transmission. Touched-file
+  Ruff and PowerShell parsing passed. Read-only checks of the completed
+  campaign's four artifacts confirmed that M3's actual diagnostic fields are
+  advertised and that oversized inventories are explicitly limited. These
+  checks establish implementation behavior, not improved scientific judgment.
+- **Disposition:** implemented for a campaign trial after maintainer approval.
+  Scientific effectiveness remains unassessed; no campaign is started or
+  resumed to validate the change.

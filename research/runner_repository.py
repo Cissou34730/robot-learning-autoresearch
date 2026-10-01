@@ -14,6 +14,7 @@ import subprocess
 import tempfile
 import time
 import uuid
+from collections import deque
 from collections.abc import Iterator
 from pathlib import Path, PureWindowsPath
 
@@ -22,6 +23,7 @@ from research import runner_paths as paths
 STATE_SCHEMA_VERSION = 6
 DEFAULT_MAX_INQUIRIES = 15
 WINDOWS_COMMAND_LINE_LIMIT = 32_767
+ARTIFACT_CONTENTS_MAX_BYTES = 4_096
 
 RUNNER_CONTROL_PATHS = {
     "research/operation_request.json",
@@ -2127,6 +2129,64 @@ def measurement_evidence(record: dict) -> dict:
         if field in record and evidence.get(field) != record[field]:
             raise ValueError(f"measurement artifact {field} differs from its record")
     return {**record, **evidence}
+
+
+def measurement_artifact_contents(evidence: dict) -> dict:
+    if not isinstance(evidence, dict):
+        raise TypeError("measurement artifact must contain a JSON object")
+    contents = {"scope": "structure_only", "truncated": False, "sections": []}
+    pending = deque([("", evidence)])
+
+    def fits(section: dict) -> bool:
+        candidate = {
+            **contents,
+            "truncated": False,
+            "sections": [*contents["sections"], section],
+        }
+        return (
+            len(json.dumps(candidate, separators=(",", ":")).encode("utf-8"))
+            <= ARTIFACT_CONTENTS_MAX_BYTES
+        )
+
+    while pending:
+        pointer, value = pending.popleft()
+        section = {"path": pointer}
+        if isinstance(value, dict):
+            section.update(type="object", entries=len(value))
+        elif isinstance(value, list):
+            section.update(type="array", entries=len(value))
+            field_names = sorted(
+                {key for row in value if isinstance(row, dict) for key in row}
+            )
+            if field_names:
+                section["field_names"] = field_names
+        elif value is None:
+            section["type"] = "null"
+        elif isinstance(value, bool):
+            section["type"] = "boolean"
+        elif isinstance(value, (int, float)):
+            section["type"] = "number"
+        elif isinstance(value, str):
+            section["type"] = "string"
+        else:
+            raise TypeError("measurement artifact contains a non-JSON value")
+        if not fits(section) and "field_names" in section:
+            section["field_count"] = len(section.pop("field_names"))
+            section["fields_omitted"] = True
+            contents["truncated"] = True
+        if not fits(section):
+            contents["truncated"] = True
+            continue
+        contents["sections"].append(section)
+        if isinstance(value, dict):
+            pending.extend(
+                (
+                    pointer + "/" + key.replace("~", "~0").replace("/", "~1"),
+                    child,
+                )
+                for key, child in value.items()
+            )
+    return contents
 
 
 def measurement_record(metrics: dict) -> dict:

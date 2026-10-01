@@ -515,12 +515,36 @@ function Get-LatestSessionResult {
                         "episode_results",
                         "evaluation_artifact",
                         "evaluation_artifact_fingerprint",
+                        "evaluation_artifact_contents",
                         "model_fingerprint"
                     )
                 } |
                 ForEach-Object { $facts[$_.Name] = $_.Value }
             $renderedFacts = $facts | ConvertTo-Json -Compress -Depth 100
-            "$($_.label): artifact=$artifact; metrics=$renderedFacts"
+            $contents = $metrics.evaluation_artifact_contents
+            $inventory = if ($null -eq $contents) {
+                "no inventory recorded; contents remain in the referenced artifact"
+            }
+            else {
+                if (
+                    $contents -isnot [pscustomobject] -and
+                    $contents -isnot [System.Collections.IDictionary]
+                ) {
+                    throw "Measurement artifact contents must be an object."
+                }
+                $scope = if ($contents.truncated) {
+                    "limited structure-only inventory"
+                }
+                else {
+                    "structure-only inventory; no measurement values"
+                }
+                "$scope`: $($contents | ConvertTo-Json -Compress -Depth 100)"
+            }
+            (
+                "$($_.label): artifact=$artifact; " +
+                "result summary (not the complete artifact)=$renderedFacts; " +
+                "artifact contents=$inventory"
+            )
         })
         $comparisons = @($result.paired_comparisons)
         $comparisonFact = if ($comparisons.Count -gt 0) {

@@ -147,6 +147,50 @@ The accepted candidate artifacts, evaluator semantics, module sources,
 PI-owned scientific changes, effective parameters, reused-panel identities,
 and paired-comparison integrity facts remain attached to the result.
 
+### Artifact contents metadata
+
+Completed measurement records retain their compact result facts, artifact path,
+and immutable artifact fingerprint. `evaluation_artifact_contents` adds
+mechanical navigation metadata derived from that JSON artifact:
+
+```json
+{
+  "scope": {"type": "string"},
+  "truncated": {"type": "boolean"},
+  "sections": {
+    "type": "array",
+    "items": {
+      "type": "object",
+      "properties": {
+        "path": {"type": "string"},
+        "type": {"type": "string"},
+        "entries": {"type": "integer"},
+        "field_names": {"type": "array", "items": {"type": "string"}},
+        "field_count": {"type": "integer"},
+        "fields_omitted": {"type": "boolean"}
+      }
+    }
+  }
+}
+```
+
+The scope is `structure_only`: the inventory contains no measurement values or
+scientific interpretation. Paths are JSON Pointers, with the empty pointer
+identifying the root and escaped tokens identifying object members. Object
+and array sections carry their entry counts. Object members are traversed
+breadth-first; array elements are not expanded into individual paths.
+`field_names`, when present, is the union of keys in actual object rows of an
+array, not a schema inferred from one sample row.
+
+The inventory has a bounded metadata size. `truncated` marks omitted sections
+or field names; `fields_omitted` and `field_count` identify an array whose field
+list did not fit. Even an untruncated inventory describes structure rather
+than the full evidence. The full artifact remains unchanged and available
+through its recorded path. This metadata applies to all measurement
+instruments without requiring any scenario-specific section or field.
+Live feedback and the brief distinguish the reduced result summary from
+artifact contents, and explicitly identify results with no recorded inventory.
+
 ## Training operation
 
 ```json
