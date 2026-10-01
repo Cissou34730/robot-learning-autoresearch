@@ -20276,38 +20276,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I14",
-        "outcome": "I14 is insufficient.",
-        "reason": "M14 decisively fails I14's closure condition. On the fixed 200-episode development panel, T14:checkpoint-120832 achieved 62/200 complete uninterrupted successes (31.0%), while the paired T9:checkpoint-120832 reference achieved 190/200 (95.0%). T14 therefore missed the 196/200 development gate by 134 successes and lost the paired comparison by 128 net wins, with 4 candidate wins versus 132 reference wins across 136 discordant episodes. The mixed-angle target distribution did not eliminate the difficult-basin failures and caused a broad acquisition regression, consistent with T14's zero training success at every checkpoint and low final reward. Because the candidate fails the primary complete-hold threshold by a wide margin, I14 cannot be actionable regardless of any subgroup change. T9 remains the strongest development candidate at 190/200; neither candidate supports the official 98% objective."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I14",
-        "outcome": "I14 is insufficient.",
-        "reason": "M14 decisively fails I14's closure condition. On the fixed 200-episode development panel, T14:checkpoint-120832 achieved 62/200 complete uninterrupted successes (31.0%), while the paired T9:checkpoint-120832 reference achieved 190/200 (95.0%). T14 therefore missed the 196/200 development gate by 134 successes and lost the paired comparison by 128 net wins, with 4 candidate wins versus 132 reference wins across 136 discordant episodes. The mixed-angle target distribution did not eliminate the difficult-basin failures and caused a broad acquisition regression, consistent with T14's zero training success at every checkpoint and low final reward. Because the candidate fails the primary complete-hold threshold by a wide margin, I14 cannot be actionable regardless of any subgroup change. T9 remains the strongest development candidate at 190/200; neither candidate supports the official 98% objective.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E56",
-    "inquiry_id": "I14",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "I14 is insufficient.",
-        "reason": "M14 decisively fails I14's closure condition. On the fixed 200-episode development panel, T14:checkpoint-120832 achieved 62/200 complete uninterrupted successes (31.0%), while the paired T9:checkpoint-120832 reference achieved 190/200 (95.0%). T14 therefore missed the 196/200 development gate by 134 successes and lost the paired comparison by 128 net wins, with 4 candidate wins versus 132 reference wins across 136 discordant episodes. The mixed-angle target distribution did not eliminate the difficult-basin failures and caused a broad acquisition regression, consistent with T14's zero training success at every checkpoint and low final reward. Because the candidate fails the primary complete-hold threshold by a wide margin, I14 cannot be actionable regardless of any subgroup change. T9 remains the strongest development candidate at 190/200; neither candidate supports the official 98% objective."
-      }
-    },
-    "request_fingerprint": "5b48e33db0d0aa3b5150bce871d1c3003e03d22e49c9df1919da3c24d35a2fba",
-    "session_id": "S29",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "No working, best-known, or retained role is assigned. T9:checkpoint-120832 remains the strongest measured development candidate at 190/200; T1:checkpoint-100352 remains the direct-torque reference at 189/200. T11:checkpoint-120832, T12:checkpoint-35840, and T13:checkpoint-120832 are rejected for their respective inquiries.",
     "completed_operations": [
