@@ -1,5 +1,13 @@
 {
-  "active_inquiry": null,
+  "active_inquiry": {
+    "closure_condition": "Close or redirect the inquiry after the continuous representation has been implemented and evaluated through at least two fresh maintainer-sized training runs on the unchanged official evaluation semantics. Treat it as a credible route only if the held-out paired evidence reproducibly improves the hard directional bins and overall success over the T1 baseline without introducing a material increase in hold interruptions; otherwise reject this route.",
+    "goal_connection": "The learned candidates remain far below the 98% episode-success goal because no-entry failures dominate, especially for targets beyond 135 degrees, whereas successful entries already show generally reliable uninterrupted holds. Removing the wrapped-angle representation discontinuity could improve directional generalization while preserving the official reach-and-hold task.",
+    "id": "I4",
+    "opened_in_session": "S8",
+    "question": "Can a continuous directional and inverse-kinematic branch representation improve reproducible learned acquisition of the currently missed target directions without changing official task mechanics or hold semantics?",
+    "rationale": "The physical model identifies wrapped branch-angle errors as a representation discontinuity, and the latest attenuation evidence shows that eliminating action saturation does not reliably solve directional no-entry failures. The T4/T5 contrast demonstrates that the current recipe can acquire different directional basins across seeds, so a representation-level intervention is a discriminating next route rather than another attenuation trial. The intervention will remain training/policy-interface code only; official mechanics, target distribution, and uninterrupted hold semantics remain unchanged.",
+    "reframes": []
+  },
   "campaign": {
     "base_commit": "c2abfc7efc60be52b98a1f4189e022d759e006b2",
     "id": "010714c2-5abd-4836-96bd-364caaf82042",
@@ -3286,16 +3294,16 @@
     }
   },
   "counters": {
-    "event": 14,
-    "inquiry": 3,
+    "event": 15,
+    "inquiry": 4,
     "measurement": 7,
-    "session": 7,
+    "session": 8,
     "training": 5
   },
   "human_goal": {
     "source": "research/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -6959,9 +6967,69 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-01T22:54:43Z",
+      "error": null,
+      "id": "E15",
+      "inquiry_id": "I4",
+      "kind": "inquiry",
+      "request": {
+        "action": "open",
+        "closure_condition": "Close or redirect the inquiry after the continuous representation has been implemented and evaluated through at least two fresh maintainer-sized training runs on the unchanged official evaluation semantics. Treat it as a credible route only if the held-out paired evidence reproducibly improves the hard directional bins and overall success over the T1 baseline without introducing a material increase in hold interruptions; otherwise reject this route.",
+        "goal_connection": "The learned candidates remain far below the 98% episode-success goal because no-entry failures dominate, especially for targets beyond 135 degrees, whereas successful entries already show generally reliable uninterrupted holds. Removing the wrapped-angle representation discontinuity could improve directional generalization while preserving the official reach-and-hold task.",
+        "question": "Can a continuous directional and inverse-kinematic branch representation improve reproducible learned acquisition of the currently missed target directions without changing official task mechanics or hold semantics?",
+        "rationale": "The physical model identifies wrapped branch-angle errors as a representation discontinuity, and the latest attenuation evidence shows that eliminating action saturation does not reliably solve directional no-entry failures. The T4/T5 contrast demonstrates that the current recipe can acquire different directional basins across seeds, so a representation-level intervention is a discriminating next route rather than another attenuation trial. The intervention will remain training/policy-interface code only; official mechanics, target distribution, and uninterrupted hold semantics remain unchanged."
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I4",
+        "status": "completed"
+      },
+      "session_id": "S8",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "open",
+        "inquiry": {
+          "closure_condition": "Close or redirect the inquiry after the continuous representation has been implemented and evaluated through at least two fresh maintainer-sized training runs on the unchanged official evaluation semantics. Treat it as a credible route only if the held-out paired evidence reproducibly improves the hard directional bins and overall success over the T1 baseline without introducing a material increase in hold interruptions; otherwise reject this route.",
+          "goal_connection": "The learned candidates remain far below the 98% episode-success goal because no-entry failures dominate, especially for targets beyond 135 degrees, whereas successful entries already show generally reliable uninterrupted holds. Removing the wrapped-angle representation discontinuity could improve directional generalization while preserving the official reach-and-hold task.",
+          "id": "I4",
+          "opened_in_session": "S8",
+          "question": "Can a continuous directional and inverse-kinematic branch representation improve reproducible learned acquisition of the currently missed target directions without changing official task mechanics or hold semantics?",
+          "rationale": "The physical model identifies wrapped branch-angle errors as a representation discontinuity, and the latest attenuation evidence shows that eliminating action saturation does not reliably solve directional no-entry failures. The T4/T5 contrast demonstrates that the current recipe can acquire different directional basins across seeds, so a representation-level intervention is a discriminating next route rather than another attenuation trial. The intervention will remain training/policy-interface code only; official mechanics, target distribution, and uninterrupted hold semantics remain unchanged.",
+          "reframes": []
+        }
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I4",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E15",
+    "inquiry_id": null,
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "open",
+        "closure_condition": "Close or redirect the inquiry after the continuous representation has been implemented and evaluated through at least two fresh maintainer-sized training runs on the unchanged official evaluation semantics. Treat it as a credible route only if the held-out paired evidence reproducibly improves the hard directional bins and overall success over the T1 baseline without introducing a material increase in hold interruptions; otherwise reject this route.",
+        "goal_connection": "The learned candidates remain far below the 98% episode-success goal because no-entry failures dominate, especially for targets beyond 135 degrees, whereas successful entries already show generally reliable uninterrupted holds. Removing the wrapped-angle representation discontinuity could improve directional generalization while preserving the official reach-and-hold task.",
+        "question": "Can a continuous directional and inverse-kinematic branch representation improve reproducible learned acquisition of the currently missed target directions without changing official task mechanics or hold semantics?",
+        "rationale": "The physical model identifies wrapped branch-angle errors as a representation discontinuity, and the latest attenuation evidence shows that eliminating action saturation does not reliably solve directional no-entry failures. The T4/T5 contrast demonstrates that the current recipe can acquire different directional basins across seeds, so a representation-level intervention is a discriminating next route rather than another attenuation trial. The intervention will remain training/policy-interface code only; official mechanics, target distribution, and uninterrupted hold semantics remain unchanged."
+      }
+    },
+    "request_fingerprint": "502bbc589ffdf84be7f95764d243065af4d63ad1bd45e25e13744acde896b954",
+    "session_id": "S8",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T1:checkpoint-120832 remains the strongest baseline learned candidate at 98/160 development success. T4's 115/160 result is the highest observed learned development result but is not reproducible by T5 and is not assigned a working, best-known, or retained role. T5, T2, and all other candidates have no model role. No candidate has official evidence.",
     "completed_operations": [
@@ -7005,6 +7073,21 @@
     "path": "research/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "73de535d-3185-49a9-bb06-f01c67a9790c",
+    "id": "S8",
+    "inquiry_id": null,
+    "kind": "goal_review",
+    "objective": "Reassess the scientific direction toward the human goal using completed evidence. You may request measurements to resolve an uncertainty or develop the method before committing to an inquiry. Decide whether to request official assessment, open one bounded goal-linked inquiry, or conclude that no credible route remains.",
+    "operation_ids": [
+      "E15"
+    ],
+    "scientific_parent_commit": "66d61540b5cd560adb9bd731550072ad0cab97de"
+  },
   "terminal_state": null
 }
