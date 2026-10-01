@@ -9026,7 +9026,7 @@
     }
   },
   "counters": {
-    "event": 46,
+    "event": 47,
     "inquiry": 12,
     "measurement": 11,
     "session": 24,
@@ -9035,7 +9035,7 @@
   "human_goal": {
     "source": "research/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -15984,30 +15984,153 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-01T01:26:50Z",
+      "error": null,
+      "id": "E47",
+      "inquiry_id": null,
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "No working, best-known, or retained role is assigned. T1:checkpoint-100352 remains the strongest evidence-backed development reference at 189/200; T9:checkpoint-120832 is an insufficient temporal-context candidate at 190/200. T10:checkpoint-100352 and T11:checkpoint-120832 are rejected as insufficient candidates.",
+        "completed_operations": [
+          "E46"
+        ],
+        "cumulative_resource_use": "Eleven fresh PPO training operations have completed with the maintainer's fixed 120000-step allocation, each producing 120832 rollout-boundary steps. M1-M11 evaluated candidates on the fixed 200-episode development panel beginning at seed 4200, with paired references where specified. No official assessment has been run.",
+        "current_goal_gap": "T1:checkpoint-100352 remains at 189/200, seven successes below the 196/200 development gate. T9:checkpoint-120832 reached 190/200, six successes below the gate. T11:checkpoint-120832 reached 145/200 and is rejected.",
+        "current_synthesis": "Observed evidence supports acquisition and branch coordination as dominant failure mechanisms in the tested direct-torque and hybrid routes, with post-entry stabilization also consequential. M11 shows that the tested episode-persistent, joint-limit-compatible branch commitment is harmful: T11 had 145/200 complete successes versus 189/200 for T1, with 30 versus 6 never-entry failures, 25 versus 5 post-entry failures, and 1000 versus 7 hold interruptions. This rejects that recipe, not IK relevance or plant controllability. The deterministic, fully actuated plant, observed velocities, and strong direct-torque baseline leave a bounded residual-control route scientifically credible, but its benefit is currently conjectural.",
+        "decision_frontier": "Can a learned residual-torque policy preserve the direct-torque baseline's acquisition behavior while adding smooth model-derived damping and coordination that reduces post-entry interruptions and difficult-angle never-entry failures? The discriminating result is a fixed-allocation candidate reaching at least 196/200 complete uninterrupted successes without regressing the baseline's acquisition or post-entry failure counts; otherwise the route is insufficient.",
+        "evidence_references": [
+          "T11",
+          "M11",
+          "E44",
+          "E46"
+        ],
+        "human_goal_connection": "The campaign still targets at least 196 complete uninterrupted successes out of 200 under the fixed official task distribution. I12 was opened because the strongest development evidence remains below that gate and no official assessment is justified.",
+        "next_direction_or_closure": "The goal-review session opened I12 and now ends at this checkpoint. In the fresh I12 session, implement and test only the bounded residual-torque route, without changing official task or complete-hold semantics, branch commitment, or the maintainer's 120000-step training allocation."
+      },
+      "result": {
+        "session_id": "S24",
+        "status": "checkpointed"
+      },
+      "session_id": "S24",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "1808b7ff51eb048b66f1cb576b2404d3266309ef",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "No working, best-known, or retained role is assigned. T1:checkpoint-100352 remains the strongest evidence-backed development reference at 189/200; T9:checkpoint-120832 is an insufficient temporal-context candidate at 190/200. T10:checkpoint-100352 and T11:checkpoint-120832 are rejected as insufficient candidates.",
+        "completed_operations": [
+          "E46"
+        ],
+        "cumulative_resource_use": "Eleven fresh PPO training operations have completed with the maintainer's fixed 120000-step allocation, each producing 120832 rollout-boundary steps. M1-M11 evaluated candidates on the fixed 200-episode development panel beginning at seed 4200, with paired references where specified. No official assessment has been run.",
+        "current_goal_gap": "T1:checkpoint-100352 remains at 189/200, seven successes below the 196/200 development gate. T9:checkpoint-120832 reached 190/200, six successes below the gate. T11:checkpoint-120832 reached 145/200 and is rejected.",
+        "current_synthesis": "Observed evidence supports acquisition and branch coordination as dominant failure mechanisms in the tested direct-torque and hybrid routes, with post-entry stabilization also consequential. M11 shows that the tested episode-persistent, joint-limit-compatible branch commitment is harmful: T11 had 145/200 complete successes versus 189/200 for T1, with 30 versus 6 never-entry failures, 25 versus 5 post-entry failures, and 1000 versus 7 hold interruptions. This rejects that recipe, not IK relevance or plant controllability. The deterministic, fully actuated plant, observed velocities, and strong direct-torque baseline leave a bounded residual-control route scientifically credible, but its benefit is currently conjectural.",
+        "decision_frontier": "Can a learned residual-torque policy preserve the direct-torque baseline's acquisition behavior while adding smooth model-derived damping and coordination that reduces post-entry interruptions and difficult-angle never-entry failures? The discriminating result is a fixed-allocation candidate reaching at least 196/200 complete uninterrupted successes without regressing the baseline's acquisition or post-entry failure counts; otherwise the route is insufficient.",
+        "evidence_references": [
+          "T11",
+          "M11",
+          "E44",
+          "E46"
+        ],
+        "human_goal_connection": "The campaign still targets at least 196 complete uninterrupted successes out of 200 under the fixed official task distribution. I12 was opened because the strongest development evidence remains below that gate and no official assessment is justified.",
+        "inquiry_id": null,
+        "next_direction_or_closure": "The goal-review session opened I12 and now ends at this checkpoint. In the fresh I12 session, implement and test only the bounded residual-torque route, without changing official task or complete-hold semantics, branch commitment, or the maintainer's 120000-step training allocation.",
+        "session_id": "S24"
+      },
+      "presentation": {
+        "backend_session_id": "348f67ab-38e4-4d59-aab3-9eb9accd0131",
+        "campaign_id": "e8788df6-9f4a-4dac-92b7-48e40477e827",
+        "campaign_usage": "1h27m | 290.52 AIU | prompt 46.3m (84% cached) | output 253.3k",
+        "session_id": "S24",
+        "session_kind": "goal_review",
+        "session_usage": "1m41s | 5.78 AIU | prompt 756.1k (79% cached) | output 4.8k"
+      },
+      "result": {
+        "session_id": "S24",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "5fceb873995c63ea94f1ccde90d5b7cde0102a5d",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E47",
+    "inquiry_id": null,
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "No working, best-known, or retained role is assigned. T1:checkpoint-100352 remains the strongest evidence-backed development reference at 189/200; T9:checkpoint-120832 is an insufficient temporal-context candidate at 190/200. T10:checkpoint-100352 and T11:checkpoint-120832 are rejected as insufficient candidates.",
+        "completed_operations": [
+          "E46"
+        ],
+        "cumulative_resource_use": "Eleven fresh PPO training operations have completed with the maintainer's fixed 120000-step allocation, each producing 120832 rollout-boundary steps. M1-M11 evaluated candidates on the fixed 200-episode development panel beginning at seed 4200, with paired references where specified. No official assessment has been run.",
+        "current_goal_gap": "T1:checkpoint-100352 remains at 189/200, seven successes below the 196/200 development gate. T9:checkpoint-120832 reached 190/200, six successes below the gate. T11:checkpoint-120832 reached 145/200 and is rejected.",
+        "current_synthesis": "Observed evidence supports acquisition and branch coordination as dominant failure mechanisms in the tested direct-torque and hybrid routes, with post-entry stabilization also consequential. M11 shows that the tested episode-persistent, joint-limit-compatible branch commitment is harmful: T11 had 145/200 complete successes versus 189/200 for T1, with 30 versus 6 never-entry failures, 25 versus 5 post-entry failures, and 1000 versus 7 hold interruptions. This rejects that recipe, not IK relevance or plant controllability. The deterministic, fully actuated plant, observed velocities, and strong direct-torque baseline leave a bounded residual-control route scientifically credible, but its benefit is currently conjectural.",
+        "decision_frontier": "Can a learned residual-torque policy preserve the direct-torque baseline's acquisition behavior while adding smooth model-derived damping and coordination that reduces post-entry interruptions and difficult-angle never-entry failures? The discriminating result is a fixed-allocation candidate reaching at least 196/200 complete uninterrupted successes without regressing the baseline's acquisition or post-entry failure counts; otherwise the route is insufficient.",
+        "evidence_references": [
+          "T11",
+          "M11",
+          "E44",
+          "E46"
+        ],
+        "human_goal_connection": "The campaign still targets at least 196 complete uninterrupted successes out of 200 under the fixed official task distribution. I12 was opened because the strongest development evidence remains below that gate and no official assessment is justified.",
+        "next_direction_or_closure": "The goal-review session opened I12 and now ends at this checkpoint. In the fresh I12 session, implement and test only the bounded residual-torque route, without changing official task or complete-hold semantics, branch commitment, or the maintainer's 120000-step training allocation."
+      }
+    },
+    "request_fingerprint": "02025b84335885a358ab391c1587a82c7cf9cf3711edb0a2fce69375e9c48256",
+    "session_id": "S24",
+    "supersedes": null
+  },
   "pi_checkpoint": {
-    "candidates_and_roles": "No working, best-known, or retained role is assigned. T1:checkpoint-100352 remains the strongest development reference at 189/200. T9:checkpoint-120832 is an insufficient temporal-context candidate at 190/200. T10:checkpoint-100352 and T11:checkpoint-120832 are rejected as insufficient hybrid and branch-commitment candidates.",
+    "candidates_and_roles": "No working, best-known, or retained role is assigned. T1:checkpoint-100352 remains the strongest evidence-backed development reference at 189/200; T9:checkpoint-120832 is an insufficient temporal-context candidate at 190/200. T10:checkpoint-100352 and T11:checkpoint-120832 are rejected as insufficient candidates.",
     "completed_operations": [
-      "T11",
-      "M11",
-      "E44"
+      "E46"
     ],
     "cumulative_resource_use": "Eleven fresh PPO training operations have completed with the maintainer's fixed 120000-step allocation, each producing 120832 rollout-boundary steps. M1-M11 evaluated candidates on the fixed 200-episode development panel beginning at seed 4200, with paired references where specified. No official assessment has been run.",
-    "current_goal_gap": "T1:checkpoint-100352 remains the strongest evidence-backed development reference at 189/200, seven successes below the 196/200 gate. T9 reached 190/200 but remains insufficient. The I11 candidate reached only 145/200 and materially worsened both acquisition and uninterrupted hold behavior.",
-    "current_synthesis": "Acquisition and branch coordination remain supported as dominant failure mechanisms for the tested direct-torque and hybrid routes, while post-entry stabilization is also consequential. M11 rejects the tested episode-persistent, joint-limit-compatible branch commitment in the learned observation interface: T11 achieved 145/200 complete successes versus 189/200 for T1, with 30 versus 6 never-entry failures, 25 versus 5 post-entry failures, and 1000 versus 7 hold interruptions. This establishes that the tested branch-commitment recipe is harmful, but does not prove that IK branch ambiguity is irrelevant or that the plant is uncontrollable.",
-    "decision_frontier": "I10 and I11 are resolved negatively. The tested per-step model-based joint-space correction and the tested episode-persistent branch-committed direct-torque interface both failed to preserve complete success. The remaining frontier is a fresh goal-review determination of whether a scientifically credible route can close the seven-success gap to 196/200 without changing official task or hold semantics and without sacrificing post-entry stability.",
+    "current_goal_gap": "T1:checkpoint-100352 remains at 189/200, seven successes below the 196/200 development gate. T9:checkpoint-120832 reached 190/200, six successes below the gate. T11:checkpoint-120832 reached 145/200 and is rejected.",
+    "current_synthesis": "Observed evidence supports acquisition and branch coordination as dominant failure mechanisms in the tested direct-torque and hybrid routes, with post-entry stabilization also consequential. M11 shows that the tested episode-persistent, joint-limit-compatible branch commitment is harmful: T11 had 145/200 complete successes versus 189/200 for T1, with 30 versus 6 never-entry failures, 25 versus 5 post-entry failures, and 1000 versus 7 hold interruptions. This rejects that recipe, not IK relevance or plant controllability. The deterministic, fully actuated plant, observed velocities, and strong direct-torque baseline leave a bounded residual-control route scientifically credible, but its benefit is currently conjectural.",
+    "decision_frontier": "Can a learned residual-torque policy preserve the direct-torque baseline's acquisition behavior while adding smooth model-derived damping and coordination that reduces post-entry interruptions and difficult-angle never-entry failures? The discriminating result is a fixed-allocation candidate reaching at least 196/200 complete uninterrupted successes without regressing the baseline's acquisition or post-entry failure counts; otherwise the route is insufficient.",
     "evidence_references": [
       "T11",
       "M11",
-      "E44"
+      "E44",
+      "E46"
     ],
-    "human_goal_connection": "The human goal remains at least 98% episode success with a complete uninterrupted hold. I11 did not meet the development gate of at least 196/200 complete successes, so no official assessment is justified.",
-    "inquiry_id": "I11",
-    "next_direction_or_closure": "I11 is closed as insufficient. End this inquiry session and return to goal review in a fresh session. Do not request official assessment on the current evidence; first determine whether a new route can directly address the remaining acquisition, coordination, and hold gap while preserving the fixed task and complete uninterrupted success semantics.",
-    "scientific_commit": "3240707168cdb2cc9935e1e0fc78c00e659c2a1d",
-    "session_id": "S23"
+    "human_goal_connection": "The campaign still targets at least 196 complete uninterrupted successes out of 200 under the fixed official task distribution. I12 was opened because the strongest development evidence remains below that gate and no official assessment is justified.",
+    "inquiry_id": null,
+    "next_direction_or_closure": "The goal-review session opened I12 and now ends at this checkpoint. In the fresh I12 session, implement and test only the bounded residual-torque route, without changing official task or complete-hold semantics, branch commitment, or the maintainer's 120000-step training allocation.",
+    "scientific_commit": "5fceb873995c63ea94f1ccde90d5b7cde0102a5d",
+    "session_id": "S24"
   },
   "schema_version": 6,
   "scientific_model": {
@@ -16015,21 +16138,6 @@
     "path": "research/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "348f67ab-38e4-4d59-aab3-9eb9accd0131",
-    "id": "S24",
-    "inquiry_id": null,
-    "kind": "goal_review",
-    "objective": "Decide whether to request official assessment, open one bounded goal-linked inquiry, or conclude that no credible route remains.",
-    "operation_ids": [
-      "E46"
-    ],
-    "scientific_parent_commit": "1808b7ff51eb048b66f1cb576b2404d3266309ef"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
