@@ -84,44 +84,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "open",
-        "inquiry": {
-          "closure_condition": "Obtain and interpret a baseline candidate's geometry-stratified official-distribution development measurements, including first reach, maximum uninterrupted hold, interruptions, target radius and angle, branch behavior, and reach-versus-hold failure attribution; close or redirect the inquiry when those observations identify the dominant barrier or show that the baseline evidence is insufficient.",
-          "goal_connection": "Resolving this distinction determines whether the next goal-directed intervention should expand training geometry and branch coverage, redesign stabilization and hold shaping, or address both. That choice is necessary to move toward at least 196 successful episodes out of 200 under the official distribution.",
-          "id": "I1",
-          "opened_in_session": "S2",
-          "question": "For a baseline candidate trained with the current recipe, are failures under the full official target annulus dominated by missing inner-radius and inverse-kinematic branch coverage, by post-arrival stabilization and uninterrupted-hold control, or by a coupled mechanism?",
-          "rationale": "No candidate or measurement exists, so the current mechanistic explanations are untested and official assessment is not justified. The scientific model predicts that restricted 0.14-0.20 m training may omit folded inner targets and that sample-and-hold dynamics may cause residual-motion hold failures. A baseline followed by targeted diagnostics is the smallest evidence-producing route that can discriminate these explanations without presupposing an intervention.",
-          "reframes": []
-        }
-      },
-      "result": {
-        "action": "open",
-        "inquiry_id": "I1",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E2",
-    "inquiry_id": null,
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "open",
-        "closure_condition": "Obtain and interpret a baseline candidate's geometry-stratified official-distribution development measurements, including first reach, maximum uninterrupted hold, interruptions, target radius and angle, branch behavior, and reach-versus-hold failure attribution; close or redirect the inquiry when those observations identify the dominant barrier or show that the baseline evidence is insufficient.",
-        "goal_connection": "Resolving this distinction determines whether the next goal-directed intervention should expand training geometry and branch coverage, redesign stabilization and hold shaping, or address both. That choice is necessary to move toward at least 196 successful episodes out of 200 under the official distribution.",
-        "question": "For a baseline candidate trained with the current recipe, are failures under the full official target annulus dominated by missing inner-radius and inverse-kinematic branch coverage, by post-arrival stabilization and uninterrupted-hold control, or by a coupled mechanism?",
-        "rationale": "No candidate or measurement exists, so the current mechanistic explanations are untested and official assessment is not justified. The scientific model predicts that restricted 0.14-0.20 m training may omit folded inner targets and that sample-and-hold dynamics may cause residual-motion hold failures. A baseline followed by targeted diagnostics is the smallest evidence-producing route that can discriminate these explanations without presupposing an intervention."
-      }
-    },
-    "request_fingerprint": "49bb59580cb6043caf32ffa238c2aad1abb88a284d7a34a5586786c095146bd0",
-    "session_id": "S2",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "No candidates have been trained, measured, or assigned roles.",
     "completed_operations": [],
