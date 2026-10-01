@@ -15921,38 +15921,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I11",
-        "outcome": "insufficient",
-        "reason": "M11 closes I11 as insufficient. The branch-committed direct-torque candidate achieved 145/200 complete uninterrupted successes (72.5%), versus 189/200 (94.5%) for the paired T1 reference, with 11 candidate wins, 55 reference wins, 66 discordant episodes, and a -22.0 percentage-point delta. T11 had 30 never-entry failures and 25 post-entry failures, compared with 6 and 5 for T1, and accumulated 1000 hold interruptions versus 7. It therefore fails the 196/200 gate, materially worsens acquisition, and materially regresses uninterrupted hold behavior. The result rejects this branch-commitment recipe as a credible route, but does not prove that branch ambiguity is irrelevant to the broader control problem."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I11",
-        "outcome": "insufficient",
-        "reason": "M11 closes I11 as insufficient. The branch-committed direct-torque candidate achieved 145/200 complete uninterrupted successes (72.5%), versus 189/200 (94.5%) for the paired T1 reference, with 11 candidate wins, 55 reference wins, 66 discordant episodes, and a -22.0 percentage-point delta. T11 had 30 never-entry failures and 25 post-entry failures, compared with 6 and 5 for T1, and accumulated 1000 hold interruptions versus 7. It therefore fails the 196/200 gate, materially worsens acquisition, and materially regresses uninterrupted hold behavior. The result rejects this branch-commitment recipe as a credible route, but does not prove that branch ambiguity is irrelevant to the broader control problem.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E44",
-    "inquiry_id": "I11",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "insufficient",
-        "reason": "M11 closes I11 as insufficient. The branch-committed direct-torque candidate achieved 145/200 complete uninterrupted successes (72.5%), versus 189/200 (94.5%) for the paired T1 reference, with 11 candidate wins, 55 reference wins, 66 discordant episodes, and a -22.0 percentage-point delta. T11 had 30 never-entry failures and 25 post-entry failures, compared with 6 and 5 for T1, and accumulated 1000 hold interruptions versus 7. It therefore fails the 196/200 gate, materially worsens acquisition, and materially regresses uninterrupted hold behavior. The result rejects this branch-commitment recipe as a credible route, but does not prove that branch ambiguity is irrelevant to the broader control problem."
-      }
-    },
-    "request_fingerprint": "1a5c9d5c31155622cd3056819191bd9b348a65b7313f6afc0507a3f95287bb63",
-    "session_id": "S23",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "No working, best-known, or retained role is assigned. T1:checkpoint-100352 is the strongest development reference at 189/200; T9:checkpoint-120832 is an insufficient temporal-context candidate at 190/200; T10:checkpoint-100352 is an insufficient hybrid-control candidate at 156/200.",
     "completed_operations": [
