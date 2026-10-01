@@ -12,6 +12,7 @@ from uuid import uuid4
 import pytest
 
 from research import reset_campaign, run_experiment, runner_paths, runner_protocol
+from research import runner_execution as execution
 from research import runner_repository as repository
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -668,6 +669,7 @@ def _goal_review_candidate(
     for name, value in {
         "ROOT": tmp_path,
         "RESEARCH_DIR": research,
+        "EVALUATION_DIR": research / "evaluations",
         "STATE_PATH": research / "research_state.json",
         "RESULTS_PATH": research / "results.jsonl",
         "LOG_PATH": research / "EXPERIMENTS.md",
@@ -777,6 +779,7 @@ def _goal_review_candidate(
             "completed_at": "now",
         }
     )
+    state["counters"]["measurement"] = 1
     repository.write_state(state)
     return state, candidate
 
@@ -802,6 +805,93 @@ def _open_inquiry_request() -> dict:
             "rationale": "The current evidence leaves a consequential uncertainty.",
         }
     }
+
+
+def test_goal_review_measurement_returns_to_same_session_before_inquiry(
+    monkeypatch, tmp_path
+):
+    state, _candidate = _goal_review_candidate(monkeypatch, tmp_path, at_cap=False)
+    session = state["scientific_session"]
+    counters = dict(state["counters"])
+    module = tmp_path / "research" / "lab" / "diagnostic.py"
+    module.parent.mkdir()
+    module.write_text("def main():\n    return None\n", encoding="utf-8")
+    artifact = runner_paths.campaign_evaluation_dir("campaign") / "diagnostic.json"
+    request = {
+        "measurement": {
+            "description": "Investigate the unresolved method before opening an inquiry.",
+            "rationale": "The observation informs the scientific direction.",
+            "measurements": [
+                {
+                    "instrument": "python_module",
+                    "module": "research.lab.diagnostic",
+                    "args": ["--output", str(artifact)],
+                    "artifact": repository.repo_relative_path(artifact),
+                }
+            ],
+        }
+    }
+    run_experiment.accept_operation(request, state)
+
+    def run_module(_module, *_args):
+        artifact.parent.mkdir(parents=True, exist_ok=True)
+        artifact.write_text('{"observation": 3}', encoding="utf-8")
+        return "diagnostic complete"
+
+    monkeypatch.setattr(execution, "run_module", run_module)
+    monkeypatch.setattr(
+        repository,
+        "publish_campaign_laboratory",
+        lambda _operation_id: {"commit": "c" * 40, "manifest": [], "fingerprint": "f"},
+    )
+    assert run_experiment.execute_pending_operation() == 0
+    measured = repository.read_state()
+    event = measured["operation_events"][-1]
+    assert event["id"] == f"M{counters['measurement'] + 1}"
+    assert event["inquiry_id"] is None
+    assert event["result"]["status"] == "completed"
+    metrics = event["result"]["measurements"][0]["metrics"]
+    assert repository.measurement_evidence(metrics)["observation"] == 3
+    assert measured["scientific_session"]["id"] == session["id"]
+    assert (
+        measured["scientific_session"]["backend_session_id"]
+        == session["backend_session_id"]
+    )
+    assert measured["scientific_session"]["operation_ids"] == [event["id"]]
+    assert measured["active_inquiry"] is None
+    assert measured["pending_operation"] is None
+    assert measured["counters"]["inquiry"] == counters["inquiry"]
+    assert measured["counters"]["training"] == counters["training"]
+    assert measured["counters"]["measurement"] == counters["measurement"] + 1
+    assert (
+        runner_protocol.validate_operation_request(request, measured) == "measurement"
+    )
+    assert (
+        runner_protocol.validate_operation_request(_open_inquiry_request(), measured)
+        == "inquiry"
+    )
+
+
+def test_goal_review_rejects_measurement_at_cap(monkeypatch, tmp_path):
+    state, _candidate = _goal_review_candidate(monkeypatch, tmp_path)
+    request = {"measurement": state["operation_events"][0]["request"]}
+    with pytest.raises(ValueError, match="inquiry-creation cap"):
+        runner_protocol.validate_operation_request(request, state)
+
+
+@pytest.mark.parametrize("at_cap", [False, True])
+def test_goal_review_still_rejects_training(monkeypatch, tmp_path, at_cap):
+    state, _candidate = _goal_review_candidate(monkeypatch, tmp_path, at_cap=at_cap)
+    request = {
+        "training": {
+            "seed": 0,
+            "steps": 120000,
+            "initialization": "fresh",
+            "rationale": "Test the goal-review operation boundary.",
+        }
+    }
+    with pytest.raises(ValueError, match="training is not available in a goal_review"):
+        runner_protocol.validate_operation_request(request, state)
 
 
 def test_goal_review_assigns_best_known_and_requests_assessment_at_cap(
@@ -862,15 +952,21 @@ def test_goal_review_role_requires_completed_evidence(monkeypatch, tmp_path, evi
         runner_protocol.validate_operation_request(request, state)
 
 
-def test_goal_review_role_cannot_bypass_open_inquiry_checkpoint(monkeypatch, tmp_path):
+@pytest.mark.parametrize("kind", ["model_role", "measurement"])
+def test_goal_review_operation_cannot_bypass_open_inquiry_checkpoint(
+    monkeypatch, tmp_path, kind
+):
     state, candidate = _goal_review_candidate(monkeypatch, tmp_path, at_cap=False)
     run_experiment.accept_operation(_open_inquiry_request(), state)
     assert run_experiment.execute_pending_operation() == 0
     opened = repository.read_state()
+    request = (
+        _best_known_request(candidate)
+        if kind == "model_role"
+        else {"measurement": opened["operation_events"][0]["request"]}
+    )
     with pytest.raises(ValueError, match="checkpoint"):
-        runner_protocol.validate_operation_request(
-            _best_known_request(candidate), opened
-        )
+        runner_protocol.validate_operation_request(request, opened)
     checkpoint = {
         "checkpoint": {
             "human_goal_connection": "The inquiry addresses a current task gap.",
@@ -897,9 +993,4 @@ def test_goal_review_role_cannot_bypass_open_inquiry_checkpoint(monkeypatch, tmp
         backend_model="gpt-5.6-luna",
         backend_reasoning="high",
     )
-    assert (
-        runner_protocol.validate_operation_request(
-            _best_known_request(candidate), checkpointed
-        )
-        == "model_role"
-    )
+    assert runner_protocol.validate_operation_request(request, checkpointed) == kind

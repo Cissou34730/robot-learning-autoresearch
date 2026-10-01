@@ -65,8 +65,11 @@ campaign-level decisions:
 Opening an inquiry records its question, connection to the human goal, closure
 condition, and rationale. The opening goal-review session then ends at a
 durable checkpoint, and a fresh inquiry session continues from that state.
-Goal review permits model-role assignment, inquiry opening, campaign conclusion,
-and checkpoint. Model roles may be assigned before the campaign-level decision,
+Goal review permits measurement before the inquiry-creation cap is reached,
+model-role assignment, inquiry opening, campaign conclusion, and the checkpoint
+required after opening an inquiry. Measurements return to the same session.
+Once an inquiry is opened, only the goal-review checkpoint may follow in that
+session. Model roles may be assigned before the campaign-level decision,
 including when no further inquiry can be opened.
 
 ## Inquiry work

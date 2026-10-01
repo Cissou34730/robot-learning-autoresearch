@@ -21,8 +21,9 @@ identities are `E#`. Only completed identities may be cited as evidence.
 Accepted operations depend on the current scientific session:
 
 - `startup`: measurement, training, model role, recipe restoration, checkpoint;
-- `goal_review`: model role, inquiry open, or campaign conclusion; checkpoint
-  becomes available only after that session opens the inquiry;
+- `goal_review`: measurement before the inquiry-creation cap is reached, model
+  role, inquiry open, or campaign conclusion; checkpoint becomes available only
+  after that session opens the inquiry;
 - `inquiry`: measurement, training, model role, recipe restoration, inquiry
   reframe or close, checkpoint.
 

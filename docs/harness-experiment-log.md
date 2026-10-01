@@ -18,10 +18,12 @@ The instruction reference is the winning campaign's final `f6fea61`,
 restored in `5fef279`. The post-winning
 closure-strengthening change `b4f1cdf` and scientific-handoff change `c0cfcb6`
 remain removed. The goal-review role-assignment correction below changes only
-operation availability, terminal prerequisites, and the meaning of best-known;
-the scientific-frontier instruction experiment below is now active as a
-separate, untested behavioral hypothesis. The inquiry architecture and
-independent runtime fixes remain unchanged.
+operation availability, terminal prerequisites, and the meaning of best-known.
+The scientific-frontier guidance remains active with mixed subsequent
+campaign observations and no isolated causal attribution. The ordinary
+goal-review measurement experiment below is now active and scientifically
+untested. The inquiry architecture and independent runtime fixes remain
+unchanged.
 
 The objective under investigation is scientifically justified action selection:
 the PI chooses the action that can resolve a consequential uncertainty rather
@@ -558,3 +560,58 @@ separate from harness changes so their outcomes are not conflated.
 - **Disposition:** outstanding. Restoring earlier guidance does not establish
   that this problem is solved; further changes require a bounded proposal and
   maintainer approval.
+
+## 2026-10-01: ordinary goal-review scientific measurements
+
+- **Implementation commit:** the commit containing this entry,
+  `Allow scientific measurements during ordinary goal review`.
+- **Baseline / observations:** completed campaign
+  `e8788df6-9f4a-4dac-92b7-48e40477e827` used 15 inquiries, each with one
+  training and one policy-evaluation measurement round, and no reframes. The
+  training operations comprised 14 fresh initializations and one transfer,
+  totaling 1,812,480 completed steps. PI usage comprised 96 invocations and
+  423.484 AIU. The retained role-permission correction was exercised at E62,
+  assigning T9 as best-known; it did not prevent the training-shaped sequence.
+- **Message evidence:** goal review repeatedly wrote a single training and
+  evaluation into an inquiry's closure condition. The next prompt made
+  advancing that condition the session objective, and the PI described its
+  training action as required or authorized. Partial improvements did not
+  produce sustained development of the tested method: T5 reduced post-entry
+  failures from five to two while worsening angular acquisition, after which
+  goal review selected a different control representation. The investigative
+  reference startup and this campaign received the same startup objective,
+  but only the reference chose a physical probe before learning. Restored
+  wording alone therefore does not guarantee the earlier opening.
+- **RCA / limits:** premature recipe commitment is visible in the inquiry
+  contracts and subsequent PI messages. Goal review could inspect and analyse
+  existing evidence but could not request a measurement before making that
+  commitment. This restriction did not force training: the PI could already
+  open a diagnostic inquiry. It is an upstream intervention point, not proof
+  that the restriction caused the observed behavior.
+- **Approved change:** permit the existing measurement operation in ordinary
+  goal review while no inquiry is active and the inquiry-creation cap has not
+  been reached. Measurements return to the same scientific session. Replace
+  only the ordinary goal-review objective and no-active-inquiry context with
+  the approved wording, and synchronize the program and instrument permission
+  descriptions.
+- **Preserved boundaries:** startup, active-inquiry prompts and closure rules,
+  persona, shared scientific guidance, training allocation, request schemas,
+  and terminal goal-review behavior remain unchanged. Opening an inquiry still
+  requires its goal-review checkpoint before further scientific work. No
+  compulsory measurement, built-in diagnostic, training gate, or Runner
+  scientific judgment is introduced.
+- **Expected effect / distinction from earlier experiments:** allow the PI to
+  produce evidence that shapes the question or method before freezing a
+  one-run inquiry contract. Earlier evidence-selection, closure, and handoff
+  wording changes preserved this operation restriction; this experiment
+  changes the capability as well as the narrowly scoped context.
+- **Implementation checks:** 18 targeted cases passed, covering PI-owned tool
+  execution and evidence recording in ordinary goal review, same-session and
+  backend continuation, unchanged inquiry/training counters, the cap and
+  post-opening restrictions, continued training rejection in goal review,
+  model roles, checkpoint boundaries, and preserved startup behavior.
+  Touched-file Ruff checks and launcher PowerShell parsing passed.
+- **Disposition:** implemented for a future campaign trial; scientific effect
+  is untested and the progression issue remains outstanding. Judge the trial
+  by whether evidence changes or refines method development, not merely by
+  fewer training runs. No campaign was started, resumed, reset, or modified.

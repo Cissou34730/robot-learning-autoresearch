@@ -712,7 +712,7 @@ function New-ScientificSessionPrompt {
         "None. Candidate roles may be assigned from completed evidence before deciding whether to request official assessment or conclude that no credible route remains."
     }
     else {
-        "None. Decide whether the evidence supports official assessment, a bounded goal-linked inquiry, or a conclusion that no credible route remains."
+        "None. Measurements and evidence-backed model-role assignments are available before choosing official assessment, one bounded goal-linked inquiry, or a conclusion that no credible route remains."
     }
     $session = $State.scientific_session
     $correction = if ($ValidationError) {
@@ -1065,7 +1065,7 @@ try {
                 "Assign candidate roles when justified by completed evidence, then decide whether to request official assessment for the explicit best-known candidate or conclude that no credible route remains."
             }
             elseif ($kind -eq "goal_review") {
-                "Decide whether to request official assessment, open one bounded goal-linked inquiry, or conclude that no credible route remains."
+                "Reassess the scientific direction toward the human goal using completed evidence. You may request measurements to resolve an uncertainty or develop the method before committing to an inquiry. Decide whether to request official assessment, open one bounded goal-linked inquiry, or conclude that no credible route remains."
             }
             else {
                 (

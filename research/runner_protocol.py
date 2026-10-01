@@ -125,7 +125,13 @@ SCIENTIFIC_OPERATION_KINDS = {
 }
 SESSION_OPERATION_MATRIX = {
     "startup": {*SCIENTIFIC_OPERATION_KINDS, "checkpoint"},
-    "goal_review": {"model_role", "inquiry", "campaign_conclusion", "checkpoint"},
+    "goal_review": {
+        "measurement",
+        "model_role",
+        "inquiry",
+        "campaign_conclusion",
+        "checkpoint",
+    },
     "inquiry": {*SCIENTIFIC_OPERATION_KINDS, "inquiry", "checkpoint"},
 }
 TRUSTED_RUNTIME_PATHS = {
@@ -827,6 +833,14 @@ def _validate_session_operation(
     if kind not in allowed:
         raise ValueError(
             f"{kind} is not available in a {session_kind} scientific session"
+        )
+    if (
+        session_kind == "goal_review"
+        and kind == "measurement"
+        and int(state["counters"]["inquiry"]) >= int(state["campaign"]["max_inquiries"])
+    ):
+        raise ValueError(
+            "goal-review measurements are unavailable at the inquiry-creation cap"
         )
     if (
         session_kind == "goal_review"
