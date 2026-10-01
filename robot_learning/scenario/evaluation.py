@@ -11,6 +11,7 @@ which never interprets its contents.
 """
 
 from collections.abc import Callable
+from itertools import pairwise
 from pathlib import Path
 
 import numpy as np
@@ -21,6 +22,84 @@ from robot_learning.scenario.environment import make_evaluation_env
 
 # Bumped when the meaning of a scenario evaluation summary changes.
 RESEARCH_EVALUATION_SUMMARY_VERSION = 4
+
+
+def _mean(values: list[float]) -> float | None:
+    return None if not values else float(np.mean(values))
+
+
+def _group_summary(
+    diagnostics: list[dict], key: str, lower: float, upper: float, is_last: bool
+) -> dict:
+    rows = [
+        row
+        for row in diagnostics
+        if (
+            lower <= row[key] <= upper
+            if is_last
+            else lower <= row[key] < upper
+        )
+    ]
+    entered = [
+        row["first_reach_step"]
+        for row in rows
+        if row["first_reach_step"] is not None
+    ]
+    successes = sum(bool(row["success"]) for row in rows)
+    return {
+        "lower_bound": lower,
+        "upper_bound": upper,
+        "episodes": len(rows),
+        "successes": successes,
+        "success_percent": 100.0 * successes / len(rows) if rows else None,
+        "mean_time_to_first_entry_step": _mean(entered),
+        "mean_longest_in_band_run_steps": _mean(
+            [float(row["max_held_steps"]) for row in rows]
+        ),
+        "mean_hold_exits": _mean(
+            [float(row["hold_interruptions"]) for row in rows]
+        ),
+        "episodes_with_action_saturation_percent": (
+            100.0
+            * sum(row["saturated_action_steps"] > 0 for row in rows)
+            / len(rows)
+            if rows
+            else None
+        ),
+    }
+
+
+def _stratified_summary(diagnostics: list[dict]) -> dict:
+    radius_edges = (6.0, 10.0, 14.0, 18.0, 20.0)
+    angle_edges = (-180.0, -135.0, -90.0, -45.0, 0.0, 45.0, 90.0, 135.0, 180.0)
+    return {
+        "radius_cm": [
+            {
+                "bin": f"{lower:g}-{upper:g}",
+                **_group_summary(
+                    diagnostics,
+                    "target_radius_cm",
+                    lower,
+                    upper,
+                    index == len(radius_edges) - 2,
+                ),
+            }
+            for index, (lower, upper) in enumerate(pairwise(radius_edges))
+        ],
+        "angle_degrees": [
+            {
+                "bin": f"{lower:g}-{upper:g}",
+                **_group_summary(
+                    diagnostics,
+                    "target_angle_degrees",
+                    lower,
+                    upper,
+                    index == len(angle_edges) - 2,
+                ),
+            }
+            for index, (lower, upper) in enumerate(pairwise(angle_edges))
+        ],
+    }
 
 
 def evaluate_research_model(
@@ -55,6 +134,8 @@ def evaluate_research_model(
         in_tolerance_steps = 0
         hold_interruptions = 0
         was_in_tolerance = False
+        saturated_action_steps = 0
+        max_abs_action = 0.0
         while not (terminated or truncated):
             action = runtime.predict(obs)
             obs, reward, terminated, truncated, info = env.step(action)
@@ -62,6 +143,11 @@ def evaluate_research_model(
             reward_total += float(reward)
             distance_cm = 100.0 * float(info["distance"])
             held_steps = int(info.get("held_steps", 0))
+            applied_action = np.asarray(info["applied_action"], dtype=np.float64)
+            saturated_action = bool(np.any(np.abs(applied_action) >= 1.0 - 1e-6))
+            if saturated_action:
+                saturated_action_steps += 1
+            max_abs_action = max(max_abs_action, float(np.max(np.abs(applied_action))))
             min_distance_cm = min(min_distance_cm, distance_cm)
             final_distance_cm = distance_cm
             max_held_steps = max(max_held_steps, held_steps)
@@ -103,6 +189,9 @@ def evaluate_research_model(
                 "max_held_steps": max_held_steps,
                 "in_tolerance_steps": in_tolerance_steps,
                 "hold_interruptions": hold_interruptions,
+                "saturated_action_steps": saturated_action_steps,
+                "max_abs_action": max_abs_action,
+                "success": success,
             }
         )
         if progress_callback is not None:
@@ -121,7 +210,12 @@ def evaluate_research_model(
         # failures and checking whether performance varies by target geometry.
         "research_evidence": {
             "episode_diagnostics": episode_diagnostics,
-            "units": {"distance": "cm", "time": "control_steps"},
+            "stratified_summary": _stratified_summary(episode_diagnostics),
+            "units": {
+                "distance": "cm",
+                "time": "control_steps",
+                "action": "normalized_motor_command",
+            },
         },
     }
 
