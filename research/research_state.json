@@ -9837,7 +9837,7 @@
     }
   },
   "counters": {
-    "event": 48,
+    "event": 49,
     "inquiry": 12,
     "measurement": 12,
     "session": 25,
@@ -9846,7 +9846,7 @@
   "human_goal": {
     "source": "research/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -17360,29 +17360,173 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-01T01:44:02Z",
+      "error": null,
+      "id": "E49",
+      "inquiry_id": "I12",
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "No working, best-known, or retained role is assigned. T9:checkpoint-120832 is the strongest measured development candidate at 190/200 but remains insufficient; T1:checkpoint-100352 is the direct-torque reference at 189/200. T11:checkpoint-120832 and T12:checkpoint-35840 are rejected. No candidate satisfies the human goal or warrants official assessment.",
+        "completed_operations": [
+          "T12",
+          "M12",
+          "E48"
+        ],
+        "cumulative_resource_use": "Twelve fresh PPO training operations have completed with the maintainer's fixed 120000-step allocation, each producing 120832 rollout-boundary steps. M1-M12 evaluated candidates on the fixed 200-episode development panel beginning at seed 4200, with paired references where specified. No official assessment has been run.",
+        "current_goal_gap": "The strongest development evidence remains T9:checkpoint-120832 at 190/200, six successes below the 196/200 development gate. T1:checkpoint-100352 achieved 189/200. T12:checkpoint-35840 achieved 171/200 and is rejected. The human goal remains unachieved.",
+        "current_synthesis": "Evidence continues to support acquisition and branch coordination as dominant failure mechanisms, with post-entry stabilization consequential. M11 rejected episode-persistent joint-limit-compatible branch commitment: T11 achieved 145/200 versus T1's 189/200, with 30 versus 6 never-entry failures, 25 versus 5 post-entry failures, and 1000 versus 7 hold interruptions. I12 tested a transferred T1 policy with a bounded smooth model-derived task-space velocity-damping residual. M12 rejected that route: T12 achieved 171/200 versus T1's 189/200 on the same panel, lost all 18 discordant paired episodes, and had 7 never-entry failures, 22 post-entry failures, and 1,836 hold interruptions versus T1's 6, 5, and 7. The result rejects this residual-torque recipe and allocation/transfer implementation as a credible route; it does not establish that plant controllability, IK relevance, or every possible future method is impossible. The strongest evidence-backed development reference remains below the goal.",
+        "decision_frontier": "The residual-torque inquiry is closed as insufficient. The next scientific decision must identify and test a new goal-linked mechanism that can close the remaining six-success development gap while preserving complete-hold semantics and avoiding the demonstrated acquisition-to-stabilization tradeoff. Any new route must be judged on the fixed development panel against T1 or T9 and must reach at least 196/200 without relying on training telemetry or changing the official task.",
+        "evidence_references": [
+          "T11",
+          "M11",
+          "E44",
+          "E46",
+          "T12",
+          "M12",
+          "E48"
+        ],
+        "human_goal_connection": "The campaign still targets at least 98% complete uninterrupted episode success under the fixed official task distribution. The fixed 200-episode development gate is 196 successes; no candidate has reached it and no official assessment is justified.",
+        "next_direction_or_closure": "The I12 session is complete and the campaign transitions to a fresh goal-review session. Do not carry the residual-torque implementation forward as an actionable route. The next session should select a new inquiry only after reconciling the persistent difficult-angle acquisition gap with complete-hold stability, using the existing fixed task, timing, tolerance, hold semantics, and 120000-step training allocation."
+      },
+      "result": {
+        "session_id": "S25",
+        "status": "checkpointed"
+      },
+      "session_id": "S25",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "131aea80aa01a9fd9d68606fca2059eab8b92d09",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "No working, best-known, or retained role is assigned. T9:checkpoint-120832 is the strongest measured development candidate at 190/200 but remains insufficient; T1:checkpoint-100352 is the direct-torque reference at 189/200. T11:checkpoint-120832 and T12:checkpoint-35840 are rejected. No candidate satisfies the human goal or warrants official assessment.",
+        "completed_operations": [
+          "T12",
+          "M12",
+          "E48"
+        ],
+        "cumulative_resource_use": "Twelve fresh PPO training operations have completed with the maintainer's fixed 120000-step allocation, each producing 120832 rollout-boundary steps. M1-M12 evaluated candidates on the fixed 200-episode development panel beginning at seed 4200, with paired references where specified. No official assessment has been run.",
+        "current_goal_gap": "The strongest development evidence remains T9:checkpoint-120832 at 190/200, six successes below the 196/200 development gate. T1:checkpoint-100352 achieved 189/200. T12:checkpoint-35840 achieved 171/200 and is rejected. The human goal remains unachieved.",
+        "current_synthesis": "Evidence continues to support acquisition and branch coordination as dominant failure mechanisms, with post-entry stabilization consequential. M11 rejected episode-persistent joint-limit-compatible branch commitment: T11 achieved 145/200 versus T1's 189/200, with 30 versus 6 never-entry failures, 25 versus 5 post-entry failures, and 1000 versus 7 hold interruptions. I12 tested a transferred T1 policy with a bounded smooth model-derived task-space velocity-damping residual. M12 rejected that route: T12 achieved 171/200 versus T1's 189/200 on the same panel, lost all 18 discordant paired episodes, and had 7 never-entry failures, 22 post-entry failures, and 1,836 hold interruptions versus T1's 6, 5, and 7. The result rejects this residual-torque recipe and allocation/transfer implementation as a credible route; it does not establish that plant controllability, IK relevance, or every possible future method is impossible. The strongest evidence-backed development reference remains below the goal.",
+        "decision_frontier": "The residual-torque inquiry is closed as insufficient. The next scientific decision must identify and test a new goal-linked mechanism that can close the remaining six-success development gap while preserving complete-hold semantics and avoiding the demonstrated acquisition-to-stabilization tradeoff. Any new route must be judged on the fixed development panel against T1 or T9 and must reach at least 196/200 without relying on training telemetry or changing the official task.",
+        "evidence_references": [
+          "T11",
+          "M11",
+          "E44",
+          "E46",
+          "T12",
+          "M12",
+          "E48"
+        ],
+        "human_goal_connection": "The campaign still targets at least 98% complete uninterrupted episode success under the fixed official task distribution. The fixed 200-episode development gate is 196 successes; no candidate has reached it and no official assessment is justified.",
+        "inquiry_id": "I12",
+        "next_direction_or_closure": "The I12 session is complete and the campaign transitions to a fresh goal-review session. Do not carry the residual-torque implementation forward as an actionable route. The next session should select a new inquiry only after reconciling the persistent difficult-angle acquisition gap with complete-hold stability, using the existing fixed task, timing, tolerance, hold semantics, and 120000-step training allocation.",
+        "session_id": "S25"
+      },
+      "presentation": {
+        "backend_session_id": "46668ed9-964e-4e7e-bc0f-e1653e60c09c",
+        "campaign_id": "e8788df6-9f4a-4dac-92b7-48e40477e827",
+        "campaign_usage": "1h34m | 314.15 AIU | prompt 50.1m (84% cached) | output 269.4k",
+        "session_id": "S25",
+        "session_kind": "inquiry",
+        "session_usage": "6m23s | 23.62 AIU | prompt 3.8m (84% cached) | output 16.1k"
+      },
+      "result": {
+        "session_id": "S25",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "6751737a31a2115f40a13a70c685025d19f5c82a",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E49",
+    "inquiry_id": "I12",
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "No working, best-known, or retained role is assigned. T9:checkpoint-120832 is the strongest measured development candidate at 190/200 but remains insufficient; T1:checkpoint-100352 is the direct-torque reference at 189/200. T11:checkpoint-120832 and T12:checkpoint-35840 are rejected. No candidate satisfies the human goal or warrants official assessment.",
+        "completed_operations": [
+          "T12",
+          "M12",
+          "E48"
+        ],
+        "cumulative_resource_use": "Twelve fresh PPO training operations have completed with the maintainer's fixed 120000-step allocation, each producing 120832 rollout-boundary steps. M1-M12 evaluated candidates on the fixed 200-episode development panel beginning at seed 4200, with paired references where specified. No official assessment has been run.",
+        "current_goal_gap": "The strongest development evidence remains T9:checkpoint-120832 at 190/200, six successes below the 196/200 development gate. T1:checkpoint-100352 achieved 189/200. T12:checkpoint-35840 achieved 171/200 and is rejected. The human goal remains unachieved.",
+        "current_synthesis": "Evidence continues to support acquisition and branch coordination as dominant failure mechanisms, with post-entry stabilization consequential. M11 rejected episode-persistent joint-limit-compatible branch commitment: T11 achieved 145/200 versus T1's 189/200, with 30 versus 6 never-entry failures, 25 versus 5 post-entry failures, and 1000 versus 7 hold interruptions. I12 tested a transferred T1 policy with a bounded smooth model-derived task-space velocity-damping residual. M12 rejected that route: T12 achieved 171/200 versus T1's 189/200 on the same panel, lost all 18 discordant paired episodes, and had 7 never-entry failures, 22 post-entry failures, and 1,836 hold interruptions versus T1's 6, 5, and 7. The result rejects this residual-torque recipe and allocation/transfer implementation as a credible route; it does not establish that plant controllability, IK relevance, or every possible future method is impossible. The strongest evidence-backed development reference remains below the goal.",
+        "decision_frontier": "The residual-torque inquiry is closed as insufficient. The next scientific decision must identify and test a new goal-linked mechanism that can close the remaining six-success development gap while preserving complete-hold semantics and avoiding the demonstrated acquisition-to-stabilization tradeoff. Any new route must be judged on the fixed development panel against T1 or T9 and must reach at least 196/200 without relying on training telemetry or changing the official task.",
+        "evidence_references": [
+          "T11",
+          "M11",
+          "E44",
+          "E46",
+          "T12",
+          "M12",
+          "E48"
+        ],
+        "human_goal_connection": "The campaign still targets at least 98% complete uninterrupted episode success under the fixed official task distribution. The fixed 200-episode development gate is 196 successes; no candidate has reached it and no official assessment is justified.",
+        "next_direction_or_closure": "The I12 session is complete and the campaign transitions to a fresh goal-review session. Do not carry the residual-torque implementation forward as an actionable route. The next session should select a new inquiry only after reconciling the persistent difficult-angle acquisition gap with complete-hold stability, using the existing fixed task, timing, tolerance, hold semantics, and 120000-step training allocation."
+      }
+    },
+    "request_fingerprint": "9902ae3d7d35940ebeffeff4edaa7c20c324f7d02f47cb861af2bfd135cf7905",
+    "session_id": "S25",
+    "supersedes": null
+  },
   "pi_checkpoint": {
-    "candidates_and_roles": "No working, best-known, or retained role is assigned. T1:checkpoint-100352 remains the strongest evidence-backed development reference at 189/200; T9:checkpoint-120832 is an insufficient temporal-context candidate at 190/200. T10:checkpoint-100352 and T11:checkpoint-120832 are rejected as insufficient candidates.",
+    "candidates_and_roles": "No working, best-known, or retained role is assigned. T9:checkpoint-120832 is the strongest measured development candidate at 190/200 but remains insufficient; T1:checkpoint-100352 is the direct-torque reference at 189/200. T11:checkpoint-120832 and T12:checkpoint-35840 are rejected. No candidate satisfies the human goal or warrants official assessment.",
     "completed_operations": [
-      "E46"
+      "T12",
+      "M12",
+      "E48"
     ],
-    "cumulative_resource_use": "Eleven fresh PPO training operations have completed with the maintainer's fixed 120000-step allocation, each producing 120832 rollout-boundary steps. M1-M11 evaluated candidates on the fixed 200-episode development panel beginning at seed 4200, with paired references where specified. No official assessment has been run.",
-    "current_goal_gap": "T1:checkpoint-100352 remains at 189/200, seven successes below the 196/200 development gate. T9:checkpoint-120832 reached 190/200, six successes below the gate. T11:checkpoint-120832 reached 145/200 and is rejected.",
-    "current_synthesis": "Observed evidence supports acquisition and branch coordination as dominant failure mechanisms in the tested direct-torque and hybrid routes, with post-entry stabilization also consequential. M11 shows that the tested episode-persistent, joint-limit-compatible branch commitment is harmful: T11 had 145/200 complete successes versus 189/200 for T1, with 30 versus 6 never-entry failures, 25 versus 5 post-entry failures, and 1000 versus 7 hold interruptions. This rejects that recipe, not IK relevance or plant controllability. The deterministic, fully actuated plant, observed velocities, and strong direct-torque baseline leave a bounded residual-control route scientifically credible, but its benefit is currently conjectural.",
-    "decision_frontier": "Can a learned residual-torque policy preserve the direct-torque baseline's acquisition behavior while adding smooth model-derived damping and coordination that reduces post-entry interruptions and difficult-angle never-entry failures? The discriminating result is a fixed-allocation candidate reaching at least 196/200 complete uninterrupted successes without regressing the baseline's acquisition or post-entry failure counts; otherwise the route is insufficient.",
+    "cumulative_resource_use": "Twelve fresh PPO training operations have completed with the maintainer's fixed 120000-step allocation, each producing 120832 rollout-boundary steps. M1-M12 evaluated candidates on the fixed 200-episode development panel beginning at seed 4200, with paired references where specified. No official assessment has been run.",
+    "current_goal_gap": "The strongest development evidence remains T9:checkpoint-120832 at 190/200, six successes below the 196/200 development gate. T1:checkpoint-100352 achieved 189/200. T12:checkpoint-35840 achieved 171/200 and is rejected. The human goal remains unachieved.",
+    "current_synthesis": "Evidence continues to support acquisition and branch coordination as dominant failure mechanisms, with post-entry stabilization consequential. M11 rejected episode-persistent joint-limit-compatible branch commitment: T11 achieved 145/200 versus T1's 189/200, with 30 versus 6 never-entry failures, 25 versus 5 post-entry failures, and 1000 versus 7 hold interruptions. I12 tested a transferred T1 policy with a bounded smooth model-derived task-space velocity-damping residual. M12 rejected that route: T12 achieved 171/200 versus T1's 189/200 on the same panel, lost all 18 discordant paired episodes, and had 7 never-entry failures, 22 post-entry failures, and 1,836 hold interruptions versus T1's 6, 5, and 7. The result rejects this residual-torque recipe and allocation/transfer implementation as a credible route; it does not establish that plant controllability, IK relevance, or every possible future method is impossible. The strongest evidence-backed development reference remains below the goal.",
+    "decision_frontier": "The residual-torque inquiry is closed as insufficient. The next scientific decision must identify and test a new goal-linked mechanism that can close the remaining six-success development gap while preserving complete-hold semantics and avoiding the demonstrated acquisition-to-stabilization tradeoff. Any new route must be judged on the fixed development panel against T1 or T9 and must reach at least 196/200 without relying on training telemetry or changing the official task.",
     "evidence_references": [
       "T11",
       "M11",
       "E44",
-      "E46"
+      "E46",
+      "T12",
+      "M12",
+      "E48"
     ],
-    "human_goal_connection": "The campaign still targets at least 196 complete uninterrupted successes out of 200 under the fixed official task distribution. I12 was opened because the strongest development evidence remains below that gate and no official assessment is justified.",
-    "inquiry_id": null,
-    "next_direction_or_closure": "The goal-review session opened I12 and now ends at this checkpoint. In the fresh I12 session, implement and test only the bounded residual-torque route, without changing official task or complete-hold semantics, branch commitment, or the maintainer's 120000-step training allocation.",
-    "scientific_commit": "5fceb873995c63ea94f1ccde90d5b7cde0102a5d",
-    "session_id": "S24"
+    "human_goal_connection": "The campaign still targets at least 98% complete uninterrupted episode success under the fixed official task distribution. The fixed 200-episode development gate is 196 successes; no candidate has reached it and no official assessment is justified.",
+    "inquiry_id": "I12",
+    "next_direction_or_closure": "The I12 session is complete and the campaign transitions to a fresh goal-review session. Do not carry the residual-torque implementation forward as an actionable route. The next session should select a new inquiry only after reconciling the persistent difficult-angle acquisition gap with complete-hold stability, using the existing fixed task, timing, tolerance, hold semantics, and 120000-step training allocation.",
+    "scientific_commit": "6751737a31a2115f40a13a70c685025d19f5c82a",
+    "session_id": "S25"
   },
   "schema_version": 6,
   "scientific_model": {
@@ -17390,23 +17534,6 @@
     "path": "research/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "46668ed9-964e-4e7e-bc0f-e1653e60c09c",
-    "id": "S25",
-    "inquiry_id": "I12",
-    "kind": "inquiry",
-    "objective": "Advance I12 toward its closure condition: Close as actionable only if a fixed-allocation candidate reaches at least 196/200 complete uninterrupted successes on the fixed development panel and does not regress the baseline's acquisition or post-entry failure counts; close as insufficient if the candidate remains below 196/200 or trades acquisition failures for hold interruptions.",
-    "operation_ids": [
-      "T12",
-      "M12",
-      "E48"
-    ],
-    "scientific_parent_commit": "131aea80aa01a9fd9d68606fca2059eab8b92d09"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
