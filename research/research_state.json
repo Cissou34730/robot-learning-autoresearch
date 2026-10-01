@@ -834,7 +834,7 @@
     }
   },
   "counters": {
-    "event": 2,
+    "event": 3,
     "inquiry": 1,
     "measurement": 0,
     "session": 2,
@@ -843,7 +843,7 @@
   "human_goal": {
     "source": "research/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -1112,26 +1112,145 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-01T21:36:41Z",
+      "error": null,
+      "id": "E3",
+      "inquiry_id": null,
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "T1 produced 24 disposable checkpoint candidates. T1:checkpoint-120832 remains the strongest training-stream candidate by recorded success (0.60), but no working, best-known, or retained role is assigned because no independent development measurement exists.",
+        "completed_operations": [
+          "E2"
+        ],
+        "cumulative_resource_use": "One completed fresh training operation: T1, requested allocation 120000 steps and 120832 actual completed steps after rollout-boundary rounding, seed 0. E2 opened inquiry I1 and used no training or measurement allocation; no model-role assignment or official assessment has occurred.",
+        "current_goal_gap": "The strongest available candidate, T1:checkpoint-120832, has only a 0.60 training-stream success and no held-out evaluation. The campaign still lacks evidence distinguishing inner-radius or branch-specific coverage failures from broad approach-transient and stabilization failures.",
+        "current_synthesis": "Observed: T1's fresh PPO policy trained across the full official radius range learned progressively and reached 0.60 training-stream success at 120832 completed steps, but produced no evaluation artifact. This establishes partial learnability under the full-range recipe, not official-task performance or the cause of remaining failures. The coverage explanation remains plausible because the prior recipe omitted 0.06-0.14 m targets; the competing explanation remains that coupled motion, overshoot, branch choice, or insufficient low-velocity stabilization under the 20 ms action hold dominates. E2 completed the goal-review decision by opening I1; no evidence yet resolves that frontier.",
+        "decision_frontier": "Determine whether remaining failures are concentrated by target radius or angle, supporting coverage or branch-selection work, or instead occur broadly after entry through repeated hold exits, high end-effector or joint speed, or action saturation, supporting stabilization and control-representation work. The discriminating action is held-out development measurement of T1:checkpoint-120832 with target-stratified outcomes and trajectory diagnostics including time to first entry, longest in-band run, exits during the hold, distance, speed, joint velocities, and action saturation.",
+        "evidence_references": [
+          "T1",
+          "E2"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 successes in the official 200-episode panel across the full 0.06-0.20 m radius range, with an uninterrupted 100-step hold. T1 reached only 0.60 on its training stream and has no independent development evidence, so the goal-review decision is to open I1 before any official assessment.",
+        "next_direction_or_closure": "End the goal-review session and continue in fresh inquiry I1. The first inquiry action should be the bounded held-out diagnostic measurement of T1:checkpoint-120832 named in the decision frontier; do not request official assessment or treat the training-stream score as official evidence."
+      },
+      "result": {
+        "session_id": "S2",
+        "status": "checkpointed"
+      },
+      "session_id": "S2",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
-  "pi_checkpoint": {
-    "candidates_and_roles": "T1 produced 24 disposable checkpoint candidates. T1:checkpoint-120832 is the strongest training-stream candidate by recorded success (0.60), but no working, best-known, or retained role is assigned because no independent development measurement exists.",
-    "completed_operations": [
-      "T1"
-    ],
-    "cumulative_resource_use": "One completed fresh training operation: T1, requested allocation 120000 steps, 120832 actual completed steps after rollout-boundary rounding, seed 0. No measurements, model-role assignments, or official assessment.",
-    "current_goal_gap": "T1's best recorded training-stream success is 0.60 at 120832 completed steps, versus the required 0.98 official success. No candidate has held-out development evidence, no candidate is best-known, and the available result does not identify whether remaining failures are concentrated in inner-radius configurations, approach transients, or sustained stabilization.",
-    "current_synthesis": "Observed: a fresh PPO policy with the full official training-radius range learned progressively, reaching training-stream success from 0.00 through 0.60 across the saved checkpoints, with the highest recorded value at T1:checkpoint-120832. Observed: the final run completed 120832 actual steps under the fixed 120000-step allocation, and no evaluation artifact was produced. Interpretation: exposing the inner annulus is compatible with learning meaningful reach-and-hold behavior, but one training seed and an on-training-stream metric cannot establish causality, generalization, or official-task performance. The coverage explanation remains plausible because the prior training range omitted 0.06-0.14 m targets, while the competing explanation is that residual failures arise from coupled transient motion, overshoot, branch choice, or insufficient stabilization under the 20 ms action hold. T1 does not discriminate these explanations because it provides neither held-out target-stratified outcomes nor trajectory-level failure measurements. The claim is therefore limited to partial learnability under the full-range recipe.",
-    "decision_frontier": "Do the remaining failures primarily reflect missing target-configuration coverage, or does a policy trained on the full range still fail because approach transients and low-velocity stabilization are not controlled? Discriminating evidence is a held-out development measurement of a selected T1 candidate with outcomes stratified by target radius and angle, together with time to first entry, longest in-band run, exits during the hold, end-effector distance and speed, joint velocities, and action saturation. A strong inner-radius deficit would support coverage or branch-selection work; broad failures after entry, especially repeated hold exits or high residual speed, would redirect toward stabilization and control representation.",
-    "evidence_references": [
-      "T1"
-    ],
-    "human_goal_connection": "The human goal requires at least 98% success on the official distribution, including the full 0.06-0.20 m radius range and an uninterrupted 100-step hold. T1 directly trained on that full range, so it is the first relevant policy-learning evidence, but it remains far from establishing the goal.",
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "2fbe477b9bb4f6cd984ac8d37f7829eba407411c",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "T1 produced 24 disposable checkpoint candidates. T1:checkpoint-120832 remains the strongest training-stream candidate by recorded success (0.60), but no working, best-known, or retained role is assigned because no independent development measurement exists.",
+        "completed_operations": [
+          "E2"
+        ],
+        "cumulative_resource_use": "One completed fresh training operation: T1, requested allocation 120000 steps and 120832 actual completed steps after rollout-boundary rounding, seed 0. E2 opened inquiry I1 and used no training or measurement allocation; no model-role assignment or official assessment has occurred.",
+        "current_goal_gap": "The strongest available candidate, T1:checkpoint-120832, has only a 0.60 training-stream success and no held-out evaluation. The campaign still lacks evidence distinguishing inner-radius or branch-specific coverage failures from broad approach-transient and stabilization failures.",
+        "current_synthesis": "Observed: T1's fresh PPO policy trained across the full official radius range learned progressively and reached 0.60 training-stream success at 120832 completed steps, but produced no evaluation artifact. This establishes partial learnability under the full-range recipe, not official-task performance or the cause of remaining failures. The coverage explanation remains plausible because the prior recipe omitted 0.06-0.14 m targets; the competing explanation remains that coupled motion, overshoot, branch choice, or insufficient low-velocity stabilization under the 20 ms action hold dominates. E2 completed the goal-review decision by opening I1; no evidence yet resolves that frontier.",
+        "decision_frontier": "Determine whether remaining failures are concentrated by target radius or angle, supporting coverage or branch-selection work, or instead occur broadly after entry through repeated hold exits, high end-effector or joint speed, or action saturation, supporting stabilization and control-representation work. The discriminating action is held-out development measurement of T1:checkpoint-120832 with target-stratified outcomes and trajectory diagnostics including time to first entry, longest in-band run, exits during the hold, distance, speed, joint velocities, and action saturation.",
+        "evidence_references": [
+          "T1",
+          "E2"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 successes in the official 200-episode panel across the full 0.06-0.20 m radius range, with an uninterrupted 100-step hold. T1 reached only 0.60 on its training stream and has no independent development evidence, so the goal-review decision is to open I1 before any official assessment.",
+        "inquiry_id": null,
+        "next_direction_or_closure": "End the goal-review session and continue in fresh inquiry I1. The first inquiry action should be the bounded held-out diagnostic measurement of T1:checkpoint-120832 named in the decision frontier; do not request official assessment or treat the training-stream score as official evidence.",
+        "session_id": "S2"
+      },
+      "presentation": {
+        "backend_session_id": "3f5e49c2-62b4-4440-9fc0-a5333b4f25c7",
+        "campaign_id": "010714c2-5abd-4836-96bd-364caaf82042",
+        "campaign_usage": "6m19s | 9.98 AIU | prompt 1m (76% cached) | output 19.5k",
+        "session_id": "S2",
+        "session_kind": "goal_review",
+        "session_usage": "1m11s | 2.03 AIU | prompt 189.2k (71% cached) | output 3.2k"
+      },
+      "result": {
+        "session_id": "S2",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "943b89475ab1b146736688d79afce3227e2a7d9f",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E3",
     "inquiry_id": null,
-    "next_direction_or_closure": "End startup and enter goal review. Open a bounded inquiry on failure-mechanism discrimination, beginning with targeted held-out measurement of T1:checkpoint-120832 and the diagnostic signals named in the decision frontier; do not treat the training-stream score as evidence of official success.",
-    "scientific_commit": "bd1e0ef84385c34442c9777f13b2180fc9072b20",
-    "session_id": "S1"
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "T1 produced 24 disposable checkpoint candidates. T1:checkpoint-120832 remains the strongest training-stream candidate by recorded success (0.60), but no working, best-known, or retained role is assigned because no independent development measurement exists.",
+        "completed_operations": [
+          "E2"
+        ],
+        "cumulative_resource_use": "One completed fresh training operation: T1, requested allocation 120000 steps and 120832 actual completed steps after rollout-boundary rounding, seed 0. E2 opened inquiry I1 and used no training or measurement allocation; no model-role assignment or official assessment has occurred.",
+        "current_goal_gap": "The strongest available candidate, T1:checkpoint-120832, has only a 0.60 training-stream success and no held-out evaluation. The campaign still lacks evidence distinguishing inner-radius or branch-specific coverage failures from broad approach-transient and stabilization failures.",
+        "current_synthesis": "Observed: T1's fresh PPO policy trained across the full official radius range learned progressively and reached 0.60 training-stream success at 120832 completed steps, but produced no evaluation artifact. This establishes partial learnability under the full-range recipe, not official-task performance or the cause of remaining failures. The coverage explanation remains plausible because the prior recipe omitted 0.06-0.14 m targets; the competing explanation remains that coupled motion, overshoot, branch choice, or insufficient low-velocity stabilization under the 20 ms action hold dominates. E2 completed the goal-review decision by opening I1; no evidence yet resolves that frontier.",
+        "decision_frontier": "Determine whether remaining failures are concentrated by target radius or angle, supporting coverage or branch-selection work, or instead occur broadly after entry through repeated hold exits, high end-effector or joint speed, or action saturation, supporting stabilization and control-representation work. The discriminating action is held-out development measurement of T1:checkpoint-120832 with target-stratified outcomes and trajectory diagnostics including time to first entry, longest in-band run, exits during the hold, distance, speed, joint velocities, and action saturation.",
+        "evidence_references": [
+          "T1",
+          "E2"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 successes in the official 200-episode panel across the full 0.06-0.20 m radius range, with an uninterrupted 100-step hold. T1 reached only 0.60 on its training stream and has no independent development evidence, so the goal-review decision is to open I1 before any official assessment.",
+        "next_direction_or_closure": "End the goal-review session and continue in fresh inquiry I1. The first inquiry action should be the bounded held-out diagnostic measurement of T1:checkpoint-120832 named in the decision frontier; do not request official assessment or treat the training-stream score as official evidence."
+      }
+    },
+    "request_fingerprint": "3d1acc6c2e0295dadec353813853dcf088a56ce3b70c03f178da3649e1d5cf63",
+    "session_id": "S2",
+    "supersedes": null
+  },
+  "pi_checkpoint": {
+    "candidates_and_roles": "T1 produced 24 disposable checkpoint candidates. T1:checkpoint-120832 remains the strongest training-stream candidate by recorded success (0.60), but no working, best-known, or retained role is assigned because no independent development measurement exists.",
+    "completed_operations": [
+      "E2"
+    ],
+    "cumulative_resource_use": "One completed fresh training operation: T1, requested allocation 120000 steps and 120832 actual completed steps after rollout-boundary rounding, seed 0. E2 opened inquiry I1 and used no training or measurement allocation; no model-role assignment or official assessment has occurred.",
+    "current_goal_gap": "The strongest available candidate, T1:checkpoint-120832, has only a 0.60 training-stream success and no held-out evaluation. The campaign still lacks evidence distinguishing inner-radius or branch-specific coverage failures from broad approach-transient and stabilization failures.",
+    "current_synthesis": "Observed: T1's fresh PPO policy trained across the full official radius range learned progressively and reached 0.60 training-stream success at 120832 completed steps, but produced no evaluation artifact. This establishes partial learnability under the full-range recipe, not official-task performance or the cause of remaining failures. The coverage explanation remains plausible because the prior recipe omitted 0.06-0.14 m targets; the competing explanation remains that coupled motion, overshoot, branch choice, or insufficient low-velocity stabilization under the 20 ms action hold dominates. E2 completed the goal-review decision by opening I1; no evidence yet resolves that frontier.",
+    "decision_frontier": "Determine whether remaining failures are concentrated by target radius or angle, supporting coverage or branch-selection work, or instead occur broadly after entry through repeated hold exits, high end-effector or joint speed, or action saturation, supporting stabilization and control-representation work. The discriminating action is held-out development measurement of T1:checkpoint-120832 with target-stratified outcomes and trajectory diagnostics including time to first entry, longest in-band run, exits during the hold, distance, speed, joint velocities, and action saturation.",
+    "evidence_references": [
+      "T1",
+      "E2"
+    ],
+    "human_goal_connection": "The human goal requires at least 196 successes in the official 200-episode panel across the full 0.06-0.20 m radius range, with an uninterrupted 100-step hold. T1 reached only 0.60 on its training stream and has no independent development evidence, so the goal-review decision is to open I1 before any official assessment.",
+    "inquiry_id": null,
+    "next_direction_or_closure": "End the goal-review session and continue in fresh inquiry I1. The first inquiry action should be the bounded held-out diagnostic measurement of T1:checkpoint-120832 named in the decision frontier; do not request official assessment or treat the training-stream score as official evidence.",
+    "scientific_commit": "943b89475ab1b146736688d79afce3227e2a7d9f",
+    "session_id": "S2"
   },
   "schema_version": 6,
   "scientific_model": {
@@ -1139,21 +1258,6 @@
     "path": "research/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "3f5e49c2-62b4-4440-9fc0-a5333b4f25c7",
-    "id": "S2",
-    "inquiry_id": null,
-    "kind": "goal_review",
-    "objective": "Reassess the scientific direction toward the human goal using completed evidence. You may request measurements to resolve an uncertainty or develop the method before committing to an inquiry. Decide whether to request official assessment, open one bounded goal-linked inquiry, or conclude that no credible route remains.",
-    "operation_ids": [
-      "E2"
-    ],
-    "scientific_parent_commit": "2fbe477b9bb4f6cd984ac8d37f7829eba407411c"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
