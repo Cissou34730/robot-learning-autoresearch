@@ -1,13 +1,5 @@
 {
-  "active_inquiry": {
-    "closure_condition": "Close as a credible route only if one fresh candidate trained with the fixed 120000-step allocation, T1's target distribution, reward, action interface, and hold semantics, but a target-relative rotation-aware observation with explicit joint-limit margins, reaches at least 196/200 complete uninterrupted successes on the same 200-episode development panel, has no more than six failures in the -180 to -90 degree sector, and has no more than five post-entry hold failures. Otherwise close as insufficient; reframe only if paired diagnostics identify a new decisive mechanism rather than repeating the tested acquisition-versus-stabilization tradeoff.",
-    "goal_connection": "The human goal requires at least 196 complete uninterrupted successes in the 200-episode official panel. T1 is the strongest development reference at 189/200, with the remaining failures concentrated in angle-dependent acquisition and a smaller post-entry subgroup. Improving the policy's angular generalization without changing the learned torque interface is a direct route toward the seven-success gap.",
-    "id": "I7",
-    "opened_in_session": "S14",
-    "question": "Can a limit-aware, target-relative rotation-symmetric observation encoding improve the negative-angle acquisition deficit while preserving T1's direct bounded-torque behavior and complete uninterrupted stabilization?",
-    "rationale": "The physical model describes a planar zero-gravity plant whose dynamics are largely invariant to global target rotation, with joint limits as the main absolute-angle asymmetry. T1's failures are localized to the -180 to -90 degree sector, while I2's branch-ordering and focused-sampling recipe and I6's globally active analytic-IK reference changed acquisition behavior but produced complete-hold regressions or broad never-entry failures. I3, I4, and I5 rejected the tested endpoint-speed, hold-progress, and local handoff mechanisms. A limit-aware target-relative encoding is a distinct representation route: it exposes radial and tangential error and relative shoulder/elbow geometry in coordinates aligned with the task, while retaining explicit shoulder-limit margins and T1's direct torque policy so valid boundary behavior is not discarded. The paired complete-hold evaluation can test whether the angle-specific deficit is representational without claiming that the plant is uncontrollable if this recipe fails.",
-    "reframes": []
-  },
+  "active_inquiry": null,
   "campaign": {
     "base_commit": "c02b0d59e8ef397c87d92f70e986ad545e585b95",
     "id": "e8788df6-9f4a-4dac-92b7-48e40477e827",
@@ -5750,7 +5742,7 @@
     }
   },
   "counters": {
-    "event": 27,
+    "event": 28,
     "inquiry": 7,
     "measurement": 7,
     "session": 15,
@@ -10009,9 +10001,63 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-01T00:03:15Z",
+      "error": null,
+      "id": "E28",
+      "inquiry_id": "I7",
+      "kind": "inquiry",
+      "request": {
+        "action": "close",
+        "outcome": "insufficient",
+        "reason": "I7's fresh candidate T7:checkpoint-120832 achieved 160/200 complete uninterrupted successes (80.0%) on the fixed development panel, below the required 196/200. It produced 36/66 failures in the -180 to -90 degree sector, exceeding the maximum of six, and 35 never-entry failures versus T1's six. Post-entry failures were five, matching T1 and the allowed maximum, so the observation did not improve stabilization while its acquisition performance deteriorated. The paired result was -29 net wins for T7, with only two candidate wins versus 31 reference wins. These diagnostics show a broad acquisition deficit, not a new decisive mechanism; the tested limit-aware target-relative representation is therefore not a credible route to the goal."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I7",
+        "outcome": "insufficient",
+        "reason": "I7's fresh candidate T7:checkpoint-120832 achieved 160/200 complete uninterrupted successes (80.0%) on the fixed development panel, below the required 196/200. It produced 36/66 failures in the -180 to -90 degree sector, exceeding the maximum of six, and 35 never-entry failures versus T1's six. Post-entry failures were five, matching T1 and the allowed maximum, so the observation did not improve stabilization while its acquisition performance deteriorated. The paired result was -29 net wins for T7, with only two candidate wins versus 31 reference wins. These diagnostics show a broad acquisition deficit, not a new decisive mechanism; the tested limit-aware target-relative representation is therefore not a credible route to the goal.",
+        "status": "completed"
+      },
+      "session_id": "S15",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "close",
+        "inquiry_id": "I7",
+        "outcome": "insufficient",
+        "reason": "I7's fresh candidate T7:checkpoint-120832 achieved 160/200 complete uninterrupted successes (80.0%) on the fixed development panel, below the required 196/200. It produced 36/66 failures in the -180 to -90 degree sector, exceeding the maximum of six, and 35 never-entry failures versus T1's six. Post-entry failures were five, matching T1 and the allowed maximum, so the observation did not improve stabilization while its acquisition performance deteriorated. The paired result was -29 net wins for T7, with only two candidate wins versus 31 reference wins. These diagnostics show a broad acquisition deficit, not a new decisive mechanism; the tested limit-aware target-relative representation is therefore not a credible route to the goal."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I7",
+        "outcome": "insufficient",
+        "reason": "I7's fresh candidate T7:checkpoint-120832 achieved 160/200 complete uninterrupted successes (80.0%) on the fixed development panel, below the required 196/200. It produced 36/66 failures in the -180 to -90 degree sector, exceeding the maximum of six, and 35 never-entry failures versus T1's six. Post-entry failures were five, matching T1 and the allowed maximum, so the observation did not improve stabilization while its acquisition performance deteriorated. The paired result was -29 net wins for T7, with only two candidate wins versus 31 reference wins. These diagnostics show a broad acquisition deficit, not a new decisive mechanism; the tested limit-aware target-relative representation is therefore not a credible route to the goal.",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E28",
+    "inquiry_id": "I7",
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "close",
+        "outcome": "insufficient",
+        "reason": "I7's fresh candidate T7:checkpoint-120832 achieved 160/200 complete uninterrupted successes (80.0%) on the fixed development panel, below the required 196/200. It produced 36/66 failures in the -180 to -90 degree sector, exceeding the maximum of six, and 35 never-entry failures versus T1's six. Post-entry failures were five, matching T1 and the allowed maximum, so the observation did not improve stabilization while its acquisition performance deteriorated. The paired result was -29 net wins for T7, with only two candidate wins versus 31 reference wins. These diagnostics show a broad acquisition deficit, not a new decisive mechanism; the tested limit-aware target-relative representation is therefore not a credible route to the goal."
+      }
+    },
+    "request_fingerprint": "6a76bd8b3b78706088e4e16f71baa55f4a54b7f3431d2cc285e38a5a51725c0b",
+    "session_id": "S15",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No working, best-known, or retained role is assigned. T1:checkpoint-100352 remains the strongest evidence-backed development reference at 189/200. T6:checkpoint-100352 is an insufficient I6 candidate at 138/200 and has no role. I7 has been opened but has no candidate or resource use in this goal-review session.",
     "completed_operations": [
@@ -10074,7 +10120,8 @@
     "objective": "Advance I7 toward its closure condition: Close as a credible route only if one fresh candidate trained with the fixed 120000-step allocation, T1's target distribution, reward, action interface, and hold semantics, but a target-relative rotation-aware observation with explicit joint-limit margins, reaches at least 196/200 complete uninterrupted successes on the same 200-episode development panel, has no more than six failures in the -180 to -90 degree sector, and has no more than five post-entry hold failures. Otherwise close as insufficient; reframe only if paired diagnostics identify a new decisive mechanism rather than repeating the tested acquisition-versus-stabilization tradeoff.",
     "operation_ids": [
       "T7",
-      "M7"
+      "M7",
+      "E28"
     ],
     "scientific_parent_commit": "b2d5e395e745c54fb661564c903c9b6464d24d99"
   },

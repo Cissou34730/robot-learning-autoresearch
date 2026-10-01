@@ -43,3 +43,4 @@
 | E27 | checkpoint | - | checkpointed |
 | T7 | training | I7 | completed |
 | M7 | measurement | I7 | completed |
+| E28 | inquiry | I7 | completed |
