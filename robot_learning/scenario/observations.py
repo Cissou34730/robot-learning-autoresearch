@@ -8,7 +8,7 @@ import numpy as np
 
 from robot_learning.robots.two_joint_arm import FOREARM_LENGTH, UPPER_ARM_LENGTH
 
-OBSERVATION_SIZE = 16
+OBSERVATION_SIZE = 11
 
 
 def reach_observation(data) -> np.ndarray:
@@ -26,8 +26,6 @@ def reach_observation(data) -> np.ndarray:
 
     target_x = float(data.mocap_pos[0][0])
     target_y = float(data.mocap_pos[0][1])
-    target_radius = float(np.hypot(target_x, target_y))
-    target_angle = float(np.arctan2(target_y, target_x))
     cos_elbow = (
         target_x**2 + target_y**2 - UPPER_ARM_LENGTH**2 - FOREARM_LENGTH**2
     ) / (2.0 * UPPER_ARM_LENGTH * FOREARM_LENGTH)
@@ -36,11 +34,6 @@ def reach_observation(data) -> np.ndarray:
     elbow_folded = -elbow_open
     shoulder_folded = shoulder_for_elbow(elbow_folded)
     end_effector = data.site("end_effector").xpos.copy()
-    target_radial = np.array(
-        [np.cos(target_angle), np.sin(target_angle)], dtype=np.float64
-    )
-    target_tangential = np.array([-target_radial[1], target_radial[0]])
-    planar_error = np.asarray([target_x, target_y]) - end_effector[:2]
     return np.concatenate(
         [
             data.qpos,
@@ -51,13 +44,6 @@ def reach_observation(data) -> np.ndarray:
                 wrap_to_pi(elbow_open - float(data.qpos[1])),
                 wrap_to_pi(shoulder_folded - float(data.qpos[0])),
                 wrap_to_pi(elbow_folded - float(data.qpos[1])),
-            ],
-            [
-                target_radius,
-                np.sin(target_angle),
-                np.cos(target_angle),
-                np.dot(planar_error, target_radial),
-                np.dot(planar_error, target_tangential),
             ],
         ]
     ).astype(np.float32)
