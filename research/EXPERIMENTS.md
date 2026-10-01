@@ -32,3 +32,4 @@
 | E16 | checkpoint | - | checkpointed |
 | T6 | training | I4 | completed |
 | T7 | training | I4 | completed |
+| M8 | measurement | I4 | completed |
