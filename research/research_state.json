@@ -3277,38 +3277,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I2",
-        "outcome": "I2 closed: the tested geometry-aware policy interface and phase-sensitive settling signal did not produce a credible improvement and instead collapsed development success.",
-        "reason": "M3 is a paired 160-episode held-out development evaluation on shared seeds with unchanged research-evaluation semantics. T2:checkpoint-120832 achieved 0/160 successes, while T1:checkpoint-120832 achieved 98/160 (61.25%); all 98 discordant episodes favored T1. This rejects the tested T2 recipe as a route toward the human goal and shows that the intervention failed to preserve the existing regime, so it cannot support official assessment or justify further work under this inquiry. The result is not evidence that every geometry-aware representation or phase-sensitive signal is impossible, nor does it establish official performance or fully separate physical authority from all policy-interface explanations. The remaining goal gap is at least 98% official success, and T1's large-radius no-entry deficit remains unresolved."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I2",
-        "outcome": "I2 closed: the tested geometry-aware policy interface and phase-sensitive settling signal did not produce a credible improvement and instead collapsed development success.",
-        "reason": "M3 is a paired 160-episode held-out development evaluation on shared seeds with unchanged research-evaluation semantics. T2:checkpoint-120832 achieved 0/160 successes, while T1:checkpoint-120832 achieved 98/160 (61.25%); all 98 discordant episodes favored T1. This rejects the tested T2 recipe as a route toward the human goal and shows that the intervention failed to preserve the existing regime, so it cannot support official assessment or justify further work under this inquiry. The result is not evidence that every geometry-aware representation or phase-sensitive signal is impossible, nor does it establish official performance or fully separate physical authority from all policy-interface explanations. The remaining goal gap is at least 98% official success, and T1's large-radius no-entry deficit remains unresolved.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E8",
-    "inquiry_id": "I2",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "I2 closed: the tested geometry-aware policy interface and phase-sensitive settling signal did not produce a credible improvement and instead collapsed development success.",
-        "reason": "M3 is a paired 160-episode held-out development evaluation on shared seeds with unchanged research-evaluation semantics. T2:checkpoint-120832 achieved 0/160 successes, while T1:checkpoint-120832 achieved 98/160 (61.25%); all 98 discordant episodes favored T1. This rejects the tested T2 recipe as a route toward the human goal and shows that the intervention failed to preserve the existing regime, so it cannot support official assessment or justify further work under this inquiry. The result is not evidence that every geometry-aware representation or phase-sensitive signal is impossible, nor does it establish official performance or fully separate physical authority from all policy-interface explanations. The remaining goal gap is at least 98% official success, and T1's large-radius no-entry deficit remains unresolved."
-      }
-    },
-    "request_fingerprint": "f6bd9abf4a3caced53fd47aa016b8ee58cf72142087cf15491233c4886ceb82e",
-    "session_id": "S5",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T1 produced 24 disposable checkpoint candidates. T1:checkpoint-120832 remains the strongest available candidate by training-stream success and has M2 development evidence at 61.25%. No working, best-known, or retained role is assigned, and no candidate is close to the official 98% requirement.",
     "completed_operations": [
