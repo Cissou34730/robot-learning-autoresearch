@@ -2464,16 +2464,16 @@
     }
   },
   "counters": {
-    "event": 12,
+    "event": 13,
     "inquiry": 2,
     "measurement": 4,
-    "session": 6,
+    "session": 7,
     "training": 3
   },
   "human_goal": {
     "source": "research/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "official_assessment_requested",
   "model_roles": {
     "best_known": "T3:checkpoint-120832",
     "retained": {},
@@ -3715,9 +3715,62 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-01T06:50:45Z",
+      "error": null,
+      "id": "E13",
+      "inquiry_id": null,
+      "kind": "campaign_conclusion",
+      "request": {
+        "action": "request_official_assessment",
+        "reason": "T3:checkpoint-120832 is the best-known candidate and achieved 160/160 complete uninterrupted holds in a fresh radius-stratified development evaluation, including 25/25 at 18-20 cm, with no observed pre-reach, post-reach, or hold-interruption failures. This resolves the current method-development frontier in favor of the hybrid configuration-aware IK, joint feedback, and bounded PPO torque-residual route. The remaining decision is the protected official 200-episode assessment under unchanged complete-hold semantics, where at least 196 successes are required; M4 is not treated as official evidence."
+      },
+      "result": {
+        "model": "T3:checkpoint-120832",
+        "status": "official_assessment_requested"
+      },
+      "session_id": "S7",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "model": "T3:checkpoint-120832",
+        "reason": "T3:checkpoint-120832 is the best-known candidate and achieved 160/160 complete uninterrupted holds in a fresh radius-stratified development evaluation, including 25/25 at 18-20 cm, with no observed pre-reach, post-reach, or hold-interruption failures. This resolves the current method-development frontier in favor of the hybrid configuration-aware IK, joint feedback, and bounded PPO torque-residual route. The remaining decision is the protected official 200-episode assessment under unchanged complete-hold semantics, where at least 196 successes are required; M4 is not treated as official evidence.",
+        "status": "official_assessment_requested"
+      },
+      "presentation": {
+        "backend_session_id": "49af02db-fa2c-4be5-8e70-3e33df0396b8",
+        "campaign_id": "77a975a5-9917-4178-ad06-ede00161560f",
+        "campaign_usage": "29m06s | 66.27 AIU | prompt 10.8m (86% cached) | output 77.2k",
+        "session_id": "S7",
+        "session_kind": "goal_review",
+        "session_usage": "34s | 1.34 AIU | prompt 163.9k (76% cached) | output 981"
+      },
+      "result": {
+        "model": "T3:checkpoint-120832",
+        "status": "official_assessment_requested"
+      }
+    },
+    "failure": null,
+    "id": "E13",
+    "inquiry_id": null,
+    "kind": "campaign_conclusion",
+    "progress": "completed",
+    "request": {
+      "campaign_conclusion": {
+        "action": "request_official_assessment",
+        "reason": "T3:checkpoint-120832 is the best-known candidate and achieved 160/160 complete uninterrupted holds in a fresh radius-stratified development evaluation, including 25/25 at 18-20 cm, with no observed pre-reach, post-reach, or hold-interruption failures. This resolves the current method-development frontier in favor of the hybrid configuration-aware IK, joint feedback, and bounded PPO torque-residual route. The remaining decision is the protected official 200-episode assessment under unchanged complete-hold semantics, where at least 196 successes are required; M4 is not treated as official evidence."
+      }
+    },
+    "request_fingerprint": "036d621b269f2cd71c85be02f8b43e29db5e684f80f688d5e2b9faa529422f54",
+    "session_id": "S7",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T3:checkpoint-120832 is the best-known candidate, assigned by E10 and backed by T3 and M4. Its retained artifact is research/checkpoints/retained/77a975a5-9917-4178-ad06-ede00161560f/t3-c8cf701d5-b473c114f0d39cac41e8bfb6844f4ec611983278a0324164643d8357fca61bd4. No working role is assigned.",
     "completed_operations": [
@@ -3749,5 +3802,9 @@
     "status": "ready"
   },
   "scientific_session": null,
-  "terminal_state": null
+  "terminal_state": {
+    "model": "T3:checkpoint-120832",
+    "reason": "T3:checkpoint-120832 is the best-known candidate and achieved 160/160 complete uninterrupted holds in a fresh radius-stratified development evaluation, including 25/25 at 18-20 cm, with no observed pre-reach, post-reach, or hold-interruption failures. This resolves the current method-development frontier in favor of the hybrid configuration-aware IK, joint feedback, and bounded PPO torque-residual route. The remaining decision is the protected official 200-episode assessment under unchanged complete-hold semantics, where at least 196 successes are required; M4 is not treated as official evidence.",
+    "status": "official_assessment_requested"
+  }
 }
