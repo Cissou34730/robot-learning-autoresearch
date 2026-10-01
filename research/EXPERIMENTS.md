@@ -89,3 +89,4 @@
 | E57 | checkpoint | I14 | checkpointed |
 | E58 | inquiry | I15 | completed |
 | E59 | checkpoint | - | checkpointed |
+| T15 | training | I15 | completed |
