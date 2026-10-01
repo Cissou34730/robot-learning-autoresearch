@@ -980,7 +980,9 @@
     },
     "T2:checkpoint-115712": {
       "artifact": "research/checkpoints/candidates/77a975a5-9917-4178-ad06-ede00161560f/t2/checkpoint-115712",
-      "evaluation_artifacts": [],
+      "evaluation_artifacts": [
+        "research/evaluations/77a975a5-9917-4178-ad06-ede00161560f/evaluation-77a975a5-9917-4178-ad06-ede00161560f-m3-T2-checkpoint-115712-160ep-seed5200-48e4acc98c39.json"
+      ],
       "fingerprint": "70fe322c264baf63e6e3d9dea44fe063187d18073dc872b07a92544546e9631d",
       "id": "T2:checkpoint-115712",
       "name": "checkpoint-115712",
@@ -1662,7 +1664,7 @@
   "counters": {
     "event": 5,
     "inquiry": 1,
-    "measurement": 2,
+    "measurement": 3,
     "session": 4,
     "training": 2
   },
@@ -2386,9 +2388,145 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-01T06:09:41Z",
+      "error": null,
+      "id": "M3",
+      "inquiry_id": "I1",
+      "kind": "measurement",
+      "request": {
+        "description": "Evaluate the strongest T2 bounded-PD PPO candidate on a fresh 160-episode research panel using complete-hold success and per-radius reach-versus-hold diagnostics.",
+        "measurements": [
+          {
+            "candidate": "T2:checkpoint-115712",
+            "episodes": 160,
+            "instrument": "research_evaluation",
+            "label": "T2 strongest-reward hold and outer-radius evaluation",
+            "seed": 5200
+          }
+        ],
+        "rationale": "T2 tested normalized joint-target actions mapped through bounded PD control, but every checkpoint had zero training-panel success and negative reward. The highest-reward checkpoint, T2:checkpoint-115712, is therefore the least unfavorable candidate for the contracted hold-specific measurement. This fresh panel tests whether the intervention produced any outer-radius reach or complete-hold improvement despite the failed learning dynamics; persistent non-entry at 14-20 cm will close this control-interface branch and redirect I1 away from the current PPO recipe. The panel uses the active T2 interface; T1 is not included as a paired measurement because its direct-motor policy would be reinterpreted by that interface."
+      },
+      "result": {
+        "measurements": [
+          {
+            "candidate": "T2:checkpoint-115712",
+            "candidate_id": "T2:checkpoint-115712",
+            "instrument": "research_evaluation",
+            "label": "T2 strongest-reward hold and outer-radius evaluation",
+            "metrics": {
+              "episodes": 160,
+              "evaluation_artifact": "research/evaluations/77a975a5-9917-4178-ad06-ede00161560f/evaluation-77a975a5-9917-4178-ad06-ede00161560f-m3-T2-checkpoint-115712-160ep-seed5200-48e4acc98c39.json",
+              "evaluation_artifact_fingerprint": "0ec12fad23025adda7c2799e8bb4a96ff9f5914793874f14234a4f83aa9d6d91",
+              "evaluation_semantics": "48e4acc98c39",
+              "model_fingerprint": "70fe322c264baf63e6e3d9dea44fe063187d18073dc872b07a92544546e9631d",
+              "official_benchmark": false,
+              "schema_version": 5,
+              "seed": 5200,
+              "success_percent": 0.0,
+              "successes": 0
+            }
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": null
+      },
+      "session_id": "S4",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "evaluation_semantics": "48e4acc98c39",
+      "measurements": [
+        {
+          "artifact": "research/checkpoints/candidates/77a975a5-9917-4178-ad06-ede00161560f/t2/checkpoint-115712",
+          "candidate": "T2:checkpoint-115712",
+          "candidate_id": "T2:checkpoint-115712",
+          "episodes": 160,
+          "instrument": "research_evaluation",
+          "label": "T2 strongest-reward hold and outer-radius evaluation",
+          "model_fingerprint": "70fe322c264baf63e6e3d9dea44fe063187d18073dc872b07a92544546e9631d",
+          "seed": 5200
+        }
+      ],
+      "module_provenance": null,
+      "paired_comparisons": [],
+      "partial_results": [
+        {
+          "candidate": "T2:checkpoint-115712",
+          "candidate_id": "T2:checkpoint-115712",
+          "instrument": "research_evaluation",
+          "label": "T2 strongest-reward hold and outer-radius evaluation",
+          "metrics": {
+            "episodes": 160,
+            "evaluation_artifact": "research/evaluations/77a975a5-9917-4178-ad06-ede00161560f/evaluation-77a975a5-9917-4178-ad06-ede00161560f-m3-T2-checkpoint-115712-160ep-seed5200-48e4acc98c39.json",
+            "evaluation_artifact_fingerprint": "0ec12fad23025adda7c2799e8bb4a96ff9f5914793874f14234a4f83aa9d6d91",
+            "evaluation_semantics": "48e4acc98c39",
+            "model_fingerprint": "70fe322c264baf63e6e3d9dea44fe063187d18073dc872b07a92544546e9631d",
+            "official_benchmark": false,
+            "schema_version": 5,
+            "seed": 5200,
+            "success_percent": 0.0,
+            "successes": 0
+          }
+        }
+      ],
+      "result": {
+        "measurements": [
+          {
+            "candidate": "T2:checkpoint-115712",
+            "candidate_id": "T2:checkpoint-115712",
+            "instrument": "research_evaluation",
+            "label": "T2 strongest-reward hold and outer-radius evaluation",
+            "metrics": {
+              "episodes": 160,
+              "evaluation_artifact": "research/evaluations/77a975a5-9917-4178-ad06-ede00161560f/evaluation-77a975a5-9917-4178-ad06-ede00161560f-m3-T2-checkpoint-115712-160ep-seed5200-48e4acc98c39.json",
+              "evaluation_artifact_fingerprint": "0ec12fad23025adda7c2799e8bb4a96ff9f5914793874f14234a4f83aa9d6d91",
+              "evaluation_semantics": "48e4acc98c39",
+              "model_fingerprint": "70fe322c264baf63e6e3d9dea44fe063187d18073dc872b07a92544546e9631d",
+              "official_benchmark": false,
+              "schema_version": 5,
+              "seed": 5200,
+              "success_percent": 0.0,
+              "successes": 0
+            }
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": null
+      },
+      "task_reference_contract": null
+    },
+    "failure": null,
+    "id": "M3",
+    "inquiry_id": "I1",
+    "kind": "measurement",
+    "progress": "completed",
+    "request": {
+      "measurement": {
+        "description": "Evaluate the strongest T2 bounded-PD PPO candidate on a fresh 160-episode research panel using complete-hold success and per-radius reach-versus-hold diagnostics.",
+        "measurements": [
+          {
+            "candidate": "T2:checkpoint-115712",
+            "episodes": 160,
+            "instrument": "research_evaluation",
+            "label": "T2 strongest-reward hold and outer-radius evaluation",
+            "seed": 5200
+          }
+        ],
+        "rationale": "T2 tested normalized joint-target actions mapped through bounded PD control, but every checkpoint had zero training-panel success and negative reward. The highest-reward checkpoint, T2:checkpoint-115712, is therefore the least unfavorable candidate for the contracted hold-specific measurement. This fresh panel tests whether the intervention produced any outer-radius reach or complete-hold improvement despite the failed learning dynamics; persistent non-entry at 14-20 cm will close this control-interface branch and redirect I1 away from the current PPO recipe. The panel uses the active T2 interface; T1 is not included as a paired measurement because its direct-motor policy would be reinterpreted by that interface."
+      }
+    },
+    "request_fingerprint": "a7856c9ef81329c52afd47be6cdd6b1b5219d0500e636193faedd363954602bb",
+    "session_id": "S4",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T1 produced archived candidates, including T1:checkpoint-120832, which was evaluated in M2. No candidate has been assigned working, best-known, or retained status; no candidate meets the human goal.",
     "completed_operations": [
@@ -2430,7 +2568,8 @@
     "kind": "inquiry",
     "objective": "Advance I1 toward its closure condition: Close or redirect after a fresh fixed-allocation intervention and hold-specific evaluation establish whether outer-radius failures improve materially toward the 98% goal, with per-radius evidence distinguishing reach failure from near-target hold failure. A failure to improve after a targeted representation, reward, or control-method change will redirect away from the current PPO recipe rather than be attributed to omitted inner-radius coverage.",
     "operation_ids": [
-      "T2"
+      "T2",
+      "M3"
     ],
     "scientific_parent_commit": "de625bd3fadb9299a6cf747d07b265328195afd5"
   },
