@@ -83,3 +83,4 @@
 | E53 | checkpoint | I13 | checkpointed |
 | E54 | inquiry | I14 | completed |
 | E55 | checkpoint | - | checkpointed |
+| T14 | training | I14 | completed |
