@@ -829,7 +829,7 @@
     }
   },
   "counters": {
-    "event": 4,
+    "event": 5,
     "inquiry": 1,
     "measurement": 2,
     "session": 3,
@@ -838,7 +838,7 @@
   "human_goal": {
     "source": "research/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -1563,27 +1563,167 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-01T21:49:10Z",
+      "error": null,
+      "id": "E5",
+      "inquiry_id": "I1",
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "T1 produced 24 disposable checkpoint candidates. T1:checkpoint-120832 is the strongest available candidate by training-stream success and has M2 development evidence at 61.25%, but no working, best-known, or retained role is assigned and no candidate is close to the official 98% requirement.",
+        "completed_operations": [
+          "M1",
+          "M2",
+          "E4"
+        ],
+        "cumulative_resource_use": "One completed fresh training operation: T1, requested allocation 120000 steps and 120832 actual completed steps after rollout-boundary rounding, seed 0. M1 and M2 were completed 160-episode held-out measurements at seed 4200; E2 opened I1 and E4 closed I1. No official assessment, model-role assignment, or additional training allocation occurred.",
+        "current_goal_gap": "T1:checkpoint-120832 achieved 61.25% (98/160) on the held-out development panel, not the official benchmark. The remaining gap is at least 98% official success, with large-radius approach failures still unresolved and post-entry stabilization requiring secondary monitoring.",
+        "current_synthesis": "Observed: M2 reproduced 61.25% success on 160 held-out episodes using the corrected stratification summaries. Of 62 failures, 58 never entered the 1 cm tolerance region; all 28 episodes in the 18-20 cm radius bin failed before entry, and the 14-18 cm bin achieved 8/39 successes with 30 no-entry failures. Only four failures occurred after entry, each with a hold exit. Any action saturation occurred in every episode, so saturation incidence alone is not discriminative, but the near-continuous saturation and no-entry behavior at large radii support insufficient approach control authority and coordinated-motion difficulty. Angle variation was present but did not explain the dominant failure pattern. This resolves I1 in favor of radius-dependent approach/control-authority failure over broad post-entry stabilization failure. The evidence is development-only, establishes a mechanism for prioritization rather than official performance, and does not exclude branch effects or secondary hold instability.",
+        "decision_frontier": "Select and test a bounded intervention that improves coordinated large-radius approach under the unchanged official task and hold semantics, while measuring whether it also preserves the small-radius successes and reduces the four observed post-entry hold exits. The key unresolved method question is whether training/control representation can provide sufficient approach authority and settle the full annulus within 500 steps without trading away hold robustness.",
+        "evidence_references": [
+          "M2",
+          "E4"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 successes in the official 200-episode panel across the complete 0.06-0.20 m radius range, with an uninterrupted 100-step hold. I1 identified the dominant failure mechanism needed to choose a credible intervention, but the current candidate remains far below the goal and has no official assessment.",
+        "next_direction_or_closure": "I1 is closed. Return to goal review and choose one bounded, goal-linked intervention focused on large-radius coordinated approach/control authority; do not request official assessment for the current 61.25% candidate."
+      },
+      "result": {
+        "session_id": "S3",
+        "status": "checkpointed"
+      },
+      "session_id": "S3",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "91dc2970555f3c2bd62043cf856361b0c91f8809",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "T1 produced 24 disposable checkpoint candidates. T1:checkpoint-120832 is the strongest available candidate by training-stream success and has M2 development evidence at 61.25%, but no working, best-known, or retained role is assigned and no candidate is close to the official 98% requirement.",
+        "completed_operations": [
+          "M1",
+          "M2",
+          "E4"
+        ],
+        "cumulative_resource_use": "One completed fresh training operation: T1, requested allocation 120000 steps and 120832 actual completed steps after rollout-boundary rounding, seed 0. M1 and M2 were completed 160-episode held-out measurements at seed 4200; E2 opened I1 and E4 closed I1. No official assessment, model-role assignment, or additional training allocation occurred.",
+        "current_goal_gap": "T1:checkpoint-120832 achieved 61.25% (98/160) on the held-out development panel, not the official benchmark. The remaining gap is at least 98% official success, with large-radius approach failures still unresolved and post-entry stabilization requiring secondary monitoring.",
+        "current_synthesis": "Observed: M2 reproduced 61.25% success on 160 held-out episodes using the corrected stratification summaries. Of 62 failures, 58 never entered the 1 cm tolerance region; all 28 episodes in the 18-20 cm radius bin failed before entry, and the 14-18 cm bin achieved 8/39 successes with 30 no-entry failures. Only four failures occurred after entry, each with a hold exit. Any action saturation occurred in every episode, so saturation incidence alone is not discriminative, but the near-continuous saturation and no-entry behavior at large radii support insufficient approach control authority and coordinated-motion difficulty. Angle variation was present but did not explain the dominant failure pattern. This resolves I1 in favor of radius-dependent approach/control-authority failure over broad post-entry stabilization failure. The evidence is development-only, establishes a mechanism for prioritization rather than official performance, and does not exclude branch effects or secondary hold instability.",
+        "decision_frontier": "Select and test a bounded intervention that improves coordinated large-radius approach under the unchanged official task and hold semantics, while measuring whether it also preserves the small-radius successes and reduces the four observed post-entry hold exits. The key unresolved method question is whether training/control representation can provide sufficient approach authority and settle the full annulus within 500 steps without trading away hold robustness.",
+        "evidence_references": [
+          "M2",
+          "E4"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 successes in the official 200-episode panel across the complete 0.06-0.20 m radius range, with an uninterrupted 100-step hold. I1 identified the dominant failure mechanism needed to choose a credible intervention, but the current candidate remains far below the goal and has no official assessment.",
+        "inquiry_id": "I1",
+        "next_direction_or_closure": "I1 is closed. Return to goal review and choose one bounded, goal-linked intervention focused on large-radius coordinated approach/control authority; do not request official assessment for the current 61.25% candidate.",
+        "session_id": "S3"
+      },
+      "presentation": {
+        "backend_session_id": "aa241f51-9324-4b29-8b7a-ef804103251a",
+        "campaign_id": "010714c2-5abd-4836-96bd-364caaf82042",
+        "campaign_usage": "12m57s | 27.34 AIU | prompt 4m (84% cached) | output 42.1k",
+        "session_id": "S3",
+        "session_kind": "inquiry",
+        "session_usage": "6m37s | 17.37 AIU | prompt 3m (87% cached) | output 22.6k"
+      },
+      "result": {
+        "session_id": "S3",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "671d198f15525a9df317b4e451396dd78dfddee8",
+      "scientific_manifest": [
+        {
+          "exists": true,
+          "fingerprint": "8b4d666cc203d330abd892712e54ca68e8d550f1a7003b187cae055fdc3312a0",
+          "path": "robot_learning/scenario/environment.py"
+        },
+        {
+          "exists": true,
+          "fingerprint": "6dbceec0e73d9e60c064e8a5ee26cc7acfc4f27f4ca8b072fdbb1bf6c27a4092",
+          "path": "robot_learning/scenario/evaluation.py"
+        }
+      ],
+      "scientific_paths": [
+        "robot_learning/scenario/environment.py",
+        "robot_learning/scenario/evaluation.py"
+      ]
+    },
+    "failure": null,
+    "id": "E5",
+    "inquiry_id": "I1",
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "T1 produced 24 disposable checkpoint candidates. T1:checkpoint-120832 is the strongest available candidate by training-stream success and has M2 development evidence at 61.25%, but no working, best-known, or retained role is assigned and no candidate is close to the official 98% requirement.",
+        "completed_operations": [
+          "M1",
+          "M2",
+          "E4"
+        ],
+        "cumulative_resource_use": "One completed fresh training operation: T1, requested allocation 120000 steps and 120832 actual completed steps after rollout-boundary rounding, seed 0. M1 and M2 were completed 160-episode held-out measurements at seed 4200; E2 opened I1 and E4 closed I1. No official assessment, model-role assignment, or additional training allocation occurred.",
+        "current_goal_gap": "T1:checkpoint-120832 achieved 61.25% (98/160) on the held-out development panel, not the official benchmark. The remaining gap is at least 98% official success, with large-radius approach failures still unresolved and post-entry stabilization requiring secondary monitoring.",
+        "current_synthesis": "Observed: M2 reproduced 61.25% success on 160 held-out episodes using the corrected stratification summaries. Of 62 failures, 58 never entered the 1 cm tolerance region; all 28 episodes in the 18-20 cm radius bin failed before entry, and the 14-18 cm bin achieved 8/39 successes with 30 no-entry failures. Only four failures occurred after entry, each with a hold exit. Any action saturation occurred in every episode, so saturation incidence alone is not discriminative, but the near-continuous saturation and no-entry behavior at large radii support insufficient approach control authority and coordinated-motion difficulty. Angle variation was present but did not explain the dominant failure pattern. This resolves I1 in favor of radius-dependent approach/control-authority failure over broad post-entry stabilization failure. The evidence is development-only, establishes a mechanism for prioritization rather than official performance, and does not exclude branch effects or secondary hold instability.",
+        "decision_frontier": "Select and test a bounded intervention that improves coordinated large-radius approach under the unchanged official task and hold semantics, while measuring whether it also preserves the small-radius successes and reduces the four observed post-entry hold exits. The key unresolved method question is whether training/control representation can provide sufficient approach authority and settle the full annulus within 500 steps without trading away hold robustness.",
+        "evidence_references": [
+          "M2",
+          "E4"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 successes in the official 200-episode panel across the complete 0.06-0.20 m radius range, with an uninterrupted 100-step hold. I1 identified the dominant failure mechanism needed to choose a credible intervention, but the current candidate remains far below the goal and has no official assessment.",
+        "next_direction_or_closure": "I1 is closed. Return to goal review and choose one bounded, goal-linked intervention focused on large-radius coordinated approach/control authority; do not request official assessment for the current 61.25% candidate."
+      }
+    },
+    "request_fingerprint": "f80ec9c5f334c95ca7816282b733bffebf1d3ec9b8b6587381d188c3c9282afb",
+    "session_id": "S3",
+    "supersedes": null
+  },
   "pi_checkpoint": {
-    "candidates_and_roles": "T1 produced 24 disposable checkpoint candidates. T1:checkpoint-120832 remains the strongest training-stream candidate by recorded success (0.60), but no working, best-known, or retained role is assigned because no independent development measurement exists.",
+    "candidates_and_roles": "T1 produced 24 disposable checkpoint candidates. T1:checkpoint-120832 is the strongest available candidate by training-stream success and has M2 development evidence at 61.25%, but no working, best-known, or retained role is assigned and no candidate is close to the official 98% requirement.",
     "completed_operations": [
-      "E2"
+      "M1",
+      "M2",
+      "E4"
     ],
-    "cumulative_resource_use": "One completed fresh training operation: T1, requested allocation 120000 steps and 120832 actual completed steps after rollout-boundary rounding, seed 0. E2 opened inquiry I1 and used no training or measurement allocation; no model-role assignment or official assessment has occurred.",
-    "current_goal_gap": "The strongest available candidate, T1:checkpoint-120832, has only a 0.60 training-stream success and no held-out evaluation. The campaign still lacks evidence distinguishing inner-radius or branch-specific coverage failures from broad approach-transient and stabilization failures.",
-    "current_synthesis": "Observed: T1's fresh PPO policy trained across the full official radius range learned progressively and reached 0.60 training-stream success at 120832 completed steps, but produced no evaluation artifact. This establishes partial learnability under the full-range recipe, not official-task performance or the cause of remaining failures. The coverage explanation remains plausible because the prior recipe omitted 0.06-0.14 m targets; the competing explanation remains that coupled motion, overshoot, branch choice, or insufficient low-velocity stabilization under the 20 ms action hold dominates. E2 completed the goal-review decision by opening I1; no evidence yet resolves that frontier.",
-    "decision_frontier": "Determine whether remaining failures are concentrated by target radius or angle, supporting coverage or branch-selection work, or instead occur broadly after entry through repeated hold exits, high end-effector or joint speed, or action saturation, supporting stabilization and control-representation work. The discriminating action is held-out development measurement of T1:checkpoint-120832 with target-stratified outcomes and trajectory diagnostics including time to first entry, longest in-band run, exits during the hold, distance, speed, joint velocities, and action saturation.",
+    "cumulative_resource_use": "One completed fresh training operation: T1, requested allocation 120000 steps and 120832 actual completed steps after rollout-boundary rounding, seed 0. M1 and M2 were completed 160-episode held-out measurements at seed 4200; E2 opened I1 and E4 closed I1. No official assessment, model-role assignment, or additional training allocation occurred.",
+    "current_goal_gap": "T1:checkpoint-120832 achieved 61.25% (98/160) on the held-out development panel, not the official benchmark. The remaining gap is at least 98% official success, with large-radius approach failures still unresolved and post-entry stabilization requiring secondary monitoring.",
+    "current_synthesis": "Observed: M2 reproduced 61.25% success on 160 held-out episodes using the corrected stratification summaries. Of 62 failures, 58 never entered the 1 cm tolerance region; all 28 episodes in the 18-20 cm radius bin failed before entry, and the 14-18 cm bin achieved 8/39 successes with 30 no-entry failures. Only four failures occurred after entry, each with a hold exit. Any action saturation occurred in every episode, so saturation incidence alone is not discriminative, but the near-continuous saturation and no-entry behavior at large radii support insufficient approach control authority and coordinated-motion difficulty. Angle variation was present but did not explain the dominant failure pattern. This resolves I1 in favor of radius-dependent approach/control-authority failure over broad post-entry stabilization failure. The evidence is development-only, establishes a mechanism for prioritization rather than official performance, and does not exclude branch effects or secondary hold instability.",
+    "decision_frontier": "Select and test a bounded intervention that improves coordinated large-radius approach under the unchanged official task and hold semantics, while measuring whether it also preserves the small-radius successes and reduces the four observed post-entry hold exits. The key unresolved method question is whether training/control representation can provide sufficient approach authority and settle the full annulus within 500 steps without trading away hold robustness.",
     "evidence_references": [
-      "T1",
-      "E2"
+      "M2",
+      "E4"
     ],
-    "human_goal_connection": "The human goal requires at least 196 successes in the official 200-episode panel across the full 0.06-0.20 m radius range, with an uninterrupted 100-step hold. T1 reached only 0.60 on its training stream and has no independent development evidence, so the goal-review decision is to open I1 before any official assessment.",
-    "inquiry_id": null,
-    "next_direction_or_closure": "End the goal-review session and continue in fresh inquiry I1. The first inquiry action should be the bounded held-out diagnostic measurement of T1:checkpoint-120832 named in the decision frontier; do not request official assessment or treat the training-stream score as official evidence.",
-    "scientific_commit": "943b89475ab1b146736688d79afce3227e2a7d9f",
-    "session_id": "S2"
+    "human_goal_connection": "The human goal requires at least 196 successes in the official 200-episode panel across the complete 0.06-0.20 m radius range, with an uninterrupted 100-step hold. I1 identified the dominant failure mechanism needed to choose a credible intervention, but the current candidate remains far below the goal and has no official assessment.",
+    "inquiry_id": "I1",
+    "next_direction_or_closure": "I1 is closed. Return to goal review and choose one bounded, goal-linked intervention focused on large-radius coordinated approach/control authority; do not request official assessment for the current 61.25% candidate.",
+    "scientific_commit": "671d198f15525a9df317b4e451396dd78dfddee8",
+    "session_id": "S3"
   },
   "schema_version": 6,
   "scientific_model": {
@@ -1591,23 +1731,6 @@
     "path": "research/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "aa241f51-9324-4b29-8b7a-ef804103251a",
-    "id": "S3",
-    "inquiry_id": "I1",
-    "kind": "inquiry",
-    "objective": "Advance I1 toward its closure condition: Close after held-out development evidence for the strongest T1 candidate is sufficient to determine whether failures are concentrated by target radius or angle, or instead show repeated post-entry exits, high end-effector or joint speed, or action saturation across the distribution; use that determination to select the next bounded goal-linked intervention or conclude that the current route is not credible.",
-    "operation_ids": [
-      "M1",
-      "M2",
-      "E4"
-    ],
-    "scientific_parent_commit": "91dc2970555f3c2bd62043cf856361b0c91f8809"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
