@@ -37,3 +37,4 @@
 | E18 | inquiry | I4 | completed |
 | E19 | checkpoint | I4 | checkpointed |
 | E20 | model_role | - | assigned |
+| M9 | measurement | - | completed |
