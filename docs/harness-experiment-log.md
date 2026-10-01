@@ -641,6 +641,9 @@ separate from harness changes so their outcomes are not conflated.
   following the goal-review capability and wording change in `c68627d`.
   The initial live assessment was taken around 08:41 local; the campaign
   subsequently completed its protected official assessment at 08:52.
+- **Campaign retrieval tag:** `inquiery-harnes-success-2`, an annotated tag on
+  `7ce2850`, preserves the completed 200/200 campaign before the later
+  measurement-evidence handoff change. The tag is published on the remote.
 - **Retrieval references:** these commits archive the relevant operation
   records and artifacts, independently of later campaign resets.
 
@@ -705,8 +708,7 @@ separate from harness changes so their outcomes are not conflated.
 
 ## 2026-10-01: generic measurement-evidence handoff
 
-- **Implementation commit:** the commit containing this entry,
-  `Expose measurement artifact contents`.
+- **Implementation commit:** `f986a2c`, `Expose measurement artifact contents`.
 - **RCA / generalization:** M3's artifact contained 160 custom diagnostic rows,
   but the returned record excluded `research_evidence`. The PI inspected only
   lines 1-80 and falsely asserted that those diagnostics were absent; their
