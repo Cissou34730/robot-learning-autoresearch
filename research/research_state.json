@@ -1,5 +1,13 @@
 {
-  "active_inquiry": null,
+  "active_inquiry": {
+    "closure_condition": "Close as sufficient only if the branch-committed direct-torque candidate achieves at least 196/200 complete uninterrupted successes on the fixed development panel and does not show a meaningful regression in post-entry hold failures relative to the paired direct-torque reference. Close as insufficient if it remains below 196/200, materially worsens complete success, or otherwise fails to provide a credible route to the human goal.",
+    "goal_connection": "The strongest direct bounded-torque reference is 189/200 and the temporal-context variant is 190/200, both below the required 196/200 development gate. I10's per-step model-based joint-space correction regressed to 156/200, so the remaining goal-relevant gap is acquisition and branch coordination rather than a justification for another corrective hybrid. A branch-committed direct-torque policy directly targets that gap without changing the physical action interface or hold semantics.",
+    "id": "I11",
+    "opened_in_session": "S22",
+    "question": "Can an episode-persistent, joint-limit-compatible IK-branch commitment in the learned observation interface improve full-angle acquisition and branch coordination while preserving the direct bounded-torque policy's uninterrupted hold behavior?",
+    "rationale": "The physical model predicts that valid IK branches impose different coordinated trajectories and braking demands, while the baseline exposes both alternatives without an episode-level commitment. T10 selected a branch repeatedly during online feedback and added bounded model-based torque, but its 41 never-entry failures and 31 negative-angle never-entry failures cannot distinguish branch ambiguity from the rejected correction itself. This inquiry isolates branch coordination: restore the direct bounded-torque reference, choose one joint-limit-compatible branch once per episode, expose branch-consistent target errors and branch identity, and leave action generation learned and direct. The paired result against the same reference will discriminate whether stable branch context improves acquisition without sacrificing hold stability.",
+    "reframes": []
+  },
   "campaign": {
     "base_commit": "c02b0d59e8ef397c87d92f70e986ad545e585b95",
     "id": "e8788df6-9f4a-4dac-92b7-48e40477e827",
@@ -8199,16 +8207,16 @@
     }
   },
   "counters": {
-    "event": 41,
-    "inquiry": 10,
+    "event": 42,
+    "inquiry": 11,
     "measurement": 10,
-    "session": 21,
+    "session": 22,
     "training": 10
   },
   "human_goal": {
     "source": "research/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -14504,9 +14512,69 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-01T01:07:32Z",
+      "error": null,
+      "id": "E42",
+      "inquiry_id": "I11",
+      "kind": "inquiry",
+      "request": {
+        "action": "open",
+        "closure_condition": "Close as sufficient only if the branch-committed direct-torque candidate achieves at least 196/200 complete uninterrupted successes on the fixed development panel and does not show a meaningful regression in post-entry hold failures relative to the paired direct-torque reference. Close as insufficient if it remains below 196/200, materially worsens complete success, or otherwise fails to provide a credible route to the human goal.",
+        "goal_connection": "The strongest direct bounded-torque reference is 189/200 and the temporal-context variant is 190/200, both below the required 196/200 development gate. I10's per-step model-based joint-space correction regressed to 156/200, so the remaining goal-relevant gap is acquisition and branch coordination rather than a justification for another corrective hybrid. A branch-committed direct-torque policy directly targets that gap without changing the physical action interface or hold semantics.",
+        "question": "Can an episode-persistent, joint-limit-compatible IK-branch commitment in the learned observation interface improve full-angle acquisition and branch coordination while preserving the direct bounded-torque policy's uninterrupted hold behavior?",
+        "rationale": "The physical model predicts that valid IK branches impose different coordinated trajectories and braking demands, while the baseline exposes both alternatives without an episode-level commitment. T10 selected a branch repeatedly during online feedback and added bounded model-based torque, but its 41 never-entry failures and 31 negative-angle never-entry failures cannot distinguish branch ambiguity from the rejected correction itself. This inquiry isolates branch coordination: restore the direct bounded-torque reference, choose one joint-limit-compatible branch once per episode, expose branch-consistent target errors and branch identity, and leave action generation learned and direct. The paired result against the same reference will discriminate whether stable branch context improves acquisition without sacrificing hold stability."
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I11",
+        "status": "completed"
+      },
+      "session_id": "S22",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "open",
+        "inquiry": {
+          "closure_condition": "Close as sufficient only if the branch-committed direct-torque candidate achieves at least 196/200 complete uninterrupted successes on the fixed development panel and does not show a meaningful regression in post-entry hold failures relative to the paired direct-torque reference. Close as insufficient if it remains below 196/200, materially worsens complete success, or otherwise fails to provide a credible route to the human goal.",
+          "goal_connection": "The strongest direct bounded-torque reference is 189/200 and the temporal-context variant is 190/200, both below the required 196/200 development gate. I10's per-step model-based joint-space correction regressed to 156/200, so the remaining goal-relevant gap is acquisition and branch coordination rather than a justification for another corrective hybrid. A branch-committed direct-torque policy directly targets that gap without changing the physical action interface or hold semantics.",
+          "id": "I11",
+          "opened_in_session": "S22",
+          "question": "Can an episode-persistent, joint-limit-compatible IK-branch commitment in the learned observation interface improve full-angle acquisition and branch coordination while preserving the direct bounded-torque policy's uninterrupted hold behavior?",
+          "rationale": "The physical model predicts that valid IK branches impose different coordinated trajectories and braking demands, while the baseline exposes both alternatives without an episode-level commitment. T10 selected a branch repeatedly during online feedback and added bounded model-based torque, but its 41 never-entry failures and 31 negative-angle never-entry failures cannot distinguish branch ambiguity from the rejected correction itself. This inquiry isolates branch coordination: restore the direct bounded-torque reference, choose one joint-limit-compatible branch once per episode, expose branch-consistent target errors and branch identity, and leave action generation learned and direct. The paired result against the same reference will discriminate whether stable branch context improves acquisition without sacrificing hold stability.",
+          "reframes": []
+        }
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I11",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E42",
+    "inquiry_id": null,
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "open",
+        "closure_condition": "Close as sufficient only if the branch-committed direct-torque candidate achieves at least 196/200 complete uninterrupted successes on the fixed development panel and does not show a meaningful regression in post-entry hold failures relative to the paired direct-torque reference. Close as insufficient if it remains below 196/200, materially worsens complete success, or otherwise fails to provide a credible route to the human goal.",
+        "goal_connection": "The strongest direct bounded-torque reference is 189/200 and the temporal-context variant is 190/200, both below the required 196/200 development gate. I10's per-step model-based joint-space correction regressed to 156/200, so the remaining goal-relevant gap is acquisition and branch coordination rather than a justification for another corrective hybrid. A branch-committed direct-torque policy directly targets that gap without changing the physical action interface or hold semantics.",
+        "question": "Can an episode-persistent, joint-limit-compatible IK-branch commitment in the learned observation interface improve full-angle acquisition and branch coordination while preserving the direct bounded-torque policy's uninterrupted hold behavior?",
+        "rationale": "The physical model predicts that valid IK branches impose different coordinated trajectories and braking demands, while the baseline exposes both alternatives without an episode-level commitment. T10 selected a branch repeatedly during online feedback and added bounded model-based torque, but its 41 never-entry failures and 31 negative-angle never-entry failures cannot distinguish branch ambiguity from the rejected correction itself. This inquiry isolates branch coordination: restore the direct bounded-torque reference, choose one joint-limit-compatible branch once per episode, expose branch-consistent target errors and branch identity, and leave action generation learned and direct. The paired result against the same reference will discriminate whether stable branch context improves acquisition without sacrificing hold stability."
+      }
+    },
+    "request_fingerprint": "4b15e0692c20aa5f7a6a60c69cba77953c105f5f1f73a481449ea7e06a4aad18",
+    "session_id": "S22",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No working, best-known, or retained role is assigned. T1:checkpoint-100352 remains the strongest evidence-backed development reference at 189/200. T9:checkpoint-120832 is an insufficient temporal-context candidate at 190/200. T10:checkpoint-100352 is an insufficient hybrid-control candidate at 156/200 and is rejected as a reference because of broad acquisition regression.",
     "completed_operations": [
@@ -14539,6 +14607,21 @@
     "path": "research/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "d8c0aec2-b7f0-4e93-8be3-9ce3775206a0",
+    "id": "S22",
+    "inquiry_id": null,
+    "kind": "goal_review",
+    "objective": "Decide whether to request official assessment, open one bounded goal-linked inquiry, or conclude that no credible route remains.",
+    "operation_ids": [
+      "E42"
+    ],
+    "scientific_parent_commit": "c3d544a7d31e22f084b0dcb57c8fe8d5e4459e70"
+  },
   "terminal_state": null
 }
