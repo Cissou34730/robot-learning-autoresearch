@@ -21,6 +21,75 @@ from robot_learning.scenario.environment import make_evaluation_env
 
 # Bumped when the meaning of a scenario evaluation summary changes.
 RESEARCH_EVALUATION_SUMMARY_VERSION = 4
+RADIUS_BANDS_CM = (
+    ("6-10cm", 6.0, 10.0),
+    ("10-14cm", 10.0, 14.0),
+    ("14-18cm", 14.0, 18.0),
+    ("18-20cm", 18.0, 20.000001),
+)
+
+
+def _radius_band(radius_cm: float) -> str:
+    for name, lower, upper in RADIUS_BANDS_CM:
+        if lower <= radius_cm < upper:
+            return name
+    raise ValueError(f"radius {radius_cm} cm is outside the official bands")
+
+
+def _radius_summary(
+    radius_band: str, diagnostics: list[dict], results: list[dict]
+) -> dict:
+    selected = [
+        (diagnostic, result)
+        for diagnostic, result in zip(diagnostics, results, strict=True)
+        if diagnostic["radius_band"] == radius_band
+    ]
+    if not selected:
+        raise ValueError(f"no episodes found in radius band {radius_band}")
+    band_diagnostics = [item[0] for item in selected]
+    band_results = [item[1] for item in selected]
+    first_reach_steps = [
+        item["first_reach_step"]
+        for item in band_diagnostics
+        if item["first_reach_step"] is not None
+    ]
+    hold_onset_steps = [
+        item["hold_onset_step"]
+        for item in band_diagnostics
+        if item["hold_onset_step"] is not None
+    ]
+    successes = sum(bool(item["success"]) for item in band_results)
+    post_reach_failures = sum(
+        item["failure_phase"] == "post_reach" for item in band_diagnostics
+    )
+    return {
+        "episodes": len(selected),
+        "successes": successes,
+        "success_percent": 100.0 * successes / len(selected),
+        "first_reach_count": len(first_reach_steps),
+        "first_reach_rate_percent": 100.0 * len(first_reach_steps) / len(selected),
+        "median_first_reach_step": (
+            float(np.median(first_reach_steps)) if first_reach_steps else None
+        ),
+        "hold_onset_count": len(hold_onset_steps),
+        "hold_onset_rate_percent": 100.0 * len(hold_onset_steps) / len(selected),
+        "median_hold_onset_step": (
+            float(np.median(hold_onset_steps)) if hold_onset_steps else None
+        ),
+        "median_max_hold_streak": float(
+            np.median([item["max_held_steps"] for item in band_diagnostics])
+        ),
+        "pre_reach_failures": sum(
+            item["failure_phase"] == "pre_reach" for item in band_diagnostics
+        ),
+        "post_reach_failures": post_reach_failures,
+        "post_reach_failure_rate_percent": (
+            100.0 * post_reach_failures / len(selected)
+        ),
+        "hold_interruptions": sum(
+            item["hold_interruptions"] for item in band_diagnostics
+        ),
+    }
 
 
 def evaluate_research_model(
@@ -51,6 +120,8 @@ def evaluate_research_model(
         min_distance_cm = float("inf")
         final_distance_cm = float("nan")
         first_reach_step: int | None = None
+        hold_onset_step: int | None = None
+        first_post_reach_exit_step: int | None = None
         max_held_steps = 0
         in_tolerance_steps = 0
         hold_interruptions = 0
@@ -65,12 +136,16 @@ def evaluate_research_model(
             min_distance_cm = min(min_distance_cm, distance_cm)
             final_distance_cm = distance_cm
             max_held_steps = max(max_held_steps, held_steps)
+            if first_reach_step is None and distance_cm <= 100.0 * env.success_threshold:
+                first_reach_step = steps
             if held_steps > 0:
                 in_tolerance_steps += 1
-                if first_reach_step is None:
-                    first_reach_step = steps
+                if hold_onset_step is None:
+                    hold_onset_step = steps
             elif was_in_tolerance:
                 hold_interruptions += 1
+                if first_post_reach_exit_step is None:
+                    first_post_reach_exit_step = steps
             was_in_tolerance = held_steps > 0
             if "is_success" in info:
                 success = bool(info["is_success"])
@@ -97,12 +172,24 @@ def evaluate_research_model(
                 "target_angle_degrees": float(
                     np.degrees(np.arctan2(target_position[1], target_position[0]))
                 ),
+                "radius_band": _radius_band(
+                    float(np.hypot(target_position[0], target_position[1]) * 100.0)
+                ),
                 "min_distance_cm": min_distance_cm,
                 "final_distance_cm": final_distance_cm,
                 "first_reach_step": first_reach_step,
+                "hold_onset_step": hold_onset_step,
                 "max_held_steps": max_held_steps,
                 "in_tolerance_steps": in_tolerance_steps,
                 "hold_interruptions": hold_interruptions,
+                "first_post_reach_exit_step": first_post_reach_exit_step,
+                "failure_phase": (
+                    "success"
+                    if success
+                    else "pre_reach"
+                    if first_reach_step is None
+                    else "post_reach"
+                ),
             }
         )
         if progress_callback is not None:
@@ -121,6 +208,10 @@ def evaluate_research_model(
         # failures and checking whether performance varies by target geometry.
         "research_evidence": {
             "episode_diagnostics": episode_diagnostics,
+            "radius_stratified": {
+                name: _radius_summary(name, episode_diagnostics, episode_results)
+                for name, _, _ in RADIUS_BANDS_CM
+            },
             "units": {"distance": "cm", "time": "control_steps"},
         },
     }
