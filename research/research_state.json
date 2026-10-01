@@ -10664,7 +10664,7 @@
     }
   },
   "counters": {
-    "event": 54,
+    "event": 55,
     "inquiry": 14,
     "measurement": 13,
     "session": 28,
@@ -10673,7 +10673,7 @@
   "human_goal": {
     "source": "research/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -18886,20 +18886,166 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-01T02:10:16Z",
+      "error": null,
+      "id": "E55",
+      "inquiry_id": null,
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "No working, best-known, or retained role is assigned. T9:checkpoint-120832 remains the strongest measured development candidate at 190/200; T1:checkpoint-100352 remains the direct-torque reference at 189/200. T11:checkpoint-120832, T12:checkpoint-35840, and T13:checkpoint-120832 are rejected for their respective inquiries.",
+        "completed_operations": [
+          "E54"
+        ],
+        "cumulative_resource_use": "Thirteen fresh PPO training operations have completed with the maintainer's fixed 120000-step allocation, each producing 120832 rollout-boundary steps. M1-M13 evaluated candidates on fixed 200-episode development panels beginning at seed 4200, with paired references where specified. E54 opened I14 and consumed no training or evaluation allocation. No official assessment has been run.",
+        "current_goal_gap": "T9:checkpoint-120832 has six never-entry failures and four post-entry failures, all concentrated in the difficult negative-angle basin; T13:checkpoint-120832 has 174 never-entry failures and does not preserve acquisition. No candidate satisfies 196/200 or the human goal.",
+        "current_synthesis": "I13 was insufficient. Compact model-derived dynamics observations did not provide an actionable route for configuration-dependent braking or local task-space controllability: T13 fell to 24/200 versus T9's paired 190/200, with widespread acquisition collapse. This rejects that representation and recipe without establishing that the plant is uncontrollable, that inverse kinematics is irrelevant, or that all future direct-torque representations are impossible. The strongest evidence still supports T9's temporal-context direct-torque recipe, with acquisition and branch coordination dominant and post-entry stabilization consequential. Goal review opened I14 to test a narrow training-distribution intervention rather than another representation or controller change.",
+        "decision_frontier": "I14 asks whether preserving T9's temporal-context direct-torque observation, action, reward, timing, and complete-hold semantics while assigning 25 percent of training targets to the observed -155 to -120 degree basin can reach at least 196/200 without introducing failures outside that basin. The inquiry is not actionable in this goal-review session; it requires a fresh inquiry session after this checkpoint.",
+        "evidence_references": [
+          "T11",
+          "M11",
+          "E44",
+          "E46",
+          "T12",
+          "M12",
+          "E48",
+          "E50",
+          "T13",
+          "M13",
+          "E52",
+          "E54"
+        ],
+        "human_goal_connection": "The human goal remains at least 98% complete uninterrupted episode success under the official task distribution. No candidate meets that goal: T9 remains the strongest development route at 190/200, six successes below the 196/200 development gate, while T13 achieved only 24/200.",
+        "next_direction_or_closure": "End this goal-review session with this checkpoint. Start a fresh inquiry session for I14 before requesting any training or measurement. Preserve the complete uninterrupted hold criterion and the 196/200 development gate; do not request official assessment unless a future candidate satisfies the evidence threshold."
+      },
+      "result": {
+        "session_id": "S28",
+        "status": "checkpointed"
+      },
+      "session_id": "S28",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "931311fe4d2135da84cfed56b3bec24476f3c5ea",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "No working, best-known, or retained role is assigned. T9:checkpoint-120832 remains the strongest measured development candidate at 190/200; T1:checkpoint-100352 remains the direct-torque reference at 189/200. T11:checkpoint-120832, T12:checkpoint-35840, and T13:checkpoint-120832 are rejected for their respective inquiries.",
+        "completed_operations": [
+          "E54"
+        ],
+        "cumulative_resource_use": "Thirteen fresh PPO training operations have completed with the maintainer's fixed 120000-step allocation, each producing 120832 rollout-boundary steps. M1-M13 evaluated candidates on fixed 200-episode development panels beginning at seed 4200, with paired references where specified. E54 opened I14 and consumed no training or evaluation allocation. No official assessment has been run.",
+        "current_goal_gap": "T9:checkpoint-120832 has six never-entry failures and four post-entry failures, all concentrated in the difficult negative-angle basin; T13:checkpoint-120832 has 174 never-entry failures and does not preserve acquisition. No candidate satisfies 196/200 or the human goal.",
+        "current_synthesis": "I13 was insufficient. Compact model-derived dynamics observations did not provide an actionable route for configuration-dependent braking or local task-space controllability: T13 fell to 24/200 versus T9's paired 190/200, with widespread acquisition collapse. This rejects that representation and recipe without establishing that the plant is uncontrollable, that inverse kinematics is irrelevant, or that all future direct-torque representations are impossible. The strongest evidence still supports T9's temporal-context direct-torque recipe, with acquisition and branch coordination dominant and post-entry stabilization consequential. Goal review opened I14 to test a narrow training-distribution intervention rather than another representation or controller change.",
+        "decision_frontier": "I14 asks whether preserving T9's temporal-context direct-torque observation, action, reward, timing, and complete-hold semantics while assigning 25 percent of training targets to the observed -155 to -120 degree basin can reach at least 196/200 without introducing failures outside that basin. The inquiry is not actionable in this goal-review session; it requires a fresh inquiry session after this checkpoint.",
+        "evidence_references": [
+          "T11",
+          "M11",
+          "E44",
+          "E46",
+          "T12",
+          "M12",
+          "E48",
+          "E50",
+          "T13",
+          "M13",
+          "E52",
+          "E54"
+        ],
+        "human_goal_connection": "The human goal remains at least 98% complete uninterrupted episode success under the official task distribution. No candidate meets that goal: T9 remains the strongest development route at 190/200, six successes below the 196/200 development gate, while T13 achieved only 24/200.",
+        "inquiry_id": null,
+        "next_direction_or_closure": "End this goal-review session with this checkpoint. Start a fresh inquiry session for I14 before requesting any training or measurement. Preserve the complete uninterrupted hold criterion and the 196/200 development gate; do not request official assessment unless a future candidate satisfies the evidence threshold.",
+        "session_id": "S28"
+      },
+      "presentation": {
+        "backend_session_id": "b07b2989-f453-4ade-a5ad-2e16e27380f1",
+        "campaign_id": "e8788df6-9f4a-4dac-92b7-48e40477e827",
+        "campaign_usage": "1h45m | 361.13 AIU | prompt 56.4m (84% cached) | output 305.3k",
+        "session_id": "S28",
+        "session_kind": "goal_review",
+        "session_usage": "2m29s | 13.19 AIU | prompt 1.1m (60% cached) | output 9.4k"
+      },
+      "result": {
+        "session_id": "S28",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "df8369fa55d5f1f9c4c5961fdcbb108f079b65bd",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E55",
+    "inquiry_id": null,
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "No working, best-known, or retained role is assigned. T9:checkpoint-120832 remains the strongest measured development candidate at 190/200; T1:checkpoint-100352 remains the direct-torque reference at 189/200. T11:checkpoint-120832, T12:checkpoint-35840, and T13:checkpoint-120832 are rejected for their respective inquiries.",
+        "completed_operations": [
+          "E54"
+        ],
+        "cumulative_resource_use": "Thirteen fresh PPO training operations have completed with the maintainer's fixed 120000-step allocation, each producing 120832 rollout-boundary steps. M1-M13 evaluated candidates on fixed 200-episode development panels beginning at seed 4200, with paired references where specified. E54 opened I14 and consumed no training or evaluation allocation. No official assessment has been run.",
+        "current_goal_gap": "T9:checkpoint-120832 has six never-entry failures and four post-entry failures, all concentrated in the difficult negative-angle basin; T13:checkpoint-120832 has 174 never-entry failures and does not preserve acquisition. No candidate satisfies 196/200 or the human goal.",
+        "current_synthesis": "I13 was insufficient. Compact model-derived dynamics observations did not provide an actionable route for configuration-dependent braking or local task-space controllability: T13 fell to 24/200 versus T9's paired 190/200, with widespread acquisition collapse. This rejects that representation and recipe without establishing that the plant is uncontrollable, that inverse kinematics is irrelevant, or that all future direct-torque representations are impossible. The strongest evidence still supports T9's temporal-context direct-torque recipe, with acquisition and branch coordination dominant and post-entry stabilization consequential. Goal review opened I14 to test a narrow training-distribution intervention rather than another representation or controller change.",
+        "decision_frontier": "I14 asks whether preserving T9's temporal-context direct-torque observation, action, reward, timing, and complete-hold semantics while assigning 25 percent of training targets to the observed -155 to -120 degree basin can reach at least 196/200 without introducing failures outside that basin. The inquiry is not actionable in this goal-review session; it requires a fresh inquiry session after this checkpoint.",
+        "evidence_references": [
+          "T11",
+          "M11",
+          "E44",
+          "E46",
+          "T12",
+          "M12",
+          "E48",
+          "E50",
+          "T13",
+          "M13",
+          "E52",
+          "E54"
+        ],
+        "human_goal_connection": "The human goal remains at least 98% complete uninterrupted episode success under the official task distribution. No candidate meets that goal: T9 remains the strongest development route at 190/200, six successes below the 196/200 development gate, while T13 achieved only 24/200.",
+        "next_direction_or_closure": "End this goal-review session with this checkpoint. Start a fresh inquiry session for I14 before requesting any training or measurement. Preserve the complete uninterrupted hold criterion and the 196/200 development gate; do not request official assessment unless a future candidate satisfies the evidence threshold."
+      }
+    },
+    "request_fingerprint": "45933ade62e0ec317b97e8171d36929089d059b8a1bcef75099b9782c2cbd7a5",
+    "session_id": "S28",
+    "supersedes": null
+  },
   "pi_checkpoint": {
-    "candidates_and_roles": "No working, best-known, or retained role is assigned. T9:checkpoint-120832 remains the strongest measured development candidate at 190/200. T1:checkpoint-100352 remains the direct-torque reference at 189/200. T11:checkpoint-120832, T12:checkpoint-35840, and T13:checkpoint-120832 are rejected for their respective inquiries.",
+    "candidates_and_roles": "No working, best-known, or retained role is assigned. T9:checkpoint-120832 remains the strongest measured development candidate at 190/200; T1:checkpoint-100352 remains the direct-torque reference at 189/200. T11:checkpoint-120832, T12:checkpoint-35840, and T13:checkpoint-120832 are rejected for their respective inquiries.",
     "completed_operations": [
-      "T13",
-      "M13",
-      "E52"
+      "E54"
     ],
-    "cumulative_resource_use": "Thirteen fresh PPO training operations have completed with the maintainer's fixed 120000-step allocation, each producing 120832 rollout-boundary steps. M1-M13 evaluated candidates on fixed 200-episode development panels beginning at seed 4200, with paired references where specified. T13 consumed one training allocation and M13 consumed one 200-episode paired development evaluation. No official assessment has been run.",
-    "current_goal_gap": "T9:checkpoint-120832 is six successes short of 196/200, with six never-entry failures and four post-entry failures. T13:checkpoint-120832 achieved 24/200 and therefore did not preserve acquisition. No candidate satisfies the human goal.",
-    "current_synthesis": "I13 tested whether compact model-derived dynamics observations could make configuration-dependent braking and local task-space controllability easier for a direct-torque PPO policy to use, without changing the task, reward, timing, actions, or complete-hold semantics. The result was insufficient: T13 produced 24/200 versus T9's paired 190/200, with 174 never-entry failures, two post-entry failures, and 58 hold interruptions. The result rejects this dynamics-feature representation and recipe as an actionable route. It does not establish that the plant is uncontrollable, that inverse kinematics is irrelevant, or that every future direct-torque representation is impossible. Across the campaign, acquisition and branch coordination remain dominant failure mechanisms, with post-entry stabilization consequential.",
-    "decision_frontier": "The I13 closure condition was not met: the candidate was below 196/200 and failed to preserve T9-level acquisition. I13 is closed as insufficient and does not justify official assessment. The remaining consequential question is which fresh method can improve the six difficult acquisition cases and four post-entry cases without sacrificing complete-hold success; that question must be defined and discriminated in a new goal-review session rather than inferred from T13.",
+    "cumulative_resource_use": "Thirteen fresh PPO training operations have completed with the maintainer's fixed 120000-step allocation, each producing 120832 rollout-boundary steps. M1-M13 evaluated candidates on fixed 200-episode development panels beginning at seed 4200, with paired references where specified. E54 opened I14 and consumed no training or evaluation allocation. No official assessment has been run.",
+    "current_goal_gap": "T9:checkpoint-120832 has six never-entry failures and four post-entry failures, all concentrated in the difficult negative-angle basin; T13:checkpoint-120832 has 174 never-entry failures and does not preserve acquisition. No candidate satisfies 196/200 or the human goal.",
+    "current_synthesis": "I13 was insufficient. Compact model-derived dynamics observations did not provide an actionable route for configuration-dependent braking or local task-space controllability: T13 fell to 24/200 versus T9's paired 190/200, with widespread acquisition collapse. This rejects that representation and recipe without establishing that the plant is uncontrollable, that inverse kinematics is irrelevant, or that all future direct-torque representations are impossible. The strongest evidence still supports T9's temporal-context direct-torque recipe, with acquisition and branch coordination dominant and post-entry stabilization consequential. Goal review opened I14 to test a narrow training-distribution intervention rather than another representation or controller change.",
+    "decision_frontier": "I14 asks whether preserving T9's temporal-context direct-torque observation, action, reward, timing, and complete-hold semantics while assigning 25 percent of training targets to the observed -155 to -120 degree basin can reach at least 196/200 without introducing failures outside that basin. The inquiry is not actionable in this goal-review session; it requires a fresh inquiry session after this checkpoint.",
     "evidence_references": [
       "T11",
       "M11",
@@ -18911,13 +19057,14 @@
       "E50",
       "T13",
       "M13",
-      "E52"
+      "E52",
+      "E54"
     ],
-    "human_goal_connection": "The human goal remains at least 98% complete uninterrupted episode success under the official task distribution. The strongest development result remains T9 at 190/200, below the 196/200 development gate, so no official assessment is justified.",
-    "inquiry_id": "I13",
-    "next_direction_or_closure": "This inquiry session is complete. Begin a fresh goal-review session before selecting another inquiry or requesting any operation. Preserve the complete-hold success criterion and the 196/200 development gate; do not request official assessment unless a future candidate satisfies the evidence threshold.",
-    "scientific_commit": "278e4f0b539b3020d84fb72ac7aaffc3b81606c9",
-    "session_id": "S27"
+    "human_goal_connection": "The human goal remains at least 98% complete uninterrupted episode success under the official task distribution. No candidate meets that goal: T9 remains the strongest development route at 190/200, six successes below the 196/200 development gate, while T13 achieved only 24/200.",
+    "inquiry_id": null,
+    "next_direction_or_closure": "End this goal-review session with this checkpoint. Start a fresh inquiry session for I14 before requesting any training or measurement. Preserve the complete uninterrupted hold criterion and the 196/200 development gate; do not request official assessment unless a future candidate satisfies the evidence threshold.",
+    "scientific_commit": "df8369fa55d5f1f9c4c5961fdcbb108f079b65bd",
+    "session_id": "S28"
   },
   "schema_version": 6,
   "scientific_model": {
@@ -18925,21 +19072,6 @@
     "path": "research/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "b07b2989-f453-4ade-a5ad-2e16e27380f1",
-    "id": "S28",
-    "inquiry_id": null,
-    "kind": "goal_review",
-    "objective": "Decide whether to request official assessment, open one bounded goal-linked inquiry, or conclude that no credible route remains.",
-    "operation_ids": [
-      "E54"
-    ],
-    "scientific_parent_commit": "931311fe4d2135da84cfed56b3bec24476f3c5ea"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
