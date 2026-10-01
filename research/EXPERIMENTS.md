@@ -67,3 +67,4 @@
 | E43 | checkpoint | - | checkpointed |
 | T11 | training | I11 | completed |
 | M11 | measurement | I11 | completed |
+| E44 | inquiry | I11 | completed |
