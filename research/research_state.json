@@ -20,8 +20,8 @@
     "event": 3,
     "inquiry": 1,
     "measurement": 0,
-    "session": 2,
-    "training": 0
+    "session": 3,
+    "training": 2
   },
   "human_goal": {
     "source": "research/scenario.md"
@@ -112,9 +112,83 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-01T11:59:16Z",
+      "error": "training made no progress for 30 minutes",
+      "id": "T1",
+      "inquiry_id": "I1",
+      "kind": "training",
+      "request": {
+        "description": "Train a fresh baseline candidate with the current recipe and maintainer allocation for I1.",
+        "initialization": "fresh",
+        "rationale": "No candidate exists, so the competing explanations of restricted inner-radius and branch coverage versus post-arrival stabilization cannot yet be tested. This current-recipe baseline is the necessary predecessor to geometry-stratified official-distribution development measurements that record first reach, uninterrupted hold, interruptions, branch behavior, and reach-versus-hold attribution.",
+        "seed": 0,
+        "steps": 120000
+      },
+      "result": {
+        "error": "training made no progress for 30 minutes",
+        "status": "failed"
+      },
+      "session_id": "S3",
+      "status": "failed",
+      "superseded_by": "T2",
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "archived_candidates": null,
+      "candidate_dir": null,
+      "code_parent_commit": "a7ad06d5bd4756554ecddbe984b2071fcd60617e",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "parent": null,
+      "result": null,
+      "scientific_commit": null,
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "T2",
+    "inquiry_id": "I1",
+    "kind": "training",
+    "progress": "accepted",
+    "request": {
+      "training": {
+        "description": "Train a fresh baseline candidate with the current recipe and maintainer allocation for I1.",
+        "initialization": "fresh",
+        "rationale": "No candidate exists, so the competing explanations of restricted inner-radius and branch coverage versus post-arrival stabilization cannot yet be tested. This current-recipe baseline is the necessary predecessor to geometry-stratified official-distribution development measurements that record first reach, uninterrupted hold, interruptions, branch behavior, and reach-versus-hold attribution.",
+        "seed": 0,
+        "steps": 120000
+      }
+    },
+    "request_fingerprint": "29a2ce2d25dc688464bec4639ee7dc272a8fc33d9cc165f023b7547be7f5ebfd",
+    "session_id": "S3",
+    "supersedes": "T1"
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No candidates have been trained, measured, or assigned working, best-known, or retained roles.",
     "completed_operations": [
@@ -139,6 +213,19 @@
     "path": "research/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "1a7313b7-dded-46c9-aa75-5769803851cd",
+    "id": "S3",
+    "inquiry_id": "I1",
+    "kind": "inquiry",
+    "objective": "Advance I1 toward its closure condition: Obtain and interpret a baseline candidate's geometry-stratified official-distribution development measurements, including first reach, maximum uninterrupted hold, interruptions, target radius and angle, branch behavior, and reach-versus-hold failure attribution; close or redirect the inquiry when those observations identify the dominant barrier or show that the baseline evidence is insufficient.",
+    "operation_ids": [],
+    "scientific_parent_commit": "a7ad06d5bd4756554ecddbe984b2071fcd60617e"
+  },
   "terminal_state": null
 }
