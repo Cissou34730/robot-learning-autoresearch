@@ -4933,13 +4933,20 @@
   "human_goal": {
     "source": "research/scenario.md"
   },
-  "last_verdict": "official_assessment_requested",
+  "last_verdict": "official assessment goal not reached; success 94.5%; 200 episodes",
   "model_roles": {
     "best_known": "T7:checkpoint-120832",
     "retained": {},
     "working": null
   },
-  "official_assessment": null,
+  "official_assessment": {
+    "artifact": "research/checkpoints/retained/010714c2-5abd-4836-96bd-364caaf82042/t7-c8cf701d5-5d660f10062d0173f6c08a60c486aacd23a7d2f30ab60eff8b6e44a30b65a1ce",
+    "completed_at": "2026-10-01T23:27:00Z",
+    "fingerprint": "5d660f10062d0173f6c08a60c486aacd23a7d2f30ab60eff8b6e44a30b65a1ce",
+    "model": "T7:checkpoint-120832",
+    "status": "failed",
+    "summary": "goal not reached; success 94.5%; 200 episodes"
+  },
   "operation_events": [
     {
       "completed_at": "2026-10-01T21:31:34Z",
@@ -10241,7 +10248,7 @@
       "supersedes": null
     },
     {
-      "completed_at": "2026-10-01T23:25:48Z",
+      "completed_at": "2026-10-01T23:27:00Z",
       "error": null,
       "id": "E21",
       "inquiry_id": null,
@@ -10252,7 +10259,7 @@
       },
       "result": {
         "model": "T7:checkpoint-120832",
-        "status": "official_assessment_requested"
+        "status": "official_assessment_failed"
       },
       "session_id": "S11",
       "status": "completed",
@@ -10292,6 +10299,6 @@
   "terminal_state": {
     "model": "T7:checkpoint-120832",
     "reason": "T7:checkpoint-120832 is the explicit best-known candidate. After reaching 156/160 on M8, it reproduced above the goal threshold on the independent M9 panel at 157/160 (98.125%). This resolves the development-readiness uncertainty sufficiently to test the actual human criterion on the protected 200-episode official panel; the official assessment remains the only basis for claiming or rejecting the 196/200 goal.",
-    "status": "official_assessment_requested"
+    "status": "official_assessment_failed"
   }
 }
