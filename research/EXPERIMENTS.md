@@ -92,3 +92,4 @@
 | T15 | training | I15 | completed |
 | M15 | measurement | I15 | completed |
 | E60 | inquiry | I15 | completed |
+| E61 | checkpoint | I15 | checkpointed |
