@@ -17362,38 +17362,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I12",
-        "outcome": "insufficient",
-        "reason": "M12 closes I12 as insufficient. The transferred residual-torque candidate T12:checkpoint-35840 achieved 171/200 complete uninterrupted successes (85.5%) versus 189/200 (94.5%) for T1:checkpoint-100352 on the same fixed development panel, missing the 196/200 gate by 25 episodes and losing all 18 discordant paired episodes to T1. The residual route also regressed both protected failure groups: 7 never-entry failures and 22 post-entry failures versus T1's 6 and 5, with 1,836 hold interruptions versus 7. The result rejects this smooth task-space velocity-damping residual recipe as a credible route; it does not establish that all residual control or model-derived coordination is impossible, but the tested route distorted complete-hold behavior rather than preserving acquisition and improving stabilization."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I12",
-        "outcome": "insufficient",
-        "reason": "M12 closes I12 as insufficient. The transferred residual-torque candidate T12:checkpoint-35840 achieved 171/200 complete uninterrupted successes (85.5%) versus 189/200 (94.5%) for T1:checkpoint-100352 on the same fixed development panel, missing the 196/200 gate by 25 episodes and losing all 18 discordant paired episodes to T1. The residual route also regressed both protected failure groups: 7 never-entry failures and 22 post-entry failures versus T1's 6 and 5, with 1,836 hold interruptions versus 7. The result rejects this smooth task-space velocity-damping residual recipe as a credible route; it does not establish that all residual control or model-derived coordination is impossible, but the tested route distorted complete-hold behavior rather than preserving acquisition and improving stabilization.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E48",
-    "inquiry_id": "I12",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "insufficient",
-        "reason": "M12 closes I12 as insufficient. The transferred residual-torque candidate T12:checkpoint-35840 achieved 171/200 complete uninterrupted successes (85.5%) versus 189/200 (94.5%) for T1:checkpoint-100352 on the same fixed development panel, missing the 196/200 gate by 25 episodes and losing all 18 discordant paired episodes to T1. The residual route also regressed both protected failure groups: 7 never-entry failures and 22 post-entry failures versus T1's 6 and 5, with 1,836 hold interruptions versus 7. The result rejects this smooth task-space velocity-damping residual recipe as a credible route; it does not establish that all residual control or model-derived coordination is impossible, but the tested route distorted complete-hold behavior rather than preserving acquisition and improving stabilization."
-      }
-    },
-    "request_fingerprint": "049e684dc0ad5bc2e5099c1ade83dff7aeb67ce93e0bf03cfb4c63c089381d81",
-    "session_id": "S25",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "No working, best-known, or retained role is assigned. T1:checkpoint-100352 remains the strongest evidence-backed development reference at 189/200; T9:checkpoint-120832 is an insufficient temporal-context candidate at 190/200. T10:checkpoint-100352 and T11:checkpoint-120832 are rejected as insufficient candidates.",
     "completed_operations": [
