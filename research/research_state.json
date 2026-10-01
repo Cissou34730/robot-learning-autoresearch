@@ -1,5 +1,13 @@
 {
-  "active_inquiry": null,
+  "active_inquiry": {
+    "closure_condition": "Close the inquiry as insufficient if its fixed-120000-step candidate fails to reach at least 196/200 complete uninterrupted successes on the held-out development panel, or if it causes a broad acquisition regression relative to T1. Treat the route as credible only if it reaches that threshold while preserving full-angle acquisition and reducing or not increasing post-entry hold failures; otherwise redirect or close based on the observed failure mechanism.",
+    "goal_connection": "The strongest development result is T9 at 190/200, six successes below the 196/200 development threshold and the human 98% objective. This inquiry directly targets both remaining failure classes: negative-angle never-entry failures through learned full-angle acquisition, and post-entry interruptions through explicit stabilization authority. Complete uninterrupted episode success remains the sole criterion.",
+    "id": "I10",
+    "opened_in_session": "S20",
+    "question": "Can a hybrid joint-space control interface that preserves learned full-angle acquisition while adding target-conditioned model-based braking and local velocity feedback close the remaining complete-hold failures, rather than merely changing observations, rewards, or short temporal context?",
+    "rationale": "The physical model describes a deterministic, fully actuated second-order plant where residual kinetic energy, configuration-dependent inertia, sampled control, and coupled joint braking can interrupt an otherwise successful hold. T1 and T9 show that direct torque with branch-aware observations already acquires most targets, while the short three-frame temporal recipe adds only one success and leaves four post-entry failures. I2-I8 show that observation, reward, branch, and phase-handoff changes either collapsed or traded acquisition against stabilization. A model-based joint-space braking and velocity-feedback layer is a distinct method-development route: it uses established kinematics and measured q/qdot to supply local stabilizing authority while leaving the learned policy responsible for target-dependent acquisition. The paired development measurement can discriminate whether the residual gap is primarily missing low-level stabilization authority or an acquisition/branch limitation that this route cannot safely overcome.",
+    "reframes": []
+  },
   "campaign": {
     "base_commit": "c02b0d59e8ef397c87d92f70e986ad545e585b95",
     "id": "e8788df6-9f4a-4dac-92b7-48e40477e827",
@@ -7380,16 +7388,16 @@
     }
   },
   "counters": {
-    "event": 37,
-    "inquiry": 9,
+    "event": 38,
+    "inquiry": 10,
     "measurement": 9,
-    "session": 19,
+    "session": 20,
     "training": 9
   },
   "human_goal": {
     "source": "research/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -13060,9 +13068,69 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-01T00:45:06Z",
+      "error": null,
+      "id": "E38",
+      "inquiry_id": "I10",
+      "kind": "inquiry",
+      "request": {
+        "action": "open",
+        "closure_condition": "Close the inquiry as insufficient if its fixed-120000-step candidate fails to reach at least 196/200 complete uninterrupted successes on the held-out development panel, or if it causes a broad acquisition regression relative to T1. Treat the route as credible only if it reaches that threshold while preserving full-angle acquisition and reducing or not increasing post-entry hold failures; otherwise redirect or close based on the observed failure mechanism.",
+        "goal_connection": "The strongest development result is T9 at 190/200, six successes below the 196/200 development threshold and the human 98% objective. This inquiry directly targets both remaining failure classes: negative-angle never-entry failures through learned full-angle acquisition, and post-entry interruptions through explicit stabilization authority. Complete uninterrupted episode success remains the sole criterion.",
+        "question": "Can a hybrid joint-space control interface that preserves learned full-angle acquisition while adding target-conditioned model-based braking and local velocity feedback close the remaining complete-hold failures, rather than merely changing observations, rewards, or short temporal context?",
+        "rationale": "The physical model describes a deterministic, fully actuated second-order plant where residual kinetic energy, configuration-dependent inertia, sampled control, and coupled joint braking can interrupt an otherwise successful hold. T1 and T9 show that direct torque with branch-aware observations already acquires most targets, while the short three-frame temporal recipe adds only one success and leaves four post-entry failures. I2-I8 show that observation, reward, branch, and phase-handoff changes either collapsed or traded acquisition against stabilization. A model-based joint-space braking and velocity-feedback layer is a distinct method-development route: it uses established kinematics and measured q/qdot to supply local stabilizing authority while leaving the learned policy responsible for target-dependent acquisition. The paired development measurement can discriminate whether the residual gap is primarily missing low-level stabilization authority or an acquisition/branch limitation that this route cannot safely overcome."
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I10",
+        "status": "completed"
+      },
+      "session_id": "S20",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "open",
+        "inquiry": {
+          "closure_condition": "Close the inquiry as insufficient if its fixed-120000-step candidate fails to reach at least 196/200 complete uninterrupted successes on the held-out development panel, or if it causes a broad acquisition regression relative to T1. Treat the route as credible only if it reaches that threshold while preserving full-angle acquisition and reducing or not increasing post-entry hold failures; otherwise redirect or close based on the observed failure mechanism.",
+          "goal_connection": "The strongest development result is T9 at 190/200, six successes below the 196/200 development threshold and the human 98% objective. This inquiry directly targets both remaining failure classes: negative-angle never-entry failures through learned full-angle acquisition, and post-entry interruptions through explicit stabilization authority. Complete uninterrupted episode success remains the sole criterion.",
+          "id": "I10",
+          "opened_in_session": "S20",
+          "question": "Can a hybrid joint-space control interface that preserves learned full-angle acquisition while adding target-conditioned model-based braking and local velocity feedback close the remaining complete-hold failures, rather than merely changing observations, rewards, or short temporal context?",
+          "rationale": "The physical model describes a deterministic, fully actuated second-order plant where residual kinetic energy, configuration-dependent inertia, sampled control, and coupled joint braking can interrupt an otherwise successful hold. T1 and T9 show that direct torque with branch-aware observations already acquires most targets, while the short three-frame temporal recipe adds only one success and leaves four post-entry failures. I2-I8 show that observation, reward, branch, and phase-handoff changes either collapsed or traded acquisition against stabilization. A model-based joint-space braking and velocity-feedback layer is a distinct method-development route: it uses established kinematics and measured q/qdot to supply local stabilizing authority while leaving the learned policy responsible for target-dependent acquisition. The paired development measurement can discriminate whether the residual gap is primarily missing low-level stabilization authority or an acquisition/branch limitation that this route cannot safely overcome.",
+          "reframes": []
+        }
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I10",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E38",
+    "inquiry_id": null,
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "open",
+        "closure_condition": "Close the inquiry as insufficient if its fixed-120000-step candidate fails to reach at least 196/200 complete uninterrupted successes on the held-out development panel, or if it causes a broad acquisition regression relative to T1. Treat the route as credible only if it reaches that threshold while preserving full-angle acquisition and reducing or not increasing post-entry hold failures; otherwise redirect or close based on the observed failure mechanism.",
+        "goal_connection": "The strongest development result is T9 at 190/200, six successes below the 196/200 development threshold and the human 98% objective. This inquiry directly targets both remaining failure classes: negative-angle never-entry failures through learned full-angle acquisition, and post-entry interruptions through explicit stabilization authority. Complete uninterrupted episode success remains the sole criterion.",
+        "question": "Can a hybrid joint-space control interface that preserves learned full-angle acquisition while adding target-conditioned model-based braking and local velocity feedback close the remaining complete-hold failures, rather than merely changing observations, rewards, or short temporal context?",
+        "rationale": "The physical model describes a deterministic, fully actuated second-order plant where residual kinetic energy, configuration-dependent inertia, sampled control, and coupled joint braking can interrupt an otherwise successful hold. T1 and T9 show that direct torque with branch-aware observations already acquires most targets, while the short three-frame temporal recipe adds only one success and leaves four post-entry failures. I2-I8 show that observation, reward, branch, and phase-handoff changes either collapsed or traded acquisition against stabilization. A model-based joint-space braking and velocity-feedback layer is a distinct method-development route: it uses established kinematics and measured q/qdot to supply local stabilizing authority while leaving the learned policy responsible for target-dependent acquisition. The paired development measurement can discriminate whether the residual gap is primarily missing low-level stabilization authority or an acquisition/branch limitation that this route cannot safely overcome."
+      }
+    },
+    "request_fingerprint": "4ea4614b5c024c33eb66ab938333bf2bf6606a07e3b1352343b59c7d9535be89",
+    "session_id": "S20",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No working, best-known, or retained role is assigned. T1:checkpoint-100352 remains the strongest evidence-backed development reference at 189/200. T9:checkpoint-120832 is an insufficient temporal-context candidate at 190/200 and has no model role. Earlier insufficient candidates remain without roles.",
     "completed_operations": [
@@ -13091,6 +13159,21 @@
     "path": "research/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "aca4a5f2-2616-4dba-959a-db5b3b6a904f",
+    "id": "S20",
+    "inquiry_id": null,
+    "kind": "goal_review",
+    "objective": "Decide whether to request official assessment, open one bounded goal-linked inquiry, or conclude that no credible route remains.",
+    "operation_ids": [
+      "E38"
+    ],
+    "scientific_parent_commit": "48659f1503f2382b278f892eec55186a95b01859"
+  },
   "terminal_state": null
 }
