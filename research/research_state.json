@@ -1565,38 +1565,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I1",
-        "outcome": "I1 resolved: the dominant failure mode is radius-dependent approach failure and insufficient control authority, not broad post-entry stabilization failure.",
-        "reason": "M2 reproduced 61.25% success on the 160-episode held-out development panel. Of 62 failures, 58 never entered the 1 cm tolerance region; all 28 episodes in the 18-20 cm radius bin failed before entry, and the 14-18 cm bin achieved only 8/39 successes with 30 failures having no entry. Only 4 failures occurred after entry, and each had a hold exit. Angle-bin success varied but did not provide a comparable concentration, while any saturation occurred in every episode and therefore is not itself discriminative; the high saturation counts in the largest-radius failures are consistent with insufficient approach authority. This is sufficient to redirect the campaign toward a bounded training/control-representation intervention for large-radius approach and coordinated motion, while retaining post-entry exit behavior as a secondary risk. The 61.25% development result is not official evidence and does not support assessment."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I1",
-        "outcome": "I1 resolved: the dominant failure mode is radius-dependent approach failure and insufficient control authority, not broad post-entry stabilization failure.",
-        "reason": "M2 reproduced 61.25% success on the 160-episode held-out development panel. Of 62 failures, 58 never entered the 1 cm tolerance region; all 28 episodes in the 18-20 cm radius bin failed before entry, and the 14-18 cm bin achieved only 8/39 successes with 30 failures having no entry. Only 4 failures occurred after entry, and each had a hold exit. Angle-bin success varied but did not provide a comparable concentration, while any saturation occurred in every episode and therefore is not itself discriminative; the high saturation counts in the largest-radius failures are consistent with insufficient approach authority. This is sufficient to redirect the campaign toward a bounded training/control-representation intervention for large-radius approach and coordinated motion, while retaining post-entry exit behavior as a secondary risk. The 61.25% development result is not official evidence and does not support assessment.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E4",
-    "inquiry_id": "I1",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "I1 resolved: the dominant failure mode is radius-dependent approach failure and insufficient control authority, not broad post-entry stabilization failure.",
-        "reason": "M2 reproduced 61.25% success on the 160-episode held-out development panel. Of 62 failures, 58 never entered the 1 cm tolerance region; all 28 episodes in the 18-20 cm radius bin failed before entry, and the 14-18 cm bin achieved only 8/39 successes with 30 failures having no entry. Only 4 failures occurred after entry, and each had a hold exit. Angle-bin success varied but did not provide a comparable concentration, while any saturation occurred in every episode and therefore is not itself discriminative; the high saturation counts in the largest-radius failures are consistent with insufficient approach authority. This is sufficient to redirect the campaign toward a bounded training/control-representation intervention for large-radius approach and coordinated motion, while retaining post-entry exit behavior as a secondary risk. The 61.25% development result is not official evidence and does not support assessment."
-      }
-    },
-    "request_fingerprint": "f35be0f0a2dfe18c0f5b534b16f14aaebe596ee44c537888291a22c1bb5168e4",
-    "session_id": "S3",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T1 produced 24 disposable checkpoint candidates. T1:checkpoint-120832 remains the strongest training-stream candidate by recorded success (0.60), but no working, best-known, or retained role is assigned because no independent development measurement exists.",
     "completed_operations": [
