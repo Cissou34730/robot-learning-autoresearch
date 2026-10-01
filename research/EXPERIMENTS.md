@@ -77,3 +77,4 @@
 | E49 | checkpoint | I12 | checkpointed |
 | E50 | inquiry | I13 | completed |
 | E51 | checkpoint | - | checkpointed |
+| T13 | training | I13 | completed |
