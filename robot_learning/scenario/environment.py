@@ -25,8 +25,10 @@ from robot_learning.benchmark.spec import (
     TARGET_RADIUS_RANGE,
 )
 from robot_learning.robots.two_joint_arm import TWO_JOINT_ARM_XML_PATH
-from robot_learning.scenario.observations import OBSERVATION_SIZE
-from robot_learning.scenario.policy_io import make_policy_io
+from robot_learning.scenario.policy_io import (
+    POLICY_OBSERVATION_SIZE,
+    make_policy_io,
+)
 from robot_learning.scenario.reward import reach_reward
 
 
@@ -60,7 +62,7 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
         self.observation_space = gym.spaces.Box(
             low=-np.inf,
             high=np.inf,
-            shape=(OBSERVATION_SIZE,),
+            shape=(POLICY_OBSERVATION_SIZE,),
             dtype=np.float32,
         )
         self.action_space = gym.spaces.Box(
