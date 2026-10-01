@@ -9997,38 +9997,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I4",
-        "outcome": "I4 is closed as a credible representation route. The continuous sine-cosine directional and inverse-kinematic branch encoding produced reproducible held-out gains in two fresh maintainer-sized runs: T6 reached 151/160 and T7 reached 156/160 on shared seeds, versus 89/160 for T1. Both runs improved every hard directional bin over T1; T7 improved the 90-180 degree region without increasing hold interruptions, while T6 exposed a seed-dependent stabilization cost.",
-        "reason": "The closure condition is satisfied: the representation was implemented and evaluated in two fresh 120000-step runs under unchanged official task mechanics and hold semantics, and paired evidence shows large overall and hard-direction gains without a material hold-interruption increase for the stronger run. The route is credible but not sufficient to claim the 98% official goal: T7 remains at 97.5% on the held-out panel with residual high-angle failures, and T6's 23 hold interruptions show reliability is seed-dependent."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I4",
-        "outcome": "I4 is closed as a credible representation route. The continuous sine-cosine directional and inverse-kinematic branch encoding produced reproducible held-out gains in two fresh maintainer-sized runs: T6 reached 151/160 and T7 reached 156/160 on shared seeds, versus 89/160 for T1. Both runs improved every hard directional bin over T1; T7 improved the 90-180 degree region without increasing hold interruptions, while T6 exposed a seed-dependent stabilization cost.",
-        "reason": "The closure condition is satisfied: the representation was implemented and evaluated in two fresh 120000-step runs under unchanged official task mechanics and hold semantics, and paired evidence shows large overall and hard-direction gains without a material hold-interruption increase for the stronger run. The route is credible but not sufficient to claim the 98% official goal: T7 remains at 97.5% on the held-out panel with residual high-angle failures, and T6's 23 hold interruptions show reliability is seed-dependent.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E18",
-    "inquiry_id": "I4",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "I4 is closed as a credible representation route. The continuous sine-cosine directional and inverse-kinematic branch encoding produced reproducible held-out gains in two fresh maintainer-sized runs: T6 reached 151/160 and T7 reached 156/160 on shared seeds, versus 89/160 for T1. Both runs improved every hard directional bin over T1; T7 improved the 90-180 degree region without increasing hold interruptions, while T6 exposed a seed-dependent stabilization cost.",
-        "reason": "The closure condition is satisfied: the representation was implemented and evaluated in two fresh 120000-step runs under unchanged official task mechanics and hold semantics, and paired evidence shows large overall and hard-direction gains without a material hold-interruption increase for the stronger run. The route is credible but not sufficient to claim the 98% official goal: T7 remains at 97.5% on the held-out panel with residual high-angle failures, and T6's 23 hold interruptions show reliability is seed-dependent."
-      }
-    },
-    "request_fingerprint": "65eb84a986e8d8b648833b6addb03fb7c1d1d0bf9857d8dcd4bcab2e5c3facf0",
-    "session_id": "S10",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T1:checkpoint-120832 remains the prior evidence-backed baseline at 89/160 on the shared M8 panel. T6:checkpoint-120832 reached 151/160 but had 23 hold interruptions and has no role. T7:checkpoint-120832 reached 156/160 with 4 hold interruptions and is the strongest I4 candidate, but has no role until a separate model-role operation. No candidate has official evidence.",
     "completed_operations": [
