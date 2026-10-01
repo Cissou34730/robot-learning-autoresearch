@@ -21845,41 +21845,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "model": null,
-        "reason": "Conclude that no credible evidence-backed route remains within this campaign. The strongest candidate, T9:checkpoint-120832, achieved 190/200 complete uninterrupted successes on the fixed development panel, six below the 196/200 gate, with six never-entry failures and four post-entry failures in the difficult negative-angle basin. The distinct target-mixture route T14 achieved 62/200, and the isolated proximity-gated joint-velocity braking route T15 achieved 0/200 and lost all 190 discordant paired episodes to T9. These results reject the tested interventions and leave the human goal unmet; they do not establish that the plant or every possible future method is impossible, but they provide no scientifically credible route justifying further campaign operations or official assessment.",
-        "status": "no_credible_route"
-      },
-      "presentation": {
-        "backend_session_id": "a3da757a-04ab-4522-a9d4-34833c0168f8",
-        "campaign_id": "e8788df6-9f4a-4dac-92b7-48e40477e827",
-        "campaign_usage": "2h36m | 423.48 AIU | prompt 67.9m (84% cached) | output 350.5k",
-        "session_id": "S32",
-        "session_kind": "goal_review",
-        "session_usage": "1m37s | 6.97 AIU | prompt 855.5k (76% cached) | output 4.5k"
-      },
-      "result": {
-        "model": null,
-        "status": "no_credible_route"
-      }
-    },
-    "failure": null,
-    "id": "E63",
-    "inquiry_id": null,
-    "kind": "campaign_conclusion",
-    "progress": "completed",
-    "request": {
-      "campaign_conclusion": {
-        "action": "no_credible_route",
-        "reason": "Conclude that no credible evidence-backed route remains within this campaign. The strongest candidate, T9:checkpoint-120832, achieved 190/200 complete uninterrupted successes on the fixed development panel, six below the 196/200 gate, with six never-entry failures and four post-entry failures in the difficult negative-angle basin. The distinct target-mixture route T14 achieved 62/200, and the isolated proximity-gated joint-velocity braking route T15 achieved 0/200 and lost all 190 discordant paired episodes to T9. These results reject the tested interventions and leave the human goal unmet; they do not establish that the plant or every possible future method is impossible, but they provide no scientifically credible route justifying further campaign operations or official assessment."
-      }
-    },
-    "request_fingerprint": "03ff612a1f2c42ab994933ab08b571dcce5d4a9ec328bb429241be8f0729d708",
-    "session_id": "S32",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "No working, best-known, or retained role is assigned. T9:checkpoint-120832 remains the strongest measured development candidate at 190/200 and the reference for I15. T15:checkpoint-120832 is rejected for I15 after scoring 0/200; T14:checkpoint-120832 remains rejected for I14 at 62/200.",
     "completed_operations": [
