@@ -11,11 +11,10 @@ from robot_learning.robots.two_joint_arm import FOREARM_LENGTH, UPPER_ARM_LENGTH
 OBSERVATION_SIZE = 11
 
 
-def _wrap_to_pi(angle: float) -> float:
-    return float((angle + np.pi) % (2.0 * np.pi) - np.pi)
+def reach_observation(data) -> np.ndarray:
+    def wrap_to_pi(angle: float) -> float:
+        return float((angle + np.pi) % (2.0 * np.pi) - np.pi)
 
-
-def _branch_targets(data) -> np.ndarray:
     def shoulder_for_elbow(elbow: float) -> float:
         return float(
             np.arctan2(target_y, target_x)
@@ -34,33 +33,17 @@ def _branch_targets(data) -> np.ndarray:
     shoulder_open = shoulder_for_elbow(elbow_open)
     elbow_folded = -elbow_open
     shoulder_folded = shoulder_for_elbow(elbow_folded)
-    return np.array(
-        [
-            [shoulder_open, elbow_open],
-            [shoulder_folded, elbow_folded],
-        ],
-        dtype=np.float64,
-    )
-
-
-def reach_observation(data) -> np.ndarray:
-    branch_targets = _branch_targets(data)
     end_effector = data.site("end_effector").xpos.copy()
-    qpos = np.asarray(data.qpos[:2], dtype=np.float64)
-    branch_errors = np.array(
-        [
-            _wrap_to_pi(branch_targets[0, 0] - qpos[0]),
-            _wrap_to_pi(branch_targets[0, 1] - qpos[1]),
-            _wrap_to_pi(branch_targets[1, 0] - qpos[0]),
-            _wrap_to_pi(branch_targets[1, 1] - qpos[1]),
-        ],
-        dtype=np.float64,
-    )
     return np.concatenate(
         [
-            qpos,
-            np.asarray(data.qvel[:2], dtype=np.float64),
+            data.qpos,
+            data.qvel,
             end_effector - data.mocap_pos[0],
-            branch_errors,
+            [
+                wrap_to_pi(shoulder_open - float(data.qpos[0])),
+                wrap_to_pi(elbow_open - float(data.qpos[1])),
+                wrap_to_pi(shoulder_folded - float(data.qpos[0])),
+                wrap_to_pi(elbow_folded - float(data.qpos[1])),
+            ],
         ]
     ).astype(np.float32)
