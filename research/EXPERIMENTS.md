@@ -38,3 +38,4 @@
 | E19 | checkpoint | I4 | checkpointed |
 | E20 | model_role | - | assigned |
 | M9 | measurement | - | completed |
+| E21 | campaign_conclusion | - | official_assessment_requested |

@@ -4924,7 +4924,7 @@
     }
   },
   "counters": {
-    "event": 20,
+    "event": 21,
     "inquiry": 4,
     "measurement": 9,
     "session": 11,
@@ -4933,7 +4933,7 @@
   "human_goal": {
     "source": "research/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "official_assessment_requested",
   "model_roles": {
     "best_known": "T7:checkpoint-120832",
     "retained": {},
@@ -10239,9 +10239,62 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-01T23:25:48Z",
+      "error": null,
+      "id": "E21",
+      "inquiry_id": null,
+      "kind": "campaign_conclusion",
+      "request": {
+        "action": "request_official_assessment",
+        "reason": "T7:checkpoint-120832 is the explicit best-known candidate. After reaching 156/160 on M8, it reproduced above the goal threshold on the independent M9 panel at 157/160 (98.125%). This resolves the development-readiness uncertainty sufficiently to test the actual human criterion on the protected 200-episode official panel; the official assessment remains the only basis for claiming or rejecting the 196/200 goal."
+      },
+      "result": {
+        "model": "T7:checkpoint-120832",
+        "status": "official_assessment_requested"
+      },
+      "session_id": "S11",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "model": "T7:checkpoint-120832",
+        "reason": "T7:checkpoint-120832 is the explicit best-known candidate. After reaching 156/160 on M8, it reproduced above the goal threshold on the independent M9 panel at 157/160 (98.125%). This resolves the development-readiness uncertainty sufficiently to test the actual human criterion on the protected 200-episode official panel; the official assessment remains the only basis for claiming or rejecting the 196/200 goal.",
+        "status": "official_assessment_requested"
+      },
+      "presentation": {
+        "backend_session_id": "5dd9a2e8-e67d-45da-8f1e-3270d59d46f3",
+        "campaign_id": "010714c2-5abd-4836-96bd-364caaf82042",
+        "campaign_usage": "45m08s | 112.08 AIU | prompt 18.9m (86% cached) | output 126.6k",
+        "session_id": "S11",
+        "session_kind": "goal_review",
+        "session_usage": "2m10s | 4.71 AIU | prompt 799.6k (85% cached) | output 3.5k"
+      },
+      "result": {
+        "model": "T7:checkpoint-120832",
+        "status": "official_assessment_requested"
+      }
+    },
+    "failure": null,
+    "id": "E21",
+    "inquiry_id": null,
+    "kind": "campaign_conclusion",
+    "progress": "completed",
+    "request": {
+      "campaign_conclusion": {
+        "action": "request_official_assessment",
+        "reason": "T7:checkpoint-120832 is the explicit best-known candidate. After reaching 156/160 on M8, it reproduced above the goal threshold on the independent M9 panel at 157/160 (98.125%). This resolves the development-readiness uncertainty sufficiently to test the actual human criterion on the protected 200-episode official panel; the official assessment remains the only basis for claiming or rejecting the 196/200 goal."
+      }
+    },
+    "request_fingerprint": "50a433b9588a7ec1782cd145afb86528458a4859044655cf3f5caf10dc587e4f",
+    "session_id": "S11",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T1:checkpoint-120832 remains the prior evidence-backed baseline at 89/160 on the M8 shared panel. T6:checkpoint-120832 reached 151/160 with 23 hold interruptions and has no role. T7:checkpoint-120832 reached 156/160 with 4 hold interruptions and is the strongest I4 candidate, but has no role. No candidate has official evidence; working, best-known, and retained roles are unset.",
     "completed_operations": [
@@ -10269,22 +10322,10 @@
     "path": "research/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "5dd9a2e8-e67d-45da-8f1e-3270d59d46f3",
-    "id": "S11",
-    "inquiry_id": null,
-    "kind": "goal_review",
-    "objective": "Reassess the scientific direction toward the human goal using completed evidence. You may request measurements to resolve an uncertainty or develop the method before committing to an inquiry. Decide whether to request official assessment, open one bounded goal-linked inquiry, or conclude that no credible route remains.",
-    "operation_ids": [
-      "E20",
-      "M9"
-    ],
-    "scientific_parent_commit": "d55644a8ae02445b664f76e74fe8db85a12403bf"
-  },
-  "terminal_state": null
+  "scientific_session": null,
+  "terminal_state": {
+    "model": "T7:checkpoint-120832",
+    "reason": "T7:checkpoint-120832 is the explicit best-known candidate. After reaching 156/160 on M8, it reproduced above the goal threshold on the independent M9 panel at 157/160 (98.125%). This resolves the development-readiness uncertainty sufficiently to test the actual human criterion on the protected 200-episode official panel; the official assessment remains the only basis for claiming or rejecting the 196/200 goal.",
+    "status": "official_assessment_requested"
+  }
 }
