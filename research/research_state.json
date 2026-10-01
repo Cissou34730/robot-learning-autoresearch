@@ -1,5 +1,13 @@
 {
-  "active_inquiry": null,
+  "active_inquiry": {
+    "closure_condition": "Close if a fresh 120000-step training operation using the restored T1 observation/reward recipe and one fixed action-attenuation intervention is evaluated on shared held-out seeds and either reaches the 98% goal threshold with no consequential regression, or fails to improve the large-radius no-entry deficit, collapses like T2, or shows that action attenuation cannot preserve the learned regime. Any candidate must be judged on held-out evidence before official assessment.",
+    "goal_connection": "M5 shows that the official task is physically controllable across the full 6-20 cm annulus, including 28/28 large-radius targets, with a fixed low-gain controller achieving the complete uninterrupted hold. The remaining gap is therefore policy acquisition: T1 reaches only 98/160 development episodes while T2's geometry and settling changes collapse to 0/160. A policy trained in the preserved T1 regime with a bounded action map could learn the same low-amplitude, non-saturating control regime and address the dominant no-entry failures without changing official task or hold semantics.",
+    "id": "I3",
+    "opened_in_session": "S6",
+    "question": "Can a learned policy acquire the physically validated reach-and-hold behavior when the successful T1 observation and reward regime is preserved but its normalized actions are attenuated before the direct motor interface?",
+    "rationale": "M2 identified radius-dependent no-entry failure, but M4 was invalid as authority evidence because all gains saturated and even easy targets failed. M5 corrected the controller and produced 160/160 success for the nearest branch, 40/40 in every radius bin, zero hold exits, and zero episode saturation, establishing available physical authority. This rejects physical impossibility as the leading explanation and makes a learning/control-interface explanation consequential. T2 cannot guide the next intervention because its explicit geometry interface and settling reward produced 0/160 and all 98 shared-seed wins went to T1. The bounded alternative is to restore T1's proven observation and reward regime, leave the official mechanics and uninterrupted-hold semantics unchanged, and test only a fixed action attenuation that keeps learned commands in the validated low-amplitude regime. The result discriminates whether T1's deficit is caused by poorly conditioned direct motor commands or by a deeper failure to acquire the required large-radius policy.",
+    "reframes": []
+  },
   "campaign": {
     "base_commit": "c2abfc7efc60be52b98a1f4189e022d759e006b2",
     "id": "010714c2-5abd-4836-96bd-364caaf82042",
@@ -1648,8 +1656,8 @@
     }
   },
   "counters": {
-    "event": 9,
-    "inquiry": 2,
+    "event": 10,
+    "inquiry": 3,
     "measurement": 5,
     "session": 6,
     "training": 2
@@ -3657,9 +3665,69 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-01T22:21:28Z",
+      "error": null,
+      "id": "E10",
+      "inquiry_id": "I3",
+      "kind": "inquiry",
+      "request": {
+        "action": "open",
+        "closure_condition": "Close if a fresh 120000-step training operation using the restored T1 observation/reward recipe and one fixed action-attenuation intervention is evaluated on shared held-out seeds and either reaches the 98% goal threshold with no consequential regression, or fails to improve the large-radius no-entry deficit, collapses like T2, or shows that action attenuation cannot preserve the learned regime. Any candidate must be judged on held-out evidence before official assessment.",
+        "goal_connection": "M5 shows that the official task is physically controllable across the full 6-20 cm annulus, including 28/28 large-radius targets, with a fixed low-gain controller achieving the complete uninterrupted hold. The remaining gap is therefore policy acquisition: T1 reaches only 98/160 development episodes while T2's geometry and settling changes collapse to 0/160. A policy trained in the preserved T1 regime with a bounded action map could learn the same low-amplitude, non-saturating control regime and address the dominant no-entry failures without changing official task or hold semantics.",
+        "question": "Can a learned policy acquire the physically validated reach-and-hold behavior when the successful T1 observation and reward regime is preserved but its normalized actions are attenuated before the direct motor interface?",
+        "rationale": "M2 identified radius-dependent no-entry failure, but M4 was invalid as authority evidence because all gains saturated and even easy targets failed. M5 corrected the controller and produced 160/160 success for the nearest branch, 40/40 in every radius bin, zero hold exits, and zero episode saturation, establishing available physical authority. This rejects physical impossibility as the leading explanation and makes a learning/control-interface explanation consequential. T2 cannot guide the next intervention because its explicit geometry interface and settling reward produced 0/160 and all 98 shared-seed wins went to T1. The bounded alternative is to restore T1's proven observation and reward regime, leave the official mechanics and uninterrupted-hold semantics unchanged, and test only a fixed action attenuation that keeps learned commands in the validated low-amplitude regime. The result discriminates whether T1's deficit is caused by poorly conditioned direct motor commands or by a deeper failure to acquire the required large-radius policy."
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I3",
+        "status": "completed"
+      },
+      "session_id": "S6",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "open",
+        "inquiry": {
+          "closure_condition": "Close if a fresh 120000-step training operation using the restored T1 observation/reward recipe and one fixed action-attenuation intervention is evaluated on shared held-out seeds and either reaches the 98% goal threshold with no consequential regression, or fails to improve the large-radius no-entry deficit, collapses like T2, or shows that action attenuation cannot preserve the learned regime. Any candidate must be judged on held-out evidence before official assessment.",
+          "goal_connection": "M5 shows that the official task is physically controllable across the full 6-20 cm annulus, including 28/28 large-radius targets, with a fixed low-gain controller achieving the complete uninterrupted hold. The remaining gap is therefore policy acquisition: T1 reaches only 98/160 development episodes while T2's geometry and settling changes collapse to 0/160. A policy trained in the preserved T1 regime with a bounded action map could learn the same low-amplitude, non-saturating control regime and address the dominant no-entry failures without changing official task or hold semantics.",
+          "id": "I3",
+          "opened_in_session": "S6",
+          "question": "Can a learned policy acquire the physically validated reach-and-hold behavior when the successful T1 observation and reward regime is preserved but its normalized actions are attenuated before the direct motor interface?",
+          "rationale": "M2 identified radius-dependent no-entry failure, but M4 was invalid as authority evidence because all gains saturated and even easy targets failed. M5 corrected the controller and produced 160/160 success for the nearest branch, 40/40 in every radius bin, zero hold exits, and zero episode saturation, establishing available physical authority. This rejects physical impossibility as the leading explanation and makes a learning/control-interface explanation consequential. T2 cannot guide the next intervention because its explicit geometry interface and settling reward produced 0/160 and all 98 shared-seed wins went to T1. The bounded alternative is to restore T1's proven observation and reward regime, leave the official mechanics and uninterrupted-hold semantics unchanged, and test only a fixed action attenuation that keeps learned commands in the validated low-amplitude regime. The result discriminates whether T1's deficit is caused by poorly conditioned direct motor commands or by a deeper failure to acquire the required large-radius policy.",
+          "reframes": []
+        }
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I3",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E10",
+    "inquiry_id": null,
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "open",
+        "closure_condition": "Close if a fresh 120000-step training operation using the restored T1 observation/reward recipe and one fixed action-attenuation intervention is evaluated on shared held-out seeds and either reaches the 98% goal threshold with no consequential regression, or fails to improve the large-radius no-entry deficit, collapses like T2, or shows that action attenuation cannot preserve the learned regime. Any candidate must be judged on held-out evidence before official assessment.",
+        "goal_connection": "M5 shows that the official task is physically controllable across the full 6-20 cm annulus, including 28/28 large-radius targets, with a fixed low-gain controller achieving the complete uninterrupted hold. The remaining gap is therefore policy acquisition: T1 reaches only 98/160 development episodes while T2's geometry and settling changes collapse to 0/160. A policy trained in the preserved T1 regime with a bounded action map could learn the same low-amplitude, non-saturating control regime and address the dominant no-entry failures without changing official task or hold semantics.",
+        "question": "Can a learned policy acquire the physically validated reach-and-hold behavior when the successful T1 observation and reward regime is preserved but its normalized actions are attenuated before the direct motor interface?",
+        "rationale": "M2 identified radius-dependent no-entry failure, but M4 was invalid as authority evidence because all gains saturated and even easy targets failed. M5 corrected the controller and produced 160/160 success for the nearest branch, 40/40 in every radius bin, zero hold exits, and zero episode saturation, establishing available physical authority. This rejects physical impossibility as the leading explanation and makes a learning/control-interface explanation consequential. T2 cannot guide the next intervention because its explicit geometry interface and settling reward produced 0/160 and all 98 shared-seed wins went to T1. The bounded alternative is to restore T1's proven observation and reward regime, leave the official mechanics and uninterrupted-hold semantics unchanged, and test only a fixed action attenuation that keeps learned commands in the validated low-amplitude regime. The result discriminates whether T1's deficit is caused by poorly conditioned direct motor commands or by a deeper failure to acquire the required large-radius policy."
+      }
+    },
+    "request_fingerprint": "1f2e217605ad79018b3843e466eb3f547473b4806694dab5c5340023fd0e1d0d",
+    "session_id": "S6",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T1 produced 24 disposable checkpoint candidates; T1:checkpoint-120832 remains the strongest available candidate with M2 development evidence at 61.25%. T2 produced 24 disposable candidates under the rejected geometry/settling recipe; T2:checkpoint-120832 has M3 evidence at 0/160. No working, best-known, or retained role is assigned, and no candidate is close to the official 98% requirement.",
     "completed_operations": [
@@ -3704,7 +3772,8 @@
     "objective": "Reassess the scientific direction toward the human goal using completed evidence. You may request measurements to resolve an uncertainty or develop the method before committing to an inquiry. Decide whether to request official assessment, open one bounded goal-linked inquiry, or conclude that no credible route remains.",
     "operation_ids": [
       "M4",
-      "M5"
+      "M5",
+      "E10"
     ],
     "scientific_parent_commit": "99e1fb1223c1a653fb5ca31178c3abf24e1e92cd"
   },
