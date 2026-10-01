@@ -3286,7 +3286,7 @@
     }
   },
   "counters": {
-    "event": 13,
+    "event": 14,
     "inquiry": 3,
     "measurement": 7,
     "session": 7,
@@ -3295,7 +3295,7 @@
   "human_goal": {
     "source": "research/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -6910,20 +6910,195 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-01T22:52:45Z",
+      "error": null,
+      "id": "E14",
+      "inquiry_id": "I3",
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "T1:checkpoint-120832 remains the strongest baseline learned candidate at 98/160 development success. T4's 115/160 result is the highest observed learned development result but is not reproducible by T5 and is not assigned a working, best-known, or retained role. T5, T2, and all other candidates have no model role. No candidate has official evidence.",
+        "completed_operations": [
+          "E12",
+          "T4",
+          "M6",
+          "T5",
+          "M7",
+          "E13"
+        ],
+        "cumulative_resource_use": "I3 used one recipe restoration (E12), two fresh maintainer-sized 120000-step training operations (T4 seed 2 and T5 seed 3, each completing 120832 actual rollout-rounded steps), and two paired 160-episode held-out measurements (M6 and M7, both comparing against T1 on shared seed panel 4200). M6 produced 115/160 for T4 and M7 produced 91/160 for T5. No official assessment, model-role assignment, or retained candidate was created.",
+        "current_goal_gap": "No learned candidate approaches the 98% goal. T1 remains at 98/160 (61.25%) on held-out development seeds, while T4 reached 115/160 (71.875%) once and T5 reached 91/160 (56.875%) under the same attenuation recipe. The remaining learned-policy deficit is dominated by no-entry failures, including severe directional failures; the evidence is not official assessment.",
+        "current_synthesis": "I3 is closed. M6 showed that restoring T1's observation/reward regime with fixed 0.5 action attenuation could improve one fresh run: T4 reached 115/160, including 13/28 at 18-20 cm, with zero action-saturated episodes and zero hold interruptions. M7 tested the unchanged recipe with a second fresh seed and failed to reproduce that result: T5 reached 91/160, lost to T1 by seven paired wins, had 66 no-entry failures and 3 post-entry hold-interruption failures, and still had zero action saturation but 0/24 success in the 135-180 degree angle bin. Therefore fixed 0.5 attenuation is rejected as a reliable route toward 98% under this recipe. The evidence preserves the narrower finding that attenuation can remove saturation and post-entry exits in a learned run, but it does not establish reliable improvement, rule out all action conditioning or directional representations, or support official assessment.",
+        "decision_frontier": "I3 is closed and no inquiry is active. The next fresh session must choose a new, discriminating route for the unresolved learned-policy acquisition problem: reduce the no-entry and directional deficit without changing official task mechanics or hold semantics, while requiring reproducible held-out evidence before any official assessment.",
+        "evidence_references": [
+          "M2",
+          "E4",
+          "E6",
+          "T2",
+          "M3",
+          "E8",
+          "M4",
+          "M5",
+          "E10",
+          "E12",
+          "T4",
+          "M6",
+          "T5",
+          "M7",
+          "E13"
+        ],
+        "human_goal_connection": "The campaign still seeks at least 196 successes in the protected 200-episode official panel, with every success requiring the complete uninterrupted 100-step hold across the 0.06-0.20 m target annulus. I3 tested whether fixed action attenuation could move learned performance toward that goal after M5 established physical controllability.",
+        "next_direction_or_closure": "This checkpoint ends the I3 inquiry session. Further scientific work belongs to a fresh session, which should begin by selecting and testing a new mechanism for reproducible acquisition of the physically validated reach-and-hold behavior, with emphasis on the unresolved directional and no-entry failures. Do not request official assessment until a candidate demonstrates sufficiently strong reproducible held-out performance."
+      },
+      "result": {
+        "session_id": "S7",
+        "status": "checkpointed"
+      },
+      "session_id": "S7",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "ef24aec757c5c0b4cf57f60d871b32dd8af07488",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "T1:checkpoint-120832 remains the strongest baseline learned candidate at 98/160 development success. T4's 115/160 result is the highest observed learned development result but is not reproducible by T5 and is not assigned a working, best-known, or retained role. T5, T2, and all other candidates have no model role. No candidate has official evidence.",
+        "completed_operations": [
+          "E12",
+          "T4",
+          "M6",
+          "T5",
+          "M7",
+          "E13"
+        ],
+        "cumulative_resource_use": "I3 used one recipe restoration (E12), two fresh maintainer-sized 120000-step training operations (T4 seed 2 and T5 seed 3, each completing 120832 actual rollout-rounded steps), and two paired 160-episode held-out measurements (M6 and M7, both comparing against T1 on shared seed panel 4200). M6 produced 115/160 for T4 and M7 produced 91/160 for T5. No official assessment, model-role assignment, or retained candidate was created.",
+        "current_goal_gap": "No learned candidate approaches the 98% goal. T1 remains at 98/160 (61.25%) on held-out development seeds, while T4 reached 115/160 (71.875%) once and T5 reached 91/160 (56.875%) under the same attenuation recipe. The remaining learned-policy deficit is dominated by no-entry failures, including severe directional failures; the evidence is not official assessment.",
+        "current_synthesis": "I3 is closed. M6 showed that restoring T1's observation/reward regime with fixed 0.5 action attenuation could improve one fresh run: T4 reached 115/160, including 13/28 at 18-20 cm, with zero action-saturated episodes and zero hold interruptions. M7 tested the unchanged recipe with a second fresh seed and failed to reproduce that result: T5 reached 91/160, lost to T1 by seven paired wins, had 66 no-entry failures and 3 post-entry hold-interruption failures, and still had zero action saturation but 0/24 success in the 135-180 degree angle bin. Therefore fixed 0.5 attenuation is rejected as a reliable route toward 98% under this recipe. The evidence preserves the narrower finding that attenuation can remove saturation and post-entry exits in a learned run, but it does not establish reliable improvement, rule out all action conditioning or directional representations, or support official assessment.",
+        "decision_frontier": "I3 is closed and no inquiry is active. The next fresh session must choose a new, discriminating route for the unresolved learned-policy acquisition problem: reduce the no-entry and directional deficit without changing official task mechanics or hold semantics, while requiring reproducible held-out evidence before any official assessment.",
+        "evidence_references": [
+          "M2",
+          "E4",
+          "E6",
+          "T2",
+          "M3",
+          "E8",
+          "M4",
+          "M5",
+          "E10",
+          "E12",
+          "T4",
+          "M6",
+          "T5",
+          "M7",
+          "E13"
+        ],
+        "human_goal_connection": "The campaign still seeks at least 196 successes in the protected 200-episode official panel, with every success requiring the complete uninterrupted 100-step hold across the 0.06-0.20 m target annulus. I3 tested whether fixed action attenuation could move learned performance toward that goal after M5 established physical controllability.",
+        "inquiry_id": "I3",
+        "next_direction_or_closure": "This checkpoint ends the I3 inquiry session. Further scientific work belongs to a fresh session, which should begin by selecting and testing a new mechanism for reproducible acquisition of the physically validated reach-and-hold behavior, with emphasis on the unresolved directional and no-entry failures. Do not request official assessment until a candidate demonstrates sufficiently strong reproducible held-out performance.",
+        "session_id": "S7"
+      },
+      "presentation": {
+        "backend_session_id": "a76cc16b-7cce-478d-abf7-ad99888a3b42",
+        "campaign_id": "010714c2-5abd-4836-96bd-364caaf82042",
+        "campaign_usage": "36m00s | 82.51 AIU | prompt 14.7m (88% cached) | output 105.3k",
+        "session_id": "S7",
+        "session_kind": "inquiry",
+        "session_usage": "8m31s | 22.52 AIU | prompt 5.7m (94% cached) | output 23.1k"
+      },
+      "result": {
+        "session_id": "S7",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "df2f06f752dff6b7451ec95fe340a05e0cc4a0ae",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E14",
+    "inquiry_id": "I3",
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "T1:checkpoint-120832 remains the strongest baseline learned candidate at 98/160 development success. T4's 115/160 result is the highest observed learned development result but is not reproducible by T5 and is not assigned a working, best-known, or retained role. T5, T2, and all other candidates have no model role. No candidate has official evidence.",
+        "completed_operations": [
+          "E12",
+          "T4",
+          "M6",
+          "T5",
+          "M7",
+          "E13"
+        ],
+        "cumulative_resource_use": "I3 used one recipe restoration (E12), two fresh maintainer-sized 120000-step training operations (T4 seed 2 and T5 seed 3, each completing 120832 actual rollout-rounded steps), and two paired 160-episode held-out measurements (M6 and M7, both comparing against T1 on shared seed panel 4200). M6 produced 115/160 for T4 and M7 produced 91/160 for T5. No official assessment, model-role assignment, or retained candidate was created.",
+        "current_goal_gap": "No learned candidate approaches the 98% goal. T1 remains at 98/160 (61.25%) on held-out development seeds, while T4 reached 115/160 (71.875%) once and T5 reached 91/160 (56.875%) under the same attenuation recipe. The remaining learned-policy deficit is dominated by no-entry failures, including severe directional failures; the evidence is not official assessment.",
+        "current_synthesis": "I3 is closed. M6 showed that restoring T1's observation/reward regime with fixed 0.5 action attenuation could improve one fresh run: T4 reached 115/160, including 13/28 at 18-20 cm, with zero action-saturated episodes and zero hold interruptions. M7 tested the unchanged recipe with a second fresh seed and failed to reproduce that result: T5 reached 91/160, lost to T1 by seven paired wins, had 66 no-entry failures and 3 post-entry hold-interruption failures, and still had zero action saturation but 0/24 success in the 135-180 degree angle bin. Therefore fixed 0.5 attenuation is rejected as a reliable route toward 98% under this recipe. The evidence preserves the narrower finding that attenuation can remove saturation and post-entry exits in a learned run, but it does not establish reliable improvement, rule out all action conditioning or directional representations, or support official assessment.",
+        "decision_frontier": "I3 is closed and no inquiry is active. The next fresh session must choose a new, discriminating route for the unresolved learned-policy acquisition problem: reduce the no-entry and directional deficit without changing official task mechanics or hold semantics, while requiring reproducible held-out evidence before any official assessment.",
+        "evidence_references": [
+          "M2",
+          "E4",
+          "E6",
+          "T2",
+          "M3",
+          "E8",
+          "M4",
+          "M5",
+          "E10",
+          "E12",
+          "T4",
+          "M6",
+          "T5",
+          "M7",
+          "E13"
+        ],
+        "human_goal_connection": "The campaign still seeks at least 196 successes in the protected 200-episode official panel, with every success requiring the complete uninterrupted 100-step hold across the 0.06-0.20 m target annulus. I3 tested whether fixed action attenuation could move learned performance toward that goal after M5 established physical controllability.",
+        "next_direction_or_closure": "This checkpoint ends the I3 inquiry session. Further scientific work belongs to a fresh session, which should begin by selecting and testing a new mechanism for reproducible acquisition of the physically validated reach-and-hold behavior, with emphasis on the unresolved directional and no-entry failures. Do not request official assessment until a candidate demonstrates sufficiently strong reproducible held-out performance."
+      }
+    },
+    "request_fingerprint": "8a3ef1ebe44c557dabd7c78df1bcff74e0a5c3931a97d095a5cdb56504109323",
+    "session_id": "S7",
+    "supersedes": null
+  },
   "pi_checkpoint": {
-    "candidates_and_roles": "T1:checkpoint-120832 remains the strongest available learned candidate at 98/160 development success, but no working, best-known, or retained role is assigned because it is far below the official threshold and no candidate has official evidence. T2:checkpoint-120832 is rejected as a route reference after 0/160 paired development success.",
+    "candidates_and_roles": "T1:checkpoint-120832 remains the strongest baseline learned candidate at 98/160 development success. T4's 115/160 result is the highest observed learned development result but is not reproducible by T5 and is not assigned a working, best-known, or retained role. T5, T2, and all other candidates have no model role. No candidate has official evidence.",
     "completed_operations": [
-      "M4",
-      "M5",
-      "E10"
+      "E12",
+      "T4",
+      "M6",
+      "T5",
+      "M7",
+      "E13"
     ],
-    "cumulative_resource_use": "Two completed fresh 120000-step training operations: T1 with seed 0 and 120832 actual steps after rollout rounding, and T2 with seed 1 and 120832 actual steps after rollout rounding. Completed measurements are M1 and M2 for T1, M3 paired for T2 versus T1, M4 saturated authority probing, and M5 corrected authority probing on 160 held-out episodes with seed 4200. E2 opened I1, E4 closed I1, E6 opened I2, E8 closed I2, and E10 opened I3. No official assessment, model-role assignment, or retained candidate.",
-    "current_goal_gap": "T1:checkpoint-120832 remains at 98/160 (61.25%) on held-out development seeds and is not official evidence. Its dominant unresolved gap is large-radius no-entry failure; four post-entry hold exits are secondary. T2:checkpoint-120832 remains at 0/160 on the paired panel. M5 establishes that the task is physically controllable, but no learned candidate approaches the 98% official threshold.",
-    "current_synthesis": "M2 showed that T1 failures were predominantly radius-dependent approach failures: 58 of 62 failures had no tolerance-region entry, all 28 episodes in the 18-20 cm bin failed before entry, and the 14-18 cm bin had 30 no-entry failures among 39 episodes; only four failures occurred after entry and each had a hold exit. T2's explicit geometry interface and phase-sensitive settling signal collapsed to 0/160 against T1's 98/160, so that recipe was rejected without ruling out all geometry-aware methods. M4 initially appeared to show no physical authority, but every tested controller saturated and failed even in the smallest-radius bin, making it an invalid authority discriminator. M5 corrected the controller gains while preserving the official mechanics: the nearest IK branch achieved 160/160, including 40/40 in every radius bin and 28/28 at 18-20 cm, with zero action-saturated episodes and zero hold exits; open and folded branches also reached every target and achieved 153/160 and 158/160 complete holds. The evidence therefore rejects physical reachability as the leading explanation and shifts the consequential distinction to learned policy acquisition and conditioning at the direct motor interface. The claim is limited to fixed-controller controllability on the held-out development panel; it does not establish learned-policy or official performance.",
-    "decision_frontier": "Can a learned policy acquire the physically validated low-amplitude reach-and-hold behavior when the successful T1 observation and reward regime is preserved, while a single fixed action-attenuation intervention improves conditioning without repeating T2's geometry/reward collapse? The discriminating evidence is held-out performance, especially large-radius entry and complete uninterrupted holds, plus whether the learned actions remain in the non-saturating regime established by M5.",
+    "cumulative_resource_use": "I3 used one recipe restoration (E12), two fresh maintainer-sized 120000-step training operations (T4 seed 2 and T5 seed 3, each completing 120832 actual rollout-rounded steps), and two paired 160-episode held-out measurements (M6 and M7, both comparing against T1 on shared seed panel 4200). M6 produced 115/160 for T4 and M7 produced 91/160 for T5. No official assessment, model-role assignment, or retained candidate was created.",
+    "current_goal_gap": "No learned candidate approaches the 98% goal. T1 remains at 98/160 (61.25%) on held-out development seeds, while T4 reached 115/160 (71.875%) once and T5 reached 91/160 (56.875%) under the same attenuation recipe. The remaining learned-policy deficit is dominated by no-entry failures, including severe directional failures; the evidence is not official assessment.",
+    "current_synthesis": "I3 is closed. M6 showed that restoring T1's observation/reward regime with fixed 0.5 action attenuation could improve one fresh run: T4 reached 115/160, including 13/28 at 18-20 cm, with zero action-saturated episodes and zero hold interruptions. M7 tested the unchanged recipe with a second fresh seed and failed to reproduce that result: T5 reached 91/160, lost to T1 by seven paired wins, had 66 no-entry failures and 3 post-entry hold-interruption failures, and still had zero action saturation but 0/24 success in the 135-180 degree angle bin. Therefore fixed 0.5 attenuation is rejected as a reliable route toward 98% under this recipe. The evidence preserves the narrower finding that attenuation can remove saturation and post-entry exits in a learned run, but it does not establish reliable improvement, rule out all action conditioning or directional representations, or support official assessment.",
+    "decision_frontier": "I3 is closed and no inquiry is active. The next fresh session must choose a new, discriminating route for the unresolved learned-policy acquisition problem: reduce the no-entry and directional deficit without changing official task mechanics or hold semantics, while requiring reproducible held-out evidence before any official assessment.",
     "evidence_references": [
       "M2",
       "E4",
@@ -6933,32 +7108,7 @@
       "E8",
       "M4",
       "M5",
-      "E10"
-    ],
-    "human_goal_connection": "The campaign still seeks at least 196 successes in the protected 200-episode official panel, with every success requiring the complete uninterrupted 100-step hold across the 0.06-0.20 m target annulus. I3 will test a route toward that goal after physical controllability was established but learned-policy performance remained at 61.25% on development evidence.",
-    "inquiry_id": null,
-    "next_direction_or_closure": "I3 is opened by E10 and continues in a fresh inquiry session. Its first bounded route is one maintainer-sized 120000-step training operation that restores the T1 observation and reward regime and tests only fixed action attenuation at the direct motor interface. The official task, target distribution, and uninterrupted-hold semantics remain unchanged; held-out evaluation must precede any official assessment. Close or redirect I3 if the intervention fails to improve the large-radius no-entry deficit, collapses as T2 did, or otherwise fails to preserve the validated control regime.",
-    "scientific_commit": "2bdd5f3181a8a6922bcdc96d7d9af9753f808eab",
-    "session_id": "S6"
-  },
-  "schema_version": 6,
-  "scientific_model": {
-    "commit": "d189d5a0c5773c311edd86a6eb551cbcd9d71341",
-    "path": "research/scientific_model.md",
-    "status": "ready"
-  },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "a76cc16b-7cce-478d-abf7-ad99888a3b42",
-    "id": "S7",
-    "inquiry_id": "I3",
-    "kind": "inquiry",
-    "objective": "Advance I3 toward its closure condition: Close if a fresh 120000-step training operation using the restored T1 observation/reward recipe and one fixed action-attenuation intervention is evaluated on shared held-out seeds and either reaches the 98% goal threshold with no consequential regression, or fails to improve the large-radius no-entry deficit, collapses like T2, or shows that action attenuation cannot preserve the learned regime. Any candidate must be judged on held-out evidence before official assessment.",
-    "operation_ids": [
+      "E10",
       "E12",
       "T4",
       "M6",
@@ -6966,7 +7116,18 @@
       "M7",
       "E13"
     ],
-    "scientific_parent_commit": "ef24aec757c5c0b4cf57f60d871b32dd8af07488"
+    "human_goal_connection": "The campaign still seeks at least 196 successes in the protected 200-episode official panel, with every success requiring the complete uninterrupted 100-step hold across the 0.06-0.20 m target annulus. I3 tested whether fixed action attenuation could move learned performance toward that goal after M5 established physical controllability.",
+    "inquiry_id": "I3",
+    "next_direction_or_closure": "This checkpoint ends the I3 inquiry session. Further scientific work belongs to a fresh session, which should begin by selecting and testing a new mechanism for reproducible acquisition of the physically validated reach-and-hold behavior, with emphasis on the unresolved directional and no-entry failures. Do not request official assessment until a candidate demonstrates sufficiently strong reproducible held-out performance.",
+    "scientific_commit": "df2f06f752dff6b7451ec95fe340a05e0cc4a0ae",
+    "session_id": "S7"
   },
+  "schema_version": 6,
+  "scientific_model": {
+    "commit": "d189d5a0c5773c311edd86a6eb551cbcd9d71341",
+    "path": "research/scientific_model.md",
+    "status": "ready"
+  },
+  "scientific_session": null,
   "terminal_state": null
 }
