@@ -1,13 +1,5 @@
 {
-  "active_inquiry": {
-    "closure_condition": "Train one bounded 120000-step direct-torque PPO recipe with the dynamics features, then evaluate it with the existing complete-hold evaluator on the fixed 200-episode development panel paired with T9. The inquiry closes as actionable only if the candidate reaches at least 196/200 and does not increase never-entry failures above T9's six; otherwise it closes as insufficient and does not justify official assessment.",
-    "goal_connection": "The best development candidate is 190/200, with six never-entry failures and four post-entry failures; reaching the required 196/200 needs a mechanism that improves braking and branch coordination without repeating the acquisition-to-stabilization tradeoff. The features will expose effective inertia, Jacobian geometry, and local bounded-actuation authority as observations while leaving direct torque control unchanged.",
-    "id": "I13",
-    "opened_in_session": "S26",
-    "question": "Can a direct-torque policy use compact model-derived dynamics features for configuration-dependent braking and local task-space controllability to preserve T9's acquisition while reducing the remaining difficult-angle and post-entry failures, without injecting a torque residual or changing the task, reward, timing, or complete-hold semantics?",
-    "rationale": "The physical model identifies configuration-dependent inertia, inertial joint coupling, sampled-data braking, and limited in-band authority as consequential unknowns. Existing interventions changed branch commitment, task-space observations, short temporal context, or applied residual torque; T9 improved only to 190/200 and the residual route degraded to 171/200. A dynamics-aware observation is a distinct, bounded test of whether the current observation is theoretically sufficient but practically difficult for PPO to represent, while preserving the proven direct-torque action interface and all official success semantics.",
-    "reframes": []
-  },
+  "active_inquiry": null,
   "campaign": {
     "base_commit": "c02b0d59e8ef397c87d92f70e986ad545e585b95",
     "id": "e8788df6-9f4a-4dac-92b7-48e40477e827",
@@ -10664,7 +10656,7 @@
     }
   },
   "counters": {
-    "event": 51,
+    "event": 52,
     "inquiry": 13,
     "measurement": 13,
     "session": 27,
@@ -18798,9 +18790,63 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-01T02:03:50Z",
+      "error": null,
+      "id": "E52",
+      "inquiry_id": "I13",
+      "kind": "inquiry",
+      "request": {
+        "action": "close",
+        "outcome": "insufficient",
+        "reason": "M13 rejects the I13 route. On the fixed 200-episode development panel, the fresh 120000-step direct-torque PPO candidate with T9 temporal context plus compact bounded dynamics features achieved 24/200 complete uninterrupted successes (12.0%) versus T9's 190/200 (95.0%), with 170 discordant episodes and a net paired deficit of 166 wins. The candidate failed the required 196/200 gate by 172 episodes and did not preserve acquisition: detailed diagnostics show the overwhelming failures timed out without reaching tolerance, while the small number of successful episodes generally completed the uninterrupted hold cleanly. The representation therefore did not provide a credible route to reduce T9's difficult-angle or post-entry failures, and no official assessment is justified. This result rejects the tested dynamics-feature representation and recipe, but does not establish that the plant is uncontrollable or that all future direct-torque representations are impossible."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I13",
+        "outcome": "insufficient",
+        "reason": "M13 rejects the I13 route. On the fixed 200-episode development panel, the fresh 120000-step direct-torque PPO candidate with T9 temporal context plus compact bounded dynamics features achieved 24/200 complete uninterrupted successes (12.0%) versus T9's 190/200 (95.0%), with 170 discordant episodes and a net paired deficit of 166 wins. The candidate failed the required 196/200 gate by 172 episodes and did not preserve acquisition: detailed diagnostics show the overwhelming failures timed out without reaching tolerance, while the small number of successful episodes generally completed the uninterrupted hold cleanly. The representation therefore did not provide a credible route to reduce T9's difficult-angle or post-entry failures, and no official assessment is justified. This result rejects the tested dynamics-feature representation and recipe, but does not establish that the plant is uncontrollable or that all future direct-torque representations are impossible.",
+        "status": "completed"
+      },
+      "session_id": "S27",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "close",
+        "inquiry_id": "I13",
+        "outcome": "insufficient",
+        "reason": "M13 rejects the I13 route. On the fixed 200-episode development panel, the fresh 120000-step direct-torque PPO candidate with T9 temporal context plus compact bounded dynamics features achieved 24/200 complete uninterrupted successes (12.0%) versus T9's 190/200 (95.0%), with 170 discordant episodes and a net paired deficit of 166 wins. The candidate failed the required 196/200 gate by 172 episodes and did not preserve acquisition: detailed diagnostics show the overwhelming failures timed out without reaching tolerance, while the small number of successful episodes generally completed the uninterrupted hold cleanly. The representation therefore did not provide a credible route to reduce T9's difficult-angle or post-entry failures, and no official assessment is justified. This result rejects the tested dynamics-feature representation and recipe, but does not establish that the plant is uncontrollable or that all future direct-torque representations are impossible."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I13",
+        "outcome": "insufficient",
+        "reason": "M13 rejects the I13 route. On the fixed 200-episode development panel, the fresh 120000-step direct-torque PPO candidate with T9 temporal context plus compact bounded dynamics features achieved 24/200 complete uninterrupted successes (12.0%) versus T9's 190/200 (95.0%), with 170 discordant episodes and a net paired deficit of 166 wins. The candidate failed the required 196/200 gate by 172 episodes and did not preserve acquisition: detailed diagnostics show the overwhelming failures timed out without reaching tolerance, while the small number of successful episodes generally completed the uninterrupted hold cleanly. The representation therefore did not provide a credible route to reduce T9's difficult-angle or post-entry failures, and no official assessment is justified. This result rejects the tested dynamics-feature representation and recipe, but does not establish that the plant is uncontrollable or that all future direct-torque representations are impossible.",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E52",
+    "inquiry_id": "I13",
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "close",
+        "outcome": "insufficient",
+        "reason": "M13 rejects the I13 route. On the fixed 200-episode development panel, the fresh 120000-step direct-torque PPO candidate with T9 temporal context plus compact bounded dynamics features achieved 24/200 complete uninterrupted successes (12.0%) versus T9's 190/200 (95.0%), with 170 discordant episodes and a net paired deficit of 166 wins. The candidate failed the required 196/200 gate by 172 episodes and did not preserve acquisition: detailed diagnostics show the overwhelming failures timed out without reaching tolerance, while the small number of successful episodes generally completed the uninterrupted hold cleanly. The representation therefore did not provide a credible route to reduce T9's difficult-angle or post-entry failures, and no official assessment is justified. This result rejects the tested dynamics-feature representation and recipe, but does not establish that the plant is uncontrollable or that all future direct-torque representations are impossible."
+      }
+    },
+    "request_fingerprint": "61b86fffe8a50b5dffb22a591855edd3773e6eda30fa57c18ea5b53fb5ca3cfc",
+    "session_id": "S27",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No working, best-known, or retained role is assigned. T9:checkpoint-120832 remains the strongest measured development candidate at 190/200 but is below the development gate; T1:checkpoint-100352 remains the direct-torque reference at 189/200. T11:checkpoint-120832 and T12:checkpoint-35840 are rejected. I13 has been opened but has not yet produced a candidate or measurement.",
     "completed_operations": [
@@ -18845,7 +18891,8 @@
     "objective": "Advance I13 toward its closure condition: Train one bounded 120000-step direct-torque PPO recipe with the dynamics features, then evaluate it with the existing complete-hold evaluator on the fixed 200-episode development panel paired with T9. The inquiry closes as actionable only if the candidate reaches at least 196/200 and does not increase never-entry failures above T9's six; otherwise it closes as insufficient and does not justify official assessment.",
     "operation_ids": [
       "T13",
-      "M13"
+      "M13",
+      "E52"
     ],
     "scientific_parent_commit": "4d93783de444408c9e0fa9642f2e6567d61fcf69"
   },
