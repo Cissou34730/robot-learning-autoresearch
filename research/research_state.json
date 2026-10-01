@@ -1,13 +1,5 @@
 {
-  "active_inquiry": {
-    "closure_condition": "Train one fresh run with the fixed 120000-step allocation, using T9's intact temporal-context direct-torque recipe and its target distribution plus only a mild velocity-aware braking reward. Evaluate the selected final checkpoint on the fixed 200-episode development panel paired with T9, including never-entry and post-entry failure counts. The route is credible only if it reaches at least 196 of 200 complete uninterrupted successes without a broad acquisition regression; otherwise close the inquiry as insufficient and do not request official assessment.",
-    "goal_connection": "The human goal requires at least 196 of 200 complete uninterrupted holds. T9 reaches 190 of 200 with six never-entry and four post-entry failures, so a braking intervention is relevant only if it preserves acquisition and closes the remaining complete-hold gap.",
-    "id": "I15",
-    "opened_in_session": "S30",
-    "question": "Can an isolated velocity-aware braking reward, added to T9's temporal-context direct-torque recipe without changing its observation, action mapping, or training target distribution, preserve broad acquisition while reducing post-entry failures in the difficult negative-angle basin?",
-    "rationale": "The physical model predicts that residual kinetic energy and sampled-data braking can cause both late acquisition misses and interruptions after entry, while joint velocity is already observed. T3 did test endpoint-speed shaping, but it also changed branch handling and omitted T9's temporal context, then collapsed; that result does not isolate the reward mechanism. M9 and E36 establish T9 as the strongest route at 190 of 200, while M14 and E56 reject the target-mixture intervention as a broad acquisition collapse. This inquiry tests the remaining stabilization explanation with the proven T9 representation held fixed.",
-    "reframes": []
-  },
+  "active_inquiry": null,
   "campaign": {
     "base_commit": "c02b0d59e8ef397c87d92f70e986ad545e585b95",
     "id": "e8788df6-9f4a-4dac-92b7-48e40477e827",
@@ -12302,7 +12294,7 @@
     }
   },
   "counters": {
-    "event": 59,
+    "event": 60,
     "inquiry": 15,
     "measurement": 15,
     "session": 31,
@@ -21729,9 +21721,63 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-01T03:20:58Z",
+      "error": null,
+      "id": "E60",
+      "inquiry_id": "I15",
+      "kind": "inquiry",
+      "request": {
+        "action": "close",
+        "outcome": "I15 is insufficient.",
+        "reason": "M15 decisively fails I15's closure condition. On the fixed 200-episode development panel, T15:checkpoint-120832 achieved 0/200 complete uninterrupted successes (0.0%), while the paired T9:checkpoint-120832 reference achieved 190/200 (95.0%). T15 lost all 190 discordant episodes, with 0 candidate wins and 190 reference wins. The isolated proximity-gated joint-velocity braking reward therefore caused a complete acquisition collapse rather than reducing post-entry failures while preserving T9's route. The tested braking intervention and recipe are rejected; this does not establish that the plant is uncontrollable or that all future stabilization or direct-torque methods are impossible. No candidate meets the 196/200 development gate, so official assessment remains unjustified."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I15",
+        "outcome": "I15 is insufficient.",
+        "reason": "M15 decisively fails I15's closure condition. On the fixed 200-episode development panel, T15:checkpoint-120832 achieved 0/200 complete uninterrupted successes (0.0%), while the paired T9:checkpoint-120832 reference achieved 190/200 (95.0%). T15 lost all 190 discordant episodes, with 0 candidate wins and 190 reference wins. The isolated proximity-gated joint-velocity braking reward therefore caused a complete acquisition collapse rather than reducing post-entry failures while preserving T9's route. The tested braking intervention and recipe are rejected; this does not establish that the plant is uncontrollable or that all future stabilization or direct-torque methods are impossible. No candidate meets the 196/200 development gate, so official assessment remains unjustified.",
+        "status": "completed"
+      },
+      "session_id": "S31",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "close",
+        "inquiry_id": "I15",
+        "outcome": "I15 is insufficient.",
+        "reason": "M15 decisively fails I15's closure condition. On the fixed 200-episode development panel, T15:checkpoint-120832 achieved 0/200 complete uninterrupted successes (0.0%), while the paired T9:checkpoint-120832 reference achieved 190/200 (95.0%). T15 lost all 190 discordant episodes, with 0 candidate wins and 190 reference wins. The isolated proximity-gated joint-velocity braking reward therefore caused a complete acquisition collapse rather than reducing post-entry failures while preserving T9's route. The tested braking intervention and recipe are rejected; this does not establish that the plant is uncontrollable or that all future stabilization or direct-torque methods are impossible. No candidate meets the 196/200 development gate, so official assessment remains unjustified."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I15",
+        "outcome": "I15 is insufficient.",
+        "reason": "M15 decisively fails I15's closure condition. On the fixed 200-episode development panel, T15:checkpoint-120832 achieved 0/200 complete uninterrupted successes (0.0%), while the paired T9:checkpoint-120832 reference achieved 190/200 (95.0%). T15 lost all 190 discordant episodes, with 0 candidate wins and 190 reference wins. The isolated proximity-gated joint-velocity braking reward therefore caused a complete acquisition collapse rather than reducing post-entry failures while preserving T9's route. The tested braking intervention and recipe are rejected; this does not establish that the plant is uncontrollable or that all future stabilization or direct-torque methods are impossible. No candidate meets the 196/200 development gate, so official assessment remains unjustified.",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E60",
+    "inquiry_id": "I15",
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "close",
+        "outcome": "I15 is insufficient.",
+        "reason": "M15 decisively fails I15's closure condition. On the fixed 200-episode development panel, T15:checkpoint-120832 achieved 0/200 complete uninterrupted successes (0.0%), while the paired T9:checkpoint-120832 reference achieved 190/200 (95.0%). T15 lost all 190 discordant episodes, with 0 candidate wins and 190 reference wins. The isolated proximity-gated joint-velocity braking reward therefore caused a complete acquisition collapse rather than reducing post-entry failures while preserving T9's route. The tested braking intervention and recipe are rejected; this does not establish that the plant is uncontrollable or that all future stabilization or direct-torque methods are impossible. No candidate meets the 196/200 development gate, so official assessment remains unjustified."
+      }
+    },
+    "request_fingerprint": "e3bdffb57c0cb16e052874647ccde32a0afa00f1cb126fa7f7d36002d35a19a6",
+    "session_id": "S31",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No working, best-known, or retained role is assigned. T9:checkpoint-120832 remains the strongest measured development candidate at 190/200 and will be the paired reference for I15. T14:checkpoint-120832 is rejected for I14 at 62/200.",
     "completed_operations": [
@@ -21775,7 +21821,8 @@
     "objective": "Advance I15 toward its closure condition: Train one fresh run with the fixed 120000-step allocation, using T9's intact temporal-context direct-torque recipe and its target distribution plus only a mild velocity-aware braking reward. Evaluate the selected final checkpoint on the fixed 200-episode development panel paired with T9, including never-entry and post-entry failure counts. The route is credible only if it reaches at least 196 of 200 complete uninterrupted successes without a broad acquisition regression; otherwise close the inquiry as insufficient and do not request official assessment.",
     "operation_ids": [
       "T15",
-      "M15"
+      "M15",
+      "E60"
     ],
     "scientific_parent_commit": "c214d783072797f2f9cc3ccfab768e9c30bb5638"
   },
