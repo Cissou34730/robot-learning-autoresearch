@@ -28,6 +28,9 @@ fixes remain unchanged. The measurement-evidence handoff now distinguishes
 reduced result summaries from full artifacts and exposes bounded structural
 inventories. This is a data-presentation change, not new scientific-action
 guidance; its effect on PI inspection remains to be assessed in a campaign.
+Its instrument-document addition is now removed for the documentation-only
+startup comparison recorded below; the inventory implementation and feedback
+remain active, and the comparison outcome is pending.
 
 The objective under investigation is scientifically justified action selection:
 the PI chooses the action that can resolve a consequential uncertainty rather
@@ -395,9 +398,9 @@ its scientific breadth or achieve its result.
 
 | Item | Status / boundary |
 |---|---|
-| Reliable measurement-evidence inspection | Approved handoff implementation below; campaign effectiveness remains unassessed. |
+| Reliable measurement-evidence inspection | Inventory implementation retained; instrument-document addition removed for the startup comparison below. Inspection effectiveness remains unassessed. |
 | Context flooding | Open, separate work; tool-output offloading thresholds are unchanged. |
-| Training-shaped inquiry commitments and scientific continuity | Main progression issue remains open; latest campaign showed improvement, not a general resolution. |
+| Training-shaped inquiry commitments and scientific continuity | Open; two fresh openings after `f986a2c` selected an unchanged-recipe baseline before intervention. Documentation-only reversal awaits a new opening observation. |
 | Checkpoint nomination and evidence selection | Deferred behind progression; available training facts are not proof of development performance. |
 | Operation-submission handoff clarification | Still unimplemented. |
 | Explicit protection of the old protocol log | Still unimplemented; read-access policy is a separate decision. |
@@ -758,3 +761,61 @@ separate from harness changes so their outcomes are not conflated.
 - **Disposition:** implemented for a campaign trial after maintainer approval.
   Scientific effectiveness remains unassessed; no campaign is started or
   resumed to validate the change.
+
+## 2026-10-01: documentation-only reversal for repeated baseline-first openings
+
+- **Implementation commit:** the commit containing this entry,
+  `Reverse artifact inventory documentation for startup comparison`.
+- **Baseline / observed openings:** the completed successful campaign
+  `77a975a5-9917-4178-ad06-ede00161560f` began with a candidate-free dynamics
+  measurement before training. After `f986a2c`, fresh campaign
+  `b3efe2bc-05e7-4f1d-b595-df09ac6b7a2c` checkpointed an unchanged-recipe
+  baseline direction, opened a candidate-dependent inquiry, and requested
+  training. Fresh campaign `6350d383-c0a4-4a20-9357-c34df595a68b` requested
+  the same kind of baseline directly in startup, without any inquiry handoff.
+  These are observations of action selection and requests, not claims about
+  completed training or scientific performance.
+- **Repeated rationale:** the second opening states that "a baseline candidate
+  is needed before deciding whether the restricted 14-20 cm training
+  distribution, reward shaping, or control representation requires
+  intervention." The first opening similarly describes baseline training and
+  diagnostics as the smallest route "without presupposing an intervention."
+  Both prioritize observing the existing recipe before changing it.
+- **Comparison / RCA limits:** the first startup prompts, restored scientific
+  recipes, backend model and reasoning setting, and phase-enforcement code
+  match the successful campaign. The direct-startup repeat shows that neither
+  an inquiry handoff nor the first opening's mistaken inquiry-first phase
+  interpretation is necessary for this behavior. The instrument-document
+  addition was read before both decisions and remains a suspected influence;
+  this association does not establish its causal mechanism. The new inventory
+  and measurement-rendering paths had not been exercised before either first
+  training request.
+- **Approved reversal:** remove only the complete 44-line "Artifact contents
+  metadata" addition from `research/instruments.md`, restoring that document
+  to its pre-`f986a2c` content. Do not replace it with different guidance,
+  remove selected schema fields, or add a required physical probe.
+- **Retained implementation:** artifact inventory generation, its 4096-byte
+  bound, all three instrument integrations, live feedback, brief rendering,
+  request schemas, fingerprints, phase permissions and transitions, persona,
+  objectives, training allocation, and scientific runtime remain unchanged.
+  The maintainer log is not part of the PI instruction corpus. The metadata
+  remains operational even though its explanatory contract section is
+  temporarily absent.
+- **Test / observation:** the maintainer runs the next fresh campaign with
+  the old instrument document and current executable harness. Record the
+  first selected action and its public justification, especially whether the
+  PI again makes a baseline candidate a prerequisite to method development.
+  Investigation before baseline training would support an opening influence
+  from the removed text; another unchanged-recipe baseline justified by that
+  prerequisite would weaken the hypothesis. Evaluate the reasoning and work,
+  not merely whether a particular instrument comes first. A fresh campaign
+  regenerates its scientific model, so preserve that model alongside the
+  prompt and request when interpreting the comparison.
+- **Resources / execution boundary:** the direct-startup repeat used two PI
+  invocations totaling 257.506 seconds and 3.282158 AIU before its training
+  request. The maintainer approved applying this reversal for the next fresh
+  campaign while handling the currently dispatched run. No campaign is
+  stopped, reset, started, resumed, or evaluated by this engineering change.
+- **Disposition:** documentation component removed for a maintainer-controlled
+  opening comparison; inventory functionality retained. The next opening and
+  the causal effect of the reversal remain unobserved.
