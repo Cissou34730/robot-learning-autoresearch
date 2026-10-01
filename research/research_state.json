@@ -6992,44 +6992,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "open",
-        "inquiry": {
-          "closure_condition": "Close or redirect the inquiry after the continuous representation has been implemented and evaluated through at least two fresh maintainer-sized training runs on the unchanged official evaluation semantics. Treat it as a credible route only if the held-out paired evidence reproducibly improves the hard directional bins and overall success over the T1 baseline without introducing a material increase in hold interruptions; otherwise reject this route.",
-          "goal_connection": "The learned candidates remain far below the 98% episode-success goal because no-entry failures dominate, especially for targets beyond 135 degrees, whereas successful entries already show generally reliable uninterrupted holds. Removing the wrapped-angle representation discontinuity could improve directional generalization while preserving the official reach-and-hold task.",
-          "id": "I4",
-          "opened_in_session": "S8",
-          "question": "Can a continuous directional and inverse-kinematic branch representation improve reproducible learned acquisition of the currently missed target directions without changing official task mechanics or hold semantics?",
-          "rationale": "The physical model identifies wrapped branch-angle errors as a representation discontinuity, and the latest attenuation evidence shows that eliminating action saturation does not reliably solve directional no-entry failures. The T4/T5 contrast demonstrates that the current recipe can acquire different directional basins across seeds, so a representation-level intervention is a discriminating next route rather than another attenuation trial. The intervention will remain training/policy-interface code only; official mechanics, target distribution, and uninterrupted hold semantics remain unchanged.",
-          "reframes": []
-        }
-      },
-      "result": {
-        "action": "open",
-        "inquiry_id": "I4",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E15",
-    "inquiry_id": null,
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "open",
-        "closure_condition": "Close or redirect the inquiry after the continuous representation has been implemented and evaluated through at least two fresh maintainer-sized training runs on the unchanged official evaluation semantics. Treat it as a credible route only if the held-out paired evidence reproducibly improves the hard directional bins and overall success over the T1 baseline without introducing a material increase in hold interruptions; otherwise reject this route.",
-        "goal_connection": "The learned candidates remain far below the 98% episode-success goal because no-entry failures dominate, especially for targets beyond 135 degrees, whereas successful entries already show generally reliable uninterrupted holds. Removing the wrapped-angle representation discontinuity could improve directional generalization while preserving the official reach-and-hold task.",
-        "question": "Can a continuous directional and inverse-kinematic branch representation improve reproducible learned acquisition of the currently missed target directions without changing official task mechanics or hold semantics?",
-        "rationale": "The physical model identifies wrapped branch-angle errors as a representation discontinuity, and the latest attenuation evidence shows that eliminating action saturation does not reliably solve directional no-entry failures. The T4/T5 contrast demonstrates that the current recipe can acquire different directional basins across seeds, so a representation-level intervention is a discriminating next route rather than another attenuation trial. The intervention will remain training/policy-interface code only; official mechanics, target distribution, and uninterrupted hold semantics remain unchanged."
-      }
-    },
-    "request_fingerprint": "502bbc589ffdf84be7f95764d243065af4d63ad1bd45e25e13744acde896b954",
-    "session_id": "S8",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T1:checkpoint-120832 remains the strongest baseline learned candidate at 98/160 development success. T4's 115/160 result is the highest observed learned development result but is not reproducible by T5 and is not assigned a working, best-known, or retained role. T5, T2, and all other candidates have no model role. No candidate has official evidence.",
     "completed_operations": [
