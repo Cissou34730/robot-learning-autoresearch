@@ -86,3 +86,4 @@
 | T14 | training | I14 | completed |
 | M14 | measurement | I14 | completed |
 | E56 | inquiry | I14 | completed |
+| E57 | checkpoint | I14 | checkpointed |
