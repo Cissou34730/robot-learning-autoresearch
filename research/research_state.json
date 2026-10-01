@@ -844,7 +844,7 @@
     }
   },
   "counters": {
-    "event": 4,
+    "event": 5,
     "inquiry": 1,
     "measurement": 2,
     "session": 3,
@@ -853,7 +853,7 @@
   "human_goal": {
     "source": "research/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -1326,26 +1326,161 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-01T05:53:49Z",
+      "error": null,
+      "id": "E5",
+      "inquiry_id": "I1",
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "T1 produced archived candidates, including T1:checkpoint-120832, which was evaluated in M2. No candidate has been assigned working, best-known, or retained status; no candidate meets the human goal.",
+        "completed_operations": [
+          "T1",
+          "M2",
+          "E4"
+        ],
+        "cumulative_resource_use": "One completed dynamics measurement (M1), two completed inquiry-opening/reframe events (E2 and E4), one completed 120000-step training allocation (T1; 120832 recorded rollout steps), and one completed 160-episode research evaluation (M2).",
+        "current_goal_gap": "A learned candidate exists from T1, but no candidate is close to the 98% goal: the strongest evaluated checkpoint achieved 61.25% on a held-out research panel. The remaining gap is concentrated in outer-radius reach, with 58 of 62 failures never entering tolerance and only four failures occurring after a hold had begun.",
+        "current_synthesis": "Established model facts and M1 show that bounded effort, residual velocity, and the complete hold are consequential, but moderate known-target joint-space control completed 112/112 tested trials across official radii and feasible branches, supporting physical feasibility. T1 trained PPO over the full 6-20 cm range and reached 0.60 training-panel success at 120832 steps. M2 measured 98/160 successes (61.25%) on a held-out research panel: 40/40 at 6-10 cm, 50/53 at 10-14 cm, 8/39 at 14-18 cm, and 0/28 at 18-20 cm. Of 62 failures, 58 never entered tolerance and four reached tolerance before interruption. These observations contradict omitted inner-radius coverage as the leading explanation and instead support an outer-radius reach or configuration-dependent control limitation in the current PPO recipe. The evidence does not yet establish whether representation, reward shaping, or direct bounded-motor control is the decisive cause, and M2 is not an official 200-episode assessment.",
+        "decision_frontier": "Can a targeted change to the PPO policy representation, reward, or control interface materially improve complete-hold success at 14-20 cm, especially near 20 cm, while preserving the already strong inner-radius behavior? A fresh fixed-allocation intervention followed by hold-specific evaluation must distinguish improved outer-radius reach from mere training-panel changes; failure to improve would redirect away from the current PPO recipe rather than revive the rejected coverage explanation.",
+        "evidence_references": [
+          "M1",
+          "T1",
+          "M2",
+          "E4"
+        ],
+        "human_goal_connection": "The campaign still targets at least 98% complete, uninterrupted 100-sample holds under the official 6-20 cm distribution. M2 shows that the current learned policy is far from that goal, with 98/160 successes, so the reframe remains directly necessary for goal progress.",
+        "next_direction_or_closure": "Begin a fresh I1 session and choose one targeted outer-radius intervention before spending another 120000-step allocation. Preserve the official task semantics and evaluate the resulting strongest candidate with per-radius and hold-specific diagnostics against T1/M2. Do not request official assessment unless a candidate first has evidence plausibly near the 98% requirement."
+      },
+      "result": {
+        "session_id": "S3",
+        "status": "checkpointed"
+      },
+      "session_id": "S3",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "62b5eea1b0de0924ff6bb305f0ec41a17cb6632f",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "T1 produced archived candidates, including T1:checkpoint-120832, which was evaluated in M2. No candidate has been assigned working, best-known, or retained status; no candidate meets the human goal.",
+        "completed_operations": [
+          "T1",
+          "M2",
+          "E4"
+        ],
+        "cumulative_resource_use": "One completed dynamics measurement (M1), two completed inquiry-opening/reframe events (E2 and E4), one completed 120000-step training allocation (T1; 120832 recorded rollout steps), and one completed 160-episode research evaluation (M2).",
+        "current_goal_gap": "A learned candidate exists from T1, but no candidate is close to the 98% goal: the strongest evaluated checkpoint achieved 61.25% on a held-out research panel. The remaining gap is concentrated in outer-radius reach, with 58 of 62 failures never entering tolerance and only four failures occurring after a hold had begun.",
+        "current_synthesis": "Established model facts and M1 show that bounded effort, residual velocity, and the complete hold are consequential, but moderate known-target joint-space control completed 112/112 tested trials across official radii and feasible branches, supporting physical feasibility. T1 trained PPO over the full 6-20 cm range and reached 0.60 training-panel success at 120832 steps. M2 measured 98/160 successes (61.25%) on a held-out research panel: 40/40 at 6-10 cm, 50/53 at 10-14 cm, 8/39 at 14-18 cm, and 0/28 at 18-20 cm. Of 62 failures, 58 never entered tolerance and four reached tolerance before interruption. These observations contradict omitted inner-radius coverage as the leading explanation and instead support an outer-radius reach or configuration-dependent control limitation in the current PPO recipe. The evidence does not yet establish whether representation, reward shaping, or direct bounded-motor control is the decisive cause, and M2 is not an official 200-episode assessment.",
+        "decision_frontier": "Can a targeted change to the PPO policy representation, reward, or control interface materially improve complete-hold success at 14-20 cm, especially near 20 cm, while preserving the already strong inner-radius behavior? A fresh fixed-allocation intervention followed by hold-specific evaluation must distinguish improved outer-radius reach from mere training-panel changes; failure to improve would redirect away from the current PPO recipe rather than revive the rejected coverage explanation.",
+        "evidence_references": [
+          "M1",
+          "T1",
+          "M2",
+          "E4"
+        ],
+        "human_goal_connection": "The campaign still targets at least 98% complete, uninterrupted 100-sample holds under the official 6-20 cm distribution. M2 shows that the current learned policy is far from that goal, with 98/160 successes, so the reframe remains directly necessary for goal progress.",
+        "inquiry_id": "I1",
+        "next_direction_or_closure": "Begin a fresh I1 session and choose one targeted outer-radius intervention before spending another 120000-step allocation. Preserve the official task semantics and evaluate the resulting strongest candidate with per-radius and hold-specific diagnostics against T1/M2. Do not request official assessment unless a candidate first has evidence plausibly near the 98% requirement.",
+        "session_id": "S3"
+      },
+      "presentation": {
+        "backend_session_id": "6f46cd03-64e0-46ff-b874-a3fbee179d1d",
+        "campaign_id": "77a975a5-9917-4178-ad06-ede00161560f",
+        "campaign_usage": "12m19s | 21.27 AIU | prompt 2.9m (83% cached) | output 33.9k",
+        "session_id": "S3",
+        "session_kind": "inquiry",
+        "session_usage": "4m13s | 5.63 AIU | prompt 951.9k (88% cached) | output 8.6k"
+      },
+      "result": {
+        "session_id": "S3",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "baa9e58bcbf4700e23cbd0fc613277ec51f136a1",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E5",
+    "inquiry_id": "I1",
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "T1 produced archived candidates, including T1:checkpoint-120832, which was evaluated in M2. No candidate has been assigned working, best-known, or retained status; no candidate meets the human goal.",
+        "completed_operations": [
+          "T1",
+          "M2",
+          "E4"
+        ],
+        "cumulative_resource_use": "One completed dynamics measurement (M1), two completed inquiry-opening/reframe events (E2 and E4), one completed 120000-step training allocation (T1; 120832 recorded rollout steps), and one completed 160-episode research evaluation (M2).",
+        "current_goal_gap": "A learned candidate exists from T1, but no candidate is close to the 98% goal: the strongest evaluated checkpoint achieved 61.25% on a held-out research panel. The remaining gap is concentrated in outer-radius reach, with 58 of 62 failures never entering tolerance and only four failures occurring after a hold had begun.",
+        "current_synthesis": "Established model facts and M1 show that bounded effort, residual velocity, and the complete hold are consequential, but moderate known-target joint-space control completed 112/112 tested trials across official radii and feasible branches, supporting physical feasibility. T1 trained PPO over the full 6-20 cm range and reached 0.60 training-panel success at 120832 steps. M2 measured 98/160 successes (61.25%) on a held-out research panel: 40/40 at 6-10 cm, 50/53 at 10-14 cm, 8/39 at 14-18 cm, and 0/28 at 18-20 cm. Of 62 failures, 58 never entered tolerance and four reached tolerance before interruption. These observations contradict omitted inner-radius coverage as the leading explanation and instead support an outer-radius reach or configuration-dependent control limitation in the current PPO recipe. The evidence does not yet establish whether representation, reward shaping, or direct bounded-motor control is the decisive cause, and M2 is not an official 200-episode assessment.",
+        "decision_frontier": "Can a targeted change to the PPO policy representation, reward, or control interface materially improve complete-hold success at 14-20 cm, especially near 20 cm, while preserving the already strong inner-radius behavior? A fresh fixed-allocation intervention followed by hold-specific evaluation must distinguish improved outer-radius reach from mere training-panel changes; failure to improve would redirect away from the current PPO recipe rather than revive the rejected coverage explanation.",
+        "evidence_references": [
+          "M1",
+          "T1",
+          "M2",
+          "E4"
+        ],
+        "human_goal_connection": "The campaign still targets at least 98% complete, uninterrupted 100-sample holds under the official 6-20 cm distribution. M2 shows that the current learned policy is far from that goal, with 98/160 successes, so the reframe remains directly necessary for goal progress.",
+        "next_direction_or_closure": "Begin a fresh I1 session and choose one targeted outer-radius intervention before spending another 120000-step allocation. Preserve the official task semantics and evaluate the resulting strongest candidate with per-radius and hold-specific diagnostics against T1/M2. Do not request official assessment unless a candidate first has evidence plausibly near the 98% requirement."
+      }
+    },
+    "request_fingerprint": "8beec262fb0ef47faa8b8e39066debd94d0d894cb61c067242ba78357bb69517",
+    "session_id": "S3",
+    "supersedes": null
+  },
   "pi_checkpoint": {
-    "candidates_and_roles": "No model candidates exist; working, best-known, and retained roles remain empty. M1 is measurement evidence only.",
+    "candidates_and_roles": "T1 produced archived candidates, including T1:checkpoint-120832, which was evaluated in M2. No candidate has been assigned working, best-known, or retained status; no candidate meets the human goal.",
     "completed_operations": [
-      "E2"
+      "T1",
+      "M2",
+      "E4"
     ],
-    "cumulative_resource_use": "One completed measurement operation (M1), one completed inquiry-opening operation (E2), no training allocation consumed, and no candidate produced.",
-    "current_goal_gap": "No learned policy or candidate exists, and no learned-policy success estimate under the official distribution is available. The decisive gap is whether PPO can learn velocity-aware braking and stable holding when its training distribution includes the omitted inner radii.",
-    "current_synthesis": "Established model facts make bounded effort, residual velocity, and the two-second hold consequential. M1 found a feasible route with known-target joint-space control: moderate soft and balanced schedules completed 112/112 trials across tested radii and feasible branches with the full hold and low median saturation, while the firm schedule failed through saturation. This supports physical feasibility and makes learning coverage the leading explanation, while branch selection and configuration-dependent coupling remain competing explanations. M1 does not establish learned-policy generalization or the 98% goal.",
-    "decision_frontier": "Can PPO acquire a stable velocity-aware reach-and-hold controller over the full official radial distribution, or will failures remain broad or concentrate in inner-radius geometry, branch choice, or near-target braking? A fresh 120000-step full-coverage training run followed by hold-specific research evaluation will discriminate coverage-limited learning from a need to change policy representation, reward shaping, or control method.",
+    "cumulative_resource_use": "One completed dynamics measurement (M1), two completed inquiry-opening/reframe events (E2 and E4), one completed 120000-step training allocation (T1; 120832 recorded rollout steps), and one completed 160-episode research evaluation (M2).",
+    "current_goal_gap": "A learned candidate exists from T1, but no candidate is close to the 98% goal: the strongest evaluated checkpoint achieved 61.25% on a held-out research panel. The remaining gap is concentrated in outer-radius reach, with 58 of 62 failures never entering tolerance and only four failures occurring after a hold had begun.",
+    "current_synthesis": "Established model facts and M1 show that bounded effort, residual velocity, and the complete hold are consequential, but moderate known-target joint-space control completed 112/112 tested trials across official radii and feasible branches, supporting physical feasibility. T1 trained PPO over the full 6-20 cm range and reached 0.60 training-panel success at 120832 steps. M2 measured 98/160 successes (61.25%) on a held-out research panel: 40/40 at 6-10 cm, 50/53 at 10-14 cm, 8/39 at 14-18 cm, and 0/28 at 18-20 cm. Of 62 failures, 58 never entered tolerance and four reached tolerance before interruption. These observations contradict omitted inner-radius coverage as the leading explanation and instead support an outer-radius reach or configuration-dependent control limitation in the current PPO recipe. The evidence does not yet establish whether representation, reward shaping, or direct bounded-motor control is the decisive cause, and M2 is not an official 200-episode assessment.",
+    "decision_frontier": "Can a targeted change to the PPO policy representation, reward, or control interface materially improve complete-hold success at 14-20 cm, especially near 20 cm, while preserving the already strong inner-radius behavior? A fresh fixed-allocation intervention followed by hold-specific evaluation must distinguish improved outer-radius reach from mere training-panel changes; failure to improve would redirect away from the current PPO recipe rather than revive the rejected coverage explanation.",
     "evidence_references": [
-      "M1"
+      "M1",
+      "T1",
+      "M2",
+      "E4"
     ],
-    "human_goal_connection": "The campaign still targets at least 98% complete, uninterrupted 100-sample holds under the official 6-20 cm distribution. Opening I1 preserves the direct route from the current evidence gap to that goal.",
-    "inquiry_id": null,
-    "next_direction_or_closure": "End this goal-review session and begin inquiry I1 in a fresh session. The first bounded action is a fresh PPO run using the fixed 120000-step allocation and full official 6-20 cm training coverage, followed by research evaluation that records complete-hold outcomes and geometry-specific failure evidence. Do not treat the run as proof of the broader method before evaluation.",
-    "scientific_commit": "09df4f329d720464b3e6f595cf82b04f008d7aac",
-    "session_id": "S2"
+    "human_goal_connection": "The campaign still targets at least 98% complete, uninterrupted 100-sample holds under the official 6-20 cm distribution. M2 shows that the current learned policy is far from that goal, with 98/160 successes, so the reframe remains directly necessary for goal progress.",
+    "inquiry_id": "I1",
+    "next_direction_or_closure": "Begin a fresh I1 session and choose one targeted outer-radius intervention before spending another 120000-step allocation. Preserve the official task semantics and evaluate the resulting strongest candidate with per-radius and hold-specific diagnostics against T1/M2. Do not request official assessment unless a candidate first has evidence plausibly near the 98% requirement.",
+    "scientific_commit": "baa9e58bcbf4700e23cbd0fc613277ec51f136a1",
+    "session_id": "S3"
   },
   "schema_version": 6,
   "scientific_model": {
@@ -1353,23 +1488,6 @@
     "path": "research/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "6f46cd03-64e0-46ff-b874-a3fbee179d1d",
-    "id": "S3",
-    "inquiry_id": "I1",
-    "kind": "inquiry",
-    "objective": "Advance I1 toward its closure condition: Close or reframe after a full-coverage 120000-step PPO run and hold-specific research evaluation establish whether failures are concentrated in the newly covered inner radii or remain broad across the official distribution, with any resulting candidate judged against M1's feasible moderate-braking evidence.",
-    "operation_ids": [
-      "T1",
-      "M2",
-      "E4"
-    ],
-    "scientific_parent_commit": "62b5eea1b0de0924ff6bb305f0ec41a17cb6632f"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
