@@ -49,3 +49,4 @@
 | E31 | checkpoint | - | checkpointed |
 | T8 | training | I8 | completed |
 | M8 | measurement | I8 | completed |
+| E32 | inquiry | I8 | completed |
