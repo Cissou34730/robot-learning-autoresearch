@@ -11518,38 +11518,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I8",
-        "outcome": "insufficient",
-        "reason": "I8 is insufficient as a route to the human goal. T8:checkpoint-120832 achieved 176/200 complete uninterrupted successes (88.0%) on the fixed development panel versus T1:checkpoint-100352 at 189/200 (94.5%), with a -13 net paired result (11 candidate wins versus 24 reference wins across 35 discordant episodes). The task-space velocity representation did improve the targeted -180 to -90 degree acquisition subgroup, reducing its failures from T1's 11/66 to 0/66, but this gain did not translate to complete episode success: T8 had 18 never-entry failures versus T1's 6, six post-entry failures versus T1's 5, and eight interrupted episodes versus T1's 7. The candidate therefore misses the 196/200 closure threshold, fails to improve T1's complete-hold result, and slightly worsens post-entry stability. The result supports a bounded mechanistic claim that explicit task-space velocity can remove the specific critical-sector deficit under this recipe, but the accompanying broad acquisition and hold losses reject this representation as a credible overall route. It does not establish that the plant is uncontrollable or that no future route exists."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I8",
-        "outcome": "insufficient",
-        "reason": "I8 is insufficient as a route to the human goal. T8:checkpoint-120832 achieved 176/200 complete uninterrupted successes (88.0%) on the fixed development panel versus T1:checkpoint-100352 at 189/200 (94.5%), with a -13 net paired result (11 candidate wins versus 24 reference wins across 35 discordant episodes). The task-space velocity representation did improve the targeted -180 to -90 degree acquisition subgroup, reducing its failures from T1's 11/66 to 0/66, but this gain did not translate to complete episode success: T8 had 18 never-entry failures versus T1's 6, six post-entry failures versus T1's 5, and eight interrupted episodes versus T1's 7. The candidate therefore misses the 196/200 closure threshold, fails to improve T1's complete-hold result, and slightly worsens post-entry stability. The result supports a bounded mechanistic claim that explicit task-space velocity can remove the specific critical-sector deficit under this recipe, but the accompanying broad acquisition and hold losses reject this representation as a credible overall route. It does not establish that the plant is uncontrollable or that no future route exists.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E32",
-    "inquiry_id": "I8",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "insufficient",
-        "reason": "I8 is insufficient as a route to the human goal. T8:checkpoint-120832 achieved 176/200 complete uninterrupted successes (88.0%) on the fixed development panel versus T1:checkpoint-100352 at 189/200 (94.5%), with a -13 net paired result (11 candidate wins versus 24 reference wins across 35 discordant episodes). The task-space velocity representation did improve the targeted -180 to -90 degree acquisition subgroup, reducing its failures from T1's 11/66 to 0/66, but this gain did not translate to complete episode success: T8 had 18 never-entry failures versus T1's 6, six post-entry failures versus T1's 5, and eight interrupted episodes versus T1's 7. The candidate therefore misses the 196/200 closure threshold, fails to improve T1's complete-hold result, and slightly worsens post-entry stability. The result supports a bounded mechanistic claim that explicit task-space velocity can remove the specific critical-sector deficit under this recipe, but the accompanying broad acquisition and hold losses reject this representation as a credible overall route. It does not establish that the plant is uncontrollable or that no future route exists."
-      }
-    },
-    "request_fingerprint": "1d987ca9cacc3334840d331c8572fa7cc95b0de97730a05309a7c247e196a9dd",
-    "session_id": "S17",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "No working, best-known, or retained role is assigned. T1:checkpoint-100352 remains the strongest evidence-backed development reference at 189/200. T7:checkpoint-120832 and T6:checkpoint-100352 remain insufficient candidates with no role.",
     "completed_operations": [
