@@ -1,12 +1,20 @@
 {
   "active_inquiry": {
-    "closure_condition": "Close or reframe after a full-coverage 120000-step PPO run and hold-specific research evaluation establish whether failures are concentrated in the newly covered inner radii or remain broad across the official distribution, with any resulting candidate judged against M1's feasible moderate-braking evidence.",
-    "goal_connection": "The human goal requires at least 98% complete-hold episode success under the official distribution. This inquiry tests whether the leading remaining bottleneck is omitted inner-radius training coverage rather than physical infeasibility, branch selection, or braking dynamics.",
+    "closure_condition": "Close or redirect after a fresh fixed-allocation intervention and hold-specific evaluation establish whether outer-radius failures improve materially toward the 98% goal, with per-radius evidence distinguishing reach failure from near-target hold failure. A failure to improve after a targeted representation, reward, or control-method change will redirect away from the current PPO recipe rather than be attributed to omitted inner-radius coverage.",
+    "goal_connection": "The human goal requires at least 98% complete-hold success across the official 6-20 cm distribution. M2 shows that full-radius training did not resolve the decisive failure: success was 100% at 6-10 cm but only 20.5% at 14-18 cm and 0% at 18-20 cm. Improving outer-radius behavior is therefore necessary for goal progress.",
     "id": "I1",
     "opened_in_session": "S2",
-    "question": "Can PPO learn a velocity-aware reach-and-hold controller that achieves the complete 100-sample hold across the full official 6-20 cm radial distribution when training directly covers that distribution?",
-    "rationale": "M1 established a credible bounded-effort route for all tested radii with a known-target controller, but no learned policy or official-distribution result exists. The current trainer samples only 14-20 cm while the official task samples 6-20 cm. A fresh run with training coverage expanded to the official range is the most direct goal-linked discriminator between a coverage-limited learning failure and a broader PPO representation, reward, or control-method limitation.",
-    "reframes": []
+    "question": "Can PPO learn a complete-hold controller in the difficult outer-radius regime, especially 14-20 cm and near the 20 cm extension boundary, by acquiring configuration-aware reach and braking behavior, or is the current direct bounded-motor PPO representation and reward inadequate there?",
+    "rationale": "M1 established physical feasibility with moderate bounded joint-space control across tested radii, while T1 trained on the full official range. M2 nevertheless achieved 98/160 overall, with 58/62 failures never entering tolerance and failures concentrated at larger radii rather than newly covered inner radii. This resolves the original coverage distinction against the leading coverage explanation and makes configuration-dependent outer-radius reach, action authority, and policy shaping the consequential next mechanisms.",
+    "reframes": [
+      {
+        "closure_condition": "Close or redirect after a fresh fixed-allocation intervention and hold-specific evaluation establish whether outer-radius failures improve materially toward the 98% goal, with per-radius evidence distinguishing reach failure from near-target hold failure. A failure to improve after a targeted representation, reward, or control-method change will redirect away from the current PPO recipe rather than be attributed to omitted inner-radius coverage.",
+        "goal_connection": "The human goal requires at least 98% complete-hold success across the official 6-20 cm distribution. M2 shows that full-radius training did not resolve the decisive failure: success was 100% at 6-10 cm but only 20.5% at 14-18 cm and 0% at 18-20 cm. Improving outer-radius behavior is therefore necessary for goal progress.",
+        "question": "Can PPO learn a complete-hold controller in the difficult outer-radius regime, especially 14-20 cm and near the 20 cm extension boundary, by acquiring configuration-aware reach and braking behavior, or is the current direct bounded-motor PPO representation and reward inadequate there?",
+        "rationale": "M1 established physical feasibility with moderate bounded joint-space control across tested radii, while T1 trained on the full official range. M2 nevertheless achieved 98/160 overall, with 58/62 failures never entering tolerance and failures concentrated at larger radii rather than newly covered inner radii. This resolves the original coverage distinction against the leading coverage explanation and makes configuration-dependent outer-radius reach, action authority, and policy shaping the consequential next mechanisms.",
+        "session_id": "S3"
+      }
+    ]
   },
   "campaign": {
     "base_commit": "46b970c3936971c86149bd112992f6482e7a2893",
@@ -836,7 +844,7 @@
     }
   },
   "counters": {
-    "event": 3,
+    "event": 4,
     "inquiry": 1,
     "measurement": 2,
     "session": 3,
@@ -1295,9 +1303,68 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-01T05:52:10Z",
+      "error": null,
+      "id": "E4",
+      "inquiry_id": "I1",
+      "kind": "inquiry",
+      "request": {
+        "action": "reframe",
+        "closure_condition": "Close or redirect after a fresh fixed-allocation intervention and hold-specific evaluation establish whether outer-radius failures improve materially toward the 98% goal, with per-radius evidence distinguishing reach failure from near-target hold failure. A failure to improve after a targeted representation, reward, or control-method change will redirect away from the current PPO recipe rather than be attributed to omitted inner-radius coverage.",
+        "goal_connection": "The human goal requires at least 98% complete-hold success across the official 6-20 cm distribution. M2 shows that full-radius training did not resolve the decisive failure: success was 100% at 6-10 cm but only 20.5% at 14-18 cm and 0% at 18-20 cm. Improving outer-radius behavior is therefore necessary for goal progress.",
+        "question": "Can PPO learn a complete-hold controller in the difficult outer-radius regime, especially 14-20 cm and near the 20 cm extension boundary, by acquiring configuration-aware reach and braking behavior, or is the current direct bounded-motor PPO representation and reward inadequate there?",
+        "rationale": "M1 established physical feasibility with moderate bounded joint-space control across tested radii, while T1 trained on the full official range. M2 nevertheless achieved 98/160 overall, with 58/62 failures never entering tolerance and failures concentrated at larger radii rather than newly covered inner radii. This resolves the original coverage distinction against the leading coverage explanation and makes configuration-dependent outer-radius reach, action authority, and policy shaping the consequential next mechanisms."
+      },
+      "result": {
+        "action": "reframe",
+        "inquiry_id": "I1",
+        "status": "completed"
+      },
+      "session_id": "S3",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "reframe",
+        "inquiry_id": "I1",
+        "reframe": {
+          "closure_condition": "Close or redirect after a fresh fixed-allocation intervention and hold-specific evaluation establish whether outer-radius failures improve materially toward the 98% goal, with per-radius evidence distinguishing reach failure from near-target hold failure. A failure to improve after a targeted representation, reward, or control-method change will redirect away from the current PPO recipe rather than be attributed to omitted inner-radius coverage.",
+          "goal_connection": "The human goal requires at least 98% complete-hold success across the official 6-20 cm distribution. M2 shows that full-radius training did not resolve the decisive failure: success was 100% at 6-10 cm but only 20.5% at 14-18 cm and 0% at 18-20 cm. Improving outer-radius behavior is therefore necessary for goal progress.",
+          "question": "Can PPO learn a complete-hold controller in the difficult outer-radius regime, especially 14-20 cm and near the 20 cm extension boundary, by acquiring configuration-aware reach and braking behavior, or is the current direct bounded-motor PPO representation and reward inadequate there?",
+          "rationale": "M1 established physical feasibility with moderate bounded joint-space control across tested radii, while T1 trained on the full official range. M2 nevertheless achieved 98/160 overall, with 58/62 failures never entering tolerance and failures concentrated at larger radii rather than newly covered inner radii. This resolves the original coverage distinction against the leading coverage explanation and makes configuration-dependent outer-radius reach, action authority, and policy shaping the consequential next mechanisms.",
+          "session_id": "S3"
+        }
+      },
+      "result": {
+        "action": "reframe",
+        "inquiry_id": "I1",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E4",
+    "inquiry_id": "I1",
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "reframe",
+        "closure_condition": "Close or redirect after a fresh fixed-allocation intervention and hold-specific evaluation establish whether outer-radius failures improve materially toward the 98% goal, with per-radius evidence distinguishing reach failure from near-target hold failure. A failure to improve after a targeted representation, reward, or control-method change will redirect away from the current PPO recipe rather than be attributed to omitted inner-radius coverage.",
+        "goal_connection": "The human goal requires at least 98% complete-hold success across the official 6-20 cm distribution. M2 shows that full-radius training did not resolve the decisive failure: success was 100% at 6-10 cm but only 20.5% at 14-18 cm and 0% at 18-20 cm. Improving outer-radius behavior is therefore necessary for goal progress.",
+        "question": "Can PPO learn a complete-hold controller in the difficult outer-radius regime, especially 14-20 cm and near the 20 cm extension boundary, by acquiring configuration-aware reach and braking behavior, or is the current direct bounded-motor PPO representation and reward inadequate there?",
+        "rationale": "M1 established physical feasibility with moderate bounded joint-space control across tested radii, while T1 trained on the full official range. M2 nevertheless achieved 98/160 overall, with 58/62 failures never entering tolerance and failures concentrated at larger radii rather than newly covered inner radii. This resolves the original coverage distinction against the leading coverage explanation and makes configuration-dependent outer-radius reach, action authority, and policy shaping the consequential next mechanisms."
+      }
+    },
+    "request_fingerprint": "6db491897b44c05f310d84d6ed20ed32a83ecfb8e100a09639c3dc523e40643f",
+    "session_id": "S3",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No model candidates exist; working, best-known, and retained roles remain empty. M1 is measurement evidence only.",
     "completed_operations": [
@@ -1335,7 +1402,8 @@
     "objective": "Advance I1 toward its closure condition: Close or reframe after a full-coverage 120000-step PPO run and hold-specific research evaluation establish whether failures are concentrated in the newly covered inner radii or remain broad across the official distribution, with any resulting candidate judged against M1's feasible moderate-braking evidence.",
     "operation_ids": [
       "T1",
-      "M2"
+      "M2",
+      "E4"
     ],
     "scientific_parent_commit": "62b5eea1b0de0924ff6bb305f0ec41a17cb6632f"
   },
