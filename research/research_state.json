@@ -8207,7 +8207,7 @@
     }
   },
   "counters": {
-    "event": 42,
+    "event": 43,
     "inquiry": 11,
     "measurement": 10,
     "session": 22,
@@ -8216,7 +8216,7 @@
   "human_goal": {
     "source": "research/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -14535,20 +14535,154 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-01T01:09:43Z",
+      "error": null,
+      "id": "E43",
+      "inquiry_id": null,
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "No working, best-known, or retained role is assigned. T1:checkpoint-100352 is the strongest development reference at 189/200; T9:checkpoint-120832 is an insufficient temporal-context candidate at 190/200; T10:checkpoint-100352 is an insufficient hybrid-control candidate at 156/200.",
+        "completed_operations": [
+          "E42"
+        ],
+        "cumulative_resource_use": "Ten fresh PPO training operations have completed with the maintainer's fixed 120000-step allocation, each producing 120832 rollout-boundary steps. M1-M10 evaluated candidates on the fixed 200-episode development panel [4200, 4400), with paired references where specified. I9 consumed T9 and M9; E36 closed I9; E38 opened I10; T10 and M10 tested the I10 hybrid route; E40 closed I10; E42 opened I11. No official assessment has been run.",
+        "current_goal_gap": "T1:checkpoint-100352 remains the strongest evidence-backed development reference at 189/200, seven successes below threshold. T9:checkpoint-120832 reached 190/200, six below threshold. T10:checkpoint-100352 reached 156/200 and is rejected as a reference.",
+        "current_synthesis": "Observed evidence supports acquisition and branch coordination as the dominant failure mechanism for the tested direct-torque and hybrid routes: T1 reached 189/200, T9 reached 190/200 with only a modest paired improvement, and T10 fell to 156/200 with 41 never-entry failures, including 31 negative-angle failures, while producing only 3 post-entry failures. The physical model predicts that IK branches impose different coordinated trajectories and braking demands, making branch ambiguity or inconsistent coordination a consequential explanation. However, the evidence does not prove that branch ambiguity alone caused the failures, does not establish that the plant is uncontrollable, and does not justify official assessment.",
+        "decision_frontier": "The I10 frontier is resolved negatively: the tested per-step bounded model-based joint-space correction did not preserve acquisition and substantially reduced complete success. I11 now records the remaining goal-relevant distinction: whether episode-persistent, joint-limit-compatible IK-branch commitment in the learned observation interface can improve full-angle acquisition and branch coordination while preserving direct-torque uninterrupted hold behavior. Evidence must remain gated on at least 196/200 complete successes and must detect any post-entry hold regression.",
+        "evidence_references": [
+          "T9",
+          "M9",
+          "E36",
+          "E38",
+          "T10",
+          "M10",
+          "E40",
+          "E42"
+        ],
+        "human_goal_connection": "The campaign still requires at least 196 complete uninterrupted successes in the 200-episode development panel, corresponding to the human objective of at least 98% success under the official task distribution. No candidate has reached that gate, so official assessment is not justified.",
+        "next_direction_or_closure": "The goal-review session has opened I11 and is now checkpointed. Continue only in the fresh I11 inquiry session. The next inquiry work must isolate episode-persistent branch coordination while retaining the direct bounded-torque action interface; do not request official assessment or treat T10 as a model role before the 196/200 criterion is met."
+      },
+      "result": {
+        "session_id": "S22",
+        "status": "checkpointed"
+      },
+      "session_id": "S22",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "c3d544a7d31e22f084b0dcb57c8fe8d5e4459e70",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "No working, best-known, or retained role is assigned. T1:checkpoint-100352 is the strongest development reference at 189/200; T9:checkpoint-120832 is an insufficient temporal-context candidate at 190/200; T10:checkpoint-100352 is an insufficient hybrid-control candidate at 156/200.",
+        "completed_operations": [
+          "E42"
+        ],
+        "cumulative_resource_use": "Ten fresh PPO training operations have completed with the maintainer's fixed 120000-step allocation, each producing 120832 rollout-boundary steps. M1-M10 evaluated candidates on the fixed 200-episode development panel [4200, 4400), with paired references where specified. I9 consumed T9 and M9; E36 closed I9; E38 opened I10; T10 and M10 tested the I10 hybrid route; E40 closed I10; E42 opened I11. No official assessment has been run.",
+        "current_goal_gap": "T1:checkpoint-100352 remains the strongest evidence-backed development reference at 189/200, seven successes below threshold. T9:checkpoint-120832 reached 190/200, six below threshold. T10:checkpoint-100352 reached 156/200 and is rejected as a reference.",
+        "current_synthesis": "Observed evidence supports acquisition and branch coordination as the dominant failure mechanism for the tested direct-torque and hybrid routes: T1 reached 189/200, T9 reached 190/200 with only a modest paired improvement, and T10 fell to 156/200 with 41 never-entry failures, including 31 negative-angle failures, while producing only 3 post-entry failures. The physical model predicts that IK branches impose different coordinated trajectories and braking demands, making branch ambiguity or inconsistent coordination a consequential explanation. However, the evidence does not prove that branch ambiguity alone caused the failures, does not establish that the plant is uncontrollable, and does not justify official assessment.",
+        "decision_frontier": "The I10 frontier is resolved negatively: the tested per-step bounded model-based joint-space correction did not preserve acquisition and substantially reduced complete success. I11 now records the remaining goal-relevant distinction: whether episode-persistent, joint-limit-compatible IK-branch commitment in the learned observation interface can improve full-angle acquisition and branch coordination while preserving direct-torque uninterrupted hold behavior. Evidence must remain gated on at least 196/200 complete successes and must detect any post-entry hold regression.",
+        "evidence_references": [
+          "T9",
+          "M9",
+          "E36",
+          "E38",
+          "T10",
+          "M10",
+          "E40",
+          "E42"
+        ],
+        "human_goal_connection": "The campaign still requires at least 196 complete uninterrupted successes in the 200-episode development panel, corresponding to the human objective of at least 98% success under the official task distribution. No candidate has reached that gate, so official assessment is not justified.",
+        "inquiry_id": null,
+        "next_direction_or_closure": "The goal-review session has opened I11 and is now checkpointed. Continue only in the fresh I11 inquiry session. The next inquiry work must isolate episode-persistent branch coordination while retaining the direct bounded-torque action interface; do not request official assessment or treat T10 as a model role before the 196/200 criterion is met.",
+        "session_id": "S22"
+      },
+      "presentation": {
+        "backend_session_id": "d8c0aec2-b7f0-4e93-8be3-9ce3775206a0",
+        "campaign_id": "e8788df6-9f4a-4dac-92b7-48e40477e827",
+        "campaign_usage": "1h22m | 268.82 AIU | prompt 42.8m (84% cached) | output 235.3k",
+        "session_id": "S22",
+        "session_kind": "goal_review",
+        "session_usage": "2m06s | 7.76 AIU | prompt 1m (79% cached) | output 5.1k"
+      },
+      "result": {
+        "session_id": "S22",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "7fa93215d8c4947c4aeb2215dd3048d42a33db57",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E43",
+    "inquiry_id": null,
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "No working, best-known, or retained role is assigned. T1:checkpoint-100352 is the strongest development reference at 189/200; T9:checkpoint-120832 is an insufficient temporal-context candidate at 190/200; T10:checkpoint-100352 is an insufficient hybrid-control candidate at 156/200.",
+        "completed_operations": [
+          "E42"
+        ],
+        "cumulative_resource_use": "Ten fresh PPO training operations have completed with the maintainer's fixed 120000-step allocation, each producing 120832 rollout-boundary steps. M1-M10 evaluated candidates on the fixed 200-episode development panel [4200, 4400), with paired references where specified. I9 consumed T9 and M9; E36 closed I9; E38 opened I10; T10 and M10 tested the I10 hybrid route; E40 closed I10; E42 opened I11. No official assessment has been run.",
+        "current_goal_gap": "T1:checkpoint-100352 remains the strongest evidence-backed development reference at 189/200, seven successes below threshold. T9:checkpoint-120832 reached 190/200, six below threshold. T10:checkpoint-100352 reached 156/200 and is rejected as a reference.",
+        "current_synthesis": "Observed evidence supports acquisition and branch coordination as the dominant failure mechanism for the tested direct-torque and hybrid routes: T1 reached 189/200, T9 reached 190/200 with only a modest paired improvement, and T10 fell to 156/200 with 41 never-entry failures, including 31 negative-angle failures, while producing only 3 post-entry failures. The physical model predicts that IK branches impose different coordinated trajectories and braking demands, making branch ambiguity or inconsistent coordination a consequential explanation. However, the evidence does not prove that branch ambiguity alone caused the failures, does not establish that the plant is uncontrollable, and does not justify official assessment.",
+        "decision_frontier": "The I10 frontier is resolved negatively: the tested per-step bounded model-based joint-space correction did not preserve acquisition and substantially reduced complete success. I11 now records the remaining goal-relevant distinction: whether episode-persistent, joint-limit-compatible IK-branch commitment in the learned observation interface can improve full-angle acquisition and branch coordination while preserving direct-torque uninterrupted hold behavior. Evidence must remain gated on at least 196/200 complete successes and must detect any post-entry hold regression.",
+        "evidence_references": [
+          "T9",
+          "M9",
+          "E36",
+          "E38",
+          "T10",
+          "M10",
+          "E40",
+          "E42"
+        ],
+        "human_goal_connection": "The campaign still requires at least 196 complete uninterrupted successes in the 200-episode development panel, corresponding to the human objective of at least 98% success under the official task distribution. No candidate has reached that gate, so official assessment is not justified.",
+        "next_direction_or_closure": "The goal-review session has opened I11 and is now checkpointed. Continue only in the fresh I11 inquiry session. The next inquiry work must isolate episode-persistent branch coordination while retaining the direct bounded-torque action interface; do not request official assessment or treat T10 as a model role before the 196/200 criterion is met."
+      }
+    },
+    "request_fingerprint": "d48aa30bf09e00b9e016ffd34af5d9ab1a6dcfe24f8d211048082b9fa21acd59",
+    "session_id": "S22",
+    "supersedes": null
+  },
   "pi_checkpoint": {
-    "candidates_and_roles": "No working, best-known, or retained role is assigned. T1:checkpoint-100352 remains the strongest evidence-backed development reference at 189/200. T9:checkpoint-120832 is an insufficient temporal-context candidate at 190/200. T10:checkpoint-100352 is an insufficient hybrid-control candidate at 156/200 and is rejected as a reference because of broad acquisition regression.",
+    "candidates_and_roles": "No working, best-known, or retained role is assigned. T1:checkpoint-100352 is the strongest development reference at 189/200; T9:checkpoint-120832 is an insufficient temporal-context candidate at 190/200; T10:checkpoint-100352 is an insufficient hybrid-control candidate at 156/200.",
     "completed_operations": [
-      "T10",
-      "M10",
-      "E40"
+      "E42"
     ],
-    "cumulative_resource_use": "Ten fresh PPO training operations have completed with the maintainer's fixed 120000-step allocation, each producing 120832 rollout-boundary steps. M1-M10 evaluated candidates on the fixed 200-episode development panel [4200, 4400), with paired references where specified. I9 consumed T9 and M9; E36 closed I9; E38 opened I10; T10 and M10 tested the I10 hybrid route; E40 closed I10 as insufficient. No official assessment has been run.",
-    "current_goal_gap": "T1:checkpoint-100352 remains the strongest evidence-backed development reference at 189/200, seven successes below threshold. T9:checkpoint-120832 reached 190/200, six below threshold. The I10 candidate T10:checkpoint-100352 reached only 156/200 and is not a viable reference.",
-    "current_synthesis": "T1's direct bounded torque with full-angle training and open/folded IK-branch observations remains the strongest route. I9 showed that the tested three-frame temporal-context recipe was insufficient. I10 tested target-conditioned local joint-space braking and velocity feedback intended to address post-entry interruptions while preserving learned acquisition, but M10 showed the opposite outcome: 41 never-entry failures, including 31 negative-angle never-entry failures, and only 3 post-entry failures. T10 achieved 156/200 versus T1's 189/200, with T1 winning all 33 discordant paired episodes. E40 therefore closes I10 as insufficient. This supports acquisition and branch coordination as the dominant failure mechanism for the tested hybrid interface, while not proving that the plant is uncontrollable or ruling out every distinct future route.",
-    "decision_frontier": "The I10 decision frontier is resolved negatively: adding the tested bounded model-based joint-space correction to the learned full-angle interface did not preserve acquisition and substantially reduced complete success. The remaining goal-relevant frontier is how to improve full-angle acquisition and branch coordination without sacrificing uninterrupted hold performance; any future inquiry must be mechanistically distinct from this rejected hybrid recipe and must remain gated on the 196/200 complete-success criterion.",
+    "cumulative_resource_use": "Ten fresh PPO training operations have completed with the maintainer's fixed 120000-step allocation, each producing 120832 rollout-boundary steps. M1-M10 evaluated candidates on the fixed 200-episode development panel [4200, 4400), with paired references where specified. I9 consumed T9 and M9; E36 closed I9; E38 opened I10; T10 and M10 tested the I10 hybrid route; E40 closed I10; E42 opened I11. No official assessment has been run.",
+    "current_goal_gap": "T1:checkpoint-100352 remains the strongest evidence-backed development reference at 189/200, seven successes below threshold. T9:checkpoint-120832 reached 190/200, six below threshold. T10:checkpoint-100352 reached 156/200 and is rejected as a reference.",
+    "current_synthesis": "Observed evidence supports acquisition and branch coordination as the dominant failure mechanism for the tested direct-torque and hybrid routes: T1 reached 189/200, T9 reached 190/200 with only a modest paired improvement, and T10 fell to 156/200 with 41 never-entry failures, including 31 negative-angle failures, while producing only 3 post-entry failures. The physical model predicts that IK branches impose different coordinated trajectories and braking demands, making branch ambiguity or inconsistent coordination a consequential explanation. However, the evidence does not prove that branch ambiguity alone caused the failures, does not establish that the plant is uncontrollable, and does not justify official assessment.",
+    "decision_frontier": "The I10 frontier is resolved negatively: the tested per-step bounded model-based joint-space correction did not preserve acquisition and substantially reduced complete success. I11 now records the remaining goal-relevant distinction: whether episode-persistent, joint-limit-compatible IK-branch commitment in the learned observation interface can improve full-angle acquisition and branch coordination while preserving direct-torque uninterrupted hold behavior. Evidence must remain gated on at least 196/200 complete successes and must detect any post-entry hold regression.",
     "evidence_references": [
       "T9",
       "M9",
@@ -14556,13 +14690,14 @@
       "E38",
       "T10",
       "M10",
-      "E40"
+      "E40",
+      "E42"
     ],
-    "human_goal_connection": "The campaign still requires at least 196 complete uninterrupted successes in the 200-episode development panel, corresponding to the human objective of at least 98% success under the official task distribution. I10 did not establish this objective, so no official assessment is justified.",
-    "inquiry_id": "I10",
-    "next_direction_or_closure": "The I10 inquiry is closed as insufficient. End this inquiry session at the checkpoint and continue only in the fresh session created after the close. That session must first conduct goal review and select a new, mechanistically distinct inquiry focused on the acquisition/branch-coordination failure mechanism; do not treat T10 as a model role or request official assessment before reaching at least 196/200.",
-    "scientific_commit": "2afcacf4cb4a7824473fa0e5ab4d52781ef4965f",
-    "session_id": "S21"
+    "human_goal_connection": "The campaign still requires at least 196 complete uninterrupted successes in the 200-episode development panel, corresponding to the human objective of at least 98% success under the official task distribution. No candidate has reached that gate, so official assessment is not justified.",
+    "inquiry_id": null,
+    "next_direction_or_closure": "The goal-review session has opened I11 and is now checkpointed. Continue only in the fresh I11 inquiry session. The next inquiry work must isolate episode-persistent branch coordination while retaining the direct bounded-torque action interface; do not request official assessment or treat T10 as a model role before the 196/200 criterion is met.",
+    "scientific_commit": "7fa93215d8c4947c4aeb2215dd3048d42a33db57",
+    "session_id": "S22"
   },
   "schema_version": 6,
   "scientific_model": {
@@ -14570,21 +14705,6 @@
     "path": "research/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "d8c0aec2-b7f0-4e93-8be3-9ce3775206a0",
-    "id": "S22",
-    "inquiry_id": null,
-    "kind": "goal_review",
-    "objective": "Decide whether to request official assessment, open one bounded goal-linked inquiry, or conclude that no credible route remains.",
-    "operation_ids": [
-      "E42"
-    ],
-    "scientific_parent_commit": "c3d544a7d31e22f084b0dcb57c8fe8d5e4459e70"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
