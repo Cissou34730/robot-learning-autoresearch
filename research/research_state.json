@@ -3681,38 +3681,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I2",
-        "outcome": "Resolved toward a credible near-goal route: the configuration-aware IK and velocity-feedback scaffold with a bounded PPO torque residual materially improved reach and preserved complete uninterrupted holds across the full radius range in fresh development evaluation.",
-        "reason": "T3 used the fixed 120000-step allocation, and M4 evaluated T3:checkpoint-120832 on 160 fresh episodes. The candidate achieved 160/160 complete holds; each radius band achieved 100% first reach, 100% hold onset, median maximum hold streak 100, and zero pre-reach failures, post-reach failures, or interruptions, including 25/25 at 18-20 cm. This resolves I2 in favor of the hybrid route as a credible near-goal candidate, while the research panel is not the protected 200-episode official assessment and therefore does not establish the human goal."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I2",
-        "outcome": "Resolved toward a credible near-goal route: the configuration-aware IK and velocity-feedback scaffold with a bounded PPO torque residual materially improved reach and preserved complete uninterrupted holds across the full radius range in fresh development evaluation.",
-        "reason": "T3 used the fixed 120000-step allocation, and M4 evaluated T3:checkpoint-120832 on 160 fresh episodes. The candidate achieved 160/160 complete holds; each radius band achieved 100% first reach, 100% hold onset, median maximum hold streak 100, and zero pre-reach failures, post-reach failures, or interruptions, including 25/25 at 18-20 cm. This resolves I2 in favor of the hybrid route as a credible near-goal candidate, while the research panel is not the protected 200-episode official assessment and therefore does not establish the human goal.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E11",
-    "inquiry_id": "I2",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "Resolved toward a credible near-goal route: the configuration-aware IK and velocity-feedback scaffold with a bounded PPO torque residual materially improved reach and preserved complete uninterrupted holds across the full radius range in fresh development evaluation.",
-        "reason": "T3 used the fixed 120000-step allocation, and M4 evaluated T3:checkpoint-120832 on 160 fresh episodes. The candidate achieved 160/160 complete holds; each radius band achieved 100% first reach, 100% hold onset, median maximum hold streak 100, and zero pre-reach failures, post-reach failures, or interruptions, including 25/25 at 18-20 cm. This resolves I2 in favor of the hybrid route as a credible near-goal candidate, while the research panel is not the protected 200-episode official assessment and therefore does not establish the human goal."
-      }
-    },
-    "request_fingerprint": "1738c75c51daf38f2625a4965f952ae0fd482b7482a52f3f7890d2af192e0680",
-    "session_id": "S6",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "No candidate has working, best-known, or retained status. T1:checkpoint-120832 remains the strongest evaluated learned candidate at 98/160 M2 successes; T2:checkpoint-115712 achieved 0/160 in M3 and is not viable for the goal.",
     "completed_operations": [
