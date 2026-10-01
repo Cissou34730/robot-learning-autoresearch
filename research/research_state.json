@@ -1,5 +1,13 @@
 {
-  "active_inquiry": null,
+  "active_inquiry": {
+    "closure_condition": "Run one controlled 120000-step training operation using T9's observation, action, reward, timing, and hold semantics, with 75 percent of training targets sampled from the original T9 distribution and 25 percent sampled uniformly from -155 to -120 degrees, then evaluate the resulting candidate on the fixed 200-episode development panel. Close as actionable only if it reaches at least 196/200 complete uninterrupted successes, reduces failures in the -155 to -120 degree basin, and introduces no failures outside that basin; otherwise close as insufficient.",
+    "goal_connection": "The human goal requires at least 98% complete uninterrupted episode success. T9 is the strongest route at 190/200, and its ten failures are localized to approximately -150 to -129 degrees, so improving this basin while preserving the other episodes directly targets the six-success gap to the 196/200 development gate.",
+    "id": "I14",
+    "opened_in_session": "S28",
+    "question": "Can preserving T9's temporal-context direct-torque recipe while using a controlled 25 percent training mixture of target angles uniformly sampled from -155 to -120 degrees eliminate both its localized acquisition and post-entry failures without creating the stabilization regression seen in I2?",
+    "rationale": "M9 and E36 show that T9 preserved broad acquisition and reached 190/200, but the remaining failures cluster in one negative-angle branch, including both never-entry and post-entry failures. I2 demonstrated that directly committing to a branch can trade acquisition gains for hold interruptions, while I13 showed that adding dynamics features destroys acquisition. A training-distribution intervention is therefore the narrowest fresh test of whether the residual gap is insufficient experience in this configuration basin rather than a need for another observation or controller representation.",
+    "reframes": []
+  },
   "campaign": {
     "base_commit": "c02b0d59e8ef397c87d92f70e986ad545e585b95",
     "id": "e8788df6-9f4a-4dac-92b7-48e40477e827",
@@ -10656,16 +10664,16 @@
     }
   },
   "counters": {
-    "event": 53,
-    "inquiry": 13,
+    "event": 54,
+    "inquiry": 14,
     "measurement": 13,
-    "session": 27,
+    "session": 28,
     "training": 13
   },
   "human_goal": {
     "source": "research/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -18855,9 +18863,69 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-01T02:08:31Z",
+      "error": null,
+      "id": "E54",
+      "inquiry_id": "I14",
+      "kind": "inquiry",
+      "request": {
+        "action": "open",
+        "closure_condition": "Run one controlled 120000-step training operation using T9's observation, action, reward, timing, and hold semantics, with 75 percent of training targets sampled from the original T9 distribution and 25 percent sampled uniformly from -155 to -120 degrees, then evaluate the resulting candidate on the fixed 200-episode development panel. Close as actionable only if it reaches at least 196/200 complete uninterrupted successes, reduces failures in the -155 to -120 degree basin, and introduces no failures outside that basin; otherwise close as insufficient.",
+        "goal_connection": "The human goal requires at least 98% complete uninterrupted episode success. T9 is the strongest route at 190/200, and its ten failures are localized to approximately -150 to -129 degrees, so improving this basin while preserving the other episodes directly targets the six-success gap to the 196/200 development gate.",
+        "question": "Can preserving T9's temporal-context direct-torque recipe while using a controlled 25 percent training mixture of target angles uniformly sampled from -155 to -120 degrees eliminate both its localized acquisition and post-entry failures without creating the stabilization regression seen in I2?",
+        "rationale": "M9 and E36 show that T9 preserved broad acquisition and reached 190/200, but the remaining failures cluster in one negative-angle branch, including both never-entry and post-entry failures. I2 demonstrated that directly committing to a branch can trade acquisition gains for hold interruptions, while I13 showed that adding dynamics features destroys acquisition. A training-distribution intervention is therefore the narrowest fresh test of whether the residual gap is insufficient experience in this configuration basin rather than a need for another observation or controller representation."
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I14",
+        "status": "completed"
+      },
+      "session_id": "S28",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "open",
+        "inquiry": {
+          "closure_condition": "Run one controlled 120000-step training operation using T9's observation, action, reward, timing, and hold semantics, with 75 percent of training targets sampled from the original T9 distribution and 25 percent sampled uniformly from -155 to -120 degrees, then evaluate the resulting candidate on the fixed 200-episode development panel. Close as actionable only if it reaches at least 196/200 complete uninterrupted successes, reduces failures in the -155 to -120 degree basin, and introduces no failures outside that basin; otherwise close as insufficient.",
+          "goal_connection": "The human goal requires at least 98% complete uninterrupted episode success. T9 is the strongest route at 190/200, and its ten failures are localized to approximately -150 to -129 degrees, so improving this basin while preserving the other episodes directly targets the six-success gap to the 196/200 development gate.",
+          "id": "I14",
+          "opened_in_session": "S28",
+          "question": "Can preserving T9's temporal-context direct-torque recipe while using a controlled 25 percent training mixture of target angles uniformly sampled from -155 to -120 degrees eliminate both its localized acquisition and post-entry failures without creating the stabilization regression seen in I2?",
+          "rationale": "M9 and E36 show that T9 preserved broad acquisition and reached 190/200, but the remaining failures cluster in one negative-angle branch, including both never-entry and post-entry failures. I2 demonstrated that directly committing to a branch can trade acquisition gains for hold interruptions, while I13 showed that adding dynamics features destroys acquisition. A training-distribution intervention is therefore the narrowest fresh test of whether the residual gap is insufficient experience in this configuration basin rather than a need for another observation or controller representation.",
+          "reframes": []
+        }
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I14",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E54",
+    "inquiry_id": null,
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "open",
+        "closure_condition": "Run one controlled 120000-step training operation using T9's observation, action, reward, timing, and hold semantics, with 75 percent of training targets sampled from the original T9 distribution and 25 percent sampled uniformly from -155 to -120 degrees, then evaluate the resulting candidate on the fixed 200-episode development panel. Close as actionable only if it reaches at least 196/200 complete uninterrupted successes, reduces failures in the -155 to -120 degree basin, and introduces no failures outside that basin; otherwise close as insufficient.",
+        "goal_connection": "The human goal requires at least 98% complete uninterrupted episode success. T9 is the strongest route at 190/200, and its ten failures are localized to approximately -150 to -129 degrees, so improving this basin while preserving the other episodes directly targets the six-success gap to the 196/200 development gate.",
+        "question": "Can preserving T9's temporal-context direct-torque recipe while using a controlled 25 percent training mixture of target angles uniformly sampled from -155 to -120 degrees eliminate both its localized acquisition and post-entry failures without creating the stabilization regression seen in I2?",
+        "rationale": "M9 and E36 show that T9 preserved broad acquisition and reached 190/200, but the remaining failures cluster in one negative-angle branch, including both never-entry and post-entry failures. I2 demonstrated that directly committing to a branch can trade acquisition gains for hold interruptions, while I13 showed that adding dynamics features destroys acquisition. A training-distribution intervention is therefore the narrowest fresh test of whether the residual gap is insufficient experience in this configuration basin rather than a need for another observation or controller representation."
+      }
+    },
+    "request_fingerprint": "ad38b200fef0f93b8b1a713c344e6109624b3c23d5dc04130b3ad553eee67e45",
+    "session_id": "S28",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No working, best-known, or retained role is assigned. T9:checkpoint-120832 remains the strongest measured development candidate at 190/200. T1:checkpoint-100352 remains the direct-torque reference at 189/200. T11:checkpoint-120832, T12:checkpoint-35840, and T13:checkpoint-120832 are rejected for their respective inquiries.",
     "completed_operations": [
@@ -18894,6 +18962,21 @@
     "path": "research/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "b07b2989-f453-4ade-a5ad-2e16e27380f1",
+    "id": "S28",
+    "inquiry_id": null,
+    "kind": "goal_review",
+    "objective": "Decide whether to request official assessment, open one bounded goal-linked inquiry, or conclude that no credible route remains.",
+    "operation_ids": [
+      "E54"
+    ],
+    "scientific_parent_commit": "931311fe4d2135da84cfed56b3bec24476f3c5ea"
+  },
   "terminal_state": null
 }

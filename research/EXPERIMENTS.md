@@ -81,3 +81,4 @@
 | M13 | measurement | I13 | completed |
 | E52 | inquiry | I13 | completed |
 | E53 | checkpoint | I13 | checkpointed |
+| E54 | inquiry | I14 | completed |
