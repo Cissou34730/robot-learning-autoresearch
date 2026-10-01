@@ -18815,38 +18815,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I13",
-        "outcome": "insufficient",
-        "reason": "M13 rejects the I13 route. On the fixed 200-episode development panel, the fresh 120000-step direct-torque PPO candidate with T9 temporal context plus compact bounded dynamics features achieved 24/200 complete uninterrupted successes (12.0%) versus T9's 190/200 (95.0%), with 170 discordant episodes and a net paired deficit of 166 wins. The candidate failed the required 196/200 gate by 172 episodes and did not preserve acquisition: detailed diagnostics show the overwhelming failures timed out without reaching tolerance, while the small number of successful episodes generally completed the uninterrupted hold cleanly. The representation therefore did not provide a credible route to reduce T9's difficult-angle or post-entry failures, and no official assessment is justified. This result rejects the tested dynamics-feature representation and recipe, but does not establish that the plant is uncontrollable or that all future direct-torque representations are impossible."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I13",
-        "outcome": "insufficient",
-        "reason": "M13 rejects the I13 route. On the fixed 200-episode development panel, the fresh 120000-step direct-torque PPO candidate with T9 temporal context plus compact bounded dynamics features achieved 24/200 complete uninterrupted successes (12.0%) versus T9's 190/200 (95.0%), with 170 discordant episodes and a net paired deficit of 166 wins. The candidate failed the required 196/200 gate by 172 episodes and did not preserve acquisition: detailed diagnostics show the overwhelming failures timed out without reaching tolerance, while the small number of successful episodes generally completed the uninterrupted hold cleanly. The representation therefore did not provide a credible route to reduce T9's difficult-angle or post-entry failures, and no official assessment is justified. This result rejects the tested dynamics-feature representation and recipe, but does not establish that the plant is uncontrollable or that all future direct-torque representations are impossible.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E52",
-    "inquiry_id": "I13",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "insufficient",
-        "reason": "M13 rejects the I13 route. On the fixed 200-episode development panel, the fresh 120000-step direct-torque PPO candidate with T9 temporal context plus compact bounded dynamics features achieved 24/200 complete uninterrupted successes (12.0%) versus T9's 190/200 (95.0%), with 170 discordant episodes and a net paired deficit of 166 wins. The candidate failed the required 196/200 gate by 172 episodes and did not preserve acquisition: detailed diagnostics show the overwhelming failures timed out without reaching tolerance, while the small number of successful episodes generally completed the uninterrupted hold cleanly. The representation therefore did not provide a credible route to reduce T9's difficult-angle or post-entry failures, and no official assessment is justified. This result rejects the tested dynamics-feature representation and recipe, but does not establish that the plant is uncontrollable or that all future direct-torque representations are impossible."
-      }
-    },
-    "request_fingerprint": "61b86fffe8a50b5dffb22a591855edd3773e6eda30fa57c18ea5b53fb5ca3cfc",
-    "session_id": "S27",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "No working, best-known, or retained role is assigned. T9:checkpoint-120832 remains the strongest measured development candidate at 190/200 but is below the development gate; T1:checkpoint-100352 remains the direct-torque reference at 189/200. T11:checkpoint-120832 and T12:checkpoint-35840 are rejected. I13 has been opened but has not yet produced a candidate or measurement.",
     "completed_operations": [
