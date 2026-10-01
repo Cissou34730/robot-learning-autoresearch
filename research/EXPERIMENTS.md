@@ -69,3 +69,4 @@
 | M11 | measurement | I11 | completed |
 | E44 | inquiry | I11 | completed |
 | E45 | checkpoint | I11 | checkpointed |
+| E46 | inquiry | I12 | completed |
