@@ -28,9 +28,10 @@ fixes remain unchanged. The measurement-evidence handoff now distinguishes
 reduced result summaries from full artifacts and exposes bounded structural
 inventories. This is a data-presentation change, not new scientific-action
 guidance; its effect on PI inspection remains to be assessed in a campaign.
-Its instrument-document addition is now removed for the documentation-only
-startup comparison recorded below; the inventory implementation and feedback
-remain active, and the comparison outcome is pending.
+Its instrument-document addition is restored after the documentation-only
+startup comparison below still selected training first. The inventory
+implementation and feedback remain active; inspection effectiveness remains
+unassessed.
 
 The objective under investigation is scientifically justified action selection:
 the PI chooses the action that can resolve a consequential uncertainty rather
@@ -398,9 +399,9 @@ its scientific breadth or achieve its result.
 
 | Item | Status / boundary |
 |---|---|
-| Reliable measurement-evidence inspection | Inventory implementation retained; instrument-document addition removed for the startup comparison below. Inspection effectiveness remains unassessed. |
+| Reliable measurement-evidence inspection | Inventory implementation and instrument contract retained after the documentation-only startup trial. Inspection effectiveness remains unassessed. |
 | Context flooding | Open, separate work; tool-output offloading thresholds are unchanged. |
-| Training-shaped inquiry commitments and scientific continuity | Open; two fresh openings after `f986a2c` selected an unchanged-recipe baseline before intervention. Documentation-only reversal awaits a new opening observation. |
+| Training-shaped inquiry commitments and scientific continuity | Open; documentation-only reversal did not prevent direct startup training. Scientific-model framing in combination with the startup prompt is the next investigative lead, not an approved prompt change. |
 | Checkpoint nomination and evidence selection | Deferred behind progression; available training facts are not proof of development performance. |
 | Operation-submission handoff clarification | Still unimplemented. |
 | Explicit protection of the old protocol log | Still unimplemented; read-access policy is a separate decision. |
@@ -764,7 +765,7 @@ separate from harness changes so their outcomes are not conflated.
 
 ## 2026-10-01: documentation-only reversal for repeated baseline-first openings
 
-- **Implementation commit:** the commit containing this entry,
+- **Implementation commit:** `c2abfc7`,
   `Reverse artifact inventory documentation for startup comparison`.
 - **Baseline / observed openings:** the completed successful campaign
   `77a975a5-9917-4178-ad06-ede00161560f` began with a candidate-free dynamics
@@ -816,6 +817,62 @@ separate from harness changes so their outcomes are not conflated.
   request. The maintainer approved applying this reversal for the next fresh
   campaign while handling the currently dispatched run. No campaign is
   stopped, reset, started, resumed, or evaluated by this engineering change.
-- **Disposition:** documentation component removed for a maintainer-controlled
-  opening comparison; inventory functionality retained. The next opening and
-  the causal effect of the reversal remain unobserved.
+- **Observed comparison:** campaign
+  `010714c2-5abd-4836-96bd-364caaf82042` started from `c2abfc7` and read the
+  instrument document without the metadata section. In S1 startup, before
+  any inquiry, measurement, or checkpoint, the PI expanded training radii
+  from 0.14-0.20 m to 0.06-0.20 m and submitted a fresh 120000-step PPO
+  request. The sole accepted scientific-code change was that training-range
+  expansion. This preserved training-first ordering, but was an intervention
+  rather than the previous unchanged-recipe baseline prerequisite. No
+  completed policy outcome is used for this opening assessment.
+- **Observed resources:** the preliminary and startup invocations totaled
+  243.959 seconds and 5.035910 AIU before the training request.
+- **Disposition:** the removal did not restore investigation before training;
+  the document addition is not necessary for the observed training-first
+  behavior. The reasoning and recipe did change, so this is not evidence of
+  identical decisions or zero influence on every aspect of the opening.
+  Restore the document after maintainer approval and retain the inventory
+  implementation.
+
+## 2026-10-01: restore the instrument contract and inspect model/prompt framing
+
+- **Implementation commit:** the commit containing this entry,
+  `Restore artifact inventory contract after startup trial`.
+- **Approved restoration:** restore the exact 44-line metadata section from
+  `f986a2c` in `research/instruments.md`. No executable code, phase prompt,
+  scientific model, training recipe, or campaign operation changes.
+- **Archived model references:** the winning campaign
+  `77a975a5-9917-4178-ad06-ede00161560f` published
+  `research/scientific_model.md` in `7d88b15`; its frozen content is also
+  retained by `inquiery-harnes-success-2`. The training-first startup
+  `010714c2-5abd-4836-96bd-364caaf82042` published its model in `d189d5a`.
+  These archived documents, not a later campaign's worktree file, support
+  the comparison.
+- **Main framing clue:** the winning model describes a second-order coupled
+  plant and leaves practical motor authority, braking margin, settling, and
+  closed-loop observables explicitly uncharacterized. The later model retains
+  physical unknowns but also concludes that "the principal uncertainty is the
+  policy's ability to infer and control the system's transient response rather
+  than to estimate a changing world." This sentence was exposed in the PI's
+  complete model read before action selection. It assigns priority to learned
+  control before compiled dynamics or bounded closed-loop capability have
+  been characterized.
+- **Additional context clue:** the winning model already situates the
+  restricted training range among physical failure classes. The later model
+  omits that range, and the startup discovers it during implementation
+  inspection, then selects its expansion as the highest-leverage intervention.
+  This is a difference in framing and discovery sequence, not a proposal to
+  insert a prescribed training intervention into the physical model.
+- **Prompt interaction / limits:** the common startup prompt asks the PI to
+  establish the first direction from the model and actively use its physical
+  consequences and unknowns to form explanations. A model that names policy
+  capability as the principal uncertainty can therefore supply a preselected
+  learning question, whereas an uncharacterized-plant framing can support
+  candidate-free investigation. The public openings follow those respective
+  framings, but this association is not an isolated causal test. Both models
+  contain physical and learning uncertainties; neither compels one instrument.
+- **Disposition:** instrument documentation restored; training-first
+  progression remains unresolved. Model priority-setting in combination with
+  the startup prompt is an investigative lead only. No preliminary prompt or
+  scientific-model contract change is approved or implemented here.
