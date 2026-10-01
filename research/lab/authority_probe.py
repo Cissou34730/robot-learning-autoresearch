@@ -64,7 +64,7 @@ def _variant_specs() -> list[dict]:
             "kd": kd,
         }
         for branch in ("nearest", "open", "folded")
-        for kp, kd in ((1.5, 0.6), (3.0, 0.8), (6.0, 1.2))
+        for kp, kd in ((0.2, 0.05), (0.3, 0.08), (0.4, 0.1))
     ]
 
 
@@ -107,6 +107,11 @@ def _summarize(rows: list[dict]) -> dict:
             else None
         ),
         "mean_hold_exits": float(np.mean([row["hold_exits"] for row in rows])),
+        "episodes_with_action_saturation_percent": (
+            100.0
+            * sum(row["saturated_action_steps"] > 0 for row in rows)
+            / len(rows)
+        ),
         "radius_bins": bins,
     }
 
@@ -129,6 +134,7 @@ def _run_variant(
         hold_exits = 0
         previous_held_steps = 0
         max_abs_action = 0.0
+        saturated_action_steps = 0
         steps = 0
         success = False
         terminated = False
@@ -144,6 +150,8 @@ def _run_variant(
                 1.0,
             )
             max_abs_action = max(max_abs_action, float(np.max(np.abs(action))))
+            if np.any(np.abs(action) >= 1.0 - 1e-6):
+                saturated_action_steps += 1
             _, _, terminated, truncated, info = env.step(action)
             steps += 1
             held_steps = int(info["held_steps"])
@@ -163,6 +171,7 @@ def _run_variant(
                 "first_entry_step": first_entry_step,
                 "hold_exits": hold_exits,
                 "max_abs_action": max_abs_action,
+                "saturated_action_steps": saturated_action_steps,
             }
         )
     return {
