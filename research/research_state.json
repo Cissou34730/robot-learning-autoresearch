@@ -1,13 +1,5 @@
 {
-  "active_inquiry": {
-    "closure_condition": "Close after held-out development evidence for the strongest T1 candidate is sufficient to determine whether failures are concentrated by target radius or angle, or instead show repeated post-entry exits, high end-effector or joint speed, or action saturation across the distribution; use that determination to select the next bounded goal-linked intervention or conclude that the current route is not credible.",
-    "goal_connection": "The human goal requires at least 196 successes in the official 200-episode panel across the complete 0.06-0.20 m radius range and uninterrupted 100-step holds. Identifying whether failures are localized to target configurations or occur after entry is necessary before selecting a credible training or control intervention toward that threshold.",
-    "id": "I1",
-    "opened_in_session": "S2",
-    "question": "Do the remaining failures of the full-range PPO policy primarily reflect target-configuration coverage and inverse-kinematic branch selection, or do they persist broadly because approach transients and low-velocity stabilization are not controlled?",
-    "rationale": "T1 reached only 0.60 on its training stream and produced no evaluation artifact, so official assessment would be premature and the training score cannot distinguish coverage from transient-control failure. The physical model predicts that both inner-radius folded configurations and residual momentum under 20 ms action holds can cause failure. A held-out measurement of T1:checkpoint-120832 with time to first entry, longest in-band run, hold exits, distance and speed, joint velocities, saturation, radius, and angle will directly discriminate these explanations without changing the official task.",
-    "reframes": []
-  },
+  "active_inquiry": null,
   "campaign": {
     "base_commit": "c2abfc7efc60be52b98a1f4189e022d759e006b2",
     "id": "010714c2-5abd-4836-96bd-364caaf82042",
@@ -837,7 +829,7 @@
     }
   },
   "counters": {
-    "event": 3,
+    "event": 4,
     "inquiry": 1,
     "measurement": 2,
     "session": 3,
@@ -1548,9 +1540,63 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-01T21:46:39Z",
+      "error": null,
+      "id": "E4",
+      "inquiry_id": "I1",
+      "kind": "inquiry",
+      "request": {
+        "action": "close",
+        "outcome": "I1 resolved: the dominant failure mode is radius-dependent approach failure and insufficient control authority, not broad post-entry stabilization failure.",
+        "reason": "M2 reproduced 61.25% success on the 160-episode held-out development panel. Of 62 failures, 58 never entered the 1 cm tolerance region; all 28 episodes in the 18-20 cm radius bin failed before entry, and the 14-18 cm bin achieved only 8/39 successes with 30 failures having no entry. Only 4 failures occurred after entry, and each had a hold exit. Angle-bin success varied but did not provide a comparable concentration, while any saturation occurred in every episode and therefore is not itself discriminative; the high saturation counts in the largest-radius failures are consistent with insufficient approach authority. This is sufficient to redirect the campaign toward a bounded training/control-representation intervention for large-radius approach and coordinated motion, while retaining post-entry exit behavior as a secondary risk. The 61.25% development result is not official evidence and does not support assessment."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I1",
+        "outcome": "I1 resolved: the dominant failure mode is radius-dependent approach failure and insufficient control authority, not broad post-entry stabilization failure.",
+        "reason": "M2 reproduced 61.25% success on the 160-episode held-out development panel. Of 62 failures, 58 never entered the 1 cm tolerance region; all 28 episodes in the 18-20 cm radius bin failed before entry, and the 14-18 cm bin achieved only 8/39 successes with 30 failures having no entry. Only 4 failures occurred after entry, and each had a hold exit. Angle-bin success varied but did not provide a comparable concentration, while any saturation occurred in every episode and therefore is not itself discriminative; the high saturation counts in the largest-radius failures are consistent with insufficient approach authority. This is sufficient to redirect the campaign toward a bounded training/control-representation intervention for large-radius approach and coordinated motion, while retaining post-entry exit behavior as a secondary risk. The 61.25% development result is not official evidence and does not support assessment.",
+        "status": "completed"
+      },
+      "session_id": "S3",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "close",
+        "inquiry_id": "I1",
+        "outcome": "I1 resolved: the dominant failure mode is radius-dependent approach failure and insufficient control authority, not broad post-entry stabilization failure.",
+        "reason": "M2 reproduced 61.25% success on the 160-episode held-out development panel. Of 62 failures, 58 never entered the 1 cm tolerance region; all 28 episodes in the 18-20 cm radius bin failed before entry, and the 14-18 cm bin achieved only 8/39 successes with 30 failures having no entry. Only 4 failures occurred after entry, and each had a hold exit. Angle-bin success varied but did not provide a comparable concentration, while any saturation occurred in every episode and therefore is not itself discriminative; the high saturation counts in the largest-radius failures are consistent with insufficient approach authority. This is sufficient to redirect the campaign toward a bounded training/control-representation intervention for large-radius approach and coordinated motion, while retaining post-entry exit behavior as a secondary risk. The 61.25% development result is not official evidence and does not support assessment."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I1",
+        "outcome": "I1 resolved: the dominant failure mode is radius-dependent approach failure and insufficient control authority, not broad post-entry stabilization failure.",
+        "reason": "M2 reproduced 61.25% success on the 160-episode held-out development panel. Of 62 failures, 58 never entered the 1 cm tolerance region; all 28 episodes in the 18-20 cm radius bin failed before entry, and the 14-18 cm bin achieved only 8/39 successes with 30 failures having no entry. Only 4 failures occurred after entry, and each had a hold exit. Angle-bin success varied but did not provide a comparable concentration, while any saturation occurred in every episode and therefore is not itself discriminative; the high saturation counts in the largest-radius failures are consistent with insufficient approach authority. This is sufficient to redirect the campaign toward a bounded training/control-representation intervention for large-radius approach and coordinated motion, while retaining post-entry exit behavior as a secondary risk. The 61.25% development result is not official evidence and does not support assessment.",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E4",
+    "inquiry_id": "I1",
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "close",
+        "outcome": "I1 resolved: the dominant failure mode is radius-dependent approach failure and insufficient control authority, not broad post-entry stabilization failure.",
+        "reason": "M2 reproduced 61.25% success on the 160-episode held-out development panel. Of 62 failures, 58 never entered the 1 cm tolerance region; all 28 episodes in the 18-20 cm radius bin failed before entry, and the 14-18 cm bin achieved only 8/39 successes with 30 failures having no entry. Only 4 failures occurred after entry, and each had a hold exit. Angle-bin success varied but did not provide a comparable concentration, while any saturation occurred in every episode and therefore is not itself discriminative; the high saturation counts in the largest-radius failures are consistent with insufficient approach authority. This is sufficient to redirect the campaign toward a bounded training/control-representation intervention for large-radius approach and coordinated motion, while retaining post-entry exit behavior as a secondary risk. The 61.25% development result is not official evidence and does not support assessment."
+      }
+    },
+    "request_fingerprint": "f35be0f0a2dfe18c0f5b534b16f14aaebe596ee44c537888291a22c1bb5168e4",
+    "session_id": "S3",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T1 produced 24 disposable checkpoint candidates. T1:checkpoint-120832 remains the strongest training-stream candidate by recorded success (0.60), but no working, best-known, or retained role is assigned because no independent development measurement exists.",
     "completed_operations": [
@@ -1589,7 +1635,8 @@
     "objective": "Advance I1 toward its closure condition: Close after held-out development evidence for the strongest T1 candidate is sufficient to determine whether failures are concentrated by target radius or angle, or instead show repeated post-entry exits, high end-effector or joint speed, or action saturation across the distribution; use that determination to select the next bounded goal-linked intervention or conclude that the current route is not credible.",
     "operation_ids": [
       "M1",
-      "M2"
+      "M2",
+      "E4"
     ],
     "scientific_parent_commit": "91dc2970555f3c2bd62043cf856361b0c91f8809"
   },
