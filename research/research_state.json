@@ -1660,7 +1660,7 @@
     "inquiry": 3,
     "measurement": 5,
     "session": 7,
-    "training": 2
+    "training": 4
   },
   "human_goal": {
     "source": "research/scenario.md"
@@ -3754,9 +3754,115 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-01T22:28:49Z",
+      "error": "ruff failed:\nI001 [*] Import block is un-sorted or un-formatted\n --> robot_learning\\scenario\\policy_io.py:7:1\n  |\n5 |   \"\"\"\n6 |\n7 | / from robot_learning.policy_runtime import PolicyIO\n8 | | from robot_learning.scenario.observations import reach_observation\n  | |__________________________________________________________________^\nhelp: Organize imports\n   |\n9  |\n   -\n10 | ACTION_ATTENUATION = 0.5\n   |\n\nFound 1 error.\n[*] 1 fixable with the `--fix` option.\n\n",
+      "id": "T3",
+      "inquiry_id": "I3",
+      "kind": "training",
+      "request": {
+        "description": "Train a fresh PPO policy with the restored T1 observation and reward recipe, applying one fixed 0.5 attenuation to normalized policy actions before the direct motor interface.",
+        "initialization": "fresh",
+        "rationale": "I3 tests whether T1's radius-dependent no-entry deficit is caused by poorly conditioned direct motor commands rather than failure to acquire the reach-and-hold mapping. E12 restored the T1 observation, reward, target distribution, and official task semantics. The only intervention is ACTION_ATTENUATION=0.5 in the shared policy I/O mapping, selected because M5's successful low-gain controller stayed below approximately 0.53 normalized command and had zero saturation and hold exits. This preserves the 1 cm threshold, uninterrupted 100-step hold, 500-step horizon, dynamics, and full 0.06-0.20 m target distribution while constraining learned commands to the validated low-amplitude regime. The fresh 120000-step run will be judged on shared held-out seeds before any official assessment, with large-radius entry/no-entry outcomes, complete holds, post-entry exits, and applied-action saturation as the discriminating evidence.",
+        "seed": 2,
+        "steps": 120000
+      },
+      "result": {
+        "error": "ruff failed:\nI001 [*] Import block is un-sorted or un-formatted\n --> robot_learning\\scenario\\policy_io.py:7:1\n  |\n5 |   \"\"\"\n6 |\n7 | / from robot_learning.policy_runtime import PolicyIO\n8 | | from robot_learning.scenario.observations import reach_observation\n  | |__________________________________________________________________^\nhelp: Organize imports\n   |\n9  |\n   -\n10 | ACTION_ATTENUATION = 0.5\n   |\n\nFound 1 error.\n[*] 1 fixable with the `--fix` option.\n\n",
+        "status": "failed"
+      },
+      "session_id": "S7",
+      "status": "failed",
+      "superseded_by": "T4",
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "archived_candidates": null,
+      "candidate_dir": null,
+      "code_parent_commit": "c65090033679ddd97042241bb45fc9d774f5e728",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "parent": null,
+      "result": null,
+      "scientific_commit": null,
+      "scientific_manifest": [
+        {
+          "exists": true,
+          "fingerprint": "952ff92e13756411b756a432d5d16b7522bf66057abf603f5d96295c406f0d21",
+          "path": "robot_learning/scenario/environment.py"
+        },
+        {
+          "exists": true,
+          "fingerprint": "5040d18e68de974bcd6ffe44daba171246a0d7758c92d58ad503452d137cc0f9",
+          "path": "robot_learning/scenario/evaluation.py"
+        },
+        {
+          "exists": true,
+          "fingerprint": "46695f021b6ab5a384a64c3c96a03dc62d8d4eb59b9bc34674d98776dedbda30",
+          "path": "robot_learning/scenario/observations.py"
+        },
+        {
+          "exists": true,
+          "fingerprint": "8d53e34e09dd46be4e1459e6b98d88c096b14f754d2269a88eaa81be16d41568",
+          "path": "robot_learning/scenario/policy_io.py"
+        },
+        {
+          "exists": true,
+          "fingerprint": "0156e7f97efa2e5a40785bde0bfc393ed4f74665b6b34f32c6fdcea76f93571d",
+          "path": "robot_learning/scenario/reward.py"
+        }
+      ],
+      "scientific_paths": [
+        "robot_learning/scenario/environment.py",
+        "robot_learning/scenario/evaluation.py",
+        "robot_learning/scenario/observations.py",
+        "robot_learning/scenario/reward.py",
+        "robot_learning/scenario/policy_io.py"
+      ]
+    },
+    "failure": null,
+    "id": "T4",
+    "inquiry_id": "I3",
+    "kind": "training",
+    "progress": "accepted",
+    "request": {
+      "training": {
+        "description": "Train a fresh PPO policy with the restored T1 observation and reward recipe, applying one fixed 0.5 attenuation to normalized policy actions before the direct motor interface.",
+        "initialization": "fresh",
+        "rationale": "I3 tests whether T1's radius-dependent no-entry deficit is caused by poorly conditioned direct motor commands rather than failure to acquire the reach-and-hold mapping. E12 restored the T1 observation, reward, target distribution, and official task semantics. The only intervention is ACTION_ATTENUATION=0.5 in the shared policy I/O mapping, selected because M5's successful low-gain controller stayed below approximately 0.53 normalized command and had zero saturation and hold exits. This preserves the 1 cm threshold, uninterrupted 100-step hold, 500-step horizon, dynamics, and full 0.06-0.20 m target distribution while constraining learned commands to the validated low-amplitude regime. The fresh 120000-step run will be judged on shared held-out seeds before any official assessment, with large-radius entry/no-entry outcomes, complete holds, post-entry exits, and applied-action saturation as the discriminating evidence.",
+        "seed": 2,
+        "steps": 120000
+      }
+    },
+    "request_fingerprint": "6cd78d681cf030d389ea75a58a2bd45674b3a8ae0ada93763726ebe6526f90c1",
+    "session_id": "S7",
+    "supersedes": "T3"
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T1:checkpoint-120832 remains the strongest available learned candidate at 98/160 development success, but no working, best-known, or retained role is assigned because it is far below the official threshold and no candidate has official evidence. T2:checkpoint-120832 is rejected as a route reference after 0/160 paired development success.",
     "completed_operations": [
