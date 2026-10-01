@@ -188,7 +188,9 @@
     },
     "T1:checkpoint-120832": {
       "artifact": "research/checkpoints/candidates/010714c2-5abd-4836-96bd-364caaf82042/t1/checkpoint-120832",
-      "evaluation_artifacts": [],
+      "evaluation_artifacts": [
+        "research/evaluations/010714c2-5abd-4836-96bd-364caaf82042/evaluation-010714c2-5abd-4836-96bd-364caaf82042-m1-T1-checkpoint-120832-160ep-seed4200-1964ef759c7c.json"
+      ],
       "fingerprint": "9545e401b0f167917ee2c577370be31c030f391f93cb5dd0c412db391698aeb5",
       "id": "T1:checkpoint-120832",
       "name": "checkpoint-120832",
@@ -836,14 +838,14 @@
   "counters": {
     "event": 3,
     "inquiry": 1,
-    "measurement": 0,
-    "session": 2,
+    "measurement": 1,
+    "session": 3,
     "training": 1
   },
   "human_goal": {
     "source": "research/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -1143,9 +1145,601 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-01T21:41:55Z",
+      "error": null,
+      "id": "M1",
+      "inquiry_id": "I1",
+      "kind": "measurement",
+      "request": {
+        "description": "Run a held-out 160-episode development evaluation of T1:checkpoint-120832 across the official radius and angle distribution, recording episode outcomes, target-stratified success, entry timing, longest uninterrupted in-band run, exits after entry, end-effector speed, joint velocities, and applied-action saturation.",
+        "measurements": [
+          {
+            "candidate": "T1:checkpoint-120832",
+            "episodes": 160,
+            "instrument": "research_evaluation",
+            "label": "I1 held-out T1 checkpoint-120832 trajectory diagnostics",
+            "seed": 4200
+          }
+        ],
+        "rationale": "I1 requires evidence that separates target-configuration or branch-specific failures from broad approach-transient and stabilization failures. This held-out panel keeps the official task mechanics and distribution while the scenario evaluator records per-episode and radius/angle-stratified diagnostics. Time to first entry and target-stratified success test coverage and branch concentration; longest runs, post-entry exits, end-effector and joint speed, and saturation test whether failures persist after entry because the controller cannot settle under the 20 ms action hold. The candidate is the strongest available T1 checkpoint by training-stream success, and the 160-episode development panel is distinct from the protected official panel."
+      },
+      "result": {
+        "measurements": [
+          {
+            "candidate": "T1:checkpoint-120832",
+            "candidate_id": "T1:checkpoint-120832",
+            "instrument": "research_evaluation",
+            "label": "I1 held-out T1 checkpoint-120832 trajectory diagnostics",
+            "metrics": {
+              "episodes": 160,
+              "evaluation_artifact": "research/evaluations/010714c2-5abd-4836-96bd-364caaf82042/evaluation-010714c2-5abd-4836-96bd-364caaf82042-m1-T1-checkpoint-120832-160ep-seed4200-1964ef759c7c.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 8,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/model",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/seed",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/official_benchmark",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 160,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "reward_total",
+                      "steps",
+                      "success",
+                      "terminated",
+                      "truncated"
+                    ],
+                    "path": "/episode_results",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/research_evidence",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 160,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "final_distance_cm",
+                      "first_reach_step",
+                      "hold_exits",
+                      "hold_interruptions",
+                      "in_tolerance_steps",
+                      "longest_in_band_run_steps",
+                      "max_abs_action",
+                      "max_distance_cm",
+                      "max_ee_speed_after_first_entry_cm_s",
+                      "max_ee_speed_cm_s",
+                      "max_held_steps",
+                      "max_joint_velocity_after_first_entry_rad_s",
+                      "max_joint_velocity_by_joint_rad_s",
+                      "max_joint_velocity_rad_s",
+                      "min_distance_cm",
+                      "saturated_action_after_first_entry_steps",
+                      "saturated_action_steps",
+                      "success",
+                      "target_angle_degrees",
+                      "target_radius_cm",
+                      "time_to_first_entry_step"
+                    ],
+                    "path": "/research_evidence/episode_diagnostics",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence/stratified_summary",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/research_evidence/units",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "field_names": [
+                      "bin",
+                      "episodes",
+                      "episodes_with_action_saturation_percent",
+                      "lower_bound",
+                      "mean_hold_exits",
+                      "mean_longest_in_band_run_steps",
+                      "mean_max_ee_speed_after_first_entry_cm_s",
+                      "mean_max_joint_velocity_after_first_entry_rad_s",
+                      "mean_time_to_first_entry_step",
+                      "success_percent",
+                      "successes",
+                      "upper_bound"
+                    ],
+                    "path": "/research_evidence/stratified_summary/radius_cm",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 8,
+                    "field_names": [
+                      "bin",
+                      "episodes",
+                      "episodes_with_action_saturation_percent",
+                      "lower_bound",
+                      "mean_hold_exits",
+                      "mean_longest_in_band_run_steps",
+                      "mean_max_ee_speed_after_first_entry_cm_s",
+                      "mean_max_joint_velocity_after_first_entry_rad_s",
+                      "mean_time_to_first_entry_step",
+                      "success_percent",
+                      "successes",
+                      "upper_bound"
+                    ],
+                    "path": "/research_evidence/stratified_summary/angle_degrees",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/research_evidence/units/distance",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/speed",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/joint_velocity",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/time",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/action",
+                    "type": "string"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "55e04daa0b678441ae7d2b279d1eb79a06f9200c29c5affe9b5f8d79e6020278",
+              "evaluation_semantics": "1964ef759c7c",
+              "model_fingerprint": "9545e401b0f167917ee2c577370be31c030f391f93cb5dd0c412db391698aeb5",
+              "official_benchmark": false,
+              "schema_version": 5,
+              "seed": 4200,
+              "success_percent": 61.25,
+              "successes": 98
+            }
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": null
+      },
+      "session_id": "S3",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "evaluation_semantics": "1964ef759c7c",
+      "measurements": [
+        {
+          "artifact": "research/checkpoints/candidates/010714c2-5abd-4836-96bd-364caaf82042/t1/checkpoint-120832",
+          "candidate": "T1:checkpoint-120832",
+          "candidate_id": "T1:checkpoint-120832",
+          "episodes": 160,
+          "instrument": "research_evaluation",
+          "label": "I1 held-out T1 checkpoint-120832 trajectory diagnostics",
+          "model_fingerprint": "9545e401b0f167917ee2c577370be31c030f391f93cb5dd0c412db391698aeb5",
+          "seed": 4200
+        }
+      ],
+      "module_provenance": null,
+      "paired_comparisons": [],
+      "partial_results": [
+        {
+          "candidate": "T1:checkpoint-120832",
+          "candidate_id": "T1:checkpoint-120832",
+          "instrument": "research_evaluation",
+          "label": "I1 held-out T1 checkpoint-120832 trajectory diagnostics",
+          "metrics": {
+            "episodes": 160,
+            "evaluation_artifact": "research/evaluations/010714c2-5abd-4836-96bd-364caaf82042/evaluation-010714c2-5abd-4836-96bd-364caaf82042-m1-T1-checkpoint-120832-160ep-seed4200-1964ef759c7c.json",
+            "evaluation_artifact_contents": {
+              "scope": "structure_only",
+              "sections": [
+                {
+                  "entries": 8,
+                  "path": "",
+                  "type": "object"
+                },
+                {
+                  "path": "/schema_version",
+                  "type": "number"
+                },
+                {
+                  "path": "/model",
+                  "type": "string"
+                },
+                {
+                  "path": "/episodes",
+                  "type": "number"
+                },
+                {
+                  "path": "/seed",
+                  "type": "number"
+                },
+                {
+                  "path": "/official_benchmark",
+                  "type": "boolean"
+                },
+                {
+                  "path": "/success_percent",
+                  "type": "number"
+                },
+                {
+                  "entries": 160,
+                  "field_names": [
+                    "episode",
+                    "episode_seed",
+                    "reward_total",
+                    "steps",
+                    "success",
+                    "terminated",
+                    "truncated"
+                  ],
+                  "path": "/episode_results",
+                  "type": "array"
+                },
+                {
+                  "entries": 3,
+                  "path": "/research_evidence",
+                  "type": "object"
+                },
+                {
+                  "entries": 160,
+                  "field_names": [
+                    "episode",
+                    "episode_seed",
+                    "final_distance_cm",
+                    "first_reach_step",
+                    "hold_exits",
+                    "hold_interruptions",
+                    "in_tolerance_steps",
+                    "longest_in_band_run_steps",
+                    "max_abs_action",
+                    "max_distance_cm",
+                    "max_ee_speed_after_first_entry_cm_s",
+                    "max_ee_speed_cm_s",
+                    "max_held_steps",
+                    "max_joint_velocity_after_first_entry_rad_s",
+                    "max_joint_velocity_by_joint_rad_s",
+                    "max_joint_velocity_rad_s",
+                    "min_distance_cm",
+                    "saturated_action_after_first_entry_steps",
+                    "saturated_action_steps",
+                    "success",
+                    "target_angle_degrees",
+                    "target_radius_cm",
+                    "time_to_first_entry_step"
+                  ],
+                  "path": "/research_evidence/episode_diagnostics",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/research_evidence/stratified_summary",
+                  "type": "object"
+                },
+                {
+                  "entries": 5,
+                  "path": "/research_evidence/units",
+                  "type": "object"
+                },
+                {
+                  "entries": 4,
+                  "field_names": [
+                    "bin",
+                    "episodes",
+                    "episodes_with_action_saturation_percent",
+                    "lower_bound",
+                    "mean_hold_exits",
+                    "mean_longest_in_band_run_steps",
+                    "mean_max_ee_speed_after_first_entry_cm_s",
+                    "mean_max_joint_velocity_after_first_entry_rad_s",
+                    "mean_time_to_first_entry_step",
+                    "success_percent",
+                    "successes",
+                    "upper_bound"
+                  ],
+                  "path": "/research_evidence/stratified_summary/radius_cm",
+                  "type": "array"
+                },
+                {
+                  "entries": 8,
+                  "field_names": [
+                    "bin",
+                    "episodes",
+                    "episodes_with_action_saturation_percent",
+                    "lower_bound",
+                    "mean_hold_exits",
+                    "mean_longest_in_band_run_steps",
+                    "mean_max_ee_speed_after_first_entry_cm_s",
+                    "mean_max_joint_velocity_after_first_entry_rad_s",
+                    "mean_time_to_first_entry_step",
+                    "success_percent",
+                    "successes",
+                    "upper_bound"
+                  ],
+                  "path": "/research_evidence/stratified_summary/angle_degrees",
+                  "type": "array"
+                },
+                {
+                  "path": "/research_evidence/units/distance",
+                  "type": "string"
+                },
+                {
+                  "path": "/research_evidence/units/speed",
+                  "type": "string"
+                },
+                {
+                  "path": "/research_evidence/units/joint_velocity",
+                  "type": "string"
+                },
+                {
+                  "path": "/research_evidence/units/time",
+                  "type": "string"
+                },
+                {
+                  "path": "/research_evidence/units/action",
+                  "type": "string"
+                }
+              ],
+              "truncated": false
+            },
+            "evaluation_artifact_fingerprint": "55e04daa0b678441ae7d2b279d1eb79a06f9200c29c5affe9b5f8d79e6020278",
+            "evaluation_semantics": "1964ef759c7c",
+            "model_fingerprint": "9545e401b0f167917ee2c577370be31c030f391f93cb5dd0c412db391698aeb5",
+            "official_benchmark": false,
+            "schema_version": 5,
+            "seed": 4200,
+            "success_percent": 61.25,
+            "successes": 98
+          }
+        }
+      ],
+      "result": {
+        "measurements": [
+          {
+            "candidate": "T1:checkpoint-120832",
+            "candidate_id": "T1:checkpoint-120832",
+            "instrument": "research_evaluation",
+            "label": "I1 held-out T1 checkpoint-120832 trajectory diagnostics",
+            "metrics": {
+              "episodes": 160,
+              "evaluation_artifact": "research/evaluations/010714c2-5abd-4836-96bd-364caaf82042/evaluation-010714c2-5abd-4836-96bd-364caaf82042-m1-T1-checkpoint-120832-160ep-seed4200-1964ef759c7c.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 8,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/model",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/seed",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/official_benchmark",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 160,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "reward_total",
+                      "steps",
+                      "success",
+                      "terminated",
+                      "truncated"
+                    ],
+                    "path": "/episode_results",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/research_evidence",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 160,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "final_distance_cm",
+                      "first_reach_step",
+                      "hold_exits",
+                      "hold_interruptions",
+                      "in_tolerance_steps",
+                      "longest_in_band_run_steps",
+                      "max_abs_action",
+                      "max_distance_cm",
+                      "max_ee_speed_after_first_entry_cm_s",
+                      "max_ee_speed_cm_s",
+                      "max_held_steps",
+                      "max_joint_velocity_after_first_entry_rad_s",
+                      "max_joint_velocity_by_joint_rad_s",
+                      "max_joint_velocity_rad_s",
+                      "min_distance_cm",
+                      "saturated_action_after_first_entry_steps",
+                      "saturated_action_steps",
+                      "success",
+                      "target_angle_degrees",
+                      "target_radius_cm",
+                      "time_to_first_entry_step"
+                    ],
+                    "path": "/research_evidence/episode_diagnostics",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence/stratified_summary",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/research_evidence/units",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "field_names": [
+                      "bin",
+                      "episodes",
+                      "episodes_with_action_saturation_percent",
+                      "lower_bound",
+                      "mean_hold_exits",
+                      "mean_longest_in_band_run_steps",
+                      "mean_max_ee_speed_after_first_entry_cm_s",
+                      "mean_max_joint_velocity_after_first_entry_rad_s",
+                      "mean_time_to_first_entry_step",
+                      "success_percent",
+                      "successes",
+                      "upper_bound"
+                    ],
+                    "path": "/research_evidence/stratified_summary/radius_cm",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 8,
+                    "field_names": [
+                      "bin",
+                      "episodes",
+                      "episodes_with_action_saturation_percent",
+                      "lower_bound",
+                      "mean_hold_exits",
+                      "mean_longest_in_band_run_steps",
+                      "mean_max_ee_speed_after_first_entry_cm_s",
+                      "mean_max_joint_velocity_after_first_entry_rad_s",
+                      "mean_time_to_first_entry_step",
+                      "success_percent",
+                      "successes",
+                      "upper_bound"
+                    ],
+                    "path": "/research_evidence/stratified_summary/angle_degrees",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/research_evidence/units/distance",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/speed",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/joint_velocity",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/time",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/action",
+                    "type": "string"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "55e04daa0b678441ae7d2b279d1eb79a06f9200c29c5affe9b5f8d79e6020278",
+              "evaluation_semantics": "1964ef759c7c",
+              "model_fingerprint": "9545e401b0f167917ee2c577370be31c030f391f93cb5dd0c412db391698aeb5",
+              "official_benchmark": false,
+              "schema_version": 5,
+              "seed": 4200,
+              "success_percent": 61.25,
+              "successes": 98
+            }
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": null
+      },
+      "task_reference_contract": null
+    },
+    "failure": null,
+    "id": "M1",
+    "inquiry_id": "I1",
+    "kind": "measurement",
+    "progress": "completed",
+    "request": {
+      "measurement": {
+        "description": "Run a held-out 160-episode development evaluation of T1:checkpoint-120832 across the official radius and angle distribution, recording episode outcomes, target-stratified success, entry timing, longest uninterrupted in-band run, exits after entry, end-effector speed, joint velocities, and applied-action saturation.",
+        "measurements": [
+          {
+            "candidate": "T1:checkpoint-120832",
+            "episodes": 160,
+            "instrument": "research_evaluation",
+            "label": "I1 held-out T1 checkpoint-120832 trajectory diagnostics",
+            "seed": 4200
+          }
+        ],
+        "rationale": "I1 requires evidence that separates target-configuration or branch-specific failures from broad approach-transient and stabilization failures. This held-out panel keeps the official task mechanics and distribution while the scenario evaluator records per-episode and radius/angle-stratified diagnostics. Time to first entry and target-stratified success test coverage and branch concentration; longest runs, post-entry exits, end-effector and joint speed, and saturation test whether failures persist after entry because the controller cannot settle under the 20 ms action hold. The candidate is the strongest available T1 checkpoint by training-stream success, and the 160-episode development panel is distinct from the protected official panel."
+      }
+    },
+    "request_fingerprint": "210f0bc6f708e9d43976ddeaa5181efe235f5fb955cb4d6d9557872c3b45a37c",
+    "session_id": "S3",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T1 produced 24 disposable checkpoint candidates. T1:checkpoint-120832 remains the strongest training-stream candidate by recorded success (0.60), but no working, best-known, or retained role is assigned because no independent development measurement exists.",
     "completed_operations": [
@@ -1171,6 +1765,21 @@
     "path": "research/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "aa241f51-9324-4b29-8b7a-ef804103251a",
+    "id": "S3",
+    "inquiry_id": "I1",
+    "kind": "inquiry",
+    "objective": "Advance I1 toward its closure condition: Close after held-out development evidence for the strongest T1 candidate is sufficient to determine whether failures are concentrated by target radius or angle, or instead show repeated post-entry exits, high end-effector or joint speed, or action saturation across the distribution; use that determination to select the next bounded goal-linked intervention or conclude that the current route is not credible.",
+    "operation_ids": [
+      "M1"
+    ],
+    "scientific_parent_commit": "91dc2970555f3c2bd62043cf856361b0c91f8809"
+  },
   "terminal_state": null
 }
