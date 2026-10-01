@@ -2446,38 +2446,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I1",
-        "outcome": "Redirected away from the bounded joint-target PD PPO recipe: T2 produced zero training-panel success at every checkpoint, and its strongest-reward candidate achieved 0/160 complete-hold successes in M3.",
-        "reason": "M1 established that moderate bounded PD control is physically feasible, but T2's policy-interface intervention produced no positive learning signal and M3 showed universal 500-step truncation without a successful hold. The intervention therefore provides no evidence that PPO can acquire the required outer-radius reach and braking behavior through this interface, and it makes further allocation to this exact recipe unjustified. Because M3 records aggregate success and truncation but no per-radius or hold-streak diagnostics, the result does not identify whether the failed candidate lacked reach or stabilization; it does establish that the learned candidate is unusable for the 98% goal. Future work must redirect to a different learning/control formulation and preserve complete-hold evaluation."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I1",
-        "outcome": "Redirected away from the bounded joint-target PD PPO recipe: T2 produced zero training-panel success at every checkpoint, and its strongest-reward candidate achieved 0/160 complete-hold successes in M3.",
-        "reason": "M1 established that moderate bounded PD control is physically feasible, but T2's policy-interface intervention produced no positive learning signal and M3 showed universal 500-step truncation without a successful hold. The intervention therefore provides no evidence that PPO can acquire the required outer-radius reach and braking behavior through this interface, and it makes further allocation to this exact recipe unjustified. Because M3 records aggregate success and truncation but no per-radius or hold-streak diagnostics, the result does not identify whether the failed candidate lacked reach or stabilization; it does establish that the learned candidate is unusable for the 98% goal. Future work must redirect to a different learning/control formulation and preserve complete-hold evaluation.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E6",
-    "inquiry_id": "I1",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "Redirected away from the bounded joint-target PD PPO recipe: T2 produced zero training-panel success at every checkpoint, and its strongest-reward candidate achieved 0/160 complete-hold successes in M3.",
-        "reason": "M1 established that moderate bounded PD control is physically feasible, but T2's policy-interface intervention produced no positive learning signal and M3 showed universal 500-step truncation without a successful hold. The intervention therefore provides no evidence that PPO can acquire the required outer-radius reach and braking behavior through this interface, and it makes further allocation to this exact recipe unjustified. Because M3 records aggregate success and truncation but no per-radius or hold-streak diagnostics, the result does not identify whether the failed candidate lacked reach or stabilization; it does establish that the learned candidate is unusable for the 98% goal. Future work must redirect to a different learning/control formulation and preserve complete-hold evaluation."
-      }
-    },
-    "request_fingerprint": "73bccfc0a811f961571dc5d6850f10cd1acacd4b0e851d690e2fd4ac33b63204",
-    "session_id": "S4",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T1 produced archived candidates, including T1:checkpoint-120832, which was evaluated in M2. No candidate has been assigned working, best-known, or retained status; no candidate meets the human goal.",
     "completed_operations": [
