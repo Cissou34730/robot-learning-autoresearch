@@ -18,3 +18,4 @@
 | E9 | checkpoint | - | checkpointed |
 | T3 | training | I2 | completed |
 | M4 | measurement | I2 | completed |
+| E10 | model_role | I2 | assigned |
