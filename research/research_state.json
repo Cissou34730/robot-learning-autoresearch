@@ -1,5 +1,13 @@
 {
-  "active_inquiry": null,
+  "active_inquiry": {
+    "closure_condition": "Close the inquiry if a bounded task-space-velocity representation yields a candidate that reaches at least 196/200 complete uninterrupted successes on the fixed development panel and is not worse than T1 in the paired comparison, or if it fails to improve T1's complete-hold result or materially worsens either the critical angular acquisition subgroup or post-entry failures under the same panel and semantics.",
+    "goal_connection": "The current best reference achieves 189/200 complete uninterrupted successes, seven below the 196/200 development threshold. The remaining failures couple broad acquisition in the -180 to -90 degree sector with residual braking and stabilization. Task-space velocity is physically the quantity that determines whether the end effector crosses the 1 cm band with enough kinetic motion to exit; making it explicit could improve both acquisition and hold control without changing the official task, action bounds, reward semantics, or success definition.",
+    "id": "I8",
+    "opened_in_session": "S16",
+    "question": "Can a task-space motion representation that exposes radial and tangential end-effector velocity, alongside target-relative position and joint-limit context, reduce the angle-localized acquisition failures while preserving or improving complete uninterrupted hold stability relative to the strongest T1 direct-torque reference?",
+    "rationale": "The scientific model identifies inertial trajectory shaping and configuration-dependent braking as unresolved limits. Prior inquiries tested acquisition shaping, endpoint-speed and hold-progress signals, phase handoff, globally active analytic-IK references, and a target-relative limit-aware encoding; those mechanisms either traded acquisition for stabilization or caused broad acquisition collapse. The present hypothesis is distinct: derive Cartesian radial/tangential velocity from the observed joint state and kinematics so the policy receives the coupled motion variable it must regulate, while retaining direct bounded torque and the complete-hold verdict.",
+    "reframes": []
+  },
   "campaign": {
     "base_commit": "c02b0d59e8ef397c87d92f70e986ad545e585b95",
     "id": "e8788df6-9f4a-4dac-92b7-48e40477e827",
@@ -5742,16 +5750,16 @@
     }
   },
   "counters": {
-    "event": 29,
-    "inquiry": 7,
+    "event": 30,
+    "inquiry": 8,
     "measurement": 7,
-    "session": 15,
+    "session": 16,
     "training": 7
   },
   "human_goal": {
     "source": "research/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -10084,9 +10092,69 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-01T00:06:38Z",
+      "error": null,
+      "id": "E30",
+      "inquiry_id": "I8",
+      "kind": "inquiry",
+      "request": {
+        "action": "open",
+        "closure_condition": "Close the inquiry if a bounded task-space-velocity representation yields a candidate that reaches at least 196/200 complete uninterrupted successes on the fixed development panel and is not worse than T1 in the paired comparison, or if it fails to improve T1's complete-hold result or materially worsens either the critical angular acquisition subgroup or post-entry failures under the same panel and semantics.",
+        "goal_connection": "The current best reference achieves 189/200 complete uninterrupted successes, seven below the 196/200 development threshold. The remaining failures couple broad acquisition in the -180 to -90 degree sector with residual braking and stabilization. Task-space velocity is physically the quantity that determines whether the end effector crosses the 1 cm band with enough kinetic motion to exit; making it explicit could improve both acquisition and hold control without changing the official task, action bounds, reward semantics, or success definition.",
+        "question": "Can a task-space motion representation that exposes radial and tangential end-effector velocity, alongside target-relative position and joint-limit context, reduce the angle-localized acquisition failures while preserving or improving complete uninterrupted hold stability relative to the strongest T1 direct-torque reference?",
+        "rationale": "The scientific model identifies inertial trajectory shaping and configuration-dependent braking as unresolved limits. Prior inquiries tested acquisition shaping, endpoint-speed and hold-progress signals, phase handoff, globally active analytic-IK references, and a target-relative limit-aware encoding; those mechanisms either traded acquisition for stabilization or caused broad acquisition collapse. The present hypothesis is distinct: derive Cartesian radial/tangential velocity from the observed joint state and kinematics so the policy receives the coupled motion variable it must regulate, while retaining direct bounded torque and the complete-hold verdict."
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I8",
+        "status": "completed"
+      },
+      "session_id": "S16",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "open",
+        "inquiry": {
+          "closure_condition": "Close the inquiry if a bounded task-space-velocity representation yields a candidate that reaches at least 196/200 complete uninterrupted successes on the fixed development panel and is not worse than T1 in the paired comparison, or if it fails to improve T1's complete-hold result or materially worsens either the critical angular acquisition subgroup or post-entry failures under the same panel and semantics.",
+          "goal_connection": "The current best reference achieves 189/200 complete uninterrupted successes, seven below the 196/200 development threshold. The remaining failures couple broad acquisition in the -180 to -90 degree sector with residual braking and stabilization. Task-space velocity is physically the quantity that determines whether the end effector crosses the 1 cm band with enough kinetic motion to exit; making it explicit could improve both acquisition and hold control without changing the official task, action bounds, reward semantics, or success definition.",
+          "id": "I8",
+          "opened_in_session": "S16",
+          "question": "Can a task-space motion representation that exposes radial and tangential end-effector velocity, alongside target-relative position and joint-limit context, reduce the angle-localized acquisition failures while preserving or improving complete uninterrupted hold stability relative to the strongest T1 direct-torque reference?",
+          "rationale": "The scientific model identifies inertial trajectory shaping and configuration-dependent braking as unresolved limits. Prior inquiries tested acquisition shaping, endpoint-speed and hold-progress signals, phase handoff, globally active analytic-IK references, and a target-relative limit-aware encoding; those mechanisms either traded acquisition for stabilization or caused broad acquisition collapse. The present hypothesis is distinct: derive Cartesian radial/tangential velocity from the observed joint state and kinematics so the policy receives the coupled motion variable it must regulate, while retaining direct bounded torque and the complete-hold verdict.",
+          "reframes": []
+        }
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I8",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E30",
+    "inquiry_id": null,
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "open",
+        "closure_condition": "Close the inquiry if a bounded task-space-velocity representation yields a candidate that reaches at least 196/200 complete uninterrupted successes on the fixed development panel and is not worse than T1 in the paired comparison, or if it fails to improve T1's complete-hold result or materially worsens either the critical angular acquisition subgroup or post-entry failures under the same panel and semantics.",
+        "goal_connection": "The current best reference achieves 189/200 complete uninterrupted successes, seven below the 196/200 development threshold. The remaining failures couple broad acquisition in the -180 to -90 degree sector with residual braking and stabilization. Task-space velocity is physically the quantity that determines whether the end effector crosses the 1 cm band with enough kinetic motion to exit; making it explicit could improve both acquisition and hold control without changing the official task, action bounds, reward semantics, or success definition.",
+        "question": "Can a task-space motion representation that exposes radial and tangential end-effector velocity, alongside target-relative position and joint-limit context, reduce the angle-localized acquisition failures while preserving or improving complete uninterrupted hold stability relative to the strongest T1 direct-torque reference?",
+        "rationale": "The scientific model identifies inertial trajectory shaping and configuration-dependent braking as unresolved limits. Prior inquiries tested acquisition shaping, endpoint-speed and hold-progress signals, phase handoff, globally active analytic-IK references, and a target-relative limit-aware encoding; those mechanisms either traded acquisition for stabilization or caused broad acquisition collapse. The present hypothesis is distinct: derive Cartesian radial/tangential velocity from the observed joint state and kinematics so the policy receives the coupled motion variable it must regulate, while retaining direct bounded torque and the complete-hold verdict."
+      }
+    },
+    "request_fingerprint": "72344c6f33d1d72dc5dd7f2053b73d960065bc6f634ccb8cd6de6a6f11a05e45",
+    "session_id": "S16",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No working, best-known, or retained role is assigned. T1:checkpoint-100352 remains the strongest evidence-backed development reference at 189/200. T7:checkpoint-120832 is an insufficient I7 candidate at 160/200 and has no role. T6:checkpoint-100352 remains an insufficient I6 candidate at 138/200 and has no role.",
     "completed_operations": [
@@ -10141,6 +10209,21 @@
     "path": "research/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "cb1ce3eb-4f22-4499-b9da-964167ad3b70",
+    "id": "S16",
+    "inquiry_id": null,
+    "kind": "goal_review",
+    "objective": "Decide whether to request official assessment, open one bounded goal-linked inquiry, or conclude that no credible route remains.",
+    "operation_ids": [
+      "E30"
+    ],
+    "scientific_parent_commit": "1e24bd07961c9491debed001ba8daa3223979756"
+  },
   "terminal_state": null
 }

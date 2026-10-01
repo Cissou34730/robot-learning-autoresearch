@@ -45,3 +45,4 @@
 | M7 | measurement | I7 | completed |
 | E28 | inquiry | I7 | completed |
 | E29 | checkpoint | I7 | checkpointed |
+| E30 | inquiry | I8 | completed |
