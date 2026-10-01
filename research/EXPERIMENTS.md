@@ -94,3 +94,4 @@
 | E60 | inquiry | I15 | completed |
 | E61 | checkpoint | I15 | checkpointed |
 | E62 | model_role | - | assigned |
+| E63 | campaign_conclusion | - | no_credible_route |
