@@ -1824,7 +1824,9 @@
     },
     "T3:checkpoint-120832": {
       "artifact": "research/checkpoints/candidates/77a975a5-9917-4178-ad06-ede00161560f/t3/checkpoint-120832",
-      "evaluation_artifacts": [],
+      "evaluation_artifacts": [
+        "research/evaluations/77a975a5-9917-4178-ad06-ede00161560f/evaluation-77a975a5-9917-4178-ad06-ede00161560f-m4-T3-checkpoint-120832-160ep-seed6200-863189b06ef0.json"
+      ],
       "fingerprint": "b473c114f0d39cac41e8bfb6844f4ec611983278a0324164643d8357fca61bd4",
       "id": "T3:checkpoint-120832",
       "name": "checkpoint-120832",
@@ -2472,7 +2474,7 @@
   "counters": {
     "event": 9,
     "inquiry": 2,
-    "measurement": 3,
+    "measurement": 4,
     "session": 6,
     "training": 3
   },
@@ -3583,9 +3585,147 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-01T06:41:37Z",
+      "error": null,
+      "id": "M4",
+      "inquiry_id": "I2",
+      "kind": "measurement",
+      "request": {
+        "description": "Evaluate the late T3 hybrid PPO checkpoint on a fresh 160-episode research panel using the unchanged official task and complete uninterrupted hold semantics, with radius-stratified reach and hold diagnostics.",
+        "measurements": [
+          {
+            "candidate": "T3:checkpoint-120832",
+            "episodes": 160,
+            "instrument": "research_evaluation",
+            "label": "hybrid residual PPO radius-stratified hold evaluation",
+            "seed": 6200
+          }
+        ],
+        "paired_comparisons": [],
+        "rationale": "T3 training dynamics reached 100% success at checkpoints 110592, 115712, and 120832, materially exceeding T1's training outcome and supporting the hybrid scaffold as a credible route. Training metrics alone do not establish held-out generalization or distinguish residual reach failures from post-reach hold failures. Evaluating T3:checkpoint-120832 on fresh episode seeds will test whether inner-radius behavior is preserved and outer-radius reach is materially improved, while reporting first reach, hold onset, maximum hold streak, interruptions, and pre/post-reach failure phase. The result will determine whether I2 has produced a near-goal route or a discriminating failure; official assessment remains inappropriate unless the fresh panel is plausibly near 98%."
+      },
+      "result": {
+        "measurements": [
+          {
+            "candidate": "T3:checkpoint-120832",
+            "candidate_id": "T3:checkpoint-120832",
+            "instrument": "research_evaluation",
+            "label": "hybrid residual PPO radius-stratified hold evaluation",
+            "metrics": {
+              "episodes": 160,
+              "evaluation_artifact": "research/evaluations/77a975a5-9917-4178-ad06-ede00161560f/evaluation-77a975a5-9917-4178-ad06-ede00161560f-m4-T3-checkpoint-120832-160ep-seed6200-863189b06ef0.json",
+              "evaluation_artifact_fingerprint": "3fef8d2e5d46cf1ffe854ed395af07311e4ab167b93f82b31854ef9c87e59ae6",
+              "evaluation_semantics": "863189b06ef0",
+              "model_fingerprint": "b473c114f0d39cac41e8bfb6844f4ec611983278a0324164643d8357fca61bd4",
+              "official_benchmark": false,
+              "schema_version": 5,
+              "seed": 6200,
+              "success_percent": 100.0,
+              "successes": 160
+            }
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": null
+      },
+      "session_id": "S6",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "evaluation_semantics": "863189b06ef0",
+      "measurements": [
+        {
+          "artifact": "research/checkpoints/candidates/77a975a5-9917-4178-ad06-ede00161560f/t3/checkpoint-120832",
+          "candidate": "T3:checkpoint-120832",
+          "candidate_id": "T3:checkpoint-120832",
+          "episodes": 160,
+          "instrument": "research_evaluation",
+          "label": "hybrid residual PPO radius-stratified hold evaluation",
+          "model_fingerprint": "b473c114f0d39cac41e8bfb6844f4ec611983278a0324164643d8357fca61bd4",
+          "seed": 6200
+        }
+      ],
+      "module_provenance": null,
+      "paired_comparisons": [],
+      "partial_results": [
+        {
+          "candidate": "T3:checkpoint-120832",
+          "candidate_id": "T3:checkpoint-120832",
+          "instrument": "research_evaluation",
+          "label": "hybrid residual PPO radius-stratified hold evaluation",
+          "metrics": {
+            "episodes": 160,
+            "evaluation_artifact": "research/evaluations/77a975a5-9917-4178-ad06-ede00161560f/evaluation-77a975a5-9917-4178-ad06-ede00161560f-m4-T3-checkpoint-120832-160ep-seed6200-863189b06ef0.json",
+            "evaluation_artifact_fingerprint": "3fef8d2e5d46cf1ffe854ed395af07311e4ab167b93f82b31854ef9c87e59ae6",
+            "evaluation_semantics": "863189b06ef0",
+            "model_fingerprint": "b473c114f0d39cac41e8bfb6844f4ec611983278a0324164643d8357fca61bd4",
+            "official_benchmark": false,
+            "schema_version": 5,
+            "seed": 6200,
+            "success_percent": 100.0,
+            "successes": 160
+          }
+        }
+      ],
+      "result": {
+        "measurements": [
+          {
+            "candidate": "T3:checkpoint-120832",
+            "candidate_id": "T3:checkpoint-120832",
+            "instrument": "research_evaluation",
+            "label": "hybrid residual PPO radius-stratified hold evaluation",
+            "metrics": {
+              "episodes": 160,
+              "evaluation_artifact": "research/evaluations/77a975a5-9917-4178-ad06-ede00161560f/evaluation-77a975a5-9917-4178-ad06-ede00161560f-m4-T3-checkpoint-120832-160ep-seed6200-863189b06ef0.json",
+              "evaluation_artifact_fingerprint": "3fef8d2e5d46cf1ffe854ed395af07311e4ab167b93f82b31854ef9c87e59ae6",
+              "evaluation_semantics": "863189b06ef0",
+              "model_fingerprint": "b473c114f0d39cac41e8bfb6844f4ec611983278a0324164643d8357fca61bd4",
+              "official_benchmark": false,
+              "schema_version": 5,
+              "seed": 6200,
+              "success_percent": 100.0,
+              "successes": 160
+            }
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": null
+      },
+      "task_reference_contract": null
+    },
+    "failure": null,
+    "id": "M4",
+    "inquiry_id": "I2",
+    "kind": "measurement",
+    "progress": "completed",
+    "request": {
+      "measurement": {
+        "description": "Evaluate the late T3 hybrid PPO checkpoint on a fresh 160-episode research panel using the unchanged official task and complete uninterrupted hold semantics, with radius-stratified reach and hold diagnostics.",
+        "measurements": [
+          {
+            "candidate": "T3:checkpoint-120832",
+            "episodes": 160,
+            "instrument": "research_evaluation",
+            "label": "hybrid residual PPO radius-stratified hold evaluation",
+            "seed": 6200
+          }
+        ],
+        "paired_comparisons": [],
+        "rationale": "T3 training dynamics reached 100% success at checkpoints 110592, 115712, and 120832, materially exceeding T1's training outcome and supporting the hybrid scaffold as a credible route. Training metrics alone do not establish held-out generalization or distinguish residual reach failures from post-reach hold failures. Evaluating T3:checkpoint-120832 on fresh episode seeds will test whether inner-radius behavior is preserved and outer-radius reach is materially improved, while reporting first reach, hold onset, maximum hold streak, interruptions, and pre/post-reach failure phase. The result will determine whether I2 has produced a near-goal route or a discriminating failure; official assessment remains inappropriate unless the fresh panel is plausibly near 98%."
+      }
+    },
+    "request_fingerprint": "146bba55c975bed953ee1b3a77647e4fd7b140479f885a9356cafe4904ab76f8",
+    "session_id": "S6",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No candidate has working, best-known, or retained status. T1:checkpoint-120832 remains the strongest evaluated learned candidate at 98/160 M2 successes; T2:checkpoint-115712 achieved 0/160 in M3 and is not viable for the goal.",
     "completed_operations": [
@@ -3628,7 +3768,8 @@
     "kind": "inquiry",
     "objective": "Advance I2 toward its closure condition: Close when one fixed 120000-step training run and its fresh research evaluation establish either a credible near-goal route or a discriminating failure: report complete-hold success plus reach and hold diagnostics stratified by radius bands and identify whether failures occur before first reach or after hold onset. Do not request official assessment unless the development result is plausibly near 196/200 under the official distribution; close as redirected if the hybrid formulation cannot materially improve the outer-radius reach failure without losing inner-radius behavior.",
     "operation_ids": [
-      "T3"
+      "T3",
+      "M4"
     ],
     "scientific_parent_commit": "ba289fee84f5f36ea4b4b6b5443937dca8085ca7"
   },
