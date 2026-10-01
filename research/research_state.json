@@ -1,13 +1,5 @@
 {
-  "active_inquiry": {
-    "closure_condition": "Close this inquiry after one bounded 120000-step training operation and paired held-out evaluation against T1:checkpoint-120832 on shared seeds. Continue only if the intervention materially improves the 14-20 cm success and no-entry profile while retaining small-radius performance and reducing post-entry hold exits; reframe or close if it collapses the small-radius regime, leaves large-radius no-entry failures essentially unchanged, or provides evidence sufficient to select a candidate for official assessment.",
-    "goal_connection": "The human goal requires at least 196 of 200 complete uninterrupted holds across the full 6-20 cm official annulus. The current candidate reaches only 98 of 160 development episodes, with the dominant deficit concentrated in no-entry failures at large radii. Improving target-geometry representation and approach-to-settling credit assignment directly targets that deficit without changing the official task.",
-    "id": "I2",
-    "opened_in_session": "S4",
-    "question": "Can a geometry-aware policy interface and phase-sensitive training signal improve coordinated approach and settling for the 14-20 cm targets, while preserving the existing small-radius successes and reducing post-entry hold exits, under unchanged official task and hold semantics?",
-    "rationale": "The current evidence favors radius-dependent approach/control-authority failure, but cannot distinguish physical authority limits from a policy-interface and credit-assignment limitation. The existing observation exposes redundant wrapped inverse-kinematic errors and does not explicitly provide a smooth radial/tangential target representation; the reward supplies progress and hold capital but no distinct settling incentive. A single geometry-aware, phase-sensitive recipe is a bounded method test of whether the learner can use the available authority and settle within the 500-step horizon. The official distribution, dynamics, action bounds, success threshold, and hold duration remain unchanged.",
-    "reframes": []
-  },
+  "active_inquiry": null,
   "campaign": {
     "base_commit": "c2abfc7efc60be52b98a1f4189e022d759e006b2",
     "id": "010714c2-5abd-4836-96bd-364caaf82042",
@@ -1656,7 +1648,7 @@
     }
   },
   "counters": {
-    "event": 7,
+    "event": 8,
     "inquiry": 2,
     "measurement": 3,
     "session": 5,
@@ -3260,9 +3252,63 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-01T22:06:36Z",
+      "error": null,
+      "id": "E8",
+      "inquiry_id": "I2",
+      "kind": "inquiry",
+      "request": {
+        "action": "close",
+        "outcome": "I2 closed: the tested geometry-aware policy interface and phase-sensitive settling signal did not produce a credible improvement and instead collapsed development success.",
+        "reason": "M3 is a paired 160-episode held-out development evaluation on shared seeds with unchanged research-evaluation semantics. T2:checkpoint-120832 achieved 0/160 successes, while T1:checkpoint-120832 achieved 98/160 (61.25%); all 98 discordant episodes favored T1. This rejects the tested T2 recipe as a route toward the human goal and shows that the intervention failed to preserve the existing regime, so it cannot support official assessment or justify further work under this inquiry. The result is not evidence that every geometry-aware representation or phase-sensitive signal is impossible, nor does it establish official performance or fully separate physical authority from all policy-interface explanations. The remaining goal gap is at least 98% official success, and T1's large-radius no-entry deficit remains unresolved."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I2",
+        "outcome": "I2 closed: the tested geometry-aware policy interface and phase-sensitive settling signal did not produce a credible improvement and instead collapsed development success.",
+        "reason": "M3 is a paired 160-episode held-out development evaluation on shared seeds with unchanged research-evaluation semantics. T2:checkpoint-120832 achieved 0/160 successes, while T1:checkpoint-120832 achieved 98/160 (61.25%); all 98 discordant episodes favored T1. This rejects the tested T2 recipe as a route toward the human goal and shows that the intervention failed to preserve the existing regime, so it cannot support official assessment or justify further work under this inquiry. The result is not evidence that every geometry-aware representation or phase-sensitive signal is impossible, nor does it establish official performance or fully separate physical authority from all policy-interface explanations. The remaining goal gap is at least 98% official success, and T1's large-radius no-entry deficit remains unresolved.",
+        "status": "completed"
+      },
+      "session_id": "S5",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "close",
+        "inquiry_id": "I2",
+        "outcome": "I2 closed: the tested geometry-aware policy interface and phase-sensitive settling signal did not produce a credible improvement and instead collapsed development success.",
+        "reason": "M3 is a paired 160-episode held-out development evaluation on shared seeds with unchanged research-evaluation semantics. T2:checkpoint-120832 achieved 0/160 successes, while T1:checkpoint-120832 achieved 98/160 (61.25%); all 98 discordant episodes favored T1. This rejects the tested T2 recipe as a route toward the human goal and shows that the intervention failed to preserve the existing regime, so it cannot support official assessment or justify further work under this inquiry. The result is not evidence that every geometry-aware representation or phase-sensitive signal is impossible, nor does it establish official performance or fully separate physical authority from all policy-interface explanations. The remaining goal gap is at least 98% official success, and T1's large-radius no-entry deficit remains unresolved."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I2",
+        "outcome": "I2 closed: the tested geometry-aware policy interface and phase-sensitive settling signal did not produce a credible improvement and instead collapsed development success.",
+        "reason": "M3 is a paired 160-episode held-out development evaluation on shared seeds with unchanged research-evaluation semantics. T2:checkpoint-120832 achieved 0/160 successes, while T1:checkpoint-120832 achieved 98/160 (61.25%); all 98 discordant episodes favored T1. This rejects the tested T2 recipe as a route toward the human goal and shows that the intervention failed to preserve the existing regime, so it cannot support official assessment or justify further work under this inquiry. The result is not evidence that every geometry-aware representation or phase-sensitive signal is impossible, nor does it establish official performance or fully separate physical authority from all policy-interface explanations. The remaining goal gap is at least 98% official success, and T1's large-radius no-entry deficit remains unresolved.",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E8",
+    "inquiry_id": "I2",
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "close",
+        "outcome": "I2 closed: the tested geometry-aware policy interface and phase-sensitive settling signal did not produce a credible improvement and instead collapsed development success.",
+        "reason": "M3 is a paired 160-episode held-out development evaluation on shared seeds with unchanged research-evaluation semantics. T2:checkpoint-120832 achieved 0/160 successes, while T1:checkpoint-120832 achieved 98/160 (61.25%); all 98 discordant episodes favored T1. This rejects the tested T2 recipe as a route toward the human goal and shows that the intervention failed to preserve the existing regime, so it cannot support official assessment or justify further work under this inquiry. The result is not evidence that every geometry-aware representation or phase-sensitive signal is impossible, nor does it establish official performance or fully separate physical authority from all policy-interface explanations. The remaining goal gap is at least 98% official success, and T1's large-radius no-entry deficit remains unresolved."
+      }
+    },
+    "request_fingerprint": "f6bd9abf4a3caced53fd47aa016b8ee58cf72142087cf15491233c4886ceb82e",
+    "session_id": "S5",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T1 produced 24 disposable checkpoint candidates. T1:checkpoint-120832 remains the strongest available candidate by training-stream success and has M2 development evidence at 61.25%. No working, best-known, or retained role is assigned, and no candidate is close to the official 98% requirement.",
     "completed_operations": [
@@ -3302,7 +3348,8 @@
     "objective": "Advance I2 toward its closure condition: Close this inquiry after one bounded 120000-step training operation and paired held-out evaluation against T1:checkpoint-120832 on shared seeds. Continue only if the intervention materially improves the 14-20 cm success and no-entry profile while retaining small-radius performance and reducing post-entry hold exits; reframe or close if it collapses the small-radius regime, leaves large-radius no-entry failures essentially unchanged, or provides evidence sufficient to select a candidate for official assessment.",
     "operation_ids": [
       "T2",
-      "M3"
+      "M3",
+      "E8"
     ],
     "scientific_parent_commit": "67c86300a827a7efdf17b1683188e79fff13df8e"
   },
