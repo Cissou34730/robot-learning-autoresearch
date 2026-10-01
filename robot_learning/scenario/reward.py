@@ -23,6 +23,9 @@ HOLD_EXIT_FORFEIT_FRACTION = 0.0
 OUTSIDE_BAND_WIDTH = 0.01
 OUTSIDE_BAND_PENALTY = 0.1
 HOLD_COMPLETE_BONUS = 50.0
+SETTLING_BAND = 0.03
+SETTLING_SPEED_SCALE = 0.20
+SETTLING_SPEED_PENALTY = 0.2
 
 
 @dataclass(frozen=True)
@@ -53,6 +56,7 @@ def reach_reward(
     previous_held_steps: int = 0,
     hold_steps_required: int = 100,
     penalize_outside: bool = False,
+    current_speed: float = 0.0,
 ) -> RewardResult:
     progress = PROGRESS_COEFFICIENT * (previous_distance - current_distance)
     reward = progress
@@ -85,6 +89,20 @@ def reach_reward(
         outside_band = -(OUTSIDE_BAND_PENALTY * outside_fraction)
     reward += outside_band
 
+    settling = 0.0
+    if current_distance < SETTLING_BAND:
+        settling_fraction = np.clip(
+            (SETTLING_BAND - current_distance)
+            / (SETTLING_BAND - success_threshold),
+            0.0,
+            1.0,
+        )
+        speed_fraction = np.clip(current_speed / SETTLING_SPEED_SCALE, 0.0, 1.0)
+        settling = -(
+            SETTLING_SPEED_PENALTY * settling_fraction * speed_fraction
+        )
+    reward += settling
+
     hold_complete = 0.0
     if held_steps >= hold_steps_required and previous_held_steps < hold_steps_required:
         hold_complete = HOLD_COMPLETE_BONUS
@@ -102,6 +120,7 @@ def reach_reward(
             "closeness": float(closeness),
             "hold_progress": float(hold_progress),
             "outside_band": float(outside_band),
+            "settling": float(settling),
             "hold_complete": float(hold_complete),
             "action_cost": float(action_cost),
         },

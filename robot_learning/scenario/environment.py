@@ -69,6 +69,7 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
 
         self._step_count = 0
         self._previous_distance = 0.0
+        self._previous_end_effector = np.zeros(3, dtype=np.float64)
         self._held_steps = 0
         self._outside_after_hold = False
 
@@ -115,6 +116,7 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
 
         self._step_count = 0
         self._previous_distance = self._distance_to_target()
+        self._previous_end_effector = self._end_effector_position()
         self._held_steps = 0
         self._outside_after_hold = False
         return self._observation(), {}
@@ -132,6 +134,12 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
             mujoco.mj_step(self.model, self.data)
 
         distance = self._distance_to_target()
+        end_effector = self._end_effector_position()
+        control_dt = self.model.opt.timestep * self.frame_skip
+        current_speed = float(
+            np.linalg.norm(end_effector - self._previous_end_effector) / control_dt
+        )
+        self._previous_end_effector = end_effector
 
         previous_held_steps = self._held_steps
         if distance <= self.success_threshold:
@@ -151,6 +159,7 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
             previous_held_steps=previous_held_steps,
             hold_steps_required=self.hold_steps_required,
             penalize_outside=self._outside_after_hold,
+            current_speed=current_speed,
         )
         self._previous_distance = distance
 
