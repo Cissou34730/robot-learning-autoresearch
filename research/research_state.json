@@ -1,5 +1,13 @@
 {
-  "active_inquiry": null,
+  "active_inquiry": {
+    "closure_condition": "Train one fresh run with the fixed 120000-step allocation, using T9's intact temporal-context direct-torque recipe and its target distribution plus only a mild velocity-aware braking reward. Evaluate the selected final checkpoint on the fixed 200-episode development panel paired with T9, including never-entry and post-entry failure counts. The route is credible only if it reaches at least 196 of 200 complete uninterrupted successes without a broad acquisition regression; otherwise close the inquiry as insufficient and do not request official assessment.",
+    "goal_connection": "The human goal requires at least 196 of 200 complete uninterrupted holds. T9 reaches 190 of 200 with six never-entry and four post-entry failures, so a braking intervention is relevant only if it preserves acquisition and closes the remaining complete-hold gap.",
+    "id": "I15",
+    "opened_in_session": "S30",
+    "question": "Can an isolated velocity-aware braking reward, added to T9's temporal-context direct-torque recipe without changing its observation, action mapping, or training target distribution, preserve broad acquisition while reducing post-entry failures in the difficult negative-angle basin?",
+    "rationale": "The physical model predicts that residual kinetic energy and sampled-data braking can cause both late acquisition misses and interruptions after entry, while joint velocity is already observed. T3 did test endpoint-speed shaping, but it also changed branch handling and omitted T9's temporal context, then collapsed; that result does not isolate the reward mechanism. M9 and E36 establish T9 as the strongest route at 190 of 200, while M14 and E56 reject the target-mixture intervention as a broad acquisition collapse. This inquiry tests the remaining stabilization explanation with the proven T9 representation held fixed.",
+    "reframes": []
+  },
   "campaign": {
     "base_commit": "c02b0d59e8ef397c87d92f70e986ad545e585b95",
     "id": "e8788df6-9f4a-4dac-92b7-48e40477e827",
@@ -11475,16 +11483,16 @@
     }
   },
   "counters": {
-    "event": 57,
-    "inquiry": 14,
+    "event": 58,
+    "inquiry": 15,
     "measurement": 14,
-    "session": 29,
+    "session": 30,
     "training": 14
   },
   "human_goal": {
     "source": "research/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -20320,9 +20328,69 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-01T03:05:53Z",
+      "error": null,
+      "id": "E58",
+      "inquiry_id": "I15",
+      "kind": "inquiry",
+      "request": {
+        "action": "open",
+        "closure_condition": "Train one fresh run with the fixed 120000-step allocation, using T9's intact temporal-context direct-torque recipe and its target distribution plus only a mild velocity-aware braking reward. Evaluate the selected final checkpoint on the fixed 200-episode development panel paired with T9, including never-entry and post-entry failure counts. The route is credible only if it reaches at least 196 of 200 complete uninterrupted successes without a broad acquisition regression; otherwise close the inquiry as insufficient and do not request official assessment.",
+        "goal_connection": "The human goal requires at least 196 of 200 complete uninterrupted holds. T9 reaches 190 of 200 with six never-entry and four post-entry failures, so a braking intervention is relevant only if it preserves acquisition and closes the remaining complete-hold gap.",
+        "question": "Can an isolated velocity-aware braking reward, added to T9's temporal-context direct-torque recipe without changing its observation, action mapping, or training target distribution, preserve broad acquisition while reducing post-entry failures in the difficult negative-angle basin?",
+        "rationale": "The physical model predicts that residual kinetic energy and sampled-data braking can cause both late acquisition misses and interruptions after entry, while joint velocity is already observed. T3 did test endpoint-speed shaping, but it also changed branch handling and omitted T9's temporal context, then collapsed; that result does not isolate the reward mechanism. M9 and E36 establish T9 as the strongest route at 190 of 200, while M14 and E56 reject the target-mixture intervention as a broad acquisition collapse. This inquiry tests the remaining stabilization explanation with the proven T9 representation held fixed."
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I15",
+        "status": "completed"
+      },
+      "session_id": "S30",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "open",
+        "inquiry": {
+          "closure_condition": "Train one fresh run with the fixed 120000-step allocation, using T9's intact temporal-context direct-torque recipe and its target distribution plus only a mild velocity-aware braking reward. Evaluate the selected final checkpoint on the fixed 200-episode development panel paired with T9, including never-entry and post-entry failure counts. The route is credible only if it reaches at least 196 of 200 complete uninterrupted successes without a broad acquisition regression; otherwise close the inquiry as insufficient and do not request official assessment.",
+          "goal_connection": "The human goal requires at least 196 of 200 complete uninterrupted holds. T9 reaches 190 of 200 with six never-entry and four post-entry failures, so a braking intervention is relevant only if it preserves acquisition and closes the remaining complete-hold gap.",
+          "id": "I15",
+          "opened_in_session": "S30",
+          "question": "Can an isolated velocity-aware braking reward, added to T9's temporal-context direct-torque recipe without changing its observation, action mapping, or training target distribution, preserve broad acquisition while reducing post-entry failures in the difficult negative-angle basin?",
+          "rationale": "The physical model predicts that residual kinetic energy and sampled-data braking can cause both late acquisition misses and interruptions after entry, while joint velocity is already observed. T3 did test endpoint-speed shaping, but it also changed branch handling and omitted T9's temporal context, then collapsed; that result does not isolate the reward mechanism. M9 and E36 establish T9 as the strongest route at 190 of 200, while M14 and E56 reject the target-mixture intervention as a broad acquisition collapse. This inquiry tests the remaining stabilization explanation with the proven T9 representation held fixed.",
+          "reframes": []
+        }
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I15",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E58",
+    "inquiry_id": null,
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "open",
+        "closure_condition": "Train one fresh run with the fixed 120000-step allocation, using T9's intact temporal-context direct-torque recipe and its target distribution plus only a mild velocity-aware braking reward. Evaluate the selected final checkpoint on the fixed 200-episode development panel paired with T9, including never-entry and post-entry failure counts. The route is credible only if it reaches at least 196 of 200 complete uninterrupted successes without a broad acquisition regression; otherwise close the inquiry as insufficient and do not request official assessment.",
+        "goal_connection": "The human goal requires at least 196 of 200 complete uninterrupted holds. T9 reaches 190 of 200 with six never-entry and four post-entry failures, so a braking intervention is relevant only if it preserves acquisition and closes the remaining complete-hold gap.",
+        "question": "Can an isolated velocity-aware braking reward, added to T9's temporal-context direct-torque recipe without changing its observation, action mapping, or training target distribution, preserve broad acquisition while reducing post-entry failures in the difficult negative-angle basin?",
+        "rationale": "The physical model predicts that residual kinetic energy and sampled-data braking can cause both late acquisition misses and interruptions after entry, while joint velocity is already observed. T3 did test endpoint-speed shaping, but it also changed branch handling and omitted T9's temporal context, then collapsed; that result does not isolate the reward mechanism. M9 and E36 establish T9 as the strongest route at 190 of 200, while M14 and E56 reject the target-mixture intervention as a broad acquisition collapse. This inquiry tests the remaining stabilization explanation with the proven T9 representation held fixed."
+      }
+    },
+    "request_fingerprint": "be4bb703c5bde3bc5a6363b6f4638eaae8a0ddbbb9cbc0171d411746bda5a340",
+    "session_id": "S30",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No working, best-known, or retained role is assigned. T9:checkpoint-120832 remains the strongest measured development candidate at 190/200 and the reference for future goal review. T14:checkpoint-120832 is rejected for I14 after scoring 62/200. T11:checkpoint-120832, T12:checkpoint-35840, and T13:checkpoint-120832 remain rejected for their respective inquiries.",
     "completed_operations": [
@@ -20363,6 +20431,21 @@
     "path": "research/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "9ca75bf3-a0a1-4314-bcbd-7976a7719f0e",
+    "id": "S30",
+    "inquiry_id": null,
+    "kind": "goal_review",
+    "objective": "Decide whether to request official assessment, open one bounded goal-linked inquiry, or conclude that no credible route remains.",
+    "operation_ids": [
+      "E58"
+    ],
+    "scientific_parent_commit": "eb2ff9bcd47ec7f2f0301c01e88ce48243d26d38"
+  },
   "terminal_state": null
 }
