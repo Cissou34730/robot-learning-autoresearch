@@ -6912,38 +6912,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I3",
-        "outcome": "I3 closed: fixed 0.5 action attenuation produced one positive but non-reproducible held-out result and did not establish a credible route to the 98% goal.",
-        "reason": "M6 showed a directional improvement for T4, reaching 115/160 (71.875%) versus T1's 98/160, with 41 candidate wins versus 24 reference wins, 13/28 success in the 18-20 cm bin, zero action-saturated episodes, and zero hold interruptions. However, M7's fresh T5 run under the identical T1 observation/reward recipe and fixed 0.5 attenuation fell to 91/160 (56.875%), below T1, with a paired comparison of 41 candidate wins versus 48 reference wins and net wins of -7. M7 retained zero action saturation but restored a severe directional failure at 135-180 degrees (0/24), had 66 no-entry failures and 3 post-entry hold-interruption failures. The intervention therefore cannot be claimed to preserve or reliably improve the learned regime, remains far below 98%, and fails I3's reproducibility and closure condition. The result rejects fixed 0.5 attenuation as a credible route under this recipe; it does not establish that all action conditioning or directional representations are impossible, nor does it support official assessment."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I3",
-        "outcome": "I3 closed: fixed 0.5 action attenuation produced one positive but non-reproducible held-out result and did not establish a credible route to the 98% goal.",
-        "reason": "M6 showed a directional improvement for T4, reaching 115/160 (71.875%) versus T1's 98/160, with 41 candidate wins versus 24 reference wins, 13/28 success in the 18-20 cm bin, zero action-saturated episodes, and zero hold interruptions. However, M7's fresh T5 run under the identical T1 observation/reward recipe and fixed 0.5 attenuation fell to 91/160 (56.875%), below T1, with a paired comparison of 41 candidate wins versus 48 reference wins and net wins of -7. M7 retained zero action saturation but restored a severe directional failure at 135-180 degrees (0/24), had 66 no-entry failures and 3 post-entry hold-interruption failures. The intervention therefore cannot be claimed to preserve or reliably improve the learned regime, remains far below 98%, and fails I3's reproducibility and closure condition. The result rejects fixed 0.5 attenuation as a credible route under this recipe; it does not establish that all action conditioning or directional representations are impossible, nor does it support official assessment.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E13",
-    "inquiry_id": "I3",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "I3 closed: fixed 0.5 action attenuation produced one positive but non-reproducible held-out result and did not establish a credible route to the 98% goal.",
-        "reason": "M6 showed a directional improvement for T4, reaching 115/160 (71.875%) versus T1's 98/160, with 41 candidate wins versus 24 reference wins, 13/28 success in the 18-20 cm bin, zero action-saturated episodes, and zero hold interruptions. However, M7's fresh T5 run under the identical T1 observation/reward recipe and fixed 0.5 attenuation fell to 91/160 (56.875%), below T1, with a paired comparison of 41 candidate wins versus 48 reference wins and net wins of -7. M7 retained zero action saturation but restored a severe directional failure at 135-180 degrees (0/24), had 66 no-entry failures and 3 post-entry hold-interruption failures. The intervention therefore cannot be claimed to preserve or reliably improve the learned regime, remains far below 98%, and fails I3's reproducibility and closure condition. The result rejects fixed 0.5 attenuation as a credible route under this recipe; it does not establish that all action conditioning or directional representations are impossible, nor does it support official assessment."
-      }
-    },
-    "request_fingerprint": "e482a4921933756255914358b3131038765cb97e8b65fe170a50f242f6052df1",
-    "session_id": "S7",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T1:checkpoint-120832 remains the strongest available learned candidate at 98/160 development success, but no working, best-known, or retained role is assigned because it is far below the official threshold and no candidate has official evidence. T2:checkpoint-120832 is rejected as a route reference after 0/160 paired development success.",
     "completed_operations": [
