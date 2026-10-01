@@ -2514,44 +2514,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "open",
-        "inquiry": {
-          "closure_condition": "Close when one fixed 120000-step training run and its fresh research evaluation establish either a credible near-goal route or a discriminating failure: report complete-hold success plus reach and hold diagnostics stratified by radius bands and identify whether failures occur before first reach or after hold onset. Do not request official assessment unless the development result is plausibly near 196/200 under the official distribution; close as redirected if the hybrid formulation cannot materially improve the outer-radius reach failure without losing inner-radius behavior.",
-          "goal_connection": "The best learned candidate achieves only 98/160 complete holds (61.25%), leaving a 37 percentage-point gap to the required 98% official success. M1 shows that target-conditioned bounded PD control is physically feasible, while T1 fails mainly by never reaching outer-radius targets and T2 fails almost entirely before reach. A hybrid learned residual is intended to remove the learned policy's burden of discovering global configuration geometry without changing the official task, target distribution, or uninterrupted 100-sample hold semantics.",
-          "id": "I2",
-          "opened_in_session": "S5",
-          "question": "Can a materially different target-conditioned hybrid formulation produce a learned policy that preserves inner-radius reach and hold while solving the outer-radius failures that limit T1: a deterministic configuration-aware IK and velocity-feedback controller provides the reach-and-brake scaffold, while PPO learns a bounded residual or stabilization correction from the official observation?",
-          "rationale": "The current evidence rejects the exact normalized joint-target PD PPO recipe, not PD control or PPO in general. Repeating direct motor PPO or arbitrary joint-target PPO would not resolve the frontier. The physical model identifies configuration-dependent Jacobians, finite braking margins, and branch choice as the consequential unknowns; an IK-conditioned feedback scaffold directly tests whether exposing those mechanisms to learning closes the observed reach gap while leaving a learned component responsible for the policy.",
-          "reframes": []
-        }
-      },
-      "result": {
-        "action": "open",
-        "inquiry_id": "I2",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E8",
-    "inquiry_id": null,
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "open",
-        "closure_condition": "Close when one fixed 120000-step training run and its fresh research evaluation establish either a credible near-goal route or a discriminating failure: report complete-hold success plus reach and hold diagnostics stratified by radius bands and identify whether failures occur before first reach or after hold onset. Do not request official assessment unless the development result is plausibly near 196/200 under the official distribution; close as redirected if the hybrid formulation cannot materially improve the outer-radius reach failure without losing inner-radius behavior.",
-        "goal_connection": "The best learned candidate achieves only 98/160 complete holds (61.25%), leaving a 37 percentage-point gap to the required 98% official success. M1 shows that target-conditioned bounded PD control is physically feasible, while T1 fails mainly by never reaching outer-radius targets and T2 fails almost entirely before reach. A hybrid learned residual is intended to remove the learned policy's burden of discovering global configuration geometry without changing the official task, target distribution, or uninterrupted 100-sample hold semantics.",
-        "question": "Can a materially different target-conditioned hybrid formulation produce a learned policy that preserves inner-radius reach and hold while solving the outer-radius failures that limit T1: a deterministic configuration-aware IK and velocity-feedback controller provides the reach-and-brake scaffold, while PPO learns a bounded residual or stabilization correction from the official observation?",
-        "rationale": "The current evidence rejects the exact normalized joint-target PD PPO recipe, not PD control or PPO in general. Repeating direct motor PPO or arbitrary joint-target PPO would not resolve the frontier. The physical model identifies configuration-dependent Jacobians, finite braking margins, and branch choice as the consequential unknowns; an IK-conditioned feedback scaffold directly tests whether exposing those mechanisms to learning closes the observed reach gap while leaving a learned component responsible for the policy."
-      }
-    },
-    "request_fingerprint": "762b3f324fb165af494a19c012bdce46a81b9c493211fdcb1412ed450e206bc8",
-    "session_id": "S5",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T1 and T2 produced archived candidates, but no candidate has working, best-known, or retained status. T1:checkpoint-120832 remains the strongest evaluated learned candidate at 98/160 M2 successes; T2:checkpoint-115712 achieved 0/160 in M3 and is not viable for the goal.",
     "completed_operations": [
