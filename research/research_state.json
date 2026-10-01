@@ -1650,14 +1650,14 @@
   "counters": {
     "event": 9,
     "inquiry": 2,
-    "measurement": 3,
-    "session": 5,
+    "measurement": 4,
+    "session": 6,
     "training": 2
   },
   "human_goal": {
     "source": "research/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -3312,9 +3312,513 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-01T22:14:31Z",
+      "error": null,
+      "id": "M4",
+      "inquiry_id": null,
+      "kind": "measurement",
+      "request": {
+        "description": "Measure whether fixed inverse-kinematic joint-space PD controllers can complete the official uninterrupted hold across the held-out development panel.",
+        "measurements": [
+          {
+            "args": [
+              "--artifact",
+              "research/evaluations/010714c2-5abd-4836-96bd-364caaf82042/authority_probe.json",
+              "--episodes",
+              "160",
+              "--seed",
+              "4200"
+            ],
+            "artifact": "research/evaluations/010714c2-5abd-4836-96bd-364caaf82042/authority_probe.json",
+            "instrument": "python_module",
+            "label": "fixed IK joint-PD authority probe",
+            "module": "research.lab.authority_probe"
+          }
+        ],
+        "paired_comparisons": [],
+        "rationale": "M2 attributes T1 failures to large-radius no-entry and insufficient control authority, but T2's collapse means the remaining distinction is not resolved between physical authority and learned policy/credit assignment. This probe preserves the official target distribution, 500-step horizon, 1 cm tolerance, and 100-step uninterrupted hold while testing fixed direct feedback over both IK branches and three gain levels. Strong performance would justify a policy/training route that preserves T1's interface; similar failure, especially at large radius, would redirect toward physical-limit or actuator-authority constraints."
+      },
+      "result": {
+        "measurements": [
+          {
+            "args": [
+              "--artifact",
+              "research/evaluations/010714c2-5abd-4836-96bd-364caaf82042/authority_probe.json",
+              "--episodes",
+              "160",
+              "--seed",
+              "4200"
+            ],
+            "instrument": "python_module",
+            "label": "fixed IK joint-PD authority probe",
+            "metrics": {
+              "evaluation_artifact": "research/evaluations/010714c2-5abd-4836-96bd-364caaf82042/python-module-M4-1-authority_probe.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 6,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/measurement",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/seed",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/task_semantics",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 9,
+                    "field_names": [
+                      "branch",
+                      "episode_diagnostics",
+                      "kd",
+                      "kp",
+                      "name",
+                      "summary"
+                    ],
+                    "path": "/variants",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/task_semantics/target_radius_cm",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/task_semantics/max_episode_steps",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/task_semantics/success_threshold_cm",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/task_semantics/hold_steps_required",
+                    "type": "number"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "746b291e402c8cd28e0b5215b05cb0df34bf2c14aaa9bf4e44468a139d5d2b12"
+            },
+            "module": "research.lab.authority_probe"
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": {
+          "campaign_lab_manifest": [
+            {
+              "fingerprint": "13b725b8b4e3876639474a376fabe6d3bbee86c16c2c15800b82d7cff70f6e1f",
+              "path": "research/lab/authority_probe.py"
+            }
+          ],
+          "campaign_lab_publication": {
+            "commit": "e5ef2754a2b02bf140bee7f630192006e78a1572",
+            "fingerprint": "c614eaebf1efee7fd0aef85a3e92352bf2f7e82e699b25c187c0ac9ea329ad42",
+            "manifest": [
+              {
+                "fingerprint": "13b725b8b4e3876639474a376fabe6d3bbee86c16c2c15800b82d7cff70f6e1f",
+                "path": "research/lab/authority_probe.py"
+              }
+            ]
+          },
+          "code_parent_commit": "99e1fb1223c1a653fb5ca31178c3abf24e1e92cd",
+          "effective_parameters": {
+            "algorithm": {
+              "name": "ppo"
+            },
+            "policy": {
+              "activation": "tanh",
+              "net_arch": [
+                64,
+                64
+              ]
+            },
+            "ppo": {
+              "batch_size": 64,
+              "ent_coef": 0.01,
+              "gae_lambda": 0.95,
+              "gamma": 0.99,
+              "learning_rate": 0.0003,
+              "n_steps": 1024
+            },
+            "training": {
+              "checkpoint_every_steps": 5000,
+              "n_envs": 1
+            }
+          },
+          "module_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "13b725b8b4e3876639474a376fabe6d3bbee86c16c2c15800b82d7cff70f6e1f",
+              "path": "research/lab/authority_probe.py"
+            }
+          ],
+          "module_paths": [
+            "research/lab/authority_probe.py"
+          ],
+          "scientific_commit": null,
+          "scientific_manifest": [],
+          "scientific_paths": []
+        }
+      },
+      "session_id": "S6",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "evaluation_semantics": null,
+      "measurements": [
+        {
+          "args": [
+            "--artifact",
+            "research/evaluations/010714c2-5abd-4836-96bd-364caaf82042/authority_probe.json",
+            "--episodes",
+            "160",
+            "--seed",
+            "4200"
+          ],
+          "artifact": "research/evaluations/010714c2-5abd-4836-96bd-364caaf82042/authority_probe.json",
+          "instrument": "python_module",
+          "label": "fixed IK joint-PD authority probe",
+          "module": "research.lab.authority_probe"
+        }
+      ],
+      "module_provenance": {
+        "campaign_lab_manifest": [
+          {
+            "fingerprint": "13b725b8b4e3876639474a376fabe6d3bbee86c16c2c15800b82d7cff70f6e1f",
+            "path": "research/lab/authority_probe.py"
+          }
+        ],
+        "campaign_lab_publication": {
+          "commit": "e5ef2754a2b02bf140bee7f630192006e78a1572",
+          "fingerprint": "c614eaebf1efee7fd0aef85a3e92352bf2f7e82e699b25c187c0ac9ea329ad42",
+          "manifest": [
+            {
+              "fingerprint": "13b725b8b4e3876639474a376fabe6d3bbee86c16c2c15800b82d7cff70f6e1f",
+              "path": "research/lab/authority_probe.py"
+            }
+          ]
+        },
+        "code_parent_commit": "99e1fb1223c1a653fb5ca31178c3abf24e1e92cd",
+        "effective_parameters": {
+          "algorithm": {
+            "name": "ppo"
+          },
+          "policy": {
+            "activation": "tanh",
+            "net_arch": [
+              64,
+              64
+            ]
+          },
+          "ppo": {
+            "batch_size": 64,
+            "ent_coef": 0.01,
+            "gae_lambda": 0.95,
+            "gamma": 0.99,
+            "learning_rate": 0.0003,
+            "n_steps": 1024
+          },
+          "training": {
+            "checkpoint_every_steps": 5000,
+            "n_envs": 1
+          }
+        },
+        "module_manifest": [
+          {
+            "exists": true,
+            "fingerprint": "13b725b8b4e3876639474a376fabe6d3bbee86c16c2c15800b82d7cff70f6e1f",
+            "path": "research/lab/authority_probe.py"
+          }
+        ],
+        "module_paths": [
+          "research/lab/authority_probe.py"
+        ],
+        "scientific_commit": null,
+        "scientific_manifest": [],
+        "scientific_paths": []
+      },
+      "paired_comparisons": [],
+      "partial_results": [
+        {
+          "args": [
+            "--artifact",
+            "research/evaluations/010714c2-5abd-4836-96bd-364caaf82042/authority_probe.json",
+            "--episodes",
+            "160",
+            "--seed",
+            "4200"
+          ],
+          "instrument": "python_module",
+          "label": "fixed IK joint-PD authority probe",
+          "metrics": {
+            "evaluation_artifact": "research/evaluations/010714c2-5abd-4836-96bd-364caaf82042/python-module-M4-1-authority_probe.json",
+            "evaluation_artifact_contents": {
+              "scope": "structure_only",
+              "sections": [
+                {
+                  "entries": 6,
+                  "path": "",
+                  "type": "object"
+                },
+                {
+                  "path": "/schema_version",
+                  "type": "number"
+                },
+                {
+                  "path": "/measurement",
+                  "type": "string"
+                },
+                {
+                  "path": "/episodes",
+                  "type": "number"
+                },
+                {
+                  "path": "/seed",
+                  "type": "number"
+                },
+                {
+                  "entries": 4,
+                  "path": "/task_semantics",
+                  "type": "object"
+                },
+                {
+                  "entries": 9,
+                  "field_names": [
+                    "branch",
+                    "episode_diagnostics",
+                    "kd",
+                    "kp",
+                    "name",
+                    "summary"
+                  ],
+                  "path": "/variants",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/task_semantics/target_radius_cm",
+                  "type": "array"
+                },
+                {
+                  "path": "/task_semantics/max_episode_steps",
+                  "type": "number"
+                },
+                {
+                  "path": "/task_semantics/success_threshold_cm",
+                  "type": "number"
+                },
+                {
+                  "path": "/task_semantics/hold_steps_required",
+                  "type": "number"
+                }
+              ],
+              "truncated": false
+            },
+            "evaluation_artifact_fingerprint": "746b291e402c8cd28e0b5215b05cb0df34bf2c14aaa9bf4e44468a139d5d2b12"
+          },
+          "module": "research.lab.authority_probe"
+        }
+      ],
+      "result": {
+        "measurements": [
+          {
+            "args": [
+              "--artifact",
+              "research/evaluations/010714c2-5abd-4836-96bd-364caaf82042/authority_probe.json",
+              "--episodes",
+              "160",
+              "--seed",
+              "4200"
+            ],
+            "instrument": "python_module",
+            "label": "fixed IK joint-PD authority probe",
+            "metrics": {
+              "evaluation_artifact": "research/evaluations/010714c2-5abd-4836-96bd-364caaf82042/python-module-M4-1-authority_probe.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 6,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/measurement",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/seed",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/task_semantics",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 9,
+                    "field_names": [
+                      "branch",
+                      "episode_diagnostics",
+                      "kd",
+                      "kp",
+                      "name",
+                      "summary"
+                    ],
+                    "path": "/variants",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/task_semantics/target_radius_cm",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/task_semantics/max_episode_steps",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/task_semantics/success_threshold_cm",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/task_semantics/hold_steps_required",
+                    "type": "number"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "746b291e402c8cd28e0b5215b05cb0df34bf2c14aaa9bf4e44468a139d5d2b12"
+            },
+            "module": "research.lab.authority_probe"
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": {
+          "campaign_lab_manifest": [
+            {
+              "fingerprint": "13b725b8b4e3876639474a376fabe6d3bbee86c16c2c15800b82d7cff70f6e1f",
+              "path": "research/lab/authority_probe.py"
+            }
+          ],
+          "campaign_lab_publication": {
+            "commit": "e5ef2754a2b02bf140bee7f630192006e78a1572",
+            "fingerprint": "c614eaebf1efee7fd0aef85a3e92352bf2f7e82e699b25c187c0ac9ea329ad42",
+            "manifest": [
+              {
+                "fingerprint": "13b725b8b4e3876639474a376fabe6d3bbee86c16c2c15800b82d7cff70f6e1f",
+                "path": "research/lab/authority_probe.py"
+              }
+            ]
+          },
+          "code_parent_commit": "99e1fb1223c1a653fb5ca31178c3abf24e1e92cd",
+          "effective_parameters": {
+            "algorithm": {
+              "name": "ppo"
+            },
+            "policy": {
+              "activation": "tanh",
+              "net_arch": [
+                64,
+                64
+              ]
+            },
+            "ppo": {
+              "batch_size": 64,
+              "ent_coef": 0.01,
+              "gae_lambda": 0.95,
+              "gamma": 0.99,
+              "learning_rate": 0.0003,
+              "n_steps": 1024
+            },
+            "training": {
+              "checkpoint_every_steps": 5000,
+              "n_envs": 1
+            }
+          },
+          "module_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "13b725b8b4e3876639474a376fabe6d3bbee86c16c2c15800b82d7cff70f6e1f",
+              "path": "research/lab/authority_probe.py"
+            }
+          ],
+          "module_paths": [
+            "research/lab/authority_probe.py"
+          ],
+          "scientific_commit": null,
+          "scientific_manifest": [],
+          "scientific_paths": []
+        }
+      },
+      "task_reference_contract": null
+    },
+    "failure": null,
+    "id": "M4",
+    "inquiry_id": null,
+    "kind": "measurement",
+    "progress": "completed",
+    "request": {
+      "measurement": {
+        "description": "Measure whether fixed inverse-kinematic joint-space PD controllers can complete the official uninterrupted hold across the held-out development panel.",
+        "measurements": [
+          {
+            "args": [
+              "--artifact",
+              "research/evaluations/010714c2-5abd-4836-96bd-364caaf82042/authority_probe.json",
+              "--episodes",
+              "160",
+              "--seed",
+              "4200"
+            ],
+            "artifact": "research/evaluations/010714c2-5abd-4836-96bd-364caaf82042/authority_probe.json",
+            "instrument": "python_module",
+            "label": "fixed IK joint-PD authority probe",
+            "module": "research.lab.authority_probe"
+          }
+        ],
+        "paired_comparisons": [],
+        "rationale": "M2 attributes T1 failures to large-radius no-entry and insufficient control authority, but T2's collapse means the remaining distinction is not resolved between physical authority and learned policy/credit assignment. This probe preserves the official target distribution, 500-step horizon, 1 cm tolerance, and 100-step uninterrupted hold while testing fixed direct feedback over both IK branches and three gain levels. Strong performance would justify a policy/training route that preserves T1's interface; similar failure, especially at large radius, would redirect toward physical-limit or actuator-authority constraints."
+      }
+    },
+    "request_fingerprint": "f27ec4b94fbd1ac01924f371b1c3eaa8ceb78edaa8dcf89eab1ad0fd3c433345",
+    "session_id": "S6",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T1 produced 24 disposable checkpoint candidates; T1:checkpoint-120832 remains the strongest available candidate with M2 development evidence at 61.25%. T2 produced 24 disposable candidates under the rejected geometry/settling recipe; T2:checkpoint-120832 has M3 evidence at 0/160. No working, best-known, or retained role is assigned, and no candidate is close to the official 98% requirement.",
     "completed_operations": [
@@ -3346,6 +3850,21 @@
     "path": "research/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "d13a7f54-e0f6-405b-96b4-98df46fcb6ad",
+    "id": "S6",
+    "inquiry_id": null,
+    "kind": "goal_review",
+    "objective": "Reassess the scientific direction toward the human goal using completed evidence. You may request measurements to resolve an uncertainty or develop the method before committing to an inquiry. Decide whether to request official assessment, open one bounded goal-linked inquiry, or conclude that no credible route remains.",
+    "operation_ids": [
+      "M4"
+    ],
+    "scientific_parent_commit": "99e1fb1223c1a653fb5ca31178c3abf24e1e92cd"
+  },
   "terminal_state": null
 }
