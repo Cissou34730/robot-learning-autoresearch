@@ -1114,44 +1114,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "open",
-        "inquiry": {
-          "closure_condition": "Close after held-out development evidence for the strongest T1 candidate is sufficient to determine whether failures are concentrated by target radius or angle, or instead show repeated post-entry exits, high end-effector or joint speed, or action saturation across the distribution; use that determination to select the next bounded goal-linked intervention or conclude that the current route is not credible.",
-          "goal_connection": "The human goal requires at least 196 successes in the official 200-episode panel across the complete 0.06-0.20 m radius range and uninterrupted 100-step holds. Identifying whether failures are localized to target configurations or occur after entry is necessary before selecting a credible training or control intervention toward that threshold.",
-          "id": "I1",
-          "opened_in_session": "S2",
-          "question": "Do the remaining failures of the full-range PPO policy primarily reflect target-configuration coverage and inverse-kinematic branch selection, or do they persist broadly because approach transients and low-velocity stabilization are not controlled?",
-          "rationale": "T1 reached only 0.60 on its training stream and produced no evaluation artifact, so official assessment would be premature and the training score cannot distinguish coverage from transient-control failure. The physical model predicts that both inner-radius folded configurations and residual momentum under 20 ms action holds can cause failure. A held-out measurement of T1:checkpoint-120832 with time to first entry, longest in-band run, hold exits, distance and speed, joint velocities, saturation, radius, and angle will directly discriminate these explanations without changing the official task.",
-          "reframes": []
-        }
-      },
-      "result": {
-        "action": "open",
-        "inquiry_id": "I1",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E2",
-    "inquiry_id": null,
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "open",
-        "closure_condition": "Close after held-out development evidence for the strongest T1 candidate is sufficient to determine whether failures are concentrated by target radius or angle, or instead show repeated post-entry exits, high end-effector or joint speed, or action saturation across the distribution; use that determination to select the next bounded goal-linked intervention or conclude that the current route is not credible.",
-        "goal_connection": "The human goal requires at least 196 successes in the official 200-episode panel across the complete 0.06-0.20 m radius range and uninterrupted 100-step holds. Identifying whether failures are localized to target configurations or occur after entry is necessary before selecting a credible training or control intervention toward that threshold.",
-        "question": "Do the remaining failures of the full-range PPO policy primarily reflect target-configuration coverage and inverse-kinematic branch selection, or do they persist broadly because approach transients and low-velocity stabilization are not controlled?",
-        "rationale": "T1 reached only 0.60 on its training stream and produced no evaluation artifact, so official assessment would be premature and the training score cannot distinguish coverage from transient-control failure. The physical model predicts that both inner-radius folded configurations and residual momentum under 20 ms action holds can cause failure. A held-out measurement of T1:checkpoint-120832 with time to first entry, longest in-band run, hold exits, distance and speed, joint velocities, saturation, radius, and angle will directly discriminate these explanations without changing the official task."
-      }
-    },
-    "request_fingerprint": "459dbc82f47321d5581fce7e461b5cd71100e82d509f2de36ed9a99b07a0e72d",
-    "session_id": "S2",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T1 produced 24 disposable checkpoint candidates. T1:checkpoint-120832 is the strongest training-stream candidate by recorded success (0.60), but no working, best-known, or retained role is assigned because no independent development measurement exists.",
     "completed_operations": [
