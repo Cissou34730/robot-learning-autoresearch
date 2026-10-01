@@ -1,13 +1,5 @@
 {
-  "active_inquiry": {
-    "closure_condition": "Close the inquiry as insufficient if its fixed-120000-step candidate fails to reach at least 196/200 complete uninterrupted successes on the held-out development panel, or if it causes a broad acquisition regression relative to T1. Treat the route as credible only if it reaches that threshold while preserving full-angle acquisition and reducing or not increasing post-entry hold failures; otherwise redirect or close based on the observed failure mechanism.",
-    "goal_connection": "The strongest development result is T9 at 190/200, six successes below the 196/200 development threshold and the human 98% objective. This inquiry directly targets both remaining failure classes: negative-angle never-entry failures through learned full-angle acquisition, and post-entry interruptions through explicit stabilization authority. Complete uninterrupted episode success remains the sole criterion.",
-    "id": "I10",
-    "opened_in_session": "S20",
-    "question": "Can a hybrid joint-space control interface that preserves learned full-angle acquisition while adding target-conditioned model-based braking and local velocity feedback close the remaining complete-hold failures, rather than merely changing observations, rewards, or short temporal context?",
-    "rationale": "The physical model describes a deterministic, fully actuated second-order plant where residual kinetic energy, configuration-dependent inertia, sampled control, and coupled joint braking can interrupt an otherwise successful hold. T1 and T9 show that direct torque with branch-aware observations already acquires most targets, while the short three-frame temporal recipe adds only one success and leaves four post-entry failures. I2-I8 show that observation, reward, branch, and phase-handoff changes either collapsed or traded acquisition against stabilization. A model-based joint-space braking and velocity-feedback layer is a distinct method-development route: it uses established kinematics and measured q/qdot to supply local stabilizing authority while leaving the learned policy responsible for target-dependent acquisition. The paired development measurement can discriminate whether the residual gap is primarily missing low-level stabilization authority or an acquisition/branch limitation that this route cannot safely overcome.",
-    "reframes": []
-  },
+  "active_inquiry": null,
   "campaign": {
     "base_commit": "c02b0d59e8ef397c87d92f70e986ad545e585b95",
     "id": "e8788df6-9f4a-4dac-92b7-48e40477e827",
@@ -8207,7 +8199,7 @@
     }
   },
   "counters": {
-    "event": 39,
+    "event": 40,
     "inquiry": 10,
     "measurement": 10,
     "session": 21,
@@ -14451,9 +14443,63 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-01T01:02:52Z",
+      "error": null,
+      "id": "E40",
+      "inquiry_id": "I10",
+      "kind": "inquiry",
+      "request": {
+        "action": "close",
+        "outcome": "insufficient",
+        "reason": "M10 closes I10 as insufficient. The fixed-120000-step T10 hybrid joint-space braking and velocity-feedback candidate achieved 156/200 complete uninterrupted successes (78.0%), missing the 196/200 closure threshold by 40 successes and regressing 33 discordant episodes against T1, which achieved 189/200. Detailed diagnostics show 41 never-entry failures, including 31 negative-angle never-entry failures among 102 negative-angle targets, and only 3 post-entry failures. The route therefore caused a broad acquisition regression rather than reducing the hold-limited gap; its model-based local correction did not preserve T1's full-angle acquisition and cannot be treated as credible under I10's stated closure condition."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I10",
+        "outcome": "insufficient",
+        "reason": "M10 closes I10 as insufficient. The fixed-120000-step T10 hybrid joint-space braking and velocity-feedback candidate achieved 156/200 complete uninterrupted successes (78.0%), missing the 196/200 closure threshold by 40 successes and regressing 33 discordant episodes against T1, which achieved 189/200. Detailed diagnostics show 41 never-entry failures, including 31 negative-angle never-entry failures among 102 negative-angle targets, and only 3 post-entry failures. The route therefore caused a broad acquisition regression rather than reducing the hold-limited gap; its model-based local correction did not preserve T1's full-angle acquisition and cannot be treated as credible under I10's stated closure condition.",
+        "status": "completed"
+      },
+      "session_id": "S21",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "close",
+        "inquiry_id": "I10",
+        "outcome": "insufficient",
+        "reason": "M10 closes I10 as insufficient. The fixed-120000-step T10 hybrid joint-space braking and velocity-feedback candidate achieved 156/200 complete uninterrupted successes (78.0%), missing the 196/200 closure threshold by 40 successes and regressing 33 discordant episodes against T1, which achieved 189/200. Detailed diagnostics show 41 never-entry failures, including 31 negative-angle never-entry failures among 102 negative-angle targets, and only 3 post-entry failures. The route therefore caused a broad acquisition regression rather than reducing the hold-limited gap; its model-based local correction did not preserve T1's full-angle acquisition and cannot be treated as credible under I10's stated closure condition."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I10",
+        "outcome": "insufficient",
+        "reason": "M10 closes I10 as insufficient. The fixed-120000-step T10 hybrid joint-space braking and velocity-feedback candidate achieved 156/200 complete uninterrupted successes (78.0%), missing the 196/200 closure threshold by 40 successes and regressing 33 discordant episodes against T1, which achieved 189/200. Detailed diagnostics show 41 never-entry failures, including 31 negative-angle never-entry failures among 102 negative-angle targets, and only 3 post-entry failures. The route therefore caused a broad acquisition regression rather than reducing the hold-limited gap; its model-based local correction did not preserve T1's full-angle acquisition and cannot be treated as credible under I10's stated closure condition.",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E40",
+    "inquiry_id": "I10",
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "close",
+        "outcome": "insufficient",
+        "reason": "M10 closes I10 as insufficient. The fixed-120000-step T10 hybrid joint-space braking and velocity-feedback candidate achieved 156/200 complete uninterrupted successes (78.0%), missing the 196/200 closure threshold by 40 successes and regressing 33 discordant episodes against T1, which achieved 189/200. Detailed diagnostics show 41 never-entry failures, including 31 negative-angle never-entry failures among 102 negative-angle targets, and only 3 post-entry failures. The route therefore caused a broad acquisition regression rather than reducing the hold-limited gap; its model-based local correction did not preserve T1's full-angle acquisition and cannot be treated as credible under I10's stated closure condition."
+      }
+    },
+    "request_fingerprint": "98baee4e73b7b759d1e21b14984163637f82df8757c8f7c42bcc92cd776de9d8",
+    "session_id": "S21",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No working, best-known, or retained role is assigned. T1:checkpoint-100352 remains the strongest evidence-backed development reference at 189/200. T9:checkpoint-120832 is an insufficient temporal-context candidate at 190/200 and has no model role. Earlier insufficient candidates remain without roles.",
     "completed_operations": [
@@ -14494,7 +14540,8 @@
     "objective": "Advance I10 toward its closure condition: Close the inquiry as insufficient if its fixed-120000-step candidate fails to reach at least 196/200 complete uninterrupted successes on the held-out development panel, or if it causes a broad acquisition regression relative to T1. Treat the route as credible only if it reaches that threshold while preserving full-angle acquisition and reducing or not increasing post-entry hold failures; otherwise redirect or close based on the observed failure mechanism.",
     "operation_ids": [
       "T10",
-      "M10"
+      "M10",
+      "E40"
     ],
     "scientific_parent_commit": "4788c11f132d091e1559f2d945f879ca08e01fb8"
   },
