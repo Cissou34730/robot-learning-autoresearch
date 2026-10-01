@@ -17431,44 +17431,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "open",
-        "inquiry": {
-          "closure_condition": "Train one bounded 120000-step direct-torque PPO recipe with the dynamics features, then evaluate it with the existing complete-hold evaluator on the fixed 200-episode development panel paired with T9. The inquiry closes as actionable only if the candidate reaches at least 196/200 and does not increase never-entry failures above T9's six; otherwise it closes as insufficient and does not justify official assessment.",
-          "goal_connection": "The best development candidate is 190/200, with six never-entry failures and four post-entry failures; reaching the required 196/200 needs a mechanism that improves braking and branch coordination without repeating the acquisition-to-stabilization tradeoff. The features will expose effective inertia, Jacobian geometry, and local bounded-actuation authority as observations while leaving direct torque control unchanged.",
-          "id": "I13",
-          "opened_in_session": "S26",
-          "question": "Can a direct-torque policy use compact model-derived dynamics features for configuration-dependent braking and local task-space controllability to preserve T9's acquisition while reducing the remaining difficult-angle and post-entry failures, without injecting a torque residual or changing the task, reward, timing, or complete-hold semantics?",
-          "rationale": "The physical model identifies configuration-dependent inertia, inertial joint coupling, sampled-data braking, and limited in-band authority as consequential unknowns. Existing interventions changed branch commitment, task-space observations, short temporal context, or applied residual torque; T9 improved only to 190/200 and the residual route degraded to 171/200. A dynamics-aware observation is a distinct, bounded test of whether the current observation is theoretically sufficient but practically difficult for PPO to represent, while preserving the proven direct-torque action interface and all official success semantics.",
-          "reframes": []
-        }
-      },
-      "result": {
-        "action": "open",
-        "inquiry_id": "I13",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E50",
-    "inquiry_id": null,
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "open",
-        "closure_condition": "Train one bounded 120000-step direct-torque PPO recipe with the dynamics features, then evaluate it with the existing complete-hold evaluator on the fixed 200-episode development panel paired with T9. The inquiry closes as actionable only if the candidate reaches at least 196/200 and does not increase never-entry failures above T9's six; otherwise it closes as insufficient and does not justify official assessment.",
-        "goal_connection": "The best development candidate is 190/200, with six never-entry failures and four post-entry failures; reaching the required 196/200 needs a mechanism that improves braking and branch coordination without repeating the acquisition-to-stabilization tradeoff. The features will expose effective inertia, Jacobian geometry, and local bounded-actuation authority as observations while leaving direct torque control unchanged.",
-        "question": "Can a direct-torque policy use compact model-derived dynamics features for configuration-dependent braking and local task-space controllability to preserve T9's acquisition while reducing the remaining difficult-angle and post-entry failures, without injecting a torque residual or changing the task, reward, timing, or complete-hold semantics?",
-        "rationale": "The physical model identifies configuration-dependent inertia, inertial joint coupling, sampled-data braking, and limited in-band authority as consequential unknowns. Existing interventions changed branch commitment, task-space observations, short temporal context, or applied residual torque; T9 improved only to 190/200 and the residual route degraded to 171/200. A dynamics-aware observation is a distinct, bounded test of whether the current observation is theoretically sufficient but practically difficult for PPO to represent, while preserving the proven direct-torque action interface and all official success semantics."
-      }
-    },
-    "request_fingerprint": "43e3477af28c25a4421faa4f28daa4f3207e0a53fd0bf7a6302d060b5a33d0d7",
-    "session_id": "S26",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "No working, best-known, or retained role is assigned. T9:checkpoint-120832 is the strongest measured development candidate at 190/200 but remains insufficient; T1:checkpoint-100352 is the direct-torque reference at 189/200. T11:checkpoint-120832 and T12:checkpoint-35840 are rejected. No candidate satisfies the human goal or warrants official assessment.",
     "completed_operations": [
