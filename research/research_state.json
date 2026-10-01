@@ -1,5 +1,13 @@
 {
-  "active_inquiry": null,
+  "active_inquiry": {
+    "closure_condition": "Close or reframe after a full-coverage 120000-step PPO run and hold-specific research evaluation establish whether failures are concentrated in the newly covered inner radii or remain broad across the official distribution, with any resulting candidate judged against M1's feasible moderate-braking evidence.",
+    "goal_connection": "The human goal requires at least 98% complete-hold episode success under the official distribution. This inquiry tests whether the leading remaining bottleneck is omitted inner-radius training coverage rather than physical infeasibility, branch selection, or braking dynamics.",
+    "id": "I1",
+    "opened_in_session": "S2",
+    "question": "Can PPO learn a velocity-aware reach-and-hold controller that achieves the complete 100-sample hold across the full official 6-20 cm radial distribution when training directly covers that distribution?",
+    "rationale": "M1 established a credible bounded-effort route for all tested radii with a known-target controller, but no learned policy or official-distribution result exists. The current trainer samples only 14-20 cm while the official task samples 6-20 cm. A fresh run with training coverage expanded to the official range is the most direct goal-linked discriminator between a coverage-limited learning failure and a broader PPO representation, reward, or control-method limitation.",
+    "reframes": []
+  },
   "campaign": {
     "base_commit": "46b970c3936971c86149bd112992f6482e7a2893",
     "id": "77a975a5-9917-4178-ad06-ede00161560f",
@@ -9,16 +17,16 @@
   },
   "candidates": {},
   "counters": {
-    "event": 1,
-    "inquiry": 0,
+    "event": 2,
+    "inquiry": 1,
     "measurement": 1,
-    "session": 1,
+    "session": 2,
     "training": 0
   },
   "human_goal": {
     "source": "research/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -157,9 +165,69 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-01T05:35:22Z",
+      "error": null,
+      "id": "E2",
+      "inquiry_id": "I1",
+      "kind": "inquiry",
+      "request": {
+        "action": "open",
+        "closure_condition": "Close or reframe after a full-coverage 120000-step PPO run and hold-specific research evaluation establish whether failures are concentrated in the newly covered inner radii or remain broad across the official distribution, with any resulting candidate judged against M1's feasible moderate-braking evidence.",
+        "goal_connection": "The human goal requires at least 98% complete-hold episode success under the official distribution. This inquiry tests whether the leading remaining bottleneck is omitted inner-radius training coverage rather than physical infeasibility, branch selection, or braking dynamics.",
+        "question": "Can PPO learn a velocity-aware reach-and-hold controller that achieves the complete 100-sample hold across the full official 6-20 cm radial distribution when training directly covers that distribution?",
+        "rationale": "M1 established a credible bounded-effort route for all tested radii with a known-target controller, but no learned policy or official-distribution result exists. The current trainer samples only 14-20 cm while the official task samples 6-20 cm. A fresh run with training coverage expanded to the official range is the most direct goal-linked discriminator between a coverage-limited learning failure and a broader PPO representation, reward, or control-method limitation."
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I1",
+        "status": "completed"
+      },
+      "session_id": "S2",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "open",
+        "inquiry": {
+          "closure_condition": "Close or reframe after a full-coverage 120000-step PPO run and hold-specific research evaluation establish whether failures are concentrated in the newly covered inner radii or remain broad across the official distribution, with any resulting candidate judged against M1's feasible moderate-braking evidence.",
+          "goal_connection": "The human goal requires at least 98% complete-hold episode success under the official distribution. This inquiry tests whether the leading remaining bottleneck is omitted inner-radius training coverage rather than physical infeasibility, branch selection, or braking dynamics.",
+          "id": "I1",
+          "opened_in_session": "S2",
+          "question": "Can PPO learn a velocity-aware reach-and-hold controller that achieves the complete 100-sample hold across the full official 6-20 cm radial distribution when training directly covers that distribution?",
+          "rationale": "M1 established a credible bounded-effort route for all tested radii with a known-target controller, but no learned policy or official-distribution result exists. The current trainer samples only 14-20 cm while the official task samples 6-20 cm. A fresh run with training coverage expanded to the official range is the most direct goal-linked discriminator between a coverage-limited learning failure and a broader PPO representation, reward, or control-method limitation.",
+          "reframes": []
+        }
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I1",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E2",
+    "inquiry_id": null,
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "open",
+        "closure_condition": "Close or reframe after a full-coverage 120000-step PPO run and hold-specific research evaluation establish whether failures are concentrated in the newly covered inner radii or remain broad across the official distribution, with any resulting candidate judged against M1's feasible moderate-braking evidence.",
+        "goal_connection": "The human goal requires at least 98% complete-hold episode success under the official distribution. This inquiry tests whether the leading remaining bottleneck is omitted inner-radius training coverage rather than physical infeasibility, branch selection, or braking dynamics.",
+        "question": "Can PPO learn a velocity-aware reach-and-hold controller that achieves the complete 100-sample hold across the full official 6-20 cm radial distribution when training directly covers that distribution?",
+        "rationale": "M1 established a credible bounded-effort route for all tested radii with a known-target controller, but no learned policy or official-distribution result exists. The current trainer samples only 14-20 cm while the official task samples 6-20 cm. A fresh run with training coverage expanded to the official range is the most direct goal-linked discriminator between a coverage-limited learning failure and a broader PPO representation, reward, or control-method limitation."
+      }
+    },
+    "request_fingerprint": "ac3b93e0695c4aa564ea8dd7491e2e984dcec3573bb3afd13855d0abb3df53c4",
+    "session_id": "S2",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No model candidates exist; working, best-known, and retained roles remain empty. M1 is a measurement only and cannot support a model-role assignment.",
     "completed_operations": [
@@ -184,6 +252,21 @@
     "path": "research/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "1b6e6305-56a8-4fca-bdaa-104ab7de359d",
+    "id": "S2",
+    "inquiry_id": null,
+    "kind": "goal_review",
+    "objective": "Reassess the scientific direction toward the human goal using completed evidence. You may request measurements to resolve an uncertainty or develop the method before committing to an inquiry. Decide whether to request official assessment, open one bounded goal-linked inquiry, or conclude that no credible route remains.",
+    "operation_ids": [
+      "E2"
+    ],
+    "scientific_parent_commit": "54fa64dcd8d5458380d05868b590738a24a80ccd"
+  },
   "terminal_state": null
 }
