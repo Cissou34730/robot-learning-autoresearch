@@ -21826,67 +21826,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "set_best_known",
-        "candidate_id": "T9:checkpoint-120832",
-        "evidence": [
-          "T9",
-          "M9",
-          "E36",
-          "M14",
-          "E56",
-          "M15",
-          "E60"
-        ],
-        "reason": "T9 is the strongest evidence-backed candidate: it achieved 190/200 complete uninterrupted successes on the fixed development panel, improving on the 189/200 direct-torque reference while preserving broad acquisition. The later T14 target-mixture and T15 velocity-aware braking routes scored 62/200 and 0/200 respectively, so neither provides a stronger candidate or a credible path to the 196/200 gate."
-      },
-      "publication": {
-        "destination": "research/checkpoints/retained/e8788df6-9f4a-4dac-92b7-48e40477e827/t9-c8cf701d5-8cb28795647fde69548607020c97e9edf25ffcdd0aeaa3d775770393e52a28d0",
-        "fingerprint": "8cb28795647fde69548607020c97e9edf25ffcdd0aeaa3d775770393e52a28d0",
-        "source": "research/checkpoints/candidates/e8788df6-9f4a-4dac-92b7-48e40477e827/t9/checkpoint-120832"
-      },
-      "result": {
-        "action": "set_best_known",
-        "candidate": "T9:checkpoint-120832",
-        "evidence": [
-          "T9",
-          "M9",
-          "E36",
-          "M14",
-          "E56",
-          "M15",
-          "E60"
-        ],
-        "status": "assigned"
-      }
-    },
-    "failure": null,
-    "id": "E62",
-    "inquiry_id": null,
-    "kind": "model_role",
-    "progress": "completed",
-    "request": {
-      "model_role": {
-        "action": "set_best_known",
-        "candidate": "T9:checkpoint-120832",
-        "evidence": [
-          "T9",
-          "M9",
-          "E36",
-          "M14",
-          "E56",
-          "M15",
-          "E60"
-        ],
-        "reason": "T9 is the strongest evidence-backed candidate: it achieved 190/200 complete uninterrupted successes on the fixed development panel, improving on the 189/200 direct-torque reference while preserving broad acquisition. The later T14 target-mixture and T15 velocity-aware braking routes scored 62/200 and 0/200 respectively, so neither provides a stronger candidate or a credible path to the 196/200 gate."
-      }
-    },
-    "request_fingerprint": "dfda9f5773bc3af212c58f184f1aee83a7e0a10eec44a2e1f5a5a54d613ee943",
-    "session_id": "S32",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "No working, best-known, or retained role is assigned. T9:checkpoint-120832 remains the strongest measured development candidate at 190/200 and the reference for I15. T15:checkpoint-120832 is rejected for I15 after scoring 0/200; T14:checkpoint-120832 remains rejected for I14 at 62/200.",
     "completed_operations": [
