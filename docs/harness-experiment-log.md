@@ -21,9 +21,10 @@ remain removed. The goal-review role-assignment correction below changes only
 operation availability, terminal prerequisites, and the meaning of best-known.
 The scientific-frontier guidance remains active with mixed subsequent
 campaign observations and no isolated causal attribution. The ordinary
-goal-review measurement experiment below is now active and scientifically
-untested. The inquiry architecture and independent runtime fixes remain
-unchanged.
+goal-review measurement experiment below is active; its first completed
+campaign did not exercise the new measurement permission, and its causal
+effect remains unestablished. The inquiry architecture and independent runtime
+fixes remain unchanged.
 
 The objective under investigation is scientifically justified action selection:
 the PI chooses the action that can resolve a consequential uncertainty rather
@@ -563,7 +564,7 @@ separate from harness changes so their outcomes are not conflated.
 
 ## 2026-10-01: ordinary goal-review scientific measurements
 
-- **Implementation commit:** the commit containing this entry,
+- **Implementation commit:** `c68627d`,
   `Allow scientific measurements during ordinary goal review`.
 - **Baseline / observations:** completed campaign
   `e8788df6-9f4a-4dac-92b7-48e40477e827` used 15 inquiries, each with one
@@ -615,3 +616,71 @@ separate from harness changes so their outcomes are not conflated.
   is untested and the progression issue remains outstanding. Judge the trial
   by whether evidence changes or refines method development, not merely by
   fewer training runs. No campaign was started, resumed, reset, or modified.
+
+## 2026-10-01: first campaign observation and I1 artifact-reading error
+
+- **Campaign / harness reference:** `77a975a5-9917-4178-ad06-ede00161560f`,
+  following the goal-review capability and wording change in `c68627d`.
+  The initial live assessment was taken around 08:41 local; the campaign
+  subsequently completed its protected official assessment at 08:52.
+- **Retrieval references:** these commits archive the relevant operation
+  records and artifacts, independently of later campaign resets.
+
+| Finding | Evidence commit |
+|---|---|
+| M1 startup dynamics probe and artifact | `b5d4e10` |
+| M2 learned-policy evaluation | `1f972df` |
+| E4 reframe of I1 after M2 | `648fe28` |
+| M3 failed learned PD-interface evaluation and nested diagnostics | `cd6aaef` |
+| E6 closure of I1, including the false missing-diagnostics claim | `70f1a61` |
+| E8 opening of the training-shaped I2 | `5341420` |
+| M4 successful hybrid-policy development evaluation | `ad255ec` |
+| E11 successful closure of I2 | `62e1059` |
+| Protected official assessment outcome | `7ce2850` |
+
+- **Opening:** the PI executed and interpreted a dynamics probe before
+  learning. Soft and balanced PD each completed 112/112 tested holds; firm PD
+  completed only 12/112 and showed sustained saturation. This was substantive
+  physical investigation, not merely a promise to measure. Startup already
+  permitted this work before `c68627d`, so the opening does not establish the
+  effect of the new goal-review capability.
+- **Inquiry progression:** I1 did not close after its first training and
+  evaluation. M2 achieved 98/160, with 58 failures before first reach and four
+  after entry; the inner-radius result was strong while outer-radius reach
+  failed. The PI reframed I1 around that distinction, then trained and
+  evaluated the joint-target PD interface before closing the inquiry.
+- **I1 closing error:** the E6 reason says M3 contains no per-radius or
+  hold-streak diagnostics. That is false: the artifact already archived in
+  `cd6aaef` contains all 160 rows under
+  `research_evidence.episode_diagnostics`, including target radius, first
+  reach, maximum held steps, and interruptions. Its recorded sealed
+  fingerprint matches. Those rows show 149 failures before first reach and
+  11 after entry. This is an evidence-inspection error, not missing
+  instrumentation or a later addition to the artifact.
+- **Scope of that error:** T2's zero training success and M3's 0/160 complete
+  holds support rejecting the tested candidate and ending that recipe branch.
+  They do not establish why learning collapsed or invalidate PD control or
+  PPO generally. Closure itself was defensible; the stated absence of
+  diagnostic evidence was not. The later campaign success does not correct
+  this earlier misreading.
+- **Bias / training-first behavior:** both ordinary goal reviews received the
+  new optional-measurement wording but opened training-led inquiries without
+  requesting measurements. I2 again prescribed one fixed-allocation training
+  and evaluation. There is no observed compulsory measurement-first pattern,
+  but training-shaped inquiry selection persists. The campaign's better
+  investigation and reframe do not imply that every subsequent training
+  choice was premature or that the general progression problem is solved.
+- **Completed outcome:** M4 achieved 160/160 complete holds, including 25/25
+  at 18-20 cm, with no recorded pre-reach failures, post-reach failures, or
+  interruptions. I2 closed on that supported development result without
+  declaring official success. The subsequent protected assessment passed
+  with 200/200 successes for `T3:checkpoint-120832`. Three training runs
+  consumed 362,496 completed steps; recorded PI usage was 21 invocations and
+  66.268 AIU.
+- **Disposition / attribution:** the campaign succeeded and the revised
+  prompts reached the PI, but no goal-review session used the newly permitted
+  measurement operation. Non-use alone is not failure; equally, this outcome
+  does not establish that `c68627d` caused the successful opening, reframe, or
+  method. The causal effect remains unestablished, and the I1 evidence-reading
+  error remains a recorded finding. No further prompt, instrument, or runtime
+  change is introduced by this entry.
