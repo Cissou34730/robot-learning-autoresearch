@@ -3666,52 +3666,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "set_best_known",
-        "candidate_id": "T3:checkpoint-120832",
-        "evidence": [
-          "T3",
-          "M4"
-        ],
-        "reason": "M4 evaluated this candidate on a fresh 160-episode panel and observed 160/160 complete uninterrupted holds. Performance was 100% in all radius bands, including 25/25 at 18-20 cm; every episode entered tolerance, reached hold onset, achieved a maximum 100-step streak, and had zero hold interruptions or pre/post-reach failures. This materially improves over T1's 98/160 result and establishes T3 as the strongest evidence-backed candidate, while not yet constituting the protected 200-episode official assessment."
-      },
-      "publication": {
-        "destination": "research/checkpoints/retained/77a975a5-9917-4178-ad06-ede00161560f/t3-c8cf701d5-b473c114f0d39cac41e8bfb6844f4ec611983278a0324164643d8357fca61bd4",
-        "fingerprint": "b473c114f0d39cac41e8bfb6844f4ec611983278a0324164643d8357fca61bd4",
-        "source": "research/checkpoints/candidates/77a975a5-9917-4178-ad06-ede00161560f/t3/checkpoint-120832"
-      },
-      "result": {
-        "action": "set_best_known",
-        "candidate": "T3:checkpoint-120832",
-        "evidence": [
-          "T3",
-          "M4"
-        ],
-        "status": "assigned"
-      }
-    },
-    "failure": null,
-    "id": "E10",
-    "inquiry_id": "I2",
-    "kind": "model_role",
-    "progress": "completed",
-    "request": {
-      "model_role": {
-        "action": "set_best_known",
-        "candidate": "T3:checkpoint-120832",
-        "evidence": [
-          "T3",
-          "M4"
-        ],
-        "reason": "M4 evaluated this candidate on a fresh 160-episode panel and observed 160/160 complete uninterrupted holds. Performance was 100% in all radius bands, including 25/25 at 18-20 cm; every episode entered tolerance, reached hold onset, achieved a maximum 100-step streak, and had zero hold interruptions or pre/post-reach failures. This materially improves over T1's 98/160 result and establishes T3 as the strongest evidence-backed candidate, while not yet constituting the protected 200-episode official assessment."
-      }
-    },
-    "request_fingerprint": "5e459c1dfa24c6fb58865e6d3ae4f121aa6778a651c826e5efa7c147f2ac2755",
-    "session_id": "S6",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "No candidate has working, best-known, or retained status. T1:checkpoint-120832 remains the strongest evaluated learned candidate at 98/160 M2 successes; T2:checkpoint-115712 achieved 0/160 in M3 and is not viable for the goal.",
     "completed_operations": [
