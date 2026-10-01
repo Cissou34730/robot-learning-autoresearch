@@ -20,3 +20,4 @@
 | M4 | measurement | I2 | completed |
 | E10 | model_role | I2 | assigned |
 | E11 | inquiry | I2 | completed |
+| E12 | checkpoint | I2 | checkpointed |

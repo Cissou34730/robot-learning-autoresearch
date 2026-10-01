@@ -2464,7 +2464,7 @@
     }
   },
   "counters": {
-    "event": 11,
+    "event": 12,
     "inquiry": 2,
     "measurement": 4,
     "session": 6,
@@ -2473,7 +2473,7 @@
   "human_goal": {
     "source": "research/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": "T3:checkpoint-120832",
     "retained": {},
@@ -3679,32 +3679,165 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-01T06:49:22Z",
+      "error": null,
+      "id": "E12",
+      "inquiry_id": "I2",
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "T3:checkpoint-120832 is the best-known candidate, assigned by E10 and backed by T3 and M4. Its retained artifact is research/checkpoints/retained/77a975a5-9917-4178-ad06-ede00161560f/t3-c8cf701d5-b473c114f0d39cac41e8bfb6844f4ec611983278a0324164643d8357fca61bd4. No working role is assigned.",
+        "completed_operations": [
+          "T3",
+          "M4",
+          "E10",
+          "E11"
+        ],
+        "cumulative_resource_use": "Completed resources include M1 dynamics measurement; T1, T2, and T3 fixed 120000-step training allocations (120832 recorded rollout steps each); M2, M3, and M4 160-episode research evaluations; inquiry and checkpoint events E1 through E11; and the E10 best-known role assignment. No official assessment has yet been requested or completed.",
+        "current_goal_gap": "The remaining gap is the protected official assessment: T3:checkpoint-120832 achieved 160/160 complete holds in M4, including 25/25 at 18-20 cm, but no official 200-episode result has been recorded. Earlier T1 achieved 98/160 (61.25%) and T2 achieved 0/160, so the hybrid result materially closes the demonstrated development gap without proving 196/200.",
+        "current_synthesis": "M1 established physical feasibility with 112/112 complete holds using known-target bounded PD control. T1's direct bounded-motor PPO failures were concentrated before first reach, while T2's normalized joint-target PD PPO recipe produced no meaningful success; E6 redirected away from that recipe. In I2, T3 used the fixed 120000-step allocation with configuration-aware feasible IK, joint position/velocity feedback, and a bounded PPO torque residual. M4 evaluated the late T3 candidate on 160 fresh episodes under unchanged complete-hold semantics: 160/160 successes, 100% first reach and hold onset in every radius band, median maximum hold streak 100, zero interruptions, and zero pre-reach or post-reach failures. E10 assigned T3:checkpoint-120832 as best-known and E11 closed I2 in favor of this hybrid route as a credible near-goal candidate. These findings resolve the I2 reach-versus-hold distinction in development evidence, but do not establish official success.",
+        "decision_frontier": "I2 is closed. The next decision is whether the protected official assessment of best-known T3:checkpoint-120832 reaches at least 196/200 complete uninterrupted holds. Do not treat M4's 160/160 research result as official evidence or claim campaign success before that assessment.",
+        "evidence_references": [
+          "T3",
+          "M4",
+          "E10",
+          "E11"
+        ],
+        "human_goal_connection": "The campaign remains directed at at least 196/200 official episodes achieving the complete uninterrupted 100-sample hold. The hybrid candidate T3:checkpoint-120832 is now a credible near-goal route, but M4 was a 160-episode research evaluation rather than the protected official assessment, so the human goal is not yet established.",
+        "next_direction_or_closure": "The I2 inquiry is closed and this checkpoint ends the session. In the fresh session, request the protected official assessment for T3:checkpoint-120832 because its 160/160 radius-stratified development result is plausibly near 196/200. If the official result reaches at least 196/200, conclude the campaign in favor of the human goal; otherwise preserve the official failure diagnostics and redirect scientifically."
+      },
+      "result": {
+        "session_id": "S6",
+        "status": "checkpointed"
+      },
+      "session_id": "S6",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "ba289fee84f5f36ea4b4b6b5443937dca8085ca7",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "T3:checkpoint-120832 is the best-known candidate, assigned by E10 and backed by T3 and M4. Its retained artifact is research/checkpoints/retained/77a975a5-9917-4178-ad06-ede00161560f/t3-c8cf701d5-b473c114f0d39cac41e8bfb6844f4ec611983278a0324164643d8357fca61bd4. No working role is assigned.",
+        "completed_operations": [
+          "T3",
+          "M4",
+          "E10",
+          "E11"
+        ],
+        "cumulative_resource_use": "Completed resources include M1 dynamics measurement; T1, T2, and T3 fixed 120000-step training allocations (120832 recorded rollout steps each); M2, M3, and M4 160-episode research evaluations; inquiry and checkpoint events E1 through E11; and the E10 best-known role assignment. No official assessment has yet been requested or completed.",
+        "current_goal_gap": "The remaining gap is the protected official assessment: T3:checkpoint-120832 achieved 160/160 complete holds in M4, including 25/25 at 18-20 cm, but no official 200-episode result has been recorded. Earlier T1 achieved 98/160 (61.25%) and T2 achieved 0/160, so the hybrid result materially closes the demonstrated development gap without proving 196/200.",
+        "current_synthesis": "M1 established physical feasibility with 112/112 complete holds using known-target bounded PD control. T1's direct bounded-motor PPO failures were concentrated before first reach, while T2's normalized joint-target PD PPO recipe produced no meaningful success; E6 redirected away from that recipe. In I2, T3 used the fixed 120000-step allocation with configuration-aware feasible IK, joint position/velocity feedback, and a bounded PPO torque residual. M4 evaluated the late T3 candidate on 160 fresh episodes under unchanged complete-hold semantics: 160/160 successes, 100% first reach and hold onset in every radius band, median maximum hold streak 100, zero interruptions, and zero pre-reach or post-reach failures. E10 assigned T3:checkpoint-120832 as best-known and E11 closed I2 in favor of this hybrid route as a credible near-goal candidate. These findings resolve the I2 reach-versus-hold distinction in development evidence, but do not establish official success.",
+        "decision_frontier": "I2 is closed. The next decision is whether the protected official assessment of best-known T3:checkpoint-120832 reaches at least 196/200 complete uninterrupted holds. Do not treat M4's 160/160 research result as official evidence or claim campaign success before that assessment.",
+        "evidence_references": [
+          "T3",
+          "M4",
+          "E10",
+          "E11"
+        ],
+        "human_goal_connection": "The campaign remains directed at at least 196/200 official episodes achieving the complete uninterrupted 100-sample hold. The hybrid candidate T3:checkpoint-120832 is now a credible near-goal route, but M4 was a 160-episode research evaluation rather than the protected official assessment, so the human goal is not yet established.",
+        "inquiry_id": "I2",
+        "next_direction_or_closure": "The I2 inquiry is closed and this checkpoint ends the session. In the fresh session, request the protected official assessment for T3:checkpoint-120832 because its 160/160 radius-stratified development result is plausibly near 196/200. If the official result reaches at least 196/200, conclude the campaign in favor of the human goal; otherwise preserve the official failure diagnostics and redirect scientifically.",
+        "session_id": "S6"
+      },
+      "presentation": {
+        "backend_session_id": "9d9be4b2-6fba-4456-a3cf-1742be6a9506",
+        "campaign_id": "77a975a5-9917-4178-ad06-ede00161560f",
+        "campaign_usage": "28m32s | 64.93 AIU | prompt 10.6m (86% cached) | output 76.3k",
+        "session_id": "S6",
+        "session_kind": "inquiry",
+        "session_usage": "7m53s | 19.63 AIU | prompt 3.6m (88% cached) | output 19.1k"
+      },
+      "result": {
+        "session_id": "S6",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "c5c66de22f0e1a24f19177ea66c5bda28c356c23",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E12",
+    "inquiry_id": "I2",
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "T3:checkpoint-120832 is the best-known candidate, assigned by E10 and backed by T3 and M4. Its retained artifact is research/checkpoints/retained/77a975a5-9917-4178-ad06-ede00161560f/t3-c8cf701d5-b473c114f0d39cac41e8bfb6844f4ec611983278a0324164643d8357fca61bd4. No working role is assigned.",
+        "completed_operations": [
+          "T3",
+          "M4",
+          "E10",
+          "E11"
+        ],
+        "cumulative_resource_use": "Completed resources include M1 dynamics measurement; T1, T2, and T3 fixed 120000-step training allocations (120832 recorded rollout steps each); M2, M3, and M4 160-episode research evaluations; inquiry and checkpoint events E1 through E11; and the E10 best-known role assignment. No official assessment has yet been requested or completed.",
+        "current_goal_gap": "The remaining gap is the protected official assessment: T3:checkpoint-120832 achieved 160/160 complete holds in M4, including 25/25 at 18-20 cm, but no official 200-episode result has been recorded. Earlier T1 achieved 98/160 (61.25%) and T2 achieved 0/160, so the hybrid result materially closes the demonstrated development gap without proving 196/200.",
+        "current_synthesis": "M1 established physical feasibility with 112/112 complete holds using known-target bounded PD control. T1's direct bounded-motor PPO failures were concentrated before first reach, while T2's normalized joint-target PD PPO recipe produced no meaningful success; E6 redirected away from that recipe. In I2, T3 used the fixed 120000-step allocation with configuration-aware feasible IK, joint position/velocity feedback, and a bounded PPO torque residual. M4 evaluated the late T3 candidate on 160 fresh episodes under unchanged complete-hold semantics: 160/160 successes, 100% first reach and hold onset in every radius band, median maximum hold streak 100, zero interruptions, and zero pre-reach or post-reach failures. E10 assigned T3:checkpoint-120832 as best-known and E11 closed I2 in favor of this hybrid route as a credible near-goal candidate. These findings resolve the I2 reach-versus-hold distinction in development evidence, but do not establish official success.",
+        "decision_frontier": "I2 is closed. The next decision is whether the protected official assessment of best-known T3:checkpoint-120832 reaches at least 196/200 complete uninterrupted holds. Do not treat M4's 160/160 research result as official evidence or claim campaign success before that assessment.",
+        "evidence_references": [
+          "T3",
+          "M4",
+          "E10",
+          "E11"
+        ],
+        "human_goal_connection": "The campaign remains directed at at least 196/200 official episodes achieving the complete uninterrupted 100-sample hold. The hybrid candidate T3:checkpoint-120832 is now a credible near-goal route, but M4 was a 160-episode research evaluation rather than the protected official assessment, so the human goal is not yet established.",
+        "next_direction_or_closure": "The I2 inquiry is closed and this checkpoint ends the session. In the fresh session, request the protected official assessment for T3:checkpoint-120832 because its 160/160 radius-stratified development result is plausibly near 196/200. If the official result reaches at least 196/200, conclude the campaign in favor of the human goal; otherwise preserve the official failure diagnostics and redirect scientifically."
+      }
+    },
+    "request_fingerprint": "64de6f41a34bdab87c9e85c6c273164bf6cf223286f98ba8f21cdc96020a1ef5",
+    "session_id": "S6",
+    "supersedes": null
+  },
   "pi_checkpoint": {
-    "candidates_and_roles": "No candidate has working, best-known, or retained status. T1:checkpoint-120832 remains the strongest evaluated learned candidate at 98/160 M2 successes; T2:checkpoint-115712 achieved 0/160 in M3 and is not viable for the goal.",
+    "candidates_and_roles": "T3:checkpoint-120832 is the best-known candidate, assigned by E10 and backed by T3 and M4. Its retained artifact is research/checkpoints/retained/77a975a5-9917-4178-ad06-ede00161560f/t3-c8cf701d5-b473c114f0d39cac41e8bfb6844f4ec611983278a0324164643d8357fca61bd4. No working role is assigned.",
     "completed_operations": [
-      "E8"
+      "T3",
+      "M4",
+      "E10",
+      "E11"
     ],
-    "cumulative_resource_use": "Completed resources include M1 dynamics measurement, T1 and T2 fixed 120000-step training allocations (120832 recorded rollout steps each), M2 and M3 160-episode research evaluations, inquiry/checkpoint events E1 through E7, and E8 opening I2. No resource has yet been spent in I2.",
-    "current_goal_gap": "T1:checkpoint-120832 remains at 98/160 successes (61.25%), a 37 percentage-point gap to the 98% goal. Its failures are concentrated in outer-radius reach, while T2:checkpoint-115712 achieved 0/160 complete holds and did not improve the route.",
-    "current_synthesis": "M1 established that the physical task is feasible: moderate known-target bounded PD control completed 112/112 tested trials across official radii and feasible branches. T1 demonstrated partial learned competence with direct bounded-motor PPO, but 58 of 62 failures never entered tolerance and only four followed hold onset, supporting a reach and configuration-selection bottleneck more than a general hold impossibility. T2 tested normalized joint targets mapped through bounded PD control; all checkpoints had zero training-panel success and negative reward, and M3 found 0/160 complete holds with all episodes truncating. This rejects the exact T2 recipe, not all PPO or all PD control. E8 opened I2 to test a materially different target-conditioned hybrid formulation; that opening is a transition decision, not evidence that the hybrid route will work.",
-    "decision_frontier": "In the fresh I2 inquiry session, determine whether a configuration-aware IK and velocity-feedback scaffold with a learned bounded residual or stabilization correction can materially improve outer-radius reach while preserving inner-radius behavior and complete hold. Discriminating evidence must retain the official task and hold semantics, use the fixed 120000-step allocation if training is selected, and report complete-hold success with radius-stratified first reach, hold onset, maximum hold streak, and post-reach failure diagnostics.",
+    "cumulative_resource_use": "Completed resources include M1 dynamics measurement; T1, T2, and T3 fixed 120000-step training allocations (120832 recorded rollout steps each); M2, M3, and M4 160-episode research evaluations; inquiry and checkpoint events E1 through E11; and the E10 best-known role assignment. No official assessment has yet been requested or completed.",
+    "current_goal_gap": "The remaining gap is the protected official assessment: T3:checkpoint-120832 achieved 160/160 complete holds in M4, including 25/25 at 18-20 cm, but no official 200-episode result has been recorded. Earlier T1 achieved 98/160 (61.25%) and T2 achieved 0/160, so the hybrid result materially closes the demonstrated development gap without proving 196/200.",
+    "current_synthesis": "M1 established physical feasibility with 112/112 complete holds using known-target bounded PD control. T1's direct bounded-motor PPO failures were concentrated before first reach, while T2's normalized joint-target PD PPO recipe produced no meaningful success; E6 redirected away from that recipe. In I2, T3 used the fixed 120000-step allocation with configuration-aware feasible IK, joint position/velocity feedback, and a bounded PPO torque residual. M4 evaluated the late T3 candidate on 160 fresh episodes under unchanged complete-hold semantics: 160/160 successes, 100% first reach and hold onset in every radius band, median maximum hold streak 100, zero interruptions, and zero pre-reach or post-reach failures. E10 assigned T3:checkpoint-120832 as best-known and E11 closed I2 in favor of this hybrid route as a credible near-goal candidate. These findings resolve the I2 reach-versus-hold distinction in development evidence, but do not establish official success.",
+    "decision_frontier": "I2 is closed. The next decision is whether the protected official assessment of best-known T3:checkpoint-120832 reaches at least 196/200 complete uninterrupted holds. Do not treat M4's 160/160 research result as official evidence or claim campaign success before that assessment.",
     "evidence_references": [
-      "M1",
-      "T1",
-      "M2",
-      "T2",
-      "M3",
-      "E6",
-      "E8"
+      "T3",
+      "M4",
+      "E10",
+      "E11"
     ],
-    "human_goal_connection": "The campaign remains directed at at least 196/200 official episodes achieving the complete uninterrupted 100-sample hold. The current best learned candidate is 98/160 on M2, so the campaign is not near the official threshold and official assessment is not justified.",
-    "inquiry_id": null,
-    "next_direction_or_closure": "The goal-review session is complete and I2 is now the active inquiry for a fresh session. Begin by developing and wiring the materially different hybrid target-conditioned formulation, then use a fixed 120000-step training operation if that method is selected, followed by fresh radius-stratified reach-versus-hold evaluation. Do not repeat the rejected normalized joint-target PD PPO recipe or request official assessment before development evidence is plausibly near 98%.",
-    "scientific_commit": "100a16ac2a86d9877a191718aa4990fa139f9f31",
-    "session_id": "S5"
+    "human_goal_connection": "The campaign remains directed at at least 196/200 official episodes achieving the complete uninterrupted 100-sample hold. The hybrid candidate T3:checkpoint-120832 is now a credible near-goal route, but M4 was a 160-episode research evaluation rather than the protected official assessment, so the human goal is not yet established.",
+    "inquiry_id": "I2",
+    "next_direction_or_closure": "The I2 inquiry is closed and this checkpoint ends the session. In the fresh session, request the protected official assessment for T3:checkpoint-120832 because its 160/160 radius-stratified development result is plausibly near 196/200. If the official result reaches at least 196/200, conclude the campaign in favor of the human goal; otherwise preserve the official failure diagnostics and redirect scientifically.",
+    "scientific_commit": "c5c66de22f0e1a24f19177ea66c5bda28c356c23",
+    "session_id": "S6"
   },
   "schema_version": 6,
   "scientific_model": {
@@ -3712,24 +3845,6 @@
     "path": "research/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "9d9be4b2-6fba-4456-a3cf-1742be6a9506",
-    "id": "S6",
-    "inquiry_id": "I2",
-    "kind": "inquiry",
-    "objective": "Advance I2 toward its closure condition: Close when one fixed 120000-step training run and its fresh research evaluation establish either a credible near-goal route or a discriminating failure: report complete-hold success plus reach and hold diagnostics stratified by radius bands and identify whether failures occur before first reach or after hold onset. Do not request official assessment unless the development result is plausibly near 196/200 under the official distribution; close as redirected if the hybrid formulation cannot materially improve the outer-radius reach failure without losing inner-radius behavior.",
-    "operation_ids": [
-      "T3",
-      "M4",
-      "E10",
-      "E11"
-    ],
-    "scientific_parent_commit": "ba289fee84f5f36ea4b4b6b5443937dca8085ca7"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
