@@ -2470,14 +2470,14 @@
   "counters": {
     "event": 13,
     "inquiry": 3,
-    "measurement": 4,
-    "session": 7,
+    "measurement": 5,
+    "session": 8,
     "training": 3
   },
   "human_goal": {
     "source": "research/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -4966,9 +4966,526 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-02T21:51:30Z",
+      "error": null,
+      "id": "M5",
+      "inquiry_id": null,
+      "kind": "measurement",
+      "request": {
+        "description": "Run the unchanged T1:checkpoint-100352 policy on 400 fresh official-distribution episodes and record radius-conditioned reach and hold outcomes together with joint-limit, velocity, Jacobian, and action diagnostics.",
+        "measurements": [
+          {
+            "args": [
+              "--model",
+              "research/checkpoints/candidates/d7080d95-e5e9-4077-a667-f75ddc16876b/t1/checkpoint-100352/model.zip",
+              "--episodes",
+              "400",
+              "--seed",
+              "6000",
+              "--output",
+              "research/evaluations/d7080d95-e5e9-4077-a667-f75ddc16876b/python-module-radius-dynamics-t1-400ep-seed6000.json"
+            ],
+            "artifact": "research/evaluations/d7080d95-e5e9-4077-a667-f75ddc16876b/python-module-radius-dynamics-t1-400ep-seed6000.json",
+            "instrument": "python_module",
+            "label": "T1 fresh radius and dynamics diagnostic",
+            "module": "research.lab.i1_diagnostic"
+          }
+        ],
+        "rationale": "The remaining decision is whether T1's nine failures are primarily a dynamic stabilization and actuator-authority problem in the known difficult angular sector or a coverage problem caused by the training range excluding radii 0.06-0.14 m. The existing 160-episode trajectory panel contains too few episodes for a reliable radius-conditioned distinction, although it already shows inner-band successes and failure-state shoulder-limit contact. A larger fresh panel preserves T1 as the reference and tests whether success and failure classes, entry velocity, action saturation, and limit margins change systematically across inner versus trained radii without revisiting the rejected raw-feasibility representation or branch-aware reward."
+      },
+      "result": {
+        "measurements": [
+          {
+            "args": [
+              "--model",
+              "research/checkpoints/candidates/d7080d95-e5e9-4077-a667-f75ddc16876b/t1/checkpoint-100352/model.zip",
+              "--episodes",
+              "400",
+              "--seed",
+              "6000",
+              "--output",
+              "research/evaluations/d7080d95-e5e9-4077-a667-f75ddc16876b/python-module-radius-dynamics-t1-400ep-seed6000.json"
+            ],
+            "instrument": "python_module",
+            "label": "T1 fresh radius and dynamics diagnostic",
+            "metrics": {
+              "evaluation_artifact": "research/evaluations/d7080d95-e5e9-4077-a667-f75ddc16876b/python-module-M5-1-python-module-radius-dynamics-t1-400ep-seed6000.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 7,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/measurement",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/seed",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/outcome_agreement_across_candidates",
+                    "type": "null"
+                  },
+                  {
+                    "entries": 1,
+                    "field_names": [
+                      "episodes",
+                      "episodes_detail",
+                      "group_summaries",
+                      "matched_success_pairs",
+                      "model",
+                      "seed",
+                      "success_percent",
+                      "successes"
+                    ],
+                    "path": "/candidates",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/matching_method",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/matching_method/successful_reference",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/matching_method/angle_scale_degrees",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/matching_method/radius_scale_cm",
+                    "type": "number"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "b5deae98a35cdf24dc1afa6312379ba7a17a1bb44d99e7047e64a23ea14d6d56"
+            },
+            "module": "research.lab.i1_diagnostic"
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": {
+          "campaign_lab_manifest": [
+            {
+              "fingerprint": "49229ad2c8f8ba788ed083b36c184c79a300096bd47226e0e1c397e466465342",
+              "path": "research/lab/i1_diagnostic.py"
+            }
+          ],
+          "campaign_lab_publication": {
+            "commit": "7b41f4ba8d46505f3628f62d7258366ccc54fd43",
+            "fingerprint": "93c4c569a3ab945c022f3753808a4963f08387b1f7d6e856c3f33597c9a762d7",
+            "manifest": [
+              {
+                "fingerprint": "49229ad2c8f8ba788ed083b36c184c79a300096bd47226e0e1c397e466465342",
+                "path": "research/lab/i1_diagnostic.py"
+              }
+            ]
+          },
+          "code_parent_commit": "5b5054c3d40d902b1f3ea076cf7d343fd5828a0e",
+          "effective_parameters": {
+            "algorithm": {
+              "name": "ppo"
+            },
+            "policy": {
+              "activation": "tanh",
+              "net_arch": [
+                64,
+                64
+              ]
+            },
+            "ppo": {
+              "batch_size": 64,
+              "ent_coef": 0.01,
+              "gae_lambda": 0.95,
+              "gamma": 0.99,
+              "learning_rate": 0.0003,
+              "n_steps": 1024
+            },
+            "training": {
+              "checkpoint_every_steps": 5000,
+              "n_envs": 1
+            }
+          },
+          "module_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "49229ad2c8f8ba788ed083b36c184c79a300096bd47226e0e1c397e466465342",
+              "path": "research/lab/i1_diagnostic.py"
+            }
+          ],
+          "module_paths": [
+            "research/lab/i1_diagnostic.py"
+          ],
+          "scientific_commit": null,
+          "scientific_manifest": [],
+          "scientific_paths": []
+        }
+      },
+      "session_id": "S8",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "evaluation_semantics": null,
+      "measurements": [
+        {
+          "args": [
+            "--model",
+            "research/checkpoints/candidates/d7080d95-e5e9-4077-a667-f75ddc16876b/t1/checkpoint-100352/model.zip",
+            "--episodes",
+            "400",
+            "--seed",
+            "6000",
+            "--output",
+            "research/evaluations/d7080d95-e5e9-4077-a667-f75ddc16876b/python-module-radius-dynamics-t1-400ep-seed6000.json"
+          ],
+          "artifact": "research/evaluations/d7080d95-e5e9-4077-a667-f75ddc16876b/python-module-radius-dynamics-t1-400ep-seed6000.json",
+          "instrument": "python_module",
+          "label": "T1 fresh radius and dynamics diagnostic",
+          "module": "research.lab.i1_diagnostic"
+        }
+      ],
+      "module_provenance": {
+        "campaign_lab_manifest": [
+          {
+            "fingerprint": "49229ad2c8f8ba788ed083b36c184c79a300096bd47226e0e1c397e466465342",
+            "path": "research/lab/i1_diagnostic.py"
+          }
+        ],
+        "campaign_lab_publication": {
+          "commit": "7b41f4ba8d46505f3628f62d7258366ccc54fd43",
+          "fingerprint": "93c4c569a3ab945c022f3753808a4963f08387b1f7d6e856c3f33597c9a762d7",
+          "manifest": [
+            {
+              "fingerprint": "49229ad2c8f8ba788ed083b36c184c79a300096bd47226e0e1c397e466465342",
+              "path": "research/lab/i1_diagnostic.py"
+            }
+          ]
+        },
+        "code_parent_commit": "5b5054c3d40d902b1f3ea076cf7d343fd5828a0e",
+        "effective_parameters": {
+          "algorithm": {
+            "name": "ppo"
+          },
+          "policy": {
+            "activation": "tanh",
+            "net_arch": [
+              64,
+              64
+            ]
+          },
+          "ppo": {
+            "batch_size": 64,
+            "ent_coef": 0.01,
+            "gae_lambda": 0.95,
+            "gamma": 0.99,
+            "learning_rate": 0.0003,
+            "n_steps": 1024
+          },
+          "training": {
+            "checkpoint_every_steps": 5000,
+            "n_envs": 1
+          }
+        },
+        "module_manifest": [
+          {
+            "exists": true,
+            "fingerprint": "49229ad2c8f8ba788ed083b36c184c79a300096bd47226e0e1c397e466465342",
+            "path": "research/lab/i1_diagnostic.py"
+          }
+        ],
+        "module_paths": [
+          "research/lab/i1_diagnostic.py"
+        ],
+        "scientific_commit": null,
+        "scientific_manifest": [],
+        "scientific_paths": []
+      },
+      "paired_comparisons": [],
+      "partial_results": [
+        {
+          "args": [
+            "--model",
+            "research/checkpoints/candidates/d7080d95-e5e9-4077-a667-f75ddc16876b/t1/checkpoint-100352/model.zip",
+            "--episodes",
+            "400",
+            "--seed",
+            "6000",
+            "--output",
+            "research/evaluations/d7080d95-e5e9-4077-a667-f75ddc16876b/python-module-radius-dynamics-t1-400ep-seed6000.json"
+          ],
+          "instrument": "python_module",
+          "label": "T1 fresh radius and dynamics diagnostic",
+          "metrics": {
+            "evaluation_artifact": "research/evaluations/d7080d95-e5e9-4077-a667-f75ddc16876b/python-module-M5-1-python-module-radius-dynamics-t1-400ep-seed6000.json",
+            "evaluation_artifact_contents": {
+              "scope": "structure_only",
+              "sections": [
+                {
+                  "entries": 7,
+                  "path": "",
+                  "type": "object"
+                },
+                {
+                  "path": "/schema_version",
+                  "type": "number"
+                },
+                {
+                  "path": "/measurement",
+                  "type": "string"
+                },
+                {
+                  "path": "/episodes",
+                  "type": "number"
+                },
+                {
+                  "path": "/seed",
+                  "type": "number"
+                },
+                {
+                  "path": "/outcome_agreement_across_candidates",
+                  "type": "null"
+                },
+                {
+                  "entries": 1,
+                  "field_names": [
+                    "episodes",
+                    "episodes_detail",
+                    "group_summaries",
+                    "matched_success_pairs",
+                    "model",
+                    "seed",
+                    "success_percent",
+                    "successes"
+                  ],
+                  "path": "/candidates",
+                  "type": "array"
+                },
+                {
+                  "entries": 3,
+                  "path": "/matching_method",
+                  "type": "object"
+                },
+                {
+                  "path": "/matching_method/successful_reference",
+                  "type": "string"
+                },
+                {
+                  "path": "/matching_method/angle_scale_degrees",
+                  "type": "number"
+                },
+                {
+                  "path": "/matching_method/radius_scale_cm",
+                  "type": "number"
+                }
+              ],
+              "truncated": false
+            },
+            "evaluation_artifact_fingerprint": "b5deae98a35cdf24dc1afa6312379ba7a17a1bb44d99e7047e64a23ea14d6d56"
+          },
+          "module": "research.lab.i1_diagnostic"
+        }
+      ],
+      "result": {
+        "measurements": [
+          {
+            "args": [
+              "--model",
+              "research/checkpoints/candidates/d7080d95-e5e9-4077-a667-f75ddc16876b/t1/checkpoint-100352/model.zip",
+              "--episodes",
+              "400",
+              "--seed",
+              "6000",
+              "--output",
+              "research/evaluations/d7080d95-e5e9-4077-a667-f75ddc16876b/python-module-radius-dynamics-t1-400ep-seed6000.json"
+            ],
+            "instrument": "python_module",
+            "label": "T1 fresh radius and dynamics diagnostic",
+            "metrics": {
+              "evaluation_artifact": "research/evaluations/d7080d95-e5e9-4077-a667-f75ddc16876b/python-module-M5-1-python-module-radius-dynamics-t1-400ep-seed6000.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 7,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/measurement",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/seed",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/outcome_agreement_across_candidates",
+                    "type": "null"
+                  },
+                  {
+                    "entries": 1,
+                    "field_names": [
+                      "episodes",
+                      "episodes_detail",
+                      "group_summaries",
+                      "matched_success_pairs",
+                      "model",
+                      "seed",
+                      "success_percent",
+                      "successes"
+                    ],
+                    "path": "/candidates",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/matching_method",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/matching_method/successful_reference",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/matching_method/angle_scale_degrees",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/matching_method/radius_scale_cm",
+                    "type": "number"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "b5deae98a35cdf24dc1afa6312379ba7a17a1bb44d99e7047e64a23ea14d6d56"
+            },
+            "module": "research.lab.i1_diagnostic"
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": {
+          "campaign_lab_manifest": [
+            {
+              "fingerprint": "49229ad2c8f8ba788ed083b36c184c79a300096bd47226e0e1c397e466465342",
+              "path": "research/lab/i1_diagnostic.py"
+            }
+          ],
+          "campaign_lab_publication": {
+            "commit": "7b41f4ba8d46505f3628f62d7258366ccc54fd43",
+            "fingerprint": "93c4c569a3ab945c022f3753808a4963f08387b1f7d6e856c3f33597c9a762d7",
+            "manifest": [
+              {
+                "fingerprint": "49229ad2c8f8ba788ed083b36c184c79a300096bd47226e0e1c397e466465342",
+                "path": "research/lab/i1_diagnostic.py"
+              }
+            ]
+          },
+          "code_parent_commit": "5b5054c3d40d902b1f3ea076cf7d343fd5828a0e",
+          "effective_parameters": {
+            "algorithm": {
+              "name": "ppo"
+            },
+            "policy": {
+              "activation": "tanh",
+              "net_arch": [
+                64,
+                64
+              ]
+            },
+            "ppo": {
+              "batch_size": 64,
+              "ent_coef": 0.01,
+              "gae_lambda": 0.95,
+              "gamma": 0.99,
+              "learning_rate": 0.0003,
+              "n_steps": 1024
+            },
+            "training": {
+              "checkpoint_every_steps": 5000,
+              "n_envs": 1
+            }
+          },
+          "module_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "49229ad2c8f8ba788ed083b36c184c79a300096bd47226e0e1c397e466465342",
+              "path": "research/lab/i1_diagnostic.py"
+            }
+          ],
+          "module_paths": [
+            "research/lab/i1_diagnostic.py"
+          ],
+          "scientific_commit": null,
+          "scientific_manifest": [],
+          "scientific_paths": []
+        }
+      },
+      "task_reference_contract": null
+    },
+    "failure": null,
+    "id": "M5",
+    "inquiry_id": null,
+    "kind": "measurement",
+    "progress": "completed",
+    "request": {
+      "measurement": {
+        "description": "Run the unchanged T1:checkpoint-100352 policy on 400 fresh official-distribution episodes and record radius-conditioned reach and hold outcomes together with joint-limit, velocity, Jacobian, and action diagnostics.",
+        "measurements": [
+          {
+            "args": [
+              "--model",
+              "research/checkpoints/candidates/d7080d95-e5e9-4077-a667-f75ddc16876b/t1/checkpoint-100352/model.zip",
+              "--episodes",
+              "400",
+              "--seed",
+              "6000",
+              "--output",
+              "research/evaluations/d7080d95-e5e9-4077-a667-f75ddc16876b/python-module-radius-dynamics-t1-400ep-seed6000.json"
+            ],
+            "artifact": "research/evaluations/d7080d95-e5e9-4077-a667-f75ddc16876b/python-module-radius-dynamics-t1-400ep-seed6000.json",
+            "instrument": "python_module",
+            "label": "T1 fresh radius and dynamics diagnostic",
+            "module": "research.lab.i1_diagnostic"
+          }
+        ],
+        "rationale": "The remaining decision is whether T1's nine failures are primarily a dynamic stabilization and actuator-authority problem in the known difficult angular sector or a coverage problem caused by the training range excluding radii 0.06-0.14 m. The existing 160-episode trajectory panel contains too few episodes for a reliable radius-conditioned distinction, although it already shows inner-band successes and failure-state shoulder-limit contact. A larger fresh panel preserves T1 as the reference and tests whether success and failure classes, entry velocity, action saturation, and limit margins change systematically across inner versus trained radii without revisiting the rejected raw-feasibility representation or branch-aware reward."
+      }
+    },
+    "request_fingerprint": "6406b7880b81d0e199f487a7f534f693ac0872d40500d7e84c170c5da7b9d33a",
+    "session_id": "S8",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No candidate has working, best-known, or retained status. T1:checkpoint-100352 remains the strongest measured baseline at 151/160 under M1 and M4; T1:checkpoint-120832 is tied at 151/160 under M1; T2:checkpoint-120832 achieved 80/160 under M3; T3:checkpoint-120832 achieved 28/160 under M4. Preserve T1 as the strongest measured baseline without assigning a model role.",
     "completed_operations": [
@@ -5007,6 +5524,21 @@
     "path": "research/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "a2846342-a5fb-4c93-b46e-59c4041d1705",
+    "id": "S8",
+    "inquiry_id": null,
+    "kind": "goal_review",
+    "objective": "Reassess the scientific direction toward the human goal using completed evidence. You may request measurements to resolve an uncertainty or develop the method before committing to an inquiry. Decide whether to request official assessment, open one bounded goal-linked inquiry, or conclude that no credible route remains.",
+    "operation_ids": [
+      "M5"
+    ],
+    "scientific_parent_commit": "5b5054c3d40d902b1f3ea076cf7d343fd5828a0e"
+  },
   "terminal_state": null
 }
