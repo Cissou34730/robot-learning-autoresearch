@@ -23,7 +23,6 @@ HOLD_EXIT_FORFEIT_FRACTION = 0.0
 OUTSIDE_BAND_WIDTH = 0.01
 OUTSIDE_BAND_PENALTY = 0.1
 HOLD_COMPLETE_BONUS = 50.0
-IK_PROGRESS_COEFFICIENT = 2.0
 
 
 @dataclass(frozen=True)
@@ -54,8 +53,6 @@ def reach_reward(
     previous_held_steps: int = 0,
     hold_steps_required: int = 100,
     penalize_outside: bool = False,
-    previous_ik_error: float | None = None,
-    current_ik_error: float | None = None,
 ) -> RewardResult:
     progress = PROGRESS_COEFFICIENT * (previous_distance - current_distance)
     reward = progress
@@ -64,15 +61,6 @@ def reach_reward(
         previous_distance
     )
     reward += closeness
-
-    if (previous_ik_error is None) != (current_ik_error is None):
-        raise ValueError("IK errors must be provided as a pair")
-    ik_progress = 0.0
-    if previous_ik_error is not None and current_ik_error is not None:
-        ik_progress = IK_PROGRESS_COEFFICIENT * (
-            previous_ik_error - current_ik_error
-        )
-        reward += ik_progress
 
     current_hold_capital = _hold_progress_potential(held_steps, hold_steps_required)
     previous_hold_capital = _hold_progress_potential(
@@ -112,7 +100,6 @@ def reach_reward(
         components={
             "progress": float(progress),
             "closeness": float(closeness),
-            "ik_progress": float(ik_progress),
             "hold_progress": float(hold_progress),
             "outside_band": float(outside_band),
             "hold_complete": float(hold_complete),
