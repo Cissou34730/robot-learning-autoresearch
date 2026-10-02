@@ -2477,13 +2477,20 @@
   "human_goal": {
     "source": "research/scenario.md"
   },
-  "last_verdict": "official_assessment_requested",
+  "last_verdict": "official assessment goal not reached; success 97.0%; 200 episodes",
   "model_roles": {
     "best_known": "T1:checkpoint-100352",
     "retained": {},
     "working": null
   },
-  "official_assessment": null,
+  "official_assessment": {
+    "artifact": "research/checkpoints/retained/d7080d95-e5e9-4077-a667-f75ddc16876b/t1-cada55eb5-1fd33602b0dd5f3f2d8c3e006fe9ec06ce48f645068a1d3557aedfd4696437a4",
+    "completed_at": "2026-10-02T21:54:36Z",
+    "fingerprint": "1fd33602b0dd5f3f2d8c3e006fe9ec06ce48f645068a1d3557aedfd4696437a4",
+    "model": "T1:checkpoint-100352",
+    "status": "failed",
+    "summary": "goal not reached; success 97.0%; 200 episodes"
+  },
   "operation_events": [
     {
       "completed_at": "2026-10-02T20:37:28Z",
@@ -5176,7 +5183,7 @@
       "supersedes": null
     },
     {
-      "completed_at": "2026-10-02T21:53:40Z",
+      "completed_at": "2026-10-02T21:54:36Z",
       "error": null,
       "id": "E15",
       "inquiry_id": null,
@@ -5187,7 +5194,7 @@
       },
       "result": {
         "model": "T1:checkpoint-100352",
-        "status": "official_assessment_requested"
+        "status": "official_assessment_failed"
       },
       "session_id": "S8",
       "status": "completed",
@@ -5238,6 +5245,6 @@
   "terminal_state": {
     "model": "T1:checkpoint-100352",
     "reason": "T1:checkpoint-100352 is the assigned best-known candidate. M5 measured 393/400 successes (98.25%) on a fresh official-distribution diagnostic, with failures distributed across radius bins rather than concentrated in the untrained inner band, while the failure states remained consistent with the established negative-angle shoulder-limit mechanism. This is sufficient evidence to assess the frozen candidate against the human goal on the protected 200-episode official panel; no further exploratory intervention is justified before that direct measurement.",
-    "status": "official_assessment_requested"
+    "status": "official_assessment_failed"
   }
 }
