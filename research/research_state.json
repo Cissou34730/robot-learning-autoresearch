@@ -1630,44 +1630,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "open",
-        "inquiry": {
-          "closure_condition": "Close when one bounded measurement-and-intervention cycle either produces a candidate with evidence of reliable outer-radius first reach while preserving inner-radius hold behavior, or establishes that the tested route does not materially improve the outer-radius failure and redirects the campaign to a different credible method.",
-          "goal_connection": "The current candidate succeeds on inner radii but reaches only 18% of 14-18 cm targets and 0% of 18-20 cm targets, leaving the campaign far below the 98% complete-hold objective. Recovering outer-radius first reach is therefore necessary before official assessment can be credible.",
-          "id": "I2",
-          "opened_in_session": "S5",
-          "question": "Can a goal-linked change recover reliable first reach for official targets at 14-20 cm, and do trajectory measurements distinguish inadequate transient braking and stabilization near extended postures from PPO failing to learn the outer-radius reach under the current reward and representation?",
-          "rationale": "M3 and E5 show that failures are concentrated before first reach, with only 7 of 200 episodes interrupted after entering tolerance. The plant map establishes local kinematic alternatives and acceleration margin but does not identify the policy mechanism. The inquiry will preserve the official 6-20 cm target distribution and uninterrupted 100-step hold criterion while separating transient stabilization limits from optimization, conditioning, representation, or reward-shaping failure.",
-          "reframes": []
-        }
-      },
-      "result": {
-        "action": "open",
-        "inquiry_id": "I2",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E7",
-    "inquiry_id": null,
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "open",
-        "closure_condition": "Close when one bounded measurement-and-intervention cycle either produces a candidate with evidence of reliable outer-radius first reach while preserving inner-radius hold behavior, or establishes that the tested route does not materially improve the outer-radius failure and redirects the campaign to a different credible method.",
-        "goal_connection": "The current candidate succeeds on inner radii but reaches only 18% of 14-18 cm targets and 0% of 18-20 cm targets, leaving the campaign far below the 98% complete-hold objective. Recovering outer-radius first reach is therefore necessary before official assessment can be credible.",
-        "question": "Can a goal-linked change recover reliable first reach for official targets at 14-20 cm, and do trajectory measurements distinguish inadequate transient braking and stabilization near extended postures from PPO failing to learn the outer-radius reach under the current reward and representation?",
-        "rationale": "M3 and E5 show that failures are concentrated before first reach, with only 7 of 200 episodes interrupted after entering tolerance. The plant map establishes local kinematic alternatives and acceleration margin but does not identify the policy mechanism. The inquiry will preserve the official 6-20 cm target distribution and uninterrupted 100-step hold criterion while separating transient stabilization limits from optimization, conditioning, representation, or reward-shaping failure."
-      }
-    },
-    "request_fingerprint": "2003d76dddc1021a5081bb4824fb9a253d7dc39db083ec398e1c751b2d0c67e6",
-    "session_id": "S5",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T1 produced archived candidates, with T1:checkpoint-120832 evaluated by M3. No working, best-known, or retained role has been assigned because the candidate is 60% on development evaluation and is not credible evidence for the 98% goal.",
     "completed_operations": [
