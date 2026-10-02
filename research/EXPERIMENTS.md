@@ -15,3 +15,4 @@
 | E7 | inquiry | I2 | completed |
 | E8 | checkpoint | - | checkpointed |
 | M4 | measurement | I2 | completed |
+| T2 | training | I2 | completed |
