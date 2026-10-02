@@ -1649,7 +1649,7 @@
     }
   },
   "counters": {
-    "event": 8,
+    "event": 9,
     "inquiry": 2,
     "measurement": 3,
     "session": 5,
@@ -1658,7 +1658,7 @@
   "human_goal": {
     "source": "research/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -3332,31 +3332,181 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-02T21:24:54Z",
+      "error": null,
+      "id": "E9",
+      "inquiry_id": "I2",
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "No candidate has working, best-known, or retained status. T1:checkpoint-100352 and T1:checkpoint-120832 remain tied under M1 at 151/160 (94.375%); T2:checkpoint-120832 is not competitive at 80/160 (50.0%) under M3.",
+        "completed_operations": [
+          "T2",
+          "M3",
+          "E8"
+        ],
+        "cumulative_resource_use": "Two fresh 120000-step training operations completed at 120832 rollout-rounded steps: T1 baseline and T2 limit-aware representation intervention. M1 measured two T1 checkpoints over 160 shared episodes; M2 replayed both T1 candidates over the same 160 seeds with branch, limit, Jacobian, entry, and hold diagnostics; M3 measured T2:checkpoint-120832 and the T1 baseline over the same 160 seeds. E2 opened I1, E4 closed I1, E6 opened I2, and E8 closed I2. No official assessment has been requested.",
+        "current_goal_gap": "The baseline has nine deterministic development failures: six non-entry failures and three interrupted holds. The intervention candidate has 80 failures, including 74 non-entry and 6 interrupted holds across the angular panel. The official 200-episode result remains unmeasured, and no candidate has working, best-known, or retained status.",
+        "current_synthesis": "T1 learned on the 0.14-0.20 m training band, but later checkpoints regressed; M1 showed checkpoint-100352 and checkpoint-120832 agreed on all 160 episodes, ruling out checkpoint timing as the current lever. M2 found the nine baseline failures in the -119 to -151 degree sector across mixed radii. E4 identified a limit-and-branch mechanism: all successes and failures selected the open branch, failed targets had open-branch shoulder solutions beyond the -170 degree limit, the folded branch remained feasible, and both failure classes reached negative actual shoulder margin; Jacobian conditioning was not a common discriminator. T2 tested signed current and target-branch joint-limit margins plus explicit branch-feasibility flags with a fresh 120000-step run. M3 found 80/160 success versus 151/160 for the paired T1 baseline, with T1 winning all 71 discordant shared episodes. E8 therefore closed I2 negatively: the raw feature intervention produced a broad failure mode rather than a localized repair, so further tuning of this representation is not supported. Claims remain limited to the deterministic 160-episode panel, the paired candidates, and the tested recipe.",
+        "decision_frontier": "I2 is closed with a negative result. The next fresh session must select a different goal-linked intervention rather than retuning the rejected raw margin-and-feasibility representation. The unresolved practical question is which remaining mechanism or method change can raise complete uninterrupted success from the 151/160 baseline toward the 196/200 human threshold without assuming that these added features are usable by the current policy recipe.",
+        "evidence_references": [
+          "T1",
+          "M1",
+          "E2",
+          "M2",
+          "E4",
+          "E6",
+          "T2",
+          "M3",
+          "E8"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 successes on the official 200-episode panel. The strongest measured baseline remains T1:checkpoint-100352 at 151/160 (94.375%) on the deterministic development panel, while the tested I2 intervention fell to 80/160 (50.0%); neither candidate is justified for official assessment.",
+        "next_direction_or_closure": "Start the next goal-review session with the negative I2 result and its claim limits. Do not request official assessment. Choose and justify a distinct intervention or discriminating measurement from the remaining unresolved goal gap, preserving T1 as the strongest measured baseline without assigning a model role until a candidate is explicitly supported."
+      },
+      "result": {
+        "session_id": "S5",
+        "status": "checkpointed"
+      },
+      "session_id": "S5",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "50c6dbdeb7224cb4a643a487ab5bd75a1efe9fc7",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "No candidate has working, best-known, or retained status. T1:checkpoint-100352 and T1:checkpoint-120832 remain tied under M1 at 151/160 (94.375%); T2:checkpoint-120832 is not competitive at 80/160 (50.0%) under M3.",
+        "completed_operations": [
+          "T2",
+          "M3",
+          "E8"
+        ],
+        "cumulative_resource_use": "Two fresh 120000-step training operations completed at 120832 rollout-rounded steps: T1 baseline and T2 limit-aware representation intervention. M1 measured two T1 checkpoints over 160 shared episodes; M2 replayed both T1 candidates over the same 160 seeds with branch, limit, Jacobian, entry, and hold diagnostics; M3 measured T2:checkpoint-120832 and the T1 baseline over the same 160 seeds. E2 opened I1, E4 closed I1, E6 opened I2, and E8 closed I2. No official assessment has been requested.",
+        "current_goal_gap": "The baseline has nine deterministic development failures: six non-entry failures and three interrupted holds. The intervention candidate has 80 failures, including 74 non-entry and 6 interrupted holds across the angular panel. The official 200-episode result remains unmeasured, and no candidate has working, best-known, or retained status.",
+        "current_synthesis": "T1 learned on the 0.14-0.20 m training band, but later checkpoints regressed; M1 showed checkpoint-100352 and checkpoint-120832 agreed on all 160 episodes, ruling out checkpoint timing as the current lever. M2 found the nine baseline failures in the -119 to -151 degree sector across mixed radii. E4 identified a limit-and-branch mechanism: all successes and failures selected the open branch, failed targets had open-branch shoulder solutions beyond the -170 degree limit, the folded branch remained feasible, and both failure classes reached negative actual shoulder margin; Jacobian conditioning was not a common discriminator. T2 tested signed current and target-branch joint-limit margins plus explicit branch-feasibility flags with a fresh 120000-step run. M3 found 80/160 success versus 151/160 for the paired T1 baseline, with T1 winning all 71 discordant shared episodes. E8 therefore closed I2 negatively: the raw feature intervention produced a broad failure mode rather than a localized repair, so further tuning of this representation is not supported. Claims remain limited to the deterministic 160-episode panel, the paired candidates, and the tested recipe.",
+        "decision_frontier": "I2 is closed with a negative result. The next fresh session must select a different goal-linked intervention rather than retuning the rejected raw margin-and-feasibility representation. The unresolved practical question is which remaining mechanism or method change can raise complete uninterrupted success from the 151/160 baseline toward the 196/200 human threshold without assuming that these added features are usable by the current policy recipe.",
+        "evidence_references": [
+          "T1",
+          "M1",
+          "E2",
+          "M2",
+          "E4",
+          "E6",
+          "T2",
+          "M3",
+          "E8"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 successes on the official 200-episode panel. The strongest measured baseline remains T1:checkpoint-100352 at 151/160 (94.375%) on the deterministic development panel, while the tested I2 intervention fell to 80/160 (50.0%); neither candidate is justified for official assessment.",
+        "inquiry_id": "I2",
+        "next_direction_or_closure": "Start the next goal-review session with the negative I2 result and its claim limits. Do not request official assessment. Choose and justify a distinct intervention or discriminating measurement from the remaining unresolved goal gap, preserving T1 as the strongest measured baseline without assigning a model role until a candidate is explicitly supported.",
+        "session_id": "S5"
+      },
+      "presentation": {
+        "backend_session_id": "8858695c-3da9-481f-9076-cfec0b9a5cb2",
+        "campaign_id": "d7080d95-e5e9-4077-a667-f75ddc16876b",
+        "campaign_usage": "19m26s | 42.33 AIU | prompt 7.3m (88% cached) | output 57.9k",
+        "session_id": "S5",
+        "session_kind": "inquiry",
+        "session_usage": "4m19s | 10.62 AIU | prompt 2.3m (91% cached) | output 10.6k"
+      },
+      "result": {
+        "session_id": "S5",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "5c71260b81c59d988e869e84ebab986ad4cd4427",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E9",
+    "inquiry_id": "I2",
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "No candidate has working, best-known, or retained status. T1:checkpoint-100352 and T1:checkpoint-120832 remain tied under M1 at 151/160 (94.375%); T2:checkpoint-120832 is not competitive at 80/160 (50.0%) under M3.",
+        "completed_operations": [
+          "T2",
+          "M3",
+          "E8"
+        ],
+        "cumulative_resource_use": "Two fresh 120000-step training operations completed at 120832 rollout-rounded steps: T1 baseline and T2 limit-aware representation intervention. M1 measured two T1 checkpoints over 160 shared episodes; M2 replayed both T1 candidates over the same 160 seeds with branch, limit, Jacobian, entry, and hold diagnostics; M3 measured T2:checkpoint-120832 and the T1 baseline over the same 160 seeds. E2 opened I1, E4 closed I1, E6 opened I2, and E8 closed I2. No official assessment has been requested.",
+        "current_goal_gap": "The baseline has nine deterministic development failures: six non-entry failures and three interrupted holds. The intervention candidate has 80 failures, including 74 non-entry and 6 interrupted holds across the angular panel. The official 200-episode result remains unmeasured, and no candidate has working, best-known, or retained status.",
+        "current_synthesis": "T1 learned on the 0.14-0.20 m training band, but later checkpoints regressed; M1 showed checkpoint-100352 and checkpoint-120832 agreed on all 160 episodes, ruling out checkpoint timing as the current lever. M2 found the nine baseline failures in the -119 to -151 degree sector across mixed radii. E4 identified a limit-and-branch mechanism: all successes and failures selected the open branch, failed targets had open-branch shoulder solutions beyond the -170 degree limit, the folded branch remained feasible, and both failure classes reached negative actual shoulder margin; Jacobian conditioning was not a common discriminator. T2 tested signed current and target-branch joint-limit margins plus explicit branch-feasibility flags with a fresh 120000-step run. M3 found 80/160 success versus 151/160 for the paired T1 baseline, with T1 winning all 71 discordant shared episodes. E8 therefore closed I2 negatively: the raw feature intervention produced a broad failure mode rather than a localized repair, so further tuning of this representation is not supported. Claims remain limited to the deterministic 160-episode panel, the paired candidates, and the tested recipe.",
+        "decision_frontier": "I2 is closed with a negative result. The next fresh session must select a different goal-linked intervention rather than retuning the rejected raw margin-and-feasibility representation. The unresolved practical question is which remaining mechanism or method change can raise complete uninterrupted success from the 151/160 baseline toward the 196/200 human threshold without assuming that these added features are usable by the current policy recipe.",
+        "evidence_references": [
+          "T1",
+          "M1",
+          "E2",
+          "M2",
+          "E4",
+          "E6",
+          "T2",
+          "M3",
+          "E8"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 successes on the official 200-episode panel. The strongest measured baseline remains T1:checkpoint-100352 at 151/160 (94.375%) on the deterministic development panel, while the tested I2 intervention fell to 80/160 (50.0%); neither candidate is justified for official assessment.",
+        "next_direction_or_closure": "Start the next goal-review session with the negative I2 result and its claim limits. Do not request official assessment. Choose and justify a distinct intervention or discriminating measurement from the remaining unresolved goal gap, preserving T1 as the strongest measured baseline without assigning a model role until a candidate is explicitly supported."
+      }
+    },
+    "request_fingerprint": "a2b358ef001c32c4e459af1dc5f6bc6535b187f1d4456fe38fa8209b672ce465",
+    "session_id": "S5",
+    "supersedes": null
+  },
   "pi_checkpoint": {
-    "candidates_and_roles": "No candidate has working, best-known, or retained status. T1:checkpoint-100352 and T1:checkpoint-120832 remain tied under M1 at 94.375% on the development panel and are not goal-qualified.",
+    "candidates_and_roles": "No candidate has working, best-known, or retained status. T1:checkpoint-100352 and T1:checkpoint-120832 remain tied under M1 at 151/160 (94.375%); T2:checkpoint-120832 is not competitive at 80/160 (50.0%) under M3.",
     "completed_operations": [
-      "E6"
+      "T2",
+      "M3",
+      "E8"
     ],
-    "cumulative_resource_use": "One fresh 120000-step training operation completed at 120832 rollout-rounded steps; M1 evaluated two tied candidates over 160 shared episodes each; M2 replayed those candidates over the same 160 shared seeds with branch, limit, Jacobian, entry, and hold diagnostics; E2 opened I1, E4 closed I1, and E6 opened I2. No official assessment has been requested.",
-    "current_goal_gap": "Nine failures remain on the deterministic 160-episode development panel: six non-entry failures and three interrupted holds. The official 200-episode result remains unmeasured, and no candidate is goal-qualified or assigned a best-known role.",
-    "current_synthesis": "Observed evidence establishes that T1 learned on the 0.14-0.20 m training band but later checkpoints regressed, and M1 found checkpoint timing irrelevant because checkpoint-100352 and checkpoint-120832 agreed on all 160 episodes. M2 found all nine failures in the -119 to -151 degree sector across mixed radii. E4 supports a limit-and-branch mechanism: the open branch was selected in all successes and failures, but every failed target had an open-branch shoulder solution beyond the -170 degree limit; the folded branch remained feasible, and both failure classes reached negative actual shoulder margin. Jacobian conditioning was not a common discriminator. The competing explanation that checkpoint timing or branch label alone is causal is contradicted by M1 and E4; the remaining method uncertainty is whether a policy can exploit explicit feasibility and margin features. These claims remain limited to the deterministic 160-episode panel and the two baseline candidates; I2 has only been opened and has not tested improvement.",
-    "decision_frontier": "The mechanism inquiry is resolved for intervention selection, but policy improvement is untested. The next discriminating result is whether one fresh 120000-step training run with signed current and target-branch joint-limit margins plus explicit branch-feasibility flags increases complete uninterrupted success on the same deterministic development panel, including both failure classes, without regressions.",
+    "cumulative_resource_use": "Two fresh 120000-step training operations completed at 120832 rollout-rounded steps: T1 baseline and T2 limit-aware representation intervention. M1 measured two T1 checkpoints over 160 shared episodes; M2 replayed both T1 candidates over the same 160 seeds with branch, limit, Jacobian, entry, and hold diagnostics; M3 measured T2:checkpoint-120832 and the T1 baseline over the same 160 seeds. E2 opened I1, E4 closed I1, E6 opened I2, and E8 closed I2. No official assessment has been requested.",
+    "current_goal_gap": "The baseline has nine deterministic development failures: six non-entry failures and three interrupted holds. The intervention candidate has 80 failures, including 74 non-entry and 6 interrupted holds across the angular panel. The official 200-episode result remains unmeasured, and no candidate has working, best-known, or retained status.",
+    "current_synthesis": "T1 learned on the 0.14-0.20 m training band, but later checkpoints regressed; M1 showed checkpoint-100352 and checkpoint-120832 agreed on all 160 episodes, ruling out checkpoint timing as the current lever. M2 found the nine baseline failures in the -119 to -151 degree sector across mixed radii. E4 identified a limit-and-branch mechanism: all successes and failures selected the open branch, failed targets had open-branch shoulder solutions beyond the -170 degree limit, the folded branch remained feasible, and both failure classes reached negative actual shoulder margin; Jacobian conditioning was not a common discriminator. T2 tested signed current and target-branch joint-limit margins plus explicit branch-feasibility flags with a fresh 120000-step run. M3 found 80/160 success versus 151/160 for the paired T1 baseline, with T1 winning all 71 discordant shared episodes. E8 therefore closed I2 negatively: the raw feature intervention produced a broad failure mode rather than a localized repair, so further tuning of this representation is not supported. Claims remain limited to the deterministic 160-episode panel, the paired candidates, and the tested recipe.",
+    "decision_frontier": "I2 is closed with a negative result. The next fresh session must select a different goal-linked intervention rather than retuning the rejected raw margin-and-feasibility representation. The unresolved practical question is which remaining mechanism or method change can raise complete uninterrupted success from the 151/160 baseline toward the 196/200 human threshold without assuming that these added features are usable by the current policy recipe.",
     "evidence_references": [
       "T1",
       "M1",
       "E2",
       "M2",
       "E4",
-      "E6"
+      "E6",
+      "T2",
+      "M3",
+      "E8"
     ],
-    "human_goal_connection": "The human goal requires at least 196 successes on the official 200-episode panel. The tied baseline candidates achieve 151 of 160 development episodes (94.375%), so the policy is below goal and there is no basis for official assessment. I2 tests a representation intervention directly selected from the diagnosed branch-and-limit failure mechanism.",
-    "inquiry_id": null,
-    "next_direction_or_closure": "The goal-review session has opened I2 and now ends. In the fresh I2 inquiry session, submit one training request at the maintainer's exact 120000-step allocation using the implemented limit-aware branch-feasibility observation, then measure the resulting candidate on the same deterministic development panel before considering official assessment.",
-    "scientific_commit": "0727d64d7e4d636505882a8deec674b89ad5f31f",
-    "session_id": "S4"
+    "human_goal_connection": "The human goal requires at least 196 successes on the official 200-episode panel. The strongest measured baseline remains T1:checkpoint-100352 at 151/160 (94.375%) on the deterministic development panel, while the tested I2 intervention fell to 80/160 (50.0%); neither candidate is justified for official assessment.",
+    "inquiry_id": "I2",
+    "next_direction_or_closure": "Start the next goal-review session with the negative I2 result and its claim limits. Do not request official assessment. Choose and justify a distinct intervention or discriminating measurement from the remaining unresolved goal gap, preserving T1 as the strongest measured baseline without assigning a model role until a candidate is explicitly supported.",
+    "scientific_commit": "5c71260b81c59d988e869e84ebab986ad4cd4427",
+    "session_id": "S5"
   },
   "schema_version": 6,
   "scientific_model": {
@@ -3364,23 +3514,6 @@
     "path": "research/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "8858695c-3da9-481f-9076-cfec0b9a5cb2",
-    "id": "S5",
-    "inquiry_id": "I2",
-    "kind": "inquiry",
-    "objective": "Advance I2 toward an evidence-supported answer to its scientific question: Does exposing signed current and target-branch joint-limit margins together with explicit branch-feasibility flags enable a policy trained on the existing 0.14-0.20 m band to avoid the observed infeasible open branch and improve complete uninterrupted episode success?",
-    "operation_ids": [
-      "T2",
-      "M3",
-      "E8"
-    ],
-    "scientific_parent_commit": "50c6dbdeb7224cb4a643a487ab5bd75a1efe9fc7"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
