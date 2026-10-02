@@ -413,6 +413,7 @@ its scientific breadth or achieve its result.
 
 | Item | Status / boundary |
 |---|---|
+| Shorter startup training | First next change; tactical and not implemented. Permit the PI to request fewer steps during startup, with the maintainer's allocation (120,000 by default) as the per-run request ceiling, never a larger request. Training remains optional; inquiry allocations are unchanged. Whether to retain rollout rounding or enforce a strict executed-step ceiling remains to be decided before implementation. |
 | Reliable measurement-evidence inspection | Discoverability provisionally retained. In `48993cfd`, M5 feedback supplied both artifacts, diagnostic paths, radius/first-reach fields, and full inventories, but the PI closed without inspecting the strata and incorrectly claimed no outer-reaching gain. Decision-linked inspection remains unresolved. |
 | Context flooding | Brief-only compaction implemented below: 57.39% smaller on the completed campaign, with all candidates and inventory references preserved. Campaign benefit remains unassessed; prompt replay and SDK output handling are unchanged and remain separate possible work. |
 | Training-shaped inquiry commitments and scientific continuity | Open. Verified subcase: aggregate regression mistaken for mechanism failure, losing subgroup gains and tradeoffs in closure and the next inquiry. The isolated question-based inquiry-objective experiment below is implemented for observation; it is not a demonstrated solution. Startup clarification is retained, and scientific-model framing remains an unproven lead. |
@@ -421,6 +422,10 @@ its scientific breadth or achieve its result.
 | Explicit protection of the old protocol log | Still unimplemented; read-access policy is a separate decision. |
 | Console clarity and maintainer-file read controls | Separate deferred work; read restrictions are not the established remedy for the present evidence-inspection failure. |
 | Publication/recovery, maintainer training allocation, and goal-review role availability | Implemented; not active repair items. |
+
+The startup allocation change is tactical, not a solution to scientific
+continuity. The maintainer plans another change as well; that additional
+change has not yet been selected.
 
 Hypothesis registries, premise-status fields, mandatory reasoning checklists,
 reference-panel reuse, submission-handoff clarification, and explicit
