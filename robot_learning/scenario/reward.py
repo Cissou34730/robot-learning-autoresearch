@@ -13,6 +13,8 @@ from dataclasses import dataclass
 
 import numpy as np
 
+from robot_learning.robots.two_joint_arm import FOREARM_LENGTH, UPPER_ARM_LENGTH
+
 PROGRESS_COEFFICIENT = 10.0
 CLOSENESS_COEFFICIENT = 4.0
 CLOSENESS_LENGTH_SCALE = 0.05
@@ -23,6 +25,8 @@ HOLD_EXIT_FORFEIT_FRACTION = 0.0
 OUTSIDE_BAND_WIDTH = 0.01
 OUTSIDE_BAND_PENALTY = 0.1
 HOLD_COMPLETE_BONUS = 50.0
+BRANCH_POTENTIAL_COEFFICIENT = 5.0
+BRANCH_DISTANCE_SCALE = 0.5
 
 
 @dataclass(frozen=True)
@@ -44,6 +48,67 @@ def _hold_progress_potential(held_steps: int, hold_steps_required: int) -> float
     return HOLD_PROGRESS_BONUS * float(progress**HOLD_PROGRESS_EXPONENT)
 
 
+def branch_feasibility_potential(data) -> float:
+    def wrap_to_pi(angle: float) -> float:
+        return float((angle + np.pi) % (2.0 * np.pi) - np.pi)
+
+    target_x = float(data.mocap_pos[0][0])
+    target_y = float(data.mocap_pos[0][1])
+    cos_elbow = (
+        target_x**2 + target_y**2 - UPPER_ARM_LENGTH**2 - FOREARM_LENGTH**2
+    ) / (2.0 * UPPER_ARM_LENGTH * FOREARM_LENGTH)
+    elbow_open = float(np.arccos(np.clip(cos_elbow, -1.0, 1.0)))
+    target_angle = float(np.arctan2(target_y, target_x))
+    branches = []
+    for elbow in (elbow_open, -elbow_open):
+        shoulder = target_angle - np.arctan2(
+            FOREARM_LENGTH * np.sin(elbow),
+            UPPER_ARM_LENGTH + FOREARM_LENGTH * np.cos(elbow),
+        )
+        branches.append(
+            (
+                wrap_to_pi(shoulder),
+                elbow,
+            )
+        )
+
+    joint_ranges = np.asarray(data.model.jnt_range[:2], dtype=np.float64)
+    branch_scores: list[float] = []
+    branch_margins: list[float] = []
+    for branch in branches:
+        errors = [
+            wrap_to_pi(float(target) - float(actual))
+            for target, actual in zip(branch, data.qpos, strict=True)
+        ]
+        branch_scores.append(
+            float(
+                np.exp(
+                    -np.linalg.norm(errors) / BRANCH_DISTANCE_SCALE
+                )
+            )
+        )
+        branch_margins.append(
+            min(
+                min(float(joint) - float(limits[0]), float(limits[1]) - float(joint))
+                for joint, limits in zip(branch, joint_ranges, strict=True)
+            )
+        )
+
+    feasible_scores = [
+        score for score, margin in zip(branch_scores, branch_margins, strict=True)
+        if margin >= 0.0
+    ]
+    infeasible_scores = [
+        score for score, margin in zip(branch_scores, branch_margins, strict=True)
+        if margin < 0.0
+    ]
+    if not feasible_scores or not infeasible_scores:
+        return 0.0
+    return BRANCH_POTENTIAL_COEFFICIENT * (
+        max(feasible_scores) - max(infeasible_scores)
+    )
+
+
 def reach_reward(
     previous_distance: float,
     current_distance: float,
@@ -53,6 +118,8 @@ def reach_reward(
     previous_held_steps: int = 0,
     hold_steps_required: int = 100,
     penalize_outside: bool = False,
+    previous_branch_potential: float = 0.0,
+    current_branch_potential: float = 0.0,
 ) -> RewardResult:
     progress = PROGRESS_COEFFICIENT * (previous_distance - current_distance)
     reward = progress
@@ -61,6 +128,9 @@ def reach_reward(
         previous_distance
     )
     reward += closeness
+
+    branch_shaping = current_branch_potential - previous_branch_potential
+    reward += branch_shaping
 
     current_hold_capital = _hold_progress_potential(held_steps, hold_steps_required)
     previous_hold_capital = _hold_progress_potential(
@@ -100,6 +170,7 @@ def reach_reward(
         components={
             "progress": float(progress),
             "closeness": float(closeness),
+            "branch_shaping": float(branch_shaping),
             "hold_progress": float(hold_progress),
             "outside_band": float(outside_band),
             "hold_complete": float(hold_complete),
