@@ -1769,38 +1769,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I1",
-        "outcome": "M2 identifies a branch-and-limit mechanism that explains both failure classes on the deterministic panel. All 151 successful episodes and all nine failed episodes select the open IK branch at the diagnostic state, but every failed target in the -119 to -151 degree sector has an open-branch shoulder target outside the -170 degree limit, while the folded branch is limit-feasible. The failures reach negative actual shoulder limit margin in both non-entry and interrupted-hold classes. Matched successful episodes select the same open branch but retain nonnegative shoulder margin, separating the mechanism from branch label alone. Jacobian conditioning is not a common discriminator: it is lower than successful matches for non-entry cases and higher for some interrupted holds. The checkpoint pair agrees on all episode outcomes, so the mechanism is stable across candidates. The next goal-linked intervention is a fresh 120000-step training run with branch feasibility and joint-limit margin made explicit to the policy, followed by the same deterministic development measurement.",
-        "reason": "I1 closure is justified because the conditioned diagnostic identifies a concrete, goal-relevant mechanism that spans both non-entry and interrupted-hold failures and selects one targeted intervention: prevent infeasible open-branch pursuit by exposing or encoding branch feasibility/joint-limit margin in the policy-facing representation. Claims remain limited to the shared 160-episode development panel and the two tied checkpoints; the intervention must still demonstrate improved complete uninterrupted success before any official assessment."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I1",
-        "outcome": "M2 identifies a branch-and-limit mechanism that explains both failure classes on the deterministic panel. All 151 successful episodes and all nine failed episodes select the open IK branch at the diagnostic state, but every failed target in the -119 to -151 degree sector has an open-branch shoulder target outside the -170 degree limit, while the folded branch is limit-feasible. The failures reach negative actual shoulder limit margin in both non-entry and interrupted-hold classes. Matched successful episodes select the same open branch but retain nonnegative shoulder margin, separating the mechanism from branch label alone. Jacobian conditioning is not a common discriminator: it is lower than successful matches for non-entry cases and higher for some interrupted holds. The checkpoint pair agrees on all episode outcomes, so the mechanism is stable across candidates. The next goal-linked intervention is a fresh 120000-step training run with branch feasibility and joint-limit margin made explicit to the policy, followed by the same deterministic development measurement.",
-        "reason": "I1 closure is justified because the conditioned diagnostic identifies a concrete, goal-relevant mechanism that spans both non-entry and interrupted-hold failures and selects one targeted intervention: prevent infeasible open-branch pursuit by exposing or encoding branch feasibility/joint-limit margin in the policy-facing representation. Claims remain limited to the shared 160-episode development panel and the two tied checkpoints; the intervention must still demonstrate improved complete uninterrupted success before any official assessment.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E4",
-    "inquiry_id": "I1",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "M2 identifies a branch-and-limit mechanism that explains both failure classes on the deterministic panel. All 151 successful episodes and all nine failed episodes select the open IK branch at the diagnostic state, but every failed target in the -119 to -151 degree sector has an open-branch shoulder target outside the -170 degree limit, while the folded branch is limit-feasible. The failures reach negative actual shoulder limit margin in both non-entry and interrupted-hold classes. Matched successful episodes select the same open branch but retain nonnegative shoulder margin, separating the mechanism from branch label alone. Jacobian conditioning is not a common discriminator: it is lower than successful matches for non-entry cases and higher for some interrupted holds. The checkpoint pair agrees on all episode outcomes, so the mechanism is stable across candidates. The next goal-linked intervention is a fresh 120000-step training run with branch feasibility and joint-limit margin made explicit to the policy, followed by the same deterministic development measurement.",
-        "reason": "I1 closure is justified because the conditioned diagnostic identifies a concrete, goal-relevant mechanism that spans both non-entry and interrupted-hold failures and selects one targeted intervention: prevent infeasible open-branch pursuit by exposing or encoding branch feasibility/joint-limit margin in the policy-facing representation. Claims remain limited to the shared 160-episode development panel and the two tied checkpoints; the intervention must still demonstrate improved complete uninterrupted success before any official assessment."
-      }
-    },
-    "request_fingerprint": "d6121808c0b0fdcf537b0aa9990195766785213a0752df7dc4aa336428c0118f",
-    "session_id": "S3",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "No candidate has been assigned working, best-known, or retained status. T1:checkpoint-100352 and T1:checkpoint-120832 remain tied candidates under M1 at 94.375% on the development panel and are not goal-qualified.",
     "completed_operations": [
