@@ -3354,38 +3354,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I2",
-        "outcome": "The IK-potential shaping route did not materially improve outer-radius first reach and is closed as a tested route. T2 training reached only 2% endpoint success at the fixed allocation, and paired M5 evaluation on shared official-distribution seeds scored T2 at 58% versus T1 at 65%, with 37 candidate wins versus 51 reference wins and a net loss of 14 episodes. This is recipe-specific negative evidence, not evidence that the plant or all potential shaping is impossible.",
-        "reason": "M4 showed that outer-radius failures were predominantly pre-reach rather than post-reach hold interruptions. The bounded intervention added progress toward the nearer valid analytic IK branch without changing the official sampler, dynamics, tolerance, horizon, or uninterrupted 100-step criterion, but T2 training collapsed and M5 found no behavioral recovery. I2 therefore redirects to a different credible method-design route targeting outer-radius learnability and representation rather than repeating IK reward shaping."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I2",
-        "outcome": "The IK-potential shaping route did not materially improve outer-radius first reach and is closed as a tested route. T2 training reached only 2% endpoint success at the fixed allocation, and paired M5 evaluation on shared official-distribution seeds scored T2 at 58% versus T1 at 65%, with 37 candidate wins versus 51 reference wins and a net loss of 14 episodes. This is recipe-specific negative evidence, not evidence that the plant or all potential shaping is impossible.",
-        "reason": "M4 showed that outer-radius failures were predominantly pre-reach rather than post-reach hold interruptions. The bounded intervention added progress toward the nearer valid analytic IK branch without changing the official sampler, dynamics, tolerance, horizon, or uninterrupted 100-step criterion, but T2 training collapsed and M5 found no behavioral recovery. I2 therefore redirects to a different credible method-design route targeting outer-radius learnability and representation rather than repeating IK reward shaping.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E9",
-    "inquiry_id": "I2",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "The IK-potential shaping route did not materially improve outer-radius first reach and is closed as a tested route. T2 training reached only 2% endpoint success at the fixed allocation, and paired M5 evaluation on shared official-distribution seeds scored T2 at 58% versus T1 at 65%, with 37 candidate wins versus 51 reference wins and a net loss of 14 episodes. This is recipe-specific negative evidence, not evidence that the plant or all potential shaping is impossible.",
-        "reason": "M4 showed that outer-radius failures were predominantly pre-reach rather than post-reach hold interruptions. The bounded intervention added progress toward the nearer valid analytic IK branch without changing the official sampler, dynamics, tolerance, horizon, or uninterrupted 100-step criterion, but T2 training collapsed and M5 found no behavioral recovery. I2 therefore redirects to a different credible method-design route targeting outer-radius learnability and representation rather than repeating IK reward shaping."
-      }
-    },
-    "request_fingerprint": "19193f424c2ec81d3ee375e9ebffd3721fc136beab9240ebe73c7cdc09d39184",
-    "session_id": "S6",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T1 produced archived candidates, with T1:checkpoint-120832 evaluated by M3. No working, best-known, or retained role is assigned because the candidate is only 60% on development evaluation and is not credible evidence for the 98% goal.",
     "completed_operations": [
