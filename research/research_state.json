@@ -4924,38 +4924,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I3",
-        "outcome": "I3 is negative for the tested branch-aware reward intervention. T3:checkpoint-120832 achieved 28/160 (17.5%) on the deterministic development panel versus 151/160 (94.375%) for T1:checkpoint-100352, losing all 123 discordant shared episodes. The intervention therefore caused a broad regression rather than a localized repair of the diagnosed limit-sector failures.",
-        "reason": "The required fresh 120000-step training operation and shared 160-episode paired measurement were completed. Keeping T1's compact observation and PPO recipe while adding a branch-feasibility potential did not support the branch-selection credit-assignment hypothesis under this recipe; T3 failed the 157/160 support threshold and regressed by 76.875 percentage points. The result is limited to the deterministic 160-episode panel, the paired candidates, and this tested reward formulation. The next route should re-evaluate dynamics and training-distribution coverage rather than further tune branch-aware reward shaping."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I3",
-        "outcome": "I3 is negative for the tested branch-aware reward intervention. T3:checkpoint-120832 achieved 28/160 (17.5%) on the deterministic development panel versus 151/160 (94.375%) for T1:checkpoint-100352, losing all 123 discordant shared episodes. The intervention therefore caused a broad regression rather than a localized repair of the diagnosed limit-sector failures.",
-        "reason": "The required fresh 120000-step training operation and shared 160-episode paired measurement were completed. Keeping T1's compact observation and PPO recipe while adding a branch-feasibility potential did not support the branch-selection credit-assignment hypothesis under this recipe; T3 failed the 157/160 support threshold and regressed by 76.875 percentage points. The result is limited to the deterministic 160-episode panel, the paired candidates, and this tested reward formulation. The next route should re-evaluate dynamics and training-distribution coverage rather than further tune branch-aware reward shaping.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E12",
-    "inquiry_id": "I3",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "I3 is negative for the tested branch-aware reward intervention. T3:checkpoint-120832 achieved 28/160 (17.5%) on the deterministic development panel versus 151/160 (94.375%) for T1:checkpoint-100352, losing all 123 discordant shared episodes. The intervention therefore caused a broad regression rather than a localized repair of the diagnosed limit-sector failures.",
-        "reason": "The required fresh 120000-step training operation and shared 160-episode paired measurement were completed. Keeping T1's compact observation and PPO recipe while adding a branch-feasibility potential did not support the branch-selection credit-assignment hypothesis under this recipe; T3 failed the 157/160 support threshold and regressed by 76.875 percentage points. The result is limited to the deterministic 160-episode panel, the paired candidates, and this tested reward formulation. The next route should re-evaluate dynamics and training-distribution coverage rather than further tune branch-aware reward shaping."
-      }
-    },
-    "request_fingerprint": "8ac66c7c59059cdd57e383781ba2492943e6ea95084674fae424841b3c2edf5e",
-    "session_id": "S7",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "No candidate has working, best-known, or retained status. T1:checkpoint-100352 and T1:checkpoint-120832 remain tied at 151/160 under M1; T2:checkpoint-120832 is not competitive at 80/160 under M3. Preserve T1 as the strongest measured baseline without assigning a model role.",
     "completed_operations": [
