@@ -838,7 +838,7 @@
     }
   },
   "counters": {
-    "event": 2,
+    "event": 3,
     "inquiry": 1,
     "measurement": 1,
     "session": 2,
@@ -847,7 +847,7 @@
   "human_goal": {
     "source": "research/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -1539,28 +1539,149 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-02T20:51:22Z",
+      "error": null,
+      "id": "E3",
+      "inquiry_id": null,
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "No candidate has been assigned working, best-known, or retained status. T1:checkpoint-100352 and T1:checkpoint-120832 remain tied candidates under M1 at 94.375% on the development panel and are not goal-qualified.",
+        "completed_operations": [
+          "E2"
+        ],
+        "cumulative_resource_use": "One fresh training operation used the 120000-step allocation (120832 actual rollout-rounded steps), and one paired development measurement evaluated two candidates over 160 shared episodes each. E2 opened I1 without training or measurement resource use. No official assessment has been requested.",
+        "current_goal_gap": "Nine failures remain on the deterministic 160-episode development panel: six never enter the 1 cm tolerance and three enter only briefly before the uninterrupted hold is broken. This leaves a 94.375% development result; no official 200-episode success claim is justified.",
+        "current_synthesis": "Established evidence: T1 learned the 0.14-0.20 m training band, with peak recorded training success 0.97, but later checkpoints regressed. M1 found identical outcomes for checkpoint-100352 and checkpoint-120832 on all 160 shared seeds, ruling out checkpoint timing as the current lever. Their failures cluster near target angles -119 to -151 degrees across radii about 7.7-18.8 cm, with six non-entry failures and three interrupted holds. The angular concentration and mixed radii support an angle-, branch-, limit-, or representation-dependent mechanism over a radius-only explanation, but do not identify whether branch choice, joint limits, Jacobian conditioning, actuator dynamics, or observation representation is causal. E2 opened inquiry I1; it produced no new behavioral evidence. Claims remain limited to this deterministic panel and these candidates.",
+        "decision_frontier": "In the fresh I1 inquiry session, determine whether the concentrated failure sector is conditioned on IK branch, joint-limit margin, or Jacobian geometry and whether those factors explain both non-entry and interrupted-hold failures, versus a diffuse failure pattern indicating generic stabilization or broader training coverage. The discriminating first measurement is a branch- and geometry-conditioned diagnostic over failed-sector cases and matched successful angles and radii, including selected joint states, limit margins, Jacobian conditioning, first-entry state, and hold-distance excursions.",
+        "evidence_references": [
+          "T1",
+          "M1",
+          "E2"
+        ],
+        "human_goal_connection": "The campaign requires at least 196 successes on the official 200-episode panel. The current baseline achieves 151 of 160 development episodes, so the policy is 5.625 percentage points below the observed development target and is not justified for official assessment.",
+        "next_direction_or_closure": "This goal-review session transitions to the fresh I1 inquiry session. Its first bounded action should be the specified conditioned diagnostic before any training, observation, reward, controller, or distribution intervention is selected. Do not request official assessment until a candidate is explicitly justified and reaches the required reliability evidence."
+      },
+      "result": {
+        "session_id": "S2",
+        "status": "checkpointed"
+      },
+      "session_id": "S2",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "6051c5986ac02cfb4f07e37e3fb7be98598bc093",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "No candidate has been assigned working, best-known, or retained status. T1:checkpoint-100352 and T1:checkpoint-120832 remain tied candidates under M1 at 94.375% on the development panel and are not goal-qualified.",
+        "completed_operations": [
+          "E2"
+        ],
+        "cumulative_resource_use": "One fresh training operation used the 120000-step allocation (120832 actual rollout-rounded steps), and one paired development measurement evaluated two candidates over 160 shared episodes each. E2 opened I1 without training or measurement resource use. No official assessment has been requested.",
+        "current_goal_gap": "Nine failures remain on the deterministic 160-episode development panel: six never enter the 1 cm tolerance and three enter only briefly before the uninterrupted hold is broken. This leaves a 94.375% development result; no official 200-episode success claim is justified.",
+        "current_synthesis": "Established evidence: T1 learned the 0.14-0.20 m training band, with peak recorded training success 0.97, but later checkpoints regressed. M1 found identical outcomes for checkpoint-100352 and checkpoint-120832 on all 160 shared seeds, ruling out checkpoint timing as the current lever. Their failures cluster near target angles -119 to -151 degrees across radii about 7.7-18.8 cm, with six non-entry failures and three interrupted holds. The angular concentration and mixed radii support an angle-, branch-, limit-, or representation-dependent mechanism over a radius-only explanation, but do not identify whether branch choice, joint limits, Jacobian conditioning, actuator dynamics, or observation representation is causal. E2 opened inquiry I1; it produced no new behavioral evidence. Claims remain limited to this deterministic panel and these candidates.",
+        "decision_frontier": "In the fresh I1 inquiry session, determine whether the concentrated failure sector is conditioned on IK branch, joint-limit margin, or Jacobian geometry and whether those factors explain both non-entry and interrupted-hold failures, versus a diffuse failure pattern indicating generic stabilization or broader training coverage. The discriminating first measurement is a branch- and geometry-conditioned diagnostic over failed-sector cases and matched successful angles and radii, including selected joint states, limit margins, Jacobian conditioning, first-entry state, and hold-distance excursions.",
+        "evidence_references": [
+          "T1",
+          "M1",
+          "E2"
+        ],
+        "human_goal_connection": "The campaign requires at least 196 successes on the official 200-episode panel. The current baseline achieves 151 of 160 development episodes, so the policy is 5.625 percentage points below the observed development target and is not justified for official assessment.",
+        "inquiry_id": null,
+        "next_direction_or_closure": "This goal-review session transitions to the fresh I1 inquiry session. Its first bounded action should be the specified conditioned diagnostic before any training, observation, reward, controller, or distribution intervention is selected. Do not request official assessment until a candidate is explicitly justified and reaches the required reliability evidence.",
+        "session_id": "S2"
+      },
+      "presentation": {
+        "backend_session_id": "8f25786e-ed87-4a9a-b47a-374b7fcc5bfb",
+        "campaign_id": "d7080d95-e5e9-4077-a667-f75ddc16876b",
+        "campaign_usage": "8m08s | 14.41 AIU | prompt 1.6m (77% cached) | output 19.8k",
+        "session_id": "S2",
+        "session_kind": "goal_review",
+        "session_usage": "1m11s | 4.21 AIU | prompt 502k (75% cached) | output 2.6k"
+      },
+      "result": {
+        "session_id": "S2",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "4435be153b0921d93c2b38cb0dc09d3c5a2dfba1",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E3",
+    "inquiry_id": null,
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "No candidate has been assigned working, best-known, or retained status. T1:checkpoint-100352 and T1:checkpoint-120832 remain tied candidates under M1 at 94.375% on the development panel and are not goal-qualified.",
+        "completed_operations": [
+          "E2"
+        ],
+        "cumulative_resource_use": "One fresh training operation used the 120000-step allocation (120832 actual rollout-rounded steps), and one paired development measurement evaluated two candidates over 160 shared episodes each. E2 opened I1 without training or measurement resource use. No official assessment has been requested.",
+        "current_goal_gap": "Nine failures remain on the deterministic 160-episode development panel: six never enter the 1 cm tolerance and three enter only briefly before the uninterrupted hold is broken. This leaves a 94.375% development result; no official 200-episode success claim is justified.",
+        "current_synthesis": "Established evidence: T1 learned the 0.14-0.20 m training band, with peak recorded training success 0.97, but later checkpoints regressed. M1 found identical outcomes for checkpoint-100352 and checkpoint-120832 on all 160 shared seeds, ruling out checkpoint timing as the current lever. Their failures cluster near target angles -119 to -151 degrees across radii about 7.7-18.8 cm, with six non-entry failures and three interrupted holds. The angular concentration and mixed radii support an angle-, branch-, limit-, or representation-dependent mechanism over a radius-only explanation, but do not identify whether branch choice, joint limits, Jacobian conditioning, actuator dynamics, or observation representation is causal. E2 opened inquiry I1; it produced no new behavioral evidence. Claims remain limited to this deterministic panel and these candidates.",
+        "decision_frontier": "In the fresh I1 inquiry session, determine whether the concentrated failure sector is conditioned on IK branch, joint-limit margin, or Jacobian geometry and whether those factors explain both non-entry and interrupted-hold failures, versus a diffuse failure pattern indicating generic stabilization or broader training coverage. The discriminating first measurement is a branch- and geometry-conditioned diagnostic over failed-sector cases and matched successful angles and radii, including selected joint states, limit margins, Jacobian conditioning, first-entry state, and hold-distance excursions.",
+        "evidence_references": [
+          "T1",
+          "M1",
+          "E2"
+        ],
+        "human_goal_connection": "The campaign requires at least 196 successes on the official 200-episode panel. The current baseline achieves 151 of 160 development episodes, so the policy is 5.625 percentage points below the observed development target and is not justified for official assessment.",
+        "next_direction_or_closure": "This goal-review session transitions to the fresh I1 inquiry session. Its first bounded action should be the specified conditioned diagnostic before any training, observation, reward, controller, or distribution intervention is selected. Do not request official assessment until a candidate is explicitly justified and reaches the required reliability evidence."
+      }
+    },
+    "request_fingerprint": "0a65d4e7954458636651851255cda33bd5f5c18d7c58d54cb9b698bdd216d1ed",
+    "session_id": "S2",
+    "supersedes": null
+  },
   "pi_checkpoint": {
-    "candidates_and_roles": "No candidate has been assigned working or best-known status. T1:checkpoint-100352 and T1:checkpoint-120832 are tied on M1; they remain available candidates, not goal-qualified policies.",
+    "candidates_and_roles": "No candidate has been assigned working, best-known, or retained status. T1:checkpoint-100352 and T1:checkpoint-120832 remain tied candidates under M1 at 94.375% on the development panel and are not goal-qualified.",
     "completed_operations": [
-      "T1",
-      "M1"
+      "E2"
     ],
-    "cumulative_resource_use": "One fresh training operation used the 120000-step startup allocation (120832 actual rollout-rounded steps); one paired development measurement evaluated two candidates over 160 shared episodes each. No official assessment has been requested.",
-    "current_goal_gap": "The unchanged PPO recipe trained on radii 0.14-0.20 m achieves 94.375% on the 0.06-0.20 m development distribution. Nine failures remain: six never enter tolerance and three enter only briefly before the hold is interrupted. The observed gap is 5.625 percentage points on this panel; no claim about the official 200-episode verdict is justified.",
-    "current_synthesis": "Established evidence: T1 learned the training band, with a peak recorded training success of 0.97, but later checkpoints regressed. M1 showed that checkpoint-100352 and checkpoint-120832 have identical outcomes on all 160 shared seeds, so checkpoint timing is not the current lever. Detailed M1 diagnostics for both candidates are effectively the same: failures cluster in target angles from about -119 to -151 degrees, while their radii span approximately 7.7 to 18.8 cm; three failures reached tolerance for only 1-2 control steps and then exited, while six never entered tolerance. Competing explanations are (a) an angle/IK-branch or joint-limit-dependent dynamic weakness, including a representation or branch-selection problem, versus (b) a generic stabilization or training-distribution weakness. The angular concentration and mixed radii support (a) over a radius-only explanation, but the current evidence does not identify whether the cause is branch choice, limits, actuator dynamics, or observation representation. The claims are limited to this deterministic 160-episode panel and these two candidates.",
-    "decision_frontier": "Does the concentrated failure sector arise from a specific IK branch, joint-limit/Jacobian configuration, or angle-dependent observation/control representation, and does that mechanism explain both non-entry and interrupted-hold failures? Discriminating evidence is a branch- and geometry-conditioned diagnostic over the failed sector versus matched successful angles/radii, including selected joint states, limit margins, Jacobian conditioning, first-entry state, and hold-distance excursions. A diffuse failure pattern would redirect toward general stabilization or broader training coverage.",
+    "cumulative_resource_use": "One fresh training operation used the 120000-step allocation (120832 actual rollout-rounded steps), and one paired development measurement evaluated two candidates over 160 shared episodes each. E2 opened I1 without training or measurement resource use. No official assessment has been requested.",
+    "current_goal_gap": "Nine failures remain on the deterministic 160-episode development panel: six never enter the 1 cm tolerance and three enter only briefly before the uninterrupted hold is broken. This leaves a 94.375% development result; no official 200-episode success claim is justified.",
+    "current_synthesis": "Established evidence: T1 learned the 0.14-0.20 m training band, with peak recorded training success 0.97, but later checkpoints regressed. M1 found identical outcomes for checkpoint-100352 and checkpoint-120832 on all 160 shared seeds, ruling out checkpoint timing as the current lever. Their failures cluster near target angles -119 to -151 degrees across radii about 7.7-18.8 cm, with six non-entry failures and three interrupted holds. The angular concentration and mixed radii support an angle-, branch-, limit-, or representation-dependent mechanism over a radius-only explanation, but do not identify whether branch choice, joint limits, Jacobian conditioning, actuator dynamics, or observation representation is causal. E2 opened inquiry I1; it produced no new behavioral evidence. Claims remain limited to this deterministic panel and these candidates.",
+    "decision_frontier": "In the fresh I1 inquiry session, determine whether the concentrated failure sector is conditioned on IK branch, joint-limit margin, or Jacobian geometry and whether those factors explain both non-entry and interrupted-hold failures, versus a diffuse failure pattern indicating generic stabilization or broader training coverage. The discriminating first measurement is a branch- and geometry-conditioned diagnostic over failed-sector cases and matched successful angles and radii, including selected joint states, limit margins, Jacobian conditioning, first-entry state, and hold-distance excursions.",
     "evidence_references": [
       "T1",
-      "M1"
+      "M1",
+      "E2"
     ],
-    "human_goal_connection": "The campaign needs a policy with at least 196 successes on the official 200-episode panel. The current baseline reaches 151 of 160 development episodes, so it is materially short of the required reliability.",
+    "human_goal_connection": "The campaign requires at least 196 successes on the official 200-episode panel. The current baseline achieves 151 of 160 development episodes, so the policy is 5.625 percentage points below the observed development target and is not justified for official assessment.",
     "inquiry_id": null,
-    "next_direction_or_closure": "End startup with this checkpoint and, in goal review, open an inquiry on angle/branch/limit-dependent failure mechanics. The first inquiry operation should produce the stated conditioned diagnostics before choosing a training-distribution, observation, reward, or controller intervention.",
-    "scientific_commit": "2d283e52bfe030a08c80e802521d8ec2346ebdca",
-    "session_id": "S1"
+    "next_direction_or_closure": "This goal-review session transitions to the fresh I1 inquiry session. Its first bounded action should be the specified conditioned diagnostic before any training, observation, reward, controller, or distribution intervention is selected. Do not request official assessment until a candidate is explicitly justified and reaches the required reliability evidence.",
+    "scientific_commit": "4435be153b0921d93c2b38cb0dc09d3c5a2dfba1",
+    "session_id": "S2"
   },
   "schema_version": 6,
   "scientific_model": {
@@ -1568,21 +1689,6 @@
     "path": "research/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "8f25786e-ed87-4a9a-b47a-374b7fcc5bfb",
-    "id": "S2",
-    "inquiry_id": null,
-    "kind": "goal_review",
-    "objective": "Reassess the scientific direction toward the human goal using completed evidence. You may request measurements to resolve an uncertainty or develop the method before committing to an inquiry. Decide whether to request official assessment, open one bounded goal-linked inquiry, or conclude that no credible route remains.",
-    "operation_ids": [
-      "E2"
-    ],
-    "scientific_parent_commit": "6051c5986ac02cfb4f07e37e3fb7be98598bc093"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
