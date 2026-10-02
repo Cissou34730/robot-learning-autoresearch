@@ -838,7 +838,7 @@
     }
   },
   "counters": {
-    "event": 2,
+    "event": 3,
     "inquiry": 1,
     "measurement": 1,
     "session": 2,
@@ -847,7 +847,7 @@
   "human_goal": {
     "source": "research/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -1607,28 +1607,149 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-02T12:57:42Z",
+      "error": null,
+      "id": "E3",
+      "inquiry_id": null,
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "T2:checkpoint-120832 is the strongest evidenced candidate at 60.0% on M1, with T2:checkpoint-86016 at 57.5%. Neither candidate has an assigned working or best-known role, and no candidate is retained.",
+        "completed_operations": [
+          "E2"
+        ],
+        "cumulative_resource_use": "One completed fresh training run using the maintainer allocation: T2 requested 120000 steps and completed 120832 simulator steps, plus one 200-episode paired development measurement in M1. E2 opened I1 without consuming training allocation. No official assessment has been requested.",
+        "current_goal_gap": "T2:checkpoint-120832 succeeds on 120/200 M1 episodes, leaving a 38 percentage-point gap to the 98% objective. Failures are concentrated at 14-20 cm, with zero first entries in the 18-20 cm bin; 6-14 cm is nearly fully successful.",
+        "current_synthesis": "Established evidence is that full-range training in T2 produced a 0.60 training success rate at 120832 steps and that the final checkpoint modestly outperformed checkpoint-86016 on the independent M1 panel, 120/200 versus 115/200 with a 2.5-point paired advantage. M1 diagnostics show near-complete performance at 6-14 cm but no first entries at 18-20 cm. This supports a near-extension reach and action-to-motion limitation associated with the initially extended posture and configuration-dependent Jacobian. Inadequate hold stabilization remains a consequential competing explanation, especially for episodes that enter tolerance, and IK-branch effects and exact action response remain unresolved. The evidence is insufficient for official success or for declaring that no credible route remains. E2 opened I1 to resolve this distinction rather than committing training resources on an untested intervention.",
+        "decision_frontier": "Can a targeted outer-workspace reach method improve first entry at 14-20 cm without sacrificing uninterrupted hold performance, or are the remaining failures primarily branch- or configuration-dependent stabilization failures? Discriminating evidence must report first-entry rate, entry distance or velocity proxies, longest uninterrupted hold, and success by radius and angle; improved entry without loss of inner-radius hold supports a reach/control bottleneck, while entry followed by short interrupted holds redirects the work toward stabilization.",
+        "evidence_references": [
+          "T2",
+          "M1",
+          "E2"
+        ],
+        "human_goal_connection": "The human goal requires at least 98% complete uninterrupted holds over the full 6-20 cm official target distribution. The strongest current candidate reaches only 60.0% on the independent M1 panel, so the campaign must resolve the concentrated outer-workspace failure before official assessment can be justified.",
+        "next_direction_or_closure": "The goal-review session is complete after opening I1. In the fresh I1 inquiry session, perform one bounded outer-workspace intervention or measurement that directly reports first-entry, entry-motion proxies, longest hold, and radius-angle outcomes before deciding whether to train a targeted method or redirect toward stabilization and branch control. Do not request official assessment while the candidate remains at 60.0%."
+      },
+      "result": {
+        "session_id": "S2",
+        "status": "checkpointed"
+      },
+      "session_id": "S2",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "4b1f5139438d20dc72c7f9f865ebeec42a33ac2b",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "T2:checkpoint-120832 is the strongest evidenced candidate at 60.0% on M1, with T2:checkpoint-86016 at 57.5%. Neither candidate has an assigned working or best-known role, and no candidate is retained.",
+        "completed_operations": [
+          "E2"
+        ],
+        "cumulative_resource_use": "One completed fresh training run using the maintainer allocation: T2 requested 120000 steps and completed 120832 simulator steps, plus one 200-episode paired development measurement in M1. E2 opened I1 without consuming training allocation. No official assessment has been requested.",
+        "current_goal_gap": "T2:checkpoint-120832 succeeds on 120/200 M1 episodes, leaving a 38 percentage-point gap to the 98% objective. Failures are concentrated at 14-20 cm, with zero first entries in the 18-20 cm bin; 6-14 cm is nearly fully successful.",
+        "current_synthesis": "Established evidence is that full-range training in T2 produced a 0.60 training success rate at 120832 steps and that the final checkpoint modestly outperformed checkpoint-86016 on the independent M1 panel, 120/200 versus 115/200 with a 2.5-point paired advantage. M1 diagnostics show near-complete performance at 6-14 cm but no first entries at 18-20 cm. This supports a near-extension reach and action-to-motion limitation associated with the initially extended posture and configuration-dependent Jacobian. Inadequate hold stabilization remains a consequential competing explanation, especially for episodes that enter tolerance, and IK-branch effects and exact action response remain unresolved. The evidence is insufficient for official success or for declaring that no credible route remains. E2 opened I1 to resolve this distinction rather than committing training resources on an untested intervention.",
+        "decision_frontier": "Can a targeted outer-workspace reach method improve first entry at 14-20 cm without sacrificing uninterrupted hold performance, or are the remaining failures primarily branch- or configuration-dependent stabilization failures? Discriminating evidence must report first-entry rate, entry distance or velocity proxies, longest uninterrupted hold, and success by radius and angle; improved entry without loss of inner-radius hold supports a reach/control bottleneck, while entry followed by short interrupted holds redirects the work toward stabilization.",
+        "evidence_references": [
+          "T2",
+          "M1",
+          "E2"
+        ],
+        "human_goal_connection": "The human goal requires at least 98% complete uninterrupted holds over the full 6-20 cm official target distribution. The strongest current candidate reaches only 60.0% on the independent M1 panel, so the campaign must resolve the concentrated outer-workspace failure before official assessment can be justified.",
+        "inquiry_id": null,
+        "next_direction_or_closure": "The goal-review session is complete after opening I1. In the fresh I1 inquiry session, perform one bounded outer-workspace intervention or measurement that directly reports first-entry, entry-motion proxies, longest hold, and radius-angle outcomes before deciding whether to train a targeted method or redirect toward stabilization and branch control. Do not request official assessment while the candidate remains at 60.0%.",
+        "session_id": "S2"
+      },
+      "presentation": {
+        "backend_session_id": "921f07be-735f-4ba4-9ecb-890e88c597b9",
+        "campaign_id": "2381bcbf-72c1-4535-9334-7e0d753f356d",
+        "campaign_usage": "14m14s | 15.52 AIU | prompt 2.6m (88% cached) | output 26.3k",
+        "session_id": "S2",
+        "session_kind": "goal_review",
+        "session_usage": "2m50s | 1.98 AIU | prompt 239.9k (79% cached) | output 2.7k"
+      },
+      "result": {
+        "session_id": "S2",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "b2c9bf4f9dc1f1ce756bbf3c7855235da9c2182d",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E3",
+    "inquiry_id": null,
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "T2:checkpoint-120832 is the strongest evidenced candidate at 60.0% on M1, with T2:checkpoint-86016 at 57.5%. Neither candidate has an assigned working or best-known role, and no candidate is retained.",
+        "completed_operations": [
+          "E2"
+        ],
+        "cumulative_resource_use": "One completed fresh training run using the maintainer allocation: T2 requested 120000 steps and completed 120832 simulator steps, plus one 200-episode paired development measurement in M1. E2 opened I1 without consuming training allocation. No official assessment has been requested.",
+        "current_goal_gap": "T2:checkpoint-120832 succeeds on 120/200 M1 episodes, leaving a 38 percentage-point gap to the 98% objective. Failures are concentrated at 14-20 cm, with zero first entries in the 18-20 cm bin; 6-14 cm is nearly fully successful.",
+        "current_synthesis": "Established evidence is that full-range training in T2 produced a 0.60 training success rate at 120832 steps and that the final checkpoint modestly outperformed checkpoint-86016 on the independent M1 panel, 120/200 versus 115/200 with a 2.5-point paired advantage. M1 diagnostics show near-complete performance at 6-14 cm but no first entries at 18-20 cm. This supports a near-extension reach and action-to-motion limitation associated with the initially extended posture and configuration-dependent Jacobian. Inadequate hold stabilization remains a consequential competing explanation, especially for episodes that enter tolerance, and IK-branch effects and exact action response remain unresolved. The evidence is insufficient for official success or for declaring that no credible route remains. E2 opened I1 to resolve this distinction rather than committing training resources on an untested intervention.",
+        "decision_frontier": "Can a targeted outer-workspace reach method improve first entry at 14-20 cm without sacrificing uninterrupted hold performance, or are the remaining failures primarily branch- or configuration-dependent stabilization failures? Discriminating evidence must report first-entry rate, entry distance or velocity proxies, longest uninterrupted hold, and success by radius and angle; improved entry without loss of inner-radius hold supports a reach/control bottleneck, while entry followed by short interrupted holds redirects the work toward stabilization.",
+        "evidence_references": [
+          "T2",
+          "M1",
+          "E2"
+        ],
+        "human_goal_connection": "The human goal requires at least 98% complete uninterrupted holds over the full 6-20 cm official target distribution. The strongest current candidate reaches only 60.0% on the independent M1 panel, so the campaign must resolve the concentrated outer-workspace failure before official assessment can be justified.",
+        "next_direction_or_closure": "The goal-review session is complete after opening I1. In the fresh I1 inquiry session, perform one bounded outer-workspace intervention or measurement that directly reports first-entry, entry-motion proxies, longest hold, and radius-angle outcomes before deciding whether to train a targeted method or redirect toward stabilization and branch control. Do not request official assessment while the candidate remains at 60.0%."
+      }
+    },
+    "request_fingerprint": "5a9c69ee8102c2a7961a1bbbf8e0fe6f688803c586131866ee40375a79272ae9",
+    "session_id": "S2",
+    "supersedes": null
+  },
   "pi_checkpoint": {
-    "candidates_and_roles": "T2:checkpoint-120832 is the strongest evidenced candidate at 60.0% on M1, with T2:checkpoint-86016 at 57.5%; neither is assigned a working or best-known role yet, and no candidate is retained.",
+    "candidates_and_roles": "T2:checkpoint-120832 is the strongest evidenced candidate at 60.0% on M1, with T2:checkpoint-86016 at 57.5%. Neither candidate has an assigned working or best-known role, and no candidate is retained.",
     "completed_operations": [
-      "T2",
-      "M1"
+      "E2"
     ],
-    "cumulative_resource_use": "One completed fresh training run using the maintainer allocation: T2 requested 120000 steps and completed 120832 simulator steps, plus one 200-episode paired development measurement in M1. No official assessment has been requested.",
-    "current_goal_gap": "The strongest evaluated candidate, T2:checkpoint-120832, succeeds on 60.0% of an independent 200-episode official-distribution panel, leaving a 38 percentage-point gap to the 98% objective. The gap is concentrated in outer targets: 18-20 cm produced zero first entries, while 6-14 cm was nearly fully successful.",
-    "current_synthesis": "Established evidence: full-range training in T2 raised training success to 0.60 by 120832 steps. On the independent M1 panel, T2:checkpoint-120832 achieved 120/200 successes versus 115/200 for T2:checkpoint-86016, so the final checkpoint is the stronger candidate but the 2.5-point paired advantage is not sufficient for the goal. The diagnostic evidence shows 6-10 cm succeeded in 60/60 episodes and 10-14 cm in 42/43; failures are concentrated at 14-18 cm and especially 18-20 cm, where the final candidate had 0/29 entries. This supports the scientific-model explanation that the extended initial posture and configuration-dependent Jacobian make outward/near-extension reach difficult. A competing explanation is inadequate hold stabilization, but it is not dominant in the outer bins because those episodes generally never enter tolerance; the evidence does not yet determine IK-branch effects or the exact action-to-motion limitation.",
-    "decision_frontier": "Can a targeted outer-workspace reach method overcome the near-extension action-to-motion limitation, or is the remaining gap caused by a branch/configuration-dependent stabilization failure? Discriminating evidence is an intervention or measurement focused on 14-20 cm that reports first-entry rate, entry distance/velocity proxies, longest hold, and success by radius and angle; improvement in first entry without loss of inner-radius hold would support a reach/control bottleneck, while entry with short interrupted holds would redirect toward stabilization.",
+    "cumulative_resource_use": "One completed fresh training run using the maintainer allocation: T2 requested 120000 steps and completed 120832 simulator steps, plus one 200-episode paired development measurement in M1. E2 opened I1 without consuming training allocation. No official assessment has been requested.",
+    "current_goal_gap": "T2:checkpoint-120832 succeeds on 120/200 M1 episodes, leaving a 38 percentage-point gap to the 98% objective. Failures are concentrated at 14-20 cm, with zero first entries in the 18-20 cm bin; 6-14 cm is nearly fully successful.",
+    "current_synthesis": "Established evidence is that full-range training in T2 produced a 0.60 training success rate at 120832 steps and that the final checkpoint modestly outperformed checkpoint-86016 on the independent M1 panel, 120/200 versus 115/200 with a 2.5-point paired advantage. M1 diagnostics show near-complete performance at 6-14 cm but no first entries at 18-20 cm. This supports a near-extension reach and action-to-motion limitation associated with the initially extended posture and configuration-dependent Jacobian. Inadequate hold stabilization remains a consequential competing explanation, especially for episodes that enter tolerance, and IK-branch effects and exact action response remain unresolved. The evidence is insufficient for official success or for declaring that no credible route remains. E2 opened I1 to resolve this distinction rather than committing training resources on an untested intervention.",
+    "decision_frontier": "Can a targeted outer-workspace reach method improve first entry at 14-20 cm without sacrificing uninterrupted hold performance, or are the remaining failures primarily branch- or configuration-dependent stabilization failures? Discriminating evidence must report first-entry rate, entry distance or velocity proxies, longest uninterrupted hold, and success by radius and angle; improved entry without loss of inner-radius hold supports a reach/control bottleneck, while entry followed by short interrupted holds redirects the work toward stabilization.",
     "evidence_references": [
       "T2",
-      "M1"
+      "M1",
+      "E2"
     ],
-    "human_goal_connection": "The human goal requires at least 98% complete uninterrupted holds over the full 6-20 cm official target distribution. T2 established a trained candidate, and M1 localized the remaining failures so the next work can target the mechanism that currently limits official success.",
+    "human_goal_connection": "The human goal requires at least 98% complete uninterrupted holds over the full 6-20 cm official target distribution. The strongest current candidate reaches only 60.0% on the independent M1 panel, so the campaign must resolve the concentrated outer-workspace failure before official assessment can be justified.",
     "inquiry_id": null,
-    "next_direction_or_closure": "Enter goal review and open one bounded inquiry on outer-workspace reach and stabilization for 14-20 cm targets. The first inquiry action should produce discriminating evidence or a targeted method capable of separating near-extension reach failure from post-entry hold failure before committing further training resources.",
-    "scientific_commit": "2b7b9e1951b9e9169119048bb0a20f367016fd8d",
-    "session_id": "S1"
+    "next_direction_or_closure": "The goal-review session is complete after opening I1. In the fresh I1 inquiry session, perform one bounded outer-workspace intervention or measurement that directly reports first-entry, entry-motion proxies, longest hold, and radius-angle outcomes before deciding whether to train a targeted method or redirect toward stabilization and branch control. Do not request official assessment while the candidate remains at 60.0%.",
+    "scientific_commit": "b2c9bf4f9dc1f1ce756bbf3c7855235da9c2182d",
+    "session_id": "S2"
   },
   "schema_version": 6,
   "scientific_model": {
@@ -1636,21 +1757,6 @@
     "path": "research/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "921f07be-735f-4ba4-9ecb-890e88c597b9",
-    "id": "S2",
-    "inquiry_id": null,
-    "kind": "goal_review",
-    "objective": "Reassess the scientific direction toward the human goal using completed evidence. You may request measurements to resolve an uncertainty or develop the method before committing to an inquiry. Decide whether to request official assessment, open one bounded goal-linked inquiry, or conclude that no credible route remains.",
-    "operation_ids": [
-      "E2"
-    ],
-    "scientific_parent_commit": "4b1f5139438d20dc72c7f9f865ebeec42a33ac2b"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
