@@ -1609,44 +1609,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "open",
-        "inquiry": {
-          "closure_condition": "Close or redirect the inquiry after a bounded intervention or measurement reports first-entry rate, entry distance or velocity proxies, longest uninterrupted hold, and success by radius and angle, with enough evidence to determine whether outer-radius entry improves without losing inner-radius hold.",
-          "goal_connection": "Resolving this distinction directly determines whether the campaign can close the 38 percentage-point gap to at least 98% official episode success through an outer-workspace reach intervention or must redirect toward stabilization and branch control.",
-          "id": "I1",
-          "opened_in_session": "S2",
-          "question": "Can a targeted method for 14-20 cm targets overcome the near-extension reach limitation without sacrificing uninterrupted hold performance, or are the remaining failures primarily branch- or configuration-dependent stabilization failures?",
-          "rationale": "M1 shows near-complete success at 6-14 cm but no first entries at 18-20 cm, supporting a reach bottleneck while leaving IK-branch effects and post-entry stabilization unresolved. A focused inquiry is more informative than official assessment of a candidate known to reach only 60% on the independent panel.",
-          "reframes": []
-        }
-      },
-      "result": {
-        "action": "open",
-        "inquiry_id": "I1",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E2",
-    "inquiry_id": null,
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "open",
-        "closure_condition": "Close or redirect the inquiry after a bounded intervention or measurement reports first-entry rate, entry distance or velocity proxies, longest uninterrupted hold, and success by radius and angle, with enough evidence to determine whether outer-radius entry improves without losing inner-radius hold.",
-        "goal_connection": "Resolving this distinction directly determines whether the campaign can close the 38 percentage-point gap to at least 98% official episode success through an outer-workspace reach intervention or must redirect toward stabilization and branch control.",
-        "question": "Can a targeted method for 14-20 cm targets overcome the near-extension reach limitation without sacrificing uninterrupted hold performance, or are the remaining failures primarily branch- or configuration-dependent stabilization failures?",
-        "rationale": "M1 shows near-complete success at 6-14 cm but no first entries at 18-20 cm, supporting a reach bottleneck while leaving IK-branch effects and post-entry stabilization unresolved. A focused inquiry is more informative than official assessment of a candidate known to reach only 60% on the independent panel."
-      }
-    },
-    "request_fingerprint": "73e2b4d2ed7693cb0b8a1233adfa1963b56985bb816c30659803e0445724339e",
-    "session_id": "S2",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T2:checkpoint-120832 is the strongest evidenced candidate at 60.0% on M1, with T2:checkpoint-86016 at 57.5%; neither is assigned a working or best-known role yet, and no candidate is retained.",
     "completed_operations": [
