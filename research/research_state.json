@@ -1,5 +1,13 @@
 {
-  "active_inquiry": null,
+  "active_inquiry": {
+    "closure_condition": "After one fresh training run using the maintainer's exact 120000-step allocation and measurement on the same deterministic 160-episode development panel, close the inquiry if the intervention either reaches at least 98% development success with no failure-class regression or fails to produce a meaningful success improvement and does not support a credible next change to this representation.",
+    "goal_connection": "The current tied candidates achieve 151 of 160 development episodes, below the 196 of 200 human-goal threshold. The intervention targets the diagnosed limit-and-branch mechanism and must improve both non-entry and interrupted-hold failures without sacrificing successes elsewhere on the fixed development panel.",
+    "id": "I2",
+    "opened_in_session": "S4",
+    "question": "Does exposing signed current and target-branch joint-limit margins together with explicit branch-feasibility flags enable a policy trained on the existing 0.14-0.20 m band to avoid the observed infeasible open branch and improve complete uninterrupted episode success?",
+    "rationale": "The completed deterministic-panel evidence rules out checkpoint timing and identifies infeasible open-branch shoulder targets plus negative actual shoulder margin in both failure classes, while the folded branch remains feasible. The current 11-element observation exposes branch errors but not feasibility or signed margin, so this is a direct, bounded test of whether the policy can use the resolved mechanism rather than another checkpoint or untargeted reward adjustment.",
+    "reframes": []
+  },
   "campaign": {
     "base_commit": "f4605b08f13ffbd1f453eaba54b12d69a247f035",
     "id": "d7080d95-e5e9-4077-a667-f75ddc16876b",
@@ -830,16 +838,16 @@
     }
   },
   "counters": {
-    "event": 5,
-    "inquiry": 1,
+    "event": 6,
+    "inquiry": 2,
     "measurement": 2,
-    "session": 3,
+    "session": 4,
     "training": 1
   },
   "human_goal": {
     "source": "research/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -1802,9 +1810,69 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-02T21:01:08Z",
+      "error": null,
+      "id": "E6",
+      "inquiry_id": "I2",
+      "kind": "inquiry",
+      "request": {
+        "action": "open",
+        "closure_condition": "After one fresh training run using the maintainer's exact 120000-step allocation and measurement on the same deterministic 160-episode development panel, close the inquiry if the intervention either reaches at least 98% development success with no failure-class regression or fails to produce a meaningful success improvement and does not support a credible next change to this representation.",
+        "goal_connection": "The current tied candidates achieve 151 of 160 development episodes, below the 196 of 200 human-goal threshold. The intervention targets the diagnosed limit-and-branch mechanism and must improve both non-entry and interrupted-hold failures without sacrificing successes elsewhere on the fixed development panel.",
+        "question": "Does exposing signed current and target-branch joint-limit margins together with explicit branch-feasibility flags enable a policy trained on the existing 0.14-0.20 m band to avoid the observed infeasible open branch and improve complete uninterrupted episode success?",
+        "rationale": "The completed deterministic-panel evidence rules out checkpoint timing and identifies infeasible open-branch shoulder targets plus negative actual shoulder margin in both failure classes, while the folded branch remains feasible. The current 11-element observation exposes branch errors but not feasibility or signed margin, so this is a direct, bounded test of whether the policy can use the resolved mechanism rather than another checkpoint or untargeted reward adjustment."
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I2",
+        "status": "completed"
+      },
+      "session_id": "S4",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "open",
+        "inquiry": {
+          "closure_condition": "After one fresh training run using the maintainer's exact 120000-step allocation and measurement on the same deterministic 160-episode development panel, close the inquiry if the intervention either reaches at least 98% development success with no failure-class regression or fails to produce a meaningful success improvement and does not support a credible next change to this representation.",
+          "goal_connection": "The current tied candidates achieve 151 of 160 development episodes, below the 196 of 200 human-goal threshold. The intervention targets the diagnosed limit-and-branch mechanism and must improve both non-entry and interrupted-hold failures without sacrificing successes elsewhere on the fixed development panel.",
+          "id": "I2",
+          "opened_in_session": "S4",
+          "question": "Does exposing signed current and target-branch joint-limit margins together with explicit branch-feasibility flags enable a policy trained on the existing 0.14-0.20 m band to avoid the observed infeasible open branch and improve complete uninterrupted episode success?",
+          "rationale": "The completed deterministic-panel evidence rules out checkpoint timing and identifies infeasible open-branch shoulder targets plus negative actual shoulder margin in both failure classes, while the folded branch remains feasible. The current 11-element observation exposes branch errors but not feasibility or signed margin, so this is a direct, bounded test of whether the policy can use the resolved mechanism rather than another checkpoint or untargeted reward adjustment.",
+          "reframes": []
+        }
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I2",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E6",
+    "inquiry_id": null,
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "open",
+        "closure_condition": "After one fresh training run using the maintainer's exact 120000-step allocation and measurement on the same deterministic 160-episode development panel, close the inquiry if the intervention either reaches at least 98% development success with no failure-class regression or fails to produce a meaningful success improvement and does not support a credible next change to this representation.",
+        "goal_connection": "The current tied candidates achieve 151 of 160 development episodes, below the 196 of 200 human-goal threshold. The intervention targets the diagnosed limit-and-branch mechanism and must improve both non-entry and interrupted-hold failures without sacrificing successes elsewhere on the fixed development panel.",
+        "question": "Does exposing signed current and target-branch joint-limit margins together with explicit branch-feasibility flags enable a policy trained on the existing 0.14-0.20 m band to avoid the observed infeasible open branch and improve complete uninterrupted episode success?",
+        "rationale": "The completed deterministic-panel evidence rules out checkpoint timing and identifies infeasible open-branch shoulder targets plus negative actual shoulder margin in both failure classes, while the folded branch remains feasible. The current 11-element observation exposes branch errors but not feasibility or signed margin, so this is a direct, bounded test of whether the policy can use the resolved mechanism rather than another checkpoint or untargeted reward adjustment."
+      }
+    },
+    "request_fingerprint": "504b842e117aae8b2694b34154fcf62970496a84d68d0d8436f73498c9c7a6e1",
+    "session_id": "S4",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No candidate has working, best-known, or retained status. T1:checkpoint-100352 and T1:checkpoint-120832 remain tied under M1 at 94.375% on the development panel and are not goal-qualified.",
     "completed_operations": [
@@ -1834,6 +1902,21 @@
     "path": "research/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "07ff0d57-4b70-4a12-ba2e-e89287ebe499",
+    "id": "S4",
+    "inquiry_id": null,
+    "kind": "goal_review",
+    "objective": "Reassess the scientific direction toward the human goal using completed evidence. You may request measurements to resolve an uncertainty or develop the method before committing to an inquiry. Decide whether to request official assessment, open one bounded goal-linked inquiry, or conclude that no credible route remains.",
+    "operation_ids": [
+      "E6"
+    ],
+    "scientific_parent_commit": "2645864d4895fb3a3fa404933a3f6aa949c3e7c5"
+  },
   "terminal_state": null
 }
