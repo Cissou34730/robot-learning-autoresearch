@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Campaign 6350d383: replaced without a measured result</title>
+  <script>
+    (() => {
+      const param = new URLSearchParams(window.location.search).get("scoutTheme");
+      const theme =
+        param || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+      document.documentElement.setAttribute("data-theme", theme);
+    })();
+  </script>
+  <style>
+    :root {
+      color-scheme: light;
+      --cp-bg: #f7f4ef;
+      --cp-bg-elevated: #fcfbf8;
+      --cp-surface: #ffffff;
+      --cp-surface-soft: #f5f5f5;
+      --cp-border: #dedede;
+      --cp-border-strong: #919191;
+      --cp-text: #242424;
+      --cp-text-muted: #5c5c5c;
+      --cp-text-soft: #6f6f6f;
+      --cp-accent: #b11f4b;
+      --cp-accent-hover: #9a1a41;
+      --cp-accent-soft: rgba(177, 31, 75, 0.08);
+      --cp-accent-fg: #ffffff;
+      --cp-success: #16a34a;
+      --cp-danger: #dc2626;
+      --cp-warning: #f59e0b;
+      --cp-link: #0078d4;
+      --cp-shadow: 0 18px 48px rgba(0, 0, 0, 0.12);
+      --cp-overlay: rgba(255, 255, 255, 0.8);
+      --cp-panel: rgba(255, 255, 255, 0.86);
+      --cp-panel-strong: rgba(255, 255, 255, 0.96);
+      --cp-sheen: rgba(255, 255, 255, 0.55);
+      --cp-highlight: rgba(177, 31, 75, 0.12);
+    }
+    html[data-theme="dark"] {
+      color-scheme: dark;
+      --cp-bg: #3d3b3a;
+      --cp-bg-elevated: #343231;
+      --cp-surface: #292929;
+      --cp-surface-soft: #2e2e2e;
+      --cp-border: #474747;
+      --cp-border-strong: #5f5f5f;
+      --cp-text: #dedede;
+      --cp-text-muted: #919191;
+      --cp-text-soft: #b0b0b0;
+      --cp-accent: #fd8ea1;
+      --cp-accent-hover: #fb7b91;
+      --cp-accent-soft: rgba(253, 142, 161, 0.14);
+      --cp-accent-fg: #1a1a1a;
+      --cp-success: #4ade80;
+      --cp-danger: #f87171;
+      --cp-warning: #fbbf24;
+      --cp-link: #4da6ff;
+      --cp-shadow: 0 18px 48px rgba(0, 0, 0, 0.32);
+      --cp-overlay: rgba(41, 41, 41, 0.88);
+      --cp-panel: rgba(41, 41, 41, 0.72);
+      --cp-panel-strong: rgba(41, 41, 41, 0.96);
+      --cp-sheen: rgba(255, 255, 255, 0.04);
+      --cp-highlight: rgba(253, 142, 161, 0.12);
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--cp-bg); color: var(--cp-text); font: 16px/1.65 "Segoe UI", Aptos, Calibri, -apple-system, BlinkMacSystemFont, sans-serif; }
+    main { max-width: 1080px; margin: auto; padding: 32px 24px 48px; }
+    h1 { font-size: clamp(1.9rem, 4vw, 2.7rem); line-height: 1.2; margin: 20px 0 12px; }
+    h2 { font-size: 1.5rem; margin: 0 0 12px; } h3 { font-size: 1.05rem; margin: 0 0 8px; }
+    p { margin: 0; } p + p { margin-top: 8px; }
+    figure { margin: 0; }
+    a { color: var(--cp-link); text-underline-offset: 3px; }
+    code { font-family: Consolas, "Courier New", Courier, monospace; font-size: .85em; overflow-wrap: anywhere; }
+    .muted { color: var(--cp-text-muted); font-size: .85rem; }
+    .section { margin-top: 28px; }
+    .card { padding: 24px; border: 1px solid var(--cp-border); border-radius: 16px; background: var(--cp-surface); box-shadow: 0 0 2px var(--cp-border), 0 1px 2px var(--cp-highlight); }
+    .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+    .note { background: var(--cp-accent-soft); border-left: 4px solid var(--cp-accent); border-radius: .625rem; padding: 16px 20px; }
+    .status { color: var(--cp-text-muted); font-size: .8rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
+    .flow { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin: 16px 0; }
+    .node { border: 1px solid var(--cp-border-strong); border-radius: .625rem; background: var(--cp-surface); padding: 12px 16px; }
+    .arrow { color: var(--cp-accent); font-weight: 700; }
+    ol { padding-left: 24px; } li + li { margin-top: 12px; }
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: .9rem; }
+    th, td { text-align: left; vertical-align: top; padding: 12px; border-bottom: 1px solid var(--cp-border); }
+    th { background: var(--cp-surface-soft); color: var(--cp-text-muted); font-size: .8rem; }
+    tr:last-child td { border-bottom: 0; }
+    details { border: 1px solid var(--cp-border); border-radius: .625rem; background: var(--cp-surface); padding: 16px 20px; }
+    summary { cursor: pointer; font-weight: 600; } .details-body { margin-top: 16px; }
+    nav { display: flex; flex-wrap: wrap; gap: 12px 24px; }
+    footer { margin-top: 28px; border-top: 1px solid var(--cp-border); padding-top: 16px; color: var(--cp-text-muted); font-size: .8rem; }
+    :focus-visible { outline: 3px solid var(--cp-accent); outline-offset: 4px; }
+    @media (max-width: 700px) { main { padding: 24px 16px; } .grid { grid-template-columns: 1fr; } .card { padding: 20px; } }
+    @media print { main { max-width: none; padding: 0; } body { font-size: 11pt; } .card, tr { break-inside: avoid; } .card { box-shadow: none; } }
+  </style>
+</head>
+<body>
+<main>
+  <nav aria-label="Document navigation"><a href="robot-learning-overview-20261002.html">Process overview</a><a href="robot-campaign-a6def80f-20261002.html">Campaign a6def80f</a></nav>
+  <header>
+    <h1>Campaign 6350d383: replaced without a measured result</h1>
+    <p class="status">Replaced / preserved state nonterminal / no official result</p>
+    <p class="muted" style="margin-top: 12px">ID: <code>6350d383-c0a4-4a20-9357-c34df595a68b</code></p>
+    <p class="muted">Started: 1 October 2026, 21:51:28.614230 CEST.</p>
+    <p class="muted">No campaign end time is recorded. The successor started on 1 October 2026 at 22:29:26.686463 CEST.</p>
+    <p class="muted">CEST means Central European Summer Time (UTC+02:00).</p>
+  </header>
+
+  <section class="section grid" aria-label="Result and evidence">
+    <article class="card"><h2>No measured policy result</h2><p>No completed training or measurement appears in the preserved history.</p><p>No development score or official assessment is recorded.</p><p>Replacement is not a formal failure or a no-credible-route conclusion.</p></article>
+    <article class="card"><h2>A startup request, not a completed run</h2><p>The scientific model was ready.</p><p>The harness log records a baseline training request during startup.</p><p>The preserved operation history contains no completed operation.</p></article>
+  </section>
+
+  <section class="section" aria-labelledby="sequence">
+    <h2 id="sequence">Sequence of work</h2>
+    <figure class="card">
+      <div class="flow" aria-label="Recorded sequence">
+        <span class="node">Scientific model ready</span><span class="arrow" aria-hidden="true">&rarr;</span>
+        <span class="node">Startup baseline request</span><span class="arrow" aria-hidden="true">&rarr;</span>
+        <span class="node">No completed operation recorded</span><span class="arrow" aria-hidden="true">&rarr;</span>
+        <span class="node">Campaign replaced</span>
+      </div>
+      <figcaption class="muted">The harness log supplies the request observation. The state and completed history supply the completion boundary.</figcaption>
+    </figure>
+    <ol>
+      <li><strong>Campaign initialization.</strong> The recorded start was 21:51:28.614230 CEST on 1 October. The state identifies the restored recipe source as <code>9fbe544002f73f9b50ded6986a6a6b6db90fea40</code>.</li>
+      <li><strong>Preliminary model.</strong> One principal investigator (PI) invocation produced the scientific-model deliverable. The state marks it ready at <code>3498bfb74236a9bd1f17f33116a707ca36636a31</code>. The preserved file matches that artifact.</li>
+      <li><strong>Startup.</strong> A second PI invocation selected a baseline before intervention. The harness log says the PI considered a candidate necessary before deciding whether to change training coverage, reward, or control representation.</li>
+      <li><strong>End of recorded activity.</strong> The last usage record is 21:59:39.407255 CEST. The completed history is empty. No inquiry, checkpoint, candidate, or model role is recorded in the state.</li>
+      <li><strong>Replacement boundary.</strong> Reset <code>1fc0129</code> initialized successor <code>010714c2-5abd-4836-96bd-364caaf82042</code> at 22:29:26.686463 CEST. This is not a recorded end time for 6350d383.</li>
+    </ol>
+  </section>
+
+  <section class="section" aria-labelledby="records">
+    <h2 id="records">Recorded operations</h2>
+    <div class="card table-wrap">
+      <table>
+        <thead><tr><th scope="col">Work or operation</th><th scope="col">Preserved evidence</th><th scope="col">Limit</th></tr></thead>
+        <tbody>
+          <tr><td>Scientific-model preparation</td><td>Ready state and matching immutable artifact</td><td>A deliverable, not a measurement operation</td></tr>
+          <tr><td>Startup training request</td><td>Public harness-log observation</td><td>No request file exists at the source Git ref</td></tr>
+          <tr><td>Completed training</td><td>0 completed runs; 0 recorded steps; 0 archived candidates</td><td>A request does not establish execution or completion</td></tr>
+          <tr><td>Completed measurement</td><td>0 measurement operations; no instrument measurement output</td><td>No development performance evidence</td></tr>
+          <tr><td>Official assessment</td><td>None; <code>official_assessment</code> is null</td><td>No official success or failure</td></tr>
+        </tbody>
+      </table>
+      <p class="muted" style="margin-top: 12px">The empty <code>research/results.jsonl</code> agrees exactly with <code>state.operation_events</code>. The state counters are all zero. Usage records still show two PI invocations.</p>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="cause">
+    <h2 id="cause">Why instrument documentation changed afterward</h2>
+    <div class="note">
+      <p>This campaign requested a baseline directly in startup.</p>
+      <p>It did not need an inquiry handoff to make that choice.</p>
+      <p>The observation concerned action selection, not policy performance.</p>
+    </div>
+    <p style="margin-top: 16px">The harness log records a comparison after two baseline-first openings.</p>
+    <p>Commit <code>c2abfc7</code> removed the 44-line artifact-metadata section from the instrument document. The executable inventory and measurement support remained unchanged.</p>
+    <p>The next campaign still requested training first. It changed the training range rather than requesting an unchanged-recipe baseline.</p>
+    <p>The log then records restoration of the document section. The comparison did not isolate a causal effect of the text. It also regenerated the scientific model.</p>
+  </section>
+
+  <section class="section" aria-labelledby="lessons">
+    <h2 id="lessons">Lessons and resulting change</h2>
+    <div class="card table-wrap">
+      <table>
+        <thead><tr><th scope="col">Supported observation</th><th scope="col">Action or boundary</th></tr></thead>
+        <tbody>
+          <tr><td>An inquiry handoff was not necessary for this baseline-first request.</td><td>The maintainer tested instrument documentation instead of requiring a particular scientific instrument.</td></tr>
+          <tr><td>Removing the metadata text did not restore investigation before training in the next opening.</td><td>The document section was restored. The log leaves training-first progression unresolved.</td></tr>
+          <tr><td>This campaign supplies no measured policy outcome.</td><td>Do not infer policy failure, policy improvement, or improved scientific behavior from the request or documentation change.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="margin-top: 16px">These are limits on the recorded comparison. They are not scientific conclusions about the robot or the learning method.</p>
+  </section>
+
+  <section class="section" aria-labelledby="resources">
+    <h2 id="resources">Recorded resource use</h2>
+    <div class="card table-wrap">
+      <table><thead><tr><th scope="col">Completed training</th><th scope="col">Completed steps</th><th scope="col">Measurement operations</th><th scope="col">PI invocations</th><th scope="col">Reported AIU</th></tr></thead><tbody><tr><td>0 runs</td><td>0</td><td>0</td><td>2</td><td>3.282158</td></tr></tbody></table>
+      <p class="muted" style="margin-top: 12px">AIU is the usage logger's reported unit for artificial intelligence use. It is not a policy score.</p>
+      <p class="muted">Scientific-model invocation: 193.670 seconds and 1.913757 AIU. Startup invocation: 63.836 seconds and 1.368401 AIU.</p>
+      <p class="muted">Total recorded PI duration: 257.506 seconds. Both invocations returned exit code 0. No failed attempt is recorded in this usage file.</p>
+    </div>
+  </section>
+  <details class="section">
+    <summary>Sources and limits</summary>
+    <div class="details-body">
+      <p>The historical state and completed history were read with read-only <code>git show</code> from <code>1fc0129^</code>. That ref resolves to <code>c2abfc7efc60be52b98a1f4189e022d759e006b2</code>.</p>
+      <p>Sources: <code>research/research_state.json</code> and <code>research/results.jsonl</code> at that ref. The campaign ID was checked. The zero-record history was checked against the state's empty <code>operation_events</code>.</p>
+      <p>The scientific-model file at that ref matches the file in its recorded artifact commit, <code>3498bfb74236a9bd1f17f33116a707ca36636a31</code>. Model preparation is not experimental validation.</p>
+      <p>Usage comes from <code>reports\session_usage\6350d383-c0a4-4a20-9357-c34df595a68b.jsonl</code>. The two durations and AIU values were summed independently.</p>
+      <p>The current <code>docs\harness-experiment-log.md</code>, lines 792&ndash;905, supplies the public startup observation, documentation comparison, and subsequent restoration. No private assistant reasoning was used.</p>
+      <p>The successor's initialization time comes from <code>1fc0129:research/research_state.json</code>. All displayed local times use UTC+02:00.</p>
+      <p>Material limit: <code>research/operation_request.json</code> is absent from the historical Git tree. The log reports a request, but this source does not preserve its exact payload or establish accepted execution. No completed artifact can establish a policy result here.</p>
+      <p>The preserved <code>terminal_state</code> is null. Replacement is an administrative boundary, not a formal terminal outcome. Activity outside the preserved completion history cannot be quantified from these sources.</p>
+    </div>
+  </details>
+  <footer>
+    <nav aria-label="Related documents"><a href="robot-learning-overview-20261002.html">Process overview</a><a href="robot-campaign-a6def80f-20261002.html">Campaign a6def80f</a></nav>
+    <p style="margin-top: 12px">Short factual sentences and consistent terms are used. Formal ASD-STE100 compliance is not verified.</p>
+    <p>This is a maintainer document outside the PI campaign context.</p>
+  </footer>
+</main>
+</body>
+</html>

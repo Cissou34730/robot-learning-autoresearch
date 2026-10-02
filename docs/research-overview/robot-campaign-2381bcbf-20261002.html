@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Campaign 2381bcbf: official assessment failed</title>
+  <script>
+    (() => {
+      const param = new URLSearchParams(window.location.search).get("scoutTheme");
+      const theme =
+        param || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+      document.documentElement.setAttribute("data-theme", theme);
+    })();
+  </script>
+  <style>
+    :root {
+      color-scheme: light;
+      --cp-bg: #f7f4ef;
+      --cp-bg-elevated: #fcfbf8;
+      --cp-surface: #ffffff;
+      --cp-surface-soft: #f5f5f5;
+      --cp-border: #dedede;
+      --cp-border-strong: #919191;
+      --cp-text: #242424;
+      --cp-text-muted: #5c5c5c;
+      --cp-text-soft: #6f6f6f;
+      --cp-accent: #b11f4b;
+      --cp-accent-hover: #9a1a41;
+      --cp-accent-soft: rgba(177, 31, 75, 0.08);
+      --cp-accent-fg: #ffffff;
+      --cp-success: #16a34a;
+      --cp-danger: #dc2626;
+      --cp-warning: #f59e0b;
+      --cp-link: #0078d4;
+      --cp-shadow: 0 18px 48px rgba(0, 0, 0, 0.12);
+      --cp-overlay: rgba(255, 255, 255, 0.8);
+      --cp-panel: rgba(255, 255, 255, 0.86);
+      --cp-panel-strong: rgba(255, 255, 255, 0.96);
+      --cp-sheen: rgba(255, 255, 255, 0.55);
+      --cp-highlight: rgba(177, 31, 75, 0.12);
+    }
+    html[data-theme="dark"] {
+      color-scheme: dark;
+      --cp-bg: #3d3b3a;
+      --cp-bg-elevated: #343231;
+      --cp-surface: #292929;
+      --cp-surface-soft: #2e2e2e;
+      --cp-border: #474747;
+      --cp-border-strong: #5f5f5f;
+      --cp-text: #dedede;
+      --cp-text-muted: #919191;
+      --cp-text-soft: #b0b0b0;
+      --cp-accent: #fd8ea1;
+      --cp-accent-hover: #fb7b91;
+      --cp-accent-soft: rgba(253, 142, 161, 0.14);
+      --cp-accent-fg: #1a1a1a;
+      --cp-success: #4ade80;
+      --cp-danger: #f87171;
+      --cp-warning: #fbbf24;
+      --cp-link: #4da6ff;
+      --cp-shadow: 0 18px 48px rgba(0, 0, 0, 0.32);
+      --cp-overlay: rgba(41, 41, 41, 0.88);
+      --cp-panel: rgba(41, 41, 41, 0.72);
+      --cp-panel-strong: rgba(41, 41, 41, 0.96);
+      --cp-sheen: rgba(255, 255, 255, 0.04);
+      --cp-highlight: rgba(253, 142, 161, 0.12);
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--cp-bg); color: var(--cp-text); font: 16px/1.65 "Segoe UI", Aptos, Calibri, -apple-system, BlinkMacSystemFont, sans-serif; }
+    main { max-width: 1080px; margin: auto; padding: 32px 24px 48px; }
+    h1 { font-size: clamp(1.9rem, 4vw, 2.7rem); line-height: 1.2; margin: 20px 0 12px; }
+    h2 { font-size: 1.5rem; margin: 0 0 12px; } h3 { font-size: 1.05rem; margin: 0 0 8px; }
+    p { margin: 0; } p + p { margin-top: 8px; }
+    figure { margin: 0; }
+    a { color: var(--cp-link); text-underline-offset: 3px; }
+    code { font-family: Consolas, "Courier New", Courier, monospace; font-size: .85em; overflow-wrap: anywhere; }
+    .muted { color: var(--cp-text-muted); font-size: .85rem; }
+    .section { margin-top: 28px; }
+    .card { padding: 24px; border: 1px solid var(--cp-border); border-radius: 16px; background: var(--cp-surface); box-shadow: 0 0 2px var(--cp-border), 0 1px 2px var(--cp-highlight); }
+    .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+    .note { background: var(--cp-accent-soft); border-left: 4px solid var(--cp-accent); border-radius: .625rem; padding: 16px 20px; }
+    .status { color: var(--cp-danger); font-size: .8rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
+    .flow { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin: 16px 0; }
+    .node { border: 1px solid var(--cp-border-strong); border-radius: .625rem; background: var(--cp-surface); padding: 12px 16px; }
+    .arrow { color: var(--cp-accent); font-weight: 700; }
+    ol { padding-left: 24px; } li + li { margin-top: 12px; }
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: .9rem; }
+    th, td { text-align: left; vertical-align: top; padding: 12px; border-bottom: 1px solid var(--cp-border); }
+    th { background: var(--cp-surface-soft); color: var(--cp-text-muted); font-size: .8rem; }
+    tr:last-child td { border-bottom: 0; }
+    .bar { height: 22px; background: var(--cp-surface-soft); border: 1px solid var(--cp-border); border-radius: .625rem; overflow: hidden; margin-top: 8px; }
+    .fill { height: 100%; background: var(--cp-accent); } .fill.failed { background: var(--cp-danger); }
+    details { border: 1px solid var(--cp-border); border-radius: .625rem; background: var(--cp-surface); padding: 16px 20px; }
+    summary { cursor: pointer; font-weight: 600; } .details-body { margin-top: 16px; }
+    nav { display: flex; flex-wrap: wrap; gap: 12px 24px; }
+    footer { margin-top: 28px; border-top: 1px solid var(--cp-border); padding-top: 16px; color: var(--cp-text-muted); font-size: .8rem; }
+    :focus-visible { outline: 3px solid var(--cp-accent); outline-offset: 4px; }
+    @media (max-width: 700px) { main { padding: 24px 16px; } .grid { grid-template-columns: 1fr; } .card { padding: 20px; } }
+    @media print { main { max-width: none; padding: 0; } body { font-size: 11pt; } .card, tr { break-inside: avoid; } .card { box-shadow: none; } }
+  </style>
+</head>
+<body>
+<main>
+  <nav aria-label="Document navigation"><a href="robot-learning-overview-20261002.html">Process overview</a><a href="robot-campaign-d7080d95-20261002.html">Newer campaign</a><a href="robot-campaign-48993cfd-20261002.html">Older campaign</a></nav>
+  <header>
+    <h1>Campaign 2381bcbf: official assessment failed</h1>
+    <p class="status">Previous campaign 1 / official result recorded</p>
+    <p class="muted" style="margin-top: 12px">ID: <code>2381bcbf-72c1-4535-9334-7e0d753f356d</code></p>
+    <p class="muted">Started: 2 October 2026, 13:54 CEST. Official result: 16:27 CEST.</p>
+  </header>
+
+  <section class="section grid" aria-label="Official and development results">
+    <figure class="card"><h2>Official result: 195 / 200</h2><p>The success rate was 97.5%. The required result was at least 196 / 200.</p><div class="bar" role="img" aria-label="195 of 200 official successes, or 97.5 percent"><div class="fill failed" style="width: 97.5%"></div></div><figcaption class="muted" style="margin-top: 12px">The official failure ended the campaign.</figcaption></figure>
+    <figure class="card"><h2>Last development result: 197 / 200</h2><p>The success rate was 98.5%. This result came from a different panel.</p><div class="bar" role="img" aria-label="197 of 200 development successes, or 98.5 percent"><div class="fill" style="width: 98.5%"></div></div><figcaption class="muted" style="margin-top: 12px">Both bars use a full 0&ndash;200 scale. The two panels must not be combined.</figcaption></figure>
+  </section>
+
+  <section class="section" aria-labelledby="sequence">
+    <h2 id="sequence">Sequence of work</h2>
+    <figure class="card">
+      <div class="flow" aria-label="Recorded sequence">
+        <span class="node">Baseline T2</span><span class="arrow" aria-hidden="true">&rarr;</span>
+        <span class="node">I1: diagnostics + T3 + T4</span><span class="arrow" aria-hidden="true">&rarr;</span>
+        <span class="node">Close I1</span><span class="arrow" aria-hidden="true">&rarr;</span>
+        <span class="node">Assess T4</span>
+      </div>
+      <figcaption class="muted">The two method changes occurred inside one inquiry, not one inquiry per training run.</figcaption>
+    </figure>
+    <ol>
+      <li><strong>Startup execution.</strong> T1 failed before learning because of a Windows file-permission error. The replacement T2 completed training on the full 6&ndash;20 cm target range.</li>
+      <li><strong>Startup measurement.</strong> M1 compared a late checkpoint with the final checkpoint. The final T2 candidate achieved 120 / 200 successes.</li>
+      <li><strong>Startup checkpoint delay.</strong> An uncommitted maintainer document blocked ownership validation. Its owner committed it. The scientific request remained unchanged.</li>
+      <li><strong>Inquiry I1.</strong> The PI investigated outer-radius reaching and hold stability. M2 measured a fixed 128-case radius/angle grid.</li>
+      <li><strong>Target sampling change.</strong> T3 continued from T2. Training sampled 75% of targets at 14&ndash;20 cm and 25% at 6&ndash;14 cm.</li>
+      <li><strong>Hold-reward change.</strong> T4 continued from T3. Leaving tolerance forfeited accumulated hold-progress credit.</li>
+      <li><strong>Closure and assessment.</strong> The PI closed I1, assigned T4 as best-known, and requested official assessment. The official result was 195 / 200.</li>
+    </ol>
+  </section>
+
+  <section class="section" aria-labelledby="measurements">
+    <h2 id="measurements">Matched development comparisons</h2>
+    <div class="card table-wrap">
+      <table>
+        <thead><tr><th scope="col">Measurement</th><th scope="col">Reference</th><th scope="col">Candidate</th><th scope="col">Paired change</th></tr></thead>
+        <tbody>
+          <tr><td>M3; seeds 1400&ndash;1599</td><td>T2: 130 / 200</td><td>T3: 190 / 200</td><td>60 gains; no losses</td></tr>
+          <tr><td>M4; seeds 1600&ndash;1799</td><td>T3: 188 / 200</td><td>T4: 197 / 200</td><td>9 gains; no losses</td></tr>
+        </tbody>
+      </table>
+      <p class="muted" style="margin-top: 12px">Each row compares candidates on the same episode seeds. The rows use different panels. T3's two scores are not contradictory.</p>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="residual">
+    <h2 id="residual">Failure evidence omitted from the closure claim</h2>
+    <p>The final fixed-grid diagnostic contained 128 cases. T4 entered tolerance in 126 and completed the hold in 124.</p>
+    <div class="card table-wrap" style="margin-top: 16px">
+      <table>
+        <thead><tr><th scope="col">Target</th><th scope="col">Recorded failure</th><th scope="col">Relevant comparison</th></tr></thead>
+        <tbody>
+          <tr><td>12 cm; -135 degrees</td><td>Entered tolerance; longest hold was 4 steps</td><td>This case succeeded with T2.</td></tr>
+          <tr><td>14 cm; -135 degrees</td><td>Never entered tolerance</td><td>A reaching failure remained.</td></tr>
+          <tr><td>14 cm; +22.5 degrees</td><td>Entered tolerance; longest hold was 9 steps</td><td>This case succeeded with T3.</td></tr>
+          <tr><td>20 cm; -157.5 degrees</td><td>Never entered tolerance</td><td>A reaching failure remained.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="margin-top: 16px">The PI described the remaining failures as hold/angle cases rather than non-entry cases. That description omitted two non-entry failures.</p>
+    <p>Positive matched-panel results did not remove the fixed-grid regressions.</p>
+    <p class="muted">These grid failures are development evidence. The retained official record does not identify the mechanisms of its five failures.</p>
+  </section>
+
+  <section class="section" aria-labelledby="handoff">
+    <h2 id="handoff">Evidence handling and assessment decision</h2>
+    <div class="grid">
+      <article class="card"><h3>What the public record shows</h3><p>S3 read only lines 1&ndash;310 of the M3/M4 diagnostic files.</p><p>It described the M4 inspection as complete.</p><p>S4 and S5 inherited the interpretation without inspecting the diagnostic files.</p><p>Goal review treated protected-panel transfer as the remaining uncertainty.</p></article>
+      <article class="card"><h3>What the results establish</h3><p>T3 and T4 improved matched development performance.</p><p>The fixed grid still showed reaching and holding failures.</p><p>The official result did not meet the human goal.</p><p>The record does not prove that the recent harness changes caused the official failure.</p></article>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="lessons">
+    <h2 id="lessons">Lessons and resulting work</h2>
+    <div class="card table-wrap">
+      <table>
+        <thead><tr><th scope="col">Lesson</th><th scope="col">Harness position or action</th></tr></thead>
+        <tbody>
+          <tr><td>An inquiry can support several related method changes.</td><td>Keep the question-based objective provisionally. This observation fits its purpose but does not prove causation.</td></tr>
+          <tr><td>A positive aggregate score can hide residual failures and regressions.</td><td>Preserve both improvements and contradictory cases in checkpoints and goal review.</td></tr>
+          <tr><td>Best-known and ready for assessment are different decisions.</td><td>A narrow goal-review guidance change is designed. It is not implemented.</td></tr>
+          <tr><td>A development-panel pass is not an official pass.</td><td>Do not pool panels or use development results to override the official result.</td></tr>
+          <tr><td>Uncommitted human edits can block scientific ownership checks.</td><td>Publish maintainer edits before scientific operations. Do not weaken the ownership boundary.</td></tr>
+          <tr><td>The failed initial training attempt produced no learning evidence.</td><td>Keep execution failure separate from a completed method with poor performance.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="margin-top: 16px">The later startup-ceiling change was tactical. It was not active in this campaign and cannot explain this campaign's result.</p>
+  </section>
+
+  <section class="section" aria-labelledby="resources">
+    <h2 id="resources">Recorded resource use</h2>
+    <div class="card table-wrap">
+      <table><thead><tr><th scope="col">Completed training</th><th scope="col">Completed steps</th><th scope="col">Inquiries</th><th scope="col">PI invocations</th><th scope="col">Reported AIU</th></tr></thead><tbody><tr><td>3 runs</td><td>362,496</td><td>1</td><td>19</td><td>43.83</td></tr></tbody></table>
+      <p class="muted" style="margin-top: 12px">Four measurement operations contained nine instrument measurements. The failed T1 attempt is not a completed training run.</p>
+    </div>
+  </section>
+  <details class="section">
+    <summary>Sources and limits</summary>
+    <div class="details-body">
+      <p>The state and operation history were read from the repository record immediately before reset <code>ba3ce6b</code>.</p>
+      <p>Both records agreed on the operation sequence. Terminal publication <code>d12d794</code> records the official result.</p>
+      <p>M1&ndash;M4 retain the development evaluation and fixed-grid artifacts under this campaign's evaluation directory.</p>
+      <p>The evidence-access analysis is recorded in <code>docs\harness-experiment-log.md</code>, in the entry for this campaign.</p>
+      <p>Usage comes from <code>reports\session_usage\2381bcbf-72c1-4535-9334-7e0d753f356d.jsonl</code>.</p>
+      <p>The five official failures have no retained per-episode mechanism report. Do not assign the grid mechanisms to them.</p>
+    </div>
+  </details>
+  <footer>
+    <nav aria-label="Related documents"><a href="robot-learning-overview-20261002.html">Process overview</a><a href="robot-campaign-d7080d95-20261002.html">d7080d95</a><a href="robot-campaign-48993cfd-20261002.html">48993cfd</a><a href="robot-campaign-a6def80f-20261002.html">a6def80f</a></nav>
+    <p style="margin-top: 12px">Short factual sentences and consistent terms are used. Formal ASD-STE100 compliance is not verified.</p>
+    <p>This is a maintainer document outside the PI campaign context.</p>
+  </footer>
+</main>
+</body>
+</html>

@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Campaign a6def80f: replaced before development measurement</title>
+  <script>
+    (() => {
+      const param = new URLSearchParams(window.location.search).get("scoutTheme");
+      const theme =
+        param || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+      document.documentElement.setAttribute("data-theme", theme);
+    })();
+  </script>
+  <style>
+    :root {
+      color-scheme: light;
+      --cp-bg: #f7f4ef;
+      --cp-bg-elevated: #fcfbf8;
+      --cp-surface: #ffffff;
+      --cp-surface-soft: #f5f5f5;
+      --cp-border: #dedede;
+      --cp-border-strong: #919191;
+      --cp-text: #242424;
+      --cp-text-muted: #5c5c5c;
+      --cp-text-soft: #6f6f6f;
+      --cp-accent: #b11f4b;
+      --cp-accent-hover: #9a1a41;
+      --cp-accent-soft: rgba(177, 31, 75, 0.08);
+      --cp-accent-fg: #ffffff;
+      --cp-success: #16a34a;
+      --cp-danger: #dc2626;
+      --cp-warning: #f59e0b;
+      --cp-link: #0078d4;
+      --cp-shadow: 0 18px 48px rgba(0, 0, 0, 0.12);
+      --cp-overlay: rgba(255, 255, 255, 0.8);
+      --cp-panel: rgba(255, 255, 255, 0.86);
+      --cp-panel-strong: rgba(255, 255, 255, 0.96);
+      --cp-sheen: rgba(255, 255, 255, 0.55);
+      --cp-highlight: rgba(177, 31, 75, 0.12);
+    }
+    html[data-theme="dark"] {
+      color-scheme: dark;
+      --cp-bg: #3d3b3a;
+      --cp-bg-elevated: #343231;
+      --cp-surface: #292929;
+      --cp-surface-soft: #2e2e2e;
+      --cp-border: #474747;
+      --cp-border-strong: #5f5f5f;
+      --cp-text: #dedede;
+      --cp-text-muted: #919191;
+      --cp-text-soft: #b0b0b0;
+      --cp-accent: #fd8ea1;
+      --cp-accent-hover: #fb7b91;
+      --cp-accent-soft: rgba(253, 142, 161, 0.14);
+      --cp-accent-fg: #1a1a1a;
+      --cp-success: #4ade80;
+      --cp-danger: #f87171;
+      --cp-warning: #fbbf24;
+      --cp-link: #4da6ff;
+      --cp-shadow: 0 18px 48px rgba(0, 0, 0, 0.32);
+      --cp-overlay: rgba(41, 41, 41, 0.88);
+      --cp-panel: rgba(41, 41, 41, 0.72);
+      --cp-panel-strong: rgba(41, 41, 41, 0.96);
+      --cp-sheen: rgba(255, 255, 255, 0.04);
+      --cp-highlight: rgba(253, 142, 161, 0.12);
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--cp-bg); color: var(--cp-text); font: 16px/1.65 "Segoe UI", Aptos, Calibri, -apple-system, BlinkMacSystemFont, sans-serif; }
+    main { max-width: 1080px; margin: auto; padding: 32px 24px 48px; }
+    h1 { font-size: clamp(1.9rem, 4vw, 2.7rem); line-height: 1.2; margin: 20px 0 12px; }
+    h2 { font-size: 1.5rem; margin: 0 0 12px; } h3 { font-size: 1.05rem; margin: 0 0 8px; }
+    p { margin: 0; } p + p { margin-top: 8px; }
+    figure { margin: 0; }
+    a { color: var(--cp-link); text-underline-offset: 3px; }
+    code { font-family: Consolas, "Courier New", Courier, monospace; font-size: .85em; overflow-wrap: anywhere; }
+    .muted { color: var(--cp-text-muted); font-size: .85rem; }
+    .section { margin-top: 28px; }
+    .card { padding: 24px; border: 1px solid var(--cp-border); border-radius: 16px; background: var(--cp-surface); box-shadow: 0 0 2px var(--cp-border), 0 1px 2px var(--cp-highlight); }
+    .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+    .note { background: var(--cp-accent-soft); border-left: 4px solid var(--cp-accent); border-radius: .625rem; padding: 16px 20px; }
+    .status { color: var(--cp-text-muted); font-size: .8rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
+    .flow { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin: 16px 0; }
+    .node { border: 1px solid var(--cp-border-strong); border-radius: .625rem; background: var(--cp-surface); padding: 12px 16px; }
+    .arrow { color: var(--cp-accent); font-weight: 700; }
+    ol { padding-left: 24px; } li + li { margin-top: 12px; }
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: .9rem; }
+    th, td { text-align: left; vertical-align: top; padding: 12px; border-bottom: 1px solid var(--cp-border); }
+    th { background: var(--cp-surface-soft); color: var(--cp-text-muted); font-size: .8rem; }
+    tr:last-child td { border-bottom: 0; }
+    details { border: 1px solid var(--cp-border); border-radius: .625rem; background: var(--cp-surface); padding: 16px 20px; }
+    summary { cursor: pointer; font-weight: 600; } .details-body { margin-top: 16px; }
+    nav { display: flex; flex-wrap: wrap; gap: 12px 24px; }
+    footer { margin-top: 28px; border-top: 1px solid var(--cp-border); padding-top: 16px; color: var(--cp-text-muted); font-size: .8rem; }
+    :focus-visible { outline: 3px solid var(--cp-accent); outline-offset: 4px; }
+    @media (max-width: 700px) { main { padding: 24px 16px; } .grid { grid-template-columns: 1fr; } .card { padding: 20px; } }
+    @media print { main { max-width: none; padding: 0; } body { font-size: 11pt; } .card, tr { break-inside: avoid; } .card { box-shadow: none; } }
+  </style>
+</head>
+<body>
+<main>
+  <nav aria-label="Document navigation"><a href="robot-learning-overview-20261002.html">Process overview</a><a href="robot-campaign-48993cfd-20261002.html">Newer campaign</a></nav>
+  <header>
+    <h1>Campaign a6def80f: replaced before development measurement</h1>
+    <p class="status">Previous campaign 3 / no official result</p>
+    <p class="muted" style="margin-top: 12px">ID: <code>a6def80f-a30e-44ec-9c18-188c04fdb535</code></p>
+    <p class="muted">Started: 2 October 2026, 08:44 CEST. The next campaign reset occurred at 09:37.</p>
+  </header>
+
+  <section class="section grid" aria-label="Result and evidence">
+    <article class="card"><h2>No development or official score</h2><p>One training run completed 120,832 steps.</p><p>No completed development measurement is recorded.</p><p>The campaign was replaced without official assessment.</p></article>
+    <article class="card"><h2>The observed issue was startup interpretation</h2><p>Startup ended at a checkpoint before any training or measurement.</p><p>The first training occurred later, inside I1.</p><p>This is not evidence that the resulting policy failed the task.</p></article>
+  </section>
+
+  <section class="section" aria-labelledby="sequence">
+    <h2 id="sequence">Sequence of work</h2>
+    <figure class="card">
+      <div class="flow" aria-label="Recorded sequence">
+        <span class="node">Scientific model</span><span class="arrow" aria-hidden="true">&rarr;</span>
+        <span class="node">Startup checkpoint E1</span><span class="arrow" aria-hidden="true">&rarr;</span>
+        <span class="node">Open I1 + checkpoint</span><span class="arrow" aria-hidden="true">&rarr;</span>
+        <span class="node">Train T1</span>
+      </div>
+      <figcaption class="muted">There was no development measurement after T1 in the preserved record.</figcaption>
+    </figure>
+    <ol>
+      <li><strong>Preliminary model.</strong> The PI identified two possible barriers: missing inner-radius training experience and inadequate braking or continuous holding.</li>
+      <li><strong>Startup checkpoint.</strong> E1 recorded those explanations and planned a baseline. It did not cite completed training or measurement evidence.</li>
+      <li><strong>Goal review.</strong> E2 opened I1. E3 ended the opening session at a checkpoint.</li>
+      <li><strong>Inquiry training.</strong> S3 submitted T1. It trained the existing PPO recipe on the 14&ndash;20 cm radius range.</li>
+      <li><strong>End of the preserved run.</strong> T1 completed. I1 remained open. No model role, development score, or official result was recorded before replacement.</li>
+    </ol>
+  </section>
+
+  <section class="section" aria-labelledby="records">
+    <h2 id="records">Recorded operations</h2>
+    <div class="card table-wrap">
+      <table>
+        <thead><tr><th scope="col">Operation</th><th scope="col">Session</th><th scope="col">Output</th></tr></thead>
+        <tbody>
+          <tr><td>E1: checkpoint</td><td>S1 startup</td><td>Initial explanations and a planned baseline</td></tr>
+          <tr><td>E2: inquiry opening</td><td>S2 goal review</td><td>I1: coverage versus braking/hold limitations</td></tr>
+          <tr><td>E3: checkpoint</td><td>S2 goal review</td><td>Saved inquiry opening and next direction</td></tr>
+          <tr><td>T1: training</td><td>S3 inquiry</td><td>120,000 requested steps; 120,832 completed steps</td></tr>
+        </tbody>
+      </table>
+      <p class="muted" style="margin-top: 12px">Training produced 24 archived candidates. Those archives do not supply a development success rate by themselves.</p>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="cause">
+    <h2 id="cause">Why the startup prompt was changed afterward</h2>
+    <div class="note">
+      <p>The PI treated startup as a phase that had to checkpoint before inquiry selection.</p>
+      <p>The prompt repeated that inquiry selection followed in goal review.</p>
+      <p>The actual restriction concerned <strong>formal inquiry opening</strong>. Startup already permitted scientific work.</p>
+    </div>
+    <p style="margin-top: 16px">Selecting a scientific question is not the same operation as formally opening an inquiry.</p>
+    <p>The prompt wording could encourage a planning-only reading. The record does not prove it was the only cause of the PI's choice.</p>
+    <p>Brief compaction had not introduced that wording. A shorter brief was not established as the cause.</p>
+  </section>
+
+  <section class="section" aria-labelledby="lessons">
+    <h2 id="lessons">Lessons and resulting change</h2>
+    <div class="card table-wrap">
+      <table>
+        <thead><tr><th scope="col">Lesson</th><th scope="col">Resulting action or boundary</th></tr></thead>
+        <tbody>
+          <tr><td>Distinguish scientific question selection from administrative inquiry opening.</td><td>Commit <code>c2ec8f7</code> clarified two startup prompt strings.</td></tr>
+          <tr><td>Startup can investigate before its checkpoint.</td><td>The clarification permits tools, measurements, or training. It does not prescribe one instrument.</td></tr>
+          <tr><td>Training output is not development performance evidence.</td><td>No policy success or failure can be concluded from this preserved record.</td></tr>
+          <tr><td>A mechanical wording correction is not proof of a better research process.</td><td>Its effect required a later campaign observation.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="margin-top: 16px">The change did not alter phase permissions, session transitions, the scientific model, or the training recipe.</p>
+  </section>
+
+  <section class="section" aria-labelledby="resources">
+    <h2 id="resources">Recorded resource use</h2>
+    <div class="card table-wrap">
+      <table><thead><tr><th scope="col">Completed training</th><th scope="col">Completed steps</th><th scope="col">Measurements</th><th scope="col">PI invocations</th><th scope="col">Reported AIU</th></tr></thead><tbody><tr><td>1 run</td><td>120,832</td><td>0</td><td>6</td><td>13.35</td></tr></tbody></table>
+    </div>
+  </section>
+  <details class="section">
+    <summary>Sources and limits</summary>
+    <div class="details-body">
+      <p>The state and operation history were read from the record immediately before reset <code>535d1e9</code>.</p>
+      <p>The histories agreed and contained E1&ndash;E3 and T1. There was no completed measurement event.</p>
+      <p><code>docs\harness-experiment-log.md</code> records the startup statement, root-cause analysis, and subsequent wording change.</p>
+      <p>Usage comes from <code>reports\session_usage\a6def80f-a30e-44ec-9c18-188c04fdb535.jsonl</code>.</p>
+      <p>No official result or formal no-credible-route conclusion exists for this run. Replacement is not an official failure.</p>
+    </div>
+  </details>
+  <footer>
+    <nav aria-label="Related documents"><a href="robot-learning-overview-20261002.html">Process overview</a><a href="robot-campaign-d7080d95-20261002.html">d7080d95</a><a href="robot-campaign-2381bcbf-20261002.html">2381bcbf</a><a href="robot-campaign-48993cfd-20261002.html">48993cfd</a></nav>
+    <p style="margin-top: 12px">Short factual sentences and consistent terms are used. Formal ASD-STE100 compliance is not verified.</p>
+    <p>This is a maintainer document outside the PI campaign context.</p>
+  </footer>
+</main>
+</body>
+</html>

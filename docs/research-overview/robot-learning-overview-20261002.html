@@ -1,0 +1,710 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Robot-learning process reference: phases, sessions, operations, evidence, ownership, recovery, and linked campaign reports.">
+  <title>Robot-learning research process</title>
+  <script>
+    (() => {
+      const param = new URLSearchParams(window.location.search).get("scoutTheme");
+      const theme =
+        param || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+      document.documentElement.setAttribute("data-theme", theme);
+    })();
+  </script>
+  <style>
+    :root {
+      color-scheme: light;
+      --cp-bg: #f7f4ef;
+      --cp-bg-elevated: #fcfbf8;
+      --cp-surface: #ffffff;
+      --cp-surface-soft: #f5f5f5;
+      --cp-border: #dedede;
+      --cp-border-strong: #919191;
+      --cp-text: #242424;
+      --cp-text-muted: #5c5c5c;
+      --cp-text-soft: #6f6f6f;
+      --cp-accent: #b11f4b;
+      --cp-accent-hover: #9a1a41;
+      --cp-accent-soft: rgba(177, 31, 75, 0.08);
+      --cp-accent-fg: #ffffff;
+      --cp-success: #16a34a;
+      --cp-danger: #dc2626;
+      --cp-warning: #f59e0b;
+      --cp-link: #0078d4;
+      --cp-shadow: 0 18px 48px rgba(0, 0, 0, 0.12);
+      --cp-overlay: rgba(255, 255, 255, 0.8);
+      --cp-panel: rgba(255, 255, 255, 0.86);
+      --cp-panel-strong: rgba(255, 255, 255, 0.96);
+      --cp-sheen: rgba(255, 255, 255, 0.55);
+      --cp-highlight: rgba(177, 31, 75, 0.12);
+    }
+    html[data-theme="dark"] {
+      color-scheme: dark;
+      --cp-bg: #3d3b3a;
+      --cp-bg-elevated: #343231;
+      --cp-surface: #292929;
+      --cp-surface-soft: #2e2e2e;
+      --cp-border: #474747;
+      --cp-border-strong: #5f5f5f;
+      --cp-text: #dedede;
+      --cp-text-muted: #919191;
+      --cp-text-soft: #b0b0b0;
+      --cp-accent: #fd8ea1;
+      --cp-accent-hover: #fb7b91;
+      --cp-accent-soft: rgba(253, 142, 161, 0.14);
+      --cp-accent-fg: #1a1a1a;
+      --cp-success: #4ade80;
+      --cp-danger: #f87171;
+      --cp-warning: #fbbf24;
+      --cp-link: #4da6ff;
+      --cp-shadow: 0 18px 48px rgba(0, 0, 0, 0.32);
+      --cp-overlay: rgba(41, 41, 41, 0.88);
+      --cp-panel: rgba(41, 41, 41, 0.72);
+      --cp-panel-strong: rgba(41, 41, 41, 0.96);
+      --cp-sheen: rgba(255, 255, 255, 0.04);
+      --cp-highlight: rgba(253, 142, 161, 0.12);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--cp-bg);
+      color: var(--cp-text);
+      font-family: "Segoe UI", Aptos, Calibri, -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: 16px;
+      line-height: 1.65;
+    }
+    main { max-width: 1160px; margin: auto; padding: 40px 24px 64px; }
+    h1, h2, h3, p, figure { margin: 0; }
+    h1 { max-width: 880px; font-size: clamp(2rem, 4.5vw, 3.25rem); line-height: 1.14; letter-spacing: -.03em; }
+    h2 { font-size: 1.6rem; line-height: 1.3; margin-bottom: 12px; }
+    h3 { font-size: 1.1rem; line-height: 1.4; margin-bottom: 8px; }
+    p + p { margin-top: 8px; }
+    code { font-family: Consolas, "Courier New", Courier, monospace; font-size: .87em; overflow-wrap: anywhere; }
+    a { color: var(--cp-link); text-underline-offset: 3px; }
+    button, summary { cursor: pointer; }
+    button {
+      background: var(--cp-surface); color: var(--cp-text); border: 1px solid var(--cp-border);
+      padding: 8px 12px; border-radius: .625rem; font: inherit; font-size: .85rem;
+    }
+    button:hover { border-color: var(--cp-accent); }
+    :focus-visible { outline: 3px solid var(--cp-accent); outline-offset: 4px; }
+    .topline { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 20px; }
+    .eyebrow { color: var(--cp-accent); font-size: .8rem; font-weight: 700; letter-spacing: .09em; text-transform: uppercase; }
+    .intro { max-width: 760px; margin-top: 20px; font-size: 1.1rem; }
+    .muted { color: var(--cp-text-muted); }
+    .small { font-size: .85rem; }
+    .snapshot { margin-top: 12px; color: var(--cp-text-muted); font-size: .85rem; }
+    .grid { display: grid; gap: 16px; }
+    .three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .four { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .card {
+      min-width: 0; background: var(--cp-surface); border: 1px solid var(--cp-border);
+      border-radius: 16px; padding: 24px;
+      box-shadow: 0 0 2px var(--cp-border), 0 1px 2px var(--cp-highlight);
+    }
+    .overview { margin-top: 28px; }
+    .overview .card { border-top: 4px solid var(--cp-accent); }
+    .overview .previous { border-top-color: var(--cp-danger); }
+    .overview .next { border-top-color: var(--cp-warning); }
+    .section { margin-top: 32px; }
+    .section > p { margin-bottom: 20px; }
+    .section-label { color: var(--cp-text-muted); font-size: .8rem; font-weight: 700; margin-bottom: 4px; }
+    .metric { font-size: 1.9rem; font-weight: 700; line-height: 1.2; }
+    .metric-label { font-size: .85rem; color: var(--cp-text-muted); margin-top: 8px; }
+    .metric-card { padding: 20px; }
+    .note { padding: 16px 20px; border-left: 4px solid var(--cp-accent); background: var(--cp-accent-soft); border-radius: .625rem; }
+    .note + .note { margin-top: 12px; }
+    .tag {
+      display: inline-block; border: 1px solid var(--cp-border); padding: 3px 9px;
+      border-radius: .625rem; font-size: .75rem; font-weight: 700; white-space: nowrap;
+    }
+    .kept { color: var(--cp-accent); background: var(--cp-accent-soft); border-color: var(--cp-accent); }
+    .fixed { color: var(--cp-success); border-color: var(--cp-success); }
+    .planned { color: var(--cp-text); border-color: var(--cp-warning); }
+    .removed { color: var(--cp-text-muted); background: var(--cp-surface-soft); }
+    .failed { color: var(--cp-danger); border-color: var(--cp-danger); }
+    .diagram { overflow-x: auto; margin: 16px 0 4px; }
+    .diagram svg { display: block; width: 100%; height: auto; }
+    .loop svg { min-width: 740px; }
+    svg text { fill: var(--cp-text); font-family: inherit; }
+    svg .label { font-size: 16px; }
+    svg .heading { font-size: 20px; font-weight: 700; }
+    svg .caption { font-size: 14px; fill: var(--cp-text-muted); }
+    svg .box { fill: var(--cp-surface); stroke: var(--cp-border-strong); stroke-width: 1.5; }
+    svg .accent-box { fill: var(--cp-accent-soft); stroke: var(--cp-accent); stroke-width: 2; }
+    svg .end-box { fill: var(--cp-surface-soft); stroke: var(--cp-text-muted); stroke-width: 1.5; }
+    svg .flow { fill: none; stroke: var(--cp-text-muted); stroke-width: 2; }
+    svg .return { fill: none; stroke: var(--cp-accent); stroke-width: 2; }
+    svg .tip { fill: var(--cp-text-muted); }
+    svg .return-tip { fill: var(--cp-accent); }
+    figcaption { color: var(--cp-text-muted); font-size: .85rem; margin-top: 12px; }
+    .role { border-top: 4px solid var(--cp-border-strong); }
+    .role.pi { border-top-color: var(--cp-accent); }
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: .9rem; }
+    th { text-align: left; font-size: .78rem; color: var(--cp-text-muted); background: var(--cp-surface-soft); }
+    th, td { padding: 14px 16px; vertical-align: top; border-bottom: 1px solid var(--cp-border); }
+    tbody tr:last-child td { border-bottom: 0; }
+    td:first-child { font-weight: 600; }
+    .changes { padding: 0; overflow: hidden; }
+    .changes table { min-width: 730px; }
+    .commit { display: block; font-size: .77rem; color: var(--cp-text-muted); margin-top: 4px; font-weight: 400; }
+    .chart-row { margin-top: 20px; }
+    .chart-label { display: flex; justify-content: space-between; gap: 16px; margin-bottom: 6px; font-size: .9rem; }
+    .bar { height: 24px; background: var(--cp-surface-soft); border: 1px solid var(--cp-border); border-radius: .625rem; overflow: hidden; }
+    .fill { height: 100%; background: var(--cp-accent); }
+    .fill.failure { background: var(--cp-danger); }
+    .scale { display: flex; justify-content: space-between; font-size: .75rem; color: var(--cp-text-muted); margin-top: 8px; }
+    .steps { counter-reset: roadmap; display: grid; gap: 12px; }
+    .step { display: grid; grid-template-columns: 36px 1fr auto; gap: 16px; align-items: start; }
+    .step::before {
+      counter-increment: roadmap; content: counter(roadmap);
+      color: var(--cp-accent); background: var(--cp-accent-soft); border-radius: .625rem;
+      width: 36px; height: 36px; text-align: center; font-weight: 700; line-height: 36px;
+    }
+    details { border: 1px solid var(--cp-border); border-radius: .625rem; background: var(--cp-surface); padding: 16px 20px; }
+    details + details { margin-top: 12px; }
+    summary { font-weight: 600; }
+    .details-body { margin-top: 16px; }
+    .definitions { display: grid; grid-template-columns: 180px 1fr; gap: 12px 20px; margin: 0; }
+    dt { font-weight: 700; }
+    dd { margin: 0; }
+    .sources { margin: 12px 0 0; padding-left: 24px; }
+    .sources li + li { margin-top: 8px; }
+    .process-flow { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin: 16px 0; }
+    .process-node { background: var(--cp-surface); border: 1px solid var(--cp-border-strong); border-radius: .625rem; padding: 12px 16px; }
+    .process-arrow { color: var(--cp-accent); font-weight: 700; }
+    footer { margin-top: 32px; padding-top: 20px; border-top: 1px solid var(--cp-border); color: var(--cp-text-muted); font-size: .8rem; }
+    @media (max-width: 760px) {
+      main { padding: 24px 16px 40px; }
+      .three, .two { grid-template-columns: 1fr; }
+      .four { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .card { padding: 20px; }
+      .changes { padding: 0; }
+      .step { grid-template-columns: 36px 1fr; gap: 12px; }
+      .step > .tag { grid-column: 2; justify-self: start; }
+      .definitions { grid-template-columns: 1fr; gap: 4px; }
+      dd { margin-bottom: 12px; }
+    }
+    @media print {
+      main { max-width: none; padding: 0; }
+      body { font-size: 11pt; }
+      button { display: none; }
+      .card { box-shadow: none; }
+      .card, figure, .step, tr { break-inside: avoid; }
+      .diagram, .table-wrap { overflow: visible; }
+      .loop svg, .changes table { min-width: 0; }
+      .section { margin-top: 24px; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <div class="topline">
+        <span class="eyebrow">Robot learning / process reference</span>
+        <button id="theme-toggle" type="button">Change theme</button>
+      </div>
+      <h1>Robot-learning research process</h1>
+      <p class="intro">The PI develops a learned controller for a fixed robot task.</p>
+      <p class="intro">This page explains the phases, requests, records, and decisions that support that work.</p>
+      <p class="snapshot">
+        Status snapshot: <time datetime="2026-10-03T00:13:46+02:00">3 October 2026, 00:13:46 CEST</time>.
+        This page does not update itself.
+      </p>
+      <p class="snapshot">The campaign ended at 23:54:36 CEST on 2 October. The backlog includes the maintainer's readiness-change approval.</p>
+    </header>
+
+    <div class="grid three overview" aria-label="The three main status facts">
+      <article class="card">
+        <span class="tag failed">Latest campaign / ended</span>
+        <h3 style="margin-top: 12px">Official assessment failed</h3>
+        <p><strong>194 of 200</strong> episodes succeeded. The goal required 196.</p>
+        <p>Three training runs completed. Assessment used the unchanged startup policy T1.</p>
+        <p class="small muted">Campaign <code>d7080d95</code>. No scientific session or operation remains pending.</p>
+        <p class="small"><a href="robot-campaign-d7080d95-20261002.html">Read the current campaign report</a></p>
+      </article>
+      <article class="card previous">
+        <span class="tag failed">Previous campaign</span>
+        <h3 style="margin-top: 12px">Official assessment failed</h3>
+        <p><strong>195 of 200</strong> episodes succeeded.</p>
+        <p>The goal requires <strong>196 of 200</strong>.</p>
+        <p class="small muted">Campaign <code>2381bcbf</code>. This is a historical result, not the current campaign's result.</p>
+        <p class="small"><a href="robot-campaign-2381bcbf-20261002.html">Read the previous campaign report</a></p>
+      </article>
+      <article class="card next">
+        <span class="tag planned">Approved / pending</span>
+        <h3 style="margin-top: 12px">Goal-review guidance is not yet applied</h3>
+        <p>Improve the decision to request official assessment.</p>
+        <p>The maintainer approved the narrow prompt change. It is <strong>not applied</strong>.</p>
+        <p class="small muted">The campaign has stopped. This report updates the analysis; it does not change the harness.</p>
+      </article>
+    </div>
+
+    <section class="section" aria-labelledby="task-heading">
+      <p class="section-label">01 / THE FIXED HUMAN GOAL</p>
+      <h2 id="task-heading">Reach the target. Then stay there.</h2>
+      <p>The human fixes the robot, the official task, and the success rule. The PI cannot change them.</p>
+      <div class="grid four">
+        <div class="card metric-card"><div class="metric">6&ndash;20 cm</div><p class="metric-label">Target distance from the base.<br>Targets cover the full angle range.</p></div>
+        <div class="card metric-card"><div class="metric">1 cm</div><p class="metric-label">Maximum distance from the target during the hold.</p></div>
+        <div class="card metric-card"><div class="metric">2 seconds</div><p class="metric-label">Continuous hold.<br>Leaving the area interrupts the hold.</p></div>
+        <div class="card metric-card"><div class="metric">196 / 200</div><p class="metric-label">Minimum official successes.<br>This equals 98%.</p></div>
+      </div>
+      <figure class="card" style="margin-top: 16px">
+        <div class="diagram">
+          <svg viewBox="0 0 720 350" role="img" aria-labelledby="arm-title arm-description">
+            <title id="arm-title">Two-joint arm and the reach-and-hold task</title>
+            <desc id="arm-description">Targets lie between 6 and 20 centimetres from the base, over all angles. The tool must stay within 1 centimetre of the target for 2 continuous seconds. The drawing is not to scale.</desc>
+            <circle cx="200" cy="175" r="125" fill="var(--cp-surface-soft)" stroke="var(--cp-border-strong)" stroke-width="2" stroke-dasharray="5 5"/>
+            <circle cx="200" cy="175" r="44" fill="var(--cp-surface)" stroke="var(--cp-border-strong)" stroke-width="2" stroke-dasharray="5 5"/>
+            <text x="78" y="39" class="caption">Outer target distance: 20 cm</text>
+            <text x="155" y="251" class="caption">Inner distance: 6 cm</text>
+            <text x="131" y="322" class="caption">Targets cover all angles</text>
+            <path d="M 200 175 L 265 100 L 325 180" fill="none" stroke="var(--cp-accent)" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="200" cy="175" r="14" fill="var(--cp-surface)" stroke="var(--cp-accent)" stroke-width="5"/>
+            <circle cx="265" cy="100" r="12" fill="var(--cp-surface)" stroke="var(--cp-accent)" stroke-width="5"/>
+            <text x="149" y="204" class="label">Base</text>
+            <text x="235" y="76" class="label">Joint 2</text>
+            <circle cx="327" cy="180" r="26" fill="var(--cp-accent-soft)" stroke="var(--cp-accent)" stroke-width="2" stroke-dasharray="4 4"/>
+            <path d="M 317 180 H 337 M 327 170 V 190" stroke="var(--cp-text)" stroke-width="2"/>
+            <circle cx="325" cy="180" r="6" fill="var(--cp-accent)" stroke="var(--cp-surface)" stroke-width="2"/>
+            <path d="M 354 180 H 400" class="flow"/>
+            <text x="412" y="144" class="heading">Tool + target</text>
+            <text x="412" y="177" class="label">Enter the 1 cm area.</text>
+            <text x="412" y="208" class="label">Stay there for 2 seconds.</text>
+            <text x="412" y="250" class="caption">Touching the target is not sufficient.</text>
+            <text x="412" y="274" class="caption">An interrupted hold does not count.</text>
+          </svg>
+        </div>
+        <figcaption>Drawing is not to scale. The official assessment uses 200 episodes, with at most 500 control steps per episode.</figcaption>
+      </figure>
+    </section>
+
+    <section class="section" aria-labelledby="loop-heading">
+      <p class="section-label">02 / THE CAMPAIGN LOOP</p>
+      <h2 id="loop-heading">Phases and scientific-session boundaries</h2>
+      <p>A campaign can contain several inquiries. An inquiry can contain several training runs and measurements.</p>
+      <figure class="card">
+        <div class="diagram loop" tabindex="0" aria-label="Scrollable campaign loop diagram">
+          <svg viewBox="0 0 1000 680" role="img" aria-labelledby="loop-title loop-description">
+            <title id="loop-title">Campaign lifecycle and its return paths</title>
+            <desc id="loop-description">Write the scientific model once, then perform startup, checkpoint, and goal review. Goal review can open an inquiry and checkpoint, request assessment, or conclude no credible route remains. Inquiry measurements and training return to the same session. Continuing or reframing requires a checkpoint and a fresh session. Closing and checkpointing returns to goal review. Official pass or fail ends the campaign.</desc>
+            <defs>
+              <marker id="flow-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 Z" class="tip"/></marker>
+              <marker id="return-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 Z" class="return-tip"/></marker>
+            </defs>
+            <rect x="35" y="30" width="225" height="82" rx="10" class="box"/>
+            <text x="147" y="62" text-anchor="middle" class="heading">Scientific model</text>
+            <text x="147" y="88" text-anchor="middle" class="caption">Write once. Then freeze it.</text>
+            <path d="M 260 71 H 320" class="flow" marker-end="url(#flow-arrow)"/>
+            <rect x="320" y="30" width="250" height="82" rx="10" class="box"/>
+            <text x="445" y="62" text-anchor="middle" class="heading">Startup</text>
+            <text x="445" y="88" text-anchor="middle" class="caption">Find an initial direction</text>
+            <path d="M 570 71 H 665" class="flow" marker-end="url(#flow-arrow)"/>
+            <rect x="665" y="30" width="250" height="82" rx="10" class="box"/>
+            <text x="790" y="62" text-anchor="middle" class="heading">PI checkpoint</text>
+            <text x="790" y="88" text-anchor="middle" class="caption">Save evidence and next direction</text>
+            <path d="M 790 112 V 205" class="flow" marker-end="url(#flow-arrow)"/>
+            <text x="806" y="161" class="caption">Fresh session</text>
+            <rect x="665" y="205" width="250" height="112" rx="10" class="box"/>
+            <text x="790" y="238" text-anchor="middle" class="heading">Goal review</text>
+            <text x="790" y="265" text-anchor="middle" class="label">Decide at campaign level</text>
+            <text x="790" y="291" text-anchor="middle" class="caption">Best candidate is not proof of readiness</text>
+            <rect x="70" y="205" width="300" height="112" rx="10" class="box"/>
+            <text x="220" y="238" text-anchor="middle" class="heading">Inquiry</text>
+            <text x="220" y="265" text-anchor="middle" class="label">Investigate one useful question</text>
+            <text x="220" y="291" text-anchor="middle" class="caption">Choose tools from the evidence</text>
+            <path d="M 665 230 H 370" class="flow" marker-end="url(#flow-arrow)"/>
+            <text x="515" y="197" text-anchor="middle" class="caption">Open inquiry + checkpoint</text>
+            <path d="M 370 295 H 665" class="return" marker-end="url(#return-arrow)"/>
+            <text x="515" y="328" text-anchor="middle" class="caption">Close inquiry + checkpoint</text>
+            <path d="M 70 270 H 30 V 148 H 220 V 205" class="return" marker-end="url(#return-arrow)"/>
+            <text x="172" y="134" text-anchor="middle" class="caption">Continue / reframe + checkpoint</text>
+            <path d="M 147 317 V 420" class="return" marker-start="url(#return-arrow)" marker-end="url(#return-arrow)"/>
+            <path d="M 300 317 V 420" class="return" marker-start="url(#return-arrow)" marker-end="url(#return-arrow)"/>
+            <rect x="70" y="420" width="145" height="80" rx="10" class="accent-box"/>
+            <text x="142" y="453" text-anchor="middle" class="heading">Measure</text>
+            <text x="142" y="479" text-anchor="middle" class="caption">Observe behavior</text>
+            <rect x="235" y="420" width="145" height="80" rx="10" class="accent-box"/>
+            <text x="307" y="453" text-anchor="middle" class="heading">Train</text>
+            <text x="307" y="479" text-anchor="middle" class="caption">Produce a candidate</text>
+            <text x="220" y="531" text-anchor="middle" class="caption">Both return to the SAME session.</text>
+            <text x="220" y="555" text-anchor="middle" class="caption">Neither creates a new inquiry.</text>
+            <path d="M 790 317 V 430" class="flow" marker-end="url(#flow-arrow)"/>
+            <text x="806" y="380" class="caption">Request assessment</text>
+            <path d="M 790 355 H 520 V 430" class="flow" marker-end="url(#flow-arrow)"/>
+            <text x="519" y="395" text-anchor="middle" class="caption">No credible route remains</text>
+            <rect x="430" y="430" width="180" height="95" rx="10" class="end-box"/>
+            <text x="520" y="465" text-anchor="middle" class="heading">Conclude</text>
+            <text x="520" y="494" text-anchor="middle" class="caption">End without assessment</text>
+            <rect x="665" y="430" width="250" height="95" rx="10" class="box"/>
+            <text x="790" y="465" text-anchor="middle" class="heading">Official assessment</text>
+            <text x="790" y="494" text-anchor="middle" class="caption">Evaluate one frozen policy</text>
+            <path d="M 790 525 V 585" class="flow" marker-end="url(#flow-arrow)"/>
+            <path d="M 520 525 V 619 H 560" class="flow" marker-end="url(#flow-arrow)"/>
+            <rect x="560" y="585" width="355" height="68" rx="10" class="end-box"/>
+            <text x="737" y="613" text-anchor="middle" class="heading">Campaign ends</text>
+            <text x="737" y="638" text-anchor="middle" class="caption">Official pass, official fail, or conclusion</text>
+          </svg>
+        </div>
+        <figcaption>Arrows show process transitions, not live activity. Opening, reframing, and closing an inquiry require a checkpoint before another operation.</figcaption>
+      </figure>
+      <div class="grid two" style="margin-top: 16px">
+        <div class="note">
+          <h3>Startup does not require training</h3>
+          <p>The PI can build tools, change its method, or measure before training.</p>
+          <p>A startup training request may be shorter than the maintainer's allocation. It cannot be larger.</p>
+          <p class="small muted">Inquiry training still uses the full allocation. Completed steps can round up at a rollout boundary.</p>
+        </div>
+        <div class="note">
+          <h3>Goal-review decisions</h3>
+          <p>Closing an inquiry does not mean the campaign has passed.</p>
+          <p>Goal review can measure before the inquiry limit is reached. It does not train.</p>
+          <p class="small muted">An official failure ends the campaign. It does not automatically return to another inquiry.</p>
+        </div>
+      </div>
+        <div class="card table-wrap" style="margin-top: 16px">
+          <h3>Each phase has a different purpose</h3>
+          <table>
+            <thead><tr><th scope="col">Phase</th><th scope="col">Purpose and permitted work</th><th scope="col">How it ends</th></tr></thead>
+            <tbody>
+              <tr><td>Preliminary scientific model</td><td>Read the robot and task contracts. Write established facts, physical consequences, and unknowns before campaign evidence exists.</td><td>The model document is accepted and published. It then remains fixed for this campaign.</td></tr>
+              <tr><td>Startup</td><td>Establish the first research direction. Build tools, change PI-owned code, measure, train, assign roles, or restore a recipe.</td><td>A PI checkpoint records the direction and evidence. A fresh goal-review session follows.</td></tr>
+              <tr><td>Goal review</td><td>Review the remaining goal gap. Measure when permitted, assign model roles, open an inquiry, or make a terminal decision. Training is not permitted.</td><td>After inquiry opening, checkpoint before further work. Otherwise request assessment or conclude that no credible route remains.</td></tr>
+              <tr><td>Inquiry</td><td>Investigate the active question. Build or change methods, measure, train, assign roles, or restore a recipe. Continue, reframe, or close the question.</td><td>Checkpoint to continue in a fresh session. Reframe or close also requires a checkpoint.</td></tr>
+              <tr><td>Terminal state</td><td>Record official pass, official fail, or a no-credible-route conclusion.</td><td>The campaign ends. Another campaign requires a maintainer reset.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <details style="margin-top: 16px">
+          <summary>Goal, campaign, inquiry, session, operation, and AI invocation are different units</summary>
+          <div class="details-body">
+            <dl class="definitions">
+              <dt>Human goal</dt><dd>The fixed task and success criterion. Lower-level milestones do not replace it.</dd>
+              <dt>Campaign</dt><dd>One attempt to reach the goal. It starts with independent records and a new scientific model.</dd>
+              <dt>Inquiry</dt><dd>A temporary question that can change the route to the goal. It has a question, goal connection, and closure condition.</dd>
+              <dt>Scientific session</dt><dd>Work on one coherent objective. It can include several operations. A checkpoint ends the session.</dd>
+              <dt>Operation</dt><dd>One accepted request, such as measurement, training, or checkpoint publication.</dd>
+              <dt>PI invocation</dt><dd>One call to the AI backend. Several invocations can belong to the same scientific session.</dd>
+            </dl>
+            <p class="small muted" style="margin-top: 16px">A completed training run is not automatically a completed session, inquiry, or campaign.</p>
+          </div>
+        </details>
+        <details>
+          <summary>Continuation, reframing, closure, and the inquiry limit</summary>
+          <div class="details-body">
+            <p><strong>Continue:</strong> keep the inquiry open and save a checkpoint. A fresh session continues the same question.</p>
+            <p><strong>Reframe:</strong> change the active question and its connection to the goal. Checkpoint before further work.</p>
+            <p><strong>Close:</strong> record the outcome and reason. After checkpointing, return to goal review.</p>
+            <p>Closing may follow a useful answer, a changed direction, or loss of a credible route. It does not require a successful policy.</p>
+            <p>The maintainer can limit the number of new inquiries.</p>
+            <p>At that limit, goal review cannot open another inquiry or request a measurement.</p>
+            <p>Model-role assignment and terminal decisions remain available. Assessment still requires an explicit best-known candidate.</p>
+          </div>
+        </details>
+    </section>
+
+    <section class="section" aria-labelledby="roles-heading">
+      <p class="section-label">03 / RESPONSIBILITY AND OWNERSHIP</p>
+      <h2 id="roles-heading">The PI decides the science. The Runner executes the requests.</h2>
+      <div class="grid three">
+        <article class="card role">
+          <h3>Maintainer</h3>
+          <p>Defines the goal and protected task.</p>
+          <p>Changes the harness and training allocation.</p>
+          <p>Starts, stops, and resets campaigns.</p>
+        </article>
+        <article class="card role pi">
+          <h3>Principal Investigator / PI</h3>
+          <p>Chooses questions, methods, and tools.</p>
+          <p>Changes PI-owned research code.</p>
+          <p>Interprets completed evidence.</p>
+          <p>Decides whether to request assessment.</p>
+        </article>
+        <article class="card role">
+          <h3>Runner</h3>
+          <p>Checks contracts and file ownership.</p>
+          <p>Executes accepted operations.</p>
+          <p>Records outcomes and artifacts.</p>
+          <p>Does not judge scientific readiness.</p>
+        </article>
+      </div>
+      <div class="card table-wrap" style="margin-top: 16px">
+        <h3>The two environment files are both PI-owned</h3>
+        <p class="small muted" style="margin-bottom: 12px">The split separates shared research mechanics from training-specific code. It is not a human/PI ownership split.</p>
+        <table>
+          <thead><tr><th scope="col">File or area</th><th scope="col">Purpose</th><th scope="col">Owner</th></tr></thead>
+          <tbody>
+            <tr><td><code>scenario\environment.py</code></td><td>Shared research environment</td><td>PI</td></tr>
+            <tr><td><code>scenario\training_environment.py</code></td><td>Training-specific environment</td><td>PI</td></tr>
+            <tr><td><code>benchmark\</code></td><td>Protected task and assessment implementations</td><td>Human</td></tr>
+            <tr><td>Official robot, harness, tests, dependencies</td><td>Protected operational and task boundaries</td><td>Human</td></tr>
+          </tbody>
+        </table>
+        <p class="small muted" style="margin-top: 12px">These code paths are under <code>robot_learning\</code>. Protected exceptions take precedence over PI-owned directories.</p>
+      </div>
+      <div class="note" style="margin-top: 16px">
+        <h3>PI freedom remains inside the scientific boundary</h3>
+        <p>The PI can replace its methods, tools, reward, observations, and training implementation.</p>
+        <p>It cannot change the official robot, task, success rule, harness, tests, or dependency manifests.</p>
+        <p>All Python execution uses <code>uv run</code>. The PI uses Runner requests for training and protected evaluation.</p>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="operation-heading">
+      <p class="section-label">04 / THE OPERATION LOOP</p>
+      <h2 id="operation-heading">From a PI request to a recorded result</h2>
+      <p>The launcher resumes pending work before asking for another action. The Runner executes requests; the PI interprets their results.</p>
+      <figure class="card">
+        <div class="process-flow" aria-label="Operation sequence">
+          <span class="process-node">PI chooses action</span><span class="process-arrow" aria-hidden="true">&rarr;</span>
+          <span class="process-node">Request file</span><span class="process-arrow" aria-hidden="true">&rarr;</span>
+          <span class="process-node">Runner validates</span><span class="process-arrow" aria-hidden="true">&rarr;</span>
+          <span class="process-node">Execute + record</span><span class="process-arrow" aria-hidden="true">&rarr;</span>
+          <span class="process-node">Update brief</span><span class="process-arrow" aria-hidden="true">&rarr;</span>
+          <span class="process-node">Resume PI</span>
+        </div>
+        <figcaption>Measurement and training normally return to the same scientific session. A checkpoint ends it instead.</figcaption>
+      </figure>
+      <div class="card table-wrap" style="margin-top: 16px">
+        <table>
+          <thead><tr><th scope="col">Step</th><th scope="col">Action</th><th scope="col">Record or boundary</th></tr></thead>
+          <tbody>
+            <tr><td>1. Prepare</td><td>The PI chooses an action and states its scientific reason. It may change PI-owned code or build a tool.</td><td>Changes must remain within the owned surface.</td></tr>
+            <tr><td>2. Submit</td><td>The PI writes one operation to <code>research\operation_request.json</code>.</td><td>The request has one top-level operation kind.</td></tr>
+            <tr><td>3. Validate</td><td>The Runner checks shape, phase permissions, ownership, allocation, and instrument-specific conditions.</td><td>A structurally valid request is not a scientific endorsement.</td></tr>
+            <tr><td>4. Accept</td><td>The Runner saves the accepted request as a pending operation and assigns its identity.</td><td>Accepted request identity is fixed during execution. M# means measurement, T# training, and E# another event.</td></tr>
+            <tr><td>5. Execute</td><td>The Runner executes the instrument or requested state transition.</td><td>Training produces candidates. Measurement produces factual outputs and detailed artifacts.</td></tr>
+            <tr><td>6. Publish</td><td>The Runner saves outcomes, provenance, artifacts, and operation history.</td><td>Only completed operations can be cited as scientific evidence.</td></tr>
+            <tr><td>7. Return</td><td>The launcher regenerates the brief and returns feedback to the PI.</td><td>The PI inspects evidence and decides the next action in the same session.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <details style="margin-top: 16px">
+        <summary>What happens when the operation does not complete normally</summary>
+        <div class="details-body table-wrap">
+          <table>
+            <thead><tr><th scope="col">Situation</th><th scope="col">Process response</th><th scope="col">Scientific meaning</th></tr></thead>
+            <tbody>
+              <tr><td>Invalid request</td><td>Return the validation reason. The launcher permits one correction retry, then stops if the request remains invalid.</td><td>No accepted scientific result exists.</td></tr>
+              <tr><td>Scientific-code execution error</td><td>Preserve pending state and return the error to the same PI session. The PI can repair the implementation or explicitly replace the failed operation.</td><td>The exception is execution history, not a measurement against the method.</td></tr>
+              <tr><td>Publication failure after execution</td><td>Preserve the result and pending transaction. Stop for publication repair. Resume publication rather than retraining.</td><td>A produced result must not be confused with a new training request.</td></tr>
+              <tr><td>Maintainer stop</td><td>End the launcher activity while preserving durable state. The maintainer decides whether to resume or reset.</td><td>A stop is not an official pass, official fail, or scientific conclusion.</td></tr>
+            </tbody>
+          </table>
+          <p style="margin-top: 12px">A completed method can perform poorly and still provide useful evidence. A code exception is a different situation.</p>
+        </div>
+      </details>
+      <details>
+        <summary>Startup allocation and inquiry allocation</summary>
+        <div class="details-body">
+          <p>The maintainer supplies a per-run training allocation. The default is 120,000 requested steps.</p>
+          <p>During startup, the PI can request any positive step count up to that allocation.</p>
+          <p>During an inquiry, a training request must use the full allocation.</p>
+          <p>Neither phase requires training. Neither the PI nor the Runner may raise the maintainer's allocation.</p>
+          <p>Completed steps can round up to a learning rollout boundary. The ceiling controls the request, not strict executed-step stopping.</p>
+        </div>
+      </details>
+    </section>
+
+    <section class="section" aria-labelledby="evidence-heading">
+      <p class="section-label">05 / EVIDENCE, CONTEXT, AND CANDIDATES</p>
+      <h2 id="evidence-heading">Evidence records and model roles</h2>
+      <div class="card table-wrap">
+        <table>
+          <thead><tr><th scope="col">Record</th><th scope="col">Purpose</th><th scope="col">Limit</th></tr></thead>
+          <tbody>
+            <tr><td><code>research\scientific_model.md</code></td><td>The campaign's initial physical reference. It separates facts, consequences, and unknowns.</td><td>It remains fixed. Later evidence can correct its interpretation in the PI checkpoint.</td></tr>
+            <tr><td><code>research\research_state.json</code></td><td>Current inquiry, session, pending operation, candidates, roles, and checkpoint.</td><td>A pending operation is not completed evidence.</td></tr>
+            <tr><td><code>research\results.jsonl</code></td><td>Authoritative operation history.</td><td>Completed records support evidence claims. Failed attempts remain execution history.</td></tr>
+            <tr><td><code>research\evaluations\</code></td><td>Detailed measurement artifacts referenced by completed operations.</td><td>Find and inspect the data needed for the decision. A summary is not the full artifact.</td></tr>
+            <tr><td><code>research\brief.md</code></td><td>Generated compact context with summaries and source references.</td><td>It does not replace detailed measurements.</td></tr>
+            <tr><td>PI checkpoint</td><td>Preserves synthesis, evidence, remaining gap, unresolved distinctions, and next direction.</td><td>Interpretations can be wrong. Preserve contradictory observations and claim limits.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="grid two" style="margin-top: 16px">
+        <div class="card">
+          <h3>Candidate and recipe are different</h3>
+          <p>A candidate is a saved learned policy from training.</p>
+          <p>A recipe is the scientific code and configuration associated with that candidate.</p>
+          <p>Recipe restoration changes the PI-owned recipe. It does not assign a model role.</p>
+          <p class="small muted">Training statistics can identify candidates worth inspecting. They do not establish development or official performance.</p>
+        </div>
+        <div class="card">
+          <h3>Model roles require explicit assignment</h3>
+          <p><strong>Working:</strong> the candidate selected for current work.</p>
+          <p><strong>Best-known:</strong> the strongest available candidate supported by completed evidence.</p>
+          <p><strong>Retained:</strong> a candidate archived under an explicit label.</p>
+          <p class="small muted">Training does not assign these roles automatically. Best-known assignment does not require official assessment.</p>
+        </div>
+      </div>
+      <details style="margin-top: 16px">
+        <summary>What a checkpoint must preserve</summary>
+        <div class="details-body">
+          <p>The checkpoint records the connection to the human goal and the remaining gap.</p>
+          <p>Its synthesis distinguishes measurements from explanations. It retains supporting and contradictory evidence.</p>
+          <p>Its decision frontier states the unresolved distinction and the evidence that could resolve or redirect it.</p>
+          <p>Its next direction states the selected action or closure and the reason.</p>
+          <p>It also records completed operations, candidate roles, evidence references, and cumulative resource use.</p>
+          <p>A new session receives this durable context. It does not depend only on the previous conversation.</p>
+        </div>
+      </details>
+      <details>
+        <summary>Development measurement and official assessment</summary>
+        <div class="details-body">
+          <p>Development measurements inform the PI's judgment. They do not declare the official goal reached.</p>
+          <p>Matched comparisons use the same episode seeds for the compared candidates.</p>
+          <p>The protected official panel is separate. Do not combine its result with development scores.</p>
+          <p>Official assessment requires goal review, no active inquiry, and an explicitly assigned best-known candidate.</p>
+          <p>The PI decides whether to request it. The Runner checks the operational contract and executes it.</p>
+          <p>Either official pass or official fail ends the campaign.</p>
+        </div>
+      </details>
+    </section>
+
+    <section class="section" aria-labelledby="changes-heading">
+      <p class="section-label">06 / IMPLEMENTATION STATUS</p>
+      <h2 id="changes-heading">Current harness changes</h2>
+      <p>This table describes what is present in the harness. The linked reports describe campaign observations and limits.</p>
+      <div class="card changes">
+        <div class="table-wrap" tabindex="0" aria-label="Scrollable change-status table">
+          <table>
+            <thead><tr><th scope="col" style="width: 29%">Change</th><th scope="col" style="width: 18%">Implementation</th><th scope="col">Function or boundary</th></tr></thead>
+            <tbody>
+              <tr><td>Preliminary scientific model</td><td><span class="tag kept">Implemented</span></td><td>The PI writes a physical reference before campaign evidence. The document then stays fixed. It does not guarantee good later decisions.</td></tr>
+              <tr><td>Question-based inquiry objective<span class="commit"><code>6d60f1f</code></span></td><td><span class="tag kept">Kept</span></td><td>A fresh inquiry session uses the scientific question as its objective. The closure condition remains separate and unchanged.</td></tr>
+              <tr><td>Clearer startup investigation<span class="commit"><code>c2ec8f7</code></span></td><td><span class="tag kept">Kept</span></td><td>Distinguishes selecting and investigating a question from formally opening an inquiry. It does not require a particular instrument.</td></tr>
+              <tr><td>Measurements during ordinary goal review<span class="commit"><code>c68627d</code></span></td><td><span class="tag kept">Kept</span></td><td>Permits measurements before the inquiry limit is reached. Measurements return to the same goal-review session.</td></tr>
+              <tr><td>Artifact inventories and references<span class="commit"><code>f986a2c</code>, <code>97a12ba</code></span></td><td><span class="tag kept">Kept</span></td><td>Detailed evidence is easier to find. Partial reading and incorrect interpretation remain unresolved.</td></tr>
+              <tr><td>Smaller research brief<span class="commit"><code>3825d2e</code></span></td><td><span class="tag kept">Kept</span></td><td>The measured brief was 57.39% smaller. Candidates and inventory references remained. Scientific benefit is not established.</td></tr>
+              <tr><td>Shorter startup training<span class="commit"><code>1a15091</code></span></td><td><span class="tag kept">Implemented</span></td><td>Allows positive startup requests up to the maintainer's allocation. Inquiry requests still use the full allocation. Rollout rounding remains.</td></tr>
+              <tr><td>Goal-review model-role availability<span class="commit"><code>eabb35c</code></span></td><td><span class="tag fixed">Fixed</span></td><td>The PI can assign the best-known role. That assignment does not require official assessment.</td></tr>
+              <tr><td>Large Git publication and recovery<span class="commit"><code>b7727d1</code></span></td><td><span class="tag fixed">Fixed</span></td><td>This repairs operation publication and recovery. It is not a controller-performance improvement.</td></tr>
+              <tr><td>Readiness and residual failure guidance</td><td><span class="tag planned">Approved / pending</span></td><td>The maintainer approved the narrow goal-review prompt change. It was absent from the completed campaign and remains unapplied.</td></tr>
+              <tr><td>Broader closure and handoff prompt changes<span class="commit"><code>b4f1cdf</code>, <code>c0cfcb6</code></span></td><td><span class="tag removed">Reverted</span></td><td>These experiments are not part of the active harness. The new proposal must not silently restore them.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <p class="small muted" style="margin-top: 12px">Implementation does not establish scientific effectiveness. Retained changes remain subject to campaign observations.</p>
+    </section>
+
+    <section class="section" aria-labelledby="roadmap-heading">
+      <p class="section-label">07 / MAINTAINER BACKLOG</p>
+      <h2 id="roadmap-heading">Harness backlog</h2>
+      <p>This is the maintainer's harness backlog. It is not a list of required PI actions.</p>
+      <div class="card table-wrap" style="margin-bottom: 16px">
+        <table>
+          <thead><tr><th scope="col">Topic</th><th scope="col">Status and remaining work</th></tr></thead>
+          <tbody>
+            <tr><td>Goal-review readiness guidance</td><td><strong>Approved; not applied.</strong> The campaign has stopped. Add the agreed block to ordinary and capped goal review, excluding checkpoint-only transitions.</td></tr>
+            <tr><td>Reliable inspection of detailed evidence</td><td>Open. S8 inspected its detailed diagnostic correctly. It still treated a favorable panel as sufficient assessment readiness.</td></tr>
+            <tr><td>Scientific continuity</td><td>Open. The latest campaign tested one training recipe in each intervention inquiry. Two broad regressions left the startup policy unchanged.</td></tr>
+            <tr><td>Context flooding</td><td>Brief compaction is implemented. Prompt replay and SDK output handling remain separate possible work.</td></tr>
+            <tr><td>Checkpoint nomination and evidence selection</td><td>Deferred behind progression. Training statistics alone do not establish development performance.</td></tr>
+            <tr><td>Operation-submission handoff clarification</td><td>Not implemented.</td></tr>
+            <tr><td>Explicit protection of the old protocol log</td><td>Not implemented. This is separate from the read-access policy.</td></tr>
+            <tr><td>Maintainer-file read controls</td><td>Deferred. Read restrictions are not the established remedy for the current evidence-interpretation failure.</td></tr>
+            <tr><td>Console clarity</td><td>Separate deferred work.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>The startup ceiling is implemented. The approved readiness change remains pending; no repository harness edit has been applied.</p>
+      <div class="card">
+        <div class="steps">
+          <div class="step">
+            <div><h3>Approve the narrow goal-review change</h3><p>Ask the PI to distinguish the strongest candidate from a candidate ready for official assessment.</p></div>
+            <span class="tag kept">Approved</span>
+          </div>
+          <div class="step">
+            <div><h3>Apply it only at goal review</h3><p>Keep consequential failures, regressions, and uncertainty in the decision.</p><p class="small muted">Do not add a numerical readiness gate, mandatory measurement, or Runner scientific judgment.</p></div>
+            <span class="tag planned">Approved / pending</span>
+          </div>
+          <div class="step">
+            <div><h3>Assess its effect from a later campaign</h3><p>Look for accurate residual evidence in the decision and checkpoint.</p><p class="small muted">A passing result alone does not prove that the guidance worked.</p></div>
+            <span class="tag planned">Not observed</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="campaigns-heading">
+      <p class="section-label">08 / SEPARATE CAMPAIGN DOCUMENTS</p>
+      <h2 id="campaigns-heading">Campaign report index</h2>
+      <p>Six reports are available: the current campaign and its five immediately preceding campaigns.</p>
+      <p>Each completed report contains the sequence of work, results, evidence limits, lessons, and recorded resource use.</p>
+      <div class="card table-wrap">
+        <table>
+          <thead><tr><th scope="col">Campaign</th><th scope="col">Start (CEST)</th><th scope="col">Recorded outcome</th><th scope="col">Report</th></tr></thead>
+          <tbody>
+            <tr><td>Latest: <code>d7080d95</code></td><td>2 Oct, 21:57</td><td>Official failure: 194 / 200; unchanged startup policy</td><td><a href="robot-campaign-d7080d95-20261002.html">Read completed report</a></td></tr>
+            <tr><td>Previous 1: <code>2381bcbf</code></td><td>2 Oct, 13:54</td><td>Official failure: 195 / 200</td><td><a href="robot-campaign-2381bcbf-20261002.html">Read report</a></td></tr>
+            <tr><td>Previous 2: <code>48993cfd</code></td><td>2 Oct, 09:37</td><td>Stopped without assessment; last development result 178 / 200</td><td><a href="robot-campaign-48993cfd-20261002.html">Read report</a></td></tr>
+            <tr><td>Previous 3: <code>a6def80f</code></td><td>2 Oct, 08:44</td><td>Replaced after training, before development measurement</td><td><a href="robot-campaign-a6def80f-20261002.html">Read report</a></td></tr>
+            <tr><td>Previous 4: <code>010714c2</code></td><td>1 Oct, 22:29</td><td>Official failure: 189 / 200</td><td><a href="robot-campaign-010714c2-20261002.html">Read report</a></td></tr>
+            <tr><td>Previous 5: <code>6350d383</code></td><td>1 Oct, 21:51</td><td>Replaced; no completed training or measurement</td><td><a href="robot-campaign-6350d383-20261002.html">Read report</a></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="small muted" style="margin-top: 12px">These are separate records, not a controlled comparison of harness changes. Stopped or replaced runs are not official failures.</p>
+    </section>
+
+    <section class="section" aria-labelledby="terms-heading">
+      <p class="section-label">09 / TERMS AND SOURCES</p>
+      <h2 id="terms-heading">Model and checkpoint terminology</h2>
+      <div class="card">
+        <dl class="definitions">
+          <dt>Scientific model</dt><dd>A document about the robot and task. It separates established facts, physical consequences, and unknowns.</dd>
+          <dt>Learned policy</dt><dd>The controller produced by learning. It chooses actions from observations.</dd>
+          <dt>Training checkpoint</dt><dd>A saved learning artifact. It is not a scientific conclusion.</dd>
+          <dt>PI checkpoint</dt><dd>A written record of evidence, interpretation, remaining questions, and next direction.</dd>
+          <dt>Best-known policy</dt><dd>The strongest available candidate supported by completed evidence. It is not automatically ready for assessment.</dd>
+          <dt>Harness</dt><dd>The launcher, Runner, contracts, and context that support the research process.</dd>
+          <dt>Inquiry</dt><dd>A temporary question that can change the route to the human goal. It is not one training run.</dd>
+        </dl>
+      </div>
+      <details style="margin-top: 16px">
+        <summary>Sources and the scope of this page</summary>
+        <div class="details-body">
+          <p>This is one offline HTML file. It does not send requests, start training, or change campaign files.</p>
+          <ul class="sources">
+            <li><code>research\scenario.md</code>: the human goal and official success rule.</li>
+            <li><code>research\program.md</code>: phases, session boundaries, evidence, and decisions.</li>
+            <li><code>AGENTS.md</code>: ownership and operational boundaries.</li>
+            <li><code>research\research_state.json</code>: the completed campaign status, checked on 3 October at 00:13:46 CEST.</li>
+            <li><code>docs\harness-experiment-log.md</code>: retained changes, earlier observations, and backlog.</li>
+            <li><code>research\instruments.md</code>: operation shapes, acceptance conditions, and phase permissions.</li>
+            <li><code>run_research.ps1</code> and <code>research\run_experiment.py</code>: launcher order, request handling, and recovery.</li>
+            <li>The linked reports cite their own operation records and historical source snapshots.</li>
+            <li>Readiness guidance: approved by the maintainer on 2 October at 23:37 CEST. No implementation commit exists.</li>
+          </ul>
+          <p class="small muted" style="margin-top: 16px">All seven HTML documents are under <code>docs\research-overview</code>, outside the PI-owned write surface.</p>
+          <p class="small muted">They are maintainer explanations, not PI guidance or cross-campaign scientific memory. The move does not restrict read access.</p>
+        </div>
+      </details>
+    </section>
+    <footer>
+      <p>Writing uses direct statements, short sentences, and consistent technical terms. Formal ASD-STE100 compliance has not been verified.</p>
+      <p>Snapshot, not live status. Implementation status and scientific effect are deliberately separate.</p>
+    </footer>
+  </main>
+  <script>
+    const themeButton = document.getElementById("theme-toggle");
+    function updateThemeButton() {
+      const isDark = document.documentElement.getAttribute("data-theme") === "dark";
+      themeButton.textContent = isDark ? "Use light theme" : "Use dark theme";
+    }
+    themeButton.addEventListener("click", () => {
+      const current = document.documentElement.getAttribute("data-theme");
+      document.documentElement.setAttribute("data-theme", current === "dark" ? "light" : "dark");
+      updateThemeButton();
+    });
+    updateThemeButton();
+  </script>
+</body>
+</html>

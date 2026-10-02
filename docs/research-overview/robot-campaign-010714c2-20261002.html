@@ -1,0 +1,336 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Campaign 010714c2: official assessment failed</title>
+  <script>
+    (() => {
+      const param = new URLSearchParams(window.location.search).get("scoutTheme");
+      const theme =
+        param || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+      document.documentElement.setAttribute("data-theme", theme);
+    })();
+  </script>
+  <style>
+    :root {
+      color-scheme: light;
+      --cp-bg: #f7f4ef;
+      --cp-bg-elevated: #fcfbf8;
+      --cp-surface: #ffffff;
+      --cp-surface-soft: #f5f5f5;
+      --cp-border: #dedede;
+      --cp-border-strong: #919191;
+      --cp-text: #242424;
+      --cp-text-muted: #5c5c5c;
+      --cp-text-soft: #6f6f6f;
+      --cp-accent: #b11f4b;
+      --cp-accent-hover: #9a1a41;
+      --cp-accent-soft: rgba(177, 31, 75, 0.08);
+      --cp-accent-fg: #ffffff;
+      --cp-success: #16a34a;
+      --cp-danger: #dc2626;
+      --cp-warning: #f59e0b;
+      --cp-link: #0078d4;
+      --cp-shadow: 0 18px 48px rgba(0, 0, 0, 0.12);
+      --cp-overlay: rgba(255, 255, 255, 0.8);
+      --cp-panel: rgba(255, 255, 255, 0.86);
+      --cp-panel-strong: rgba(255, 255, 255, 0.96);
+      --cp-sheen: rgba(255, 255, 255, 0.55);
+      --cp-highlight: rgba(177, 31, 75, 0.12);
+    }
+    html[data-theme="dark"] {
+      color-scheme: dark;
+      --cp-bg: #3d3b3a;
+      --cp-bg-elevated: #343231;
+      --cp-surface: #292929;
+      --cp-surface-soft: #2e2e2e;
+      --cp-border: #474747;
+      --cp-border-strong: #5f5f5f;
+      --cp-text: #dedede;
+      --cp-text-muted: #919191;
+      --cp-text-soft: #b0b0b0;
+      --cp-accent: #fd8ea1;
+      --cp-accent-hover: #fb7b91;
+      --cp-accent-soft: rgba(253, 142, 161, 0.14);
+      --cp-accent-fg: #1a1a1a;
+      --cp-success: #4ade80;
+      --cp-danger: #f87171;
+      --cp-warning: #fbbf24;
+      --cp-link: #4da6ff;
+      --cp-shadow: 0 18px 48px rgba(0, 0, 0, 0.32);
+      --cp-overlay: rgba(41, 41, 41, 0.88);
+      --cp-panel: rgba(41, 41, 41, 0.72);
+      --cp-panel-strong: rgba(41, 41, 41, 0.96);
+      --cp-sheen: rgba(255, 255, 255, 0.04);
+      --cp-highlight: rgba(253, 142, 161, 0.12);
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--cp-bg); color: var(--cp-text); font: 16px/1.65 "Segoe UI", Aptos, Calibri, -apple-system, BlinkMacSystemFont, sans-serif; }
+    main { max-width: 1080px; margin: auto; padding: 32px 24px 48px; }
+    h1 { font-size: clamp(1.9rem, 4vw, 2.7rem); line-height: 1.2; margin: 20px 0 12px; }
+    h2 { font-size: 1.5rem; margin: 0 0 12px; } h3 { font-size: 1.05rem; margin: 0 0 8px; }
+    p { margin: 0; } p + p { margin-top: 8px; }
+    figure { margin: 0; }
+    a { color: var(--cp-link); text-underline-offset: 3px; }
+    code { font-family: Consolas, "Courier New", Courier, monospace; font-size: .85em; overflow-wrap: anywhere; }
+    .muted { color: var(--cp-text-muted); font-size: .85rem; }
+    .section { margin-top: 28px; }
+    .card { padding: 24px; border: 1px solid var(--cp-border); border-radius: 16px; background: var(--cp-surface); box-shadow: 0 0 2px var(--cp-border), 0 1px 2px var(--cp-highlight); }
+    .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+    .note { background: var(--cp-accent-soft); border-left: 4px solid var(--cp-accent); border-radius: .625rem; padding: 16px 20px; }
+    .status { color: var(--cp-text-muted); font-size: .8rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
+    .flow { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin: 16px 0; }
+    .node { border: 1px solid var(--cp-border-strong); border-radius: .625rem; background: var(--cp-surface); padding: 12px 16px; }
+    .arrow { color: var(--cp-accent); font-weight: 700; }
+    ol { padding-left: 24px; } li + li { margin-top: 12px; }
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: .9rem; }
+    th, td { text-align: left; vertical-align: top; padding: 12px; border-bottom: 1px solid var(--cp-border); }
+    th { background: var(--cp-surface-soft); color: var(--cp-text-muted); font-size: .8rem; }
+    tr:last-child td { border-bottom: 0; }
+    details { border: 1px solid var(--cp-border); border-radius: .625rem; background: var(--cp-surface); padding: 16px 20px; }
+    summary { cursor: pointer; font-weight: 600; } .details-body { margin-top: 16px; }
+    nav { display: flex; flex-wrap: wrap; gap: 12px 24px; }
+    footer { margin-top: 28px; border-top: 1px solid var(--cp-border); padding-top: 16px; color: var(--cp-text-muted); font-size: .8rem; }
+    :focus-visible { outline: 3px solid var(--cp-accent); outline-offset: 4px; }
+    @media (max-width: 700px) { main { padding: 24px 16px; } .grid { grid-template-columns: 1fr; } .card { padding: 20px; } }
+    @media print { main { max-width: none; padding: 0; } body { font-size: 11pt; } .card, tr { break-inside: avoid; } .card { box-shadow: none; } }
+  </style>
+</head>
+<body>
+<main>
+  <nav aria-label="Document navigation"><a href="robot-learning-overview-20261002.html">Process overview</a><a href="robot-campaign-a6def80f-20261002.html">Next campaign: a6def80f</a></nav>
+  <header>
+    <h1>Campaign 010714c2: official assessment failed</h1>
+    <p class="status">Formal terminal result / goal not reached</p>
+    <p class="muted" style="margin-top: 12px">ID: <code>010714c2-5abd-4836-96bd-364caaf82042</code></p>
+    <p class="muted">Started: <time datetime="2026-10-01T22:29:26.686463+02:00">1 October 2026, 22:29:26.686463 CEST</time>.</p>
+    <p class="muted">Official assessment completed: <time datetime="2026-10-02T01:27:00+02:00">2 October 2026, 01:27:00 CEST</time>.</p>
+    <p class="muted">CEST means Central European Summer Time, UTC+02:00. The end time is the recorded terminal assessment time, not the later reset time.</p>
+  </header>
+
+  <section class="section grid" aria-label="Result and state">
+    <article class="card"><h2>Official result: 189 / 200</h2><p>T7 achieved 94.5% success on the protected panel.</p><p>The goal required 196 / 200 successes.</p><p>The result was seven successes below that requirement.</p></article>
+    <article class="card"><h2>Campaign reached a terminal outcome</h2><p>E21 requested official assessment of <code>T7:checkpoint-120832</code>.</p><p>The recorded status is <code>official_assessment_failed</code>.</p><p>This was not a campaign stopped with an open inquiry.</p></article>
+  </section>
+
+  <section class="section card" aria-labelledby="task">
+    <h2 id="task">Task and terms</h2>
+    <p>A learned policy controls a two-joint arm. Targets cover radii of 6&ndash;20 cm and the full angular range.</p>
+    <p>The end effector must stay within 1 cm of the target for two continuous seconds. This requires 100 consecutive control steps. Each episode permits at most 500 control steps.</p>
+    <p>The official goal is at least 98% success on one fixed 200-episode panel. Development measurements do not count toward that result.</p>
+    <p class="muted">PI means principal investigator. PPO means proximal policy optimization, the learning algorithm used here. IK means inverse kinematics. PD means proportional-derivative control. T identifies a training operation, M a measurement operation, I an inquiry, and E another recorded operation. Candidate names in this report refer to checkpoint 120832 unless stated otherwise.</p>
+  </section>
+
+  <section class="section" aria-labelledby="sequence">
+    <h2 id="sequence">Sequence of work</h2>
+    <figure class="card">
+      <div class="flow" aria-label="Recorded sequence">
+        <span class="node">Startup: T1 training</span><span class="arrow" aria-hidden="true">&rarr;</span>
+        <span class="node">I1: diagnostics</span><span class="arrow" aria-hidden="true">&rarr;</span>
+        <span class="node">I2: geometry interface</span><span class="arrow" aria-hidden="true">&rarr;</span>
+        <span class="node">Goal review: M4 / M5</span><span class="arrow" aria-hidden="true">&rarr;</span>
+        <span class="node">I3: action attenuation</span><span class="arrow" aria-hidden="true">&rarr;</span>
+        <span class="node">I4: continuous representation</span><span class="arrow" aria-hidden="true">&rarr;</span>
+        <span class="node">Goal review: role / M9</span><span class="arrow" aria-hidden="true">&rarr;</span>
+        <span class="node">Official assessment</span>
+      </div>
+      <figcaption class="muted">Four inquiries opened and closed. M4, M5, and M9 ran without an active inquiry, during goal review.</figcaption>
+    </figure>
+    <ol>
+      <li><strong>Startup intervention.</strong> The PI expanded the training radius range from 14&ndash;20 cm to 6&ndash;20 cm. T1 trained a fresh PPO policy before any measurement or inquiry.</li>
+      <li><strong>I1: locate the failure pattern.</strong> M1 evaluated T1. M2 repeated the same panel after a radius-bin correction. T1 succeeded in 98 / 160 episodes. Of its 62 failures, 58 never entered the tolerance region.</li>
+      <li><strong>I2: test a geometry interface.</strong> T2 combined target-polar and radial-tangential inputs with a near-target velocity-sensitive training signal. M3 recorded 0 / 160 successes against T1's 98 / 160. The PI rejected the tested recipe.</li>
+      <li><strong>Goal review: test physical control capability.</strong> M4 tested nine fixed IK joint-PD controllers. Each failed all 160 cases. M5 reduced the gains. Each nearest-branch controller then completed all 160 cases.</li>
+      <li><strong>I3: test action attenuation.</strong> E12 restored the T1 recipe. T3 failed a formatting check before training. T4 repeated the identical request after repair. M6 showed a gain. T5 repeated the method with a new training seed, but M7 fell below T1. The PI closed the inquiry.</li>
+      <li><strong>I4: test continuous branch-error inputs.</strong> T6 and T7 replaced four wrapped IK angle errors with sine-cosine pairs. Both used the identity physical action mapping. M8 showed large gains over T1, but T6 increased hold interruptions. E18 accepted the route using the stronger T7 result.</li>
+      <li><strong>Role and readiness review.</strong> E20 assigned T7 the best-known role. M9 evaluated the same frozen candidate on new development seeds. E21 then requested official assessment. The official result failed the goal.</li>
+    </ol>
+  </section>
+
+  <section class="section" aria-labelledby="training">
+    <h2 id="training">Training and method comparison</h2>
+    <div class="card table-wrap">
+      <table>
+        <thead><tr><th scope="col">Completed run</th><th scope="col">Training seed</th><th scope="col">Method</th><th scope="col">Completed steps</th><th scope="col">Archived candidates</th></tr></thead>
+        <tbody>
+          <tr><td>T1</td><td>0</td><td>Full 6&ndash;20 cm range; reference observation and reward recipe</td><td>120,832</td><td>24</td></tr>
+          <tr><td>T2</td><td>1</td><td>Geometry interface and velocity-sensitive settling signal</td><td>120,832</td><td>24</td></tr>
+          <tr><td>T4</td><td>2</td><td>T1 recipe; multiply physical actions by 0.5</td><td>120,832</td><td>24</td></tr>
+          <tr><td>T5</td><td>3</td><td>Repeat the T4 method with a new seed</td><td>120,832</td><td>24</td></tr>
+          <tr><td>T6</td><td>4</td><td>Continuous IK branch-error inputs; identity action mapping</td><td>120,832</td><td>24</td></tr>
+          <tr><td>T7</td><td>5</td><td>Repeat the T6 method with a new seed</td><td>120,832</td><td>24</td></tr>
+        </tbody>
+      </table>
+      <p class="muted" style="margin-top: 12px">All six runs used fresh initialization. Each requested 120,000 steps. The completed-step count, not the requested allocation, gives the resource total. The 144 archived candidates are checkpoints from six runs, not 144 independent training runs.</p>
+    </div>
+    <p style="margin-top: 16px">T3 produced no training steps or candidates. It failed the Ruff import-order check. T4 superseded T3 with the same scientific request, initialization, seed, and allocation.</p>
+    <p>T2 changed both inputs and the training signal. Its result does not isolate either change. The method comparisons also use different training seeds.</p>
+  </section>
+
+  <section class="section" aria-labelledby="measurements">
+    <h2 id="measurements">Development results</h2>
+    <div class="card table-wrap">
+      <table>
+        <thead><tr><th scope="col">Operation</th><th scope="col">Episode seeds</th><th scope="col">Reference</th><th scope="col">Tested candidate</th><th scope="col">Paired gains / losses</th></tr></thead>
+        <tbody>
+          <tr><td>M1 / M2</td><td>4200&ndash;4359</td><td>None</td><td>T1: 98 / 160; 61.25%</td><td>Same candidate and panel; diagnostic correction</td></tr>
+          <tr><td>M3</td><td>4200&ndash;4359</td><td>T1: 98 / 160</td><td>T2: 0 / 160; 0%</td><td>0 / 98; net -98</td></tr>
+          <tr><td>M6</td><td>4200&ndash;4359</td><td>T1: 98 / 160</td><td>T4: 115 / 160; 71.875%</td><td>41 / 24; net +17</td></tr>
+          <tr><td>M7</td><td>4200&ndash;4359</td><td>T1: 98 / 160</td><td>T5: 91 / 160; 56.875%</td><td>41 / 48; net -7</td></tr>
+          <tr><td>M8</td><td>4360&ndash;4519</td><td>T1: 89 / 160</td><td>T6: 151 / 160; 94.375%</td><td>63 / 1; net +62</td></tr>
+          <tr><td>M8</td><td>4360&ndash;4519</td><td>T1: 89 / 160</td><td>T7: 156 / 160; 97.5%</td><td>69 / 2; net +67</td></tr>
+          <tr><td>M9</td><td>4520&ndash;4679</td><td>None</td><td>T7: 157 / 160; 98.125%</td><td>New panel; same frozen candidate</td></tr>
+        </tbody>
+      </table>
+      <p class="muted" style="margin-top: 12px">Each panel contains 160 consecutive episode seeds. A gain means that the tested candidate succeeded where the reference failed. A loss means the reverse. Comparisons within each paired row use matching episode seeds and evaluation semantics.</p>
+    </div>
+    <p style="margin-top: 16px">M1 incorrectly assigned all 160 episodes to its 18&ndash;20 cm summary bin. M2 corrected that bin to 28 episodes with no successes. Both operations retained the same 98 / 160 overall result. M2 was not independent replication.</p>
+    <p>Corrected M2 data show 90 / 93 successes at 6&ndash;14 cm, 8 / 39 at 14&ndash;18 cm, and 0 / 28 at 18&ndash;20 cm. This identifies an approach deficit in the learned policy. It does not prove insufficient physical control capability.</p>
+  </section>
+
+  <section class="section" aria-labelledby="controllers">
+    <h2 id="controllers">Controller measurements and action attenuation</h2>
+    <div class="card table-wrap">
+      <table>
+        <thead><tr><th scope="col">Operation</th><th scope="col">Controller</th><th scope="col">Gain pair: proportional / derivative</th><th scope="col">Success per variant</th><th scope="col">Cases with saturated actions</th></tr></thead>
+        <tbody>
+          <tr><td>M4</td><td>Nearest, open, and folded IK branches</td><td>1.5 / 0.6; 3 / 0.8; 6 / 1.2</td><td>0 / 160 for each of nine variants</td><td>160 / 160 for every variant</td></tr>
+          <tr><td>M5</td><td>Nearest IK branch</td><td>0.2 / 0.05; 0.3 / 0.08</td><td>160 / 160 for each variant</td><td>0 / 160 for each variant</td></tr>
+          <tr><td>M5</td><td>Nearest IK branch</td><td>0.4 / 0.1</td><td>160 / 160</td><td>11 / 160</td></tr>
+          <tr><td>M5</td><td>Open IK branch</td><td>All three lower-gain pairs</td><td>153 / 160 for each variant</td><td>0 / 160; 0 / 160; 50 / 160</td></tr>
+          <tr><td>M5</td><td>Folded IK branch</td><td>All three lower-gain pairs</td><td>158 / 160 for each variant</td><td>0 / 160; 0 / 160; 35 / 160</td></tr>
+        </tbody>
+      </table>
+      <p class="muted" style="margin-top: 12px">M4 and M5 used seeds 4200&ndash;4359 and the 1 cm, 100-step hold criterion. Each operation contained one laboratory instrument measurement with nine internal controller variants. These controllers were not learned-policy candidates or official assessments.</p>
+    </div>
+    <p style="margin-top: 16px">M4 was a completed negative measurement, not an execution failure. The corrected M5 controller demonstrated task capability on these cases. It did not establish that PPO would learn the same behavior.</p>
+    <p>T4 improved the learned-policy result and removed action saturation on this panel. It achieved 13 / 28 successes at 18&ndash;20 cm and had no hold interruptions.</p>
+    <p>T5 also had no action saturation, but it fell to 91 / 160 successes. It missed all 24 targets at 135&ndash;180 degrees. Reduced saturation alone was not sufficient for reliable performance.</p>
+  </section>
+
+  <section class="section" aria-labelledby="tradeoffs">
+    <h2 id="tradeoffs">Hold and directional tradeoffs</h2>
+    <div class="card table-wrap">
+      <table>
+        <thead><tr><th scope="col">Operation / candidate</th><th scope="col">Successes</th><th scope="col">Failures before entry</th><th scope="col">Failures after entry</th><th scope="col">Hold interruptions / affected episodes</th></tr></thead>
+        <tbody>
+          <tr><td>M6 / T4</td><td>115 / 160</td><td>45</td><td>0</td><td>0 / 0</td></tr>
+          <tr><td>M7 / T5</td><td>91 / 160</td><td>66</td><td>3</td><td>243 / 4</td></tr>
+          <tr><td>M8 / T1</td><td>89 / 160</td><td>67</td><td>4</td><td>5 / 5</td></tr>
+          <tr><td>M8 / T6</td><td>151 / 160</td><td>4</td><td>5</td><td>23 / 18</td></tr>
+          <tr><td>M8 / T7</td><td>156 / 160</td><td>2</td><td>2</td><td>4 / 4</td></tr>
+          <tr><td>M9 / T7</td><td>157 / 160</td><td>1</td><td>2</td><td>5 / 3</td></tr>
+        </tbody>
+      </table>
+      <p class="muted" style="margin-top: 12px">An interruption is an exit after an in-tolerance run. An episode can contain several interruptions and can still succeed later. Interruption events, affected episodes, and post-entry failures are different counts.</p>
+    </div>
+    <p style="margin-top: 16px">The I3 closure cited three T5 post-entry failure episodes. Its artifact also contains 243 interruption events across four episodes. The smaller failure count must not replace the interruption count.</p>
+    <div class="card table-wrap" style="margin-top: 16px">
+      <table>
+        <thead><tr><th scope="col">Panel / candidate</th><th scope="col">Success at 90&ndash;135 degrees</th><th scope="col">Success at 135&ndash;180 degrees</th><th scope="col">Success outside 90&ndash;180 degrees</th></tr></thead>
+        <tbody>
+          <tr><td>M8 / T1</td><td>14 / 19</td><td>10 / 16</td><td>65 / 125</td></tr>
+          <tr><td>M8 / T6</td><td>19 / 19</td><td>16 / 16</td><td>116 / 125</td></tr>
+          <tr><td>M8 / T7</td><td>18 / 19</td><td>13 / 16</td><td>125 / 125</td></tr>
+          <tr><td>M9 / T7</td><td>16 / 17</td><td>12 / 14</td><td>129 / 129</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="margin-top: 16px">T6 had better M8 results than T7 in these positive-angle bins, but worse total success and more hold interruptions. T7's remaining development failures all occurred at 90&ndash;180 degrees.</p>
+    <p>I4 required gains without a material increase in hold interruptions. E18 accepted the method using the stronger run, despite T6's 23 interruptions. That narrowed the original condition. Both training seeds showed gains, but stabilization reliability did not reproduce equally.</p>
+  </section>
+
+  <section class="section" aria-labelledby="readiness">
+    <h2 id="readiness">Readiness and official result</h2>
+    <div class="card table-wrap">
+      <table>
+        <thead><tr><th scope="col">Evidence</th><th scope="col">Panel identity</th><th scope="col">T7 result</th><th scope="col">Meaning</th></tr></thead>
+        <tbody>
+          <tr><td>M8</td><td>Development; seeds 4360&ndash;4519</td><td>156 / 160; 97.5%</td><td>Below 98%</td></tr>
+          <tr><td>M9</td><td>Development; seeds 4520&ndash;4679</td><td>157 / 160; 98.125%</td><td>Above 98% on this panel only</td></tr>
+          <tr><td>M8 + M9</td><td>320 distinct development seeds</td><td>313 / 320; 97.8125%</td><td>Combined development result below 98%</td></tr>
+          <tr><td>Official assessment</td><td>Protected final panel; seeds 1000&ndash;1199</td><td>189 / 200; 94.5%</td><td>Failed the required 196 / 200</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="note" style="margin-top: 16px">
+      <p>E21 described T7 as having reproduced above the goal threshold. M8 was below that threshold. The combined M8/M9 result was also below it.</p>
+      <p>M9 improved the evidence but did not establish repeated above-threshold performance. E20's best-known role assignment was not an assessment-readiness finding.</p>
+    </div>
+    <p style="margin-top: 16px">The M8, M9, and official records identify the same model fingerprint. The archived T7 candidate remained the selected model. Neither archival retention nor role assignment proves scientific effectiveness.</p>
+    <p>The official record stores the verdict and an aggregate summary. The 189-success count is calculated from its recorded 94.5% over 200 episodes. That summary does not identify the causes of the 11 official failures.</p>
+  </section>
+
+  <section class="section" aria-labelledby="lessons">
+    <h2 id="lessons">Lessons and harness interpretation</h2>
+    <div class="card table-wrap">
+      <table>
+        <thead><tr><th scope="col">Observation</th><th scope="col">Lesson</th><th scope="col">Actual harness relation</th></tr></thead>
+        <tbody>
+          <tr><td>M4/M5 investigated control capability before I3. M9 measured readiness during goal review.</td><td>Measurement can inform the next inquiry or assessment decision.</td><td>The permission added by <code>c68627d</code> was exercised. This does not prove that permission alone caused the direction.</td></tr>
+          <tr><td>All 14 instrument artifact records carried structural inventories. After M1, the PI inspected diagnostic values and corrected the radius bin.</td><td>An inventory helps locate evidence. It does not replace the evidence.</td><td>The inventory implementation from <code>f986a2c</code> remained active. The log observed no repeat of the earlier claim that available diagnostics were absent.</td></tr>
+          <tr><td>Startup still trained first while the instrument document's inventory explanation was temporarily removed.</td><td>The added explanation was not necessary for that opening order.</td><td>The explanation was later restored. Removal did not produce investigation before training. It also did not reproduce an identical scientific decision.</td></tr>
+          <tr><td>I1 was diagnostic-only. I3 tested replication. I4 used two training seeds, but later contracts still specified fixed recipes.</td><td>Progression improved in some rounds but remained partly training-shaped.</td><td>The maintainer provisionally retained goal-review measurement and evidence-inspection changes. Their scientific benefit was not isolated.</td></tr>
+          <tr><td>I4 accepted T7 while softening the hold condition. E21 overstated the threshold evidence.</td><td>Preserve regressions and compare readiness claims with all relevant results.</td><td>At the campaign review, the log classified these as PI scientific-judgment limits. That review introduced no Runner scientific gate or readiness-prompt change.</td></tr>
+          <tr><td>The brief repeated candidate and artifact information.</td><td>Reduce duplicate context without selecting favorable evidence.</td><td>Brief compaction was implemented after this campaign. It cannot explain this campaign's behavior, and its campaign benefit remained unassessed.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="margin-top: 16px">The maintainer provisionally retained two mechanisms because their specific functions worked here. That engineering decision is not proof that they improved official success. Official policy failure is also not proof that those mechanisms failed.</p>
+    <p><strong>Later harness status:</strong> at report preparation on 2 October 2026, the maintainer approved narrow goal-review readiness guidance. This approval postdates the campaign and supplies no evidence of its effect. See the <a href="robot-learning-overview-20261002.html">process overview</a> for the latest harness status.</p>
+  </section>
+
+  <section class="section" aria-labelledby="limits">
+    <h2 id="limits">Evidence limits and unresolved questions</h2>
+    <div class="grid">
+      <article class="card"><h3>Method evidence</h3><p>Two fresh runs support a directional improvement from the tested continuous-representation recipe. They do not establish seed-independent hold reliability.</p><p>The controller gain grid reused one development panel. Its perfect nearest-branch result does not establish general performance or learned-policy success.</p><p>Which method can preserve directional acquisition and reliable hold across training seeds remains unresolved.</p></article>
+      <article class="card"><h3>Assessment and harness evidence</h3><p>T7 retained a concentrated development deficit at 90&ndash;180 degrees. The aggregate official record cannot show whether the same deficit caused its final failures.</p><p>Repeated T1 evaluations on seeds 4200&ndash;4359 are not new independent panels. Development success must remain separate from official success.</p><p>The harness changes were not isolated causal experiments. Their effect on scientific progression and resource use remains uncertain.</p></article>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="resources">
+    <h2 id="resources">Recorded resource use</h2>
+    <div class="card table-wrap">
+      <table>
+        <thead><tr><th scope="col">Resource</th><th scope="col">Total</th><th scope="col">Counting rule</th></tr></thead>
+        <tbody>
+          <tr><td>Completed training runs</td><td>6</td><td>T1, T2, T4, T5, T6, and T7</td></tr>
+          <tr><td>Completed training steps</td><td>724,992</td><td>Six runs of 120,832 steps</td></tr>
+          <tr><td>Archived candidates</td><td>144</td><td>24 checkpoints per completed run</td></tr>
+          <tr><td>Completed measurement operations</td><td>9</td><td>M1&ndash;M9</td></tr>
+          <tr><td>Instrument measurements</td><td>14</td><td>12 policy evaluations and two laboratory probes</td></tr>
+          <tr><td>Official assessments</td><td>1</td><td>E21; not a development measurement</td></tr>
+          <tr><td>Inquiries</td><td>4 opened; 4 closed</td><td>I1&ndash;I4</td></tr>
+          <tr><td>PI invocations</td><td>41</td><td>One model, two startup, 13 goal-review, and 25 inquiry invocations</td></tr>
+          <tr><td>Reported AIU</td><td>112.084903</td><td>Sum of all 41 usage rows</td></tr>
+          <tr><td>PI invocation duration</td><td>2,708.234 seconds</td><td>Sum of reported invocation durations; not campaign elapsed time</td></tr>
+        </tbody>
+      </table>
+      <p class="muted" style="margin-top: 12px">AIU denotes the artificial intelligence usage unit reported by Copilot. It is not a training-step, episode, or wall-time measure. This total includes the preliminary scientific-model invocation and the repair invocation.</p>
+    </div>
+    <p style="margin-top: 16px">The T3 repair used 49.315 seconds of PI invocation time and 1.525432 AIU. These amounts are included above. T3 supplied no training steps or scientific evidence.</p>
+  </section>
+
+  <details class="section">
+    <summary>Sources and limits</summary>
+    <div class="details-body">
+      <p><strong>Historical source:</strong> <code>2b65648^</code>, resolved to <code>0aa25249a773599447ca1e87f3c0fc11e07c8767</code>. This is the record immediately before the reset that started campaign a6def80f.</p>
+      <p><code>research\research_state.json</code> and <code>research\results.jsonl</code> were read from that immutable Git object. Both identify campaign <code>010714c2-5abd-4836-96bd-364caaf82042</code>. All 37 operations agree in identity, order, and content after excluding the JSONL-only campaign-ID envelope field. The history contains 36 completed operations and one failed training attempt.</p>
+      <p><strong>Scientific evidence:</strong> completed operation records and their artifacts under <code>research\evaluations\010714c2-5abd-4836-96bd-364caaf82042\</code>. Policy success, episode seeds, failure phases, interruption counts, and stated subgroups were checked against retained episode rows. Controller outcomes were checked against their variant episode rows. Failed attempts and commit messages were not used as scientific evidence.</p>
+      <p>The retained T7 metadata was read under <code>research\checkpoints\retained\010714c2-5abd-4836-96bd-364caaf82042\</code>. Its recorded training implementation was checked at <code>b553057e99a201dd34b553b382a2491ebd610d78</code>, the scientific commit referenced by T7. Code confirms the input representation; it does not prove effectiveness.</p>
+      <p><strong>Task and official panel:</strong> the same snapshot's <code>research\scenario.md</code>, <code>robot_learning\benchmark\final_contract.py</code>, and <code>robot_learning\benchmark\final_benchmark.py</code>. The official verdict and percentage come from the state record. No official episode-level failure analysis is supplied by that aggregate summary.</p>
+      <p><strong>Usage:</strong> <code>reports\session_usage\010714c2-5abd-4836-96bd-364caaf82042.jsonl</code> in the maintainer worktree. All 41 rows identify this campaign. AIU and invocation durations were summed directly. This usage file is a separate source from the historical Git snapshot.</p>
+      <p><strong>Harness observations:</strong> relevant ranges of <code>docs\harness-experiment-log.md</code>, especially lines 906&ndash;949, with the earlier goal-review and measurement-inventory entries and the following brief-compaction entry. These document public evidence inspection and maintainer decisions. They are not substitutes for measured policy results or isolated causal tests.</p>
+      <p>This report uses no private assistant reasoning. It does not accept checkpoint interpretations as measured facts.</p>
+    </div>
+  </details>
+  <footer>
+    <nav aria-label="Related documents"><a href="robot-learning-overview-20261002.html">Process overview</a><a href="robot-campaign-a6def80f-20261002.html">Next campaign: a6def80f</a></nav>
+    <p style="margin-top: 12px">Short factual sentences and consistent terms are used. Formal ASD-STE100 compliance is not verified.</p>
+    <p>This is a maintainer document outside the PI campaign context. It is self-contained and works offline.</p>
+  </footer>
+</main>
+</body>
+</html>

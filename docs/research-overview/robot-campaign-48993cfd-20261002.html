@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Campaign 48993cfd: stopped without official assessment</title>
+  <script>
+    (() => {
+      const param = new URLSearchParams(window.location.search).get("scoutTheme");
+      const theme =
+        param || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+      document.documentElement.setAttribute("data-theme", theme);
+    })();
+  </script>
+  <style>
+    :root {
+      color-scheme: light;
+      --cp-bg: #f7f4ef;
+      --cp-bg-elevated: #fcfbf8;
+      --cp-surface: #ffffff;
+      --cp-surface-soft: #f5f5f5;
+      --cp-border: #dedede;
+      --cp-border-strong: #919191;
+      --cp-text: #242424;
+      --cp-text-muted: #5c5c5c;
+      --cp-text-soft: #6f6f6f;
+      --cp-accent: #b11f4b;
+      --cp-accent-hover: #9a1a41;
+      --cp-accent-soft: rgba(177, 31, 75, 0.08);
+      --cp-accent-fg: #ffffff;
+      --cp-success: #16a34a;
+      --cp-danger: #dc2626;
+      --cp-warning: #f59e0b;
+      --cp-link: #0078d4;
+      --cp-shadow: 0 18px 48px rgba(0, 0, 0, 0.12);
+      --cp-overlay: rgba(255, 255, 255, 0.8);
+      --cp-panel: rgba(255, 255, 255, 0.86);
+      --cp-panel-strong: rgba(255, 255, 255, 0.96);
+      --cp-sheen: rgba(255, 255, 255, 0.55);
+      --cp-highlight: rgba(177, 31, 75, 0.12);
+    }
+    html[data-theme="dark"] {
+      color-scheme: dark;
+      --cp-bg: #3d3b3a;
+      --cp-bg-elevated: #343231;
+      --cp-surface: #292929;
+      --cp-surface-soft: #2e2e2e;
+      --cp-border: #474747;
+      --cp-border-strong: #5f5f5f;
+      --cp-text: #dedede;
+      --cp-text-muted: #919191;
+      --cp-text-soft: #b0b0b0;
+      --cp-accent: #fd8ea1;
+      --cp-accent-hover: #fb7b91;
+      --cp-accent-soft: rgba(253, 142, 161, 0.14);
+      --cp-accent-fg: #1a1a1a;
+      --cp-success: #4ade80;
+      --cp-danger: #f87171;
+      --cp-warning: #fbbf24;
+      --cp-link: #4da6ff;
+      --cp-shadow: 0 18px 48px rgba(0, 0, 0, 0.32);
+      --cp-overlay: rgba(41, 41, 41, 0.88);
+      --cp-panel: rgba(41, 41, 41, 0.72);
+      --cp-panel-strong: rgba(41, 41, 41, 0.96);
+      --cp-sheen: rgba(255, 255, 255, 0.04);
+      --cp-highlight: rgba(253, 142, 161, 0.12);
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--cp-bg); color: var(--cp-text); font: 16px/1.65 "Segoe UI", Aptos, Calibri, -apple-system, BlinkMacSystemFont, sans-serif; }
+    main { max-width: 1080px; margin: auto; padding: 32px 24px 48px; }
+    h1 { font-size: clamp(1.9rem, 4vw, 2.7rem); line-height: 1.2; margin: 20px 0 12px; }
+    h2 { font-size: 1.5rem; margin: 0 0 12px; } h3 { font-size: 1.05rem; margin: 0 0 8px; }
+    p { margin: 0; } p + p { margin-top: 8px; }
+    figure { margin: 0; }
+    a { color: var(--cp-link); text-underline-offset: 3px; }
+    code { font-family: Consolas, "Courier New", Courier, monospace; font-size: .85em; overflow-wrap: anywhere; }
+    .muted { color: var(--cp-text-muted); font-size: .85rem; }
+    .section { margin-top: 28px; }
+    .card { padding: 24px; border: 1px solid var(--cp-border); border-radius: 16px; background: var(--cp-surface); box-shadow: 0 0 2px var(--cp-border), 0 1px 2px var(--cp-highlight); }
+    .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+    .note { background: var(--cp-accent-soft); border-left: 4px solid var(--cp-accent); border-radius: .625rem; padding: 16px 20px; }
+    .status { color: var(--cp-text-muted); font-size: .8rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
+    .flow { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin: 16px 0; }
+    .node { border: 1px solid var(--cp-border-strong); border-radius: .625rem; background: var(--cp-surface); padding: 12px 16px; }
+    .arrow { color: var(--cp-accent); font-weight: 700; }
+    ol { padding-left: 24px; } li + li { margin-top: 12px; }
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: .9rem; }
+    th, td { text-align: left; vertical-align: top; padding: 12px; border-bottom: 1px solid var(--cp-border); }
+    th { background: var(--cp-surface-soft); color: var(--cp-text-muted); font-size: .8rem; }
+    tr:last-child td { border-bottom: 0; }
+    details { border: 1px solid var(--cp-border); border-radius: .625rem; background: var(--cp-surface); padding: 16px 20px; }
+    summary { cursor: pointer; font-weight: 600; } .details-body { margin-top: 16px; }
+    nav { display: flex; flex-wrap: wrap; gap: 12px 24px; }
+    footer { margin-top: 28px; border-top: 1px solid var(--cp-border); padding-top: 16px; color: var(--cp-text-muted); font-size: .8rem; }
+    :focus-visible { outline: 3px solid var(--cp-accent); outline-offset: 4px; }
+    @media (max-width: 700px) { main { padding: 24px 16px; } .grid { grid-template-columns: 1fr; } .card { padding: 20px; } }
+    @media print { main { max-width: none; padding: 0; } body { font-size: 11pt; } .card, tr { break-inside: avoid; } .card { box-shadow: none; } }
+  </style>
+</head>
+<body>
+<main>
+  <nav aria-label="Document navigation"><a href="robot-learning-overview-20261002.html">Process overview</a><a href="robot-campaign-2381bcbf-20261002.html">Newer campaign</a><a href="robot-campaign-a6def80f-20261002.html">Older campaign</a></nav>
+  <header>
+    <h1>Campaign 48993cfd: stopped without official assessment</h1>
+    <p class="status">Previous campaign 2 / no official result</p>
+    <p class="muted" style="margin-top: 12px">ID: <code>48993cfd-1808-4db6-a7b8-000fd5daba50</code></p>
+    <p class="muted">Started: 2 October 2026, 09:37 CEST. Records were preserved before the next reset at 13:54.</p>
+  </header>
+
+  <section class="section grid" aria-label="Result and state">
+    <article class="card"><h2>Last development result: 178 / 200</h2><p>T3 achieved 89% success in M6.</p><p>The reference T1 candidate achieved 130 / 200 on the same seeds.</p><p>This was not an official assessment.</p></article>
+    <article class="card"><h2>Campaign stopped with I3 open</h2><p>The maintainer stopped the campaign.</p><p>The final checkpoint preserved an unresolved tradeoff between outer and inner targets.</p><p>No best-known role or terminal scientific conclusion is recorded.</p></article>
+  </section>
+
+  <section class="section" aria-labelledby="sequence">
+    <h2 id="sequence">Sequence of work</h2>
+    <figure class="card">
+      <div class="flow" aria-label="Recorded sequence">
+        <span class="node">Startup plant probe</span><span class="arrow" aria-hidden="true">&rarr;</span>
+        <span class="node">I1: full-range baseline</span><span class="arrow" aria-hidden="true">&rarr;</span>
+        <span class="node">I2: joint-goal reward shaping</span><span class="arrow" aria-hidden="true">&rarr;</span>
+        <span class="node">I3: representation</span>
+      </div>
+      <figcaption class="muted">The campaign used three inquiries. The last remained open when the run stopped.</figcaption>
+    </figure>
+    <ol>
+      <li><strong>Startup investigation.</strong> The first plant-probe execution failed. A repaired probe completed as M2 in the same startup session.</li>
+      <li><strong>Physical measurements.</strong> M2 mapped robot geometry and local dynamics across radii and angles. It did not evaluate a learned policy.</li>
+      <li><strong>Inquiry I1.</strong> T1 trained with the full 6&ndash;20 cm target range. M3 recorded 120 / 200 successes. Most outer-radius failures occurred before first entry.</li>
+      <li><strong>Inquiry I2.</strong> M4 measured the reference again. T2 then used branch-aware inverse-kinematic potential shaping. M5 compared T2 and T1 on matched seeds.</li>
+      <li><strong>I2 closure.</strong> T2's overall result was worse. The PI rejected the tested recipe but incorrectly denied its outer-reaching improvement.</li>
+      <li><strong>Inquiry I3.</strong> T3 used periodic target-frame features and analytic branch-goal conditioning. M6 recorded a large outer-reaching gain and an inner-radius regression.</li>
+      <li><strong>Last checkpoint.</strong> E13 preserved the remaining tradeoff. The campaign stopped without official assessment.</li>
+    </ol>
+  </section>
+
+  <section class="section" aria-labelledby="measurements">
+    <h2 id="measurements">Development results</h2>
+    <div class="card table-wrap">
+      <table>
+        <thead><tr><th scope="col">Measurement</th><th scope="col">Panel seed</th><th scope="col">Reference</th><th scope="col">Candidate</th><th scope="col">Paired result</th></tr></thead>
+        <tbody>
+          <tr><td>M3</td><td>4200</td><td>None</td><td>T1: 120 / 200</td><td>Single-candidate evaluation</td></tr>
+          <tr><td>M4</td><td>5200</td><td>None</td><td>T1: 118 / 200</td><td>Single-candidate evaluation</td></tr>
+          <tr><td>M5</td><td>5400</td><td>T1: 130 / 200</td><td>T2: 116 / 200</td><td>37 gains; 51 losses; net -14</td></tr>
+          <tr><td>M6</td><td>5600</td><td>T1: 130 / 200</td><td>T3: 178 / 200</td><td>64 gains; 16 losses; net +48</td></tr>
+        </tbody>
+      </table>
+      <p class="muted" style="margin-top: 12px">Each panel contains 200 consecutive episode seeds. Only candidates within the same row form a matched comparison.</p>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="tradeoff">
+    <h2 id="tradeoff">M5 contained an outer gain and an inner loss</h2>
+    <div class="card table-wrap">
+      <table>
+        <thead><tr><th scope="col">Outcome</th><th scope="col">Radius group</th><th scope="col">T1</th><th scope="col">T2</th></tr></thead>
+        <tbody>
+          <tr><td>First entry</td><td>14&ndash;20 cm</td><td>17 / 82</td><td>54 / 82</td></tr>
+          <tr><td>Complete hold</td><td>14&ndash;20 cm</td><td>15 / 82</td><td>41 / 82</td></tr>
+          <tr><td>Complete hold</td><td>6&ndash;14 cm</td><td>115 / 118</td><td>75 / 118</td></tr>
+          <tr><td>Complete hold</td><td>All radii</td><td>130 / 200</td><td>116 / 200</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="margin-top: 16px">T2 gained 26 outer-radius successes and lost 40 inner-radius successes. The total fell by 14.</p>
+    <p>Rejecting T2 as the better overall candidate was defensible. Claiming that outer reaching did not improve was incorrect.</p>
+    <p class="muted">The training seeds differed. This limits attribution of the behavior change to the shaping term alone.</p>
+  </section>
+
+  <section class="section" aria-labelledby="last-result">
+    <h2 id="last-result">M6 improved outer behavior but did not preserve all inner behavior</h2>
+    <div class="card table-wrap">
+      <table>
+        <thead><tr><th scope="col">Radius group</th><th scope="col">T1 complete holds</th><th scope="col">T3 complete holds</th><th scope="col">Difference</th></tr></thead>
+        <tbody>
+          <tr><td>6&ndash;14 cm; 115 cases</td><td>115 / 115</td><td>102 / 115</td><td>-13</td></tr>
+          <tr><td>14&ndash;20 cm; 85 cases</td><td>15 / 85</td><td>76 / 85</td><td>+61</td></tr>
+          <tr><td>All 200 cases</td><td>130 / 200</td><td>178 / 200</td><td>+48</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="margin-top: 16px">The last checkpoint recognized this tradeoff. It left the route for combining outer reach with inner reliability unresolved.</p>
+  </section>
+
+  <section class="section" aria-labelledby="lessons">
+    <h2 id="lessons">Lessons and harness interpretation</h2>
+    <div class="card table-wrap">
+      <table>
+        <thead><tr><th scope="col">Observation</th><th scope="col">Lesson</th><th scope="col">Harness position</th></tr></thead>
+        <tbody>
+          <tr><td>Startup performed a physical probe before training.</td><td>Startup can produce scientific evidence without a learned policy.</td><td>Keep the startup clarification provisionally. One observation is not causal proof.</td></tr>
+          <tr><td>The failed probe was repaired in the same startup session.</td><td>An execution exception is not evidence against the scientific explanation.</td><td>Retain execution history without treating the failed attempt as a measurement.</td></tr>
+          <tr><td>M5's overall loss hid its outer gain in the closure claim.</td><td>State both subgroup gains and regressions before rejecting a method.</td><td>Evidence interpretation and scientific continuity remain unresolved.</td></tr>
+          <tr><td>Diagnostic paths and field inventories were present in feedback.</td><td>Available data can still remain unread or misinterpreted.</td><td>Brief compaction did not remove those references. Discovery alone is insufficient.</td></tr>
+          <tr><td>M6 improved overall success but lost inner cases.</td><td>A larger aggregate gain does not erase a consequential regression.</td><td>The later readiness proposal must preserve residual evidence. It has not been tested here.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="margin-top: 16px">The immediate M5 claim error belonged to PI interpretation. Aggregate-first presentation and a trial-shaped objective were possible amplifiers, not established causes.</p>
+  </section>
+
+  <section class="section" aria-labelledby="resources">
+    <h2 id="resources">Recorded resource use</h2>
+    <div class="card table-wrap">
+      <table><thead><tr><th scope="col">Completed training</th><th scope="col">Completed steps</th><th scope="col">Inquiries opened</th><th scope="col">PI invocations</th><th scope="col">Reported AIU</th></tr></thead><tbody><tr><td>3 runs</td><td>362,496</td><td>3</td><td>25</td><td>68.51</td></tr></tbody></table>
+      <p class="muted" style="margin-top: 12px">Five completed measurement operations contained seven instrument measurements. The failed initial probe supplied no scientific measurement.</p>
+    </div>
+  </section>
+  <details class="section">
+    <summary>Sources and limits</summary>
+    <div class="details-body">
+      <p>The state and operation history were read from the record immediately before reset <code>e0e4d5e</code>.</p>
+      <p>The histories agreed. The record contains no official assessment or terminal scientific conclusion.</p>
+      <p>M3&ndash;M6 retain the policy measurements. E13 records the M6 radius-group results and remaining question.</p>
+      <p><code>docs\harness-experiment-log.md</code> records the M5 diagnostic analysis and the public evidence-access trace.</p>
+      <p>Usage comes from <code>reports\session_usage\48993cfd-1808-4db6-a7b8-000fd5daba50.jsonl</code>.</p>
+      <p>Local plant measurements do not prove that a learned policy can meet the official task. Development measurements are not official success.</p>
+    </div>
+  </details>
+  <footer>
+    <nav aria-label="Related documents"><a href="robot-learning-overview-20261002.html">Process overview</a><a href="robot-campaign-d7080d95-20261002.html">d7080d95</a><a href="robot-campaign-2381bcbf-20261002.html">2381bcbf</a><a href="robot-campaign-a6def80f-20261002.html">a6def80f</a></nav>
+    <p style="margin-top: 12px">Short factual sentences and consistent terms are used. Formal ASD-STE100 compliance is not verified.</p>
+    <p>This is a maintainer document outside the PI campaign context.</p>
+  </footer>
+</main>
+</body>
+</html>
