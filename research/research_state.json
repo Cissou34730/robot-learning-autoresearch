@@ -323,44 +323,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "open",
-        "inquiry": {
-          "closure_condition": "After the inquiry checkpoint, replace only the training target-radius range with the official 6-20 cm range, train one fresh PPO baseline for the fixed 120000-step allocation, and run a development evaluation that reports overall success plus radius-stratified first reach, maximum uninterrupted hold, hold interruptions, and success. Close the inquiry when these results determine whether inner-radius coverage is selectively limiting performance or whether reaching is broad but uninterrupted holding remains the dominant failure.",
-          "goal_connection": "The human goal requires at least 196 of 200 complete uninterrupted two-second holds under targets uniformly distributed from 6 to 20 cm. Resolving whether the current restricted 14-20 cm training distribution is the dominant route risk determines whether full-coverage training is the necessary next intervention before changing reward or stabilization mechanisms.",
-          "id": "I1",
-          "opened_in_session": "S2",
-          "question": "Does training PPO over the full official 6-20 cm target-radius distribution produce a credible first policy, or do failures persist because transient stabilization and the uninterrupted hold objective are not learned?",
-          "rationale": "M2 found broadly feasible local kinematics and dynamics with valid branch alternatives for nearly all sampled targets, but used no learned policy and cannot distinguish distribution coverage from transient stabilization or reward-credit-assignment failure. The existing training environment excludes the official 6-14 cm region, whereas the evaluation path already measures the official distribution and exposes the diagnostics needed for this distinction. A fresh full-range baseline is therefore the most direct bounded, goal-linked test before introducing a stabilization or reward intervention.",
-          "reframes": []
-        }
-      },
-      "result": {
-        "action": "open",
-        "inquiry_id": "I1",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E2",
-    "inquiry_id": null,
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "open",
-        "closure_condition": "After the inquiry checkpoint, replace only the training target-radius range with the official 6-20 cm range, train one fresh PPO baseline for the fixed 120000-step allocation, and run a development evaluation that reports overall success plus radius-stratified first reach, maximum uninterrupted hold, hold interruptions, and success. Close the inquiry when these results determine whether inner-radius coverage is selectively limiting performance or whether reaching is broad but uninterrupted holding remains the dominant failure.",
-        "goal_connection": "The human goal requires at least 196 of 200 complete uninterrupted two-second holds under targets uniformly distributed from 6 to 20 cm. Resolving whether the current restricted 14-20 cm training distribution is the dominant route risk determines whether full-coverage training is the necessary next intervention before changing reward or stabilization mechanisms.",
-        "question": "Does training PPO over the full official 6-20 cm target-radius distribution produce a credible first policy, or do failures persist because transient stabilization and the uninterrupted hold objective are not learned?",
-        "rationale": "M2 found broadly feasible local kinematics and dynamics with valid branch alternatives for nearly all sampled targets, but used no learned policy and cannot distinguish distribution coverage from transient stabilization or reward-credit-assignment failure. The existing training environment excludes the official 6-14 cm region, whereas the evaluation path already measures the official distribution and exposes the diagnostics needed for this distinction. A fresh full-range baseline is therefore the most direct bounded, goal-linked test before introducing a stabilization or reward intervention."
-      }
-    },
-    "request_fingerprint": "357073e7c0ea431cb9f962f730d474e777cbc9f8534017159647298957a16868",
-    "session_id": "S2",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "No training candidate exists. Working, best-known, and retained roles are empty; M1 was a failed implementation attempt and is not evidence.",
     "completed_operations": [
