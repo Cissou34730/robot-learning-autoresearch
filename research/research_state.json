@@ -1,5 +1,13 @@
 {
-  "active_inquiry": null,
+  "active_inquiry": {
+    "closure_condition": "Close this inquiry only after a fresh 120000-step baseline has been measured on the official distribution with target radius and angle, first-entry time, longest uninterrupted in-tolerance streak, settling and velocity margins, and action saturation recorded, and the failure pattern supports one evidence-backed next intervention or shows that no credible intervention remains.",
+    "goal_connection": "The human goal requires complete 100-sample holds across the full 0.06-0.20 m official distribution. Identifying whether failures are localized to unseen inner radii or occur broadly after target entry determines whether the credible next intervention is distribution coverage or a stabilization-oriented change to the learning signal, observations, or control method.",
+    "id": "I1",
+    "opened_in_session": "S2",
+    "question": "For the first learned baseline, is the dominant barrier to reaching at least 98% official episode success missing experience in the official inner-radius workspace, or inadequate braking and uninterrupted hold stabilization across radii already seen during training?",
+    "rationale": "The scientific model establishes reachability and predicts geometry-dependent correction sensitivity, but no learned policy has yet been trained or measured. A baseline is therefore the highest-value discriminating evidence: inner-radius-concentrated failures support expanding or staging the training distribution, while broad high-entry, overshoot, late-exit, or low-hold failures support changing stabilization learning signals, observations, or control.",
+    "reframes": []
+  },
   "campaign": {
     "base_commit": "0aa25249a773599447ca1e87f3c0fc11e07c8767",
     "id": "a6def80f-a30e-44ec-9c18-188c04fdb535",
@@ -9,16 +17,16 @@
   },
   "candidates": {},
   "counters": {
-    "event": 1,
-    "inquiry": 0,
+    "event": 2,
+    "inquiry": 1,
     "measurement": 0,
-    "session": 1,
+    "session": 2,
     "training": 0
   },
   "human_goal": {
     "source": "research/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -51,9 +59,69 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-02T06:54:49Z",
+      "error": null,
+      "id": "E2",
+      "inquiry_id": "I1",
+      "kind": "inquiry",
+      "request": {
+        "action": "open",
+        "closure_condition": "Close this inquiry only after a fresh 120000-step baseline has been measured on the official distribution with target radius and angle, first-entry time, longest uninterrupted in-tolerance streak, settling and velocity margins, and action saturation recorded, and the failure pattern supports one evidence-backed next intervention or shows that no credible intervention remains.",
+        "goal_connection": "The human goal requires complete 100-sample holds across the full 0.06-0.20 m official distribution. Identifying whether failures are localized to unseen inner radii or occur broadly after target entry determines whether the credible next intervention is distribution coverage or a stabilization-oriented change to the learning signal, observations, or control method.",
+        "question": "For the first learned baseline, is the dominant barrier to reaching at least 98% official episode success missing experience in the official inner-radius workspace, or inadequate braking and uninterrupted hold stabilization across radii already seen during training?",
+        "rationale": "The scientific model establishes reachability and predicts geometry-dependent correction sensitivity, but no learned policy has yet been trained or measured. A baseline is therefore the highest-value discriminating evidence: inner-radius-concentrated failures support expanding or staging the training distribution, while broad high-entry, overshoot, late-exit, or low-hold failures support changing stabilization learning signals, observations, or control."
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I1",
+        "status": "completed"
+      },
+      "session_id": "S2",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "open",
+        "inquiry": {
+          "closure_condition": "Close this inquiry only after a fresh 120000-step baseline has been measured on the official distribution with target radius and angle, first-entry time, longest uninterrupted in-tolerance streak, settling and velocity margins, and action saturation recorded, and the failure pattern supports one evidence-backed next intervention or shows that no credible intervention remains.",
+          "goal_connection": "The human goal requires complete 100-sample holds across the full 0.06-0.20 m official distribution. Identifying whether failures are localized to unseen inner radii or occur broadly after target entry determines whether the credible next intervention is distribution coverage or a stabilization-oriented change to the learning signal, observations, or control method.",
+          "id": "I1",
+          "opened_in_session": "S2",
+          "question": "For the first learned baseline, is the dominant barrier to reaching at least 98% official episode success missing experience in the official inner-radius workspace, or inadequate braking and uninterrupted hold stabilization across radii already seen during training?",
+          "rationale": "The scientific model establishes reachability and predicts geometry-dependent correction sensitivity, but no learned policy has yet been trained or measured. A baseline is therefore the highest-value discriminating evidence: inner-radius-concentrated failures support expanding or staging the training distribution, while broad high-entry, overshoot, late-exit, or low-hold failures support changing stabilization learning signals, observations, or control.",
+          "reframes": []
+        }
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I1",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E2",
+    "inquiry_id": null,
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "open",
+        "closure_condition": "Close this inquiry only after a fresh 120000-step baseline has been measured on the official distribution with target radius and angle, first-entry time, longest uninterrupted in-tolerance streak, settling and velocity margins, and action saturation recorded, and the failure pattern supports one evidence-backed next intervention or shows that no credible intervention remains.",
+        "goal_connection": "The human goal requires complete 100-sample holds across the full 0.06-0.20 m official distribution. Identifying whether failures are localized to unseen inner radii or occur broadly after target entry determines whether the credible next intervention is distribution coverage or a stabilization-oriented change to the learning signal, observations, or control method.",
+        "question": "For the first learned baseline, is the dominant barrier to reaching at least 98% official episode success missing experience in the official inner-radius workspace, or inadequate braking and uninterrupted hold stabilization across radii already seen during training?",
+        "rationale": "The scientific model establishes reachability and predicts geometry-dependent correction sensitivity, but no learned policy has yet been trained or measured. A baseline is therefore the highest-value discriminating evidence: inner-radius-concentrated failures support expanding or staging the training distribution, while broad high-entry, overshoot, late-exit, or low-hold failures support changing stabilization learning signals, observations, or control."
+      }
+    },
+    "request_fingerprint": "74e603d13b22276d55d1eca05bab93985eb15315b81f3f3f3fb8dd5a0de209d7",
+    "session_id": "S2",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No training candidates, working model, best-known model, or retained model exist.",
     "completed_operations": [],
@@ -74,6 +142,21 @@
     "path": "research/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "694bbd59-e0a3-4c19-907a-150bf787b263",
+    "id": "S2",
+    "inquiry_id": null,
+    "kind": "goal_review",
+    "objective": "Reassess the scientific direction toward the human goal using completed evidence. You may request measurements to resolve an uncertainty or develop the method before committing to an inquiry. Decide whether to request official assessment, open one bounded goal-linked inquiry, or conclude that no credible route remains.",
+    "operation_ids": [
+      "E2"
+    ],
+    "scientific_parent_commit": "bf072480135a7abd5761d3feeec36a93d81bf4b7"
+  },
   "terminal_state": null
 }
