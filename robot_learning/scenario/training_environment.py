@@ -12,8 +12,23 @@ import gymnasium as gym
 from robot_learning.scenario.environment import TwoJointArmReachEnv
 
 TRAINING_TARGET_RADIUS_RANGE = (0.06, 0.20)
+OUTER_TARGET_RADIUS_RANGE = (0.14, 0.20)
+INNER_TARGET_RADIUS_RANGE = (0.06, 0.14)
+OUTER_TARGET_PROBABILITY = 0.75
+
+
+def targeted_radius_sampler(rng) -> float:
+    """Oversample the unresolved outer workspace while retaining inner controls."""
+    if rng.uniform() < OUTER_TARGET_PROBABILITY:
+        target_range = OUTER_TARGET_RADIUS_RANGE
+    else:
+        target_range = INNER_TARGET_RADIUS_RANGE
+    return float(rng.uniform(*target_range))
 
 
 def make_training_env() -> gym.Env:
     """Build the Gymnasium environment used for training this scenario."""
-    return TwoJointArmReachEnv(target_radius_range=TRAINING_TARGET_RADIUS_RANGE)
+    return TwoJointArmReachEnv(
+        target_radius_range=TRAINING_TARGET_RADIUS_RANGE,
+        target_radius_sampler=targeted_radius_sampler,
+    )
