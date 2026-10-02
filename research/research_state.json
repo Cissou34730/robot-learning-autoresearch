@@ -1,5 +1,13 @@
 {
-  "active_inquiry": null,
+  "active_inquiry": {
+    "closure_condition": "Close or redirect after one bounded representation-conditioned PPO intervention at the maintainer allocation and same-seed development diagnostics against T1: the route must materially improve 14-20 cm first-reach and complete-hold outcomes without materially degrading 6-14 cm complete holds; otherwise treat this representation route as non-credible and return to goal review.",
+    "goal_connection": "Outer-radius first reach is the dominant gap to the 98% episode-success goal. This inquiry changes policy conditioning rather than repeating the closed IK-potential reward route, while retaining the official 6-20 cm task distribution and 100-step uninterrupted hold criterion.",
+    "id": "I3",
+    "opened_in_session": "S7",
+    "question": "Can an explicit periodic target-frame and absolute analytic branch-goal representation make PPO learn reliable 14-20 cm first reach while preserving inner-radius complete uninterrupted holds under the fixed official mechanics and distribution?",
+    "rationale": "The physical model establishes valid IK alternatives and sufficient local actuation, while M4 localizes failure before reach. The current observation exposes displacement and wrapped branch-relative errors but leaves target periodicity and absolute branch goals for the policy to infer. T2 showed that adding IK-error progress as reward did not improve the mechanism, so an explicit goal-conditioned representation is the next discriminating method-design test.",
+    "reframes": []
+  },
   "campaign": {
     "base_commit": "c2ec8f7b3bd33000bb6467c6149888e1df631b7d",
     "id": "48993cfd-1808-4db6-a7b8-000fd5daba50",
@@ -1648,16 +1656,16 @@
     }
   },
   "counters": {
-    "event": 10,
-    "inquiry": 2,
+    "event": 11,
+    "inquiry": 3,
     "measurement": 5,
-    "session": 6,
+    "session": 7,
     "training": 2
   },
   "human_goal": {
     "source": "research/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -3394,9 +3402,69 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-02T09:53:01Z",
+      "error": null,
+      "id": "E11",
+      "inquiry_id": "I3",
+      "kind": "inquiry",
+      "request": {
+        "action": "open",
+        "closure_condition": "Close or redirect after one bounded representation-conditioned PPO intervention at the maintainer allocation and same-seed development diagnostics against T1: the route must materially improve 14-20 cm first-reach and complete-hold outcomes without materially degrading 6-14 cm complete holds; otherwise treat this representation route as non-credible and return to goal review.",
+        "goal_connection": "Outer-radius first reach is the dominant gap to the 98% episode-success goal. This inquiry changes policy conditioning rather than repeating the closed IK-potential reward route, while retaining the official 6-20 cm task distribution and 100-step uninterrupted hold criterion.",
+        "question": "Can an explicit periodic target-frame and absolute analytic branch-goal representation make PPO learn reliable 14-20 cm first reach while preserving inner-radius complete uninterrupted holds under the fixed official mechanics and distribution?",
+        "rationale": "The physical model establishes valid IK alternatives and sufficient local actuation, while M4 localizes failure before reach. The current observation exposes displacement and wrapped branch-relative errors but leaves target periodicity and absolute branch goals for the policy to infer. T2 showed that adding IK-error progress as reward did not improve the mechanism, so an explicit goal-conditioned representation is the next discriminating method-design test."
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I3",
+        "status": "completed"
+      },
+      "session_id": "S7",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "open",
+        "inquiry": {
+          "closure_condition": "Close or redirect after one bounded representation-conditioned PPO intervention at the maintainer allocation and same-seed development diagnostics against T1: the route must materially improve 14-20 cm first-reach and complete-hold outcomes without materially degrading 6-14 cm complete holds; otherwise treat this representation route as non-credible and return to goal review.",
+          "goal_connection": "Outer-radius first reach is the dominant gap to the 98% episode-success goal. This inquiry changes policy conditioning rather than repeating the closed IK-potential reward route, while retaining the official 6-20 cm task distribution and 100-step uninterrupted hold criterion.",
+          "id": "I3",
+          "opened_in_session": "S7",
+          "question": "Can an explicit periodic target-frame and absolute analytic branch-goal representation make PPO learn reliable 14-20 cm first reach while preserving inner-radius complete uninterrupted holds under the fixed official mechanics and distribution?",
+          "rationale": "The physical model establishes valid IK alternatives and sufficient local actuation, while M4 localizes failure before reach. The current observation exposes displacement and wrapped branch-relative errors but leaves target periodicity and absolute branch goals for the policy to infer. T2 showed that adding IK-error progress as reward did not improve the mechanism, so an explicit goal-conditioned representation is the next discriminating method-design test.",
+          "reframes": []
+        }
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I3",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E11",
+    "inquiry_id": null,
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "open",
+        "closure_condition": "Close or redirect after one bounded representation-conditioned PPO intervention at the maintainer allocation and same-seed development diagnostics against T1: the route must materially improve 14-20 cm first-reach and complete-hold outcomes without materially degrading 6-14 cm complete holds; otherwise treat this representation route as non-credible and return to goal review.",
+        "goal_connection": "Outer-radius first reach is the dominant gap to the 98% episode-success goal. This inquiry changes policy conditioning rather than repeating the closed IK-potential reward route, while retaining the official 6-20 cm task distribution and 100-step uninterrupted hold criterion.",
+        "question": "Can an explicit periodic target-frame and absolute analytic branch-goal representation make PPO learn reliable 14-20 cm first reach while preserving inner-radius complete uninterrupted holds under the fixed official mechanics and distribution?",
+        "rationale": "The physical model establishes valid IK alternatives and sufficient local actuation, while M4 localizes failure before reach. The current observation exposes displacement and wrapped branch-relative errors but leaves target periodicity and absolute branch goals for the policy to infer. T2 showed that adding IK-error progress as reward did not improve the mechanism, so an explicit goal-conditioned representation is the next discriminating method-design test."
+      }
+    },
+    "request_fingerprint": "70eac6ccc1e94d949dfdbb7e70974ede4d194ec217cb68c3c5e805be85e6c3a8",
+    "session_id": "S7",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T1:checkpoint-120832 remains the strongest evaluated development candidate at 65% on the M5 paired panel, but no working, best-known, or retained role is assigned because it is far below the 98% goal. T2:checkpoint-120832 is archived as the tested IK-potential intervention and is not retained.",
     "completed_operations": [
@@ -3433,6 +3501,21 @@
     "path": "research/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "f27885ff-76dc-4a23-92ac-4b833cf8c86f",
+    "id": "S7",
+    "inquiry_id": null,
+    "kind": "goal_review",
+    "objective": "Reassess the scientific direction toward the human goal using completed evidence. You may request measurements to resolve an uncertainty or develop the method before committing to an inquiry. Decide whether to request official assessment, open one bounded goal-linked inquiry, or conclude that no credible route remains.",
+    "operation_ids": [
+      "E11"
+    ],
+    "scientific_parent_commit": "6b57723c074f0c293941f48b825b40ef54e35fb2"
+  },
   "terminal_state": null
 }
