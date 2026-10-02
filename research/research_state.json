@@ -2475,7 +2475,7 @@
     }
   },
   "counters": {
-    "event": 12,
+    "event": 13,
     "inquiry": 3,
     "measurement": 6,
     "session": 8,
@@ -2484,7 +2484,7 @@
   "human_goal": {
     "source": "research/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -4990,18 +4990,173 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-02T10:53:42Z",
+      "error": null,
+      "id": "E13",
+      "inquiry_id": "I3",
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "T3:checkpoint-120832 is the strongest current development candidate at 178/200 (89%) on M6, but no working, best-known, or retained role is assigned because it is below the 98% goal and materially degrades 6-14 cm complete holds relative to T1. T1:checkpoint-120832 remains the reference baseline; T2:checkpoint-120832 remains archived as the rejected IK-potential recipe.",
+        "completed_operations": [
+          "T3",
+          "M6"
+        ],
+        "cumulative_resource_use": "M2 used one deterministic 512-branch local plant map. T1, T2, and T3 each used the maintainer allocation of 120000 requested steps and completed 120832 rollout-aligned steps. M3 used one 200-episode panel at seed 4200. M4 used one 200-episode trajectory-diagnostic panel at seed 5200. M5 used paired 200-episode panels for T1 and T2 at shared seeds 5400-5599. M6 used paired 200-episode panels for T3 and T1 at shared seeds 5600-5799. E2, E5, E7, E9, and E11 used no training or measurement resources.",
+        "current_goal_gap": "M6 T3 achieved 178/200 complete holds (89%) versus 130/200 (65%) for T1 on shared seeds. By radius, T3 achieved 52/59 at 6-10 cm, 50/56 at 10-14 cm, 49/55 at 14-18 cm, and 27/30 at 18-20 cm; T1 achieved 59/59, 56/56, 15/55, and 0/30 respectively. T3 therefore largely repairs outer first reach, but loses 13 complete holds across 6-14 cm relative to T1.",
+        "current_synthesis": "M2 established broad local plant feasibility, valid IK alternatives, and acceleration margin, so outer failures are not established as a plant impossibility. M4 localized the prior gap to pre-reach behavior. T2 and M5 closed the tested IK-potential recipe as negative evidence without generalizing that result to all shaping or PPO. T3 implemented explicit periodic target-frame and absolute analytic branch-goal conditioning and M6 showed a large paired aggregate gain: T3 won 64 episodes versus 16 for T1, with 80 discordant episodes and net wins of 48. The gain is mechanistically concentrated in outer reach: T3 first reached 52/55 episodes at 14-18 cm and 28/30 at 18-20 cm, compared with T1's 15/55 and 0/30. However, T3 complete holds fell to 52/59 and 50/56 in the 6-10 and 10-14 cm bands, versus T1's 59/59 and 56/56. Among T3 episodes that first reached, inner-band complete holds were preserved, so the degradation is primarily lost first reach on inner targets; nevertheless, the closure condition is about complete holds and this is a material 13/115 loss. I3 therefore supports the representation mechanism for outer reach but rejects this single recipe as a complete solution because it does not preserve 6-14 cm success. This is recipe-specific evidence, not evidence against all goal representations, PPO, or the plant.",
+        "decision_frontier": "The explicit representation route demonstrated that outer first reach is learnable, but the tested conditioning recipe trades away inner first-reach reliability. The consequential next question is how to combine the outer-reach capability with T1's 6-14 cm complete-hold reliability under the unchanged official mechanics, target distribution, horizon, tolerance, and 100-step uninterrupted criterion. The next decision must be made in goal review rather than by treating T3 as an official candidate.",
+        "evidence_references": [
+          "M2",
+          "E2",
+          "T1",
+          "M3",
+          "E5",
+          "E7",
+          "M4",
+          "T2",
+          "M5",
+          "E9",
+          "E11",
+          "T3",
+          "M6"
+        ],
+        "human_goal_connection": "The campaign still requires at least 196 of 200 complete uninterrupted 100-step holds under the official 6-20 cm target distribution. M6 improved the representation-conditioned candidate to 178/200 on a development panel, but this remains below the 98% threshold and is not an official assessment.",
+        "next_direction_or_closure": "I3 is resolved and should be closed as a tested recipe-specific route after this checkpoint. Return to goal review with T3 retained as mechanistic evidence that explicit conditioning can recover outer reach, but do not request official assessment. Any next inquiry must target the tradeoff between outer first reach and inner complete-hold preservation rather than repeat T3 unchanged."
+      },
+      "result": {
+        "session_id": "S8",
+        "status": "checkpointed"
+      },
+      "session_id": "S8",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "35b1fa8991bb1cd10cd985f7cc16a1e3032819ec",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "T3:checkpoint-120832 is the strongest current development candidate at 178/200 (89%) on M6, but no working, best-known, or retained role is assigned because it is below the 98% goal and materially degrades 6-14 cm complete holds relative to T1. T1:checkpoint-120832 remains the reference baseline; T2:checkpoint-120832 remains archived as the rejected IK-potential recipe.",
+        "completed_operations": [
+          "T3",
+          "M6"
+        ],
+        "cumulative_resource_use": "M2 used one deterministic 512-branch local plant map. T1, T2, and T3 each used the maintainer allocation of 120000 requested steps and completed 120832 rollout-aligned steps. M3 used one 200-episode panel at seed 4200. M4 used one 200-episode trajectory-diagnostic panel at seed 5200. M5 used paired 200-episode panels for T1 and T2 at shared seeds 5400-5599. M6 used paired 200-episode panels for T3 and T1 at shared seeds 5600-5799. E2, E5, E7, E9, and E11 used no training or measurement resources.",
+        "current_goal_gap": "M6 T3 achieved 178/200 complete holds (89%) versus 130/200 (65%) for T1 on shared seeds. By radius, T3 achieved 52/59 at 6-10 cm, 50/56 at 10-14 cm, 49/55 at 14-18 cm, and 27/30 at 18-20 cm; T1 achieved 59/59, 56/56, 15/55, and 0/30 respectively. T3 therefore largely repairs outer first reach, but loses 13 complete holds across 6-14 cm relative to T1.",
+        "current_synthesis": "M2 established broad local plant feasibility, valid IK alternatives, and acceleration margin, so outer failures are not established as a plant impossibility. M4 localized the prior gap to pre-reach behavior. T2 and M5 closed the tested IK-potential recipe as negative evidence without generalizing that result to all shaping or PPO. T3 implemented explicit periodic target-frame and absolute analytic branch-goal conditioning and M6 showed a large paired aggregate gain: T3 won 64 episodes versus 16 for T1, with 80 discordant episodes and net wins of 48. The gain is mechanistically concentrated in outer reach: T3 first reached 52/55 episodes at 14-18 cm and 28/30 at 18-20 cm, compared with T1's 15/55 and 0/30. However, T3 complete holds fell to 52/59 and 50/56 in the 6-10 and 10-14 cm bands, versus T1's 59/59 and 56/56. Among T3 episodes that first reached, inner-band complete holds were preserved, so the degradation is primarily lost first reach on inner targets; nevertheless, the closure condition is about complete holds and this is a material 13/115 loss. I3 therefore supports the representation mechanism for outer reach but rejects this single recipe as a complete solution because it does not preserve 6-14 cm success. This is recipe-specific evidence, not evidence against all goal representations, PPO, or the plant.",
+        "decision_frontier": "The explicit representation route demonstrated that outer first reach is learnable, but the tested conditioning recipe trades away inner first-reach reliability. The consequential next question is how to combine the outer-reach capability with T1's 6-14 cm complete-hold reliability under the unchanged official mechanics, target distribution, horizon, tolerance, and 100-step uninterrupted criterion. The next decision must be made in goal review rather than by treating T3 as an official candidate.",
+        "evidence_references": [
+          "M2",
+          "E2",
+          "T1",
+          "M3",
+          "E5",
+          "E7",
+          "M4",
+          "T2",
+          "M5",
+          "E9",
+          "E11",
+          "T3",
+          "M6"
+        ],
+        "human_goal_connection": "The campaign still requires at least 196 of 200 complete uninterrupted 100-step holds under the official 6-20 cm target distribution. M6 improved the representation-conditioned candidate to 178/200 on a development panel, but this remains below the 98% threshold and is not an official assessment.",
+        "inquiry_id": "I3",
+        "next_direction_or_closure": "I3 is resolved and should be closed as a tested recipe-specific route after this checkpoint. Return to goal review with T3 retained as mechanistic evidence that explicit conditioning can recover outer reach, but do not request official assessment. Any next inquiry must target the tradeoff between outer first reach and inner complete-hold preservation rather than repeat T3 unchanged.",
+        "session_id": "S8"
+      },
+      "presentation": {
+        "backend_session_id": "19d759d7-5c8c-4fe7-b2f8-6a0b1160f0dc",
+        "campaign_id": "48993cfd-1808-4db6-a7b8-000fd5daba50",
+        "campaign_usage": "45m48s | 65.45 AIU | prompt 10.8m (86% cached) | output 79.7k",
+        "session_id": "S8",
+        "session_kind": "inquiry",
+        "session_usage": "10m02s | 16.94 AIU | prompt 2.3m (80% cached) | output 18.1k"
+      },
+      "result": {
+        "session_id": "S8",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "f88661d64ee8a58dfb3635524d16ca3b9b849ea3",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E13",
+    "inquiry_id": "I3",
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "T3:checkpoint-120832 is the strongest current development candidate at 178/200 (89%) on M6, but no working, best-known, or retained role is assigned because it is below the 98% goal and materially degrades 6-14 cm complete holds relative to T1. T1:checkpoint-120832 remains the reference baseline; T2:checkpoint-120832 remains archived as the rejected IK-potential recipe.",
+        "completed_operations": [
+          "T3",
+          "M6"
+        ],
+        "cumulative_resource_use": "M2 used one deterministic 512-branch local plant map. T1, T2, and T3 each used the maintainer allocation of 120000 requested steps and completed 120832 rollout-aligned steps. M3 used one 200-episode panel at seed 4200. M4 used one 200-episode trajectory-diagnostic panel at seed 5200. M5 used paired 200-episode panels for T1 and T2 at shared seeds 5400-5599. M6 used paired 200-episode panels for T3 and T1 at shared seeds 5600-5799. E2, E5, E7, E9, and E11 used no training or measurement resources.",
+        "current_goal_gap": "M6 T3 achieved 178/200 complete holds (89%) versus 130/200 (65%) for T1 on shared seeds. By radius, T3 achieved 52/59 at 6-10 cm, 50/56 at 10-14 cm, 49/55 at 14-18 cm, and 27/30 at 18-20 cm; T1 achieved 59/59, 56/56, 15/55, and 0/30 respectively. T3 therefore largely repairs outer first reach, but loses 13 complete holds across 6-14 cm relative to T1.",
+        "current_synthesis": "M2 established broad local plant feasibility, valid IK alternatives, and acceleration margin, so outer failures are not established as a plant impossibility. M4 localized the prior gap to pre-reach behavior. T2 and M5 closed the tested IK-potential recipe as negative evidence without generalizing that result to all shaping or PPO. T3 implemented explicit periodic target-frame and absolute analytic branch-goal conditioning and M6 showed a large paired aggregate gain: T3 won 64 episodes versus 16 for T1, with 80 discordant episodes and net wins of 48. The gain is mechanistically concentrated in outer reach: T3 first reached 52/55 episodes at 14-18 cm and 28/30 at 18-20 cm, compared with T1's 15/55 and 0/30. However, T3 complete holds fell to 52/59 and 50/56 in the 6-10 and 10-14 cm bands, versus T1's 59/59 and 56/56. Among T3 episodes that first reached, inner-band complete holds were preserved, so the degradation is primarily lost first reach on inner targets; nevertheless, the closure condition is about complete holds and this is a material 13/115 loss. I3 therefore supports the representation mechanism for outer reach but rejects this single recipe as a complete solution because it does not preserve 6-14 cm success. This is recipe-specific evidence, not evidence against all goal representations, PPO, or the plant.",
+        "decision_frontier": "The explicit representation route demonstrated that outer first reach is learnable, but the tested conditioning recipe trades away inner first-reach reliability. The consequential next question is how to combine the outer-reach capability with T1's 6-14 cm complete-hold reliability under the unchanged official mechanics, target distribution, horizon, tolerance, and 100-step uninterrupted criterion. The next decision must be made in goal review rather than by treating T3 as an official candidate.",
+        "evidence_references": [
+          "M2",
+          "E2",
+          "T1",
+          "M3",
+          "E5",
+          "E7",
+          "M4",
+          "T2",
+          "M5",
+          "E9",
+          "E11",
+          "T3",
+          "M6"
+        ],
+        "human_goal_connection": "The campaign still requires at least 196 of 200 complete uninterrupted 100-step holds under the official 6-20 cm target distribution. M6 improved the representation-conditioned candidate to 178/200 on a development panel, but this remains below the 98% threshold and is not an official assessment.",
+        "next_direction_or_closure": "I3 is resolved and should be closed as a tested recipe-specific route after this checkpoint. Return to goal review with T3 retained as mechanistic evidence that explicit conditioning can recover outer reach, but do not request official assessment. Any next inquiry must target the tradeoff between outer first reach and inner complete-hold preservation rather than repeat T3 unchanged."
+      }
+    },
+    "request_fingerprint": "dc2c4db3cd105203950ee48c75ff0d8f5121ca3a37d0ca8d00bfe859efa80a9a",
+    "session_id": "S8",
+    "supersedes": null
+  },
   "pi_checkpoint": {
-    "candidates_and_roles": "T1:checkpoint-120832 remains the strongest evaluated development candidate at 65% on the M5 paired panel, but no working, best-known, or retained role is assigned because it is far below the 98% goal. T2:checkpoint-120832 is archived as the tested IK-potential intervention and is not retained.",
+    "candidates_and_roles": "T3:checkpoint-120832 is the strongest current development candidate at 178/200 (89%) on M6, but no working, best-known, or retained role is assigned because it is below the 98% goal and materially degrades 6-14 cm complete holds relative to T1. T1:checkpoint-120832 remains the reference baseline; T2:checkpoint-120832 remains archived as the rejected IK-potential recipe.",
     "completed_operations": [
-      "E11"
+      "T3",
+      "M6"
     ],
-    "cumulative_resource_use": "M2 used one deterministic 512-branch local plant map. T1 and T2 each used the maintainer allocation of 120000 requested steps and completed 120832 rollout-aligned steps. M3 used one 200-episode panel at seed 4200. M4 used one 200-episode trajectory-diagnostic panel at seed 5200. M5 used paired 200-episode panels for T1 and T2 at shared seeds 5400-5599. E2, E5, E7, E9, and E11 used no training or measurement resources.",
-    "current_goal_gap": "The best development evidence remains 120/200 successes: 56/56 at 6-10 cm, 56/60 at 10-14 cm, 8/50 at 14-18 cm, and 0/34 at 18-20 cm. Outer-radius first reach remains the limiting behavior.",
-    "current_synthesis": "M2 established broad local plant feasibility, valid IK alternatives, and acceleration margin, so the observed outer failures are not established as a plant impossibility. M4 showed that outer failures were predominantly pre-reach, with 47/50 failed 14-18 cm episodes and all 32 sampled 18-20 cm episodes missing first reach, while only a small number of reached episodes lost the hold. T2 tested branch-aware IK-potential progress without changing official task semantics, but reached only 2% endpoint success. M5 scored T2 at 58% versus T1 at 65% on shared seeds, with 37 candidate wins, 51 reference wins, 88 discordant episodes, and a net loss of 14 episodes. The IK-potential route is therefore closed as a recipe-specific negative result, without establishing that PPO generally, all reward shaping, or the plant is impossible. E11 opened I3 as the next bounded route: explicit periodic target-frame and absolute analytic branch-goal conditioning.",
-    "decision_frontier": "The remaining consequential method-design question is whether explicit goal-conditioned representation can make PPO learn reliable 14-20 cm first reach while preserving 6-14 cm complete uninterrupted holds. The discriminating result must retain the official 6-20 cm target distribution, fixed dynamics and tolerance, 500-step horizon, 100-step uninterrupted hold criterion, and separate outer first-reach from post-reach hold reliability.",
+    "cumulative_resource_use": "M2 used one deterministic 512-branch local plant map. T1, T2, and T3 each used the maintainer allocation of 120000 requested steps and completed 120832 rollout-aligned steps. M3 used one 200-episode panel at seed 4200. M4 used one 200-episode trajectory-diagnostic panel at seed 5200. M5 used paired 200-episode panels for T1 and T2 at shared seeds 5400-5599. M6 used paired 200-episode panels for T3 and T1 at shared seeds 5600-5799. E2, E5, E7, E9, and E11 used no training or measurement resources.",
+    "current_goal_gap": "M6 T3 achieved 178/200 complete holds (89%) versus 130/200 (65%) for T1 on shared seeds. By radius, T3 achieved 52/59 at 6-10 cm, 50/56 at 10-14 cm, 49/55 at 14-18 cm, and 27/30 at 18-20 cm; T1 achieved 59/59, 56/56, 15/55, and 0/30 respectively. T3 therefore largely repairs outer first reach, but loses 13 complete holds across 6-14 cm relative to T1.",
+    "current_synthesis": "M2 established broad local plant feasibility, valid IK alternatives, and acceleration margin, so outer failures are not established as a plant impossibility. M4 localized the prior gap to pre-reach behavior. T2 and M5 closed the tested IK-potential recipe as negative evidence without generalizing that result to all shaping or PPO. T3 implemented explicit periodic target-frame and absolute analytic branch-goal conditioning and M6 showed a large paired aggregate gain: T3 won 64 episodes versus 16 for T1, with 80 discordant episodes and net wins of 48. The gain is mechanistically concentrated in outer reach: T3 first reached 52/55 episodes at 14-18 cm and 28/30 at 18-20 cm, compared with T1's 15/55 and 0/30. However, T3 complete holds fell to 52/59 and 50/56 in the 6-10 and 10-14 cm bands, versus T1's 59/59 and 56/56. Among T3 episodes that first reached, inner-band complete holds were preserved, so the degradation is primarily lost first reach on inner targets; nevertheless, the closure condition is about complete holds and this is a material 13/115 loss. I3 therefore supports the representation mechanism for outer reach but rejects this single recipe as a complete solution because it does not preserve 6-14 cm success. This is recipe-specific evidence, not evidence against all goal representations, PPO, or the plant.",
+    "decision_frontier": "The explicit representation route demonstrated that outer first reach is learnable, but the tested conditioning recipe trades away inner first-reach reliability. The consequential next question is how to combine the outer-reach capability with T1's 6-14 cm complete-hold reliability under the unchanged official mechanics, target distribution, horizon, tolerance, and 100-step uninterrupted criterion. The next decision must be made in goal review rather than by treating T3 as an official candidate.",
     "evidence_references": [
       "M2",
       "E2",
@@ -5013,13 +5168,15 @@
       "T2",
       "M5",
       "E9",
-      "E11"
+      "E11",
+      "T3",
+      "M6"
     ],
-    "human_goal_connection": "The campaign still requires at least 196 of 200 complete uninterrupted 100-step holds under the official 6-20 cm target distribution. The current best development result is 120/200, so official assessment is not justified. I3 was opened to test a representation change aimed at the dominant outer-radius first-reach gap.",
-    "inquiry_id": null,
-    "next_direction_or_closure": "I3 is opened but not yet actionable in this goal-review session. In the fresh I3 inquiry session, implement one bounded representation-conditioned PPO intervention at the maintainer allocation, then compare it with T1 on shared development seeds using official task semantics and reach/hold diagnostics. Do not request official assessment unless the candidate first shows credible outer-radius reach and complete-hold reliability.",
-    "scientific_commit": "d4d49323a5c11e4c3510d6572ae1865df31bbc77",
-    "session_id": "S7"
+    "human_goal_connection": "The campaign still requires at least 196 of 200 complete uninterrupted 100-step holds under the official 6-20 cm target distribution. M6 improved the representation-conditioned candidate to 178/200 on a development panel, but this remains below the 98% threshold and is not an official assessment.",
+    "inquiry_id": "I3",
+    "next_direction_or_closure": "I3 is resolved and should be closed as a tested recipe-specific route after this checkpoint. Return to goal review with T3 retained as mechanistic evidence that explicit conditioning can recover outer reach, but do not request official assessment. Any next inquiry must target the tradeoff between outer first reach and inner complete-hold preservation rather than repeat T3 unchanged.",
+    "scientific_commit": "f88661d64ee8a58dfb3635524d16ca3b9b849ea3",
+    "session_id": "S8"
   },
   "schema_version": 6,
   "scientific_model": {
@@ -5027,22 +5184,6 @@
     "path": "research/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "19d759d7-5c8c-4fe7-b2f8-6a0b1160f0dc",
-    "id": "S8",
-    "inquiry_id": "I3",
-    "kind": "inquiry",
-    "objective": "Advance I3 toward its closure condition: Close or redirect after one bounded representation-conditioned PPO intervention at the maintainer allocation and same-seed development diagnostics against T1: the route must materially improve 14-20 cm first-reach and complete-hold outcomes without materially degrading 6-14 cm complete holds; otherwise treat this representation route as non-credible and return to goal review.",
-    "operation_ids": [
-      "T3",
-      "M6"
-    ],
-    "scientific_parent_commit": "35b1fa8991bb1cd10cd985f7cc16a1e3032819ec"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
