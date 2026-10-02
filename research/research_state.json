@@ -830,7 +830,7 @@
     }
   },
   "counters": {
-    "event": 4,
+    "event": 5,
     "inquiry": 1,
     "measurement": 2,
     "session": 3,
@@ -839,7 +839,7 @@
   "human_goal": {
     "source": "research/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -1767,28 +1767,161 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-02T20:58:51Z",
+      "error": null,
+      "id": "E5",
+      "inquiry_id": "I1",
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "No candidate has working, best-known, or retained status. T1:checkpoint-100352 and T1:checkpoint-120832 remain tied under M1 at 94.375% on the development panel and are not goal-qualified.",
+        "completed_operations": [
+          "M2",
+          "E4"
+        ],
+        "cumulative_resource_use": "One fresh 120000-step training operation completed at 120832 rollout-rounded steps; M1 evaluated two tied candidates over 160 shared episodes each; M2 replayed those two candidates over the same 160 shared seeds with branch, limit, Jacobian, entry, and hold diagnostics; E2 opened I1 and E4 closed it. No official assessment has been requested.",
+        "current_goal_gap": "Nine failures remain on the deterministic 160-episode development panel: six non-entry failures and three interrupted holds. The policy is not yet goal-qualified, and the official 200-episode result remains unmeasured.",
+        "current_synthesis": "T1 established learning on the 0.14-0.20 m training band but later checkpoints regressed. M1 found identical outcomes for checkpoint-100352 and checkpoint-120832 on all 160 shared seeds, ruling out checkpoint timing as the current lever. M2 replayed both candidates and found outcome agreement, with all nine failures concentrated near target angles -119 to -151 degrees across mixed radii. All successes and failures selected the open IK branch at the diagnostic state, but every failed target had an open-branch shoulder IK solution beyond the -170 degree joint limit while the folded branch remained limit-feasible. Both non-entry and interrupted-hold failures reached negative actual shoulder limit margin; matched successful cases retained nonnegative margin despite selecting the same open branch. Jacobian conditioning was not a common discriminator across failure classes. E4 therefore closed I1 with a limit-and-branch mechanism sufficient to select a targeted intervention. Claims remain limited to this deterministic 160-episode panel and these two candidates.",
+        "decision_frontier": "The mechanism inquiry is resolved for intervention selection, but policy improvement is untested. The next decision is whether explicit branch feasibility and joint-limit margin in the policy-facing representation raises complete uninterrupted development success toward the human goal, including both non-entry and interrupted-hold cases, without creating regressions elsewhere in the official distribution.",
+        "evidence_references": [
+          "T1",
+          "M1",
+          "E2",
+          "M2",
+          "E4"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 successes on the official 200-episode panel. The current tied baseline candidates achieve 151 of 160 development episodes (94.375%), leaving a 5.625 percentage-point gap to the observed development target and providing no basis for official assessment.",
+        "next_direction_or_closure": "Begin a fresh goal-review session after this checkpoint. Use the next bounded action to implement and train one limit-aware branch-feasibility intervention under the maintainer's exact 120000-step allocation, then measure the resulting candidate on the same deterministic development panel before considering any official assessment."
+      },
+      "result": {
+        "session_id": "S3",
+        "status": "checkpointed"
+      },
+      "session_id": "S3",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "988e83f04d630480564d921d549ff4500af1c4a4",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "No candidate has working, best-known, or retained status. T1:checkpoint-100352 and T1:checkpoint-120832 remain tied under M1 at 94.375% on the development panel and are not goal-qualified.",
+        "completed_operations": [
+          "M2",
+          "E4"
+        ],
+        "cumulative_resource_use": "One fresh 120000-step training operation completed at 120832 rollout-rounded steps; M1 evaluated two tied candidates over 160 shared episodes each; M2 replayed those two candidates over the same 160 shared seeds with branch, limit, Jacobian, entry, and hold diagnostics; E2 opened I1 and E4 closed it. No official assessment has been requested.",
+        "current_goal_gap": "Nine failures remain on the deterministic 160-episode development panel: six non-entry failures and three interrupted holds. The policy is not yet goal-qualified, and the official 200-episode result remains unmeasured.",
+        "current_synthesis": "T1 established learning on the 0.14-0.20 m training band but later checkpoints regressed. M1 found identical outcomes for checkpoint-100352 and checkpoint-120832 on all 160 shared seeds, ruling out checkpoint timing as the current lever. M2 replayed both candidates and found outcome agreement, with all nine failures concentrated near target angles -119 to -151 degrees across mixed radii. All successes and failures selected the open IK branch at the diagnostic state, but every failed target had an open-branch shoulder IK solution beyond the -170 degree joint limit while the folded branch remained limit-feasible. Both non-entry and interrupted-hold failures reached negative actual shoulder limit margin; matched successful cases retained nonnegative margin despite selecting the same open branch. Jacobian conditioning was not a common discriminator across failure classes. E4 therefore closed I1 with a limit-and-branch mechanism sufficient to select a targeted intervention. Claims remain limited to this deterministic 160-episode panel and these two candidates.",
+        "decision_frontier": "The mechanism inquiry is resolved for intervention selection, but policy improvement is untested. The next decision is whether explicit branch feasibility and joint-limit margin in the policy-facing representation raises complete uninterrupted development success toward the human goal, including both non-entry and interrupted-hold cases, without creating regressions elsewhere in the official distribution.",
+        "evidence_references": [
+          "T1",
+          "M1",
+          "E2",
+          "M2",
+          "E4"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 successes on the official 200-episode panel. The current tied baseline candidates achieve 151 of 160 development episodes (94.375%), leaving a 5.625 percentage-point gap to the observed development target and providing no basis for official assessment.",
+        "inquiry_id": "I1",
+        "next_direction_or_closure": "Begin a fresh goal-review session after this checkpoint. Use the next bounded action to implement and train one limit-aware branch-feasibility intervention under the maintainer's exact 120000-step allocation, then measure the resulting candidate on the same deterministic development panel before considering any official assessment.",
+        "session_id": "S3"
+      },
+      "presentation": {
+        "backend_session_id": "343fec6f-39a1-4256-94e8-7c8d5a175ca2",
+        "campaign_id": "d7080d95-e5e9-4077-a667-f75ddc16876b",
+        "campaign_usage": "12m37s | 27.63 AIU | prompt 4.4m (86% cached) | output 39.6k",
+        "session_id": "S3",
+        "session_kind": "inquiry",
+        "session_usage": "4m29s | 13.21 AIU | prompt 2.8m (92% cached) | output 19.9k"
+      },
+      "result": {
+        "session_id": "S3",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "ee9c4f18848fed4c8af7e1c97a5ac3c306096067",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E5",
+    "inquiry_id": "I1",
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "No candidate has working, best-known, or retained status. T1:checkpoint-100352 and T1:checkpoint-120832 remain tied under M1 at 94.375% on the development panel and are not goal-qualified.",
+        "completed_operations": [
+          "M2",
+          "E4"
+        ],
+        "cumulative_resource_use": "One fresh 120000-step training operation completed at 120832 rollout-rounded steps; M1 evaluated two tied candidates over 160 shared episodes each; M2 replayed those two candidates over the same 160 shared seeds with branch, limit, Jacobian, entry, and hold diagnostics; E2 opened I1 and E4 closed it. No official assessment has been requested.",
+        "current_goal_gap": "Nine failures remain on the deterministic 160-episode development panel: six non-entry failures and three interrupted holds. The policy is not yet goal-qualified, and the official 200-episode result remains unmeasured.",
+        "current_synthesis": "T1 established learning on the 0.14-0.20 m training band but later checkpoints regressed. M1 found identical outcomes for checkpoint-100352 and checkpoint-120832 on all 160 shared seeds, ruling out checkpoint timing as the current lever. M2 replayed both candidates and found outcome agreement, with all nine failures concentrated near target angles -119 to -151 degrees across mixed radii. All successes and failures selected the open IK branch at the diagnostic state, but every failed target had an open-branch shoulder IK solution beyond the -170 degree joint limit while the folded branch remained limit-feasible. Both non-entry and interrupted-hold failures reached negative actual shoulder limit margin; matched successful cases retained nonnegative margin despite selecting the same open branch. Jacobian conditioning was not a common discriminator across failure classes. E4 therefore closed I1 with a limit-and-branch mechanism sufficient to select a targeted intervention. Claims remain limited to this deterministic 160-episode panel and these two candidates.",
+        "decision_frontier": "The mechanism inquiry is resolved for intervention selection, but policy improvement is untested. The next decision is whether explicit branch feasibility and joint-limit margin in the policy-facing representation raises complete uninterrupted development success toward the human goal, including both non-entry and interrupted-hold cases, without creating regressions elsewhere in the official distribution.",
+        "evidence_references": [
+          "T1",
+          "M1",
+          "E2",
+          "M2",
+          "E4"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 successes on the official 200-episode panel. The current tied baseline candidates achieve 151 of 160 development episodes (94.375%), leaving a 5.625 percentage-point gap to the observed development target and providing no basis for official assessment.",
+        "next_direction_or_closure": "Begin a fresh goal-review session after this checkpoint. Use the next bounded action to implement and train one limit-aware branch-feasibility intervention under the maintainer's exact 120000-step allocation, then measure the resulting candidate on the same deterministic development panel before considering any official assessment."
+      }
+    },
+    "request_fingerprint": "6c9257d35f6e5869748be28a0032b22ea13cd3880e753860a573bc98f9b019e6",
+    "session_id": "S3",
+    "supersedes": null
+  },
   "pi_checkpoint": {
-    "candidates_and_roles": "No candidate has been assigned working, best-known, or retained status. T1:checkpoint-100352 and T1:checkpoint-120832 remain tied candidates under M1 at 94.375% on the development panel and are not goal-qualified.",
+    "candidates_and_roles": "No candidate has working, best-known, or retained status. T1:checkpoint-100352 and T1:checkpoint-120832 remain tied under M1 at 94.375% on the development panel and are not goal-qualified.",
     "completed_operations": [
-      "E2"
+      "M2",
+      "E4"
     ],
-    "cumulative_resource_use": "One fresh training operation used the 120000-step allocation (120832 actual rollout-rounded steps), and one paired development measurement evaluated two candidates over 160 shared episodes each. E2 opened I1 without training or measurement resource use. No official assessment has been requested.",
-    "current_goal_gap": "Nine failures remain on the deterministic 160-episode development panel: six never enter the 1 cm tolerance and three enter only briefly before the uninterrupted hold is broken. This leaves a 94.375% development result; no official 200-episode success claim is justified.",
-    "current_synthesis": "Established evidence: T1 learned the 0.14-0.20 m training band, with peak recorded training success 0.97, but later checkpoints regressed. M1 found identical outcomes for checkpoint-100352 and checkpoint-120832 on all 160 shared seeds, ruling out checkpoint timing as the current lever. Their failures cluster near target angles -119 to -151 degrees across radii about 7.7-18.8 cm, with six non-entry failures and three interrupted holds. The angular concentration and mixed radii support an angle-, branch-, limit-, or representation-dependent mechanism over a radius-only explanation, but do not identify whether branch choice, joint limits, Jacobian conditioning, actuator dynamics, or observation representation is causal. E2 opened inquiry I1; it produced no new behavioral evidence. Claims remain limited to this deterministic panel and these candidates.",
-    "decision_frontier": "In the fresh I1 inquiry session, determine whether the concentrated failure sector is conditioned on IK branch, joint-limit margin, or Jacobian geometry and whether those factors explain both non-entry and interrupted-hold failures, versus a diffuse failure pattern indicating generic stabilization or broader training coverage. The discriminating first measurement is a branch- and geometry-conditioned diagnostic over failed-sector cases and matched successful angles and radii, including selected joint states, limit margins, Jacobian conditioning, first-entry state, and hold-distance excursions.",
+    "cumulative_resource_use": "One fresh 120000-step training operation completed at 120832 rollout-rounded steps; M1 evaluated two tied candidates over 160 shared episodes each; M2 replayed those two candidates over the same 160 shared seeds with branch, limit, Jacobian, entry, and hold diagnostics; E2 opened I1 and E4 closed it. No official assessment has been requested.",
+    "current_goal_gap": "Nine failures remain on the deterministic 160-episode development panel: six non-entry failures and three interrupted holds. The policy is not yet goal-qualified, and the official 200-episode result remains unmeasured.",
+    "current_synthesis": "T1 established learning on the 0.14-0.20 m training band but later checkpoints regressed. M1 found identical outcomes for checkpoint-100352 and checkpoint-120832 on all 160 shared seeds, ruling out checkpoint timing as the current lever. M2 replayed both candidates and found outcome agreement, with all nine failures concentrated near target angles -119 to -151 degrees across mixed radii. All successes and failures selected the open IK branch at the diagnostic state, but every failed target had an open-branch shoulder IK solution beyond the -170 degree joint limit while the folded branch remained limit-feasible. Both non-entry and interrupted-hold failures reached negative actual shoulder limit margin; matched successful cases retained nonnegative margin despite selecting the same open branch. Jacobian conditioning was not a common discriminator across failure classes. E4 therefore closed I1 with a limit-and-branch mechanism sufficient to select a targeted intervention. Claims remain limited to this deterministic 160-episode panel and these two candidates.",
+    "decision_frontier": "The mechanism inquiry is resolved for intervention selection, but policy improvement is untested. The next decision is whether explicit branch feasibility and joint-limit margin in the policy-facing representation raises complete uninterrupted development success toward the human goal, including both non-entry and interrupted-hold cases, without creating regressions elsewhere in the official distribution.",
     "evidence_references": [
       "T1",
       "M1",
-      "E2"
+      "E2",
+      "M2",
+      "E4"
     ],
-    "human_goal_connection": "The campaign requires at least 196 successes on the official 200-episode panel. The current baseline achieves 151 of 160 development episodes, so the policy is 5.625 percentage points below the observed development target and is not justified for official assessment.",
-    "inquiry_id": null,
-    "next_direction_or_closure": "This goal-review session transitions to the fresh I1 inquiry session. Its first bounded action should be the specified conditioned diagnostic before any training, observation, reward, controller, or distribution intervention is selected. Do not request official assessment until a candidate is explicitly justified and reaches the required reliability evidence.",
-    "scientific_commit": "4435be153b0921d93c2b38cb0dc09d3c5a2dfba1",
-    "session_id": "S2"
+    "human_goal_connection": "The human goal requires at least 196 successes on the official 200-episode panel. The current tied baseline candidates achieve 151 of 160 development episodes (94.375%), leaving a 5.625 percentage-point gap to the observed development target and providing no basis for official assessment.",
+    "inquiry_id": "I1",
+    "next_direction_or_closure": "Begin a fresh goal-review session after this checkpoint. Use the next bounded action to implement and train one limit-aware branch-feasibility intervention under the maintainer's exact 120000-step allocation, then measure the resulting candidate on the same deterministic development panel before considering any official assessment.",
+    "scientific_commit": "ee9c4f18848fed4c8af7e1c97a5ac3c306096067",
+    "session_id": "S3"
   },
   "schema_version": 6,
   "scientific_model": {
@@ -1796,22 +1929,6 @@
     "path": "research/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "343fec6f-39a1-4256-94e8-7c8d5a175ca2",
-    "id": "S3",
-    "inquiry_id": "I1",
-    "kind": "inquiry",
-    "objective": "Advance I1 toward an evidence-supported answer to its scientific question: Does the concentrated failure sector near target angles -119 to -151 degrees arise from a specific IK branch, joint-limit or Jacobian configuration, or an angle-dependent observation/control representation, and does that mechanism explain both non-entry and interrupted-hold failures?",
-    "operation_ids": [
-      "M2",
-      "E4"
-    ],
-    "scientific_parent_commit": "988e83f04d630480564d921d549ff4500af1c4a4"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
