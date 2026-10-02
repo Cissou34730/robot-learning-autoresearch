@@ -840,14 +840,14 @@
   "counters": {
     "event": 3,
     "inquiry": 1,
-    "measurement": 1,
-    "session": 2,
+    "measurement": 2,
+    "session": 3,
     "training": 2
   },
   "human_goal": {
     "source": "research/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -1639,9 +1639,1255 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-02T13:10:09Z",
+      "error": null,
+      "id": "M2",
+      "inquiry_id": "I1",
+      "kind": "measurement",
+      "request": {
+        "description": "Run a fixed 128-episode diagnostic grid over eight target radii from 6 to 20 cm and sixteen target angles using T2:checkpoint-120832. Record first-entry rate, pre-entry distance, entry speed proxy, elbow branch at entry, longest uninterrupted hold, hold interruptions, and success stratified by radius and angle.",
+        "measurements": [
+          {
+            "args": [
+              "--model",
+              "research/checkpoints/candidates/2381bcbf-72c1-4535-9334-7e0d753f356d/t2/checkpoint-120832/model.zip",
+              "--output",
+              "research/evaluations/2381bcbf-72c1-4535-9334-7e0d753f356d/i1-outer-workspace-diagnostic.json",
+              "--seed",
+              "3000"
+            ],
+            "artifact": "research/evaluations/2381bcbf-72c1-4535-9334-7e0d753f356d/i1-outer-workspace-diagnostic.json",
+            "instrument": "python_module",
+            "label": "i1 outer-workspace reach and hold diagnostic",
+            "module": "robot_learning.scenario.outer_workspace_diagnostic"
+          }
+        ],
+        "rationale": "I1 is unresolved because the existing panel establishes outer-radius non-entry but does not distinguish insufficient reach and braking from entry followed by unstable holding or branch-dependent behavior. This bounded grid concentrates resolution on 14-20 cm while retaining 6-12 cm controls, so outer first-entry and entry-motion changes can be compared directly with uninterrupted hold performance and angular/branch effects before allocating another training run."
+      },
+      "result": {
+        "measurements": [
+          {
+            "args": [
+              "--model",
+              "research/checkpoints/candidates/2381bcbf-72c1-4535-9334-7e0d753f356d/t2/checkpoint-120832/model.zip",
+              "--output",
+              "research/evaluations/2381bcbf-72c1-4535-9334-7e0d753f356d/i1-outer-workspace-diagnostic.json",
+              "--seed",
+              "3000"
+            ],
+            "instrument": "python_module",
+            "label": "i1 outer-workspace reach and hold diagnostic",
+            "metrics": {
+              "evaluation_artifact": "research/evaluations/2381bcbf-72c1-4535-9334-7e0d753f356d/python-module-M2-1-i1-outer-workspace-diagnostic.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 12,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/model",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/seed",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/control_dt_seconds",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 8,
+                    "path": "/radii_cm",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/angle_count",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/summary",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 8,
+                    "path": "/by_radius_cm",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 16,
+                    "path": "/by_angle_degrees",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 128,
+                    "field_names": [
+                      "entry_elbow_angle_degrees",
+                      "entry_speed_cm_per_s",
+                      "episode",
+                      "episode_seed",
+                      "first_reach_step",
+                      "hold_interruptions",
+                      "in_tolerance_steps",
+                      "longest_uninterrupted_hold_steps",
+                      "pre_entry_distance_cm",
+                      "reward_total",
+                      "steps",
+                      "success",
+                      "target_angle_degrees",
+                      "target_position_cm",
+                      "target_radius_cm",
+                      "terminated",
+                      "truncated"
+                    ],
+                    "path": "/episode_diagnostics",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/units",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/summary/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/successes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/first_entries",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/first_entry_percent",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/mean_first_reach_step",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/mean_entry_speed_cm_per_s",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/mean_longest_uninterrupted_hold_steps",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/mean_hold_interruptions",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/by_radius_cm/10.0",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/by_radius_cm/12.0",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/by_radius_cm/14.0",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/by_radius_cm/16.0",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/by_radius_cm/18.0",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/by_radius_cm/20.0",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/by_radius_cm/6.0",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/by_radius_cm/8.0",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/by_angle_degrees/-112.5",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/by_angle_degrees/-135.0",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/by_angle_degrees/-157.5",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/by_angle_degrees/-180.0",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/by_angle_degrees/-22.5",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/by_angle_degrees/-45.0",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/by_angle_degrees/-67.5",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/by_angle_degrees/-90.0",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/by_angle_degrees/0.0",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/by_angle_degrees/112.5",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/by_angle_degrees/135.0",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/by_angle_degrees/157.5",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/by_angle_degrees/22.5",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/by_angle_degrees/45.0",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/by_angle_degrees/67.5",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/by_angle_degrees/90.0",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/units/distance",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/units/speed",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/units/time",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/units/angle",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/by_radius_cm/10.0/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/by_radius_cm/10.0/successes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/by_radius_cm/10.0/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/by_radius_cm/10.0/first_entries",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/by_radius_cm/10.0/first_entry_percent",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/by_radius_cm/10.0/mean_first_reach_step",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/by_radius_cm/10.0/mean_entry_speed_cm_per_s",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/by_radius_cm/10.0/mean_longest_uninterrupted_hold_steps",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/by_radius_cm/10.0/mean_hold_interruptions",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/by_radius_cm/12.0/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/by_radius_cm/12.0/successes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/by_radius_cm/12.0/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/by_radius_cm/12.0/first_entries",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/by_radius_cm/12.0/first_entry_percent",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/by_radius_cm/12.0/mean_first_reach_step",
+                    "type": "number"
+                  }
+                ],
+                "truncated": true
+              },
+              "evaluation_artifact_fingerprint": "d8e6c363d514ebe00288942f9a3529e93eab799b9f282cd4b9486ec128857636"
+            },
+            "module": "robot_learning.scenario.outer_workspace_diagnostic"
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": {
+          "campaign_lab_manifest": [],
+          "campaign_lab_publication": null,
+          "code_parent_commit": "3fd155202aed99b1e083edcb58500eb8e9218930",
+          "effective_parameters": {
+            "algorithm": {
+              "name": "ppo"
+            },
+            "policy": {
+              "activation": "tanh",
+              "net_arch": [
+                64,
+                64
+              ]
+            },
+            "ppo": {
+              "batch_size": 64,
+              "ent_coef": 0.01,
+              "gae_lambda": 0.95,
+              "gamma": 0.99,
+              "learning_rate": 0.0003,
+              "n_steps": 1024
+            },
+            "training": {
+              "checkpoint_every_steps": 5000,
+              "n_envs": 1
+            }
+          },
+          "module_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "01d3a4534490216f8a893819607ea01fa04d9417a554d046eb7b973365e38a16",
+              "path": "robot_learning/scenario/outer_workspace_diagnostic.py"
+            }
+          ],
+          "module_paths": [
+            "robot_learning/scenario/outer_workspace_diagnostic.py"
+          ],
+          "scientific_commit": "966c08eab385c03a02012bc91884be58d4030a67",
+          "scientific_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "01d3a4534490216f8a893819607ea01fa04d9417a554d046eb7b973365e38a16",
+              "path": "robot_learning/scenario/outer_workspace_diagnostic.py"
+            }
+          ],
+          "scientific_paths": [
+            "robot_learning/scenario/outer_workspace_diagnostic.py"
+          ]
+        }
+      },
+      "session_id": "S3",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "evaluation_semantics": null,
+      "measurements": [
+        {
+          "args": [
+            "--model",
+            "research/checkpoints/candidates/2381bcbf-72c1-4535-9334-7e0d753f356d/t2/checkpoint-120832/model.zip",
+            "--output",
+            "research/evaluations/2381bcbf-72c1-4535-9334-7e0d753f356d/i1-outer-workspace-diagnostic.json",
+            "--seed",
+            "3000"
+          ],
+          "artifact": "research/evaluations/2381bcbf-72c1-4535-9334-7e0d753f356d/i1-outer-workspace-diagnostic.json",
+          "instrument": "python_module",
+          "label": "i1 outer-workspace reach and hold diagnostic",
+          "module": "robot_learning.scenario.outer_workspace_diagnostic"
+        }
+      ],
+      "module_provenance": {
+        "campaign_lab_manifest": [],
+        "campaign_lab_publication": null,
+        "code_parent_commit": "3fd155202aed99b1e083edcb58500eb8e9218930",
+        "effective_parameters": {
+          "algorithm": {
+            "name": "ppo"
+          },
+          "policy": {
+            "activation": "tanh",
+            "net_arch": [
+              64,
+              64
+            ]
+          },
+          "ppo": {
+            "batch_size": 64,
+            "ent_coef": 0.01,
+            "gae_lambda": 0.95,
+            "gamma": 0.99,
+            "learning_rate": 0.0003,
+            "n_steps": 1024
+          },
+          "training": {
+            "checkpoint_every_steps": 5000,
+            "n_envs": 1
+          }
+        },
+        "module_manifest": [
+          {
+            "exists": true,
+            "fingerprint": "01d3a4534490216f8a893819607ea01fa04d9417a554d046eb7b973365e38a16",
+            "path": "robot_learning/scenario/outer_workspace_diagnostic.py"
+          }
+        ],
+        "module_paths": [
+          "robot_learning/scenario/outer_workspace_diagnostic.py"
+        ],
+        "scientific_commit": "966c08eab385c03a02012bc91884be58d4030a67",
+        "scientific_manifest": [
+          {
+            "exists": true,
+            "fingerprint": "01d3a4534490216f8a893819607ea01fa04d9417a554d046eb7b973365e38a16",
+            "path": "robot_learning/scenario/outer_workspace_diagnostic.py"
+          }
+        ],
+        "scientific_paths": [
+          "robot_learning/scenario/outer_workspace_diagnostic.py"
+        ]
+      },
+      "paired_comparisons": [],
+      "partial_results": [
+        {
+          "args": [
+            "--model",
+            "research/checkpoints/candidates/2381bcbf-72c1-4535-9334-7e0d753f356d/t2/checkpoint-120832/model.zip",
+            "--output",
+            "research/evaluations/2381bcbf-72c1-4535-9334-7e0d753f356d/i1-outer-workspace-diagnostic.json",
+            "--seed",
+            "3000"
+          ],
+          "instrument": "python_module",
+          "label": "i1 outer-workspace reach and hold diagnostic",
+          "metrics": {
+            "evaluation_artifact": "research/evaluations/2381bcbf-72c1-4535-9334-7e0d753f356d/python-module-M2-1-i1-outer-workspace-diagnostic.json",
+            "evaluation_artifact_contents": {
+              "scope": "structure_only",
+              "sections": [
+                {
+                  "entries": 12,
+                  "path": "",
+                  "type": "object"
+                },
+                {
+                  "path": "/schema_version",
+                  "type": "number"
+                },
+                {
+                  "path": "/model",
+                  "type": "string"
+                },
+                {
+                  "path": "/seed",
+                  "type": "number"
+                },
+                {
+                  "path": "/episodes",
+                  "type": "number"
+                },
+                {
+                  "path": "/control_dt_seconds",
+                  "type": "number"
+                },
+                {
+                  "entries": 8,
+                  "path": "/radii_cm",
+                  "type": "array"
+                },
+                {
+                  "path": "/angle_count",
+                  "type": "number"
+                },
+                {
+                  "entries": 9,
+                  "path": "/summary",
+                  "type": "object"
+                },
+                {
+                  "entries": 8,
+                  "path": "/by_radius_cm",
+                  "type": "object"
+                },
+                {
+                  "entries": 16,
+                  "path": "/by_angle_degrees",
+                  "type": "object"
+                },
+                {
+                  "entries": 128,
+                  "field_names": [
+                    "entry_elbow_angle_degrees",
+                    "entry_speed_cm_per_s",
+                    "episode",
+                    "episode_seed",
+                    "first_reach_step",
+                    "hold_interruptions",
+                    "in_tolerance_steps",
+                    "longest_uninterrupted_hold_steps",
+                    "pre_entry_distance_cm",
+                    "reward_total",
+                    "steps",
+                    "success",
+                    "target_angle_degrees",
+                    "target_position_cm",
+                    "target_radius_cm",
+                    "terminated",
+                    "truncated"
+                  ],
+                  "path": "/episode_diagnostics",
+                  "type": "array"
+                },
+                {
+                  "entries": 4,
+                  "path": "/units",
+                  "type": "object"
+                },
+                {
+                  "path": "/summary/episodes",
+                  "type": "number"
+                },
+                {
+                  "path": "/summary/successes",
+                  "type": "number"
+                },
+                {
+                  "path": "/summary/success_percent",
+                  "type": "number"
+                },
+                {
+                  "path": "/summary/first_entries",
+                  "type": "number"
+                },
+                {
+                  "path": "/summary/first_entry_percent",
+                  "type": "number"
+                },
+                {
+                  "path": "/summary/mean_first_reach_step",
+                  "type": "number"
+                },
+                {
+                  "path": "/summary/mean_entry_speed_cm_per_s",
+                  "type": "number"
+                },
+                {
+                  "path": "/summary/mean_longest_uninterrupted_hold_steps",
+                  "type": "number"
+                },
+                {
+                  "path": "/summary/mean_hold_interruptions",
+                  "type": "number"
+                },
+                {
+                  "entries": 9,
+                  "path": "/by_radius_cm/10.0",
+                  "type": "object"
+                },
+                {
+                  "entries": 9,
+                  "path": "/by_radius_cm/12.0",
+                  "type": "object"
+                },
+                {
+                  "entries": 9,
+                  "path": "/by_radius_cm/14.0",
+                  "type": "object"
+                },
+                {
+                  "entries": 9,
+                  "path": "/by_radius_cm/16.0",
+                  "type": "object"
+                },
+                {
+                  "entries": 9,
+                  "path": "/by_radius_cm/18.0",
+                  "type": "object"
+                },
+                {
+                  "entries": 9,
+                  "path": "/by_radius_cm/20.0",
+                  "type": "object"
+                },
+                {
+                  "entries": 9,
+                  "path": "/by_radius_cm/6.0",
+                  "type": "object"
+                },
+                {
+                  "entries": 9,
+                  "path": "/by_radius_cm/8.0",
+                  "type": "object"
+                },
+                {
+                  "entries": 9,
+                  "path": "/by_angle_degrees/-112.5",
+                  "type": "object"
+                },
+                {
+                  "entries": 9,
+                  "path": "/by_angle_degrees/-135.0",
+                  "type": "object"
+                },
+                {
+                  "entries": 9,
+                  "path": "/by_angle_degrees/-157.5",
+                  "type": "object"
+                },
+                {
+                  "entries": 9,
+                  "path": "/by_angle_degrees/-180.0",
+                  "type": "object"
+                },
+                {
+                  "entries": 9,
+                  "path": "/by_angle_degrees/-22.5",
+                  "type": "object"
+                },
+                {
+                  "entries": 9,
+                  "path": "/by_angle_degrees/-45.0",
+                  "type": "object"
+                },
+                {
+                  "entries": 9,
+                  "path": "/by_angle_degrees/-67.5",
+                  "type": "object"
+                },
+                {
+                  "entries": 9,
+                  "path": "/by_angle_degrees/-90.0",
+                  "type": "object"
+                },
+                {
+                  "entries": 9,
+                  "path": "/by_angle_degrees/0.0",
+                  "type": "object"
+                },
+                {
+                  "entries": 9,
+                  "path": "/by_angle_degrees/112.5",
+                  "type": "object"
+                },
+                {
+                  "entries": 9,
+                  "path": "/by_angle_degrees/135.0",
+                  "type": "object"
+                },
+                {
+                  "entries": 9,
+                  "path": "/by_angle_degrees/157.5",
+                  "type": "object"
+                },
+                {
+                  "entries": 9,
+                  "path": "/by_angle_degrees/22.5",
+                  "type": "object"
+                },
+                {
+                  "entries": 9,
+                  "path": "/by_angle_degrees/45.0",
+                  "type": "object"
+                },
+                {
+                  "entries": 9,
+                  "path": "/by_angle_degrees/67.5",
+                  "type": "object"
+                },
+                {
+                  "entries": 9,
+                  "path": "/by_angle_degrees/90.0",
+                  "type": "object"
+                },
+                {
+                  "path": "/units/distance",
+                  "type": "string"
+                },
+                {
+                  "path": "/units/speed",
+                  "type": "string"
+                },
+                {
+                  "path": "/units/time",
+                  "type": "string"
+                },
+                {
+                  "path": "/units/angle",
+                  "type": "string"
+                },
+                {
+                  "path": "/by_radius_cm/10.0/episodes",
+                  "type": "number"
+                },
+                {
+                  "path": "/by_radius_cm/10.0/successes",
+                  "type": "number"
+                },
+                {
+                  "path": "/by_radius_cm/10.0/success_percent",
+                  "type": "number"
+                },
+                {
+                  "path": "/by_radius_cm/10.0/first_entries",
+                  "type": "number"
+                },
+                {
+                  "path": "/by_radius_cm/10.0/first_entry_percent",
+                  "type": "number"
+                },
+                {
+                  "path": "/by_radius_cm/10.0/mean_first_reach_step",
+                  "type": "number"
+                },
+                {
+                  "path": "/by_radius_cm/10.0/mean_entry_speed_cm_per_s",
+                  "type": "number"
+                },
+                {
+                  "path": "/by_radius_cm/10.0/mean_longest_uninterrupted_hold_steps",
+                  "type": "number"
+                },
+                {
+                  "path": "/by_radius_cm/10.0/mean_hold_interruptions",
+                  "type": "number"
+                },
+                {
+                  "path": "/by_radius_cm/12.0/episodes",
+                  "type": "number"
+                },
+                {
+                  "path": "/by_radius_cm/12.0/successes",
+                  "type": "number"
+                },
+                {
+                  "path": "/by_radius_cm/12.0/success_percent",
+                  "type": "number"
+                },
+                {
+                  "path": "/by_radius_cm/12.0/first_entries",
+                  "type": "number"
+                },
+                {
+                  "path": "/by_radius_cm/12.0/first_entry_percent",
+                  "type": "number"
+                },
+                {
+                  "path": "/by_radius_cm/12.0/mean_first_reach_step",
+                  "type": "number"
+                }
+              ],
+              "truncated": true
+            },
+            "evaluation_artifact_fingerprint": "d8e6c363d514ebe00288942f9a3529e93eab799b9f282cd4b9486ec128857636"
+          },
+          "module": "robot_learning.scenario.outer_workspace_diagnostic"
+        }
+      ],
+      "result": {
+        "measurements": [
+          {
+            "args": [
+              "--model",
+              "research/checkpoints/candidates/2381bcbf-72c1-4535-9334-7e0d753f356d/t2/checkpoint-120832/model.zip",
+              "--output",
+              "research/evaluations/2381bcbf-72c1-4535-9334-7e0d753f356d/i1-outer-workspace-diagnostic.json",
+              "--seed",
+              "3000"
+            ],
+            "instrument": "python_module",
+            "label": "i1 outer-workspace reach and hold diagnostic",
+            "metrics": {
+              "evaluation_artifact": "research/evaluations/2381bcbf-72c1-4535-9334-7e0d753f356d/python-module-M2-1-i1-outer-workspace-diagnostic.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 12,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/model",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/seed",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/control_dt_seconds",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 8,
+                    "path": "/radii_cm",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/angle_count",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/summary",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 8,
+                    "path": "/by_radius_cm",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 16,
+                    "path": "/by_angle_degrees",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 128,
+                    "field_names": [
+                      "entry_elbow_angle_degrees",
+                      "entry_speed_cm_per_s",
+                      "episode",
+                      "episode_seed",
+                      "first_reach_step",
+                      "hold_interruptions",
+                      "in_tolerance_steps",
+                      "longest_uninterrupted_hold_steps",
+                      "pre_entry_distance_cm",
+                      "reward_total",
+                      "steps",
+                      "success",
+                      "target_angle_degrees",
+                      "target_position_cm",
+                      "target_radius_cm",
+                      "terminated",
+                      "truncated"
+                    ],
+                    "path": "/episode_diagnostics",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/units",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/summary/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/successes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/first_entries",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/first_entry_percent",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/mean_first_reach_step",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/mean_entry_speed_cm_per_s",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/mean_longest_uninterrupted_hold_steps",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/mean_hold_interruptions",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/by_radius_cm/10.0",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/by_radius_cm/12.0",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/by_radius_cm/14.0",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/by_radius_cm/16.0",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/by_radius_cm/18.0",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/by_radius_cm/20.0",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/by_radius_cm/6.0",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/by_radius_cm/8.0",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/by_angle_degrees/-112.5",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/by_angle_degrees/-135.0",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/by_angle_degrees/-157.5",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/by_angle_degrees/-180.0",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/by_angle_degrees/-22.5",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/by_angle_degrees/-45.0",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/by_angle_degrees/-67.5",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/by_angle_degrees/-90.0",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/by_angle_degrees/0.0",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/by_angle_degrees/112.5",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/by_angle_degrees/135.0",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/by_angle_degrees/157.5",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/by_angle_degrees/22.5",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/by_angle_degrees/45.0",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/by_angle_degrees/67.5",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/by_angle_degrees/90.0",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/units/distance",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/units/speed",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/units/time",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/units/angle",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/by_radius_cm/10.0/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/by_radius_cm/10.0/successes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/by_radius_cm/10.0/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/by_radius_cm/10.0/first_entries",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/by_radius_cm/10.0/first_entry_percent",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/by_radius_cm/10.0/mean_first_reach_step",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/by_radius_cm/10.0/mean_entry_speed_cm_per_s",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/by_radius_cm/10.0/mean_longest_uninterrupted_hold_steps",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/by_radius_cm/10.0/mean_hold_interruptions",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/by_radius_cm/12.0/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/by_radius_cm/12.0/successes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/by_radius_cm/12.0/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/by_radius_cm/12.0/first_entries",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/by_radius_cm/12.0/first_entry_percent",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/by_radius_cm/12.0/mean_first_reach_step",
+                    "type": "number"
+                  }
+                ],
+                "truncated": true
+              },
+              "evaluation_artifact_fingerprint": "d8e6c363d514ebe00288942f9a3529e93eab799b9f282cd4b9486ec128857636"
+            },
+            "module": "robot_learning.scenario.outer_workspace_diagnostic"
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": {
+          "campaign_lab_manifest": [],
+          "campaign_lab_publication": null,
+          "code_parent_commit": "3fd155202aed99b1e083edcb58500eb8e9218930",
+          "effective_parameters": {
+            "algorithm": {
+              "name": "ppo"
+            },
+            "policy": {
+              "activation": "tanh",
+              "net_arch": [
+                64,
+                64
+              ]
+            },
+            "ppo": {
+              "batch_size": 64,
+              "ent_coef": 0.01,
+              "gae_lambda": 0.95,
+              "gamma": 0.99,
+              "learning_rate": 0.0003,
+              "n_steps": 1024
+            },
+            "training": {
+              "checkpoint_every_steps": 5000,
+              "n_envs": 1
+            }
+          },
+          "module_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "01d3a4534490216f8a893819607ea01fa04d9417a554d046eb7b973365e38a16",
+              "path": "robot_learning/scenario/outer_workspace_diagnostic.py"
+            }
+          ],
+          "module_paths": [
+            "robot_learning/scenario/outer_workspace_diagnostic.py"
+          ],
+          "scientific_commit": "966c08eab385c03a02012bc91884be58d4030a67",
+          "scientific_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "01d3a4534490216f8a893819607ea01fa04d9417a554d046eb7b973365e38a16",
+              "path": "robot_learning/scenario/outer_workspace_diagnostic.py"
+            }
+          ],
+          "scientific_paths": [
+            "robot_learning/scenario/outer_workspace_diagnostic.py"
+          ]
+        }
+      },
+      "task_reference_contract": null
+    },
+    "failure": null,
+    "id": "M2",
+    "inquiry_id": "I1",
+    "kind": "measurement",
+    "progress": "completed",
+    "request": {
+      "measurement": {
+        "description": "Run a fixed 128-episode diagnostic grid over eight target radii from 6 to 20 cm and sixteen target angles using T2:checkpoint-120832. Record first-entry rate, pre-entry distance, entry speed proxy, elbow branch at entry, longest uninterrupted hold, hold interruptions, and success stratified by radius and angle.",
+        "measurements": [
+          {
+            "args": [
+              "--model",
+              "research/checkpoints/candidates/2381bcbf-72c1-4535-9334-7e0d753f356d/t2/checkpoint-120832/model.zip",
+              "--output",
+              "research/evaluations/2381bcbf-72c1-4535-9334-7e0d753f356d/i1-outer-workspace-diagnostic.json",
+              "--seed",
+              "3000"
+            ],
+            "artifact": "research/evaluations/2381bcbf-72c1-4535-9334-7e0d753f356d/i1-outer-workspace-diagnostic.json",
+            "instrument": "python_module",
+            "label": "i1 outer-workspace reach and hold diagnostic",
+            "module": "robot_learning.scenario.outer_workspace_diagnostic"
+          }
+        ],
+        "rationale": "I1 is unresolved because the existing panel establishes outer-radius non-entry but does not distinguish insufficient reach and braking from entry followed by unstable holding or branch-dependent behavior. This bounded grid concentrates resolution on 14-20 cm while retaining 6-12 cm controls, so outer first-entry and entry-motion changes can be compared directly with uninterrupted hold performance and angular/branch effects before allocating another training run."
+      }
+    },
+    "request_fingerprint": "98c066cecb9ef71681511aca70d006fe28115fffb71afba02794977f67fac5d6",
+    "session_id": "S3",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T2:checkpoint-120832 is the strongest evidenced candidate at 60.0% on M1, with T2:checkpoint-86016 at 57.5%. Neither candidate has an assigned working or best-known role, and no candidate is retained.",
     "completed_operations": [
@@ -1668,6 +2914,21 @@
     "path": "research/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "df881938-e5f9-46dd-8cf3-6ec3815ceb33",
+    "id": "S3",
+    "inquiry_id": "I1",
+    "kind": "inquiry",
+    "objective": "Advance I1 toward an evidence-supported answer to its scientific question: Can a targeted method for 14-20 cm targets overcome the near-extension reach limitation without sacrificing uninterrupted hold performance, or are the remaining failures primarily branch- or configuration-dependent stabilization failures?",
+    "operation_ids": [
+      "M2"
+    ],
+    "scientific_parent_commit": "966c08eab385c03a02012bc91884be58d4030a67"
+  },
   "terminal_state": null
 }
