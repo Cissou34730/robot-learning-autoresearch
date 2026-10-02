@@ -1,13 +1,5 @@
 {
-  "active_inquiry": {
-    "closure_condition": "After the inquiry checkpoint, replace only the training target-radius range with the official 6-20 cm range, train one fresh PPO baseline for the fixed 120000-step allocation, and run a development evaluation that reports overall success plus radius-stratified first reach, maximum uninterrupted hold, hold interruptions, and success. Close the inquiry when these results determine whether inner-radius coverage is selectively limiting performance or whether reaching is broad but uninterrupted holding remains the dominant failure.",
-    "goal_connection": "The human goal requires at least 196 of 200 complete uninterrupted two-second holds under targets uniformly distributed from 6 to 20 cm. Resolving whether the current restricted 14-20 cm training distribution is the dominant route risk determines whether full-coverage training is the necessary next intervention before changing reward or stabilization mechanisms.",
-    "id": "I1",
-    "opened_in_session": "S2",
-    "question": "Does training PPO over the full official 6-20 cm target-radius distribution produce a credible first policy, or do failures persist because transient stabilization and the uninterrupted hold objective are not learned?",
-    "rationale": "M2 found broadly feasible local kinematics and dynamics with valid branch alternatives for nearly all sampled targets, but used no learned policy and cannot distinguish distribution coverage from transient stabilization or reward-credit-assignment failure. The existing training environment excludes the official 6-14 cm region, whereas the evaluation path already measures the official distribution and exposes the diagnostics needed for this distinction. A fresh full-range baseline is therefore the most direct bounded, goal-linked test before introducing a stabilization or reward intervention.",
-    "reframes": []
-  },
+  "active_inquiry": null,
   "campaign": {
     "base_commit": "c2ec8f7b3bd33000bb6467c6149888e1df631b7d",
     "id": "48993cfd-1808-4db6-a7b8-000fd5daba50",
@@ -836,16 +828,16 @@
     }
   },
   "counters": {
-    "event": 4,
+    "event": 5,
     "inquiry": 1,
     "measurement": 3,
-    "session": 3,
+    "session": 4,
     "training": 1
   },
   "human_goal": {
     "source": "research/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -1548,9 +1540,63 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-02T08:58:49Z",
+      "error": null,
+      "id": "E5",
+      "inquiry_id": "I1",
+      "kind": "inquiry",
+      "request": {
+        "action": "close",
+        "outcome": "Full official-radius PPO training did not produce a credible policy for the 98% goal. It resolved the coverage hypothesis for this recipe: inner-radius behavior was strong, with 56/56 first reaches and successes at 6-10 cm and 60/60 first reaches with 56/60 successes at 10-14 cm, while outer-radius reaching remained poor at 9/50 first reaches and 8/50 successes at 14-18 cm and 0/34 at 18-20 cm. Only 7/200 episodes had hold interruptions, so the dominant failure is outer-radius first reach rather than uninterrupted holding after broad reaching.",
+        "reason": "M2, T1, and M3 establish that the full 6-20 cm training distribution is not selectively limited by inner-radius coverage, but the evidence does not distinguish outer-posture transient braking and stabilization from PPO optimization, representation, or reward-shaping failure. I1 is therefore closed with the next frontier focused on recovering outer-radius first reach while preserving the official distribution and measuring hold reliability separately."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I1",
+        "outcome": "Full official-radius PPO training did not produce a credible policy for the 98% goal. It resolved the coverage hypothesis for this recipe: inner-radius behavior was strong, with 56/56 first reaches and successes at 6-10 cm and 60/60 first reaches with 56/60 successes at 10-14 cm, while outer-radius reaching remained poor at 9/50 first reaches and 8/50 successes at 14-18 cm and 0/34 at 18-20 cm. Only 7/200 episodes had hold interruptions, so the dominant failure is outer-radius first reach rather than uninterrupted holding after broad reaching.",
+        "reason": "M2, T1, and M3 establish that the full 6-20 cm training distribution is not selectively limited by inner-radius coverage, but the evidence does not distinguish outer-posture transient braking and stabilization from PPO optimization, representation, or reward-shaping failure. I1 is therefore closed with the next frontier focused on recovering outer-radius first reach while preserving the official distribution and measuring hold reliability separately.",
+        "status": "completed"
+      },
+      "session_id": "S4",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "close",
+        "inquiry_id": "I1",
+        "outcome": "Full official-radius PPO training did not produce a credible policy for the 98% goal. It resolved the coverage hypothesis for this recipe: inner-radius behavior was strong, with 56/56 first reaches and successes at 6-10 cm and 60/60 first reaches with 56/60 successes at 10-14 cm, while outer-radius reaching remained poor at 9/50 first reaches and 8/50 successes at 14-18 cm and 0/34 at 18-20 cm. Only 7/200 episodes had hold interruptions, so the dominant failure is outer-radius first reach rather than uninterrupted holding after broad reaching.",
+        "reason": "M2, T1, and M3 establish that the full 6-20 cm training distribution is not selectively limited by inner-radius coverage, but the evidence does not distinguish outer-posture transient braking and stabilization from PPO optimization, representation, or reward-shaping failure. I1 is therefore closed with the next frontier focused on recovering outer-radius first reach while preserving the official distribution and measuring hold reliability separately."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I1",
+        "outcome": "Full official-radius PPO training did not produce a credible policy for the 98% goal. It resolved the coverage hypothesis for this recipe: inner-radius behavior was strong, with 56/56 first reaches and successes at 6-10 cm and 60/60 first reaches with 56/60 successes at 10-14 cm, while outer-radius reaching remained poor at 9/50 first reaches and 8/50 successes at 14-18 cm and 0/34 at 18-20 cm. Only 7/200 episodes had hold interruptions, so the dominant failure is outer-radius first reach rather than uninterrupted holding after broad reaching.",
+        "reason": "M2, T1, and M3 establish that the full 6-20 cm training distribution is not selectively limited by inner-radius coverage, but the evidence does not distinguish outer-posture transient braking and stabilization from PPO optimization, representation, or reward-shaping failure. I1 is therefore closed with the next frontier focused on recovering outer-radius first reach while preserving the official distribution and measuring hold reliability separately.",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E5",
+    "inquiry_id": "I1",
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "close",
+        "outcome": "Full official-radius PPO training did not produce a credible policy for the 98% goal. It resolved the coverage hypothesis for this recipe: inner-radius behavior was strong, with 56/56 first reaches and successes at 6-10 cm and 60/60 first reaches with 56/60 successes at 10-14 cm, while outer-radius reaching remained poor at 9/50 first reaches and 8/50 successes at 14-18 cm and 0/34 at 18-20 cm. Only 7/200 episodes had hold interruptions, so the dominant failure is outer-radius first reach rather than uninterrupted holding after broad reaching.",
+        "reason": "M2, T1, and M3 establish that the full 6-20 cm training distribution is not selectively limited by inner-radius coverage, but the evidence does not distinguish outer-posture transient braking and stabilization from PPO optimization, representation, or reward-shaping failure. I1 is therefore closed with the next frontier focused on recovering outer-radius first reach while preserving the official distribution and measuring hold reliability separately."
+      }
+    },
+    "request_fingerprint": "fb663536851595503b3cc017cc5d69ffde203211784af705f58e8144d1639387",
+    "session_id": "S4",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T1 produced archived candidates, with T1:checkpoint-120832 evaluated by M3. No working, best-known, or retained role has been assigned because the candidate is 60% on development evaluation and is not credible evidence for the 98% goal.",
     "completed_operations": [
@@ -1579,6 +1625,21 @@
     "path": "research/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "68339782-a542-44b5-9818-5c72e1b158c5",
+    "id": "S4",
+    "inquiry_id": "I1",
+    "kind": "inquiry",
+    "objective": "Advance I1 toward its closure condition: After the inquiry checkpoint, replace only the training target-radius range with the official 6-20 cm range, train one fresh PPO baseline for the fixed 120000-step allocation, and run a development evaluation that reports overall success plus radius-stratified first reach, maximum uninterrupted hold, hold interruptions, and success. Close the inquiry when these results determine whether inner-radius coverage is selectively limiting performance or whether reaching is broad but uninterrupted holding remains the dominant failure.",
+    "operation_ids": [
+      "E5"
+    ],
+    "scientific_parent_commit": "6257c493c9e8bd300f77f43a1d0b25b7dc8f0d21"
+  },
   "terminal_state": null
 }
