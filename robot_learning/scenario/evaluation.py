@@ -20,7 +20,7 @@ from robot_learning.policy_runtime import load_runtime
 from robot_learning.scenario.environment import make_evaluation_env
 
 # Bumped when the meaning of a scenario evaluation summary changes.
-RESEARCH_EVALUATION_SUMMARY_VERSION = 5
+RESEARCH_EVALUATION_SUMMARY_VERSION = 4
 
 
 def evaluate_research_model(
@@ -51,22 +51,10 @@ def evaluate_research_model(
         min_distance_cm = float("inf")
         final_distance_cm = float("nan")
         first_reach_step: int | None = None
-        first_reach_ee_speed_cm_s: float | None = None
-        first_reach_joint_speed_rad_s: float | None = None
-        first_reach_action_norm: float | None = None
         max_held_steps = 0
         in_tolerance_steps = 0
         hold_interruptions = 0
         was_in_tolerance = False
-        hold_min_distance_cm = float("inf")
-        max_ee_speed_cm_s = 0.0
-        max_joint_speed_rad_s = 0.0
-        max_action_norm = 0.0
-        min_distance_ee_speed_cm_s = 0.0
-        min_distance_joint_speed_rad_s = 0.0
-        min_distance_step = 0
-        previous_ee_position = env._end_effector_position()
-        control_dt = env.model.opt.timestep * env.frame_skip
         while not (terminated or truncated):
             action = runtime.predict(obs)
             obs, reward, terminated, truncated, info = env.step(action)
@@ -74,33 +62,13 @@ def evaluate_research_model(
             reward_total += float(reward)
             distance_cm = 100.0 * float(info["distance"])
             held_steps = int(info.get("held_steps", 0))
-            ee_position = env._end_effector_position()
-            ee_speed_cm_s = (
-                100.0
-                * float(np.linalg.norm(ee_position - previous_ee_position))
-                / control_dt
-            )
-            joint_speed_rad_s = float(np.linalg.norm(env.data.qvel))
-            action_norm = float(np.linalg.norm(action))
-            previous_ee_position = ee_position
             min_distance_cm = min(min_distance_cm, distance_cm)
             final_distance_cm = distance_cm
             max_held_steps = max(max_held_steps, held_steps)
-            max_ee_speed_cm_s = max(max_ee_speed_cm_s, ee_speed_cm_s)
-            max_joint_speed_rad_s = max(max_joint_speed_rad_s, joint_speed_rad_s)
-            max_action_norm = max(max_action_norm, action_norm)
-            if distance_cm <= min_distance_cm:
-                min_distance_ee_speed_cm_s = ee_speed_cm_s
-                min_distance_joint_speed_rad_s = joint_speed_rad_s
-                min_distance_step = steps
             if held_steps > 0:
                 in_tolerance_steps += 1
-                hold_min_distance_cm = min(hold_min_distance_cm, distance_cm)
                 if first_reach_step is None:
                     first_reach_step = steps
-                    first_reach_ee_speed_cm_s = ee_speed_cm_s
-                    first_reach_joint_speed_rad_s = joint_speed_rad_s
-                    first_reach_action_norm = action_norm
             elif was_in_tolerance:
                 hold_interruptions += 1
             was_in_tolerance = held_steps > 0
@@ -132,21 +100,9 @@ def evaluate_research_model(
                 "min_distance_cm": min_distance_cm,
                 "final_distance_cm": final_distance_cm,
                 "first_reach_step": first_reach_step,
-                "first_reach_ee_speed_cm_s": first_reach_ee_speed_cm_s,
-                "first_reach_joint_speed_rad_s": first_reach_joint_speed_rad_s,
-                "first_reach_action_norm": first_reach_action_norm,
                 "max_held_steps": max_held_steps,
                 "in_tolerance_steps": in_tolerance_steps,
                 "hold_interruptions": hold_interruptions,
-                "hold_min_distance_cm": hold_min_distance_cm
-                if hold_min_distance_cm != float("inf")
-                else None,
-                "max_ee_speed_cm_s": max_ee_speed_cm_s,
-                "max_joint_speed_rad_s": max_joint_speed_rad_s,
-                "max_action_norm": max_action_norm,
-                "min_distance_ee_speed_cm_s": min_distance_ee_speed_cm_s,
-                "min_distance_joint_speed_rad_s": min_distance_joint_speed_rad_s,
-                "min_distance_step": min_distance_step,
             }
         )
         if progress_callback is not None:
