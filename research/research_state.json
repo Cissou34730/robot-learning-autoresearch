@@ -1,13 +1,5 @@
 {
-  "active_inquiry": {
-    "closure_condition": "Run one fresh 120000-step training operation with T1's compact observation and PPO recipe unchanged apart from a branch-aware reward signal, then measure it against T1:checkpoint-100352 on the shared 160-episode panel. Treat at least 157/160 with no broad new failure mode as support for this route; treat no improvement over 151/160 or a broad regression as a negative result and re-evaluate the remaining route.",
-    "goal_connection": "The strongest baseline succeeds on 151/160 development episodes, leaving six non-entry failures and three interrupted holds concentrated in the -119 to -151 degree sector. Those failures select the open branch even when its shoulder solution violates the -170 degree limit while the folded branch remains feasible. Repairing this branch-selection mechanism is directly aimed at closing the nine-episode gap toward at least 196/200 official successes.",
-    "id": "I3",
-    "opened_in_session": "S6",
-    "question": "Can branch-aware reward shaping, while preserving T1's proven compact observation and PPO recipe, redirect the policy from the infeasible open IK branch to the folded feasible branch in the limit-sector targets and raise complete uninterrupted success toward the human threshold?",
-    "rationale": "E4 supports a limit-and-branch mechanism, but E8 showed that exposing signed margins and feasibility flags as raw inputs caused a broad collapse to 80/160; it did not invalidate the mechanism itself. T1 already receives both analytic branch residuals, so changing the credit assigned to selecting a limit-feasible branch is a distinct method intervention that avoids adding the rejected representation. The mixed-radius failures and non-discriminating Jacobian evidence leave dynamics and distribution coverage as competing explanations; a paired outcome and failure-class measurement will discriminate whether branch-directed learning produces a localized repair or another recipe-wide failure.",
-    "reframes": []
-  },
+  "active_inquiry": null,
   "campaign": {
     "base_commit": "f4605b08f13ffbd1f453eaba54b12d69a247f035",
     "id": "d7080d95-e5e9-4077-a667-f75ddc16876b",
@@ -2476,7 +2468,7 @@
     }
   },
   "counters": {
-    "event": 11,
+    "event": 12,
     "inquiry": 3,
     "measurement": 4,
     "session": 7,
@@ -4907,9 +4899,63 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-02T21:45:51Z",
+      "error": null,
+      "id": "E12",
+      "inquiry_id": "I3",
+      "kind": "inquiry",
+      "request": {
+        "action": "close",
+        "outcome": "I3 is negative for the tested branch-aware reward intervention. T3:checkpoint-120832 achieved 28/160 (17.5%) on the deterministic development panel versus 151/160 (94.375%) for T1:checkpoint-100352, losing all 123 discordant shared episodes. The intervention therefore caused a broad regression rather than a localized repair of the diagnosed limit-sector failures.",
+        "reason": "The required fresh 120000-step training operation and shared 160-episode paired measurement were completed. Keeping T1's compact observation and PPO recipe while adding a branch-feasibility potential did not support the branch-selection credit-assignment hypothesis under this recipe; T3 failed the 157/160 support threshold and regressed by 76.875 percentage points. The result is limited to the deterministic 160-episode panel, the paired candidates, and this tested reward formulation. The next route should re-evaluate dynamics and training-distribution coverage rather than further tune branch-aware reward shaping."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I3",
+        "outcome": "I3 is negative for the tested branch-aware reward intervention. T3:checkpoint-120832 achieved 28/160 (17.5%) on the deterministic development panel versus 151/160 (94.375%) for T1:checkpoint-100352, losing all 123 discordant shared episodes. The intervention therefore caused a broad regression rather than a localized repair of the diagnosed limit-sector failures.",
+        "reason": "The required fresh 120000-step training operation and shared 160-episode paired measurement were completed. Keeping T1's compact observation and PPO recipe while adding a branch-feasibility potential did not support the branch-selection credit-assignment hypothesis under this recipe; T3 failed the 157/160 support threshold and regressed by 76.875 percentage points. The result is limited to the deterministic 160-episode panel, the paired candidates, and this tested reward formulation. The next route should re-evaluate dynamics and training-distribution coverage rather than further tune branch-aware reward shaping.",
+        "status": "completed"
+      },
+      "session_id": "S7",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "close",
+        "inquiry_id": "I3",
+        "outcome": "I3 is negative for the tested branch-aware reward intervention. T3:checkpoint-120832 achieved 28/160 (17.5%) on the deterministic development panel versus 151/160 (94.375%) for T1:checkpoint-100352, losing all 123 discordant shared episodes. The intervention therefore caused a broad regression rather than a localized repair of the diagnosed limit-sector failures.",
+        "reason": "The required fresh 120000-step training operation and shared 160-episode paired measurement were completed. Keeping T1's compact observation and PPO recipe while adding a branch-feasibility potential did not support the branch-selection credit-assignment hypothesis under this recipe; T3 failed the 157/160 support threshold and regressed by 76.875 percentage points. The result is limited to the deterministic 160-episode panel, the paired candidates, and this tested reward formulation. The next route should re-evaluate dynamics and training-distribution coverage rather than further tune branch-aware reward shaping."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I3",
+        "outcome": "I3 is negative for the tested branch-aware reward intervention. T3:checkpoint-120832 achieved 28/160 (17.5%) on the deterministic development panel versus 151/160 (94.375%) for T1:checkpoint-100352, losing all 123 discordant shared episodes. The intervention therefore caused a broad regression rather than a localized repair of the diagnosed limit-sector failures.",
+        "reason": "The required fresh 120000-step training operation and shared 160-episode paired measurement were completed. Keeping T1's compact observation and PPO recipe while adding a branch-feasibility potential did not support the branch-selection credit-assignment hypothesis under this recipe; T3 failed the 157/160 support threshold and regressed by 76.875 percentage points. The result is limited to the deterministic 160-episode panel, the paired candidates, and this tested reward formulation. The next route should re-evaluate dynamics and training-distribution coverage rather than further tune branch-aware reward shaping.",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E12",
+    "inquiry_id": "I3",
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "close",
+        "outcome": "I3 is negative for the tested branch-aware reward intervention. T3:checkpoint-120832 achieved 28/160 (17.5%) on the deterministic development panel versus 151/160 (94.375%) for T1:checkpoint-100352, losing all 123 discordant shared episodes. The intervention therefore caused a broad regression rather than a localized repair of the diagnosed limit-sector failures.",
+        "reason": "The required fresh 120000-step training operation and shared 160-episode paired measurement were completed. Keeping T1's compact observation and PPO recipe while adding a branch-feasibility potential did not support the branch-selection credit-assignment hypothesis under this recipe; T3 failed the 157/160 support threshold and regressed by 76.875 percentage points. The result is limited to the deterministic 160-episode panel, the paired candidates, and this tested reward formulation. The next route should re-evaluate dynamics and training-distribution coverage rather than further tune branch-aware reward shaping."
+      }
+    },
+    "request_fingerprint": "8ac66c7c59059cdd57e383781ba2492943e6ea95084674fae424841b3c2edf5e",
+    "session_id": "S7",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No candidate has working, best-known, or retained status. T1:checkpoint-100352 and T1:checkpoint-120832 remain tied at 151/160 under M1; T2:checkpoint-120832 is not competitive at 80/160 under M3. Preserve T1 as the strongest measured baseline without assigning a model role.",
     "completed_operations": [
@@ -4956,7 +5002,8 @@
     "objective": "Advance I3 toward an evidence-supported answer to its scientific question: Can branch-aware reward shaping, while preserving T1's proven compact observation and PPO recipe, redirect the policy from the infeasible open IK branch to the folded feasible branch in the limit-sector targets and raise complete uninterrupted success toward the human threshold?",
     "operation_ids": [
       "T3",
-      "M4"
+      "M4",
+      "E12"
     ],
     "scientific_parent_commit": "7fe61ed064c4abda3a9980879d9aa547cb8d2e76"
   },
