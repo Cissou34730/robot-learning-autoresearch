@@ -9,7 +9,7 @@
   },
   "candidates": {
     "T1:checkpoint-100352": {
-      "artifact": "research/checkpoints/candidates/d7080d95-e5e9-4077-a667-f75ddc16876b/t1/checkpoint-100352",
+      "artifact": "research/checkpoints/retained/d7080d95-e5e9-4077-a667-f75ddc16876b/t1-cada55eb5-1fd33602b0dd5f3f2d8c3e006fe9ec06ce48f645068a1d3557aedfd4696437a4",
       "evaluation_artifacts": [
         "research/evaluations/d7080d95-e5e9-4077-a667-f75ddc16876b/evaluation-d7080d95-e5e9-4077-a667-f75ddc16876b-m1-T1-checkpoint-100352-160ep-seed4200-48e4acc98c39.json",
         "research/evaluations/d7080d95-e5e9-4077-a667-f75ddc16876b/evaluation-d7080d95-e5e9-4077-a667-f75ddc16876b-m3-T1-checkpoint-100352-160ep-seed4200-48e4acc98c39.json",
@@ -2468,7 +2468,7 @@
     }
   },
   "counters": {
-    "event": 13,
+    "event": 14,
     "inquiry": 3,
     "measurement": 5,
     "session": 8,
@@ -2477,9 +2477,9 @@
   "human_goal": {
     "source": "research/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "assigned",
   "model_roles": {
-    "best_known": null,
+    "best_known": "T1:checkpoint-100352",
     "retained": {},
     "working": null
   },
@@ -5143,9 +5143,88 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-02T21:52:46Z",
+      "error": null,
+      "id": "E14",
+      "inquiry_id": null,
+      "kind": "model_role",
+      "request": {
+        "action": "set_best_known",
+        "candidate": "T1:checkpoint-100352",
+        "evidence": [
+          "M5",
+          "M1",
+          "M4"
+        ],
+        "reason": "M5 measured the unchanged T1 policy at 393/400 (98.25%) on a fresh official-distribution diagnostic. Its seven failures were distributed across radius bins, including the untrained inner band, while all remained in the established negative-angle shoulder-limit sector with negative actual shoulder margins. T1 is therefore the strongest evidence-backed candidate and the appropriate frozen policy for official assessment."
+      },
+      "result": {
+        "action": "set_best_known",
+        "candidate": "T1:checkpoint-100352",
+        "evidence": [
+          "M5",
+          "M1",
+          "M4"
+        ],
+        "status": "assigned"
+      },
+      "session_id": "S8",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "set_best_known",
+        "candidate_id": "T1:checkpoint-100352",
+        "evidence": [
+          "M5",
+          "M1",
+          "M4"
+        ],
+        "reason": "M5 measured the unchanged T1 policy at 393/400 (98.25%) on a fresh official-distribution diagnostic. Its seven failures were distributed across radius bins, including the untrained inner band, while all remained in the established negative-angle shoulder-limit sector with negative actual shoulder margins. T1 is therefore the strongest evidence-backed candidate and the appropriate frozen policy for official assessment."
+      },
+      "publication": {
+        "destination": "research/checkpoints/retained/d7080d95-e5e9-4077-a667-f75ddc16876b/t1-cada55eb5-1fd33602b0dd5f3f2d8c3e006fe9ec06ce48f645068a1d3557aedfd4696437a4",
+        "fingerprint": "1fd33602b0dd5f3f2d8c3e006fe9ec06ce48f645068a1d3557aedfd4696437a4",
+        "source": "research/checkpoints/candidates/d7080d95-e5e9-4077-a667-f75ddc16876b/t1/checkpoint-100352"
+      },
+      "result": {
+        "action": "set_best_known",
+        "candidate": "T1:checkpoint-100352",
+        "evidence": [
+          "M5",
+          "M1",
+          "M4"
+        ],
+        "status": "assigned"
+      }
+    },
+    "failure": null,
+    "id": "E14",
+    "inquiry_id": null,
+    "kind": "model_role",
+    "progress": "completed",
+    "request": {
+      "model_role": {
+        "action": "set_best_known",
+        "candidate": "T1:checkpoint-100352",
+        "evidence": [
+          "M5",
+          "M1",
+          "M4"
+        ],
+        "reason": "M5 measured the unchanged T1 policy at 393/400 (98.25%) on a fresh official-distribution diagnostic. Its seven failures were distributed across radius bins, including the untrained inner band, while all remained in the established negative-angle shoulder-limit sector with negative actual shoulder margins. T1 is therefore the strongest evidence-backed candidate and the appropriate frozen policy for official assessment."
+      }
+    },
+    "request_fingerprint": "30bd446715676e38f076b96b0f12051d2cd4d783dcdb2e1cc28f77f286341dfb",
+    "session_id": "S8",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No candidate has working, best-known, or retained status. T1:checkpoint-100352 remains the strongest measured baseline at 151/160 under M1 and M4; T1:checkpoint-120832 is tied at 151/160 under M1; T2:checkpoint-120832 achieved 80/160 under M3; T3:checkpoint-120832 achieved 28/160 under M4. Preserve T1 as the strongest measured baseline without assigning a model role.",
     "completed_operations": [
@@ -5196,7 +5275,8 @@
     "kind": "goal_review",
     "objective": "Reassess the scientific direction toward the human goal using completed evidence. You may request measurements to resolve an uncertainty or develop the method before committing to an inquiry. Decide whether to request official assessment, open one bounded goal-linked inquiry, or conclude that no credible route remains.",
     "operation_ids": [
-      "M5"
+      "M5",
+      "E14"
     ],
     "scientific_parent_commit": "5b5054c3d40d902b1f3ea076cf7d343fd5828a0e"
   },
