@@ -36,8 +36,10 @@ selected training first. Both changes are provisionally retained, not a
 demonstrated solution to training-shaped progression. The brief-only context
 compaction below removes duplicate presentation while retaining all candidates,
 completed operations, and artifact inventories. Its campaign effect on PI cost
-and scientific decisions remains unassessed; prompts and SDK settings are
-unchanged.
+and scientific decisions remains unassessed; that compaction did not change
+prompts or SDK settings. The startup-wording correction below now distinguishes
+selecting and investigating a scientific question from formally opening an
+inquiry. It does not change phase permissions or prescribe an instrument.
 
 The objective under investigation is scientifically justified action selection:
 the PI chooses the action that can resolve a consequential uncertainty rather
@@ -407,7 +409,7 @@ its scientific breadth or achieve its result.
 |---|---|
 | Reliable measurement-evidence inspection | Provisionally retained. Campaign `010714c2` used the inventories to recognize and inspect existing diagnostics; no recurrence of the prior absent-diagnostics error was observed. Scientific progression is not thereby solved. |
 | Context flooding | Brief-only compaction implemented below: 57.39% smaller on the completed campaign, with all candidates and inventory references preserved. Campaign benefit remains unassessed; prompt replay and SDK output handling are unchanged and remain separate possible work. |
-| Training-shaped inquiry commitments and scientific continuity | Open. Campaign `010714c2` included measurement-only work, physical investigation in goal review, and replication, but some inquiry contracts remained fixed-recipe trials and closure/readiness claims exceeded the evidence. Startup is not a separate priority; model/prompt framing remains an unproven lead, not an approved change. |
+| Training-shaped inquiry commitments and scientific continuity | Open. Campaign `010714c2` included measurement-only work, physical investigation in goal review, and replication, but some inquiry contracts remained fixed-recipe trials and closure/readiness claims exceeded the evidence. The startup-only wording correction below is approved for a fresh campaign; it is not a demonstrated solution to the broader progression problem. Scientific-model framing remains an unproven lead. |
 | Checkpoint nomination and evidence selection | Deferred behind progression; available training facts are not proof of development performance. |
 | Operation-submission handoff clarification | Still unimplemented. |
 | Explicit protection of the old protocol log | Still unimplemented; read-access policy is a separate decision. |
@@ -969,3 +971,42 @@ separate from harness changes so their outcomes are not conflated.
   Repeated full prompts and large tool outputs remain outside this isolated
   change; there is no history cutoff, candidate ranking, semantic
   summarization, or deletion from the factual record.
+
+## 2026-10-02: separate startup investigation from formal inquiry opening
+
+- **Implementation commit:** the commit containing this entry,
+  `Clarify scientific investigation during startup`.
+- **Trigger:** in S1 of campaign
+  `a6def80f-a30e-44ec-9c18-188c04fdb535`, the PI stated: "The active session is
+  the initial startup session, so the contract requires a durable checkpoint
+  before inquiry selection." It submitted E1 without a measurement or training
+  operation and prescribed baseline training for the next inquiry.
+- **RCA:** the startup prompt repeated "inquiry selection follows in goal
+  review" in both the active-inquiry description and the session objective.
+  The actual protocol restricts formal inquiry opening to goal review; startup
+  already permits scientific operations before its closing checkpoint.
+  Selecting a scientific question or investigating it is not mechanically
+  gated by formal opening. The broader wording can encourage a planning-only
+  interpretation. It was present before brief compaction; that does not make
+  it neutral, nor establish that it alone caused the baseline-first choice.
+- **Approved change:** change only those two startup strings in
+  `run_research.ps1`. State that startup permits selecting and investigating
+  a scientific question before checkpointing. Establish the initial direction
+  through the model and scientific work in that session, and checkpoint when
+  the work reaches a stable decision. Reserve only formal inquiry opening for
+  goal review. Do not require a probe, measurement, training run, or baseline.
+- **Preserved boundary:** no phase-permission, session-transition, scientific
+  model, persona, goal-review/inquiry objective, SDK, or brief-renderer change.
+  The existing campaign state, operation request, and PI-owned code edits are
+  not modified. The maintainer will reset and restart the campaign.
+- **Implementation checks:** 11 existing targeted prompt/phase-permission
+  cases passed. The full launcher parsed successfully. A read-only rendering
+  comparison evaluated the actual objective expressions and context functions:
+  only the startup active-inquiry description and objective changed;
+  goal-review and inquiry objectives and rendered prompts were unchanged.
+  It did not execute the campaign loop. No tests of instruction wording were
+  added.
+- **Disposition:** implemented for a fresh-campaign observation. It corrects
+  the distinction between scientific work and administrative inquiry opening;
+  whether it improves startup decisions or later method development remains
+  unassessed.
