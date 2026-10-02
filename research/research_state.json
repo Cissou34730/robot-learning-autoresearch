@@ -3427,44 +3427,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "open",
-        "inquiry": {
-          "closure_condition": "Close or redirect after one bounded representation-conditioned PPO intervention at the maintainer allocation and same-seed development diagnostics against T1: the route must materially improve 14-20 cm first-reach and complete-hold outcomes without materially degrading 6-14 cm complete holds; otherwise treat this representation route as non-credible and return to goal review.",
-          "goal_connection": "Outer-radius first reach is the dominant gap to the 98% episode-success goal. This inquiry changes policy conditioning rather than repeating the closed IK-potential reward route, while retaining the official 6-20 cm task distribution and 100-step uninterrupted hold criterion.",
-          "id": "I3",
-          "opened_in_session": "S7",
-          "question": "Can an explicit periodic target-frame and absolute analytic branch-goal representation make PPO learn reliable 14-20 cm first reach while preserving inner-radius complete uninterrupted holds under the fixed official mechanics and distribution?",
-          "rationale": "The physical model establishes valid IK alternatives and sufficient local actuation, while M4 localizes failure before reach. The current observation exposes displacement and wrapped branch-relative errors but leaves target periodicity and absolute branch goals for the policy to infer. T2 showed that adding IK-error progress as reward did not improve the mechanism, so an explicit goal-conditioned representation is the next discriminating method-design test.",
-          "reframes": []
-        }
-      },
-      "result": {
-        "action": "open",
-        "inquiry_id": "I3",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E11",
-    "inquiry_id": null,
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "open",
-        "closure_condition": "Close or redirect after one bounded representation-conditioned PPO intervention at the maintainer allocation and same-seed development diagnostics against T1: the route must materially improve 14-20 cm first-reach and complete-hold outcomes without materially degrading 6-14 cm complete holds; otherwise treat this representation route as non-credible and return to goal review.",
-        "goal_connection": "Outer-radius first reach is the dominant gap to the 98% episode-success goal. This inquiry changes policy conditioning rather than repeating the closed IK-potential reward route, while retaining the official 6-20 cm task distribution and 100-step uninterrupted hold criterion.",
-        "question": "Can an explicit periodic target-frame and absolute analytic branch-goal representation make PPO learn reliable 14-20 cm first reach while preserving inner-radius complete uninterrupted holds under the fixed official mechanics and distribution?",
-        "rationale": "The physical model establishes valid IK alternatives and sufficient local actuation, while M4 localizes failure before reach. The current observation exposes displacement and wrapped branch-relative errors but leaves target periodicity and absolute branch goals for the policy to infer. T2 showed that adding IK-error progress as reward did not improve the mechanism, so an explicit goal-conditioned representation is the next discriminating method-design test."
-      }
-    },
-    "request_fingerprint": "70eac6ccc1e94d949dfdbb7e70974ede4d194ec217cb68c3c5e805be85e6c3a8",
-    "session_id": "S7",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T1:checkpoint-120832 remains the strongest evaluated development candidate at 65% on the M5 paired panel, but no working, best-known, or retained role is assigned because it is far below the 98% goal. T2:checkpoint-120832 is archived as the tested IK-potential intervention and is not retained.",
     "completed_operations": [
