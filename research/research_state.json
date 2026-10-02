@@ -12,8 +12,8 @@
     "event": 0,
     "inquiry": 0,
     "measurement": 0,
-    "session": 0,
-    "training": 0
+    "session": 1,
+    "training": 2
   },
   "human_goal": {
     "source": "research/scenario.md"
@@ -25,8 +25,91 @@
     "working": null
   },
   "official_assessment": null,
-  "operation_events": [],
-  "pending_operation": null,
+  "operation_events": [
+    {
+      "completed_at": "2026-10-02T12:08:15Z",
+      "error": "pytest failed:\n................F..                                                      [100%]\n================================== FAILURES ===================================\n_____________ test_copy_and_identity_include_executable_contract ______________\n\nmonkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000018110043350>\ntmp_path = WindowsPath('C:/Users/cyril.beurier/code/robot-learning-inquiry-centered-lifecycle/.pytest-run-temp/test_copy_and_identity_include0')\n\n    def test_copy_and_identity_include_executable_contract(monkeypatch, tmp_path):\n        module = scientific_module(monkeypatch, 3)\n        source = artifact(tmp_path / \"source\", module)\n        before = artifact_fingerprint(source.parent)\n        copy_artifact(source.parent, tmp_path / \"accepted\")\n        assert artifact_fingerprint(tmp_path / \"accepted\") == before\n        runtime = load_runtime(tmp_path / \"accepted/model.zip\")\n        assert runtime.io.observe(None).shape == (3,)\n        module.SCALE = 0.2\n>       artifact(source.parent, module)\n\ntests\\autoresearch\\test_policy_runtime.py:321: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _\ntests\\autoresearch\\test_policy_runtime.py:113: in artifact\n    save_runtime(\nrobot_learning\\policy_runtime.py:87: in save_runtime\n    temporary.replace(destination)\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _\n\nself = WindowsPath('C:/Users/cyril.beurier/code/robot-learning-inquiry-centered-lifecycle/.pytest-run-temp/test_copy_and_identity_include0/source/policy_runtime.tmp')\ntarget = WindowsPath('C:/Users/cyril.beurier/code/robot-learning-inquiry-centered-lifecycle/.pytest-run-temp/test_copy_and_identity_include0/source/policy_runtime.pkl')\n\n    def replace(self, target):\n        \"\"\"\n        Rename this path to the target path, overwriting if that path exists.\n    \n        The target path may be absolute or relative. Relative paths are\n        interpreted relative to the current working directory, *not* the\n        directory of the Path object.\n    \n        Returns the new Path instance pointing to the target path.\n        \"\"\"\n>       os.replace(self, target)\nE       PermissionError: [WinError 5] Access is denied: 'C:\\\\Users\\\\cyril.beurier\\\\code\\\\robot-learning-inquiry-centered-lifecycle\\\\.pytest-run-temp\\\\test_copy_and_identity_include0\\\\source\\\\policy_runtime.tmp' -> 'C:\\\\Users\\\\cyril.beurier\\\\code\\\\robot-learning-inquiry-centered-lifecycle\\\\.pytest-run-temp\\\\test_copy_and_identity_include0\\\\source\\\\policy_runtime.pkl'\n\n..\\..\\AppData\\Roaming\\uv\\python\\cpython-3.13-windows-x86_64-none\\Lib\\pathlib\\_local.py:780: PermissionError\n=========================== short test summary info ===========================\nFAILED tests/autoresearch/test_policy_runtime.py::test_copy_and_identity_include_executable_contract\n1 failed, 18 passed in 32.18s\n\n",
+      "id": "T1",
+      "inquiry_id": null,
+      "kind": "training",
+      "request": {
+        "description": "Train a fresh PPO policy on the full official target-radius distribution.",
+        "initialization": "fresh",
+        "rationale": "The current training distribution excludes the official 6-14 cm inner range. Aligning training with the fixed 6-20 cm task is the most direct first intervention toward 98% official success and provides the baseline evidence needed to distinguish distribution coverage limits from later stabilization or learning-method limits.",
+        "seed": 0,
+        "steps": 120000
+      },
+      "result": {
+        "error": "pytest failed:\n................F..                                                      [100%]\n================================== FAILURES ===================================\n_____________ test_copy_and_identity_include_executable_contract ______________\n\nmonkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000018110043350>\ntmp_path = WindowsPath('C:/Users/cyril.beurier/code/robot-learning-inquiry-centered-lifecycle/.pytest-run-temp/test_copy_and_identity_include0')\n\n    def test_copy_and_identity_include_executable_contract(monkeypatch, tmp_path):\n        module = scientific_module(monkeypatch, 3)\n        source = artifact(tmp_path / \"source\", module)\n        before = artifact_fingerprint(source.parent)\n        copy_artifact(source.parent, tmp_path / \"accepted\")\n        assert artifact_fingerprint(tmp_path / \"accepted\") == before\n        runtime = load_runtime(tmp_path / \"accepted/model.zip\")\n        assert runtime.io.observe(None).shape == (3,)\n        module.SCALE = 0.2\n>       artifact(source.parent, module)\n\ntests\\autoresearch\\test_policy_runtime.py:321: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _\ntests\\autoresearch\\test_policy_runtime.py:113: in artifact\n    save_runtime(\nrobot_learning\\policy_runtime.py:87: in save_runtime\n    temporary.replace(destination)\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _\n\nself = WindowsPath('C:/Users/cyril.beurier/code/robot-learning-inquiry-centered-lifecycle/.pytest-run-temp/test_copy_and_identity_include0/source/policy_runtime.tmp')\ntarget = WindowsPath('C:/Users/cyril.beurier/code/robot-learning-inquiry-centered-lifecycle/.pytest-run-temp/test_copy_and_identity_include0/source/policy_runtime.pkl')\n\n    def replace(self, target):\n        \"\"\"\n        Rename this path to the target path, overwriting if that path exists.\n    \n        The target path may be absolute or relative. Relative paths are\n        interpreted relative to the current working directory, *not* the\n        directory of the Path object.\n    \n        Returns the new Path instance pointing to the target path.\n        \"\"\"\n>       os.replace(self, target)\nE       PermissionError: [WinError 5] Access is denied: 'C:\\\\Users\\\\cyril.beurier\\\\code\\\\robot-learning-inquiry-centered-lifecycle\\\\.pytest-run-temp\\\\test_copy_and_identity_include0\\\\source\\\\policy_runtime.tmp' -> 'C:\\\\Users\\\\cyril.beurier\\\\code\\\\robot-learning-inquiry-centered-lifecycle\\\\.pytest-run-temp\\\\test_copy_and_identity_include0\\\\source\\\\policy_runtime.pkl'\n\n..\\..\\AppData\\Roaming\\uv\\python\\cpython-3.13-windows-x86_64-none\\Lib\\pathlib\\_local.py:780: PermissionError\n=========================== short test summary info ===========================\nFAILED tests/autoresearch/test_policy_runtime.py::test_copy_and_identity_include_executable_contract\n1 failed, 18 passed in 32.18s\n\n",
+        "status": "failed"
+      },
+      "session_id": "S1",
+      "status": "failed",
+      "superseded_by": "T2",
+      "supersedes": null
+    }
+  ],
+  "pending_operation": {
+    "data": {
+      "archived_candidates": null,
+      "candidate_dir": null,
+      "code_parent_commit": "db5a2c51ce74f918fcc5ca69beb330d8998e5498",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "parent": null,
+      "result": null,
+      "scientific_commit": null,
+      "scientific_manifest": [
+        {
+          "exists": true,
+          "fingerprint": "082b5c82a037cf40071415274a1058848862cca9c30ec2694a8a15bcf01c4337",
+          "path": "robot_learning/scenario/training_environment.py"
+        }
+      ],
+      "scientific_paths": [
+        "robot_learning/scenario/training_environment.py"
+      ]
+    },
+    "failure": null,
+    "id": "T2",
+    "inquiry_id": null,
+    "kind": "training",
+    "progress": "accepted",
+    "request": {
+      "training": {
+        "description": "Train a fresh PPO policy on the full official target-radius distribution.",
+        "initialization": "fresh",
+        "rationale": "The current training distribution excludes the official 6-14 cm inner range. Aligning training with the fixed 6-20 cm task is the most direct first intervention toward 98% official success and provides the baseline evidence needed to distinguish distribution coverage limits from later stabilization or learning-method limits.",
+        "seed": 0,
+        "steps": 120000
+      }
+    },
+    "request_fingerprint": "3384b86b9aa9dabbf1c745f7a91aea6687af35f81f61e82e8b998ae3b45c9346",
+    "session_id": "S1",
+    "supersedes": "T1"
+  },
   "pi_checkpoint": null,
   "schema_version": 6,
   "scientific_model": {
@@ -34,6 +117,19 @@
     "path": "research/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "3d442d85-9469-4064-8f8d-d4acea1a3a8f",
+    "id": "S1",
+    "inquiry_id": null,
+    "kind": "startup",
+    "objective": "Establish the most credible first scientific direction toward the human goal from the scientific model and scientific work in this session. Checkpoint when that work reaches a stable decision; formal inquiry opening belongs to goal review.",
+    "operation_ids": [],
+    "scientific_parent_commit": "db5a2c51ce74f918fcc5ca69beb330d8998e5498"
+  },
   "terminal_state": null
 }
