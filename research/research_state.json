@@ -11,8 +11,8 @@
   "counters": {
     "event": 0,
     "inquiry": 0,
-    "measurement": 0,
-    "session": 0,
+    "measurement": 2,
+    "session": 1,
     "training": 0
   },
   "human_goal": {
@@ -25,8 +25,133 @@
     "working": null
   },
   "official_assessment": null,
-  "operation_events": [],
-  "pending_operation": null,
+  "operation_events": [
+    {
+      "completed_at": "2026-10-02T08:10:19Z",
+      "error": "research.lab.dynamics_probe failed:\n\nTraceback (most recent call last):\n  File \"<frozen runpy>\", line 198, in _run_module_as_main\n  File \"<frozen runpy>\", line 88, in _run_code\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\research\\lab\\dynamics_probe.py\", line 195, in <module>\n    main()\n    ~~~~^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\research\\lab\\dynamics_probe.py\", line 191, in main\n    output.write_text(json.dumps(measure(), indent=2), encoding=\"utf-8\")\n                                 ~~~~~~~^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\research\\lab\\dynamics_probe.py\", line 89, in measure\n    inertia = mass_matrix(model, data)\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\research\\lab\\dynamics_probe.py\", line 61, in mass_matrix\n    mujoco.mj_fullM(model, full, data.qM)\n                                 ^^^^^^^\nAttributeError: 'mujoco._structs.MjData' object has no attribute 'qM'. Did you mean: 'M'?\n",
+      "id": "M1",
+      "inquiry_id": null,
+      "kind": "measurement",
+      "request": {
+        "description": "Map official-annulus IK branch validity, Jacobian conditioning, composite inertia, and saturated Cartesian acceleration over 32 target angles at eight radii.",
+        "measurements": [
+          {
+            "args": [
+              "--artifact",
+              "research/evaluations/48993cfd-1808-4db6-a7b8-000fd5daba50/startup-dynamics.json"
+            ],
+            "artifact": "research/evaluations/48993cfd-1808-4db6-a7b8-000fd5daba50/startup-dynamics.json",
+            "instrument": "python_module",
+            "label": "startup plant geometry and dynamics map",
+            "module": "research.lab.dynamics_probe"
+          }
+        ],
+        "rationale": "The physical model leaves dynamic reachability and stabilization difficulty unresolved. This policy-independent map discriminates between a geometry/dynamics-limited route, which would justify branch- and radius-aware stabilization work, and a broadly well-conditioned plant, which would make a fresh baseline and learning-signal diagnosis the higher-value next action."
+      },
+      "result": {
+        "error": "research.lab.dynamics_probe failed:\n\nTraceback (most recent call last):\n  File \"<frozen runpy>\", line 198, in _run_module_as_main\n  File \"<frozen runpy>\", line 88, in _run_code\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\research\\lab\\dynamics_probe.py\", line 195, in <module>\n    main()\n    ~~~~^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\research\\lab\\dynamics_probe.py\", line 191, in main\n    output.write_text(json.dumps(measure(), indent=2), encoding=\"utf-8\")\n                                 ~~~~~~~^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\research\\lab\\dynamics_probe.py\", line 89, in measure\n    inertia = mass_matrix(model, data)\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\research\\lab\\dynamics_probe.py\", line 61, in mass_matrix\n    mujoco.mj_fullM(model, full, data.qM)\n                                 ^^^^^^^\nAttributeError: 'mujoco._structs.MjData' object has no attribute 'qM'. Did you mean: 'M'?\n",
+        "status": "failed"
+      },
+      "session_id": "S1",
+      "status": "failed",
+      "superseded_by": "M2",
+      "supersedes": null
+    }
+  ],
+  "pending_operation": {
+    "data": {
+      "evaluation_semantics": null,
+      "measurements": [
+        {
+          "args": [
+            "--artifact",
+            "research/evaluations/48993cfd-1808-4db6-a7b8-000fd5daba50/startup-dynamics.json"
+          ],
+          "artifact": "research/evaluations/48993cfd-1808-4db6-a7b8-000fd5daba50/startup-dynamics.json",
+          "instrument": "python_module",
+          "label": "startup plant geometry and dynamics map",
+          "module": "research.lab.dynamics_probe"
+        }
+      ],
+      "module_provenance": {
+        "campaign_lab_manifest": [
+          {
+            "fingerprint": "aeb53a235e11f7e1c5bcecfc2ebceb9f5a14590f9bef5d67655967b29aae27fb",
+            "path": "research/lab/dynamics_probe.py"
+          }
+        ],
+        "campaign_lab_publication": null,
+        "code_parent_commit": "03b48969002955bc8e4a925346f151f9ca8089e9",
+        "effective_parameters": {
+          "algorithm": {
+            "name": "ppo"
+          },
+          "policy": {
+            "activation": "tanh",
+            "net_arch": [
+              64,
+              64
+            ]
+          },
+          "ppo": {
+            "batch_size": 64,
+            "ent_coef": 0.01,
+            "gae_lambda": 0.95,
+            "gamma": 0.99,
+            "learning_rate": 0.0003,
+            "n_steps": 1024
+          },
+          "training": {
+            "checkpoint_every_steps": 5000,
+            "n_envs": 1
+          }
+        },
+        "module_manifest": [
+          {
+            "exists": true,
+            "fingerprint": "aeb53a235e11f7e1c5bcecfc2ebceb9f5a14590f9bef5d67655967b29aae27fb",
+            "path": "research/lab/dynamics_probe.py"
+          }
+        ],
+        "module_paths": [
+          "research/lab/dynamics_probe.py"
+        ],
+        "scientific_commit": null,
+        "scientific_manifest": [],
+        "scientific_paths": []
+      },
+      "paired_comparisons": [],
+      "partial_results": [],
+      "result": null,
+      "task_reference_contract": null
+    },
+    "failure": null,
+    "id": "M2",
+    "inquiry_id": null,
+    "kind": "measurement",
+    "progress": "accepted",
+    "request": {
+      "measurement": {
+        "description": "Map official-annulus IK branch validity, Jacobian conditioning, composite inertia, and saturated Cartesian acceleration over 32 target angles at eight radii.",
+        "measurements": [
+          {
+            "args": [
+              "--artifact",
+              "research/evaluations/48993cfd-1808-4db6-a7b8-000fd5daba50/startup-dynamics.json"
+            ],
+            "artifact": "research/evaluations/48993cfd-1808-4db6-a7b8-000fd5daba50/startup-dynamics.json",
+            "instrument": "python_module",
+            "label": "startup plant geometry and dynamics map",
+            "module": "research.lab.dynamics_probe"
+          }
+        ],
+        "rationale": "The physical model leaves dynamic reachability and stabilization difficulty unresolved. This policy-independent map discriminates between a geometry/dynamics-limited route, which would justify branch- and radius-aware stabilization work, and a broadly well-conditioned plant, which would make a fresh baseline and learning-signal diagnosis the higher-value next action."
+      }
+    },
+    "request_fingerprint": "9867ca82bec0f74d391e9493bc33eea5a9713550975685de00ed791dc43a561b",
+    "session_id": "S1",
+    "supersedes": "M1"
+  },
   "pi_checkpoint": null,
   "schema_version": 6,
   "scientific_model": {
@@ -34,6 +159,19 @@
     "path": "research/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "380d58b1-d4c9-4c1d-9784-4cbd280d6c25",
+    "id": "S1",
+    "inquiry_id": null,
+    "kind": "startup",
+    "objective": "Establish the most credible first scientific direction toward the human goal from the scientific model and scientific work in this session. Checkpoint when that work reaches a stable decision; formal inquiry opening belongs to goal review.",
+    "operation_ids": [],
+    "scientific_parent_commit": "03b48969002955bc8e4a925346f151f9ca8089e9"
+  },
   "terminal_state": null
 }
