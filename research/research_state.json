@@ -1541,44 +1541,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "open",
-        "inquiry": {
-          "closure_condition": "Close when a conditioned diagnostic over the failed sector and matched successful angles and radii identifies a mechanism that explains the failure classes well enough to select one goal-linked intervention, or shows a diffuse pattern that redirects the campaign to general stabilization or broader distribution coverage.",
-          "goal_connection": "The current best development result is 94.375% (151/160), below the 98% human goal. Identifying the mechanism behind the nine failures is necessary to choose a targeted intervention that can raise complete uninterrupted episode success toward at least 196 of 200 official episodes.",
-          "id": "I1",
-          "opened_in_session": "S2",
-          "question": "Does the concentrated failure sector near target angles -119 to -151 degrees arise from a specific IK branch, joint-limit or Jacobian configuration, or an angle-dependent observation/control representation, and does that mechanism explain both non-entry and interrupted-hold failures?",
-          "rationale": "M1 establishes a reproducible angular concentration across two checkpoint candidates with mixed radii, while checkpoint timing is not discriminative. The physical model predicts branch-dependent joint limits, Jacobian conditioning, and dynamic stabilization differences, but the existing artifact lacks joint states, branch selection, limit margins, and hold-trajectory excursions. A bounded diagnostic is therefore more informative than official assessment or another unchanged training run.",
-          "reframes": []
-        }
-      },
-      "result": {
-        "action": "open",
-        "inquiry_id": "I1",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E2",
-    "inquiry_id": null,
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "open",
-        "closure_condition": "Close when a conditioned diagnostic over the failed sector and matched successful angles and radii identifies a mechanism that explains the failure classes well enough to select one goal-linked intervention, or shows a diffuse pattern that redirects the campaign to general stabilization or broader distribution coverage.",
-        "goal_connection": "The current best development result is 94.375% (151/160), below the 98% human goal. Identifying the mechanism behind the nine failures is necessary to choose a targeted intervention that can raise complete uninterrupted episode success toward at least 196 of 200 official episodes.",
-        "question": "Does the concentrated failure sector near target angles -119 to -151 degrees arise from a specific IK branch, joint-limit or Jacobian configuration, or an angle-dependent observation/control representation, and does that mechanism explain both non-entry and interrupted-hold failures?",
-        "rationale": "M1 establishes a reproducible angular concentration across two checkpoint candidates with mixed radii, while checkpoint timing is not discriminative. The physical model predicts branch-dependent joint limits, Jacobian conditioning, and dynamic stabilization differences, but the existing artifact lacks joint states, branch selection, limit margins, and hold-trajectory excursions. A bounded diagnostic is therefore more informative than official assessment or another unchanged training run."
-      }
-    },
-    "request_fingerprint": "60f5b251aedc3310ca80ee439540ccb10156c83b3c76f6e70c3462d46fa46b96",
-    "session_id": "S2",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "No candidate has been assigned working or best-known status. T1:checkpoint-100352 and T1:checkpoint-120832 are tied on M1; they remain available candidates, not goal-qualified policies.",
     "completed_operations": [
