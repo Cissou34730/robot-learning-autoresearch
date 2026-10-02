@@ -18,7 +18,7 @@
   "human_goal": {
     "source": "research/scenario.md"
   },
-  "last_verdict": "fresh campaign initialized; scientific model pending",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -56,6 +56,210 @@
       "status": "failed",
       "superseded_by": "M2",
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-02T08:11:05Z",
+      "error": null,
+      "id": "M2",
+      "inquiry_id": null,
+      "kind": "measurement",
+      "request": {
+        "description": "Map official-annulus IK branch validity, Jacobian conditioning, composite inertia, and saturated Cartesian acceleration over 32 target angles at eight radii.",
+        "measurements": [
+          {
+            "args": [
+              "--artifact",
+              "research/evaluations/48993cfd-1808-4db6-a7b8-000fd5daba50/startup-dynamics.json"
+            ],
+            "artifact": "research/evaluations/48993cfd-1808-4db6-a7b8-000fd5daba50/startup-dynamics.json",
+            "instrument": "python_module",
+            "label": "startup plant geometry and dynamics map",
+            "module": "research.lab.dynamics_probe"
+          }
+        ],
+        "rationale": "The physical model leaves dynamic reachability and stabilization difficulty unresolved. This policy-independent map discriminates between a geometry/dynamics-limited route, which would justify branch- and radius-aware stabilization work, and a broadly well-conditioned plant, which would make a fresh baseline and learning-signal diagnosis the higher-value next action."
+      },
+      "result": {
+        "measurements": [
+          {
+            "args": [
+              "--artifact",
+              "research/evaluations/48993cfd-1808-4db6-a7b8-000fd5daba50/startup-dynamics.json"
+            ],
+            "instrument": "python_module",
+            "label": "startup plant geometry and dynamics map",
+            "metrics": {
+              "evaluation_artifact": "research/evaluations/48993cfd-1808-4db6-a7b8-000fd5daba50/python-module-M2-1-startup-dynamics.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 7,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/measurement",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/sampling",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/units",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 8,
+                    "field_names": [
+                      "inertia_max_eigenvalue_p95",
+                      "jacobian_condition_p95",
+                      "radius_cm",
+                      "saturated_cartesian_accel_min_p05",
+                      "valid_branch_fraction"
+                    ],
+                    "path": "/summary_by_radius",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 512,
+                    "field_names": [
+                      "angle_degrees",
+                      "branch",
+                      "inertia_max_eigenvalue",
+                      "inertia_min_eigenvalue",
+                      "jacobian_condition",
+                      "jacobian_min_singular_value",
+                      "joint_limit_valid",
+                      "q1_degrees",
+                      "q2_degrees",
+                      "radius_cm",
+                      "saturated_cartesian_accel_max",
+                      "saturated_cartesian_accel_min"
+                    ],
+                    "path": "/branch_records",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/aggregate",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 8,
+                    "path": "/sampling/radii_cm",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/sampling/angles",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/sampling/branches_per_target",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/units/inertia",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/units/cartesian_acceleration",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/aggregate/valid_branch_fraction",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/aggregate/jacobian_condition_p95",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/aggregate/inertia_max_eigenvalue_p95",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/aggregate/saturated_cartesian_accel_min_p05",
+                    "type": "number"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "9b51b8aa6bf5b4ba285143678994aff7416e3c4569b5e21c0339ef7a5b215df8"
+            },
+            "module": "research.lab.dynamics_probe"
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": {
+          "campaign_lab_manifest": [
+            {
+              "fingerprint": "aeb53a235e11f7e1c5bcecfc2ebceb9f5a14590f9bef5d67655967b29aae27fb",
+              "path": "research/lab/dynamics_probe.py"
+            }
+          ],
+          "campaign_lab_publication": {
+            "commit": "919ecfb02cf5e3ad78de7e52f11be7bb868b0773",
+            "fingerprint": "f8c57310b9baf08d63d9c104c1263bf011abf8521b8cdcc1d23bc39a118f510d",
+            "manifest": [
+              {
+                "fingerprint": "aeb53a235e11f7e1c5bcecfc2ebceb9f5a14590f9bef5d67655967b29aae27fb",
+                "path": "research/lab/dynamics_probe.py"
+              }
+            ]
+          },
+          "code_parent_commit": "03b48969002955bc8e4a925346f151f9ca8089e9",
+          "effective_parameters": {
+            "algorithm": {
+              "name": "ppo"
+            },
+            "policy": {
+              "activation": "tanh",
+              "net_arch": [
+                64,
+                64
+              ]
+            },
+            "ppo": {
+              "batch_size": 64,
+              "ent_coef": 0.01,
+              "gae_lambda": 0.95,
+              "gamma": 0.99,
+              "learning_rate": 0.0003,
+              "n_steps": 1024
+            },
+            "training": {
+              "checkpoint_every_steps": 5000,
+              "n_envs": 1
+            }
+          },
+          "module_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "aeb53a235e11f7e1c5bcecfc2ebceb9f5a14590f9bef5d67655967b29aae27fb",
+              "path": "research/lab/dynamics_probe.py"
+            }
+          ],
+          "module_paths": [
+            "research/lab/dynamics_probe.py"
+          ],
+          "scientific_commit": null,
+          "scientific_manifest": [],
+          "scientific_paths": []
+        }
+      },
+      "session_id": "S1",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": "M1"
     }
   ],
   "pending_operation": {
@@ -80,7 +284,16 @@
             "path": "research/lab/dynamics_probe.py"
           }
         ],
-        "campaign_lab_publication": null,
+        "campaign_lab_publication": {
+          "commit": "919ecfb02cf5e3ad78de7e52f11be7bb868b0773",
+          "fingerprint": "f8c57310b9baf08d63d9c104c1263bf011abf8521b8cdcc1d23bc39a118f510d",
+          "manifest": [
+            {
+              "fingerprint": "aeb53a235e11f7e1c5bcecfc2ebceb9f5a14590f9bef5d67655967b29aae27fb",
+              "path": "research/lab/dynamics_probe.py"
+            }
+          ]
+        },
         "code_parent_commit": "03b48969002955bc8e4a925346f151f9ca8089e9",
         "effective_parameters": {
           "algorithm": {
@@ -121,15 +334,307 @@
         "scientific_paths": []
       },
       "paired_comparisons": [],
-      "partial_results": [],
-      "result": null,
+      "partial_results": [
+        {
+          "args": [
+            "--artifact",
+            "research/evaluations/48993cfd-1808-4db6-a7b8-000fd5daba50/startup-dynamics.json"
+          ],
+          "instrument": "python_module",
+          "label": "startup plant geometry and dynamics map",
+          "metrics": {
+            "evaluation_artifact": "research/evaluations/48993cfd-1808-4db6-a7b8-000fd5daba50/python-module-M2-1-startup-dynamics.json",
+            "evaluation_artifact_contents": {
+              "scope": "structure_only",
+              "sections": [
+                {
+                  "entries": 7,
+                  "path": "",
+                  "type": "object"
+                },
+                {
+                  "path": "/schema_version",
+                  "type": "number"
+                },
+                {
+                  "path": "/measurement",
+                  "type": "string"
+                },
+                {
+                  "entries": 3,
+                  "path": "/sampling",
+                  "type": "object"
+                },
+                {
+                  "entries": 2,
+                  "path": "/units",
+                  "type": "object"
+                },
+                {
+                  "entries": 8,
+                  "field_names": [
+                    "inertia_max_eigenvalue_p95",
+                    "jacobian_condition_p95",
+                    "radius_cm",
+                    "saturated_cartesian_accel_min_p05",
+                    "valid_branch_fraction"
+                  ],
+                  "path": "/summary_by_radius",
+                  "type": "array"
+                },
+                {
+                  "entries": 512,
+                  "field_names": [
+                    "angle_degrees",
+                    "branch",
+                    "inertia_max_eigenvalue",
+                    "inertia_min_eigenvalue",
+                    "jacobian_condition",
+                    "jacobian_min_singular_value",
+                    "joint_limit_valid",
+                    "q1_degrees",
+                    "q2_degrees",
+                    "radius_cm",
+                    "saturated_cartesian_accel_max",
+                    "saturated_cartesian_accel_min"
+                  ],
+                  "path": "/branch_records",
+                  "type": "array"
+                },
+                {
+                  "entries": 4,
+                  "path": "/aggregate",
+                  "type": "object"
+                },
+                {
+                  "entries": 8,
+                  "path": "/sampling/radii_cm",
+                  "type": "array"
+                },
+                {
+                  "path": "/sampling/angles",
+                  "type": "number"
+                },
+                {
+                  "path": "/sampling/branches_per_target",
+                  "type": "number"
+                },
+                {
+                  "path": "/units/inertia",
+                  "type": "string"
+                },
+                {
+                  "path": "/units/cartesian_acceleration",
+                  "type": "string"
+                },
+                {
+                  "path": "/aggregate/valid_branch_fraction",
+                  "type": "number"
+                },
+                {
+                  "path": "/aggregate/jacobian_condition_p95",
+                  "type": "number"
+                },
+                {
+                  "path": "/aggregate/inertia_max_eigenvalue_p95",
+                  "type": "number"
+                },
+                {
+                  "path": "/aggregate/saturated_cartesian_accel_min_p05",
+                  "type": "number"
+                }
+              ],
+              "truncated": false
+            },
+            "evaluation_artifact_fingerprint": "9b51b8aa6bf5b4ba285143678994aff7416e3c4569b5e21c0339ef7a5b215df8"
+          },
+          "module": "research.lab.dynamics_probe"
+        }
+      ],
+      "result": {
+        "measurements": [
+          {
+            "args": [
+              "--artifact",
+              "research/evaluations/48993cfd-1808-4db6-a7b8-000fd5daba50/startup-dynamics.json"
+            ],
+            "instrument": "python_module",
+            "label": "startup plant geometry and dynamics map",
+            "metrics": {
+              "evaluation_artifact": "research/evaluations/48993cfd-1808-4db6-a7b8-000fd5daba50/python-module-M2-1-startup-dynamics.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 7,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/measurement",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/sampling",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/units",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 8,
+                    "field_names": [
+                      "inertia_max_eigenvalue_p95",
+                      "jacobian_condition_p95",
+                      "radius_cm",
+                      "saturated_cartesian_accel_min_p05",
+                      "valid_branch_fraction"
+                    ],
+                    "path": "/summary_by_radius",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 512,
+                    "field_names": [
+                      "angle_degrees",
+                      "branch",
+                      "inertia_max_eigenvalue",
+                      "inertia_min_eigenvalue",
+                      "jacobian_condition",
+                      "jacobian_min_singular_value",
+                      "joint_limit_valid",
+                      "q1_degrees",
+                      "q2_degrees",
+                      "radius_cm",
+                      "saturated_cartesian_accel_max",
+                      "saturated_cartesian_accel_min"
+                    ],
+                    "path": "/branch_records",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/aggregate",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 8,
+                    "path": "/sampling/radii_cm",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/sampling/angles",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/sampling/branches_per_target",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/units/inertia",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/units/cartesian_acceleration",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/aggregate/valid_branch_fraction",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/aggregate/jacobian_condition_p95",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/aggregate/inertia_max_eigenvalue_p95",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/aggregate/saturated_cartesian_accel_min_p05",
+                    "type": "number"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "9b51b8aa6bf5b4ba285143678994aff7416e3c4569b5e21c0339ef7a5b215df8"
+            },
+            "module": "research.lab.dynamics_probe"
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": {
+          "campaign_lab_manifest": [
+            {
+              "fingerprint": "aeb53a235e11f7e1c5bcecfc2ebceb9f5a14590f9bef5d67655967b29aae27fb",
+              "path": "research/lab/dynamics_probe.py"
+            }
+          ],
+          "campaign_lab_publication": {
+            "commit": "919ecfb02cf5e3ad78de7e52f11be7bb868b0773",
+            "fingerprint": "f8c57310b9baf08d63d9c104c1263bf011abf8521b8cdcc1d23bc39a118f510d",
+            "manifest": [
+              {
+                "fingerprint": "aeb53a235e11f7e1c5bcecfc2ebceb9f5a14590f9bef5d67655967b29aae27fb",
+                "path": "research/lab/dynamics_probe.py"
+              }
+            ]
+          },
+          "code_parent_commit": "03b48969002955bc8e4a925346f151f9ca8089e9",
+          "effective_parameters": {
+            "algorithm": {
+              "name": "ppo"
+            },
+            "policy": {
+              "activation": "tanh",
+              "net_arch": [
+                64,
+                64
+              ]
+            },
+            "ppo": {
+              "batch_size": 64,
+              "ent_coef": 0.01,
+              "gae_lambda": 0.95,
+              "gamma": 0.99,
+              "learning_rate": 0.0003,
+              "n_steps": 1024
+            },
+            "training": {
+              "checkpoint_every_steps": 5000,
+              "n_envs": 1
+            }
+          },
+          "module_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "aeb53a235e11f7e1c5bcecfc2ebceb9f5a14590f9bef5d67655967b29aae27fb",
+              "path": "research/lab/dynamics_probe.py"
+            }
+          ],
+          "module_paths": [
+            "research/lab/dynamics_probe.py"
+          ],
+          "scientific_commit": null,
+          "scientific_manifest": [],
+          "scientific_paths": []
+        }
+      },
       "task_reference_contract": null
     },
     "failure": null,
     "id": "M2",
     "inquiry_id": null,
     "kind": "measurement",
-    "progress": "accepted",
+    "progress": "completed",
     "request": {
       "measurement": {
         "description": "Map official-annulus IK branch validity, Jacobian conditioning, composite inertia, and saturated Cartesian acceleration over 32 target angles at eight radii.",
@@ -170,7 +675,9 @@
     "inquiry_id": null,
     "kind": "startup",
     "objective": "Establish the most credible first scientific direction toward the human goal from the scientific model and scientific work in this session. Checkpoint when that work reaches a stable decision; formal inquiry opening belongs to goal review.",
-    "operation_ids": [],
+    "operation_ids": [
+      "M2"
+    ],
     "scientific_parent_commit": "03b48969002955bc8e4a925346f151f9ca8089e9"
   },
   "terminal_state": null
