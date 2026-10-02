@@ -189,7 +189,8 @@
     "T1:checkpoint-120832": {
       "artifact": "research/checkpoints/candidates/48993cfd-1808-4db6-a7b8-000fd5daba50/t1/checkpoint-120832",
       "evaluation_artifacts": [
-        "research/evaluations/48993cfd-1808-4db6-a7b8-000fd5daba50/evaluation-48993cfd-1808-4db6-a7b8-000fd5daba50-m3-T1-checkpoint-120832-200ep-seed4200-48e4acc98c39.json"
+        "research/evaluations/48993cfd-1808-4db6-a7b8-000fd5daba50/evaluation-48993cfd-1808-4db6-a7b8-000fd5daba50-m3-T1-checkpoint-120832-200ep-seed4200-48e4acc98c39.json",
+        "research/evaluations/48993cfd-1808-4db6-a7b8-000fd5daba50/evaluation-48993cfd-1808-4db6-a7b8-000fd5daba50-m4-T1-checkpoint-120832-200ep-seed5200-3f2985277b8b.json"
       ],
       "fingerprint": "82101d2f294c67e12d79500d8da1af94902a7dab9f314959865ffe0236463685",
       "id": "T1:checkpoint-120832",
@@ -838,14 +839,14 @@
   "counters": {
     "event": 8,
     "inquiry": 2,
-    "measurement": 3,
-    "session": 5,
+    "measurement": 4,
+    "session": 6,
     "training": 1
   },
   "human_goal": {
     "source": "research/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -1663,9 +1664,427 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-02T09:10:20Z",
+      "error": null,
+      "id": "M4",
+      "inquiry_id": "I2",
+      "kind": "measurement",
+      "request": {
+        "description": "Measure the archived full-range PPO baseline on a fresh 200-episode official-distribution development panel with trajectory diagnostics for first-reach and stabilization.",
+        "measurements": [
+          {
+            "candidate": "T1:checkpoint-120832",
+            "episodes": 200,
+            "instrument": "research_evaluation",
+            "label": "I2 baseline trajectory diagnostics",
+            "seed": 5200
+          }
+        ],
+        "rationale": "I2 must distinguish outer-radius transient braking and stabilization limits from failure to learn a reliable reach. Preserve the official 6-20 cm target sampler and uninterrupted 100-step hold semantics while recording end-effector speed, joint speed, action magnitude, and minimum-distance timing at first reach and during the trajectory. Compare these quantities by target radius and success outcome; high speed or repeated boundary exits near first reach would support a stabilization bottleneck, while multi-centimeter minima with low eventual motion would support a learned outer-reach failure."
+      },
+      "result": {
+        "measurements": [
+          {
+            "candidate": "T1:checkpoint-120832",
+            "candidate_id": "T1:checkpoint-120832",
+            "instrument": "research_evaluation",
+            "label": "I2 baseline trajectory diagnostics",
+            "metrics": {
+              "episodes": 200,
+              "evaluation_artifact": "research/evaluations/48993cfd-1808-4db6-a7b8-000fd5daba50/evaluation-48993cfd-1808-4db6-a7b8-000fd5daba50-m4-T1-checkpoint-120832-200ep-seed5200-3f2985277b8b.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 8,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/model",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/seed",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/official_benchmark",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 200,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "reward_total",
+                      "steps",
+                      "success",
+                      "terminated",
+                      "truncated"
+                    ],
+                    "path": "/episode_results",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 200,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "final_distance_cm",
+                      "first_reach_action_norm",
+                      "first_reach_ee_speed_cm_s",
+                      "first_reach_joint_speed_rad_s",
+                      "first_reach_step",
+                      "hold_interruptions",
+                      "hold_min_distance_cm",
+                      "in_tolerance_steps",
+                      "max_action_norm",
+                      "max_ee_speed_cm_s",
+                      "max_held_steps",
+                      "max_joint_speed_rad_s",
+                      "min_distance_cm",
+                      "min_distance_ee_speed_cm_s",
+                      "min_distance_joint_speed_rad_s",
+                      "min_distance_step",
+                      "target_angle_degrees",
+                      "target_radius_cm"
+                    ],
+                    "path": "/research_evidence/episode_diagnostics",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence/units",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/research_evidence/units/distance",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/time",
+                    "type": "string"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "8bf6c7755c76152a5eb454aceb1e5197ef02f2e3f15a4c7909c41122892d71f5",
+              "evaluation_semantics": "3f2985277b8b",
+              "model_fingerprint": "82101d2f294c67e12d79500d8da1af94902a7dab9f314959865ffe0236463685",
+              "official_benchmark": false,
+              "schema_version": 5,
+              "seed": 5200,
+              "success_percent": 59.0,
+              "successes": 118
+            }
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": null
+      },
+      "session_id": "S6",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "evaluation_semantics": "3f2985277b8b",
+      "measurements": [
+        {
+          "artifact": "research/checkpoints/candidates/48993cfd-1808-4db6-a7b8-000fd5daba50/t1/checkpoint-120832",
+          "candidate": "T1:checkpoint-120832",
+          "candidate_id": "T1:checkpoint-120832",
+          "episodes": 200,
+          "instrument": "research_evaluation",
+          "label": "I2 baseline trajectory diagnostics",
+          "model_fingerprint": "82101d2f294c67e12d79500d8da1af94902a7dab9f314959865ffe0236463685",
+          "seed": 5200
+        }
+      ],
+      "module_provenance": null,
+      "paired_comparisons": [],
+      "partial_results": [
+        {
+          "candidate": "T1:checkpoint-120832",
+          "candidate_id": "T1:checkpoint-120832",
+          "instrument": "research_evaluation",
+          "label": "I2 baseline trajectory diagnostics",
+          "metrics": {
+            "episodes": 200,
+            "evaluation_artifact": "research/evaluations/48993cfd-1808-4db6-a7b8-000fd5daba50/evaluation-48993cfd-1808-4db6-a7b8-000fd5daba50-m4-T1-checkpoint-120832-200ep-seed5200-3f2985277b8b.json",
+            "evaluation_artifact_contents": {
+              "scope": "structure_only",
+              "sections": [
+                {
+                  "entries": 8,
+                  "path": "",
+                  "type": "object"
+                },
+                {
+                  "path": "/schema_version",
+                  "type": "number"
+                },
+                {
+                  "path": "/model",
+                  "type": "string"
+                },
+                {
+                  "path": "/episodes",
+                  "type": "number"
+                },
+                {
+                  "path": "/seed",
+                  "type": "number"
+                },
+                {
+                  "path": "/official_benchmark",
+                  "type": "boolean"
+                },
+                {
+                  "path": "/success_percent",
+                  "type": "number"
+                },
+                {
+                  "entries": 200,
+                  "field_names": [
+                    "episode",
+                    "episode_seed",
+                    "reward_total",
+                    "steps",
+                    "success",
+                    "terminated",
+                    "truncated"
+                  ],
+                  "path": "/episode_results",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/research_evidence",
+                  "type": "object"
+                },
+                {
+                  "entries": 200,
+                  "field_names": [
+                    "episode",
+                    "episode_seed",
+                    "final_distance_cm",
+                    "first_reach_action_norm",
+                    "first_reach_ee_speed_cm_s",
+                    "first_reach_joint_speed_rad_s",
+                    "first_reach_step",
+                    "hold_interruptions",
+                    "hold_min_distance_cm",
+                    "in_tolerance_steps",
+                    "max_action_norm",
+                    "max_ee_speed_cm_s",
+                    "max_held_steps",
+                    "max_joint_speed_rad_s",
+                    "min_distance_cm",
+                    "min_distance_ee_speed_cm_s",
+                    "min_distance_joint_speed_rad_s",
+                    "min_distance_step",
+                    "target_angle_degrees",
+                    "target_radius_cm"
+                  ],
+                  "path": "/research_evidence/episode_diagnostics",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/research_evidence/units",
+                  "type": "object"
+                },
+                {
+                  "path": "/research_evidence/units/distance",
+                  "type": "string"
+                },
+                {
+                  "path": "/research_evidence/units/time",
+                  "type": "string"
+                }
+              ],
+              "truncated": false
+            },
+            "evaluation_artifact_fingerprint": "8bf6c7755c76152a5eb454aceb1e5197ef02f2e3f15a4c7909c41122892d71f5",
+            "evaluation_semantics": "3f2985277b8b",
+            "model_fingerprint": "82101d2f294c67e12d79500d8da1af94902a7dab9f314959865ffe0236463685",
+            "official_benchmark": false,
+            "schema_version": 5,
+            "seed": 5200,
+            "success_percent": 59.0,
+            "successes": 118
+          }
+        }
+      ],
+      "result": {
+        "measurements": [
+          {
+            "candidate": "T1:checkpoint-120832",
+            "candidate_id": "T1:checkpoint-120832",
+            "instrument": "research_evaluation",
+            "label": "I2 baseline trajectory diagnostics",
+            "metrics": {
+              "episodes": 200,
+              "evaluation_artifact": "research/evaluations/48993cfd-1808-4db6-a7b8-000fd5daba50/evaluation-48993cfd-1808-4db6-a7b8-000fd5daba50-m4-T1-checkpoint-120832-200ep-seed5200-3f2985277b8b.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 8,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/model",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/seed",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/official_benchmark",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 200,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "reward_total",
+                      "steps",
+                      "success",
+                      "terminated",
+                      "truncated"
+                    ],
+                    "path": "/episode_results",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 200,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "final_distance_cm",
+                      "first_reach_action_norm",
+                      "first_reach_ee_speed_cm_s",
+                      "first_reach_joint_speed_rad_s",
+                      "first_reach_step",
+                      "hold_interruptions",
+                      "hold_min_distance_cm",
+                      "in_tolerance_steps",
+                      "max_action_norm",
+                      "max_ee_speed_cm_s",
+                      "max_held_steps",
+                      "max_joint_speed_rad_s",
+                      "min_distance_cm",
+                      "min_distance_ee_speed_cm_s",
+                      "min_distance_joint_speed_rad_s",
+                      "min_distance_step",
+                      "target_angle_degrees",
+                      "target_radius_cm"
+                    ],
+                    "path": "/research_evidence/episode_diagnostics",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence/units",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/research_evidence/units/distance",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/time",
+                    "type": "string"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "8bf6c7755c76152a5eb454aceb1e5197ef02f2e3f15a4c7909c41122892d71f5",
+              "evaluation_semantics": "3f2985277b8b",
+              "model_fingerprint": "82101d2f294c67e12d79500d8da1af94902a7dab9f314959865ffe0236463685",
+              "official_benchmark": false,
+              "schema_version": 5,
+              "seed": 5200,
+              "success_percent": 59.0,
+              "successes": 118
+            }
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": null
+      },
+      "task_reference_contract": null
+    },
+    "failure": null,
+    "id": "M4",
+    "inquiry_id": "I2",
+    "kind": "measurement",
+    "progress": "completed",
+    "request": {
+      "measurement": {
+        "description": "Measure the archived full-range PPO baseline on a fresh 200-episode official-distribution development panel with trajectory diagnostics for first-reach and stabilization.",
+        "measurements": [
+          {
+            "candidate": "T1:checkpoint-120832",
+            "episodes": 200,
+            "instrument": "research_evaluation",
+            "label": "I2 baseline trajectory diagnostics",
+            "seed": 5200
+          }
+        ],
+        "rationale": "I2 must distinguish outer-radius transient braking and stabilization limits from failure to learn a reliable reach. Preserve the official 6-20 cm target sampler and uninterrupted 100-step hold semantics while recording end-effector speed, joint speed, action magnitude, and minimum-distance timing at first reach and during the trajectory. Compare these quantities by target radius and success outcome; high speed or repeated boundary exits near first reach would support a stabilization bottleneck, while multi-centimeter minima with low eventual motion would support a learned outer-reach failure."
+      }
+    },
+    "request_fingerprint": "60d4be4acad4139257184333bf6129073fc533e07ef13afa75b69074c367740b",
+    "session_id": "S6",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T1 produced archived candidates, with T1:checkpoint-120832 evaluated by M3. No working, best-known, or retained role is assigned because the candidate is only 60% on development evaluation and is not credible evidence for the 98% goal.",
     "completed_operations": [
@@ -1695,6 +2114,21 @@
     "path": "research/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "3ef30620-9d43-441e-88de-414372c3d70d",
+    "id": "S6",
+    "inquiry_id": "I2",
+    "kind": "inquiry",
+    "objective": "Advance I2 toward its closure condition: Close when one bounded measurement-and-intervention cycle either produces a candidate with evidence of reliable outer-radius first reach while preserving inner-radius hold behavior, or establishes that the tested route does not materially improve the outer-radius failure and redirects the campaign to a different credible method.",
+    "operation_ids": [
+      "M4"
+    ],
+    "scientific_parent_commit": "f726ce7c82c2ba5ac06a71fb9a9c5d3cc28b5ac9"
+  },
   "terminal_state": null
 }
