@@ -1,5 +1,13 @@
 {
-  "active_inquiry": null,
+  "active_inquiry": {
+    "closure_condition": "Run one fresh 120000-step training operation with T1's compact observation and PPO recipe unchanged apart from a branch-aware reward signal, then measure it against T1:checkpoint-100352 on the shared 160-episode panel. Treat at least 157/160 with no broad new failure mode as support for this route; treat no improvement over 151/160 or a broad regression as a negative result and re-evaluate the remaining route.",
+    "goal_connection": "The strongest baseline succeeds on 151/160 development episodes, leaving six non-entry failures and three interrupted holds concentrated in the -119 to -151 degree sector. Those failures select the open branch even when its shoulder solution violates the -170 degree limit while the folded branch remains feasible. Repairing this branch-selection mechanism is directly aimed at closing the nine-episode gap toward at least 196/200 official successes.",
+    "id": "I3",
+    "opened_in_session": "S6",
+    "question": "Can branch-aware reward shaping, while preserving T1's proven compact observation and PPO recipe, redirect the policy from the infeasible open IK branch to the folded feasible branch in the limit-sector targets and raise complete uninterrupted success toward the human threshold?",
+    "rationale": "E4 supports a limit-and-branch mechanism, but E8 showed that exposing signed margins and feasibility flags as raw inputs caused a broad collapse to 80/160; it did not invalidate the mechanism itself. T1 already receives both analytic branch residuals, so changing the credit assigned to selecting a limit-feasible branch is a distinct method intervention that avoids adding the rejected representation. The mixed-radius failures and non-discriminating Jacobian evidence leave dynamics and distribution coverage as competing explanations; a paired outcome and failure-class measurement will discriminate whether branch-directed learning produces a localized repair or another recipe-wide failure.",
+    "reframes": []
+  },
   "campaign": {
     "base_commit": "f4605b08f13ffbd1f453eaba54b12d69a247f035",
     "id": "d7080d95-e5e9-4077-a667-f75ddc16876b",
@@ -1649,16 +1657,16 @@
     }
   },
   "counters": {
-    "event": 9,
-    "inquiry": 2,
+    "event": 10,
+    "inquiry": 3,
     "measurement": 3,
-    "session": 5,
+    "session": 6,
     "training": 2
   },
   "human_goal": {
     "source": "research/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -3372,9 +3380,69 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-02T21:26:50Z",
+      "error": null,
+      "id": "E10",
+      "inquiry_id": "I3",
+      "kind": "inquiry",
+      "request": {
+        "action": "open",
+        "closure_condition": "Run one fresh 120000-step training operation with T1's compact observation and PPO recipe unchanged apart from a branch-aware reward signal, then measure it against T1:checkpoint-100352 on the shared 160-episode panel. Treat at least 157/160 with no broad new failure mode as support for this route; treat no improvement over 151/160 or a broad regression as a negative result and re-evaluate the remaining route.",
+        "goal_connection": "The strongest baseline succeeds on 151/160 development episodes, leaving six non-entry failures and three interrupted holds concentrated in the -119 to -151 degree sector. Those failures select the open branch even when its shoulder solution violates the -170 degree limit while the folded branch remains feasible. Repairing this branch-selection mechanism is directly aimed at closing the nine-episode gap toward at least 196/200 official successes.",
+        "question": "Can branch-aware reward shaping, while preserving T1's proven compact observation and PPO recipe, redirect the policy from the infeasible open IK branch to the folded feasible branch in the limit-sector targets and raise complete uninterrupted success toward the human threshold?",
+        "rationale": "E4 supports a limit-and-branch mechanism, but E8 showed that exposing signed margins and feasibility flags as raw inputs caused a broad collapse to 80/160; it did not invalidate the mechanism itself. T1 already receives both analytic branch residuals, so changing the credit assigned to selecting a limit-feasible branch is a distinct method intervention that avoids adding the rejected representation. The mixed-radius failures and non-discriminating Jacobian evidence leave dynamics and distribution coverage as competing explanations; a paired outcome and failure-class measurement will discriminate whether branch-directed learning produces a localized repair or another recipe-wide failure."
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I3",
+        "status": "completed"
+      },
+      "session_id": "S6",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "open",
+        "inquiry": {
+          "closure_condition": "Run one fresh 120000-step training operation with T1's compact observation and PPO recipe unchanged apart from a branch-aware reward signal, then measure it against T1:checkpoint-100352 on the shared 160-episode panel. Treat at least 157/160 with no broad new failure mode as support for this route; treat no improvement over 151/160 or a broad regression as a negative result and re-evaluate the remaining route.",
+          "goal_connection": "The strongest baseline succeeds on 151/160 development episodes, leaving six non-entry failures and three interrupted holds concentrated in the -119 to -151 degree sector. Those failures select the open branch even when its shoulder solution violates the -170 degree limit while the folded branch remains feasible. Repairing this branch-selection mechanism is directly aimed at closing the nine-episode gap toward at least 196/200 official successes.",
+          "id": "I3",
+          "opened_in_session": "S6",
+          "question": "Can branch-aware reward shaping, while preserving T1's proven compact observation and PPO recipe, redirect the policy from the infeasible open IK branch to the folded feasible branch in the limit-sector targets and raise complete uninterrupted success toward the human threshold?",
+          "rationale": "E4 supports a limit-and-branch mechanism, but E8 showed that exposing signed margins and feasibility flags as raw inputs caused a broad collapse to 80/160; it did not invalidate the mechanism itself. T1 already receives both analytic branch residuals, so changing the credit assigned to selecting a limit-feasible branch is a distinct method intervention that avoids adding the rejected representation. The mixed-radius failures and non-discriminating Jacobian evidence leave dynamics and distribution coverage as competing explanations; a paired outcome and failure-class measurement will discriminate whether branch-directed learning produces a localized repair or another recipe-wide failure.",
+          "reframes": []
+        }
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I3",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E10",
+    "inquiry_id": null,
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "open",
+        "closure_condition": "Run one fresh 120000-step training operation with T1's compact observation and PPO recipe unchanged apart from a branch-aware reward signal, then measure it against T1:checkpoint-100352 on the shared 160-episode panel. Treat at least 157/160 with no broad new failure mode as support for this route; treat no improvement over 151/160 or a broad regression as a negative result and re-evaluate the remaining route.",
+        "goal_connection": "The strongest baseline succeeds on 151/160 development episodes, leaving six non-entry failures and three interrupted holds concentrated in the -119 to -151 degree sector. Those failures select the open branch even when its shoulder solution violates the -170 degree limit while the folded branch remains feasible. Repairing this branch-selection mechanism is directly aimed at closing the nine-episode gap toward at least 196/200 official successes.",
+        "question": "Can branch-aware reward shaping, while preserving T1's proven compact observation and PPO recipe, redirect the policy from the infeasible open IK branch to the folded feasible branch in the limit-sector targets and raise complete uninterrupted success toward the human threshold?",
+        "rationale": "E4 supports a limit-and-branch mechanism, but E8 showed that exposing signed margins and feasibility flags as raw inputs caused a broad collapse to 80/160; it did not invalidate the mechanism itself. T1 already receives both analytic branch residuals, so changing the credit assigned to selecting a limit-feasible branch is a distinct method intervention that avoids adding the rejected representation. The mixed-radius failures and non-discriminating Jacobian evidence leave dynamics and distribution coverage as competing explanations; a paired outcome and failure-class measurement will discriminate whether branch-directed learning produces a localized repair or another recipe-wide failure."
+      }
+    },
+    "request_fingerprint": "7105f5553157c86fa6de305bdca7b14a6d7222175a555355fb1f42d585de206f",
+    "session_id": "S6",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No candidate has working, best-known, or retained status. T1:checkpoint-100352 and T1:checkpoint-120832 remain tied under M1 at 151/160 (94.375%); T2:checkpoint-120832 is not competitive at 80/160 (50.0%) under M3.",
     "completed_operations": [
@@ -3409,6 +3477,21 @@
     "path": "research/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "b42b22f6-25cf-4739-8fab-9e21a70cc135",
+    "id": "S6",
+    "inquiry_id": null,
+    "kind": "goal_review",
+    "objective": "Reassess the scientific direction toward the human goal using completed evidence. You may request measurements to resolve an uncertainty or develop the method before committing to an inquiry. Decide whether to request official assessment, open one bounded goal-linked inquiry, or conclude that no credible route remains.",
+    "operation_ids": [
+      "E10"
+    ],
+    "scientific_parent_commit": "3e6a561c6db0aed49df4b3b7c643ae3b455bb833"
+  },
   "terminal_state": null
 }
