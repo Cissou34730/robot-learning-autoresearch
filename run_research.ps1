@@ -778,6 +778,14 @@ function New-ScientificSessionPrompt {
         )
     }
 
+    $readinessGuidance = if (-not $transition -and $session.kind -eq "goal_review") {
+        @(
+            "Decide whether completed evidence justifies official assessment, distinguishing the strongest available candidate from assessment readiness."
+            "Consider consequential residual failures, regressions and measurement uncertainty, and preserve their limits in the campaign decision."
+            "Inquiry closure or an above-target development score does not automatically justify assessment."
+        )
+    }
+
     $trainingAllocation = if ($session.kind -eq "startup") {
         "Maintainer training ceiling: $Timesteps requested steps per startup run. You may request any positive integer up to this ceiling, but neither the PI nor the Runner may raise it. Actual completed steps may round up to the learning algorithm's rollout boundary."
     }
@@ -799,6 +807,7 @@ function New-ScientificSessionPrompt {
         $scientificModelUseGuidance
         "Direct every decision toward the human goal and distinguish evidence from conjecture."
         $actionGuidance
+        $readinessGuidance
         "Begin with research/brief.md and the latest checkpoint. Consult research/scenario.md, research/scientific_model.md, and other evidence only as the scientific question requires."
     ) | Where-Object { $_ }
     return ($sections -join "`n`n")

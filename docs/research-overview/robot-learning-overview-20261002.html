@@ -212,10 +212,10 @@
       <p class="intro">The PI develops a learned controller for a fixed robot task.</p>
       <p class="intro">This page explains the phases, requests, records, and decisions that support that work.</p>
       <p class="snapshot">
-        Status snapshot: <time datetime="2026-10-03T00:13:46+02:00">3 October 2026, 00:13:46 CEST</time>.
+        Campaign record checked: <time datetime="2026-10-03T00:13:46+02:00">3 October 2026, 00:13:46 CEST</time>.
         This page does not update itself.
       </p>
-      <p class="snapshot">The campaign ended at 23:54:36 CEST on 2 October. The backlog includes the maintainer's readiness-change approval.</p>
+      <p class="snapshot">The campaign ended at 23:54:36 CEST on 2 October. Goal-review readiness guidance was added on 3 October.</p>
     </header>
 
     <div class="grid three overview" aria-label="The three main status facts">
@@ -236,11 +236,11 @@
         <p class="small"><a href="robot-campaign-2381bcbf-20261002.html">Read the previous campaign report</a></p>
       </article>
       <article class="card next">
-        <span class="tag planned">Approved / pending</span>
-        <h3 style="margin-top: 12px">Goal-review guidance is not yet applied</h3>
-        <p>Improve the decision to request official assessment.</p>
-        <p>The maintainer approved the narrow prompt change. It is <strong>not applied</strong>.</p>
-        <p class="small muted">The campaign has stopped. This report updates the analysis; it does not change the harness.</p>
+        <span class="tag kept">Implemented</span>
+        <h3 style="margin-top: 12px">Goal-review readiness guidance added</h3>
+        <p>Separate the best-known policy from a policy ready for assessment.</p>
+        <p>Consider remaining failures, regressions, and measurement uncertainty.</p>
+        <p class="small muted">The change was absent from the failed campaigns. Its scientific effect is not yet known.</p>
       </article>
     </div>
 
@@ -363,6 +363,8 @@
         <div class="note">
           <h3>Goal-review decisions</h3>
           <p>Closing an inquiry does not mean the campaign has passed.</p>
+          <p>A development score above the goal does not automatically justify assessment.</p>
+          <p>Consider remaining failures, regressions, and uncertainty before choosing assessment.</p>
           <p>Goal review can measure before the inquiry limit is reached. It does not train.</p>
           <p class="small muted">An official failure ends the campaign. It does not automatically return to another inquiry.</p>
         </div>
@@ -585,7 +587,7 @@
               <tr><td>Shorter startup training<span class="commit"><code>1a15091</code></span></td><td><span class="tag kept">Implemented</span></td><td>Allows positive startup requests up to the maintainer's allocation. Inquiry requests still use the full allocation. Rollout rounding remains.</td></tr>
               <tr><td>Goal-review model-role availability<span class="commit"><code>eabb35c</code></span></td><td><span class="tag fixed">Fixed</span></td><td>The PI can assign the best-known role. That assignment does not require official assessment.</td></tr>
               <tr><td>Large Git publication and recovery<span class="commit"><code>b7727d1</code></span></td><td><span class="tag fixed">Fixed</span></td><td>This repairs operation publication and recovery. It is not a controller-performance improvement.</td></tr>
-              <tr><td>Readiness and residual failure guidance</td><td><span class="tag planned">Approved / pending</span></td><td>The maintainer approved the narrow goal-review prompt change. It was absent from the completed campaign and remains unapplied.</td></tr>
+              <tr><td>Readiness and residual failure guidance</td><td><span class="tag kept">Implemented</span></td><td>Added on 3 October. Applies to ordinary goal review and goal review at the inquiry limit. Checkpoint-only prompts are unchanged. Scientific effect is not yet known.</td></tr>
               <tr><td>Broader closure and handoff prompt changes<span class="commit"><code>b4f1cdf</code>, <code>c0cfcb6</code></span></td><td><span class="tag removed">Reverted</span></td><td>These experiments are not part of the active harness. The new proposal must not silently restore them.</td></tr>
             </tbody>
           </table>
@@ -602,7 +604,7 @@
         <table>
           <thead><tr><th scope="col">Topic</th><th scope="col">Status and remaining work</th></tr></thead>
           <tbody>
-            <tr><td>Goal-review readiness guidance</td><td><strong>Approved; not applied.</strong> The campaign has stopped. Add the agreed block to ordinary and capped goal review, excluding checkpoint-only transitions.</td></tr>
+            <tr><td>Goal-review readiness guidance</td><td><strong>Implemented on 3 October.</strong> Observe how later decisions use remaining failures and conflicting evidence. Implementation checks do not establish scientific benefit.</td></tr>
             <tr><td>Reliable inspection of detailed evidence</td><td>Open. S8 inspected its detailed diagnostic correctly. It still treated a favorable panel as sufficient assessment readiness.</td></tr>
             <tr><td>Scientific continuity</td><td>Open. The latest campaign tested one training recipe in each intervention inquiry. Two broad regressions left the startup policy unchanged.</td></tr>
             <tr><td>Context flooding</td><td>Brief compaction is implemented. Prompt replay and SDK output handling remain separate possible work.</td></tr>
@@ -614,7 +616,8 @@
           </tbody>
         </table>
       </div>
-      <p>The startup ceiling is implemented. The approved readiness change remains pending; no repository harness edit has been applied.</p>
+      <p>The startup ceiling and goal-review readiness guidance are implemented.</p>
+      <p>The readiness guidance has not yet been observed in a campaign.</p>
       <div class="card">
         <div class="steps">
           <div class="step">
@@ -623,7 +626,7 @@
           </div>
           <div class="step">
             <div><h3>Apply it only at goal review</h3><p>Keep consequential failures, regressions, and uncertainty in the decision.</p><p class="small muted">Do not add a numerical readiness gate, mandatory measurement, or Runner scientific judgment.</p></div>
-            <span class="tag planned">Approved / pending</span>
+            <span class="tag kept">Implemented</span>
           </div>
           <div class="step">
             <div><h3>Assess its effect from a later campaign</h3><p>Look for accurate residual evidence in the decision and checkpoint.</p><p class="small muted">A passing result alone does not prove that the guidance worked.</p></div>
@@ -681,7 +684,7 @@
             <li><code>research\instruments.md</code>: operation shapes, acceptance conditions, and phase permissions.</li>
             <li><code>run_research.ps1</code> and <code>research\run_experiment.py</code>: launcher order, request handling, and recovery.</li>
             <li>The linked reports cite their own operation records and historical source snapshots.</li>
-            <li>Readiness guidance: approved by the maintainer on 2 October at 23:37 CEST. No implementation commit exists.</li>
+            <li>Readiness guidance: added to <code>run_research.ps1</code> on 3 October. Both reported near-miss campaigns ended before this change.</li>
           </ul>
           <p class="small muted" style="margin-top: 16px">All seven HTML documents are under <code>docs\research-overview</code>, outside the PI-owned write surface.</p>
           <p class="small muted">They are maintainer explanations, not PI guidance or cross-campaign scientific memory. The move does not restrict read access.</p>

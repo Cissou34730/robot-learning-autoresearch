@@ -51,7 +51,11 @@ continuity but without isolated causal attribution. It failed official
 assessment at 195/200 after 197/200 development success; its closure lost
 non-entry counterevidence and treated readiness as settled too early. The
 startup requested-step ceiling below is implemented as a separate tactical
-change; its campaign effect is unassessed.
+change; its campaign effect is unassessed. Campaign `d7080d95` used the full
+startup allocation and assessed its unchanged startup policy after two
+regressing interventions. It failed at 194/200. The narrow goal-review
+readiness guidance below is now implemented; neither failed campaign had it.
+Its effect on scientific decisions remains unassessed.
 
 The objective under investigation is scientifically justified action selection:
 the PI chooses the action that can resolve a consequential uncertainty rather
@@ -413,17 +417,17 @@ its scientific breadth or achieve its result.
   operation was started, resumed, reset, or finalized during implementation.
   This infrastructure correction establishes no scientific improvement.
 
-## Discussed but not implemented
+## Current backlog and remaining work
 
-### Current backlog (2026-10-02)
+### Current backlog (2026-10-03)
 
 | Item | Status / boundary |
 |---|---|
-| Counterevidence preservation and official-assessment readiness | Next substantive topic; design not yet selected or implemented. In `2381bcbf`, a positive aggregate result displaced remaining non-entry failures and a grid regression in the closure handoff; goal review then treated a narrow development-panel pass as leaving only protected-panel uncertainty. Preserve the actual residual evidence and calibrate terminal readiness without Runner scientific judgment or mandatory measurement gates. |
+| Counterevidence preservation and official-assessment readiness | Narrow goal-review guidance implemented below; scientific effect unassessed. In `2381bcbf`, a positive aggregate displaced non-entry failures and a grid regression. In `d7080d95`, detailed inspection preserved the failure sector, but a favorable fresh panel justified assessing an unchanged policy. The guidance distinguishes best-known from readiness and preserves residual evidence and uncertainty without Runner scientific judgment or mandatory measurement gates. |
 | Shorter startup training | Tactical change implemented below. The PI may request any positive integer up to the maintainer's per-run allocation during startup, never a larger request. Training remains optional; inquiry requests still use the full allocation. Existing rollout rounding is retained. Campaign effect is unassessed. |
 | Reliable measurement-evidence inspection | Discoverability provisionally retained. In `48993cfd`, M5 feedback advertised diagnostics, but the PI closed without inspecting the strata and incorrectly claimed no outer-reaching gain. In `2381bcbf`, M3/M4 diagnostic reads stopped at lines 1-310, were described as full inspection, and remaining non-entry cases were lost in the synthesis. Decision-linked inspection and interpretation remain unresolved. |
 | Context flooding | Brief-only compaction implemented below: 57.39% smaller on the completed campaign, with all candidates and inventory references preserved. Campaign benefit remains unassessed; prompt replay and SDK output handling are unchanged and remain separate possible work. |
-| Training-shaped inquiry commitments and scientific continuity | Open, with a positive local observation in `2381bcbf`: one inquiry sustained diagnostics and two successive method interventions. The question-based objective was active, but causation is unproved. Both aggregate losses and aggregate gains have obscured consequential subgroup evidence in handoffs; the next substantive topic isolates that unresolved problem. Startup clarification is retained, and scientific-model framing remains an unproven lead. |
+| Training-shaped inquiry commitments and scientific continuity | Open, with a positive local observation in `2381bcbf`: one inquiry sustained diagnostics and two successive method interventions. The question-based objective was active, but causation is unproved. Both aggregate losses and aggregate gains have obscured consequential subgroup evidence in handoffs. The new goal-review guidance addresses decision framing, not method development or trial-shaped commitments. Startup clarification is retained, and scientific-model framing remains an unproven lead. |
 | Checkpoint nomination and evidence selection | Deferred behind progression; available training facts are not proof of development performance. |
 | Operation-submission handoff clarification | Still unimplemented. |
 | Explicit protection of the old protocol log | Still unimplemented; read-access policy is a separate decision. |
@@ -431,8 +435,10 @@ its scientific breadth or achieve its result.
 | Publication/recovery, maintainer training allocation, and goal-review role availability | Implemented; not active repair items. |
 
 The startup allocation change is tactical, not a solution to scientific
-continuity. The next substantive topic is counterevidence preservation and
-official-assessment readiness; its implementation design remains to be agreed.
+continuity. Counterevidence preservation and official-assessment readiness
+now have an implemented, narrow prompt change. Its scientific effect remains
+to be observed in future decisions, not inferred from implementation checks
+or a benchmark pass alone.
 
 Hypothesis registries, premise-status fields, mandatory reasoning checklists,
 reference-panel reuse, submission-handoff clarification, and explicit
@@ -1195,3 +1201,71 @@ separate from harness changes so their outcomes are not conflated.
   demonstrated scientific improvement. No campaign operation is run, reset,
   or resumed by this change. Counterevidence preservation and official-assessment
   readiness remains the next substantive design topic.
+
+## 2026-10-03: unchanged startup policy fails official assessment
+
+- **Reference:** campaign `d7080d95-e5e9-4077-a667-f75ddc16876b`;
+  completed T1-T3, M1-M5 and E1-E15 records; terminal publication `cf2bb98`.
+  The detailed maintainer report is
+  `docs/research-overview/robot-campaign-d7080d95-20261002.html`.
+- **Outcome and resources:** 194/200 official successes, two below the required
+  196. Three inquiries, three completed training runs, 362,496 completed
+  steps, 26 PI invocations, 63.153858 AIU and 1,745.52 seconds of recorded PI
+  invocation time. No failed execution attempt was recorded. M5's artifact
+  path was rejected before dispatch and corrected without changing intent.
+- **Scientific results:** T1 achieved 151/160 on the original development
+  panel. The two tested interventions regressed: feasibility observations
+  produced 80/160; branch-aware reward shaping produced 28/160. Paired
+  comparisons found no gains and respectively 71 and 123 losses. These are
+  negative results for the tested recipes, not proof that every related
+  representation or reward method is invalid.
+- **Readiness pivot:** S8 inspected M5's detailed artifact and summarized
+  radius bins and all seven failures. Unchanged T1 achieved 393/400 on fresh
+  seeds. The PI treated this as sufficient to stop exploration and request
+  assessment. The two distinct T1 development panels contained 544/560
+  successes, or 97.14%; repeated original-panel evaluations add no independent
+  cases. Only three of the fifteen permitted inquiries had been used.
+- **Measurement and claim limits:** M2 and M5 used identical diagnostic module
+  bytes. M2 reproduced the original panel outcomes, and success flags matched
+  the uninterrupted-hold criterion. The seven M5 failures remained in the
+  negative-angle shoulder-limit sector. The recorded nearest analytic branch
+  is not a direct observation of the policy's internal decision. The aggregate
+  official record does not identify the mechanisms of its six failures.
+- **Disposition:** the repeated near miss concerns assessment calibration,
+  but not the earlier partial-file inspection error. It does not establish
+  that recent harness changes caused the official failure. The readiness
+  guidance below was absent during this campaign.
+
+## 2026-10-03: goal-review assessment-readiness guidance
+
+- **Implementation commit:** the commit containing this entry,
+  `Clarify assessment readiness in goal review`.
+- **RCA and approval:** two campaigns justified official assessment from
+  narrow above-target development results while consequential residual
+  evidence or uncertainty remained. The maintainer approved the three-sentence
+  goal-review block and then authorized its application after the campaign
+  stopped.
+- **Exact scope:** `New-ScientificSessionPrompt` in `run_research.ps1` adds the
+  approved block after action guidance and before source routing. It applies
+  to ordinary and inquiry-capped goal review. Checkpoint-only transitions,
+  startup and inquiry prompts remain unchanged.
+- **Guidance:** distinguish the strongest available candidate from assessment
+  readiness; consider residual failures, regressions and measurement
+  uncertainty; do not treat inquiry closure or an above-target development
+  score as automatic justification for assessment.
+- **Unchanged contracts:** objectives, phase permissions, request schemas,
+  operation validation, model roles, transitions and Runner behavior are
+  unchanged. There is no numerical readiness gate, required replication,
+  mandatory artifact sequence or Runner scientific judgment.
+- **Implementation checks:** the full launcher parsed without executing its
+  loop. A seven-context rendering comparison verified the exact addition in
+  both goal-review contexts and identical output in the other five contexts.
+  The three existing targeted checkpoint-frontier cases passed. No
+  instruction-wording tests or new test infrastructure were added.
+- **Documentation:** the process overview marks the change as implemented.
+  Campaign reports preserve the fact that it was absent during their runs.
+  HTML wording uses short technical sentences and retains the existing
+  qualification about unverified formal ASD-STE100 compliance.
+- **Disposition:** implemented for observation; scientific effect unassessed.
+  No campaign was started, resumed or reset. Campaign evidence and scientific
+  code were not changed.
