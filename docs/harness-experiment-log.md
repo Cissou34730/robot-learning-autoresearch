@@ -40,6 +40,12 @@ and scientific decisions remains unassessed; that compaction did not change
 prompts or SDK settings. The startup-wording correction below now distinguishes
 selecting and investigating a scientific question from formally opening an
 inquiry. It does not change phase permissions or prescribe an instrument.
+Campaign `48993cfd` exercised that clarification with a completed plant probe
+before checkpointing or training. Its later M5 closure nevertheless lost a
+substantial outer-reaching gain behind an aggregate regression, despite
+advertised diagnostics. The question-based inquiry-objective experiment below
+now targets that framing gap without changing closure criteria or adding
+scientific gates. Its behavioral effect remains unassessed.
 
 The objective under investigation is scientifically justified action selection:
 the PI chooses the action that can resolve a consequential uncertainty rather
@@ -407,9 +413,9 @@ its scientific breadth or achieve its result.
 
 | Item | Status / boundary |
 |---|---|
-| Reliable measurement-evidence inspection | Provisionally retained. Campaign `010714c2` used the inventories to recognize and inspect existing diagnostics; no recurrence of the prior absent-diagnostics error was observed. Scientific progression is not thereby solved. |
+| Reliable measurement-evidence inspection | Discoverability provisionally retained. In `48993cfd`, M5 feedback supplied both artifacts, diagnostic paths, radius/first-reach fields, and full inventories, but the PI closed without inspecting the strata and incorrectly claimed no outer-reaching gain. Decision-linked inspection remains unresolved. |
 | Context flooding | Brief-only compaction implemented below: 57.39% smaller on the completed campaign, with all candidates and inventory references preserved. Campaign benefit remains unassessed; prompt replay and SDK output handling are unchanged and remain separate possible work. |
-| Training-shaped inquiry commitments and scientific continuity | Open. Campaign `010714c2` included measurement-only work, physical investigation in goal review, and replication, but some inquiry contracts remained fixed-recipe trials and closure/readiness claims exceeded the evidence. The startup-only wording correction below is approved for a fresh campaign; it is not a demonstrated solution to the broader progression problem. Scientific-model framing remains an unproven lead. |
+| Training-shaped inquiry commitments and scientific continuity | Open. Verified subcase: aggregate regression mistaken for mechanism failure, losing subgroup gains and tradeoffs in closure and the next inquiry. The isolated question-based inquiry-objective experiment below is implemented for observation; it is not a demonstrated solution. Startup clarification is retained, and scientific-model framing remains an unproven lead. |
 | Checkpoint nomination and evidence selection | Deferred behind progression; available training facts are not proof of development performance. |
 | Operation-submission handoff clarification | Still unimplemented. |
 | Explicit protection of the old protocol log | Still unimplemented; read-access policy is a separate decision. |
@@ -1010,3 +1016,92 @@ separate from harness changes so their outcomes are not conflated.
   the distinction between scientific work and administrative inquiry opening;
   whether it improves startup decisions or later method development remains
   unassessed.
+
+## 2026-10-02: M5 tradeoff lost in inquiry closure
+
+- **Reference:** campaign `48993cfd-1808-4db6-a7b8-000fd5daba50`; M5 paired
+  artifacts under `research/evaluations/48993cfd-1808-4db6-a7b8-000fd5daba50/`;
+  E9/E10 closure and checkpoint, followed by E11/E12 opening I3. The maintainer
+  stopped the campaign. This entry assesses that scientific handoff, not a
+  terminal assessment or the result of later training.
+- **Observed tradeoff:** on 200 shared episode seeds, T1 achieved 130 successes
+  and T2 116. At 6-14 cm, complete holds fell from 115/118 to 75/118. At
+  14-20 cm, first reaches increased from 17/82 to 54/82 and complete holds
+  from 15/82 to 41/82. Outer-radius paired wins were 37 versus 11 losses,
+  a net gain of 26; inner-radius net loss was 40, yielding the aggregate
+  loss of 14. Different training seeds limit attribution to the shaping term,
+  but do not erase the measured candidate behavior.
+- **Incorrect conclusion:** the PI said there was "no evidence of improved
+  outer reach" and closed the IK-shaping route. Rejecting T2 as the better
+  overall candidate was defensible; denying its outer-reaching improvement
+  was not. The tradeoff was lost in the checkpoint and the next
+  representation-conditioned inquiry.
+- **Actual evidence access:** the public S6 SDK session
+  `3ef30620-9d43-441e-88de-414372c3d70d` received both M5 artifact paths,
+  `/research_evidence/episode_diagnostics`, `target_radius_cm`,
+  `first_reach_step`, and full inline structural inventories in its feedback.
+  The closure turn read brief lines 27-45 and the inquiry contract, then
+  submitted and validated the close request; it did not inspect the M5
+  diagnostic artifacts. The recent brief compaction did not hide those
+  diagnostic references or require an inventory-registry lookup in that turn.
+- **Harness attribution:** the immediate claim error was PI scientific
+  judgment. Aggregate-first feedback and a session objective duplicating
+  the PI's one-cycle closure condition are plausible amplifiers, not proven
+  causes. Keep the observed startup and discoverability benefits; do not
+  treat them as a solved interpretation or continuity problem. Add this
+  verified failure case to the existing continuity backlog rather than a
+  new scientific-judgment framework.
+
+## 2026-10-02: derive inquiry objectives from the scientific question
+
+- **Implementation commit:** the commit containing this entry,
+  `Focus inquiry objectives on scientific questions`.
+- **RCA:** I2's question asked whether outer reaching could improve and whether
+  trajectories distinguished braking/stabilization from learning failure.
+  Its closure condition specified one bounded intervention cycle. The launcher
+  promoted the latter into the repeated session objective, making trial
+  completion the operational target even though the scientific distinction
+  remained visible elsewhere. M5's tradeoff was then reduced to a negative
+  aggregate result. This identifies a framing gap, not a proven causal
+  explanation of the wrong claim.
+- **Prior-experiment comparison:** `f6fea61` and the restored baseline used
+  "Advance ... toward its closure condition." `b4f1cdf` instead emphasized
+  bringing the inquiry to the decision required by its closure condition and
+  closing as soon as evidence supplied it. `6c73715` reordered active-inquiry
+  context but retained that closure-based objective. `c0cfcb6` changed the
+  broader handoff while also retaining it. Those combined experiments did
+  not demonstrate sustained method development. None isolated the scientific
+  question itself as the session objective.
+- **Approved isolated change:** in `run_research.ps1`, derive the fresh inquiry
+  session objective from `active_inquiry.question`, not
+  `active_inquiry.closure_condition`: "Advance [inquiry] toward an
+  evidence-supported answer to its scientific question: [question]."
+  The closure condition remains unchanged and visible in the active-inquiry
+  context; this does not weaken or bypass the closure contract.
+- **Unchanged:** context ordering, action guidance, feedback, persona,
+  scientific-model guidance, startup and goal-review objectives, inquiry
+  permissions, session transitions, checkpoint/close schemas, brief rendering,
+  scientific artifacts, and existing persisted session objectives. No
+  hypothesis registry, reasoning checklist, mandatory measurement or retry,
+  Runner scientific judgment, or training allocation change.
+- **Observation criterion:** after a candidate regresses overall but improves
+  the inquiry's targeted behavior, the PI accurately preserves gains,
+  regressions, claim limits, and unresolved explanations in its decision and
+  handoff, even if it rejects the candidate. Continuing, reframing, or closing
+  remains its scientific choice.
+- **Failure signal:** an aggregate negative result again becomes an unsupported
+  claim of no mechanism improvement, or completion of a planned trial alone
+  redirects to another recipe while the question remains unexplained.
+  Fewer trainings, correct prompt rendering, or a successful policy alone
+  do not establish improved scientific continuity.
+- **Implementation checks:** 11 existing targeted prompt/phase-permission
+  cases passed. The full launcher parsed. A read-only comparison evaluated
+  the actual objective expressions and context functions: only the inquiry
+  current-objective field changed, using the supplied question rather than
+  closure-condition data; the original criterion remained in active-inquiry
+  context. Startup, ordinary goal review, and terminal goal review objectives
+  and rendered prompts were unchanged. No campaign loop or scientific
+  operation was executed, and no instruction-wording tests were added.
+- **Campaign observation / disposition:** implemented for observation; no
+  campaign has been reset or restarted for this change. The specific effect
+  is unassessed. Existing campaign state and pending requests are untouched.

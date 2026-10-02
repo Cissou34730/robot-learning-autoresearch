@@ -1093,8 +1093,8 @@ try {
             }
             else {
                 (
-                    "Advance $($state.active_inquiry.id) toward its closure condition: " +
-                    "$($state.active_inquiry.closure_condition)"
+                    "Advance $($state.active_inquiry.id) toward an evidence-supported " +
+                    "answer to its scientific question: $($state.active_inquiry.question)"
                 )
             }
             $startArguments = @(
