@@ -3334,38 +3334,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I2",
-        "outcome": "I2 is negative for the tested representation intervention. After a fresh 120000-step run, T2:checkpoint-120832 achieved 80/160 (50.0%) on the deterministic development panel versus 151/160 (94.375%) for the paired T1 baseline, losing all 71 discordant shared episodes. The T2 failures were broad rather than confined to the diagnosed sector: 74 were non-entry failures and 6 were interrupted holds across the angular panel. Exposing signed current and target-branch joint-limit margins together with branch-feasibility flags therefore did not improve complete uninterrupted success and instead produced a major regression. The result does not support further tuning of this representation as the next goal-directed change.",
-        "reason": "I2 closure is justified by the required fresh allocation and same-panel paired measurement. The intervention failed both the improvement criterion and the no-regression requirement, with a 44.375 percentage-point decrease and a broad new non-entry failure mode. Because the degradation is not localized to the diagnosed branch-limit sector, the evidence does not identify a credible representation-only repair; further work should not assume that adding these raw features enables branch avoidance. Claims remain limited to this deterministic 160-episode panel, the paired candidates, and the tested 120000-step recipe; no official assessment is justified."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I2",
-        "outcome": "I2 is negative for the tested representation intervention. After a fresh 120000-step run, T2:checkpoint-120832 achieved 80/160 (50.0%) on the deterministic development panel versus 151/160 (94.375%) for the paired T1 baseline, losing all 71 discordant shared episodes. The T2 failures were broad rather than confined to the diagnosed sector: 74 were non-entry failures and 6 were interrupted holds across the angular panel. Exposing signed current and target-branch joint-limit margins together with branch-feasibility flags therefore did not improve complete uninterrupted success and instead produced a major regression. The result does not support further tuning of this representation as the next goal-directed change.",
-        "reason": "I2 closure is justified by the required fresh allocation and same-panel paired measurement. The intervention failed both the improvement criterion and the no-regression requirement, with a 44.375 percentage-point decrease and a broad new non-entry failure mode. Because the degradation is not localized to the diagnosed branch-limit sector, the evidence does not identify a credible representation-only repair; further work should not assume that adding these raw features enables branch avoidance. Claims remain limited to this deterministic 160-episode panel, the paired candidates, and the tested 120000-step recipe; no official assessment is justified.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E8",
-    "inquiry_id": "I2",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "I2 is negative for the tested representation intervention. After a fresh 120000-step run, T2:checkpoint-120832 achieved 80/160 (50.0%) on the deterministic development panel versus 151/160 (94.375%) for the paired T1 baseline, losing all 71 discordant shared episodes. The T2 failures were broad rather than confined to the diagnosed sector: 74 were non-entry failures and 6 were interrupted holds across the angular panel. Exposing signed current and target-branch joint-limit margins together with branch-feasibility flags therefore did not improve complete uninterrupted success and instead produced a major regression. The result does not support further tuning of this representation as the next goal-directed change.",
-        "reason": "I2 closure is justified by the required fresh allocation and same-panel paired measurement. The intervention failed both the improvement criterion and the no-regression requirement, with a 44.375 percentage-point decrease and a broad new non-entry failure mode. Because the degradation is not localized to the diagnosed branch-limit sector, the evidence does not identify a credible representation-only repair; further work should not assume that adding these raw features enables branch avoidance. Claims remain limited to this deterministic 160-episode panel, the paired candidates, and the tested 120000-step recipe; no official assessment is justified."
-      }
-    },
-    "request_fingerprint": "2bf82ef78b84223f53ba4bf1f834b8aa4adf119977f6f4d1099a1614e0242eb7",
-    "session_id": "S5",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "No candidate has working, best-known, or retained status. T1:checkpoint-100352 and T1:checkpoint-120832 remain tied under M1 at 94.375% on the development panel and are not goal-qualified.",
     "completed_operations": [
