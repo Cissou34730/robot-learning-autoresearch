@@ -1,13 +1,5 @@
 {
-  "active_inquiry": {
-    "closure_condition": "Close when one bounded measurement-and-intervention cycle either produces a candidate with evidence of reliable outer-radius first reach while preserving inner-radius hold behavior, or establishes that the tested route does not materially improve the outer-radius failure and redirects the campaign to a different credible method.",
-    "goal_connection": "The current candidate succeeds on inner radii but reaches only 18% of 14-18 cm targets and 0% of 18-20 cm targets, leaving the campaign far below the 98% complete-hold objective. Recovering outer-radius first reach is therefore necessary before official assessment can be credible.",
-    "id": "I2",
-    "opened_in_session": "S5",
-    "question": "Can a goal-linked change recover reliable first reach for official targets at 14-20 cm, and do trajectory measurements distinguish inadequate transient braking and stabilization near extended postures from PPO failing to learn the outer-radius reach under the current reward and representation?",
-    "rationale": "M3 and E5 show that failures are concentrated before first reach, with only 7 of 200 episodes interrupted after entering tolerance. The plant map establishes local kinematic alternatives and acceleration margin but does not identify the policy mechanism. The inquiry will preserve the official 6-20 cm target distribution and uninterrupted 100-step hold criterion while separating transient stabilization limits from optimization, conditioning, representation, or reward-shaping failure.",
-    "reframes": []
-  },
+  "active_inquiry": null,
   "campaign": {
     "base_commit": "c2ec8f7b3bd33000bb6467c6149888e1df631b7d",
     "id": "48993cfd-1808-4db6-a7b8-000fd5daba50",
@@ -1656,7 +1648,7 @@
     }
   },
   "counters": {
-    "event": 8,
+    "event": 9,
     "inquiry": 2,
     "measurement": 5,
     "session": 6,
@@ -3337,9 +3329,63 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-02T09:48:23Z",
+      "error": null,
+      "id": "E9",
+      "inquiry_id": "I2",
+      "kind": "inquiry",
+      "request": {
+        "action": "close",
+        "outcome": "The IK-potential shaping route did not materially improve outer-radius first reach and is closed as a tested route. T2 training reached only 2% endpoint success at the fixed allocation, and paired M5 evaluation on shared official-distribution seeds scored T2 at 58% versus T1 at 65%, with 37 candidate wins versus 51 reference wins and a net loss of 14 episodes. This is recipe-specific negative evidence, not evidence that the plant or all potential shaping is impossible.",
+        "reason": "M4 showed that outer-radius failures were predominantly pre-reach rather than post-reach hold interruptions. The bounded intervention added progress toward the nearer valid analytic IK branch without changing the official sampler, dynamics, tolerance, horizon, or uninterrupted 100-step criterion, but T2 training collapsed and M5 found no behavioral recovery. I2 therefore redirects to a different credible method-design route targeting outer-radius learnability and representation rather than repeating IK reward shaping."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I2",
+        "outcome": "The IK-potential shaping route did not materially improve outer-radius first reach and is closed as a tested route. T2 training reached only 2% endpoint success at the fixed allocation, and paired M5 evaluation on shared official-distribution seeds scored T2 at 58% versus T1 at 65%, with 37 candidate wins versus 51 reference wins and a net loss of 14 episodes. This is recipe-specific negative evidence, not evidence that the plant or all potential shaping is impossible.",
+        "reason": "M4 showed that outer-radius failures were predominantly pre-reach rather than post-reach hold interruptions. The bounded intervention added progress toward the nearer valid analytic IK branch without changing the official sampler, dynamics, tolerance, horizon, or uninterrupted 100-step criterion, but T2 training collapsed and M5 found no behavioral recovery. I2 therefore redirects to a different credible method-design route targeting outer-radius learnability and representation rather than repeating IK reward shaping.",
+        "status": "completed"
+      },
+      "session_id": "S6",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "close",
+        "inquiry_id": "I2",
+        "outcome": "The IK-potential shaping route did not materially improve outer-radius first reach and is closed as a tested route. T2 training reached only 2% endpoint success at the fixed allocation, and paired M5 evaluation on shared official-distribution seeds scored T2 at 58% versus T1 at 65%, with 37 candidate wins versus 51 reference wins and a net loss of 14 episodes. This is recipe-specific negative evidence, not evidence that the plant or all potential shaping is impossible.",
+        "reason": "M4 showed that outer-radius failures were predominantly pre-reach rather than post-reach hold interruptions. The bounded intervention added progress toward the nearer valid analytic IK branch without changing the official sampler, dynamics, tolerance, horizon, or uninterrupted 100-step criterion, but T2 training collapsed and M5 found no behavioral recovery. I2 therefore redirects to a different credible method-design route targeting outer-radius learnability and representation rather than repeating IK reward shaping."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I2",
+        "outcome": "The IK-potential shaping route did not materially improve outer-radius first reach and is closed as a tested route. T2 training reached only 2% endpoint success at the fixed allocation, and paired M5 evaluation on shared official-distribution seeds scored T2 at 58% versus T1 at 65%, with 37 candidate wins versus 51 reference wins and a net loss of 14 episodes. This is recipe-specific negative evidence, not evidence that the plant or all potential shaping is impossible.",
+        "reason": "M4 showed that outer-radius failures were predominantly pre-reach rather than post-reach hold interruptions. The bounded intervention added progress toward the nearer valid analytic IK branch without changing the official sampler, dynamics, tolerance, horizon, or uninterrupted 100-step criterion, but T2 training collapsed and M5 found no behavioral recovery. I2 therefore redirects to a different credible method-design route targeting outer-radius learnability and representation rather than repeating IK reward shaping.",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E9",
+    "inquiry_id": "I2",
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "close",
+        "outcome": "The IK-potential shaping route did not materially improve outer-radius first reach and is closed as a tested route. T2 training reached only 2% endpoint success at the fixed allocation, and paired M5 evaluation on shared official-distribution seeds scored T2 at 58% versus T1 at 65%, with 37 candidate wins versus 51 reference wins and a net loss of 14 episodes. This is recipe-specific negative evidence, not evidence that the plant or all potential shaping is impossible.",
+        "reason": "M4 showed that outer-radius failures were predominantly pre-reach rather than post-reach hold interruptions. The bounded intervention added progress toward the nearer valid analytic IK branch without changing the official sampler, dynamics, tolerance, horizon, or uninterrupted 100-step criterion, but T2 training collapsed and M5 found no behavioral recovery. I2 therefore redirects to a different credible method-design route targeting outer-radius learnability and representation rather than repeating IK reward shaping."
+      }
+    },
+    "request_fingerprint": "19193f424c2ec81d3ee375e9ebffd3721fc136beab9240ebe73c7cdc09d39184",
+    "session_id": "S6",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T1 produced archived candidates, with T1:checkpoint-120832 evaluated by M3. No working, best-known, or retained role is assigned because the candidate is only 60% on development evaluation and is not credible evidence for the 98% goal.",
     "completed_operations": [
@@ -3383,7 +3429,8 @@
     "operation_ids": [
       "M4",
       "T2",
-      "M5"
+      "M5",
+      "E9"
     ],
     "scientific_parent_commit": "d5b6b81c5448afeb513298434987631bc7acc562"
   },
