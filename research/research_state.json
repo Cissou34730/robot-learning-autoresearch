@@ -2468,7 +2468,7 @@
     }
   },
   "counters": {
-    "event": 14,
+    "event": 15,
     "inquiry": 3,
     "measurement": 5,
     "session": 8,
@@ -2477,7 +2477,7 @@
   "human_goal": {
     "source": "research/scenario.md"
   },
-  "last_verdict": "assigned",
+  "last_verdict": "official_assessment_requested",
   "model_roles": {
     "best_known": "T1:checkpoint-100352",
     "retained": {},
@@ -5174,9 +5174,62 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-02T21:53:40Z",
+      "error": null,
+      "id": "E15",
+      "inquiry_id": null,
+      "kind": "campaign_conclusion",
+      "request": {
+        "action": "request_official_assessment",
+        "reason": "T1:checkpoint-100352 is the assigned best-known candidate. M5 measured 393/400 successes (98.25%) on a fresh official-distribution diagnostic, with failures distributed across radius bins rather than concentrated in the untrained inner band, while the failure states remained consistent with the established negative-angle shoulder-limit mechanism. This is sufficient evidence to assess the frozen candidate against the human goal on the protected 200-episode official panel; no further exploratory intervention is justified before that direct measurement."
+      },
+      "result": {
+        "model": "T1:checkpoint-100352",
+        "status": "official_assessment_requested"
+      },
+      "session_id": "S8",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "model": "T1:checkpoint-100352",
+        "reason": "T1:checkpoint-100352 is the assigned best-known candidate. M5 measured 393/400 successes (98.25%) on a fresh official-distribution diagnostic, with failures distributed across radius bins rather than concentrated in the untrained inner band, while the failure states remained consistent with the established negative-angle shoulder-limit mechanism. This is sufficient evidence to assess the frozen candidate against the human goal on the protected 200-episode official panel; no further exploratory intervention is justified before that direct measurement.",
+        "status": "official_assessment_requested"
+      },
+      "presentation": {
+        "backend_session_id": "a2846342-a5fb-4c93-b46e-59c4041d1705",
+        "campaign_id": "d7080d95-e5e9-4077-a667-f75ddc16876b",
+        "campaign_usage": "29m05s | 63.15 AIU | prompt 11.1m (88% cached) | output 89.9k",
+        "session_id": "S8",
+        "session_kind": "goal_review",
+        "session_usage": "2m58s | 5.38 AIU | prompt 987.7k (90% cached) | output 8.9k"
+      },
+      "result": {
+        "model": "T1:checkpoint-100352",
+        "status": "official_assessment_requested"
+      }
+    },
+    "failure": null,
+    "id": "E15",
+    "inquiry_id": null,
+    "kind": "campaign_conclusion",
+    "progress": "completed",
+    "request": {
+      "campaign_conclusion": {
+        "action": "request_official_assessment",
+        "reason": "T1:checkpoint-100352 is the assigned best-known candidate. M5 measured 393/400 successes (98.25%) on a fresh official-distribution diagnostic, with failures distributed across radius bins rather than concentrated in the untrained inner band, while the failure states remained consistent with the established negative-angle shoulder-limit mechanism. This is sufficient evidence to assess the frozen candidate against the human goal on the protected 200-episode official panel; no further exploratory intervention is justified before that direct measurement."
+      }
+    },
+    "request_fingerprint": "9a41a002287bc4254d935f0129ec69b7a50306aa0639ff096bbae7f7768ab2c7",
+    "session_id": "S8",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No candidate has working, best-known, or retained status. T1:checkpoint-100352 remains the strongest measured baseline at 151/160 under M1 and M4; T1:checkpoint-120832 is tied at 151/160 under M1; T2:checkpoint-120832 achieved 80/160 under M3; T3:checkpoint-120832 achieved 28/160 under M4. Preserve T1 as the strongest measured baseline without assigning a model role.",
     "completed_operations": [
@@ -5215,22 +5268,10 @@
     "path": "research/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "a2846342-a5fb-4c93-b46e-59c4041d1705",
-    "id": "S8",
-    "inquiry_id": null,
-    "kind": "goal_review",
-    "objective": "Reassess the scientific direction toward the human goal using completed evidence. You may request measurements to resolve an uncertainty or develop the method before committing to an inquiry. Decide whether to request official assessment, open one bounded goal-linked inquiry, or conclude that no credible route remains.",
-    "operation_ids": [
-      "M5",
-      "E14"
-    ],
-    "scientific_parent_commit": "5b5054c3d40d902b1f3ea076cf7d343fd5828a0e"
-  },
-  "terminal_state": null
+  "scientific_session": null,
+  "terminal_state": {
+    "model": "T1:checkpoint-100352",
+    "reason": "T1:checkpoint-100352 is the assigned best-known candidate. M5 measured 393/400 successes (98.25%) on a fresh official-distribution diagnostic, with failures distributed across radius bins rather than concentrated in the untrained inner band, while the failure states remained consistent with the established negative-angle shoulder-limit mechanism. This is sufficient evidence to assess the frozen candidate against the human goal on the protected 200-episode official panel; no further exploratory intervention is justified before that direct measurement.",
+    "status": "official_assessment_requested"
+  }
 }

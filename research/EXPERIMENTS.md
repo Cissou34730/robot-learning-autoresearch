@@ -24,3 +24,4 @@
 | E13 | checkpoint | I3 | checkpointed |
 | M5 | measurement | - | completed |
 | E14 | model_role | - | assigned |
+| E15 | campaign_conclusion | - | official_assessment_requested |
