@@ -189,7 +189,8 @@
     "T2:checkpoint-120832": {
       "artifact": "research/checkpoints/candidates/2381bcbf-72c1-4535-9334-7e0d753f356d/t2/checkpoint-120832",
       "evaluation_artifacts": [
-        "research/evaluations/2381bcbf-72c1-4535-9334-7e0d753f356d/evaluation-2381bcbf-72c1-4535-9334-7e0d753f356d-m1-T2-checkpoint-120832-200ep-seed1200-48e4acc98c39.json"
+        "research/evaluations/2381bcbf-72c1-4535-9334-7e0d753f356d/evaluation-2381bcbf-72c1-4535-9334-7e0d753f356d-m1-T2-checkpoint-120832-200ep-seed1200-48e4acc98c39.json",
+        "research/evaluations/2381bcbf-72c1-4535-9334-7e0d753f356d/evaluation-2381bcbf-72c1-4535-9334-7e0d753f356d-m3-T2-checkpoint-120832-200ep-seed1400-4b40e0295333.json"
       ],
       "fingerprint": "14e53b4a0ba222919a108194f6b67b755f92da6a60a79ef42bb6d10fe555386b",
       "id": "T2:checkpoint-120832",
@@ -1008,7 +1009,9 @@
     },
     "T3:checkpoint-120832": {
       "artifact": "research/checkpoints/candidates/2381bcbf-72c1-4535-9334-7e0d753f356d/t3/checkpoint-120832",
-      "evaluation_artifacts": [],
+      "evaluation_artifacts": [
+        "research/evaluations/2381bcbf-72c1-4535-9334-7e0d753f356d/evaluation-2381bcbf-72c1-4535-9334-7e0d753f356d-m3-T3-checkpoint-120832-200ep-seed1400-4b40e0295333.json"
+      ],
       "fingerprint": "06ef0a2a7fe9e1b78a6222f021f053082818fa8b71eed83d91b0bb54eca5e67c",
       "id": "T3:checkpoint-120832",
       "name": "checkpoint-120832",
@@ -1656,7 +1659,7 @@
   "counters": {
     "event": 3,
     "inquiry": 1,
-    "measurement": 2,
+    "measurement": 3,
     "session": 3,
     "training": 3
   },
@@ -3090,9 +3093,2556 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-02T13:55:44Z",
+      "error": null,
+      "id": "M3",
+      "inquiry_id": "I1",
+      "kind": "measurement",
+      "request": {
+        "description": "Evaluate T3:checkpoint-120832 and T2:checkpoint-120832 on a shared 200-episode independent research panel, compare their paired outcomes, and run the fixed 128-episode radius-angle reach-and-hold diagnostic on the T3 candidate.",
+        "measurements": [
+          {
+            "candidate": "T3:checkpoint-120832",
+            "episodes": 200,
+            "instrument": "research_evaluation",
+            "label": "t3 targeted curriculum independent panel",
+            "seed": 1400
+          },
+          {
+            "candidate": "T2:checkpoint-120832",
+            "episodes": 200,
+            "instrument": "research_evaluation",
+            "label": "t2 baseline shared panel",
+            "seed": 1400
+          },
+          {
+            "args": [
+              "--model",
+              "research/checkpoints/candidates/2381bcbf-72c1-4535-9334-7e0d753f356d/t3/checkpoint-120832/model.zip",
+              "--output",
+              "research/evaluations/2381bcbf-72c1-4535-9334-7e0d753f356d/i1-t3-outer-workspace-diagnostic.json",
+              "--seed",
+              "3000"
+            ],
+            "artifact": "research/evaluations/2381bcbf-72c1-4535-9334-7e0d753f356d/i1-t3-outer-workspace-diagnostic.json",
+            "instrument": "python_module",
+            "label": "t3 outer-workspace reach and hold diagnostic",
+            "module": "robot_learning.scenario.outer_workspace_diagnostic"
+          }
+        ],
+        "paired_comparisons": [
+          {
+            "candidate": "T3:checkpoint-120832",
+            "reference": "T2:checkpoint-120832"
+          }
+        ],
+        "rationale": "T3's 0.98 training success after oversampling 14-20 cm is evidence that the intervention learned, but training success cannot establish official-distribution performance. The shared panel tests whether T3 improves complete uninterrupted episode success over T2 without panel-specific confounding. The matched radius-angle diagnostic directly tests I1's closure condition by measuring first-entry rate, entry-motion proxy, longest uninterrupted hold, interruptions, branch-at-entry proxy, and success by radius and angle; preservation of 6-12 cm full holds with improved 14-20 cm entry and success supports the targeted reach method, while entry without long holds redirects toward stabilization."
+      },
+      "result": {
+        "measurements": [
+          {
+            "candidate": "T3:checkpoint-120832",
+            "candidate_id": "T3:checkpoint-120832",
+            "instrument": "research_evaluation",
+            "label": "t3 targeted curriculum independent panel",
+            "metrics": {
+              "episodes": 200,
+              "evaluation_artifact": "research/evaluations/2381bcbf-72c1-4535-9334-7e0d753f356d/evaluation-2381bcbf-72c1-4535-9334-7e0d753f356d-m3-T3-checkpoint-120832-200ep-seed1400-4b40e0295333.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 8,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/model",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/seed",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/official_benchmark",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 200,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "reward_total",
+                      "steps",
+                      "success",
+                      "terminated",
+                      "truncated"
+                    ],
+                    "path": "/episode_results",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 200,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "final_distance_cm",
+                      "first_reach_step",
+                      "hold_interruptions",
+                      "in_tolerance_steps",
+                      "max_held_steps",
+                      "min_distance_cm",
+                      "target_angle_degrees",
+                      "target_radius_cm"
+                    ],
+                    "path": "/research_evidence/episode_diagnostics",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence/units",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/research_evidence/units/distance",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/time",
+                    "type": "string"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "ec97f1b93188a7defa16b368c2cf02fcbbe614e40b956f399841437a27339a27",
+              "evaluation_semantics": "4b40e0295333",
+              "model_fingerprint": "06ef0a2a7fe9e1b78a6222f021f053082818fa8b71eed83d91b0bb54eca5e67c",
+              "official_benchmark": false,
+              "schema_version": 5,
+              "seed": 1400,
+              "success_percent": 95.0,
+              "successes": 190
+            }
+          },
+          {
+            "candidate": "T2:checkpoint-120832",
+            "candidate_id": "T2:checkpoint-120832",
+            "instrument": "research_evaluation",
+            "label": "t2 baseline shared panel",
+            "metrics": {
+              "episodes": 200,
+              "evaluation_artifact": "research/evaluations/2381bcbf-72c1-4535-9334-7e0d753f356d/evaluation-2381bcbf-72c1-4535-9334-7e0d753f356d-m3-T2-checkpoint-120832-200ep-seed1400-4b40e0295333.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 8,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/model",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/seed",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/official_benchmark",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 200,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "reward_total",
+                      "steps",
+                      "success",
+                      "terminated",
+                      "truncated"
+                    ],
+                    "path": "/episode_results",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 200,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "final_distance_cm",
+                      "first_reach_step",
+                      "hold_interruptions",
+                      "in_tolerance_steps",
+                      "max_held_steps",
+                      "min_distance_cm",
+                      "target_angle_degrees",
+                      "target_radius_cm"
+                    ],
+                    "path": "/research_evidence/episode_diagnostics",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence/units",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/research_evidence/units/distance",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/time",
+                    "type": "string"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "d4e2d02147c13eed2323d83b1685445e068645b4570ba8092bbf2b4b90f162e7",
+              "evaluation_semantics": "4b40e0295333",
+              "model_fingerprint": "14e53b4a0ba222919a108194f6b67b755f92da6a60a79ef42bb6d10fe555386b",
+              "official_benchmark": false,
+              "schema_version": 5,
+              "seed": 1400,
+              "success_percent": 65.0,
+              "successes": 130
+            }
+          },
+          {
+            "args": [
+              "--model",
+              "research/checkpoints/candidates/2381bcbf-72c1-4535-9334-7e0d753f356d/t3/checkpoint-120832/model.zip",
+              "--output",
+              "research/evaluations/2381bcbf-72c1-4535-9334-7e0d753f356d/i1-t3-outer-workspace-diagnostic.json",
+              "--seed",
+              "3000"
+            ],
+            "instrument": "python_module",
+            "label": "t3 outer-workspace reach and hold diagnostic",
+            "metrics": {
+              "evaluation_artifact": "research/evaluations/2381bcbf-72c1-4535-9334-7e0d753f356d/python-module-M3-3-i1-t3-outer-workspace-diagnostic.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 12,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/model",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/seed",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/control_dt_seconds",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 8,
+                    "path": "/radii_cm",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/angle_count",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/summary",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 8,
+                    "path": "/by_radius_cm",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 16,
+                    "path": "/by_angle_degrees",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 128,
+                    "field_names": [
+                      "entry_elbow_angle_degrees",
+                      "entry_speed_cm_per_s",
+                      "episode",
+                      "episode_seed",
+                      "first_reach_step",
+                      "hold_interruptions",
+                      "in_tolerance_steps",
+                      "longest_uninterrupted_hold_steps",
+                      "pre_entry_distance_cm",
+                      "reward_total",
+                      "steps",
+                      "success",
+                      "target_angle_degrees",
+                      "target_position_cm",
+                      "target_radius_cm",
+                      "terminated",
+                      "truncated"
+                    ],
+                    "path": "/episode_diagnostics",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/units",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/summary/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/successes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/first_entries",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/first_entry_percent",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/mean_first_reach_step",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/mean_entry_speed_cm_per_s",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/mean_longest_uninterrupted_hold_steps",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/mean_hold_interruptions",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/by_radius_cm/10.0",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/by_radius_cm/12.0",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/by_radius_cm/14.0",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/by_radius_cm/16.0",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/by_radius_cm/18.0",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/by_radius_cm/20.0",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/by_radius_cm/6.0",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/by_radius_cm/8.0",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/by_angle_degrees/-112.5",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/by_angle_degrees/-135.0",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/by_angle_degrees/-157.5",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/by_angle_degrees/-180.0",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/by_angle_degrees/-22.5",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/by_angle_degrees/-45.0",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/by_angle_degrees/-67.5",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/by_angle_degrees/-90.0",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/by_angle_degrees/0.0",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/by_angle_degrees/112.5",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/by_angle_degrees/135.0",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/by_angle_degrees/157.5",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/by_angle_degrees/22.5",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/by_angle_degrees/45.0",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/by_angle_degrees/67.5",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/by_angle_degrees/90.0",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/units/distance",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/units/speed",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/units/time",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/units/angle",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/by_radius_cm/10.0/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/by_radius_cm/10.0/successes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/by_radius_cm/10.0/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/by_radius_cm/10.0/first_entries",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/by_radius_cm/10.0/first_entry_percent",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/by_radius_cm/10.0/mean_first_reach_step",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/by_radius_cm/10.0/mean_entry_speed_cm_per_s",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/by_radius_cm/10.0/mean_longest_uninterrupted_hold_steps",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/by_radius_cm/10.0/mean_hold_interruptions",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/by_radius_cm/12.0/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/by_radius_cm/12.0/successes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/by_radius_cm/12.0/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/by_radius_cm/12.0/first_entries",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/by_radius_cm/12.0/first_entry_percent",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/by_radius_cm/12.0/mean_first_reach_step",
+                    "type": "number"
+                  }
+                ],
+                "truncated": true
+              },
+              "evaluation_artifact_fingerprint": "cbb086af629813ea1008ce632d8d64459798d0d70a8daa89b7573f708293d69b"
+            },
+            "module": "robot_learning.scenario.outer_workspace_diagnostic"
+          }
+        ],
+        "paired_comparisons": [
+          {
+            "candidate": "T3:checkpoint-120832",
+            "candidate_model_fingerprint": "06ef0a2a7fe9e1b78a6222f021f053082818fa8b71eed83d91b0bb54eca5e67c",
+            "candidate_wins": 60,
+            "discordant_episodes": 60,
+            "episodes": 200,
+            "net_wins": 60,
+            "reference": "T2:checkpoint-120832",
+            "reference_model_fingerprint": "14e53b4a0ba222919a108194f6b67b755f92da6a60a79ef42bb6d10fe555386b",
+            "reference_wins": 0,
+            "shared_episode_seeds": [
+              1400,
+              1401,
+              1402,
+              1403,
+              1404,
+              1405,
+              1406,
+              1407,
+              1408,
+              1409,
+              1410,
+              1411,
+              1412,
+              1413,
+              1414,
+              1415,
+              1416,
+              1417,
+              1418,
+              1419,
+              1420,
+              1421,
+              1422,
+              1423,
+              1424,
+              1425,
+              1426,
+              1427,
+              1428,
+              1429,
+              1430,
+              1431,
+              1432,
+              1433,
+              1434,
+              1435,
+              1436,
+              1437,
+              1438,
+              1439,
+              1440,
+              1441,
+              1442,
+              1443,
+              1444,
+              1445,
+              1446,
+              1447,
+              1448,
+              1449,
+              1450,
+              1451,
+              1452,
+              1453,
+              1454,
+              1455,
+              1456,
+              1457,
+              1458,
+              1459,
+              1460,
+              1461,
+              1462,
+              1463,
+              1464,
+              1465,
+              1466,
+              1467,
+              1468,
+              1469,
+              1470,
+              1471,
+              1472,
+              1473,
+              1474,
+              1475,
+              1476,
+              1477,
+              1478,
+              1479,
+              1480,
+              1481,
+              1482,
+              1483,
+              1484,
+              1485,
+              1486,
+              1487,
+              1488,
+              1489,
+              1490,
+              1491,
+              1492,
+              1493,
+              1494,
+              1495,
+              1496,
+              1497,
+              1498,
+              1499,
+              1500,
+              1501,
+              1502,
+              1503,
+              1504,
+              1505,
+              1506,
+              1507,
+              1508,
+              1509,
+              1510,
+              1511,
+              1512,
+              1513,
+              1514,
+              1515,
+              1516,
+              1517,
+              1518,
+              1519,
+              1520,
+              1521,
+              1522,
+              1523,
+              1524,
+              1525,
+              1526,
+              1527,
+              1528,
+              1529,
+              1530,
+              1531,
+              1532,
+              1533,
+              1534,
+              1535,
+              1536,
+              1537,
+              1538,
+              1539,
+              1540,
+              1541,
+              1542,
+              1543,
+              1544,
+              1545,
+              1546,
+              1547,
+              1548,
+              1549,
+              1550,
+              1551,
+              1552,
+              1553,
+              1554,
+              1555,
+              1556,
+              1557,
+              1558,
+              1559,
+              1560,
+              1561,
+              1562,
+              1563,
+              1564,
+              1565,
+              1566,
+              1567,
+              1568,
+              1569,
+              1570,
+              1571,
+              1572,
+              1573,
+              1574,
+              1575,
+              1576,
+              1577,
+              1578,
+              1579,
+              1580,
+              1581,
+              1582,
+              1583,
+              1584,
+              1585,
+              1586,
+              1587,
+              1588,
+              1589,
+              1590,
+              1591,
+              1592,
+              1593,
+              1594,
+              1595,
+              1596,
+              1597,
+              1598,
+              1599
+            ],
+            "source_artifacts": [
+              "research/evaluations/2381bcbf-72c1-4535-9334-7e0d753f356d/evaluation-2381bcbf-72c1-4535-9334-7e0d753f356d-m3-T3-checkpoint-120832-200ep-seed1400-4b40e0295333.json",
+              "research/evaluations/2381bcbf-72c1-4535-9334-7e0d753f356d/evaluation-2381bcbf-72c1-4535-9334-7e0d753f356d-m3-T2-checkpoint-120832-200ep-seed1400-4b40e0295333.json"
+            ],
+            "success_delta_percent": 30.0
+          }
+        ],
+        "status": "completed",
+        "tool_provenance": {
+          "campaign_lab_manifest": [],
+          "campaign_lab_publication": null,
+          "code_parent_commit": "ed8dd785ff3b3e9227dae4a3c17b6e13a7aab663",
+          "effective_parameters": {
+            "algorithm": {
+              "name": "ppo"
+            },
+            "policy": {
+              "activation": "tanh",
+              "net_arch": [
+                64,
+                64
+              ]
+            },
+            "ppo": {
+              "batch_size": 64,
+              "ent_coef": 0.01,
+              "gae_lambda": 0.95,
+              "gamma": 0.99,
+              "learning_rate": 0.0003,
+              "n_steps": 1024
+            },
+            "training": {
+              "checkpoint_every_steps": 5000,
+              "n_envs": 1
+            }
+          },
+          "module_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "01d3a4534490216f8a893819607ea01fa04d9417a554d046eb7b973365e38a16",
+              "path": "robot_learning/scenario/outer_workspace_diagnostic.py"
+            }
+          ],
+          "module_paths": [
+            "robot_learning/scenario/outer_workspace_diagnostic.py"
+          ],
+          "scientific_commit": null,
+          "scientific_manifest": [],
+          "scientific_paths": []
+        }
+      },
+      "session_id": "S3",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "evaluation_semantics": "4b40e0295333",
+      "measurements": [
+        {
+          "artifact": "research/checkpoints/candidates/2381bcbf-72c1-4535-9334-7e0d753f356d/t3/checkpoint-120832",
+          "candidate": "T3:checkpoint-120832",
+          "candidate_id": "T3:checkpoint-120832",
+          "episodes": 200,
+          "instrument": "research_evaluation",
+          "label": "t3 targeted curriculum independent panel",
+          "model_fingerprint": "06ef0a2a7fe9e1b78a6222f021f053082818fa8b71eed83d91b0bb54eca5e67c",
+          "seed": 1400
+        },
+        {
+          "artifact": "research/checkpoints/candidates/2381bcbf-72c1-4535-9334-7e0d753f356d/t2/checkpoint-120832",
+          "candidate": "T2:checkpoint-120832",
+          "candidate_id": "T2:checkpoint-120832",
+          "episodes": 200,
+          "instrument": "research_evaluation",
+          "label": "t2 baseline shared panel",
+          "model_fingerprint": "14e53b4a0ba222919a108194f6b67b755f92da6a60a79ef42bb6d10fe555386b",
+          "seed": 1400
+        },
+        {
+          "args": [
+            "--model",
+            "research/checkpoints/candidates/2381bcbf-72c1-4535-9334-7e0d753f356d/t3/checkpoint-120832/model.zip",
+            "--output",
+            "research/evaluations/2381bcbf-72c1-4535-9334-7e0d753f356d/i1-t3-outer-workspace-diagnostic.json",
+            "--seed",
+            "3000"
+          ],
+          "artifact": "research/evaluations/2381bcbf-72c1-4535-9334-7e0d753f356d/i1-t3-outer-workspace-diagnostic.json",
+          "instrument": "python_module",
+          "label": "t3 outer-workspace reach and hold diagnostic",
+          "module": "robot_learning.scenario.outer_workspace_diagnostic"
+        }
+      ],
+      "module_provenance": {
+        "campaign_lab_manifest": [],
+        "campaign_lab_publication": null,
+        "code_parent_commit": "ed8dd785ff3b3e9227dae4a3c17b6e13a7aab663",
+        "effective_parameters": {
+          "algorithm": {
+            "name": "ppo"
+          },
+          "policy": {
+            "activation": "tanh",
+            "net_arch": [
+              64,
+              64
+            ]
+          },
+          "ppo": {
+            "batch_size": 64,
+            "ent_coef": 0.01,
+            "gae_lambda": 0.95,
+            "gamma": 0.99,
+            "learning_rate": 0.0003,
+            "n_steps": 1024
+          },
+          "training": {
+            "checkpoint_every_steps": 5000,
+            "n_envs": 1
+          }
+        },
+        "module_manifest": [
+          {
+            "exists": true,
+            "fingerprint": "01d3a4534490216f8a893819607ea01fa04d9417a554d046eb7b973365e38a16",
+            "path": "robot_learning/scenario/outer_workspace_diagnostic.py"
+          }
+        ],
+        "module_paths": [
+          "robot_learning/scenario/outer_workspace_diagnostic.py"
+        ],
+        "scientific_commit": null,
+        "scientific_manifest": [],
+        "scientific_paths": []
+      },
+      "paired_comparisons": [
+        {
+          "candidate": "T3:checkpoint-120832",
+          "candidate_measurement_indexes": [
+            0
+          ],
+          "candidate_model_fingerprint": "06ef0a2a7fe9e1b78a6222f021f053082818fa8b71eed83d91b0bb54eca5e67c",
+          "reference": "T2:checkpoint-120832",
+          "reference_measurement_indexes": [
+            1
+          ],
+          "reference_model_fingerprint": "14e53b4a0ba222919a108194f6b67b755f92da6a60a79ef42bb6d10fe555386b",
+          "shared_episode_seeds": [
+            1400,
+            1401,
+            1402,
+            1403,
+            1404,
+            1405,
+            1406,
+            1407,
+            1408,
+            1409,
+            1410,
+            1411,
+            1412,
+            1413,
+            1414,
+            1415,
+            1416,
+            1417,
+            1418,
+            1419,
+            1420,
+            1421,
+            1422,
+            1423,
+            1424,
+            1425,
+            1426,
+            1427,
+            1428,
+            1429,
+            1430,
+            1431,
+            1432,
+            1433,
+            1434,
+            1435,
+            1436,
+            1437,
+            1438,
+            1439,
+            1440,
+            1441,
+            1442,
+            1443,
+            1444,
+            1445,
+            1446,
+            1447,
+            1448,
+            1449,
+            1450,
+            1451,
+            1452,
+            1453,
+            1454,
+            1455,
+            1456,
+            1457,
+            1458,
+            1459,
+            1460,
+            1461,
+            1462,
+            1463,
+            1464,
+            1465,
+            1466,
+            1467,
+            1468,
+            1469,
+            1470,
+            1471,
+            1472,
+            1473,
+            1474,
+            1475,
+            1476,
+            1477,
+            1478,
+            1479,
+            1480,
+            1481,
+            1482,
+            1483,
+            1484,
+            1485,
+            1486,
+            1487,
+            1488,
+            1489,
+            1490,
+            1491,
+            1492,
+            1493,
+            1494,
+            1495,
+            1496,
+            1497,
+            1498,
+            1499,
+            1500,
+            1501,
+            1502,
+            1503,
+            1504,
+            1505,
+            1506,
+            1507,
+            1508,
+            1509,
+            1510,
+            1511,
+            1512,
+            1513,
+            1514,
+            1515,
+            1516,
+            1517,
+            1518,
+            1519,
+            1520,
+            1521,
+            1522,
+            1523,
+            1524,
+            1525,
+            1526,
+            1527,
+            1528,
+            1529,
+            1530,
+            1531,
+            1532,
+            1533,
+            1534,
+            1535,
+            1536,
+            1537,
+            1538,
+            1539,
+            1540,
+            1541,
+            1542,
+            1543,
+            1544,
+            1545,
+            1546,
+            1547,
+            1548,
+            1549,
+            1550,
+            1551,
+            1552,
+            1553,
+            1554,
+            1555,
+            1556,
+            1557,
+            1558,
+            1559,
+            1560,
+            1561,
+            1562,
+            1563,
+            1564,
+            1565,
+            1566,
+            1567,
+            1568,
+            1569,
+            1570,
+            1571,
+            1572,
+            1573,
+            1574,
+            1575,
+            1576,
+            1577,
+            1578,
+            1579,
+            1580,
+            1581,
+            1582,
+            1583,
+            1584,
+            1585,
+            1586,
+            1587,
+            1588,
+            1589,
+            1590,
+            1591,
+            1592,
+            1593,
+            1594,
+            1595,
+            1596,
+            1597,
+            1598,
+            1599
+          ]
+        }
+      ],
+      "partial_results": [
+        {
+          "candidate": "T3:checkpoint-120832",
+          "candidate_id": "T3:checkpoint-120832",
+          "instrument": "research_evaluation",
+          "label": "t3 targeted curriculum independent panel",
+          "metrics": {
+            "episodes": 200,
+            "evaluation_artifact": "research/evaluations/2381bcbf-72c1-4535-9334-7e0d753f356d/evaluation-2381bcbf-72c1-4535-9334-7e0d753f356d-m3-T3-checkpoint-120832-200ep-seed1400-4b40e0295333.json",
+            "evaluation_artifact_contents": {
+              "scope": "structure_only",
+              "sections": [
+                {
+                  "entries": 8,
+                  "path": "",
+                  "type": "object"
+                },
+                {
+                  "path": "/schema_version",
+                  "type": "number"
+                },
+                {
+                  "path": "/model",
+                  "type": "string"
+                },
+                {
+                  "path": "/episodes",
+                  "type": "number"
+                },
+                {
+                  "path": "/seed",
+                  "type": "number"
+                },
+                {
+                  "path": "/official_benchmark",
+                  "type": "boolean"
+                },
+                {
+                  "path": "/success_percent",
+                  "type": "number"
+                },
+                {
+                  "entries": 200,
+                  "field_names": [
+                    "episode",
+                    "episode_seed",
+                    "reward_total",
+                    "steps",
+                    "success",
+                    "terminated",
+                    "truncated"
+                  ],
+                  "path": "/episode_results",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/research_evidence",
+                  "type": "object"
+                },
+                {
+                  "entries": 200,
+                  "field_names": [
+                    "episode",
+                    "episode_seed",
+                    "final_distance_cm",
+                    "first_reach_step",
+                    "hold_interruptions",
+                    "in_tolerance_steps",
+                    "max_held_steps",
+                    "min_distance_cm",
+                    "target_angle_degrees",
+                    "target_radius_cm"
+                  ],
+                  "path": "/research_evidence/episode_diagnostics",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/research_evidence/units",
+                  "type": "object"
+                },
+                {
+                  "path": "/research_evidence/units/distance",
+                  "type": "string"
+                },
+                {
+                  "path": "/research_evidence/units/time",
+                  "type": "string"
+                }
+              ],
+              "truncated": false
+            },
+            "evaluation_artifact_fingerprint": "ec97f1b93188a7defa16b368c2cf02fcbbe614e40b956f399841437a27339a27",
+            "evaluation_semantics": "4b40e0295333",
+            "model_fingerprint": "06ef0a2a7fe9e1b78a6222f021f053082818fa8b71eed83d91b0bb54eca5e67c",
+            "official_benchmark": false,
+            "schema_version": 5,
+            "seed": 1400,
+            "success_percent": 95.0,
+            "successes": 190
+          }
+        },
+        {
+          "candidate": "T2:checkpoint-120832",
+          "candidate_id": "T2:checkpoint-120832",
+          "instrument": "research_evaluation",
+          "label": "t2 baseline shared panel",
+          "metrics": {
+            "episodes": 200,
+            "evaluation_artifact": "research/evaluations/2381bcbf-72c1-4535-9334-7e0d753f356d/evaluation-2381bcbf-72c1-4535-9334-7e0d753f356d-m3-T2-checkpoint-120832-200ep-seed1400-4b40e0295333.json",
+            "evaluation_artifact_contents": {
+              "scope": "structure_only",
+              "sections": [
+                {
+                  "entries": 8,
+                  "path": "",
+                  "type": "object"
+                },
+                {
+                  "path": "/schema_version",
+                  "type": "number"
+                },
+                {
+                  "path": "/model",
+                  "type": "string"
+                },
+                {
+                  "path": "/episodes",
+                  "type": "number"
+                },
+                {
+                  "path": "/seed",
+                  "type": "number"
+                },
+                {
+                  "path": "/official_benchmark",
+                  "type": "boolean"
+                },
+                {
+                  "path": "/success_percent",
+                  "type": "number"
+                },
+                {
+                  "entries": 200,
+                  "field_names": [
+                    "episode",
+                    "episode_seed",
+                    "reward_total",
+                    "steps",
+                    "success",
+                    "terminated",
+                    "truncated"
+                  ],
+                  "path": "/episode_results",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/research_evidence",
+                  "type": "object"
+                },
+                {
+                  "entries": 200,
+                  "field_names": [
+                    "episode",
+                    "episode_seed",
+                    "final_distance_cm",
+                    "first_reach_step",
+                    "hold_interruptions",
+                    "in_tolerance_steps",
+                    "max_held_steps",
+                    "min_distance_cm",
+                    "target_angle_degrees",
+                    "target_radius_cm"
+                  ],
+                  "path": "/research_evidence/episode_diagnostics",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/research_evidence/units",
+                  "type": "object"
+                },
+                {
+                  "path": "/research_evidence/units/distance",
+                  "type": "string"
+                },
+                {
+                  "path": "/research_evidence/units/time",
+                  "type": "string"
+                }
+              ],
+              "truncated": false
+            },
+            "evaluation_artifact_fingerprint": "d4e2d02147c13eed2323d83b1685445e068645b4570ba8092bbf2b4b90f162e7",
+            "evaluation_semantics": "4b40e0295333",
+            "model_fingerprint": "14e53b4a0ba222919a108194f6b67b755f92da6a60a79ef42bb6d10fe555386b",
+            "official_benchmark": false,
+            "schema_version": 5,
+            "seed": 1400,
+            "success_percent": 65.0,
+            "successes": 130
+          }
+        },
+        {
+          "args": [
+            "--model",
+            "research/checkpoints/candidates/2381bcbf-72c1-4535-9334-7e0d753f356d/t3/checkpoint-120832/model.zip",
+            "--output",
+            "research/evaluations/2381bcbf-72c1-4535-9334-7e0d753f356d/i1-t3-outer-workspace-diagnostic.json",
+            "--seed",
+            "3000"
+          ],
+          "instrument": "python_module",
+          "label": "t3 outer-workspace reach and hold diagnostic",
+          "metrics": {
+            "evaluation_artifact": "research/evaluations/2381bcbf-72c1-4535-9334-7e0d753f356d/python-module-M3-3-i1-t3-outer-workspace-diagnostic.json",
+            "evaluation_artifact_contents": {
+              "scope": "structure_only",
+              "sections": [
+                {
+                  "entries": 12,
+                  "path": "",
+                  "type": "object"
+                },
+                {
+                  "path": "/schema_version",
+                  "type": "number"
+                },
+                {
+                  "path": "/model",
+                  "type": "string"
+                },
+                {
+                  "path": "/seed",
+                  "type": "number"
+                },
+                {
+                  "path": "/episodes",
+                  "type": "number"
+                },
+                {
+                  "path": "/control_dt_seconds",
+                  "type": "number"
+                },
+                {
+                  "entries": 8,
+                  "path": "/radii_cm",
+                  "type": "array"
+                },
+                {
+                  "path": "/angle_count",
+                  "type": "number"
+                },
+                {
+                  "entries": 9,
+                  "path": "/summary",
+                  "type": "object"
+                },
+                {
+                  "entries": 8,
+                  "path": "/by_radius_cm",
+                  "type": "object"
+                },
+                {
+                  "entries": 16,
+                  "path": "/by_angle_degrees",
+                  "type": "object"
+                },
+                {
+                  "entries": 128,
+                  "field_names": [
+                    "entry_elbow_angle_degrees",
+                    "entry_speed_cm_per_s",
+                    "episode",
+                    "episode_seed",
+                    "first_reach_step",
+                    "hold_interruptions",
+                    "in_tolerance_steps",
+                    "longest_uninterrupted_hold_steps",
+                    "pre_entry_distance_cm",
+                    "reward_total",
+                    "steps",
+                    "success",
+                    "target_angle_degrees",
+                    "target_position_cm",
+                    "target_radius_cm",
+                    "terminated",
+                    "truncated"
+                  ],
+                  "path": "/episode_diagnostics",
+                  "type": "array"
+                },
+                {
+                  "entries": 4,
+                  "path": "/units",
+                  "type": "object"
+                },
+                {
+                  "path": "/summary/episodes",
+                  "type": "number"
+                },
+                {
+                  "path": "/summary/successes",
+                  "type": "number"
+                },
+                {
+                  "path": "/summary/success_percent",
+                  "type": "number"
+                },
+                {
+                  "path": "/summary/first_entries",
+                  "type": "number"
+                },
+                {
+                  "path": "/summary/first_entry_percent",
+                  "type": "number"
+                },
+                {
+                  "path": "/summary/mean_first_reach_step",
+                  "type": "number"
+                },
+                {
+                  "path": "/summary/mean_entry_speed_cm_per_s",
+                  "type": "number"
+                },
+                {
+                  "path": "/summary/mean_longest_uninterrupted_hold_steps",
+                  "type": "number"
+                },
+                {
+                  "path": "/summary/mean_hold_interruptions",
+                  "type": "number"
+                },
+                {
+                  "entries": 9,
+                  "path": "/by_radius_cm/10.0",
+                  "type": "object"
+                },
+                {
+                  "entries": 9,
+                  "path": "/by_radius_cm/12.0",
+                  "type": "object"
+                },
+                {
+                  "entries": 9,
+                  "path": "/by_radius_cm/14.0",
+                  "type": "object"
+                },
+                {
+                  "entries": 9,
+                  "path": "/by_radius_cm/16.0",
+                  "type": "object"
+                },
+                {
+                  "entries": 9,
+                  "path": "/by_radius_cm/18.0",
+                  "type": "object"
+                },
+                {
+                  "entries": 9,
+                  "path": "/by_radius_cm/20.0",
+                  "type": "object"
+                },
+                {
+                  "entries": 9,
+                  "path": "/by_radius_cm/6.0",
+                  "type": "object"
+                },
+                {
+                  "entries": 9,
+                  "path": "/by_radius_cm/8.0",
+                  "type": "object"
+                },
+                {
+                  "entries": 9,
+                  "path": "/by_angle_degrees/-112.5",
+                  "type": "object"
+                },
+                {
+                  "entries": 9,
+                  "path": "/by_angle_degrees/-135.0",
+                  "type": "object"
+                },
+                {
+                  "entries": 9,
+                  "path": "/by_angle_degrees/-157.5",
+                  "type": "object"
+                },
+                {
+                  "entries": 9,
+                  "path": "/by_angle_degrees/-180.0",
+                  "type": "object"
+                },
+                {
+                  "entries": 9,
+                  "path": "/by_angle_degrees/-22.5",
+                  "type": "object"
+                },
+                {
+                  "entries": 9,
+                  "path": "/by_angle_degrees/-45.0",
+                  "type": "object"
+                },
+                {
+                  "entries": 9,
+                  "path": "/by_angle_degrees/-67.5",
+                  "type": "object"
+                },
+                {
+                  "entries": 9,
+                  "path": "/by_angle_degrees/-90.0",
+                  "type": "object"
+                },
+                {
+                  "entries": 9,
+                  "path": "/by_angle_degrees/0.0",
+                  "type": "object"
+                },
+                {
+                  "entries": 9,
+                  "path": "/by_angle_degrees/112.5",
+                  "type": "object"
+                },
+                {
+                  "entries": 9,
+                  "path": "/by_angle_degrees/135.0",
+                  "type": "object"
+                },
+                {
+                  "entries": 9,
+                  "path": "/by_angle_degrees/157.5",
+                  "type": "object"
+                },
+                {
+                  "entries": 9,
+                  "path": "/by_angle_degrees/22.5",
+                  "type": "object"
+                },
+                {
+                  "entries": 9,
+                  "path": "/by_angle_degrees/45.0",
+                  "type": "object"
+                },
+                {
+                  "entries": 9,
+                  "path": "/by_angle_degrees/67.5",
+                  "type": "object"
+                },
+                {
+                  "entries": 9,
+                  "path": "/by_angle_degrees/90.0",
+                  "type": "object"
+                },
+                {
+                  "path": "/units/distance",
+                  "type": "string"
+                },
+                {
+                  "path": "/units/speed",
+                  "type": "string"
+                },
+                {
+                  "path": "/units/time",
+                  "type": "string"
+                },
+                {
+                  "path": "/units/angle",
+                  "type": "string"
+                },
+                {
+                  "path": "/by_radius_cm/10.0/episodes",
+                  "type": "number"
+                },
+                {
+                  "path": "/by_radius_cm/10.0/successes",
+                  "type": "number"
+                },
+                {
+                  "path": "/by_radius_cm/10.0/success_percent",
+                  "type": "number"
+                },
+                {
+                  "path": "/by_radius_cm/10.0/first_entries",
+                  "type": "number"
+                },
+                {
+                  "path": "/by_radius_cm/10.0/first_entry_percent",
+                  "type": "number"
+                },
+                {
+                  "path": "/by_radius_cm/10.0/mean_first_reach_step",
+                  "type": "number"
+                },
+                {
+                  "path": "/by_radius_cm/10.0/mean_entry_speed_cm_per_s",
+                  "type": "number"
+                },
+                {
+                  "path": "/by_radius_cm/10.0/mean_longest_uninterrupted_hold_steps",
+                  "type": "number"
+                },
+                {
+                  "path": "/by_radius_cm/10.0/mean_hold_interruptions",
+                  "type": "number"
+                },
+                {
+                  "path": "/by_radius_cm/12.0/episodes",
+                  "type": "number"
+                },
+                {
+                  "path": "/by_radius_cm/12.0/successes",
+                  "type": "number"
+                },
+                {
+                  "path": "/by_radius_cm/12.0/success_percent",
+                  "type": "number"
+                },
+                {
+                  "path": "/by_radius_cm/12.0/first_entries",
+                  "type": "number"
+                },
+                {
+                  "path": "/by_radius_cm/12.0/first_entry_percent",
+                  "type": "number"
+                },
+                {
+                  "path": "/by_radius_cm/12.0/mean_first_reach_step",
+                  "type": "number"
+                }
+              ],
+              "truncated": true
+            },
+            "evaluation_artifact_fingerprint": "cbb086af629813ea1008ce632d8d64459798d0d70a8daa89b7573f708293d69b"
+          },
+          "module": "robot_learning.scenario.outer_workspace_diagnostic"
+        }
+      ],
+      "result": {
+        "measurements": [
+          {
+            "candidate": "T3:checkpoint-120832",
+            "candidate_id": "T3:checkpoint-120832",
+            "instrument": "research_evaluation",
+            "label": "t3 targeted curriculum independent panel",
+            "metrics": {
+              "episodes": 200,
+              "evaluation_artifact": "research/evaluations/2381bcbf-72c1-4535-9334-7e0d753f356d/evaluation-2381bcbf-72c1-4535-9334-7e0d753f356d-m3-T3-checkpoint-120832-200ep-seed1400-4b40e0295333.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 8,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/model",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/seed",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/official_benchmark",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 200,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "reward_total",
+                      "steps",
+                      "success",
+                      "terminated",
+                      "truncated"
+                    ],
+                    "path": "/episode_results",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 200,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "final_distance_cm",
+                      "first_reach_step",
+                      "hold_interruptions",
+                      "in_tolerance_steps",
+                      "max_held_steps",
+                      "min_distance_cm",
+                      "target_angle_degrees",
+                      "target_radius_cm"
+                    ],
+                    "path": "/research_evidence/episode_diagnostics",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence/units",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/research_evidence/units/distance",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/time",
+                    "type": "string"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "ec97f1b93188a7defa16b368c2cf02fcbbe614e40b956f399841437a27339a27",
+              "evaluation_semantics": "4b40e0295333",
+              "model_fingerprint": "06ef0a2a7fe9e1b78a6222f021f053082818fa8b71eed83d91b0bb54eca5e67c",
+              "official_benchmark": false,
+              "schema_version": 5,
+              "seed": 1400,
+              "success_percent": 95.0,
+              "successes": 190
+            }
+          },
+          {
+            "candidate": "T2:checkpoint-120832",
+            "candidate_id": "T2:checkpoint-120832",
+            "instrument": "research_evaluation",
+            "label": "t2 baseline shared panel",
+            "metrics": {
+              "episodes": 200,
+              "evaluation_artifact": "research/evaluations/2381bcbf-72c1-4535-9334-7e0d753f356d/evaluation-2381bcbf-72c1-4535-9334-7e0d753f356d-m3-T2-checkpoint-120832-200ep-seed1400-4b40e0295333.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 8,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/model",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/seed",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/official_benchmark",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 200,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "reward_total",
+                      "steps",
+                      "success",
+                      "terminated",
+                      "truncated"
+                    ],
+                    "path": "/episode_results",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 200,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "final_distance_cm",
+                      "first_reach_step",
+                      "hold_interruptions",
+                      "in_tolerance_steps",
+                      "max_held_steps",
+                      "min_distance_cm",
+                      "target_angle_degrees",
+                      "target_radius_cm"
+                    ],
+                    "path": "/research_evidence/episode_diagnostics",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence/units",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/research_evidence/units/distance",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/time",
+                    "type": "string"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "d4e2d02147c13eed2323d83b1685445e068645b4570ba8092bbf2b4b90f162e7",
+              "evaluation_semantics": "4b40e0295333",
+              "model_fingerprint": "14e53b4a0ba222919a108194f6b67b755f92da6a60a79ef42bb6d10fe555386b",
+              "official_benchmark": false,
+              "schema_version": 5,
+              "seed": 1400,
+              "success_percent": 65.0,
+              "successes": 130
+            }
+          },
+          {
+            "args": [
+              "--model",
+              "research/checkpoints/candidates/2381bcbf-72c1-4535-9334-7e0d753f356d/t3/checkpoint-120832/model.zip",
+              "--output",
+              "research/evaluations/2381bcbf-72c1-4535-9334-7e0d753f356d/i1-t3-outer-workspace-diagnostic.json",
+              "--seed",
+              "3000"
+            ],
+            "instrument": "python_module",
+            "label": "t3 outer-workspace reach and hold diagnostic",
+            "metrics": {
+              "evaluation_artifact": "research/evaluations/2381bcbf-72c1-4535-9334-7e0d753f356d/python-module-M3-3-i1-t3-outer-workspace-diagnostic.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 12,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/model",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/seed",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/control_dt_seconds",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 8,
+                    "path": "/radii_cm",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/angle_count",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/summary",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 8,
+                    "path": "/by_radius_cm",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 16,
+                    "path": "/by_angle_degrees",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 128,
+                    "field_names": [
+                      "entry_elbow_angle_degrees",
+                      "entry_speed_cm_per_s",
+                      "episode",
+                      "episode_seed",
+                      "first_reach_step",
+                      "hold_interruptions",
+                      "in_tolerance_steps",
+                      "longest_uninterrupted_hold_steps",
+                      "pre_entry_distance_cm",
+                      "reward_total",
+                      "steps",
+                      "success",
+                      "target_angle_degrees",
+                      "target_position_cm",
+                      "target_radius_cm",
+                      "terminated",
+                      "truncated"
+                    ],
+                    "path": "/episode_diagnostics",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/units",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/summary/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/successes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/first_entries",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/first_entry_percent",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/mean_first_reach_step",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/mean_entry_speed_cm_per_s",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/mean_longest_uninterrupted_hold_steps",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/mean_hold_interruptions",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/by_radius_cm/10.0",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/by_radius_cm/12.0",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/by_radius_cm/14.0",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/by_radius_cm/16.0",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/by_radius_cm/18.0",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/by_radius_cm/20.0",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/by_radius_cm/6.0",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/by_radius_cm/8.0",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/by_angle_degrees/-112.5",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/by_angle_degrees/-135.0",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/by_angle_degrees/-157.5",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/by_angle_degrees/-180.0",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/by_angle_degrees/-22.5",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/by_angle_degrees/-45.0",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/by_angle_degrees/-67.5",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/by_angle_degrees/-90.0",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/by_angle_degrees/0.0",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/by_angle_degrees/112.5",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/by_angle_degrees/135.0",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/by_angle_degrees/157.5",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/by_angle_degrees/22.5",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/by_angle_degrees/45.0",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/by_angle_degrees/67.5",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/by_angle_degrees/90.0",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/units/distance",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/units/speed",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/units/time",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/units/angle",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/by_radius_cm/10.0/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/by_radius_cm/10.0/successes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/by_radius_cm/10.0/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/by_radius_cm/10.0/first_entries",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/by_radius_cm/10.0/first_entry_percent",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/by_radius_cm/10.0/mean_first_reach_step",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/by_radius_cm/10.0/mean_entry_speed_cm_per_s",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/by_radius_cm/10.0/mean_longest_uninterrupted_hold_steps",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/by_radius_cm/10.0/mean_hold_interruptions",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/by_radius_cm/12.0/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/by_radius_cm/12.0/successes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/by_radius_cm/12.0/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/by_radius_cm/12.0/first_entries",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/by_radius_cm/12.0/first_entry_percent",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/by_radius_cm/12.0/mean_first_reach_step",
+                    "type": "number"
+                  }
+                ],
+                "truncated": true
+              },
+              "evaluation_artifact_fingerprint": "cbb086af629813ea1008ce632d8d64459798d0d70a8daa89b7573f708293d69b"
+            },
+            "module": "robot_learning.scenario.outer_workspace_diagnostic"
+          }
+        ],
+        "paired_comparisons": [
+          {
+            "candidate": "T3:checkpoint-120832",
+            "candidate_model_fingerprint": "06ef0a2a7fe9e1b78a6222f021f053082818fa8b71eed83d91b0bb54eca5e67c",
+            "candidate_wins": 60,
+            "discordant_episodes": 60,
+            "episodes": 200,
+            "net_wins": 60,
+            "reference": "T2:checkpoint-120832",
+            "reference_model_fingerprint": "14e53b4a0ba222919a108194f6b67b755f92da6a60a79ef42bb6d10fe555386b",
+            "reference_wins": 0,
+            "shared_episode_seeds": [
+              1400,
+              1401,
+              1402,
+              1403,
+              1404,
+              1405,
+              1406,
+              1407,
+              1408,
+              1409,
+              1410,
+              1411,
+              1412,
+              1413,
+              1414,
+              1415,
+              1416,
+              1417,
+              1418,
+              1419,
+              1420,
+              1421,
+              1422,
+              1423,
+              1424,
+              1425,
+              1426,
+              1427,
+              1428,
+              1429,
+              1430,
+              1431,
+              1432,
+              1433,
+              1434,
+              1435,
+              1436,
+              1437,
+              1438,
+              1439,
+              1440,
+              1441,
+              1442,
+              1443,
+              1444,
+              1445,
+              1446,
+              1447,
+              1448,
+              1449,
+              1450,
+              1451,
+              1452,
+              1453,
+              1454,
+              1455,
+              1456,
+              1457,
+              1458,
+              1459,
+              1460,
+              1461,
+              1462,
+              1463,
+              1464,
+              1465,
+              1466,
+              1467,
+              1468,
+              1469,
+              1470,
+              1471,
+              1472,
+              1473,
+              1474,
+              1475,
+              1476,
+              1477,
+              1478,
+              1479,
+              1480,
+              1481,
+              1482,
+              1483,
+              1484,
+              1485,
+              1486,
+              1487,
+              1488,
+              1489,
+              1490,
+              1491,
+              1492,
+              1493,
+              1494,
+              1495,
+              1496,
+              1497,
+              1498,
+              1499,
+              1500,
+              1501,
+              1502,
+              1503,
+              1504,
+              1505,
+              1506,
+              1507,
+              1508,
+              1509,
+              1510,
+              1511,
+              1512,
+              1513,
+              1514,
+              1515,
+              1516,
+              1517,
+              1518,
+              1519,
+              1520,
+              1521,
+              1522,
+              1523,
+              1524,
+              1525,
+              1526,
+              1527,
+              1528,
+              1529,
+              1530,
+              1531,
+              1532,
+              1533,
+              1534,
+              1535,
+              1536,
+              1537,
+              1538,
+              1539,
+              1540,
+              1541,
+              1542,
+              1543,
+              1544,
+              1545,
+              1546,
+              1547,
+              1548,
+              1549,
+              1550,
+              1551,
+              1552,
+              1553,
+              1554,
+              1555,
+              1556,
+              1557,
+              1558,
+              1559,
+              1560,
+              1561,
+              1562,
+              1563,
+              1564,
+              1565,
+              1566,
+              1567,
+              1568,
+              1569,
+              1570,
+              1571,
+              1572,
+              1573,
+              1574,
+              1575,
+              1576,
+              1577,
+              1578,
+              1579,
+              1580,
+              1581,
+              1582,
+              1583,
+              1584,
+              1585,
+              1586,
+              1587,
+              1588,
+              1589,
+              1590,
+              1591,
+              1592,
+              1593,
+              1594,
+              1595,
+              1596,
+              1597,
+              1598,
+              1599
+            ],
+            "source_artifacts": [
+              "research/evaluations/2381bcbf-72c1-4535-9334-7e0d753f356d/evaluation-2381bcbf-72c1-4535-9334-7e0d753f356d-m3-T3-checkpoint-120832-200ep-seed1400-4b40e0295333.json",
+              "research/evaluations/2381bcbf-72c1-4535-9334-7e0d753f356d/evaluation-2381bcbf-72c1-4535-9334-7e0d753f356d-m3-T2-checkpoint-120832-200ep-seed1400-4b40e0295333.json"
+            ],
+            "success_delta_percent": 30.0
+          }
+        ],
+        "status": "completed",
+        "tool_provenance": {
+          "campaign_lab_manifest": [],
+          "campaign_lab_publication": null,
+          "code_parent_commit": "ed8dd785ff3b3e9227dae4a3c17b6e13a7aab663",
+          "effective_parameters": {
+            "algorithm": {
+              "name": "ppo"
+            },
+            "policy": {
+              "activation": "tanh",
+              "net_arch": [
+                64,
+                64
+              ]
+            },
+            "ppo": {
+              "batch_size": 64,
+              "ent_coef": 0.01,
+              "gae_lambda": 0.95,
+              "gamma": 0.99,
+              "learning_rate": 0.0003,
+              "n_steps": 1024
+            },
+            "training": {
+              "checkpoint_every_steps": 5000,
+              "n_envs": 1
+            }
+          },
+          "module_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "01d3a4534490216f8a893819607ea01fa04d9417a554d046eb7b973365e38a16",
+              "path": "robot_learning/scenario/outer_workspace_diagnostic.py"
+            }
+          ],
+          "module_paths": [
+            "robot_learning/scenario/outer_workspace_diagnostic.py"
+          ],
+          "scientific_commit": null,
+          "scientific_manifest": [],
+          "scientific_paths": []
+        }
+      },
+      "task_reference_contract": null
+    },
+    "failure": null,
+    "id": "M3",
+    "inquiry_id": "I1",
+    "kind": "measurement",
+    "progress": "completed",
+    "request": {
+      "measurement": {
+        "description": "Evaluate T3:checkpoint-120832 and T2:checkpoint-120832 on a shared 200-episode independent research panel, compare their paired outcomes, and run the fixed 128-episode radius-angle reach-and-hold diagnostic on the T3 candidate.",
+        "measurements": [
+          {
+            "candidate": "T3:checkpoint-120832",
+            "episodes": 200,
+            "instrument": "research_evaluation",
+            "label": "t3 targeted curriculum independent panel",
+            "seed": 1400
+          },
+          {
+            "candidate": "T2:checkpoint-120832",
+            "episodes": 200,
+            "instrument": "research_evaluation",
+            "label": "t2 baseline shared panel",
+            "seed": 1400
+          },
+          {
+            "args": [
+              "--model",
+              "research/checkpoints/candidates/2381bcbf-72c1-4535-9334-7e0d753f356d/t3/checkpoint-120832/model.zip",
+              "--output",
+              "research/evaluations/2381bcbf-72c1-4535-9334-7e0d753f356d/i1-t3-outer-workspace-diagnostic.json",
+              "--seed",
+              "3000"
+            ],
+            "artifact": "research/evaluations/2381bcbf-72c1-4535-9334-7e0d753f356d/i1-t3-outer-workspace-diagnostic.json",
+            "instrument": "python_module",
+            "label": "t3 outer-workspace reach and hold diagnostic",
+            "module": "robot_learning.scenario.outer_workspace_diagnostic"
+          }
+        ],
+        "paired_comparisons": [
+          {
+            "candidate": "T3:checkpoint-120832",
+            "reference": "T2:checkpoint-120832"
+          }
+        ],
+        "rationale": "T3's 0.98 training success after oversampling 14-20 cm is evidence that the intervention learned, but training success cannot establish official-distribution performance. The shared panel tests whether T3 improves complete uninterrupted episode success over T2 without panel-specific confounding. The matched radius-angle diagnostic directly tests I1's closure condition by measuring first-entry rate, entry-motion proxy, longest uninterrupted hold, interruptions, branch-at-entry proxy, and success by radius and angle; preservation of 6-12 cm full holds with improved 14-20 cm entry and success supports the targeted reach method, while entry without long holds redirects toward stabilization."
+      }
+    },
+    "request_fingerprint": "89d2b36b9a2ea1cc9e98c33f6e21c093aab303b242693e48579f6704acc1738b",
+    "session_id": "S3",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T2:checkpoint-120832 is the strongest evidenced candidate at 60.0% on M1, with T2:checkpoint-86016 at 57.5%. Neither candidate has an assigned working or best-known role, and no candidate is retained.",
     "completed_operations": [
@@ -3132,7 +5682,8 @@
     "objective": "Advance I1 toward an evidence-supported answer to its scientific question: Can a targeted method for 14-20 cm targets overcome the near-extension reach limitation without sacrificing uninterrupted hold performance, or are the remaining failures primarily branch- or configuration-dependent stabilization failures?",
     "operation_ids": [
       "M2",
-      "T3"
+      "T3",
+      "M3"
     ],
     "scientific_parent_commit": "ed8dd785ff3b3e9227dae4a3c17b6e13a7aab663"
   },
