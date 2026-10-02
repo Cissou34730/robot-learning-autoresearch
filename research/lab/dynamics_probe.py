@@ -58,7 +58,7 @@ def planar_jacobian(q: tuple[float, float]) -> np.ndarray:
 
 def mass_matrix(model: mujoco.MjModel, data: mujoco.MjData) -> np.ndarray:
     full = np.zeros((model.nv, model.nv), dtype=np.float64)
-    mujoco.mj_fullM(model, full, data.qM)
+    mujoco.mj_fullM(model, data, full)
     return full
 
 
