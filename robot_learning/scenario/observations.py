@@ -8,7 +8,7 @@ import numpy as np
 
 from robot_learning.robots.two_joint_arm import FOREARM_LENGTH, UPPER_ARM_LENGTH
 
-OBSERVATION_SIZE = 16
+OBSERVATION_SIZE = 19
 
 
 def _wrap_to_pi(angle: float) -> float:
@@ -49,6 +49,7 @@ def reach_observation(data) -> np.ndarray:
         [
             data.qpos,
             data.qvel,
+            end_effector - data.mocap_pos[0],
             target_frame_displacement,
             [target_angle_sin, target_angle_cos],
             [shoulder_open, elbow_open, shoulder_folded, elbow_folded],
