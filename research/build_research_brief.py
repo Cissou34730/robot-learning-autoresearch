@@ -99,7 +99,45 @@ def _measurement_facts(record: object, *, omitted: set[str] | None = None) -> st
     return ", ".join(facts) or "none"
 
 
-def _event_detail_lines(event: dict) -> list[str]:
+def _artifact_inventory_key(contents: object) -> str:
+    if not isinstance(contents, dict):
+        raise TypeError("measurement artifact contents must be an object")
+    return json.dumps(contents, sort_keys=True, separators=(",", ":"))
+
+
+def _artifact_inventory_refs(state: dict) -> dict[str, str]:
+    references: dict[str, str] = {}
+    for event in _completed_events(state):
+        if event["kind"] != "measurement":
+            continue
+        for measurement in (event.get("result") or {}).get("measurements") or []:
+            metrics = measurement.get("metrics")
+            contents = (
+                metrics.get("evaluation_artifact_contents")
+                if isinstance(metrics, dict)
+                else None
+            )
+            if contents is not None:
+                key = _artifact_inventory_key(contents)
+                if key not in references:
+                    references[key] = f"structure-{len(references) + 1}"
+    return references
+
+
+def _artifact_inventory_lines(references: dict[str, str]) -> list[str]:
+    lines: list[str] = []
+    for key, reference in references.items():
+        contents = json.loads(key)
+        scope = (
+            "limited structure-only inventory; no measurement values"
+            if contents["truncated"]
+            else "structure-only inventory; no measurement values"
+        )
+        lines.append(f"- `{reference}` ({scope}): {key}")
+    return lines or ["- No artifact inventories recorded."]
+
+
+def _event_detail_lines(event: dict, *, inventory_refs: dict[str, str]) -> list[str]:
     result = event.get("result")
     if not isinstance(result, dict):
         return []
@@ -141,17 +179,10 @@ def _event_detail_lines(event: dict) -> list[str]:
                     "contents remain in the referenced artifact."
                 )
             else:
-                if not isinstance(contents, dict):
-                    raise TypeError("measurement artifact contents must be an object")
-                scope = (
-                    "limited structure-only inventory"
-                    if contents["truncated"]
-                    else "structure-only inventory; no measurement values"
-                )
+                reference = inventory_refs[_artifact_inventory_key(contents)]
                 lines.append(
-                    f"    Artifact contents ({scope}): "
-                    + json.dumps(contents, sort_keys=True)
-                    + "."
+                    f"    Artifact contents: `{reference}` in the artifact "
+                    "inventory registry below (structure only, not measurement values)."
                 )
         comparisons = result.get("paired_comparisons") or []
         if comparisons:
@@ -161,7 +192,6 @@ def _event_detail_lines(event: dict) -> list[str]:
             )
         return lines
     if event["kind"] == "training":
-        dynamics = result.get("learning_dynamics") or []
         provenance = result.get("mechanical_provenance")
         changed = (
             [
@@ -173,12 +203,13 @@ def _event_detail_lines(event: dict) -> list[str]:
             else []
         )
         return [
-            "  - Training candidates: "
-            + ", ".join(f"`{item}`" for item in result.get("candidates") or [])
-            + ".",
-            "  - Learning dynamics: "
-            + _compact(json.dumps(dynamics, sort_keys=True))
-            + ".",
+            (
+                f"  - Training: initialization `{result['initialization']}`; "
+                f"parent `{result['parent'] or 'none'}`; seed {result['seed']}; "
+                f"requested steps {result['requested_steps']}; "
+                f"completed steps {result['completed_steps']}. "
+                "All candidates and learning statistics are in the candidate registry above."
+            ),
             "  - Mechanical provenance: parent `"
             + str((provenance or {}).get("code_parent_commit") or "-")
             + "`; changed "
@@ -192,7 +223,7 @@ def _best_evidence(state: dict) -> list[str]:
     lines: list[str] = []
     checkpoint = state["pi_checkpoint"]
     if isinstance(checkpoint, dict):
-        lines.append(f"- PI synthesis: {checkpoint['current_synthesis']}")
+        lines.append("- PI interpretation: see the latest durable checkpoint below.")
         if checkpoint["evidence_references"]:
             lines.append(
                 "- Supporting references: "
@@ -319,25 +350,39 @@ def _candidate_lines(state: dict) -> list[str]:
         for item in (event.get("result") or {}).get("learning_dynamics", [])
         if isinstance(item, dict) and isinstance(item.get("candidate"), str)
     }
-    lines.append("- Available candidates:")
+    lines.extend(
+        [
+            (
+                "- Archive paths and full candidate metadata: "
+                "`research/research_state.json`, `candidates[candidate ID]`. "
+                "The table includes every candidate; training statistics are not "
+                "development measurements."
+            ),
+            "",
+            (
+                "| Candidate | Origin | Run steps | Total steps | Training success | "
+                "Training reward | Evaluation artifacts |"
+            ),
+            "|---|---|---|---|---|---|---|",
+        ]
+    )
     for identifier, candidate in state["candidates"].items():
         evidence = candidate["evaluation_artifacts"]
         training = dynamics.get(identifier, {})
         success = training.get("training_success")
         reward = training.get("ep_rew_mean")
+        run_steps = training.get("training_steps")
+        cells = [
+            f"`{identifier}`",
+            f"`{candidate['origin_operation']}`",
+            str(run_steps) if run_steps is not None else "not recorded",
+            str(candidate["training_steps"]),
+            str(success) if success is not None else "not recorded",
+            str(reward) if reward is not None else "not recorded",
+            ", ".join(_artifact(path) for path in evidence) if evidence else "none",
+        ]
         lines.append(
-            f"  - `{identifier}`: {_artifact(candidate['artifact'])}; "
-            f"origin `{candidate['origin_operation']}`; "
-            f"{candidate['training_steps']:,} training steps; "
-            f"training success {success if success is not None else 'not recorded'}; "
-            f"reward {reward if reward is not None else 'not recorded'}; "
-            "evaluation artifacts "
-            + (
-                ", ".join(_artifact(path) for path in evidence)
-                if evidence
-                else "none"
-            )
-            + "."
+            "| " + " | ".join(cell.replace("|", r"\|") for cell in cells) + " |"
         )
     return lines
 
@@ -350,7 +395,7 @@ def _completed_events(state: dict) -> list[dict]:
     ]
 
 
-def _event_lines(state: dict) -> list[str]:
+def _event_lines(state: dict, *, inventory_refs: dict[str, str]) -> list[str]:
     events = _completed_events(state)
     if not events:
         return ["- No completed operations."]
@@ -367,7 +412,7 @@ def _event_lines(state: dict) -> list[str]:
             f"- `{event['id']}` `{event['kind']}`{inquiry}: "
             f"{_event_summary(event)}{artifact_note}"
         )
-        lines.extend(_event_detail_lines(event))
+        lines.extend(_event_detail_lines(event, inventory_refs=inventory_refs))
     return lines
 
 
@@ -401,6 +446,7 @@ def render_research_brief() -> str:
         raise RuntimeError("research state is missing")
     state = json.loads(state_path.read_text(encoding="utf-8"))
     runner_repository.validate_research_state(state, allow_missing_artifact=True)
+    inventory_refs = _artifact_inventory_refs(state)
 
     lines = [
         "# Research brief",
@@ -437,7 +483,11 @@ def render_research_brief() -> str:
         "",
         "### Completed operation evidence",
         "",
-        *_event_lines(state),
+        *_event_lines(state, inventory_refs=inventory_refs),
+        "",
+        "### Artifact inventory registry",
+        "",
+        *_artifact_inventory_lines(inventory_refs),
         "",
         "### Execution history (not evidence)",
         "",

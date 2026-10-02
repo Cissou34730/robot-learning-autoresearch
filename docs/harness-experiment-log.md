@@ -22,16 +22,22 @@ operation availability, terminal prerequisites, and the meaning of best-known.
 The scientific-frontier guidance remains active with mixed subsequent
 campaign observations and no isolated causal attribution. The ordinary
 goal-review measurement experiment below is active; its first completed
-campaign did not exercise the new measurement permission, and its causal
-effect remains unestablished. The inquiry architecture and independent runtime
-fixes remain unchanged. The measurement-evidence handoff now distinguishes
-reduced result summaries from full artifacts and exposes bounded structural
+campaign did not exercise the new measurement permission, but campaign
+`010714c2` used it for physical investigation before opening I3 and for a
+readiness measurement before official assessment. The inquiry architecture and
+independent runtime fixes remain unchanged. The measurement-evidence handoff
+distinguishes reduced result summaries from full artifacts and exposes bounded structural
 inventories. This is a data-presentation change, not new scientific-action
-guidance; its effect on PI inspection remains to be assessed in a campaign.
-Its instrument-document addition is restored after the documentation-only
-startup comparison below still selected training first. The inventory
-implementation and feedback remain active; inspection effectiveness remains
-unassessed.
+guidance. Campaign `010714c2` explicitly distinguished the summary from the
+recorded diagnostics and inspected the artifacts; no recurrence of the prior
+false absent-diagnostics claim was observed. Its instrument-document addition
+is restored after the documentation-only startup comparison below still
+selected training first. Both changes are provisionally retained, not a
+demonstrated solution to training-shaped progression. The brief-only context
+compaction below removes duplicate presentation while retaining all candidates,
+completed operations, and artifact inventories. Its campaign effect on PI cost
+and scientific decisions remains unassessed; prompts and SDK settings are
+unchanged.
 
 The objective under investigation is scientifically justified action selection:
 the PI chooses the action that can resolve a consequential uncertainty rather
@@ -395,13 +401,13 @@ its scientific breadth or achieve its result.
 
 ## Discussed but not implemented
 
-### Current backlog (2026-10-01)
+### Current backlog (2026-10-02)
 
 | Item | Status / boundary |
 |---|---|
-| Reliable measurement-evidence inspection | Inventory implementation and instrument contract retained after the documentation-only startup trial. Inspection effectiveness remains unassessed. |
-| Context flooding | Open, separate work; tool-output offloading thresholds are unchanged. |
-| Training-shaped inquiry commitments and scientific continuity | Open; documentation-only reversal did not prevent direct startup training. Scientific-model framing in combination with the startup prompt is the next investigative lead, not an approved prompt change. |
+| Reliable measurement-evidence inspection | Provisionally retained. Campaign `010714c2` used the inventories to recognize and inspect existing diagnostics; no recurrence of the prior absent-diagnostics error was observed. Scientific progression is not thereby solved. |
+| Context flooding | Brief-only compaction implemented below: 57.39% smaller on the completed campaign, with all candidates and inventory references preserved. Campaign benefit remains unassessed; prompt replay and SDK output handling are unchanged and remain separate possible work. |
+| Training-shaped inquiry commitments and scientific continuity | Open. Campaign `010714c2` included measurement-only work, physical investigation in goal review, and replication, but some inquiry contracts remained fixed-recipe trials and closure/readiness claims exceeded the evidence. Startup is not a separate priority; model/prompt framing remains an unproven lead, not an approved change. |
 | Checkpoint nomination and evidence selection | Deferred behind progression; available training facts are not proof of development performance. |
 | Operation-submission handoff clarification | Still unimplemented. |
 | Explicit protection of the old protocol log | Still unimplemented; read-access policy is a separate decision. |
@@ -876,3 +882,90 @@ separate from harness changes so their outcomes are not conflated.
   progression remains unresolved. Model priority-setting in combination with
   the startup prompt is an investigative lead only. No preliminary prompt or
   scientific-model contract change is approved or implemented here.
+
+## 2026-10-02: assess evidence-led progression in the completed campaign
+
+- **Reference:** campaign `010714c2-5abd-4836-96bd-364caaf82042`; authoritative
+  operation records and terminal result in `research/research_state.json`,
+  detailed measurements under `research/evaluations/010714c2-5abd-4836-96bd-364caaf82042/`,
+  and PI resource records in
+  `reports/session_usage/010714c2-5abd-4836-96bd-364caaf82042.jsonl`.
+- **Observed result:** official assessment failed at 189/200 (94.5%) for
+  `T7:checkpoint-120832`, below the required 196/200. Six completed training
+  operations consumed 724,992 steps; 41 PI invocations consumed 112.084903 AIU.
+- **Goal-review capability:** M4/M5 investigated control authority before
+  opening I3. The first probe saturated and failed; the PI corrected the
+  controller rather than infer physical impossibility. M5 then achieved
+  160/160 with the nearest-branch low-gain controller. M9 was also requested
+  in goal review to examine readiness before official assessment. This is
+  actual exercise of the permission added by `c68627d`, not proof that the
+  permission alone caused the scientific direction.
+- **Evidence inspection:** all 14 measurement artifact records carried
+  structural inventories. After M1, the PI explicitly recognized that
+  diagnostics were present although their values were omitted from the
+  summary. It inspected them, corrected a radius-binning defect, and queried
+  geometry and hold diagnostics in later rounds. No recurrence of the
+  earlier partial-read claim that diagnostics were absent was observed.
+- **Progression limits:** I1 was diagnostic-only; I3 continued a partial gain
+  to replication; I4 tested two seeds. Nevertheless, I2 explicitly
+  prescribed one training/evaluation round and later inquiries still framed
+  method questions around fixed recipes. I4's no-material-hold-regression
+  condition was softened to the stronger run despite 23 interruptions for
+  T6 versus four for T7. For T7 readiness, M8 scored 156/160 and M9 157/160;
+  the combined 313/320 (97.8125%) did not support the claim that performance
+  had reproduced above threshold. These are PI scientific-judgment limits,
+  not a request for Runner scientific gates.
+- **Execution failure:** T3 failed Ruff before training. The same PI session
+  repaired formatting; T4 superseded T3 with the identical scientific request,
+  seed, initialization, and allocation. The repair added 49.315 seconds of
+  PI invocation time and 1.525432 AIU, with no training steps or scientific
+  evidence. No direction change was observed.
+- **Disposition:** maintainer accepted provisional retention of the
+  goal-review measurement and evidence-inspection changes. Their specific
+  mechanisms worked in this campaign; the broader progression objective was
+  only partly met. Official policy failure does not establish that those
+  mechanisms failed. Context flooding is the next approved backlog item;
+  no startup, inquiry, closure, or readiness prompt change is introduced.
+
+## 2026-10-02: compact repeated brief content without evidence selection
+
+- **Implementation commit:** the commit containing this entry,
+  `Compact repeated research brief content`.
+- **Approved scope:** `research/build_research_brief.py`, directly affected
+  tests in `tests/autoresearch/test_research_brief.py`, and this log. No phase
+  prompt, scientific contract, authoritative campaign record, artifact,
+  fingerprint, session-continuity rule, or SDK offloading threshold changes.
+- **Rationale:** the completed campaign's prior rendered brief was 109,508
+  UTF-8 bytes. It repeated the statistics of 144 candidates in both a verbose
+  registry and training-event JSON blocks. Fourteen artifact inventories
+  contained only three distinct structures. The brief also copied the latest
+  checkpoint synthesis into its leading evidence section.
+- **Change:** list every candidate in one compact table with origin,
+  per-operation and accumulated steps, training success/reward, and evaluation
+  references. Full archive locations and metadata remain explicitly
+  addressable through `research/research_state.json`'s candidate registry.
+  Training events retain initialization, parent, seed, requested/completed
+  steps, and mechanical provenance but reference the table instead of
+  repeating checkpoint statistics. Render each exact structural inventory
+  once and associate every measurement artifact with its reference; distinct,
+  truncated, and missing inventories remain distinguishable. Render the full
+  checkpoint synthesis once. Keep the human goal, gap, inquiry, session
+  objective, all completed operations, measurement summaries, paired
+  comparisons, artifact references, and execution-failure history.
+- **Implementation checks:** seven directly affected brief/goal-context
+  tests passed; touched-file Ruff checks passed. A read-only replay of the
+  completed campaign compared the old and new renderers: 109,508 -> 46,656
+  bytes, a 57.39% reduction. It verified all 144 candidate rows and their
+  statistics, every completed-operation reference, artifact reference and
+  paired comparison, and all 14 inventories resolving to three exact
+  structures. The authoritative state was unchanged. The quantitative
+  comparison uses both renderers' UTF-8 output, not differing file newline
+  encodings.
+- **Campaign observation:** none yet with this compact renderer. No campaign,
+  training, or protected evaluation was started or resumed for this change.
+- **Disposition / limits:** implemented for observation. The measured
+  presentation reduction exceeds the approved less-than-half-size target,
+  but does not demonstrate lower PI cost or better scientific decisions.
+  Repeated full prompts and large tool outputs remain outside this isolated
+  change; there is no history cutoff, candidate ranking, semantic
+  summarization, or deletion from the factual record.

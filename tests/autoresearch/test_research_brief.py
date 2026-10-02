@@ -95,9 +95,8 @@ def test_brief_leads_with_goal_evidence_gap_inquiry_and_checkpoint(
 ):
     research = tmp_path / "research"
     research.mkdir()
-    (research / "research_state.json").write_text(
-        json.dumps(_state()), encoding="utf-8"
-    )
+    state = _state()
+    (research / "research_state.json").write_text(json.dumps(state), encoding="utf-8")
     monkeypatch.setattr(brief, "RESEARCH_DIR", research)
 
     text = brief.render_research_brief()
@@ -106,6 +105,7 @@ def test_brief_leads_with_goal_evidence_gap_inquiry_and_checkpoint(
     assert "Hold reliability remains below the goal." in text
     assert "Unstable holds prevent the human goal." in text
     assert "`E1` `inquiry` in `I1`: completed" in text
+    assert text.count(state["pi_checkpoint"]["current_synthesis"]) == 1
 
 
 def test_operation_feedback_is_factual_and_operation_specific():
@@ -117,6 +117,7 @@ def test_operation_feedback_is_factual_and_operation_specific():
     contents = repository.measurement_artifact_contents(evidence)
     measurement = {
         "kind": "measurement",
+        "status": "completed",
         "result": {
             "measurements": [
                 {
@@ -137,6 +138,11 @@ def test_operation_feedback_is_factual_and_operation_specific():
     training = {
         "kind": "training",
         "result": {
+            "initialization": "transfer",
+            "parent": "T1:checkpoint-10",
+            "seed": 4,
+            "requested_steps": 10,
+            "completed_steps": 10,
             "candidates": ["T2:checkpoint-10"],
             "learning_dynamics": [
                 {
@@ -153,18 +159,137 @@ def test_operation_feedback_is_factual_and_operation_specific():
         },
     }
 
-    measurement_lines = "\n".join(brief._event_detail_lines(measurement))
+    inventory_refs = brief._artifact_inventory_refs({"operation_events": [measurement]})
+    measurement_lines = "\n".join(
+        brief._event_detail_lines(measurement, inventory_refs=inventory_refs)
+    )
     assert "research/evaluations/panel.json" in measurement_lines
     assert "success_percent=97.5" in measurement_lines
     assert "Paired comparisons" in measurement_lines
-    assert json.dumps(contents, sort_keys=True) in measurement_lines
-    assert "/arbitrary_lab_section/series" in measurement_lines
+    key = brief._artifact_inventory_key(contents)
+    assert inventory_refs[key] in measurement_lines
+    assert json.loads(key) == contents
+    assert key in "\n".join(brief._artifact_inventory_lines(inventory_refs))
     assert raw_value not in measurement_lines
 
-    training_lines = "\n".join(brief._event_detail_lines(training))
-    assert "T2:checkpoint-10" in training_lines
-    assert "training_success" in training_lines
+    training_lines = "\n".join(
+        brief._event_detail_lines(training, inventory_refs=inventory_refs)
+    )
+    assert training["result"]["parent"] in training_lines
+    assert training["result"]["candidates"][0] not in training_lines
     assert "robot_learning/training/algorithm.py" in training_lines
+
+
+def test_candidate_registry_preserves_every_checkpoint_and_transfer_statistics():
+    candidates = {
+        "T2:checkpoint-10": {
+            "origin_operation": "T2",
+            "training_steps": 110,
+            "evaluation_artifacts": ["research/evaluations/paired.json"],
+        },
+        "T2:checkpoint-20": {
+            "origin_operation": "T2",
+            "training_steps": 120,
+            "evaluation_artifacts": [],
+        },
+    }
+    dynamics = [
+        {
+            "candidate": "T2:checkpoint-10",
+            "training_steps": 10,
+            "training_success": 0.8,
+            "ep_rew_mean": 12.0,
+        },
+        {
+            "candidate": "T2:checkpoint-20",
+            "training_steps": 20,
+            "training_success": None,
+            "ep_rew_mean": None,
+        },
+    ]
+    state = {
+        "model_roles": {
+            "working": None,
+            "best_known": "T2:checkpoint-10",
+            "retained": {"control": "T2:checkpoint-20"},
+        },
+        "candidates": candidates,
+        "operation_events": [
+            {
+                "kind": "training",
+                "status": "completed",
+                "result": {"learning_dynamics": dynamics},
+            }
+        ],
+    }
+    text = "\n".join(brief._candidate_lines(state))
+    rows = [line for line in text.splitlines() if line.startswith("| `")]
+    assert len(rows) == len(candidates)
+    for item in dynamics:
+        identifier = item["candidate"]
+        candidate = candidates[identifier]
+        row = next(line for line in rows if f"`{identifier}`" in line)
+        cells = [cell.strip() for cell in row.split("|")]
+        assert f"`{candidate['origin_operation']}`" in cells
+        assert str(item["training_steps"]) in cells
+        assert str(candidate["training_steps"]) in cells
+        for field in ("training_success", "ep_rew_mean"):
+            value = item[field]
+            assert (str(value) if value is not None else "not recorded") in cells
+        for artifact in candidate["evaluation_artifacts"]:
+            assert artifact in row
+
+
+def test_artifact_inventory_references_share_only_exact_structures():
+    contents = repository.measurement_artifact_contents(
+        {"episode_diagnostics": [{"first": None}, {"later": 1}]}
+    )
+    reordered = dict(reversed(list(contents.items())))
+    different = {**contents, "truncated": True}
+    measurement = {
+        "kind": "measurement",
+        "status": "completed",
+        "result": {
+            "measurements": [
+                {
+                    "label": label,
+                    "metrics": {
+                        "evaluation_artifact": f"research/evaluations/{label}.json",
+                        "evaluation_artifact_contents": inventory,
+                    },
+                }
+                for label, inventory in [
+                    ("first", contents),
+                    ("repeat", reordered),
+                    ("limited", different),
+                    ("unindexed", None),
+                ]
+            ]
+        },
+    }
+    state = {"operation_events": [measurement]}
+    original = json.dumps(state)
+    references = brief._artifact_inventory_refs(state)
+    assert (
+        references[brief._artifact_inventory_key(contents)]
+        == references[brief._artifact_inventory_key(reordered)]
+    )
+    assert (
+        references[brief._artifact_inventory_key(contents)]
+        != references[brief._artifact_inventory_key(different)]
+    )
+    registry = "\n".join(brief._artifact_inventory_lines(references))
+    details = "\n".join(
+        brief._event_detail_lines(measurement, inventory_refs=references)
+    )
+    for key, reference in references.items():
+        assert registry.count(key) == 1
+        assert reference in registry
+        assert reference in details
+    for record in measurement["result"]["measurements"]:
+        assert record["metrics"]["evaluation_artifact"] in details
+    assert json.dumps(state) == original
+    assert "no inventory recorded" in details
 
 
 def test_failed_and_superseded_attempts_are_history_not_evidence(
