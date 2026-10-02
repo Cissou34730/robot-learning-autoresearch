@@ -5951,52 +5951,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "set_best_known",
-        "candidate_id": "T4:checkpoint-120832",
-        "evidence": [
-          "M4",
-          "E5"
-        ],
-        "reason": "T4 is the strongest evidenced candidate: it achieved 197/200 successes (98.5%) on the fresh independent development panel, improved over T3 by a paired 4.5 percentage points, and its residual failures are localized to hold and angle behavior rather than the previously unresolved outer-radius reach failure. This is sufficient to select it for the protected official assessment, while the assessment remains necessary because development evidence does not establish official-panel performance."
-      },
-      "publication": {
-        "destination": "research/checkpoints/retained/2381bcbf-72c1-4535-9334-7e0d753f356d/t4-c8cf701d5-becd8af80fb9ec13f06ce123be914e7f89fc303d2f30859cb6d14bbb16b1be9d",
-        "fingerprint": "becd8af80fb9ec13f06ce123be914e7f89fc303d2f30859cb6d14bbb16b1be9d",
-        "source": "research/checkpoints/candidates/2381bcbf-72c1-4535-9334-7e0d753f356d/t4/checkpoint-120832"
-      },
-      "result": {
-        "action": "set_best_known",
-        "candidate": "T4:checkpoint-120832",
-        "evidence": [
-          "M4",
-          "E5"
-        ],
-        "status": "assigned"
-      }
-    },
-    "failure": null,
-    "id": "E7",
-    "inquiry_id": null,
-    "kind": "model_role",
-    "progress": "completed",
-    "request": {
-      "model_role": {
-        "action": "set_best_known",
-        "candidate": "T4:checkpoint-120832",
-        "evidence": [
-          "M4",
-          "E5"
-        ],
-        "reason": "T4 is the strongest evidenced candidate: it achieved 197/200 successes (98.5%) on the fresh independent development panel, improved over T3 by a paired 4.5 percentage points, and its residual failures are localized to hold and angle behavior rather than the previously unresolved outer-radius reach failure. This is sufficient to select it for the protected official assessment, while the assessment remains necessary because development evidence does not establish official-panel performance."
-      }
-    },
-    "request_fingerprint": "db62ff6f733f537229e00099dd93e11485ce8fa93213bb95ac0c73756925eb53",
-    "session_id": "S5",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T4:checkpoint-120832 is the strongest evidenced candidate at 98.5% on the fresh M4 independent panel, with T3:checkpoint-120832 at 94.0% on the same panel and T2:checkpoint-120832 at 60.0% on M1. No working, best-known, or retained role is assigned yet; T4 is the candidate to carry into official assessment after goal review.",
     "completed_operations": [
