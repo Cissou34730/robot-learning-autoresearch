@@ -778,6 +778,13 @@ function New-ScientificSessionPrompt {
         )
     }
 
+    $trainingAllocation = if ($session.kind -eq "startup") {
+        "Maintainer training ceiling: $Timesteps requested steps per startup run. You may request any positive integer up to this ceiling, but neither the PI nor the Runner may raise it. Actual completed steps may round up to the learning algorithm's rollout boundary."
+    }
+    else {
+        "Maintainer training allocation: $Timesteps steps per run. Training requests must match this allocation; neither the PI nor the Runner may independently change it."
+    }
+
     $sections = @(
         "Human goal: $goal"
         "Current evidence relative to the goal: $bestEvidence $(Get-LatestSessionResult -State $State)"
@@ -786,7 +793,7 @@ function New-ScientificSessionPrompt {
         "Current goal gap: $gap"
         "Active inquiry: $inquiry"
         "Current objective: $objective"
-        "Maintainer training allocation: $Timesteps steps per run. Training requests must match this allocation; neither the PI nor the Runner may independently change it."
+        $trainingAllocation
         $correction
         $piPersona
         $scientificModelUseGuidance

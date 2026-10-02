@@ -89,8 +89,12 @@ to the same active bounded session without implying a required successor
 action.
 
 The maintainer controls the per-run training allocation through the launcher's
-`-Timesteps` option, which defaults to 120,000 steps. The PI uses the allocation
-shown in its context; neither the PI nor the Runner may independently change it.
+`-Timesteps` option, which defaults to 120,000 steps. During startup, that
+allocation is a requested-step ceiling: the PI may choose a shorter run but
+may not exceed it. Inquiry training requests use the full allocation shown in
+their context. Neither the PI nor the Runner may raise the maintainer's
+allocation. Actual completed steps may round up to the learning algorithm's
+rollout boundary.
 
 An inquiry reframe is a scientific-session boundary: after recording the
 reframe, the PI checkpoints before any further operation and resumes the

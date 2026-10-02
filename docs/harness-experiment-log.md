@@ -45,7 +45,13 @@ before checkpointing or training. Its later M5 closure nevertheless lost a
 substantial outer-reaching gain behind an aggregate regression, despite
 advertised diagnostics. The question-based inquiry-objective experiment below
 now targets that framing gap without changing closure criteria or adding
-scientific gates. Its behavioral effect remains unassessed.
+scientific gates. Campaign `2381bcbf` sustained one inquiry through diagnostics,
+targeted reaching, and hold-focused shaping, consistent with that intended
+continuity but without isolated causal attribution. It failed official
+assessment at 195/200 after 197/200 development success; its closure lost
+non-entry counterevidence and treated readiness as settled too early. The
+startup requested-step ceiling below is implemented as a separate tactical
+change; its campaign effect is unassessed.
 
 The objective under investigation is scientifically justified action selection:
 the PI chooses the action that can resolve a consequential uncertainty rather
@@ -413,10 +419,11 @@ its scientific breadth or achieve its result.
 
 | Item | Status / boundary |
 |---|---|
-| Shorter startup training | First next change; tactical and not implemented. Permit the PI to request fewer steps during startup, with the maintainer's allocation (120,000 by default) as the per-run request ceiling, never a larger request. Training remains optional; inquiry allocations are unchanged. Whether to retain rollout rounding or enforce a strict executed-step ceiling remains to be decided before implementation. |
-| Reliable measurement-evidence inspection | Discoverability provisionally retained. In `48993cfd`, M5 feedback supplied both artifacts, diagnostic paths, radius/first-reach fields, and full inventories, but the PI closed without inspecting the strata and incorrectly claimed no outer-reaching gain. Decision-linked inspection remains unresolved. |
+| Counterevidence preservation and official-assessment readiness | Next substantive topic; design not yet selected or implemented. In `2381bcbf`, a positive aggregate result displaced remaining non-entry failures and a grid regression in the closure handoff; goal review then treated a narrow development-panel pass as leaving only protected-panel uncertainty. Preserve the actual residual evidence and calibrate terminal readiness without Runner scientific judgment or mandatory measurement gates. |
+| Shorter startup training | Tactical change implemented below. The PI may request any positive integer up to the maintainer's per-run allocation during startup, never a larger request. Training remains optional; inquiry requests still use the full allocation. Existing rollout rounding is retained. Campaign effect is unassessed. |
+| Reliable measurement-evidence inspection | Discoverability provisionally retained. In `48993cfd`, M5 feedback advertised diagnostics, but the PI closed without inspecting the strata and incorrectly claimed no outer-reaching gain. In `2381bcbf`, M3/M4 diagnostic reads stopped at lines 1-310, were described as full inspection, and remaining non-entry cases were lost in the synthesis. Decision-linked inspection and interpretation remain unresolved. |
 | Context flooding | Brief-only compaction implemented below: 57.39% smaller on the completed campaign, with all candidates and inventory references preserved. Campaign benefit remains unassessed; prompt replay and SDK output handling are unchanged and remain separate possible work. |
-| Training-shaped inquiry commitments and scientific continuity | Open. Verified subcase: aggregate regression mistaken for mechanism failure, losing subgroup gains and tradeoffs in closure and the next inquiry. The isolated question-based inquiry-objective experiment below is implemented for observation; it is not a demonstrated solution. Startup clarification is retained, and scientific-model framing remains an unproven lead. |
+| Training-shaped inquiry commitments and scientific continuity | Open, with a positive local observation in `2381bcbf`: one inquiry sustained diagnostics and two successive method interventions. The question-based objective was active, but causation is unproved. Both aggregate losses and aggregate gains have obscured consequential subgroup evidence in handoffs; the next substantive topic isolates that unresolved problem. Startup clarification is retained, and scientific-model framing remains an unproven lead. |
 | Checkpoint nomination and evidence selection | Deferred behind progression; available training facts are not proof of development performance. |
 | Operation-submission handoff clarification | Still unimplemented. |
 | Explicit protection of the old protocol log | Still unimplemented; read-access policy is a separate decision. |
@@ -424,8 +431,8 @@ its scientific breadth or achieve its result.
 | Publication/recovery, maintainer training allocation, and goal-review role availability | Implemented; not active repair items. |
 
 The startup allocation change is tactical, not a solution to scientific
-continuity. The maintainer plans another change as well; that additional
-change has not yet been selected.
+continuity. The next substantive topic is counterevidence preservation and
+official-assessment readiness; its implementation design remains to be agreed.
 
 Hypothesis registries, premise-status fields, mandatory reasoning checklists,
 reference-panel reuse, submission-handoff clarification, and explicit
@@ -1110,3 +1117,81 @@ separate from harness changes so their outcomes are not conflated.
 - **Campaign observation / disposition:** implemented for observation; no
   campaign has been reset or restarted for this change. The specific effect
   is unassessed. Existing campaign state and pending requests are untouched.
+
+## 2026-10-02: near miss after sustained inquiry development
+
+- **Reference:** completed campaign `2381bcbf-72c1-4535-9334-7e0d753f356d`;
+  authoritative M1-M4 artifacts, E4-E6 checkpoint/closure records, E7/E8
+  promotion and assessment request, and terminal result `d12d794`.
+- **Outcome and resources:** 195/200 official successes, one below the required
+  196. One inquiry, three completed training runs, 362,496 completed steps,
+  19 PI invocations, and 43.832647 AIU. T1 failed before training on a Windows
+  file-permission error and was superseded by T2; it supplied no scientific
+  evidence. An uncommitted maintainer backlog edit separately blocked the
+  startup checkpoint until it was published in `2b7b9e1`; the preserved request
+  then validated without changing campaign state or scientific content.
+- **Scientific progress:** M3 compared T3 against T2 on shared episode seeds:
+  190/200 versus 130/200, with 60 gains and no losses. M4 compared T4 against
+  T3 on a fresh shared panel: 197/200 versus 188/200, with nine gains and no
+  losses. Diagnostics informed an outer-target curriculum and then hold-credit
+  forfeiture within the same inquiry, rather than a new inquiry for each trial.
+- **Lost counterevidence:** the T4 fixed grid achieved 124/128 successes and
+  126/128 first entries. Two failures never entered tolerance: 14 cm at
+  -135 degrees and 20 cm at -157.5 degrees. Two entered but failed to hold:
+  12 cm at -135 degrees and 14 cm at 22.5 degrees. The 12 cm failure was absent
+  in T2; the 14 cm/22.5-degree failure was absent in T3. The positive matched
+  panel gains did not erase these grid tradeoffs.
+- **Actual handoff:** S3 read M3/M4 diagnostic lines 1-310 but described the M4
+  read as full inspection. Its synthesis characterized the residual failures
+  as hold/angle cases rather than non-entry. Fresh S4 closure and S5 goal review
+  inherited that interpretation without reading the diagnostic artifacts.
+  S5 claimed the remaining uncertainty was only protected-panel transfer and
+  that no further development inquiry was justified. Best-known assignment
+  did not require that terminal choice, and further measurement was available.
+- **Readiness uncertainty:** 197/200 is a narrow observed pass, not assurance
+  that another panel will meet 196/200. Illustratively, even a true 98.5%
+  episode success probability gives about an 18.35% chance of fewer than 196
+  successes in 200 independent episodes. The retained official record contains
+  only aggregate outcome facts; it does not establish the exact physical
+  mechanisms of the five official failures.
+- **Harness attribution / disposition:** the question-based objective was
+  present in both inquiry sessions, and sustained development is consistent
+  with its intended effect, not proof of causation. Brief compaction and
+  inventories did not hide the diagnostic references. Startup did not become
+  endless preparation, and shorter startup training was not yet implemented.
+  Retain the recent changes provisionally. The next substantive target is
+  faithful counterevidence handoff and assessment readiness, not another
+  startup requirement, numerical scientific gate, or Runner judgment.
+
+## 2026-10-02: permit shorter startup training requests
+
+- **Implementation commit:** the commit containing this entry,
+  `Allow shorter startup training requests`.
+- **RCA:** the maintainer allocation was enforced as exact equality in every
+  training phase. Startup therefore could not request a shorter learning
+  observation even though training is optional there.
+- **Approved tactical change:** during startup, accept a positive integer
+  request up to the maintainer's per-run allocation, whose default remains
+  120,000. The maintainer selected a requested-step ceiling, not a strict
+  executed-step ceiling. Inquiry requests still require the full allocation.
+- **Acceptance and execution:** proposal validation, new-operation acceptance,
+  accepted-request checks, and training dispatch apply the current session's
+  allocation contract. Dispatch preserves the accepted requested steps instead
+  of replacing them with the ceiling. Frozen request identity, repair intent,
+  maintainer overrides, and completed-result publication remain unchanged.
+- **PI contract:** startup prompts identify the ceiling and permit shorter
+  positive requests; other phase allocation prompts remain unchanged.
+  `research/program.md` and `research/instruments.md` state the same contract.
+  No new request field, automatic run length, training requirement, phase
+  transition, scientific implementation, dependency, or cumulative budget.
+- **Rollout rounding:** completed steps may still exceed requested steps at
+  the learning algorithm's existing rollout boundary. This is not permission
+  to request more than the maintainer's startup ceiling.
+- **Implementation checks:** 31 targeted allocation, accepted-request,
+  dispatch/publication-recovery, and phase-contract cases passed. Touched-file
+  Ruff and formatting checks passed, and the full launcher parsed without
+  executing its campaign loop. No instruction-wording tests were added.
+- **Campaign observation / disposition:** implemented for observation, not a
+  demonstrated scientific improvement. No campaign operation is run, reset,
+  or resumed by this change. Counterevidence preservation and official-assessment
+  readiness remains the next substantive design topic.

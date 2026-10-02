@@ -76,22 +76,56 @@ def test_training_allocation_default_and_maintainer_override(monkeypatch):
     assert run_experiment.parse_args().timesteps == 60_000
 
 
-def test_pi_cannot_change_the_maintainer_training_allocation(monkeypatch, tmp_path):
+@pytest.mark.parametrize(
+    ("allocation", "steps", "accepted"),
+    [
+        (120_000, 1, True),
+        (120_000, 60_000, True),
+        (120_000, 120_000, True),
+        (120_000, 120_001, False),
+        (60_000, 30_000, True),
+        (60_000, 60_001, False),
+    ],
+)
+def test_startup_training_requests_respect_maintainer_ceiling(
+    monkeypatch, tmp_path, allocation, steps, accepted
+):
     state = _configure(monkeypatch, tmp_path)
-    monkeypatch.setattr(run_experiment, "TIMESTEPS", 120_000)
+    monkeypatch.setattr(run_experiment, "TIMESTEPS", allocation)
     request = _training()
-    request["training"]["steps"] = 500_000
+    request["training"]["steps"] = steps
     _write_request(request)
     before = repository.read_state()
 
-    assert run_experiment.check_operation() == 1
-    with pytest.raises(ValueError, match="maintainer-owned"):
-        run_experiment.accept_operation(request, state)
+    assert run_experiment.check_operation() == (0 if accepted else 1)
     assert repository.read_state() == before
     assert state == before
 
-    request["training"]["steps"] = 120_000
-    assert run_experiment.accept_operation(request, state)["request"] == request
+    if accepted:
+        assert run_experiment.accept_operation(request, state)["request"] == request
+        _write_request(request)
+        pending_state = repository.read_state()
+        assert run_experiment.check_operation() == 0
+        assert repository.read_state() == pending_state
+    else:
+        with pytest.raises(ValueError, match="maintainer-owned"):
+            run_experiment.accept_operation(request, state)
+        assert repository.read_state() == before
+        assert state == before
+
+
+@pytest.mark.parametrize("steps", [5, 10, 11])
+def test_inquiry_training_requests_still_require_full_allocation(monkeypatch, steps):
+    monkeypatch.setattr(run_experiment, "TIMESTEPS", 10)
+    request = _training()["training"]
+    request["steps"] = steps
+    state = {"scientific_session": {"kind": "inquiry"}}
+
+    if steps == 10:
+        assert run_experiment._training_allocation(request, state) == steps
+    else:
+        with pytest.raises(ValueError, match="maintainer-owned"):
+            run_experiment._training_allocation(request, state)
 
 
 def test_changed_maintainer_allocation_refuses_pending_training_without_mutation(
@@ -358,12 +392,14 @@ def test_transfer_parent_is_revalidated_at_execution(monkeypatch, tmp_path):
         "resumed_finalization",
     ],
 )
+@pytest.mark.parametrize("requested_steps", [5, 10])
 def test_completed_training_transaction_retries_publication_without_retraining(
-    monkeypatch, tmp_path, failure_point, capsys
+    monkeypatch, tmp_path, failure_point, requested_steps, capsys
 ):
     state = _configure(monkeypatch, tmp_path)
     monkeypatch.setattr(run_experiment.research_config, "load_experiment_config", dict)
     request = _training()
+    request["training"]["steps"] = requested_steps
     run_experiment.accept_operation(request, state)
     artifact = tmp_path / "archive"
     artifact.mkdir()
@@ -389,7 +425,7 @@ def test_completed_training_transaction_retries_publication_without_retraining(
     monkeypatch.setattr(execution, "validate_active_configuration", dict)
 
     def train(*_args, **_kwargs):
-        assert _args[1] == run_experiment.TIMESTEPS
+        assert _args[1] == requested_steps
         calls["training"] += 1
         return 1.0
 
@@ -450,6 +486,10 @@ def test_completed_training_transaction_retries_publication_without_retraining(
     assert [event["id"] for event in completed["operation_events"]] == ["T1"]
     assert [event["id"] for event in repository.history_records()] == ["T1"]
     assert repository.history_records()[0]["request"] == request["training"]
+    assert (
+        completed["operation_events"][0]["result"]["requested_steps"] == requested_steps
+    )
+    assert completed["operation_events"][0]["result"]["completed_steps"] == 10
 
 
 def test_completed_result_retries_memory_publication_without_reacceptance(

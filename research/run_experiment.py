@@ -354,16 +354,23 @@ def _validate_new_operation_scientific_delta(state: dict) -> None:
     )
 
 
-def _training_allocation(request: dict) -> int:
+def _training_allocation(request: dict, state: dict) -> int:
     allocation = execution.training_budget(
         TIMESTEPS, request["initialization"], False, 0
     )
-    if request["steps"] != allocation:
+    session = protocol.require_active_session(state)
+    if session["kind"] == "startup":
+        if request["steps"] > allocation:
+            raise ValueError(
+                f"training allocation is maintainer-owned: startup steps must "
+                f"not exceed {allocation:,}; got {request['steps']!r}"
+            )
+    elif request["steps"] != allocation:
         raise ValueError(
             f"training allocation is maintainer-owned: steps must equal "
             f"{allocation:,}, not {request['steps']!r}"
         )
-    return allocation
+    return request["steps"]
 
 
 def _new_pending_operation(
@@ -374,7 +381,7 @@ def _new_pending_operation(
 ) -> dict:
     kind = protocol.validate_operation_request(request, state)
     if kind == "training":
-        _training_allocation(request["training"])
+        _training_allocation(request["training"], state)
     _validate_new_operation_scientific_delta(state)
     identifier = protocol.allocate_operation_id(kind, state)
     session = protocol.require_active_session(state)
@@ -1363,7 +1370,7 @@ def execute_training(state: dict, pending: dict) -> int:
                     )
                     completed = True
             if not completed:
-                timesteps = _training_allocation(request)
+                timesteps = _training_allocation(request, state)
                 if candidate_dir.exists():
                     execution.remove_candidate_dir(candidate_dir)
                 pending["progress"] = "training_dispatched"
@@ -1694,7 +1701,7 @@ def execute_pending_operation() -> int:
         "recipe_published",
         "training_dispatched",
     }:
-        _training_allocation(request["training"])
+        _training_allocation(request["training"], state)
     _write_accepted_request_handoff(pending)
     subject = _operation_subject(pending)
     detail = _operation_request_detail(pending)
@@ -1767,7 +1774,7 @@ def check_operation() -> int:
             repository.validate_research_state(working, allow_missing_artifact=True)
             kind = str(pending["kind"])
         if kind == "training":
-            _training_allocation(request["training"])
+            _training_allocation(request["training"], working)
     except PROPOSAL_ERRORS as error:
         print(f"OPERATION_INVALID: {error}")
         return 1
