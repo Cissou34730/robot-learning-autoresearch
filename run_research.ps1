@@ -664,6 +664,18 @@ function Get-RequiredSessionSummaryTransition {
     return $null
 }
 
+function Test-InquiryCapPause {
+    param([Parameter(Mandatory)]$State)
+
+    return (
+        -not $State.scientific_session -and
+        -not $State.active_inquiry -and
+        -not $State.pending_operation -and
+        -not $State.terminal_state -and
+        [int]$State.counters.inquiry -ge [int]$State.campaign.max_inquiries
+    )
+}
+
 function New-ScientificSessionPrompt {
     param(
         [Parameter(Mandatory)]$State,
@@ -709,13 +721,6 @@ function New-ScientificSessionPrompt {
         "No scientific decision frontier has been checkpointed yet."
     }
     $transition = Get-RequiredSessionSummaryTransition -State $State
-    $terminalGoalReview = (
-        -not $transition -and
-        $State.scientific_session.kind -eq "goal_review" -and
-        -not $State.active_inquiry -and
-        [int]$State.counters.inquiry -ge
-            [int]$State.campaign.max_inquiries
-    )
     $inquiry = if ($transition) {
         [string]$transition.Inquiry
     }
@@ -732,11 +737,8 @@ function New-ScientificSessionPrompt {
     elseif ($State.scientific_session.kind -eq "inquiry") {
         "The inquiry has closed. Preserve its outcome and the resulting campaign decision."
     }
-    elseif ($terminalGoalReview) {
-        "None. Candidate roles may be assigned from completed evidence before deciding whether to request official assessment or conclude that no credible route remains."
-    }
     else {
-        "None. Measurements and evidence-backed model-role assignments are available before choosing official assessment, one bounded goal-linked inquiry, or a conclusion that no credible route remains."
+        "None. Measurements and evidence-backed model-role assignments are available before choosing official assessment or one bounded goal-linked inquiry."
     }
     $session = $State.scientific_session
     $correction = if ($ValidationError) {
@@ -758,15 +760,6 @@ function New-ScientificSessionPrompt {
             "Use the checkpoint contract in research/instruments.md and preserve the transition decision, evidence, remaining goal gap, and next direction."
         )
     }
-    elseif ($terminalGoalReview) {
-        @(
-            "Make the terminal goal-level decision supported by the complete campaign evidence."
-            "Goal review permits evidence-backed model-role operations. Use the model-role contract in research/instruments.md to select or update the best-known candidate when justified."
-            "Official assessment requires an explicitly assigned best-known candidate; assigning that role neither establishes goal success nor requires assessment."
-            "Use the campaign-conclusion contract in research/instruments.md to request official assessment or conclude that no credible route remains."
-            "Do not request another inquiry."
-        )
-    }
     else {
         @(
             "Choose the operation whose result would most improve the next decision toward the human goal."
@@ -775,14 +768,6 @@ function New-ScientificSessionPrompt {
             "When evidence resolves or redirects the active inquiry, record that decision explicitly rather than drifting to another question."
             "When the current line of work reaches a stable decision, preserve the synthesis, consequential competing explanations, claim limits, supporting evidence, remaining gap, decision frontier, and next direction in a checkpoint."
             "When ready to act, use the matching contract in research/instruments.md to submit one scientific action."
-        )
-    }
-
-    $readinessGuidance = if (-not $transition -and $session.kind -eq "goal_review") {
-        @(
-            "Decide whether completed evidence justifies official assessment, distinguishing the strongest available candidate from assessment readiness."
-            "Consider consequential residual failures, regressions and measurement uncertainty, and preserve their limits in the campaign decision."
-            "Inquiry closure or an above-target development score does not automatically justify assessment."
         )
     }
 
@@ -807,7 +792,6 @@ function New-ScientificSessionPrompt {
         $scientificModelUseGuidance
         "Direct every decision toward the human goal and distinguish evidence from conjecture."
         $actionGuidance
-        $readinessGuidance
         "Begin with research/brief.md and the latest checkpoint. Consult research/scenario.md, research/scientific_model.md, and other evidence only as the scientific question requires."
     ) | Where-Object { $_ }
     return ($sections -join "`n`n")
@@ -1008,8 +992,8 @@ try {
         )
         if ($maxInquiryExitCode -ne 0) {
             throw (
-                "Explicit launcher MaxInquiries must match the persisted campaign " +
-                "setting after fresh/startup initialization."
+                "Explicit launcher MaxInquiries may change only during fresh " +
+                "initialization or as an increase at an inquiry-cap pause."
             )
         }
     }
@@ -1081,6 +1065,15 @@ try {
             break
         }
 
+        if (Test-InquiryCapPause -State $state) {
+            Write-Status (
+                "PAUSE | inquiry creation cap reached | " +
+                "scientific state preserved; no campaign conclusion | " +
+                "resume with an explicit higher -MaxInquiries"
+            ) -Color Yellow -Label campaign
+            break
+        }
+
         if (-not $state.scientific_session) {
             $kind = if ($state.active_inquiry) {
                 "inquiry"
@@ -1097,15 +1090,8 @@ try {
             $objective = if ($kind -eq "startup") {
                 "Establish the most credible first scientific direction toward the human goal from the scientific model and scientific work in this session. Checkpoint when that work reaches a stable decision; formal inquiry opening belongs to goal review."
             }
-            elseif (
-                $kind -eq "goal_review" -and
-                [int]$state.counters.inquiry -ge
-                    [int]$state.campaign.max_inquiries
-            ) {
-                "Assign candidate roles when justified by completed evidence, then decide whether to request official assessment for the explicit best-known candidate or conclude that no credible route remains."
-            }
             elseif ($kind -eq "goal_review") {
-                "Reassess the scientific direction toward the human goal using completed evidence. You may request measurements to resolve an uncertainty or develop the method before committing to an inquiry. Decide whether to request official assessment, open one bounded goal-linked inquiry, or conclude that no credible route remains."
+                "Reassess the scientific direction toward the human goal using completed evidence. You may request measurements to resolve an uncertainty or develop the method before committing to an inquiry. Decide whether to request official assessment or open one bounded goal-linked inquiry."
             }
             else {
                 (

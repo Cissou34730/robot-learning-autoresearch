@@ -836,10 +836,11 @@ def _open_inquiry_request() -> dict:
     }
 
 
+@pytest.mark.parametrize("at_cap", [False, True])
 def test_goal_review_measurement_returns_to_same_session_before_inquiry(
-    monkeypatch, tmp_path
+    monkeypatch, tmp_path, at_cap
 ):
-    state, _candidate = _goal_review_candidate(monkeypatch, tmp_path, at_cap=False)
+    state, _candidate = _goal_review_candidate(monkeypatch, tmp_path, at_cap=at_cap)
     session = state["scientific_session"]
     counters = dict(state["counters"])
     module = tmp_path / "research" / "lab" / "diagnostic.py"
@@ -895,17 +896,18 @@ def test_goal_review_measurement_returns_to_same_session_before_inquiry(
     assert (
         runner_protocol.validate_operation_request(request, measured) == "measurement"
     )
-    assert (
-        runner_protocol.validate_operation_request(_open_inquiry_request(), measured)
-        == "inquiry"
-    )
-
-
-def test_goal_review_rejects_measurement_at_cap(monkeypatch, tmp_path):
-    state, _candidate = _goal_review_candidate(monkeypatch, tmp_path)
-    request = {"measurement": state["operation_events"][0]["request"]}
-    with pytest.raises(ValueError, match="inquiry-creation cap"):
-        runner_protocol.validate_operation_request(request, state)
+    if at_cap:
+        with pytest.raises(ValueError, match="MaxInquiries"):
+            runner_protocol.validate_operation_request(
+                _open_inquiry_request(), measured
+            )
+    else:
+        assert (
+            runner_protocol.validate_operation_request(
+                _open_inquiry_request(), measured
+            )
+            == "inquiry"
+        )
 
 
 @pytest.mark.parametrize("at_cap", [False, True])
@@ -921,6 +923,64 @@ def test_goal_review_still_rejects_training(monkeypatch, tmp_path, at_cap):
     }
     with pytest.raises(ValueError, match="training is not available in a goal_review"):
         runner_protocol.validate_operation_request(request, state)
+
+
+@powershell_only
+@pytest.mark.parametrize(
+    ("count", "active_field", "expected"),
+    [
+        (14, None, False),
+        (15, None, True),
+        (16, None, True),
+        (15, "active_inquiry", False),
+        (15, "scientific_session", False),
+        (15, "pending_operation", False),
+        (15, "terminal_state", False),
+    ],
+)
+def test_launcher_pauses_at_cap_only_after_scientific_work_is_checkpointed(
+    tmp_path, count, active_field, expected
+):
+    state = {
+        "campaign": {"max_inquiries": 15},
+        "counters": {"inquiry": count},
+        "active_inquiry": None,
+        "scientific_session": None,
+        "pending_operation": None,
+        "terminal_state": None,
+    }
+    if active_field:
+        state[active_field] = {"id": "active"}
+    state_json = json.dumps(state)
+    script = tmp_path / "cap-pause.ps1"
+    script.write_text(
+        f"""
+$ast = [System.Management.Automation.Language.Parser]::ParseFile(
+    '{SCRIPT_PATH}', [ref]$null, [ref]$null)
+$definition = $ast.FindAll({{
+    param($node)
+    $node -is [System.Management.Automation.Language.FunctionDefinitionAst] -and
+        $node.Name -eq 'Test-InquiryCapPause'
+}}, $true) | Select-Object -First 1
+. ([scriptblock]::Create($definition.Extent.Text))
+$state = '{state_json}' | ConvertFrom-Json
+$before = $state | ConvertTo-Json -Depth 20 -Compress
+$pause = Test-InquiryCapPause -State $state
+if (($state | ConvertTo-Json -Depth 20 -Compress) -ne $before) {{
+    throw 'Cap pause mutated scientific state'
+}}
+Write-Output $pause
+""",
+        encoding="utf-8",
+    )
+    completed = subprocess.run(
+        [POWERSHELL, "-NoProfile", "-NonInteractive", "-File", str(script)],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert completed.returncode == 0, completed.stderr
+    assert completed.stdout.strip().lower() == str(expected).lower()
 
 
 def test_goal_review_assigns_best_known_and_requests_assessment_at_cap(

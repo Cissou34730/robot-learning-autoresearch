@@ -54,8 +54,26 @@ startup requested-step ceiling below is implemented as a separate tactical
 change; its campaign effect is unassessed. Campaign `d7080d95` used the full
 startup allocation and assessed its unchanged startup policy after two
 regressing interventions. It failed at 194/200. The narrow goal-review
-readiness guidance below is now implemented; neither failed campaign had it.
-Its effect on scientific decisions remains unassessed.
+readiness guidance from `e4736da` is withdrawn by maintainer decision;
+neither failed campaign had it. Its scientific effect remains unassessed,
+not experimentally disproven. The coordinator confirmed that a separate
+agent completed the rollback. The repair commit includes this rollback.
+The maintainer approved removing the invented ending and isolating the
+temporary inquiry cap. Implementation and directly affected checks are complete.
+The shutdown repair `2e897c7`
+remains provisionally retained as an operational repair, with campaign-level
+behavior unassessed.
+The full 120,000-step startup-budget review remains pending.
+The maintainer rejects scientific exhaustion / `no_credible_route` as a valid
+campaign outcome. Future requests and obsolete pending execution for that
+ending are rejected. Historical records remain readable. The current
+fifteen-inquiry cap is a temporary execution
+limit, not a scientific decision signal, and is intended to be removed when
+the scientist is ready. The cap now pauses execution at a checkpointed boundary;
+its value is unchanged. An explicit maintainer increase at that boundary can
+resume the same campaign. Independent
+frozen-policy publication remains a proposal. The main and campaign HTML
+failure explanations are updated before runtime edits.
 
 The objective under investigation is scientifically justified action selection:
 the PI chooses the action that can resolve a consequential uncertainty rather
@@ -424,22 +442,29 @@ its scientific breadth or achieve its result.
 | Item | Status / boundary |
 |---|---|
 | Full 120,000-step startup baseline | **Next review, before another harness change.** Shorter startup requests and non-training work are already permitted, but the PI still selects a full baseline. Review startup purpose, training-budget cues and candidate-publication coupling. No fix is selected or approved; current behavior is unchanged. |
-| Counterevidence preservation and official-assessment readiness | Narrow goal-review guidance implemented below; scientific effect unassessed. In `2381bcbf`, a positive aggregate displaced non-entry failures and a grid regression. In `d7080d95`, detailed inspection preserved the failure sector, but a favorable fresh panel justified assessing an unchanged policy. The guidance distinguishes best-known from readiness and preserves residual evidence and uncertainty without Runner scientific judgment or mandatory measurement gates. |
+| Counterevidence preservation and official-assessment readiness | Guidance `e4736da` withdrawn and rolled back in the working tree, not yet committed. Scientific effect remains unassessed. The residual-evidence concerns remain open. No replacement readiness prompt is added; the approved contract repair is separate. |
 | Shorter startup training | Tactical change implemented below. The PI may request any positive integer up to the maintainer's per-run allocation during startup, never a larger request. Training remains optional; inquiry requests still use the full allocation. Existing rollout rounding is retained. Campaign effect is unassessed. |
 | Reliable measurement-evidence inspection | Discoverability provisionally retained. In `48993cfd`, M5 feedback advertised diagnostics, but the PI closed without inspecting the strata and incorrectly claimed no outer-reaching gain. In `2381bcbf`, M3/M4 diagnostic reads stopped at lines 1-310, were described as full inspection, and remaining non-entry cases were lost in the synthesis. Decision-linked inspection and interpretation remain unresolved. |
 | Context flooding | Brief-only compaction implemented below: 57.39% smaller on the completed campaign, with all candidates and inventory references preserved. Campaign benefit remains unassessed; prompt replay and SDK output handling are unchanged and remain separate possible work. |
-| Training-shaped inquiry commitments and scientific continuity | Open, with a positive local observation in `2381bcbf`: one inquiry sustained diagnostics and two successive method interventions. The question-based objective was active, but causation is unproved. Both aggregate losses and aggregate gains have obscured consequential subgroup evidence in handoffs. The new goal-review guidance addresses decision framing, not method development or trial-shaped commitments. Startup clarification is retained, and scientific-model framing remains an unproven lead. |
+| Training-shaped inquiry commitments and scientific continuity | Open, with a positive local observation in `2381bcbf`: one inquiry sustained diagnostics and two successive method interventions. The question-based objective was active, but causation is unproved. Both aggregate losses and aggregate gains have obscured consequential subgroup evidence in handoffs. The withdrawn goal-review guidance addressed decision framing, not method development or trial-shaped commitments; no replacement is selected. Startup clarification is retained, and scientific-model framing remains an unproven lead. |
 | Checkpoint nomination and evidence selection | Deferred behind progression; available training facts are not proof of development performance. |
 | Operation-submission handoff clarification | Still unimplemented. |
 | Explicit protection of the old protocol log | Still unimplemented; read-access policy is a separate decision. |
-| Console clarity and maintainer-file read controls | Separate deferred work; read restrictions are not the established remedy for the present evidence-inspection failure. |
+| Console clarity and maintainer-file read controls | Console work remains deferred. Copilot read/view and explicit shell-reader targets now use the shared reserved-path policy. Required scientific Markdown remains readable. This is not an OS sandbox or demonstrated scientific remedy. |
+| Independent frozen-policy publication | **Proposal only.** Publication independent of training is not approved or implemented; campaign recovery is not authorized. |
+| Scientific-exhaustion / no-credible-route outcome | **Removed from future requests and instructions.** Obsolete pending execution is rejected. Historical E19 remains readable and unchanged. Directly affected checks pass; scientific effect remains unassessed. |
+| Fifteen-inquiry cap | **Decoupled; value unchanged.** The launcher pauses after active work is checkpointed, without a terminal state. Measurements keep their permission. Only an explicit maintainer increase at that paused boundary resumes execution. Later cap removal remains pending. E19 at four of fifteen inquiries was not cap-triggered. |
 | Publication/recovery, maintainer training allocation, and goal-review role availability | Implemented; not active repair items. |
 
 The startup allocation change is tactical, not a solution to scientific
 continuity. Counterevidence preservation and official-assessment readiness
-now have an implemented, narrow prompt change. Its scientific effect remains
-to be observed in future decisions, not inferred from implementation checks
-or a benchmark pass alone.
+remain unresolved after the maintainer withdrew the narrow prompt guidance.
+Implementation checks do not establish scientific effectiveness. The full
+startup-budget review remains pending; no replacement guidance or budget
+change is approved. The earlier operational-block versus scientific-exhaustion
+proposal is superseded by the maintainer's rejection of scientific exhaustion
+as an intended endpoint. Operational constraints must not be presented as
+scientific exhaustion.
 
 Hypothesis registries, premise-status fields, mandatory reasoning checklists,
 reference-panel reuse, submission-handoff clarification, and explicit
@@ -1239,7 +1264,7 @@ separate from harness changes so their outcomes are not conflated.
 
 ## 2026-10-03: goal-review assessment-readiness guidance
 
-- **Implementation commit:** the commit containing this entry,
+- **Implementation commit:** `e4736da`,
   `Clarify assessment readiness in goal review`.
 - **RCA and approval:** two campaigns justified official assessment from
   narrow above-target development results while consequential residual
@@ -1267,12 +1292,15 @@ separate from harness changes so their outcomes are not conflated.
   Campaign reports preserve the fact that it was absent during their runs.
   HTML wording uses short technical sentences and retains the existing
   qualification about unverified formal ASD-STE100 compliance.
-- **Disposition:** implemented for observation; scientific effect unassessed.
-  No campaign was started, resumed or reset. Campaign evidence and scientific
-  code were not changed.
+- **Disposition:** initially implemented for observation, then withdrawn by
+  maintainer decision and rolled back in the working tree, as recorded below.
+  Scientific effect remains unassessed; withdrawal is not experimental
+  disproof. The original implementation did not start, resume or reset a
+  campaign, or change campaign evidence or scientific code.
 
 ## 2026-10-03: bounded Copilot runtime shutdown
 
+- **Implementation commit:** `2e897c7`.
 - **RCA and approval:** campaign `3ac5a413` stopped at the PI-to-Runner
   handoff. S6 completed its final turn, destroyed its session, and prepared
   the CLI runtime for shutdown at 08:13:00 CEST. The adapter and runtime
@@ -1302,3 +1330,168 @@ separate from harness changes so their outcomes are not conflated.
   scientific intervention.
   Campaign-level behavior remains unassessed. The startup-baseline review
   remains pending; this repair does not change its training budget.
+
+## 2026-10-03: withdraw goal-review readiness guidance
+
+- **Decision / scope:** the maintainer approved rollback of the three-sentence
+  goal-review readiness guidance from `e4736da`, while retaining shutdown
+  repair `2e897c7`. The coordinator confirmed that a separate agent removed
+  the exact nine-line readiness block and its prompt inclusion from
+  `run_research.ps1`. The rollback is complete in the working tree, not yet
+  committed. Historical entries and backlog findings remain preserved.
+- **Implementation checks:** the coordinator reported that PowerShell
+  parsing and whitespace checks passed without executing the launcher.
+  Shutdown repair `2e897c7` and campaign artifacts were untouched.
+  This log-only update changes no executable behavior. These checks and
+  the historical implementation checks above are not evidence of scientific
+  effectiveness.
+- **Scientific limits:** campaign `3ac5a413` does not establish that the
+  readiness guidance caused termination or was experimentally disproven.
+  The training-centered candidate-publication path and `no_credible_route`
+  terminal mechanism predate `e4736da`.
+- **Disposition / boundary:** this readiness approach is withdrawn and rolled
+  back in the working tree. A replacement is to be designed later, not
+  approved or implemented now. Independent frozen-policy publication remains
+  a proposal, not an approved or implemented change. The earlier
+  operational-block versus scientific-exhaustion proposal is superseded by
+  the maintainer clarification below; exhaustion is not an intended endpoint.
+  Shutdown repair remains provisionally
+  retained with its existing scientific disposition. The full 120,000-step
+  startup-budget review remains pending. No state recovery, reset, new
+  experiment, registration fix, isolation change or banner fix is authorized
+  by this decision.
+
+## 2026-10-03: PI-requested terminal outcome after wrapper measurements
+
+- **Reference:** campaign `3ac5a413-ac79-4850-9c3a-83a3f0b41457`;
+  terminal E19 in S10. See the
+  [detailed maintainer report](research-overview/robot-campaign-3ac5a413-20261003.html).
+- **Terminal RCA:** the PI explicitly requested `no_credible_route`.
+  This terminal outcome was not maintainer-triggered, an inquiry-cap stop,
+  a crash or an official benchmark failure. The earlier S6 shutdown stall
+  recorded above is a separate operational event. The terminal interface
+  lacks an explicit operational-block outcome; Runner records PI decisions,
+  not scientific judgments.
+- **Operations and resources:** four of fifteen inquiries, ten sessions,
+  eight measurements and two training operations. T1 and T2 each requested
+  120,000 steps and completed 120,832, for 241,664 completed steps in total.
+  Recorded usage is 34 invocations and 94.397128 AIU. The stranded S6
+  accounting row is absent, so these records are not guaranteed complete
+  billing. Elapsed time is omitted because console elapsed and timestamps
+  disagree.
+- **Development evidence:** ordinary T1 `checkpoint100352` scored 151/160.
+  M6's wrapper scored 160/160; M7's frozen wrapper also scored 160/160.
+  Both wrapper measurements used the same reused development panel. M7 is
+  not independent confirmation, and neither result is official success.
+- **Publication boundary:** M8 found no registry binding for the wrapper and
+  no dedicated registration operation. It did not prove that every possible
+  authorized producer route was exhausted. Standard candidate publication
+  is training-centered. Validators accept zero completed steps and the PI
+  owns producer code, but an export-only route is undocumented and untested
+  end-to-end. These checks do not establish an authorized or proven workaround.
+- **Terminal state and artifacts:** M7 model and runtime artifacts still
+  exist and match their measured hashes. The campaign remains terminal, with
+  no official assessment, 48 registered T1/T2 candidates and no best-known
+  role. These facts do not authorize recovery or a new operation.
+- **Interpretation / disposition:** development success was followed by a
+  PI-reported publication barrier, not an official test of the wrapper.
+  The record supports neither exhaustive route closure nor a causal claim
+  against `e4736da`. Readiness withdrawal is a maintainer decision; shutdown
+  repair remains provisionally retained, not scientifically validated by
+  this outcome. No campaign or implementation change is made by this entry.
+
+## 2026-10-03: reject scientific-exhaustion outcomes
+
+- **Maintainer clarification:** scientific exhaustion / `no_credible_route`
+  is rejected as a valid campaign outcome. Remove it from future design;
+  do not preserve a supposedly genuine scientific-exhaustion endpoint.
+  This supersedes the earlier proposal to distinguish operational-block
+  from scientific-exhaustion endpoints.
+- **Historical fact / runtime:** the PI requested E19 `no_credible_route` in
+  S10 of campaign `3ac5a413`. That record remains accurate and the campaign
+  remains terminal. The runtime still contains this outcome. Requested
+  removal has not been patched; historical recording is not endorsement.
+- **Execution limit:** the current fifteen-inquiry cap is temporary, not a
+  scientific decision signal. The maintainer intends to remove it when the
+  scientist is ready. Cap removal is not implemented.
+- **RCA / scope:** the requested bounded code/instruction RCA is now reviewed
+  and complete, as reported by the coordinator. This tracking session records
+  those findings without further code or SDK investigation. This batch rolls
+  back only `e4736da` readiness guidance; outcome removal and cap decoupling
+  remain unimplemented.
+- **Origin:** at local conversation turn 264, the user explicitly said fifteen
+  inquiries was only test-safety. The assistant added policy success or
+  establishing no credible route as alternative campaign objectives to avoid
+  endless inquiry. Core commit `034daed` and lifecycle commit `6d6d41e`
+  implement that unrequested alternative objective.
+- **Instruction and execution path:** `research\program.md:19-21,63`,
+  `research\instruments.md:313-318` and `run_research.ps1:1099` explicitly
+  instruct `no_credible_route`. `research\runner_protocol.py:779-805` accepts
+  the action with a nonempty reason. `research\run_experiment.py:774-788`
+  writes `terminal_state`; `run_research.ps1:1058-1073` breaks the loop.
+- **Separate cap violation:** `research\runner_protocol.py:837-844` blocks
+  goal-review measurements at the cap. `run_research.ps1:759-769` forces a
+  terminal decision. Actual E19 at four of fifteen inquiries was not
+  cap-triggered.
+- **Readiness-guidance limit:** `e4736da` sought to prevent premature official
+  assessment after narrow above-target development results. It neither
+  introduced nor removed `no_credible_route`; its causal effect on E19 is
+  unproven. The rejected decision option and training-centered publication
+  remain after the readiness rollback.
+- **Disposition / boundary:** independent frozen-policy publication remains
+  a proposal, not approved or implemented. Shutdown repair `2e897c7` remains
+  provisionally retained. Backlog findings and historical entries remain
+  preserved. The full 120,000-step startup-budget review remains pending;
+  campaign recovery and other code changes are not authorized by this
+  log update.
+
+## 2026-10-03: remove invented ending and isolate inquiry cap
+
+- **Approval and order:** after the exact code/instruction RCA, the maintainer
+  approved the repair. The main overview and campaign report were updated
+  before runtime edits. Implementation and directly affected checks are complete.
+- **Failure:** the assistant changed goal-directed research into either
+  satisfying the goal or establishing that no credible route remained.
+  Prompts and contracts exposed that invented ending. The PI selected it
+  after encountering an artifact-publication barrier; the Runner recorded
+  the terminal state and the launcher stopped.
+- **Separate cap error:** the temporary inquiry cap also restricted
+  goal-review measurements and forced a terminal decision. It must only
+  pause execution resumably. Actual E19 at four of fifteen inquiries was
+  not cap-triggered.
+- **Approved scope:** remove the invented action from future requests and
+  instructions; separate the cap from scientific decisions and instrument
+  permissions. Preserve E19, campaign state and evidence. Keep the current
+  cap value, training allocation and shutdown repair.
+- **Other boundaries:** independent frozen-policy publication remains a
+  proposal. No campaign recovery, reset, training or assessment is authorized.
+  The maintainer also reauthorized a bounded SDK check of PI read controls
+  for maintainer documents. Required scientific Markdown must remain readable;
+  enforcement limits must be stated, not hidden.
+- **Implementation:** future conclusion requests permit only official
+  assessment. Obsolete pending conclusions are rejected before mutation.
+  Existing E19 and terminal records remain readable; no migration or reopening
+  is performed. The launcher pauses at the cap only after active inquiry and
+  session work finish. Goal-review measurement permissions no longer depend
+  on the count. Only an explicit maintainer increase at the paused boundary
+  can change the persisted cap after startup.
+- **Read controls:** SDK `PermissionRequestRead` and explicit shell-reader
+  targets use the existing reserved path matcher. `RESERVED_SCRIPT_PATHS`
+  includes maintainer documents and harness source patterns. Scientific
+  Markdown remains readable. Existing reserved scientific entry-point paths
+  are also denied direct reads, as requested; write ownership is unchanged.
+  Rejections give visible feedback. Arbitrary code and broad searches are not
+  filesystem-isolated; no OS sandbox is claimed.
+- **Checks and limits:** the initial four-file targeted run found twelve
+  temporary Git-init permission failures and an unrelated malformed training
+  fixture missing `initialization`. Neither is repaired by this change.
+  The new explicit-reader bypass was fixed and directly affected old reader
+  expectations were updated. The final focused run passed 209 tests, with
+  the thirteen identified unrelated cases deselected. Touched-file Ruff
+  checks, launcher parsing, HTML structure, theme and local-link checks
+  passed. Campaign state and results SHA256 values are unchanged. These
+  checks do not establish scientific effectiveness or OS-level isolation.
+- **Disposition:** implemented for observation. No scientific effect
+  is claimed from this operational repair.
+- **Publication:** the maintainer authorized commit and push of the repair,
+  tests and documentation. The maintainer will reset the campaign separately.

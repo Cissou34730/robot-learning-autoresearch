@@ -51,9 +51,7 @@ def _configure(monkeypatch, tmp_path: Path) -> dict:
     return state
 
 
-def test_no_credible_route_is_terminal_without_allocating_training(
-    monkeypatch, tmp_path
-):
+def test_no_credible_route_is_rejected_without_changing_campaign(monkeypatch, tmp_path):
     state = _configure(monkeypatch, tmp_path)
     request = {
         "campaign_conclusion": {
@@ -61,12 +59,31 @@ def test_no_credible_route_is_terminal_without_allocating_training(
             "reason": "The durable evidence leaves no credible path.",
         }
     }
-    run_experiment.accept_operation(request, state)
-    assert run_experiment.execute_pending_operation() == 0
-    persisted = repository.read_state()
-    assert persisted["terminal_state"]["status"] == "no_credible_route"
-    assert persisted["counters"]["training"] == 0
-    assert persisted["scientific_session"] is None
+    original = repository.read_state()
+    with pytest.raises(ValueError, match="must be request_official_assessment"):
+        run_experiment.accept_operation(request, state)
+    assert repository.read_state() == original
+    assert state == original
+
+
+def test_obsolete_pending_conclusion_cannot_create_a_terminal_state(
+    monkeypatch, tmp_path
+):
+    state = _configure(monkeypatch, tmp_path)
+    pending = {
+        "data": {
+            "plan": {
+                "status": "no_credible_route",
+                "reason": "An obsolete request.",
+                "model": None,
+            }
+        }
+    }
+    original = repository.read_state()
+    with pytest.raises(ValueError, match="only an official-assessment request"):
+        run_experiment._execute_campaign_conclusion(state, pending)
+    assert repository.read_state() == original
+    assert state == original
 
 
 def test_official_assessment_requires_an_explicit_best_known(monkeypatch, tmp_path):
@@ -79,6 +96,18 @@ def test_official_assessment_requires_an_explicit_best_known(monkeypatch, tmp_pa
     }
     with pytest.raises(ValueError, match="best-known"):
         protocol.validate_operation_request(request, state)
+
+
+def test_historical_terminal_record_remains_readable(monkeypatch, tmp_path):
+    state = _configure(monkeypatch, tmp_path)
+    state["scientific_session"] = None
+    state["terminal_state"] = {
+        "status": "no_credible_route",
+        "reason": "A recorded historical stop.",
+        "model": None,
+    }
+    repository.write_state(state)
+    assert repository.read_state() == state
 
 
 def test_official_assessment_records_the_selected_best_known(monkeypatch, tmp_path):
@@ -133,8 +162,8 @@ def test_campaign_conclusion_requires_goal_review_after_inquiry_closure(
     }
     request = {
         "campaign_conclusion": {
-            "action": "no_credible_route",
-            "reason": "No route remains.",
+            "action": "request_official_assessment",
+            "reason": "Assess the selected candidate.",
         }
     }
     with pytest.raises(ValueError, match="opened inquiry"):

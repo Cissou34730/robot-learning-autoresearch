@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import argparse
 import asyncio
+import fnmatch
 import json
 import ntpath
 import re
@@ -151,6 +152,11 @@ FILE_EDIT_DENIAL = (
     "This path is outside the editable scientific surface defined in AGENTS.md."
 )
 
+FILE_READ_DENIAL = (
+    "Reserved harness and maintainer files are unavailable for inspection. "
+    "Use AGENTS.md, the scientific contracts, and campaign evidence instead."
+)
+
 RESERVED_SCRIPT_NAMES = (
     "run_experiment.py",
     "runner_assessment.py",
@@ -165,6 +171,14 @@ RESERVED_SCRIPT_PATHS = (
     "robot_learning/evaluate.py",
     "robot_learning/play.py",
     "robot_learning/train.py",
+    "research/runner_*.py",
+    "research/build_research_brief.py",
+    "research/query_training_log.py",
+    "researcher_*.py",
+    "researcher_*.ps1",
+    "tools/campaign_report.py",
+    "docs",
+    "docs/*",
 )
 
 RESERVED_MODULES = (
@@ -178,8 +192,7 @@ RESERVED_MODULES = (
     "robot_learning.benchmark.final_benchmark",
 )
 
-# Commands that only ever read. Naming a protected path to one of these is
-# research, not execution.
+# These readers use the same reserved-path policy as execution.
 READER_COMMANDS = frozenset(
     {
         "get-content",
@@ -416,6 +429,12 @@ def file_edit_denial(target: str, *, preliminary: bool = False) -> str | None:
     return FILE_EDIT_DENIAL
 
 
+def file_read_denial(target: str) -> str | None:
+    if is_reserved_execution(target):
+        return FILE_READ_DENIAL
+    return None
+
+
 def thousands(count: int) -> str:
     return f"{count / 1000:.0f}k" if count >= 1000 else str(count)
 
@@ -557,10 +576,14 @@ def execution_target(tokens: list[str]) -> str | None:
 def is_reserved_execution(target: str | None) -> bool:
     if not target:
         return False
-    normalized = target.replace("\\", "/").lstrip("./").lower()
+    relative = _repository_relative_target(target)
+    normalized = (relative or target).replace("\\", "/").lstrip("./").lower()
     if Path(normalized).name in RESERVED_SCRIPT_NAMES:
         return True
-    if any(normalized.endswith(path) for path in RESERVED_SCRIPT_PATHS):
+    if any(
+        fnmatch.fnmatchcase(normalized, path) or normalized.endswith("/" + path)
+        for path in RESERVED_SCRIPT_PATHS
+    ):
         return True
     return normalized in RESERVED_MODULES
 
@@ -830,14 +853,50 @@ def is_dependency_management(tokens: list[str]) -> bool:
 def command_denial(command: str) -> str | None:
     """The reason this command is refused, or None when it may run.
 
-    Only what a segment executes is judged, never what it mentions: reading or
-    grepping a protected path is ordinary research. A guardrail against the
-    failures that have actually broken research runs, not a sandbox --
+    Explicit reader targets and execution use the same reserved-path policy.
+    This is a tool boundary, not a sandbox --
     `uv run python -c` can still do anything the researcher could.
     """
     for tokens in command_segments(command):
         if is_dependency_management(tokens):
             return DEPENDENCY_DENIAL
+        reader_tokens = tokens
+        while reader_tokens and reader_tokens[0] == "&":
+            reader_tokens = reader_tokens[1:]
+        reader_name = (
+            Path(clean_command_token(reader_tokens[0]))
+            .name.lower()
+            .removesuffix(".exe")
+            if reader_tokens
+            else ""
+        )
+        if reader_name in READER_COMMANDS:
+            pattern_pending = reader_name in {"rg", "select-string", "sls", "findstr"}
+            skip_pattern_value = False
+            for token in reader_tokens[1:]:
+                path = clean_command_token(token)
+                if skip_pattern_value:
+                    skip_pattern_value = False
+                    continue
+                if path.lower() in {"-e", "--regexp", "-pattern"}:
+                    skip_pattern_value = True
+                    pattern_pending = False
+                    continue
+                if path.lower().startswith(("--regexp=", "-pattern=")):
+                    pattern_pending = False
+                    continue
+                if path.lower() in {"-path", "-literalpath"}:
+                    pattern_pending = False
+                    continue
+                if path.startswith("-") and "=" in path:
+                    path = clean_command_token(path.split("=", 1)[1])
+                elif path.startswith("-"):
+                    continue
+                if pattern_pending:
+                    pattern_pending = False
+                    continue
+                if file_read_denial(path):
+                    return FILE_READ_DENIAL
         target = execution_target(tokens)
         if not target:
             continue
@@ -1265,6 +1324,7 @@ def build_handlers(
         AssistantTurnEndData,
         AssistantTurnStartData,
         AssistantUsageData,
+        PermissionRequestRead,
         PermissionRequestShell,
         PermissionRequestWrite,
         SessionErrorData,
@@ -1331,7 +1391,12 @@ def build_handlers(
 
     def on_permission_request(request, invocation):
         del invocation
-        if isinstance(request, PermissionRequestWrite):
+        if isinstance(request, PermissionRequestRead):
+            reason = file_read_denial(request.path)
+            if reason:
+                console.denied(reason, getattr(request, "tool_call_id", None))
+                return PermissionDecisionReject(feedback=reason)
+        elif isinstance(request, PermissionRequestWrite):
             reason = file_edit_denial(
                 request.file_name,
                 preliminary=preliminary,

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import builtins
+import copy
 import subprocess
 import sys
 import types
@@ -86,7 +87,7 @@ def test_startup_session_persists_backend_identity_and_has_strict_shape(monkeypa
         ("inquiry", "measurement", None, True),
         ("inquiry", "inquiry", "reframe", True),
         ("inquiry", "inquiry", "open", False),
-        ("inquiry", "campaign_conclusion", "no_credible_route", False),
+        ("inquiry", "campaign_conclusion", "request_official_assessment", False),
     ],
 )
 def test_scientific_session_operation_matrix_is_explicit(
@@ -318,6 +319,37 @@ def test_max_inquiries_changes_only_during_fresh_or_startup_initialization(monke
     with pytest.raises(ValueError, match="does not match persisted"):
         repository.synchronize_max_inquiries(state, 8)
     assert not repository.synchronize_max_inquiries(state, 7)
+
+
+def test_maintainer_can_raise_inquiry_cap_only_at_the_paused_boundary(monkeypatch):
+    state = _ready_state(monkeypatch, session_kind="goal_review")
+    state["scientific_session"] = None
+    cap = state["campaign"]["max_inquiries"]
+    state["counters"]["inquiry"] = cap
+    original = copy.deepcopy(state)
+
+    assert repository.synchronize_max_inquiries(state, cap + 1)
+    original["campaign"]["max_inquiries"] = cap + 1
+    assert state == original
+    assert state["terminal_state"] is None
+
+
+@pytest.mark.parametrize(
+    "active_field",
+    ["scientific_session", "active_inquiry", "pending_operation", "terminal_state"],
+)
+def test_cap_resume_does_not_change_active_or_terminal_campaigns(
+    monkeypatch, active_field
+):
+    state = _ready_state(monkeypatch, session_kind="goal_review")
+    state["scientific_session"] = None
+    cap = state["campaign"]["max_inquiries"]
+    state["counters"]["inquiry"] = cap
+    state[active_field] = {"id": "active"}
+    original = copy.deepcopy(state)
+    with pytest.raises(ValueError, match="does not match persisted"):
+        repository.synchronize_max_inquiries(state, cap + 1)
+    assert state == original
 
 
 def test_active_session_backend_descriptor_must_match_until_checkpoint(monkeypatch):

@@ -773,6 +773,8 @@ def _execute_recipe_restore(state: dict, pending: dict) -> int:
 
 def _execute_campaign_conclusion(state: dict, pending: dict) -> int:
     terminal = copy.deepcopy(pending["data"]["plan"])
+    if terminal["status"] != "official_assessment_requested":
+        raise ValueError("only an official-assessment request may conclude a campaign")
 
     def apply(current: dict, _result: dict) -> None:
         current["terminal_state"] = terminal

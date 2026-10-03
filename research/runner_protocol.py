@@ -785,26 +785,18 @@ def plan_campaign_conclusion(request: dict, state: dict) -> dict:
     if set(request) != {"action", "reason"}:
         raise ValueError("campaign_conclusion requires action and reason")
     action = str(request.get("action", "")).strip()
-    if action not in {"request_official_assessment", "no_credible_route"}:
+    if action != "request_official_assessment":
         raise ValueError(
-            "campaign conclusion action must be request_official_assessment "
-            "or no_credible_route"
+            "campaign conclusion action must be request_official_assessment"
         )
     reason = _nonempty(request, "reason", "campaign conclusion reason")
-    model = None
-    if action == "request_official_assessment":
-        model = state["model_roles"]["best_known"]
-        if model is None:
-            raise ValueError(
-                "official assessment requires an explicitly assigned best-known model"
-            )
-        resolve_candidate(state, model)
-    status = (
-        "official_assessment_requested"
-        if action == "request_official_assessment"
-        else action
-    )
-    return {"status": status, "reason": reason, "model": model}
+    model = state["model_roles"]["best_known"]
+    if model is None:
+        raise ValueError(
+            "official assessment requires an explicitly assigned best-known model"
+        )
+    resolve_candidate(state, model)
+    return {"status": "official_assessment_requested", "reason": reason, "model": model}
 
 
 def _latest_session_event(state: dict, session: dict) -> dict | None:
@@ -833,14 +825,6 @@ def _validate_session_operation(
     if kind not in allowed:
         raise ValueError(
             f"{kind} is not available in a {session_kind} scientific session"
-        )
-    if (
-        session_kind == "goal_review"
-        and kind == "measurement"
-        and int(state["counters"]["inquiry"]) >= int(state["campaign"]["max_inquiries"])
-    ):
-        raise ValueError(
-            "goal-review measurements are unavailable at the inquiry-creation cap"
         )
     if (
         session_kind == "goal_review"

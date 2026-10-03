@@ -21,7 +21,7 @@ identities are `E#`. Only completed identities may be cited as evidence.
 Accepted operations depend on the current scientific session:
 
 - `startup`: measurement, training, model role, recipe restoration, checkpoint;
-- `goal_review`: measurement before the inquiry-creation cap is reached, model
+- `goal_review`: measurement, model
   role, inquiry open, or campaign conclusion; checkpoint becomes available only
   after that session opens the inquiry;
 - `inquiry`: measurement, training, model role, recipe restoration, inquiry
@@ -310,12 +310,11 @@ not assign a model role.
 }
 ```
 
-`action` is `request_official_assessment` or `no_credible_route`. `reason` is
-required and non-empty. Both actions require a goal-review session and no
-active inquiry. An assessment request also requires an explicit best-known
+`action` is `request_official_assessment`. `reason` is required and non-empty.
+The request requires a goal-review session and no active inquiry.
+An assessment request also requires an explicit best-known
 candidate. It executes the protected official assessment and records its
-result. `no_credible_route` records the terminal state without running an
-assessment.
+result. No other campaign-conclusion action is supported.
 
 ## Scientific-model publication
 

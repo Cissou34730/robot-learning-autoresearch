@@ -18,7 +18,8 @@ whether the campaign is making progress.
 
 The human goal defined by `research/scenario.md` is the campaign's only
 objective. Science, methods, training, measurements, and tools are instruments
-for reaching that goal or establishing that no credible route remains.
+for reaching that goal. An unsuccessful recipe, inquiry, or implementation
+barrier does not establish a scientific ending for the campaign.
 
 The lifecycle has five levels:
 
@@ -55,22 +56,28 @@ candidates using completed evidence.
 
 ## Goal review
 
-When no inquiry is active, a bounded goal-review session reaches one of three
+When no inquiry is active, a bounded goal-review session reaches one of two
 campaign-level decisions:
 
-- request the official assessment for the explicit best-known model;
-- open one bounded inquiry connected directly to the current goal gap; or
-- conclude that no credible route remains.
+- request the official assessment for the explicit best-known model; or
+- open one bounded inquiry connected directly to the current goal gap.
 
 Opening an inquiry records its question, connection to the human goal, closure
 condition, and rationale. The opening goal-review session then ends at a
 durable checkpoint, and a fresh inquiry session continues from that state.
-Goal review permits measurement before the inquiry-creation cap is reached,
+Goal review permits measurement,
 model-role assignment, inquiry opening, campaign conclusion, and the checkpoint
 required after opening an inquiry. Measurements return to the same session.
 Once an inquiry is opened, only the goal-review checkpoint may follow in that
 session. Model roles may be assigned before the campaign-level decision,
-including when no further inquiry can be opened.
+without making the inquiry count a scientific decision signal.
+
+The inquiry cap is a temporary unattended-execution limit. After the final
+permitted inquiry closes and its session checkpoints, the launcher pauses
+without recording a campaign conclusion or forcing official assessment.
+An active inquiry and its checkpoint finish normally. The maintainer may
+explicitly raise `-MaxInquiries` at that paused boundary to resume the same
+campaign. The cap does not change scientific instrument permissions.
 
 ## Inquiry work
 
@@ -147,8 +154,8 @@ role neither declares success nor obliges the PI to request official assessment.
 
 The PI alone decides whether the evidence justifies requesting the official
 assessment. The protected assessment then returns the recorded pass or fail
-result that ends the campaign. The PI may instead conclude that no credible
-route remains, ending the campaign without assessment.
+result that ends the campaign. There is no PI-selected scientific-exhaustion
+or no-credible-route campaign ending.
 
 ## Context routing
 

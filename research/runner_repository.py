@@ -1836,6 +1836,7 @@ def validate_research_state(state: dict, *, allow_missing_artifact: bool) -> Non
             "model",
         }:
             raise ValueError("terminal_state requires status, reason, and model")
+        # Preserve completed historical stops without permitting new requests.
         if terminal["status"] not in {
             "official_assessment_requested",
             "official_assessment_passed",
@@ -2068,7 +2069,15 @@ def synchronize_max_inquiries(state: dict, requested: int) -> bool:
         and state["pending_operation"] is None
         and state["terminal_state"] is None
     )
-    if not startup_initialization:
+    cap_pause = (
+        state["scientific_session"] is None
+        and state["active_inquiry"] is None
+        and state["pending_operation"] is None
+        and state["terminal_state"] is None
+        and int(state["counters"]["inquiry"]) >= current
+        and requested > int(state["counters"]["inquiry"])
+    )
+    if not startup_initialization and not cap_pause:
         raise ValueError(
             f"launcher MaxInquiries {requested} does not match persisted campaign "
             f"setting {current}"

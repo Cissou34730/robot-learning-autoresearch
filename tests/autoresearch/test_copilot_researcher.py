@@ -260,18 +260,22 @@ def test_ordinary_research_commands_are_not_obstructed():
 
 
 @pytest.mark.parametrize(
-    "command",
+    ("command", "expected"),
     [
-        # Naming a protected path is research; only running it is execution.
-        "Get-Content research/run_experiment.py",
-        "rg request_official_assessment research/runner_protocol.py",
-        "Select-String -Path research/program.md -Pattern official_assessment",
-        "python -c \"print(operation['campaign_conclusion'])\"",
-        "cat robot_learning/train.py",
+        ("Get-Content research/run_experiment.py", adapter.FILE_READ_DENIAL),
+        (
+            "rg request_official_assessment research/runner_protocol.py",
+            adapter.FILE_READ_DENIAL,
+        ),
+        ("Select-String -Path research/program.md -Pattern official_assessment", None),
+        ("python -c \"print(operation['campaign_conclusion'])\"", None),
+        ("cat robot_learning/train.py", adapter.FILE_READ_DENIAL),
     ],
 )
-def test_reading_about_a_protected_path_is_not_running_it(command):
-    assert adapter.command_denial(command) is None
+def test_reader_targets_distinguish_reserved_files_from_scientific_sources(
+    command, expected
+):
+    assert adapter.command_denial(command) == expected
 
 
 def test_the_execution_target_is_resolved_through_the_launcher_prefix():
@@ -381,6 +385,81 @@ def test_preliminary_write_permission_only_allows_the_scientific_model():
         == adapter.FILE_EDIT_DENIAL
     )
     assert adapter.file_edit_denial("research/operation_request.json") is None
+
+
+@pytest.mark.parametrize(
+    "path",
+    [
+        "research/run_experiment.py",
+        "research/runner_protocol.py",
+        "researcher_copilot.py",
+        "robot_learning/train.py",
+        "docs/harness-experiment-log.md",
+        r"DOCS\IMPLEMENTATION_PLAN_CAMPAIGN_CORRECTNESS.md",
+        str(
+            ROOT
+            / "docs"
+            / "research-overview"
+            / "robot-learning-overview-20261002.html"
+        ),
+    ],
+)
+def test_reserved_read_permissions_are_rejected(path, capsys):
+    pytest.importorskip("copilot")
+    from copilot.rpc import PermissionDecisionReject
+    from copilot.session_events import PermissionRequestRead
+
+    console = adapter.Console()
+    _, on_permission = adapter.build_handlers(console, asyncio.Event())
+    request = PermissionRequestRead(
+        intention="inspect a file", path=path, tool_call_id="read-denied"
+    )
+    decision = on_permission(request, {})
+    assert isinstance(decision, PermissionDecisionReject)
+    assert decision.feedback == adapter.FILE_READ_DENIAL
+    assert "read-denied" in console.denied_calls
+    capsys.readouterr()
+
+
+@pytest.mark.parametrize(
+    "path",
+    [
+        "AGENTS.md",
+        "research/program.md",
+        "research/instruments.md",
+        "research/scientific_model.md",
+        "research/brief.md",
+        "research/lab/diagnostic.py",
+        "robot_learning/scenario/environment.py",
+        "robot_learning/robots/two_joint_arm.xml",
+    ],
+)
+def test_scientific_corpus_remains_readable(path):
+    pytest.importorskip("copilot")
+    from copilot.rpc import PermissionDecisionApproveOnce
+    from copilot.session_events import PermissionRequestRead
+
+    _, on_permission = adapter.build_handlers(adapter.Console(), asyncio.Event())
+    request = PermissionRequestRead(intention="scientific inspection", path=path)
+    assert isinstance(on_permission(request, {}), PermissionDecisionApproveOnce)
+
+
+@pytest.mark.parametrize(
+    "command",
+    [
+        r"Get-Content docs\harness-experiment-log.md",
+        r"Get-Content -LiteralPath='docs\harness-experiment-log.md'",
+        r"cat research\runner_protocol.py",
+        r"rg -n route docs\harness-experiment-log.md",
+        r"Select-String -Path docs\harness-experiment-log.md -Pattern route",
+    ],
+)
+def test_explicit_shell_reads_use_the_reserved_path_policy(command):
+    assert adapter.command_denial(command) == adapter.FILE_READ_DENIAL
+
+
+def test_searching_scientific_code_for_a_reserved_name_is_not_a_reserved_read():
+    assert adapter.command_denial(r"rg run_research.ps1 research\lab") is None
 
 
 # --- the session profile ----------------------------------------------------

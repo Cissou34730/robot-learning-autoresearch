@@ -69,8 +69,9 @@ commands. Heavy scientific operations are requested through the contracts in
 
 ## Human-owned paths
 
-The PI may read but not modify these paths during a scientific session:
+The PI must not modify these paths during a scientific session:
 
+- `docs/` - maintainer documents and campaign reports;
 - `AGENTS.md`, `research/program.md`, `research/scenario.md`,
   `research/instruments.md`, `research/scientific_model.md` (after its
   campaign-start PI session);
@@ -92,6 +93,13 @@ The PI may read but not modify these paths during a scientific session:
   test files.
 
 A protected path takes precedence over any PI-owned prefix.
+
+The Copilot adapter also rejects read/view requests and explicit shell-reader
+targets matched by its shared reserved-script policy, including `docs/`.
+`AGENTS.md` and the scientific Markdown under `research/` remain readable.
+The existing reserved scientific entry-point paths are also read-restricted;
+their PI write ownership is unchanged. This is a tool-level restriction,
+not an operating-system filesystem sandbox.
 
 ## PI-owned paths
 
