@@ -1656,7 +1656,7 @@
     }
   },
   "counters": {
-    "event": 17,
+    "event": 18,
     "inquiry": 4,
     "measurement": 8,
     "session": 9,
@@ -1665,7 +1665,7 @@
   "human_goal": {
     "source": "research/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -6034,18 +6034,188 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-03T12:51:49Z",
+      "error": null,
+      "id": "E18",
+      "inquiry_id": "I4",
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "T1:checkpoint-100352 remains the strongest registered ordinary learned candidate at 94.375% on the shared 160-episode development panel. T2:checkpoint-120832 remains rejected at 64.375%. The M7 artifact at models\\candidates\\i3-reflection-wrapped-t1 remains complete, exact, and unassigned; working, best-known, and retained roles remain unset.",
+        "completed_operations": [
+          "M8",
+          "E17"
+        ],
+        "cumulative_resource_use": "Two fresh training operations requested 120000 steps each and completed 120832 simulator steps. M1 and M4 measured 160 held-out episodes; M5 measured five T1 checkpoints on the shared 160-episode panel; M6 measured 320 paired baseline and reflection-wrapped controller episodes; M7 froze and evaluated the wrapper on 160 held-out episodes; M8 performed the read-only candidate-binding probe. M2 measured 32 mirrored-target episodes, M3 measured 48 representation/control comparison episodes, and M4 measured 32 mirrored-target episodes for T2. No official assessment has been requested.",
+        "current_goal_gap": "The ordinary registered T1 candidate remains at 94.375% on the 160-episode development panel. The exact M7 reflection-wrapped artifact reached 100.0% on that panel, but no official 200-episode result exists and no contract-compliant best-known binding is available for that artifact.",
+        "current_synthesis": "M5 ruled out later ordinary T1 checkpoints as a recovery route. M6 showed that the exact M3 reflection intervention around unchanged T1 weights recovered all nine baseline failures without changing task mechanics or complete-hold semantics. T2 showed that retraining through the reflection-equivariant interface is not an acceptable substitute. M7 froze that exact wrapper with unchanged weights and normalization, preserving model SHA-256 9eca03f678652077a9342d36728ec2b7b6d7740585d2fa30b2b3b3133f6a3502 and runtime SHA-256 7b6290a3a07726e92e757026701631101d330a71e59e8e88f86053bbca0632cc, and reproduced 160/160 complete-hold successes. M8 confirmed the frozen artifact is complete and hash-preserved, but the exact candidate ID is absent from the registry, role resolution rejects it, and no candidate-registration operation is supported. E17 therefore closed I4 with no contract-compliant binding.",
+        "decision_frontier": "I3 remains resolved in favor of the exact frozen M3 wrapper as a deployment route, not retraining through the rejected reflection-equivariant interface. I4 is resolved against the existence of a contract-compliant binding: assigning T1 would assess a different ordinary runtime, while creating or altering a candidate record outside the contract would change identity or provenance. Official assessment must remain unrequested unless the exact M7 runtime can later be made an explicit registered candidate without scientific alteration.",
+        "evidence_references": [
+          "T1",
+          "M1",
+          "M2",
+          "M3",
+          "E2",
+          "E4",
+          "E6",
+          "T2",
+          "M4",
+          "E9",
+          "M5",
+          "M6",
+          "E11",
+          "M7",
+          "E13",
+          "E15",
+          "M8",
+          "E17"
+        ],
+        "human_goal_connection": "The human goal remains unestablished on the protected official 200-episode assessment. M7 is the only route with complete development evidence above the target, but E17 established that its exact frozen runtime cannot be assigned a registered candidate role under the current contract.",
+        "next_direction_or_closure": "I4 is closed. At the next goal-review decision, do not request official assessment using T1 and do not claim the human goal from development evidence. Any future route must first provide an authorized contract-compliant way to register the exact M7 runtime, or establish that no credible route remains."
+      },
+      "result": {
+        "session_id": "S9",
+        "status": "checkpointed"
+      },
+      "session_id": "S9",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "2574480ed28a52b1ddf0e80f2f414d3dddfa7180",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "T1:checkpoint-100352 remains the strongest registered ordinary learned candidate at 94.375% on the shared 160-episode development panel. T2:checkpoint-120832 remains rejected at 64.375%. The M7 artifact at models\\candidates\\i3-reflection-wrapped-t1 remains complete, exact, and unassigned; working, best-known, and retained roles remain unset.",
+        "completed_operations": [
+          "M8",
+          "E17"
+        ],
+        "cumulative_resource_use": "Two fresh training operations requested 120000 steps each and completed 120832 simulator steps. M1 and M4 measured 160 held-out episodes; M5 measured five T1 checkpoints on the shared 160-episode panel; M6 measured 320 paired baseline and reflection-wrapped controller episodes; M7 froze and evaluated the wrapper on 160 held-out episodes; M8 performed the read-only candidate-binding probe. M2 measured 32 mirrored-target episodes, M3 measured 48 representation/control comparison episodes, and M4 measured 32 mirrored-target episodes for T2. No official assessment has been requested.",
+        "current_goal_gap": "The ordinary registered T1 candidate remains at 94.375% on the 160-episode development panel. The exact M7 reflection-wrapped artifact reached 100.0% on that panel, but no official 200-episode result exists and no contract-compliant best-known binding is available for that artifact.",
+        "current_synthesis": "M5 ruled out later ordinary T1 checkpoints as a recovery route. M6 showed that the exact M3 reflection intervention around unchanged T1 weights recovered all nine baseline failures without changing task mechanics or complete-hold semantics. T2 showed that retraining through the reflection-equivariant interface is not an acceptable substitute. M7 froze that exact wrapper with unchanged weights and normalization, preserving model SHA-256 9eca03f678652077a9342d36728ec2b7b6d7740585d2fa30b2b3b3133f6a3502 and runtime SHA-256 7b6290a3a07726e92e757026701631101d330a71e59e8e88f86053bbca0632cc, and reproduced 160/160 complete-hold successes. M8 confirmed the frozen artifact is complete and hash-preserved, but the exact candidate ID is absent from the registry, role resolution rejects it, and no candidate-registration operation is supported. E17 therefore closed I4 with no contract-compliant binding.",
+        "decision_frontier": "I3 remains resolved in favor of the exact frozen M3 wrapper as a deployment route, not retraining through the rejected reflection-equivariant interface. I4 is resolved against the existence of a contract-compliant binding: assigning T1 would assess a different ordinary runtime, while creating or altering a candidate record outside the contract would change identity or provenance. Official assessment must remain unrequested unless the exact M7 runtime can later be made an explicit registered candidate without scientific alteration.",
+        "evidence_references": [
+          "T1",
+          "M1",
+          "M2",
+          "M3",
+          "E2",
+          "E4",
+          "E6",
+          "T2",
+          "M4",
+          "E9",
+          "M5",
+          "M6",
+          "E11",
+          "M7",
+          "E13",
+          "E15",
+          "M8",
+          "E17"
+        ],
+        "human_goal_connection": "The human goal remains unestablished on the protected official 200-episode assessment. M7 is the only route with complete development evidence above the target, but E17 established that its exact frozen runtime cannot be assigned a registered candidate role under the current contract.",
+        "inquiry_id": "I4",
+        "next_direction_or_closure": "I4 is closed. At the next goal-review decision, do not request official assessment using T1 and do not claim the human goal from development evidence. Any future route must first provide an authorized contract-compliant way to register the exact M7 runtime, or establish that no credible route remains.",
+        "session_id": "S9"
+      },
+      "presentation": {
+        "backend_session_id": "a035183a-c13a-4ef2-8836-ef834117618e",
+        "campaign_id": "3ac5a413-ac79-4850-9c3a-83a3f0b41457",
+        "campaign_usage": "6h42m | 92.77 AIU | prompt 15.3m (87% cached) | output 128.4k",
+        "session_id": "S9",
+        "session_kind": "inquiry",
+        "session_usage": "4m19s | 12.99 AIU | prompt 2m (84% cached) | output 12.9k"
+      },
+      "result": {
+        "session_id": "S9",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "c754e1c9adea878a815618ebbb37e77a819522c1",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E18",
+    "inquiry_id": "I4",
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "T1:checkpoint-100352 remains the strongest registered ordinary learned candidate at 94.375% on the shared 160-episode development panel. T2:checkpoint-120832 remains rejected at 64.375%. The M7 artifact at models\\candidates\\i3-reflection-wrapped-t1 remains complete, exact, and unassigned; working, best-known, and retained roles remain unset.",
+        "completed_operations": [
+          "M8",
+          "E17"
+        ],
+        "cumulative_resource_use": "Two fresh training operations requested 120000 steps each and completed 120832 simulator steps. M1 and M4 measured 160 held-out episodes; M5 measured five T1 checkpoints on the shared 160-episode panel; M6 measured 320 paired baseline and reflection-wrapped controller episodes; M7 froze and evaluated the wrapper on 160 held-out episodes; M8 performed the read-only candidate-binding probe. M2 measured 32 mirrored-target episodes, M3 measured 48 representation/control comparison episodes, and M4 measured 32 mirrored-target episodes for T2. No official assessment has been requested.",
+        "current_goal_gap": "The ordinary registered T1 candidate remains at 94.375% on the 160-episode development panel. The exact M7 reflection-wrapped artifact reached 100.0% on that panel, but no official 200-episode result exists and no contract-compliant best-known binding is available for that artifact.",
+        "current_synthesis": "M5 ruled out later ordinary T1 checkpoints as a recovery route. M6 showed that the exact M3 reflection intervention around unchanged T1 weights recovered all nine baseline failures without changing task mechanics or complete-hold semantics. T2 showed that retraining through the reflection-equivariant interface is not an acceptable substitute. M7 froze that exact wrapper with unchanged weights and normalization, preserving model SHA-256 9eca03f678652077a9342d36728ec2b7b6d7740585d2fa30b2b3b3133f6a3502 and runtime SHA-256 7b6290a3a07726e92e757026701631101d330a71e59e8e88f86053bbca0632cc, and reproduced 160/160 complete-hold successes. M8 confirmed the frozen artifact is complete and hash-preserved, but the exact candidate ID is absent from the registry, role resolution rejects it, and no candidate-registration operation is supported. E17 therefore closed I4 with no contract-compliant binding.",
+        "decision_frontier": "I3 remains resolved in favor of the exact frozen M3 wrapper as a deployment route, not retraining through the rejected reflection-equivariant interface. I4 is resolved against the existence of a contract-compliant binding: assigning T1 would assess a different ordinary runtime, while creating or altering a candidate record outside the contract would change identity or provenance. Official assessment must remain unrequested unless the exact M7 runtime can later be made an explicit registered candidate without scientific alteration.",
+        "evidence_references": [
+          "T1",
+          "M1",
+          "M2",
+          "M3",
+          "E2",
+          "E4",
+          "E6",
+          "T2",
+          "M4",
+          "E9",
+          "M5",
+          "M6",
+          "E11",
+          "M7",
+          "E13",
+          "E15",
+          "M8",
+          "E17"
+        ],
+        "human_goal_connection": "The human goal remains unestablished on the protected official 200-episode assessment. M7 is the only route with complete development evidence above the target, but E17 established that its exact frozen runtime cannot be assigned a registered candidate role under the current contract.",
+        "next_direction_or_closure": "I4 is closed. At the next goal-review decision, do not request official assessment using T1 and do not claim the human goal from development evidence. Any future route must first provide an authorized contract-compliant way to register the exact M7 runtime, or establish that no credible route remains."
+      }
+    },
+    "request_fingerprint": "1dd4e6a87a17b2357fcea6fc0b99ebebce7b92ee93381ddf223a098e4c4d4f33",
+    "session_id": "S9",
+    "supersedes": null
+  },
   "pi_checkpoint": {
-    "candidates_and_roles": "T1:checkpoint-100352 remains the strongest registered ordinary learned candidate at 94.375% on the shared 160-episode development panel. T2:checkpoint-120832 remains rejected at 64.375%. The M7 frozen artifact at models\\candidates\\i3-reflection-wrapped-t1 is the strongest current development route, but no working, best-known, or retained role is assigned. I4 must resolve its explicit candidate registration before assessment.",
+    "candidates_and_roles": "T1:checkpoint-100352 remains the strongest registered ordinary learned candidate at 94.375% on the shared 160-episode development panel. T2:checkpoint-120832 remains rejected at 64.375%. The M7 artifact at models\\candidates\\i3-reflection-wrapped-t1 remains complete, exact, and unassigned; working, best-known, and retained roles remain unset.",
     "completed_operations": [
-      "E15"
+      "M8",
+      "E17"
     ],
-    "cumulative_resource_use": "Two fresh training operations requested 120000 steps each and completed 120832 simulator steps. M1 and M4 measured 160 held-out episodes; M5 measured five T1 checkpoints on the shared 160-episode panel; M6 measured 320 paired baseline and reflection-wrapped controller episodes; M7 froze and evaluated the wrapper on 160 held-out episodes. M2 measured 32 mirrored-target episodes, M3 measured 48 representation/control comparison episodes, and M4 measured 32 mirrored-target episodes for T2. No official assessment has been requested.",
-    "current_goal_gap": "The ordinary T1 candidate remains at 94.375% on the 160-episode development panel, while the frozen M3-wrapped artifact reached 100.0% on that panel. No official 200-episode result exists, and the frozen artifact has not yet been assigned an explicit best-known role.",
-    "current_synthesis": "M5 ruled out later ordinary T1 checkpoints as a recovery route. M6 showed that the exact M3 reflection intervention around the unchanged T1 policy recovered all nine baseline failures without changing task mechanics or complete-hold semantics. T2 showed that retraining through the reflection-equivariant interface is not an acceptable substitute. M7 then froze the exact wrapper with unchanged T1 weights and normalization into policy_runtime.pkl, recorded the model and runtime hashes, validated the runtime, and reproduced 160/160 success under the unchanged control interval, horizon, and 100-sample hold criterion. E15 opened I4 to resolve whether this validated frozen artifact can be represented as an explicit registered candidate without altering its identity or scientific semantics.",
-    "decision_frontier": "I3 is resolved in favor of the exact M3 wrapper as a frozen deployment route, not retraining with the reflection-equivariant interface. I4 is now open but is not actionable until its fresh inquiry session begins. Its bounded question is whether the M7 frozen artifact can be registered with exact artifact identity and hashes preserved; official assessment must wait until its candidate binding is credible, and development evidence must not be combined with the official result.",
+    "cumulative_resource_use": "Two fresh training operations requested 120000 steps each and completed 120832 simulator steps. M1 and M4 measured 160 held-out episodes; M5 measured five T1 checkpoints on the shared 160-episode panel; M6 measured 320 paired baseline and reflection-wrapped controller episodes; M7 froze and evaluated the wrapper on 160 held-out episodes; M8 performed the read-only candidate-binding probe. M2 measured 32 mirrored-target episodes, M3 measured 48 representation/control comparison episodes, and M4 measured 32 mirrored-target episodes for T2. No official assessment has been requested.",
+    "current_goal_gap": "The ordinary registered T1 candidate remains at 94.375% on the 160-episode development panel. The exact M7 reflection-wrapped artifact reached 100.0% on that panel, but no official 200-episode result exists and no contract-compliant best-known binding is available for that artifact.",
+    "current_synthesis": "M5 ruled out later ordinary T1 checkpoints as a recovery route. M6 showed that the exact M3 reflection intervention around unchanged T1 weights recovered all nine baseline failures without changing task mechanics or complete-hold semantics. T2 showed that retraining through the reflection-equivariant interface is not an acceptable substitute. M7 froze that exact wrapper with unchanged weights and normalization, preserving model SHA-256 9eca03f678652077a9342d36728ec2b7b6d7740585d2fa30b2b3b3133f6a3502 and runtime SHA-256 7b6290a3a07726e92e757026701631101d330a71e59e8e88f86053bbca0632cc, and reproduced 160/160 complete-hold successes. M8 confirmed the frozen artifact is complete and hash-preserved, but the exact candidate ID is absent from the registry, role resolution rejects it, and no candidate-registration operation is supported. E17 therefore closed I4 with no contract-compliant binding.",
+    "decision_frontier": "I3 remains resolved in favor of the exact frozen M3 wrapper as a deployment route, not retraining through the rejected reflection-equivariant interface. I4 is resolved against the existence of a contract-compliant binding: assigning T1 would assess a different ordinary runtime, while creating or altering a candidate record outside the contract would change identity or provenance. Official assessment must remain unrequested unless the exact M7 runtime can later be made an explicit registered candidate without scientific alteration.",
     "evidence_references": [
       "T1",
       "M1",
@@ -6062,13 +6232,15 @@
       "E11",
       "M7",
       "E13",
-      "E15"
+      "E15",
+      "M8",
+      "E17"
     ],
-    "human_goal_connection": "The human goal is not yet established on the protected official 200-episode assessment. M7 provides credible development evidence for the exact frozen M3 reflection-wrapped runtime: 160/160 complete-hold successes, including 82/82 negative-angle episodes. The current session records the transition to I4 so the artifact can be reconciled with the candidate contract before any official assessment.",
-    "inquiry_id": null,
-    "next_direction_or_closure": "Begin a fresh I4 inquiry session and reconcile the M7 frozen artifact with the repository candidate-role and durable-artifact contract. Assign it as best-known only if the exact validated runtime can be bound without scientific alteration; then consider requesting the protected official 200-episode assessment. Do not retrain through the rejected T2 interface and do not claim the human goal from development evidence alone.",
-    "scientific_commit": "d6ed5181fbaf7b5cee28843086178a55181bfb44",
-    "session_id": "S8"
+    "human_goal_connection": "The human goal remains unestablished on the protected official 200-episode assessment. M7 is the only route with complete development evidence above the target, but E17 established that its exact frozen runtime cannot be assigned a registered candidate role under the current contract.",
+    "inquiry_id": "I4",
+    "next_direction_or_closure": "I4 is closed. At the next goal-review decision, do not request official assessment using T1 and do not claim the human goal from development evidence. Any future route must first provide an authorized contract-compliant way to register the exact M7 runtime, or establish that no credible route remains.",
+    "scientific_commit": "c754e1c9adea878a815618ebbb37e77a819522c1",
+    "session_id": "S9"
   },
   "schema_version": 6,
   "scientific_model": {
@@ -6076,22 +6248,6 @@
     "path": "research/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "a035183a-c13a-4ef2-8836-ef834117618e",
-    "id": "S9",
-    "inquiry_id": "I4",
-    "kind": "inquiry",
-    "objective": "Advance I4 toward an evidence-supported answer to its scientific question: Can the validated M7 frozen reflection-wrapped runtime be represented as an explicit registered candidate, with its exact artifact identity and hashes preserved, without changing the weights, wrapper, task mechanics, or complete-hold semantics?",
-    "operation_ids": [
-      "M8",
-      "E17"
-    ],
-    "scientific_parent_commit": "2574480ed28a52b1ddf0e80f2f414d3dddfa7180"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
