@@ -602,7 +602,7 @@
               <tr><td>Publication independent of training</td><td><span class="tag planned">Review proposal</span></td><td>Recommend candidate publication independent of training. This proposal is not approved or implemented. Review the training-centered path and the unregistered M7 artifact. No export-only solution is validated.</td></tr>
               <tr><td>Rejected no-credible-route outcome</td><td><span class="tag fixed">Removed from requests</span></td><td>Future requests and obsolete pending execution are rejected. Historical records remain readable. The PI instructions no longer offer this ending.</td></tr>
               <tr><td>Temporary 15-inquiry cap</td><td><span class="tag fixed">Operational pause</span></td><td>The cap value remains. The launcher pauses at a checkpointed boundary, not a scientific conclusion. Only an explicit maintainer increase at that boundary resumes execution.</td></tr>
-              <tr><td>Reserved-file reads</td><td><span class="tag fixed">Tool restriction</span></td><td>Copilot read/view and explicit shell-reader targets use the shared reserved-path policy. Maintainer documents under <code>docs\</code> are included. Scientific Markdown remains readable. Arbitrary code and broad searches are not filesystem-isolated.</td></tr>
+              <tr><td>Reserved-file reads</td><td><span class="tag fixed">Tool restriction</span></td><td>Copilot read/view and explicit shell-reader targets use the shared reserved-path policy after checking PI ownership. PI-owned scientific files and scientific Markdown remain readable. Direct execution restrictions are unchanged. Maintainer documents under <code>docs\</code> are included. Arbitrary code and broad searches are not filesystem-isolated.</td></tr>
               <tr><td>Broader closure and handoff prompt changes<span class="commit"><code>b4f1cdf</code>, <code>c0cfcb6</code></span></td><td><span class="tag removed">Reverted</span></td><td>These experiments are not part of the active harness. The new proposal must not silently restore them.</td></tr>
             </tbody>
           </table>
@@ -642,7 +642,7 @@
             <tr><td>Checkpoint nomination and evidence selection</td><td>Deferred behind progression. Training statistics alone do not establish development performance.</td></tr>
             <tr><td>Operation-submission handoff clarification</td><td>Not implemented.</td></tr>
             <tr><td>Explicit protection of the old protocol log</td><td>Not implemented. This is separate from the read-access policy.</td></tr>
-            <tr><td>Maintainer-file read controls</td><td><strong>Implemented at the tool boundary.</strong> Reserved read/view requests and explicit shell-reader targets are denied using the shared policy. This is not an OS sandbox or a demonstrated remedy for scientific interpretation.</td></tr>
+            <tr><td>Maintainer-file read controls</td><td><strong>Implemented at the tool boundary.</strong> Reserved read/view requests and explicit shell-reader targets are denied using the shared policy. PI-owned scientific files remain readable, even when direct execution is restricted. This is not an OS sandbox or a demonstrated remedy for scientific interpretation.</td></tr>
             <tr><td>Console clarity</td><td>Separate deferred work.</td></tr>
           </tbody>
         </table>

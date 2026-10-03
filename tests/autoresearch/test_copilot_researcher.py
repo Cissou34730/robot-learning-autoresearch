@@ -269,7 +269,10 @@ def test_ordinary_research_commands_are_not_obstructed():
         ),
         ("Select-String -Path research/program.md -Pattern official_assessment", None),
         ("python -c \"print(operation['campaign_conclusion'])\"", None),
-        ("cat robot_learning/train.py", adapter.FILE_READ_DENIAL),
+        ("cat robot_learning/train.py", None),
+        (r"Get-Content -LiteralPath robot_learning\evaluate.py", None),
+        ("rg policy robot_learning/play.py", None),
+        ("cat research/lab/run_experiment.py", None),
     ],
 )
 def test_reader_targets_distinguish_reserved_files_from_scientific_sources(
@@ -393,7 +396,7 @@ def test_preliminary_write_permission_only_allows_the_scientific_model():
         "research/run_experiment.py",
         "research/runner_protocol.py",
         "researcher_copilot.py",
-        "robot_learning/train.py",
+        "robot_learning/scenario/final_benchmark.py",
         "docs/harness-experiment-log.md",
         r"DOCS\IMPLEMENTATION_PLAN_CAMPAIGN_CORRECTNESS.md",
         str(
@@ -429,7 +432,12 @@ def test_reserved_read_permissions_are_rejected(path, capsys):
         "research/instruments.md",
         "research/scientific_model.md",
         "research/brief.md",
+        "robot_learning/train.py",
+        "robot_learning/evaluate.py",
+        "robot_learning/play.py",
+        str(ROOT / "robot_learning" / "train.py"),
         "research/lab/diagnostic.py",
+        "research/lab/run_experiment.py",
         "robot_learning/scenario/environment.py",
         "robot_learning/robots/two_joint_arm.xml",
     ],

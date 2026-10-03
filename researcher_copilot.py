@@ -430,6 +430,8 @@ def file_edit_denial(target: str, *, preliminary: bool = False) -> str | None:
 
 
 def file_read_denial(target: str) -> str | None:
+    if is_pi_writable_path(target):
+        return None
     if is_reserved_execution(target):
         return FILE_READ_DENIAL
     return None

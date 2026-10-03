@@ -446,11 +446,11 @@ its scientific breadth or achieve its result.
 | Shorter startup training | Tactical change implemented below. The PI may request any positive integer up to the maintainer's per-run allocation during startup, never a larger request. Training remains optional; inquiry requests still use the full allocation. Existing rollout rounding is retained. Campaign effect is unassessed. |
 | Reliable measurement-evidence inspection | Discoverability provisionally retained. In `48993cfd`, M5 feedback advertised diagnostics, but the PI closed without inspecting the strata and incorrectly claimed no outer-reaching gain. In `2381bcbf`, M3/M4 diagnostic reads stopped at lines 1-310, were described as full inspection, and remaining non-entry cases were lost in the synthesis. Decision-linked inspection and interpretation remain unresolved. |
 | Context flooding | Brief-only compaction implemented below: 57.39% smaller on the completed campaign, with all candidates and inventory references preserved. Campaign benefit remains unassessed; prompt replay and SDK output handling are unchanged and remain separate possible work. |
-| Training-shaped inquiry commitments and scientific continuity | Open, with a positive local observation in `2381bcbf`: one inquiry sustained diagnostics and two successive method interventions. The question-based objective was active, but causation is unproved. Both aggregate losses and aggregate gains have obscured consequential subgroup evidence in handoffs. The withdrawn goal-review guidance addressed decision framing, not method development or trial-shaped commitments; no replacement is selected. Startup wording is restored verbatim from `inquiery-harnes-success-2`; its effect is unassessed. Scientific-model framing remains an unproven lead. |
+| Training-shaped inquiry commitments and scientific continuity | Open, with a positive local observation in `2381bcbf`: one inquiry sustained diagnostics and two successive method interventions. The question-based objective was active, but causation is unproved. Both aggregate losses and aggregate gains have obscured consequential subgroup evidence in handoffs. The withdrawn goal-review guidance addressed decision framing, not method development or trial-shaped commitments; no replacement is selected. Startup wording was restored verbatim from `inquiery-harnes-success-2`, but the first observed fresh startup `2573991c` still chose baseline training before empirical investigation. Scientific-model framing remains an unproven lead. |
 | Checkpoint nomination and evidence selection | Deferred behind progression; available training facts are not proof of development performance. |
 | Operation-submission handoff clarification | Still unimplemented. |
 | Explicit protection of the old protocol log | Still unimplemented; read-access policy is a separate decision. |
-| Console clarity and maintainer-file read controls | Console work remains deferred. Copilot read/view and explicit shell-reader targets now use the shared reserved-path policy. Required scientific Markdown remains readable. This is not an OS sandbox or demonstrated scientific remedy. |
+| Console clarity and maintainer-file read controls | Console work remains deferred. Copilot read/view and explicit shell-reader targets use the shared reserved-path policy after checking PI ownership. PI-owned scientific files and required scientific Markdown remain readable; execution restrictions are unchanged. This is not an OS sandbox or demonstrated scientific remedy. |
 | Independent frozen-policy publication | **Proposal only.** Publication independent of training is not approved or implemented; campaign recovery is not authorized. |
 | Scientific-exhaustion / no-credible-route outcome | **Removed from future requests and instructions.** Obsolete pending execution is rejected. Historical E19 remains readable and unchanged. Directly affected checks pass; scientific effect remains unassessed. |
 | Fifteen-inquiry cap | **Decoupled; value unchanged.** The launcher pauses after active work is checkpointed, without a terminal state. Measurements keep their permission. Only an explicit maintainer increase at that paused boundary resumes execution. Later cap removal remains pending. E19 at four of fifteen inquiries was not cap-triggered. |
@@ -1478,8 +1478,9 @@ separate from harness changes so their outcomes are not conflated.
 - **Read controls:** SDK `PermissionRequestRead` and explicit shell-reader
   targets use the existing reserved path matcher. `RESERVED_SCRIPT_PATHS`
   includes maintainer documents and harness source patterns. Scientific
-  Markdown remains readable. Existing reserved scientific entry-point paths
-  are also denied direct reads, as requested; write ownership is unchanged.
+  Markdown remains readable. The initial implementation also denied reads of
+  PI-owned reserved entry points. The correction below restores their reads;
+  execution restrictions are unchanged.
   Rejections give visible feedback. Arbitrary code and broad searches are not
   filesystem-isolated; no OS sandbox is claimed.
 - **Checks and limits:** the initial four-file targeted run found twelve
@@ -1500,9 +1501,9 @@ separate from harness changes so their outcomes are not conflated.
 
 - **Approval:** the maintainer rejected new or adapted instructions and
   approved restoring the two original startup blocks verbatim.
-- **Source:** tag `inquiery-harnes-success-2`, commit `3a8f034`, the successful
+- **Source:** tag `inquiery-harnes-success-2`, commit `7ce2850`, the successful
   reference for campaign `77a975a5` that began with a candidate-free dynamics
-  measurement.
+  measurement. `3a8f034` identifies the annotated tag object, not the commit.
 - **Exact scope:** restore only the startup active-inquiry description and
   startup session objective in `run_research.ps1`. Withdraw the two-string
   October 2 clarification. No whole-commit rollback or replacement wording.
@@ -1525,3 +1526,39 @@ separate from harness changes so their outcomes are not conflated.
 - **Checks:** both restored strings match the reference exactly. The launcher
   parses, the existing startup phase-contract case passes, and the touched
   files pass the whitespace check. No new test or instruction gate is added.
+- **First observed trial:** stopped fresh campaign `2573991c` loaded the
+  restored objective but requested an unchanged-recipe 120,000-step PPO
+  baseline before empirical investigation. S1 named hypotheses, then made
+  baseline training a prerequisite in both its initial inquiry proposal and
+  accepted T1 request. The restoration did not recover the intended behavior.
+- **Context comparison:** actual session inputs were not identical to the
+  successful campaign. Instrument documentation, inventory context,
+  training-allocation wording, and the generated scientific model differ.
+  The latest model also incorrectly claims two joint-limit-feasible IK
+  branches at every official target: at 20 cm and 150 degrees, one shoulder
+  solution is 172.33 degrees, beyond the 170-degree limit. The archived M1
+  probe records only one feasible branch there. This identifies a changed
+  scientific input and an error, not a causally isolated harness defect.
+
+## 2026-10-03: keep PI-owned scientific files readable
+
+- **RCA and approval:** the read guard reused the execution-denial matcher
+  without first checking PI ownership. It therefore denied inspection of
+  scientific entry points that the PI owns. The maintainer approved a
+  separate, minimal correction; the older training-first startup issue is
+  not attributed to this later read restriction.
+- **Exact change:** `file_read_denial` returns no denial for paths accepted
+  by the existing PI-ownership helper, then applies the reserved matcher.
+  The same helper serves SDK read/view and explicit shell-reader requests.
+  Execution restrictions and protected-file ownership checks are unchanged.
+- **Scope:** no SDK configuration, new permission list, dependency, startup
+  instruction, scientific implementation, or campaign artifact changes.
+  Existing parameterized cases cover owned reads, including reserved
+  filenames inside the lab, and a protected scenario file that must still
+  be denied. The directly affected documentation states the ownership rule.
+- **Disposition:** read-access defect corrected. This is not a startup
+  behavior fix or a claim of filesystem isolation.
+- **Checks:** all 144 adapter cases pass, including existing execution
+  restrictions and reserved maintainer reads. Touched-file Ruff and
+  whitespace checks pass. Campaign state and request SHA256 hashes are
+  unchanged. The runtime delta is two added lines.

@@ -97,8 +97,8 @@ A protected path takes precedence over any PI-owned prefix.
 The Copilot adapter also rejects read/view requests and explicit shell-reader
 targets matched by its shared reserved-script policy, including `docs/`.
 `AGENTS.md` and the scientific Markdown under `research/` remain readable.
-The existing reserved scientific entry-point paths are also read-restricted;
-their PI write ownership is unchanged. This is a tool-level restriction,
+PI-owned scientific files remain readable, including entry points whose
+direct execution is restricted. This is a tool-level restriction,
 not an operating-system filesystem sandbox.
 
 ## PI-owned paths
