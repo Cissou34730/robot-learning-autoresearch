@@ -6103,41 +6103,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "model": null,
-        "reason": "The human goal is not established: the strongest registered candidate T1:checkpoint-100352 achieved 94.375% on the 160-episode development panel, below the 98% target, while the exact M7 reflection-wrapped runtime achieved 160/160 complete-hold successes but has no contract-compliant candidate binding. M8 and E17 established that its candidate ID is absent from the registry, role resolution rejects it, and the supported operation surface has no candidate-registration operation. Assigning T1 would request assessment of a different ordinary runtime, and creating or altering a registry record outside the contract would change identity or provenance. M5 ruled out later ordinary T1 checkpoints, and T2 rejected retraining through the reflection-equivariant interface. With no authorized path to assess the exact M7 runtime and no evidence-backed alternative route, no credible contract-compliant route to the human goal remains.",
-        "status": "no_credible_route"
-      },
-      "presentation": {
-        "backend_session_id": "ba03d345-0fae-443e-a118-75aea0187943",
-        "campaign_id": "3ac5a413-ac79-4850-9c3a-83a3f0b41457",
-        "campaign_usage": "6h43m | 94.40 AIU | prompt 15.5m (87% cached) | output 130.8k",
-        "session_id": "S10",
-        "session_kind": "goal_review",
-        "session_usage": "57s | 1.62 AIU | prompt 181.6k (77% cached) | output 2.4k"
-      },
-      "result": {
-        "model": null,
-        "status": "no_credible_route"
-      }
-    },
-    "failure": null,
-    "id": "E19",
-    "inquiry_id": null,
-    "kind": "campaign_conclusion",
-    "progress": "completed",
-    "request": {
-      "campaign_conclusion": {
-        "action": "no_credible_route",
-        "reason": "The human goal is not established: the strongest registered candidate T1:checkpoint-100352 achieved 94.375% on the 160-episode development panel, below the 98% target, while the exact M7 reflection-wrapped runtime achieved 160/160 complete-hold successes but has no contract-compliant candidate binding. M8 and E17 established that its candidate ID is absent from the registry, role resolution rejects it, and the supported operation surface has no candidate-registration operation. Assigning T1 would request assessment of a different ordinary runtime, and creating or altering a registry record outside the contract would change identity or provenance. M5 ruled out later ordinary T1 checkpoints, and T2 rejected retraining through the reflection-equivariant interface. With no authorized path to assess the exact M7 runtime and no evidence-backed alternative route, no credible contract-compliant route to the human goal remains."
-      }
-    },
-    "request_fingerprint": "828e346681e4781f993c260645d8fe43738f022326d148218df2e73030721e12",
-    "session_id": "S10",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T1:checkpoint-100352 remains the strongest registered ordinary learned candidate at 94.375% on the shared 160-episode development panel. T2:checkpoint-120832 remains rejected at 64.375%. The M7 artifact at models\\candidates\\i3-reflection-wrapped-t1 remains complete, exact, and unassigned; working, best-known, and retained roles remain unset.",
     "completed_operations": [
