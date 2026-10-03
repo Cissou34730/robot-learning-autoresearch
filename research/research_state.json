@@ -5731,44 +5731,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "open",
-        "inquiry": {
-          "closure_condition": "Close when the existing candidate-role contract either accepts a precise binding of the M7 frozen artifact as a candidate or establishes that no contract-compliant binding is possible without an inadmissible scientific change; do not request official assessment until the assessed artifact is exactly the validated M7 runtime.",
-          "goal_connection": "The frozen M7 runtime is the only current route above the 98% development target, but official assessment requires an explicitly registered best-known candidate. Resolving this identity and artifact-binding gap is necessary before official assessment can measure the strongest route rather than the weaker ordinary T1 runtime.",
-          "id": "I4",
-          "opened_in_session": "S8",
-          "question": "Can the validated M7 frozen reflection-wrapped runtime be represented as an explicit registered candidate, with its exact artifact identity and hashes preserved, without changing the weights, wrapper, task mechanics, or complete-hold semantics?",
-          "rationale": "M7 validated 160/160 complete holds using the frozen m3_reflection runtime, while the registry contains only the underlying T1 candidate. The role validator rejects unregistered candidates, and assigning T1 would bind assessment to its ordinary 94.375% runtime. This is a bounded deployment-identity question, not a request to retrain or alter the task.",
-          "reframes": []
-        }
-      },
-      "result": {
-        "action": "open",
-        "inquiry_id": "I4",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E15",
-    "inquiry_id": null,
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "open",
-        "closure_condition": "Close when the existing candidate-role contract either accepts a precise binding of the M7 frozen artifact as a candidate or establishes that no contract-compliant binding is possible without an inadmissible scientific change; do not request official assessment until the assessed artifact is exactly the validated M7 runtime.",
-        "goal_connection": "The frozen M7 runtime is the only current route above the 98% development target, but official assessment requires an explicitly registered best-known candidate. Resolving this identity and artifact-binding gap is necessary before official assessment can measure the strongest route rather than the weaker ordinary T1 runtime.",
-        "question": "Can the validated M7 frozen reflection-wrapped runtime be represented as an explicit registered candidate, with its exact artifact identity and hashes preserved, without changing the weights, wrapper, task mechanics, or complete-hold semantics?",
-        "rationale": "M7 validated 160/160 complete holds using the frozen m3_reflection runtime, while the registry contains only the underlying T1 candidate. The role validator rejects unregistered candidates, and assigning T1 would bind assessment to its ordinary 94.375% runtime. This is a bounded deployment-identity question, not a request to retrain or alter the task."
-      }
-    },
-    "request_fingerprint": "36f8f471fd127d1c614b89f671d8395c55a6c79a0eef32434488474fb8fa21f4",
-    "session_id": "S8",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T1:checkpoint-100352 remains the strongest registered ordinary learned candidate at 94.375% on M1, M4, and M5. T2:checkpoint-120832 remains rejected at 64.375%. The frozen M3-wrapped artifact produced by M7 is the strongest current development route, with 160/160 success, but it is not yet represented as an explicit candidate in the registry and no working, best-known, or retained role is assigned.",
     "completed_operations": [
