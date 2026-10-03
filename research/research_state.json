@@ -1,13 +1,5 @@
 {
-  "active_inquiry": {
-    "closure_condition": "Close when a frozen candidate artifact using the exact M3 wrapper has been produced and evaluated with the unchanged task mechanics and complete 100-sample hold semantics on held-out development evidence with transit, settling, action, and uninterrupted-hold diagnostics; consider official assessment only if the artifact is accepted as an explicit best-known candidate and the development evidence remains credible.",
-    "goal_connection": "M6 recovered the full 3.625-point development gap: the learned T1 controller under the exact M3 observation/action wrapper achieved 160/160 held-out successes, including 82/82 negative-angle targets, with zero never-reached and zero hold-broken episodes. Converting this validated intervention into a frozen candidate is the most direct route to the at-least-98% complete uninterrupted-hold objective, while avoiding the T2 training/interface regression.",
-    "id": "I3",
-    "opened_in_session": "S6",
-    "question": "Can the exact M3 reflection wrapper be converted into a frozen, assessment-compatible runtime around T1:checkpoint-100352, preserving its 100% held-out complete-hold behavior, without retraining through the reflection-equivariant learning interface that failed in T2?",
-    "rationale": "M5 ruled out later ordinary T1 checkpoints as a recovery route: none exceeded T1:checkpoint-100352's 94.375% shared-panel result. M6 then showed that the exact reflection intervention, applied around the already-trained baseline rather than learned through T2's canonical interface, achieved 100% on all 160 held-out episodes and eliminated all nine baseline failures. This distinguishes the validated controller mechanism from the failed training recipe. The remaining scientific and engineering uncertainty is deployment compatibility: whether the intervention can be frozen into the candidate runtime and assessed as the learned policy without changing the official task or weakening complete-hold semantics.",
-    "reframes": []
-  },
+  "active_inquiry": null,
   "campaign": {
     "base_commit": "c50cd2a2625981fc9d4cdf9c63654c09fdc54be9",
     "id": "3ac5a413-ac79-4850-9c3a-83a3f0b41457",
@@ -1664,7 +1656,7 @@
     }
   },
   "counters": {
-    "event": 12,
+    "event": 13,
     "inquiry": 3,
     "measurement": 7,
     "session": 7,
@@ -5638,9 +5630,63 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-03T12:36:40Z",
+      "error": null,
+      "id": "E13",
+      "inquiry_id": "I3",
+      "kind": "inquiry",
+      "request": {
+        "action": "close",
+        "outcome": "frozen_reflection_runtime_validated",
+        "reason": "M7 resolves I3 at the deployment-compatibility level. The exact M3 reflection wrapper was frozen into a new assessment-compatible runtime around T1:checkpoint-100352, with immutable model and runtime hashes recorded, and the frozen artifact achieved 160/160 successes on the full 160-episode held-out panel. All 82 negative-angle episodes succeeded, with zero never-reached and zero reached-but-hold-broken outcomes. The artifact recorded first reach, endpoint speed, action magnitude, in-tolerance samples, maximum held steps, interruptions, and complete 100-sample holds under the unchanged 0.02-second control interval and 500-step episode limit. This validates the frozen candidate route without retraining through T2's rejected reflection-equivariant interface. The evidence remains development-only and does not establish the official 200-episode result; the next decision is whether to assign this explicit candidate as best-known before requesting official assessment."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I3",
+        "outcome": "frozen_reflection_runtime_validated",
+        "reason": "M7 resolves I3 at the deployment-compatibility level. The exact M3 reflection wrapper was frozen into a new assessment-compatible runtime around T1:checkpoint-100352, with immutable model and runtime hashes recorded, and the frozen artifact achieved 160/160 successes on the full 160-episode held-out panel. All 82 negative-angle episodes succeeded, with zero never-reached and zero reached-but-hold-broken outcomes. The artifact recorded first reach, endpoint speed, action magnitude, in-tolerance samples, maximum held steps, interruptions, and complete 100-sample holds under the unchanged 0.02-second control interval and 500-step episode limit. This validates the frozen candidate route without retraining through T2's rejected reflection-equivariant interface. The evidence remains development-only and does not establish the official 200-episode result; the next decision is whether to assign this explicit candidate as best-known before requesting official assessment.",
+        "status": "completed"
+      },
+      "session_id": "S7",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "close",
+        "inquiry_id": "I3",
+        "outcome": "frozen_reflection_runtime_validated",
+        "reason": "M7 resolves I3 at the deployment-compatibility level. The exact M3 reflection wrapper was frozen into a new assessment-compatible runtime around T1:checkpoint-100352, with immutable model and runtime hashes recorded, and the frozen artifact achieved 160/160 successes on the full 160-episode held-out panel. All 82 negative-angle episodes succeeded, with zero never-reached and zero reached-but-hold-broken outcomes. The artifact recorded first reach, endpoint speed, action magnitude, in-tolerance samples, maximum held steps, interruptions, and complete 100-sample holds under the unchanged 0.02-second control interval and 500-step episode limit. This validates the frozen candidate route without retraining through T2's rejected reflection-equivariant interface. The evidence remains development-only and does not establish the official 200-episode result; the next decision is whether to assign this explicit candidate as best-known before requesting official assessment."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I3",
+        "outcome": "frozen_reflection_runtime_validated",
+        "reason": "M7 resolves I3 at the deployment-compatibility level. The exact M3 reflection wrapper was frozen into a new assessment-compatible runtime around T1:checkpoint-100352, with immutable model and runtime hashes recorded, and the frozen artifact achieved 160/160 successes on the full 160-episode held-out panel. All 82 negative-angle episodes succeeded, with zero never-reached and zero reached-but-hold-broken outcomes. The artifact recorded first reach, endpoint speed, action magnitude, in-tolerance samples, maximum held steps, interruptions, and complete 100-sample holds under the unchanged 0.02-second control interval and 500-step episode limit. This validates the frozen candidate route without retraining through T2's rejected reflection-equivariant interface. The evidence remains development-only and does not establish the official 200-episode result; the next decision is whether to assign this explicit candidate as best-known before requesting official assessment.",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E13",
+    "inquiry_id": "I3",
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "close",
+        "outcome": "frozen_reflection_runtime_validated",
+        "reason": "M7 resolves I3 at the deployment-compatibility level. The exact M3 reflection wrapper was frozen into a new assessment-compatible runtime around T1:checkpoint-100352, with immutable model and runtime hashes recorded, and the frozen artifact achieved 160/160 successes on the full 160-episode held-out panel. All 82 negative-angle episodes succeeded, with zero never-reached and zero reached-but-hold-broken outcomes. The artifact recorded first reach, endpoint speed, action magnitude, in-tolerance samples, maximum held steps, interruptions, and complete 100-sample holds under the unchanged 0.02-second control interval and 500-step episode limit. This validates the frozen candidate route without retraining through T2's rejected reflection-equivariant interface. The evidence remains development-only and does not establish the official 200-episode result; the next decision is whether to assign this explicit candidate as best-known before requesting official assessment."
+      }
+    },
+    "request_fingerprint": "f2d9385895b91d9c51c9e9522d0f3468e7e5a7f663b82ed8efaf03d13d7ebc0e",
+    "session_id": "S7",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T1:checkpoint-100352 remains the strongest evidence-backed ordinary learned candidate at 94.375% on M1, M4, and M5. T2:checkpoint-120832 remains rejected at 64.375%. The M6 reflection-wrapped controller is a validated intervention, not yet an assigned candidate role. No working, best-known, or retained role is assigned.",
     "completed_operations": [
@@ -5691,7 +5737,8 @@
     "kind": "inquiry",
     "objective": "Advance I3 toward an evidence-supported answer to its scientific question: Can the exact M3 reflection wrapper be converted into a frozen, assessment-compatible runtime around T1:checkpoint-100352, preserving its 100% held-out complete-hold behavior, without retraining through the reflection-equivariant learning interface that failed in T2?",
     "operation_ids": [
-      "M7"
+      "M7",
+      "E13"
     ],
     "scientific_parent_commit": "e86ad3c91b37cb36b64d346cf70ab939a231866c"
   },

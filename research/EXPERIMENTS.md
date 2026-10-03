@@ -23,3 +23,4 @@
 | E11 | inquiry | I3 | completed |
 | E12 | checkpoint | - | checkpointed |
 | M7 | measurement | I3 | completed |
+| E13 | inquiry | I3 | completed |
