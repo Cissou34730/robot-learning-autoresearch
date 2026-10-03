@@ -838,14 +838,14 @@
   "counters": {
     "event": 3,
     "inquiry": 1,
-    "measurement": 2,
-    "session": 2,
+    "measurement": 3,
+    "session": 3,
     "training": 1
   },
   "human_goal": {
     "source": "research/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -1522,9 +1522,817 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-03T05:46:34Z",
+      "error": null,
+      "id": "M3",
+      "inquiry_id": "I1",
+      "kind": "measurement",
+      "request": {
+        "description": "Compare T1 on matched mirrored targets under the baseline controller and an exact reflection-equivariant observation/control intervention that swaps inverse-kinematic branch residuals and reflects actions, recording transit, settling, action, and complete-hold diagnostics for all conditions.",
+        "measurements": [
+          {
+            "args": [
+              "--model",
+              "research\\checkpoints\\candidates\\3ac5a413-ac79-4850-9c3a-83a3f0b41457\\t1\\checkpoint-100352\\model.zip",
+              "--artifact",
+              "research\\evaluations\\3ac5a413-ac79-4850-9c3a-83a3f0b41457\\representation-control-comparison-i1.json",
+              "--seed",
+              "9200"
+            ],
+            "artifact": "research\\evaluations\\3ac5a413-ac79-4850-9c3a-83a3f0b41457\\representation-control-comparison-i1.json",
+            "instrument": "python_module",
+            "label": "I1-representation-control-comparison-T1-checkpoint-100352",
+            "module": "research.lab.representation_control_comparison"
+          }
+        ],
+        "rationale": "M2 established a negative-angle deficit but could not distinguish learned branch/representation asymmetry from directional transit. The intervention maps each negative episode into the positive-angle policy frame using the exact physical reflection, including the branch swap required by the wrapped IK representation, then maps policy torques back to the negative dynamics. Recovery toward the matched positive outcome supports a representation or branch-selection cause; persistent matched failures support a dynamics/control limitation. The panel uses identical radii, angle magnitudes, seeds, and full trajectory diagnostics across baseline negative, baseline positive, and intervened negative conditions."
+      },
+      "result": {
+        "measurements": [
+          {
+            "args": [
+              "--model",
+              "research\\checkpoints\\candidates\\3ac5a413-ac79-4850-9c3a-83a3f0b41457\\t1\\checkpoint-100352\\model.zip",
+              "--artifact",
+              "research\\evaluations\\3ac5a413-ac79-4850-9c3a-83a3f0b41457\\representation-control-comparison-i1.json",
+              "--seed",
+              "9200"
+            ],
+            "instrument": "python_module",
+            "label": "I1-representation-control-comparison-T1-checkpoint-100352",
+            "metrics": {
+              "evaluation_artifact": "research/evaluations/3ac5a413-ac79-4850-9c3a-83a3f0b41457/python-module-M3-1-representation-control-comparison-i1.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 8,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/measurement",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/model",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/seed",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 7,
+                    "path": "/panel",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 7,
+                    "path": "/summary",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 16,
+                    "field_names": [
+                      "angle_magnitude_degrees",
+                      "baseline",
+                      "canonical_initial_action_reflection_error",
+                      "canonical_initial_observation_reflection_error",
+                      "canonical_negative_episode_seed",
+                      "canonical_negative_first_reach_step",
+                      "canonical_negative_max_held_steps",
+                      "canonical_negative_outcome_class",
+                      "canonical_negative_success",
+                      "initial_action_reflection_error",
+                      "initial_observation_reflection_error",
+                      "negative_episode_seed",
+                      "negative_first_reach_step",
+                      "negative_max_held_steps",
+                      "negative_outcome_class",
+                      "negative_success",
+                      "positive_episode_seed",
+                      "positive_first_reach_step",
+                      "positive_max_held_steps",
+                      "positive_outcome_class",
+                      "positive_success",
+                      "radius_cm",
+                      "reflection_equivariant"
+                    ],
+                    "path": "/matched_pairs",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 48,
+                    "field_names": [
+                      "angle_degrees",
+                      "controller",
+                      "final_distance_cm",
+                      "first_reach_step",
+                      "hold_interruptions",
+                      "in_tolerance_steps",
+                      "initial_action",
+                      "initial_observation",
+                      "initial_policy_action",
+                      "initial_policy_observation",
+                      "max_held_steps",
+                      "min_distance_cm",
+                      "outcome_class",
+                      "peak_action_abs",
+                      "peak_endpoint_speed_cm_s",
+                      "post_reach_peak_action_abs",
+                      "pre_reach_peak_action_abs",
+                      "radius_cm",
+                      "reward_total",
+                      "seed",
+                      "steps",
+                      "success",
+                      "trajectory"
+                    ],
+                    "path": "/episodes",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/panel/radii_cm",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/panel/angle_magnitudes_degrees",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/panel/episodes_per_condition",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/panel/total_episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/panel/control_dt_seconds",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/panel/max_episode_steps",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/panel/conditions",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/summary/baseline_negative_successes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/baseline_positive_successes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/reflection_equivariant_negative_successes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/baseline_negative_never_reached",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/reflection_equivariant_negative_never_reached",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/baseline_negative_reached_but_hold_broken",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/reflection_equivariant_negative_reached_but_hold_broken",
+                    "type": "number"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "e61468f844511e41337e49b0bebec4a0d68959c4dd8bfa0d7f49fc7459588886"
+            },
+            "module": "research.lab.representation_control_comparison"
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": {
+          "campaign_lab_manifest": [
+            {
+              "fingerprint": "90aa86ce1ec4439ce7c8aa263ca31db546575b5698370395539e4cdda314b1c0",
+              "path": "research/lab/mirrored_target_diagnostics.py"
+            },
+            {
+              "fingerprint": "5bf94f5d5c6ff8f55e6ca26a1223385a2430c0e251e24e147be62d34cbd4aed4",
+              "path": "research/lab/representation_control_comparison.py"
+            }
+          ],
+          "campaign_lab_publication": {
+            "commit": "4d2a8b66ed68b9e50337ccb89ea152ec4e06d45d",
+            "fingerprint": "4b8d1ee61d9375564fe50914667871650bc31af2d4be089acada75c3f34745aa",
+            "manifest": [
+              {
+                "fingerprint": "90aa86ce1ec4439ce7c8aa263ca31db546575b5698370395539e4cdda314b1c0",
+                "path": "research/lab/mirrored_target_diagnostics.py"
+              },
+              {
+                "fingerprint": "5bf94f5d5c6ff8f55e6ca26a1223385a2430c0e251e24e147be62d34cbd4aed4",
+                "path": "research/lab/representation_control_comparison.py"
+              }
+            ]
+          },
+          "code_parent_commit": "6cb1e1566831b95403871f0037e7c655449216a9",
+          "effective_parameters": {
+            "algorithm": {
+              "name": "ppo"
+            },
+            "policy": {
+              "activation": "tanh",
+              "net_arch": [
+                64,
+                64
+              ]
+            },
+            "ppo": {
+              "batch_size": 64,
+              "ent_coef": 0.01,
+              "gae_lambda": 0.95,
+              "gamma": 0.99,
+              "learning_rate": 0.0003,
+              "n_steps": 1024
+            },
+            "training": {
+              "checkpoint_every_steps": 5000,
+              "n_envs": 1
+            }
+          },
+          "module_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "5bf94f5d5c6ff8f55e6ca26a1223385a2430c0e251e24e147be62d34cbd4aed4",
+              "path": "research/lab/representation_control_comparison.py"
+            }
+          ],
+          "module_paths": [
+            "research/lab/representation_control_comparison.py"
+          ],
+          "scientific_commit": null,
+          "scientific_manifest": [],
+          "scientific_paths": []
+        }
+      },
+      "session_id": "S3",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "evaluation_semantics": null,
+      "measurements": [
+        {
+          "args": [
+            "--model",
+            "research\\checkpoints\\candidates\\3ac5a413-ac79-4850-9c3a-83a3f0b41457\\t1\\checkpoint-100352\\model.zip",
+            "--artifact",
+            "research\\evaluations\\3ac5a413-ac79-4850-9c3a-83a3f0b41457\\representation-control-comparison-i1.json",
+            "--seed",
+            "9200"
+          ],
+          "artifact": "research/evaluations/3ac5a413-ac79-4850-9c3a-83a3f0b41457/representation-control-comparison-i1.json",
+          "instrument": "python_module",
+          "label": "I1-representation-control-comparison-T1-checkpoint-100352",
+          "module": "research.lab.representation_control_comparison"
+        }
+      ],
+      "module_provenance": {
+        "campaign_lab_manifest": [
+          {
+            "fingerprint": "90aa86ce1ec4439ce7c8aa263ca31db546575b5698370395539e4cdda314b1c0",
+            "path": "research/lab/mirrored_target_diagnostics.py"
+          },
+          {
+            "fingerprint": "5bf94f5d5c6ff8f55e6ca26a1223385a2430c0e251e24e147be62d34cbd4aed4",
+            "path": "research/lab/representation_control_comparison.py"
+          }
+        ],
+        "campaign_lab_publication": {
+          "commit": "4d2a8b66ed68b9e50337ccb89ea152ec4e06d45d",
+          "fingerprint": "4b8d1ee61d9375564fe50914667871650bc31af2d4be089acada75c3f34745aa",
+          "manifest": [
+            {
+              "fingerprint": "90aa86ce1ec4439ce7c8aa263ca31db546575b5698370395539e4cdda314b1c0",
+              "path": "research/lab/mirrored_target_diagnostics.py"
+            },
+            {
+              "fingerprint": "5bf94f5d5c6ff8f55e6ca26a1223385a2430c0e251e24e147be62d34cbd4aed4",
+              "path": "research/lab/representation_control_comparison.py"
+            }
+          ]
+        },
+        "code_parent_commit": "6cb1e1566831b95403871f0037e7c655449216a9",
+        "effective_parameters": {
+          "algorithm": {
+            "name": "ppo"
+          },
+          "policy": {
+            "activation": "tanh",
+            "net_arch": [
+              64,
+              64
+            ]
+          },
+          "ppo": {
+            "batch_size": 64,
+            "ent_coef": 0.01,
+            "gae_lambda": 0.95,
+            "gamma": 0.99,
+            "learning_rate": 0.0003,
+            "n_steps": 1024
+          },
+          "training": {
+            "checkpoint_every_steps": 5000,
+            "n_envs": 1
+          }
+        },
+        "module_manifest": [
+          {
+            "exists": true,
+            "fingerprint": "5bf94f5d5c6ff8f55e6ca26a1223385a2430c0e251e24e147be62d34cbd4aed4",
+            "path": "research/lab/representation_control_comparison.py"
+          }
+        ],
+        "module_paths": [
+          "research/lab/representation_control_comparison.py"
+        ],
+        "scientific_commit": null,
+        "scientific_manifest": [],
+        "scientific_paths": []
+      },
+      "paired_comparisons": [],
+      "partial_results": [
+        {
+          "args": [
+            "--model",
+            "research\\checkpoints\\candidates\\3ac5a413-ac79-4850-9c3a-83a3f0b41457\\t1\\checkpoint-100352\\model.zip",
+            "--artifact",
+            "research\\evaluations\\3ac5a413-ac79-4850-9c3a-83a3f0b41457\\representation-control-comparison-i1.json",
+            "--seed",
+            "9200"
+          ],
+          "instrument": "python_module",
+          "label": "I1-representation-control-comparison-T1-checkpoint-100352",
+          "metrics": {
+            "evaluation_artifact": "research/evaluations/3ac5a413-ac79-4850-9c3a-83a3f0b41457/python-module-M3-1-representation-control-comparison-i1.json",
+            "evaluation_artifact_contents": {
+              "scope": "structure_only",
+              "sections": [
+                {
+                  "entries": 8,
+                  "path": "",
+                  "type": "object"
+                },
+                {
+                  "path": "/schema_version",
+                  "type": "number"
+                },
+                {
+                  "path": "/measurement",
+                  "type": "string"
+                },
+                {
+                  "path": "/model",
+                  "type": "string"
+                },
+                {
+                  "path": "/seed",
+                  "type": "number"
+                },
+                {
+                  "entries": 7,
+                  "path": "/panel",
+                  "type": "object"
+                },
+                {
+                  "entries": 7,
+                  "path": "/summary",
+                  "type": "object"
+                },
+                {
+                  "entries": 16,
+                  "field_names": [
+                    "angle_magnitude_degrees",
+                    "baseline",
+                    "canonical_initial_action_reflection_error",
+                    "canonical_initial_observation_reflection_error",
+                    "canonical_negative_episode_seed",
+                    "canonical_negative_first_reach_step",
+                    "canonical_negative_max_held_steps",
+                    "canonical_negative_outcome_class",
+                    "canonical_negative_success",
+                    "initial_action_reflection_error",
+                    "initial_observation_reflection_error",
+                    "negative_episode_seed",
+                    "negative_first_reach_step",
+                    "negative_max_held_steps",
+                    "negative_outcome_class",
+                    "negative_success",
+                    "positive_episode_seed",
+                    "positive_first_reach_step",
+                    "positive_max_held_steps",
+                    "positive_outcome_class",
+                    "positive_success",
+                    "radius_cm",
+                    "reflection_equivariant"
+                  ],
+                  "path": "/matched_pairs",
+                  "type": "array"
+                },
+                {
+                  "entries": 48,
+                  "field_names": [
+                    "angle_degrees",
+                    "controller",
+                    "final_distance_cm",
+                    "first_reach_step",
+                    "hold_interruptions",
+                    "in_tolerance_steps",
+                    "initial_action",
+                    "initial_observation",
+                    "initial_policy_action",
+                    "initial_policy_observation",
+                    "max_held_steps",
+                    "min_distance_cm",
+                    "outcome_class",
+                    "peak_action_abs",
+                    "peak_endpoint_speed_cm_s",
+                    "post_reach_peak_action_abs",
+                    "pre_reach_peak_action_abs",
+                    "radius_cm",
+                    "reward_total",
+                    "seed",
+                    "steps",
+                    "success",
+                    "trajectory"
+                  ],
+                  "path": "/episodes",
+                  "type": "array"
+                },
+                {
+                  "entries": 4,
+                  "path": "/panel/radii_cm",
+                  "type": "array"
+                },
+                {
+                  "entries": 4,
+                  "path": "/panel/angle_magnitudes_degrees",
+                  "type": "array"
+                },
+                {
+                  "path": "/panel/episodes_per_condition",
+                  "type": "number"
+                },
+                {
+                  "path": "/panel/total_episodes",
+                  "type": "number"
+                },
+                {
+                  "path": "/panel/control_dt_seconds",
+                  "type": "number"
+                },
+                {
+                  "path": "/panel/max_episode_steps",
+                  "type": "number"
+                },
+                {
+                  "entries": 3,
+                  "path": "/panel/conditions",
+                  "type": "array"
+                },
+                {
+                  "path": "/summary/baseline_negative_successes",
+                  "type": "number"
+                },
+                {
+                  "path": "/summary/baseline_positive_successes",
+                  "type": "number"
+                },
+                {
+                  "path": "/summary/reflection_equivariant_negative_successes",
+                  "type": "number"
+                },
+                {
+                  "path": "/summary/baseline_negative_never_reached",
+                  "type": "number"
+                },
+                {
+                  "path": "/summary/reflection_equivariant_negative_never_reached",
+                  "type": "number"
+                },
+                {
+                  "path": "/summary/baseline_negative_reached_but_hold_broken",
+                  "type": "number"
+                },
+                {
+                  "path": "/summary/reflection_equivariant_negative_reached_but_hold_broken",
+                  "type": "number"
+                }
+              ],
+              "truncated": false
+            },
+            "evaluation_artifact_fingerprint": "e61468f844511e41337e49b0bebec4a0d68959c4dd8bfa0d7f49fc7459588886"
+          },
+          "module": "research.lab.representation_control_comparison"
+        }
+      ],
+      "result": {
+        "measurements": [
+          {
+            "args": [
+              "--model",
+              "research\\checkpoints\\candidates\\3ac5a413-ac79-4850-9c3a-83a3f0b41457\\t1\\checkpoint-100352\\model.zip",
+              "--artifact",
+              "research\\evaluations\\3ac5a413-ac79-4850-9c3a-83a3f0b41457\\representation-control-comparison-i1.json",
+              "--seed",
+              "9200"
+            ],
+            "instrument": "python_module",
+            "label": "I1-representation-control-comparison-T1-checkpoint-100352",
+            "metrics": {
+              "evaluation_artifact": "research/evaluations/3ac5a413-ac79-4850-9c3a-83a3f0b41457/python-module-M3-1-representation-control-comparison-i1.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 8,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/measurement",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/model",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/seed",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 7,
+                    "path": "/panel",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 7,
+                    "path": "/summary",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 16,
+                    "field_names": [
+                      "angle_magnitude_degrees",
+                      "baseline",
+                      "canonical_initial_action_reflection_error",
+                      "canonical_initial_observation_reflection_error",
+                      "canonical_negative_episode_seed",
+                      "canonical_negative_first_reach_step",
+                      "canonical_negative_max_held_steps",
+                      "canonical_negative_outcome_class",
+                      "canonical_negative_success",
+                      "initial_action_reflection_error",
+                      "initial_observation_reflection_error",
+                      "negative_episode_seed",
+                      "negative_first_reach_step",
+                      "negative_max_held_steps",
+                      "negative_outcome_class",
+                      "negative_success",
+                      "positive_episode_seed",
+                      "positive_first_reach_step",
+                      "positive_max_held_steps",
+                      "positive_outcome_class",
+                      "positive_success",
+                      "radius_cm",
+                      "reflection_equivariant"
+                    ],
+                    "path": "/matched_pairs",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 48,
+                    "field_names": [
+                      "angle_degrees",
+                      "controller",
+                      "final_distance_cm",
+                      "first_reach_step",
+                      "hold_interruptions",
+                      "in_tolerance_steps",
+                      "initial_action",
+                      "initial_observation",
+                      "initial_policy_action",
+                      "initial_policy_observation",
+                      "max_held_steps",
+                      "min_distance_cm",
+                      "outcome_class",
+                      "peak_action_abs",
+                      "peak_endpoint_speed_cm_s",
+                      "post_reach_peak_action_abs",
+                      "pre_reach_peak_action_abs",
+                      "radius_cm",
+                      "reward_total",
+                      "seed",
+                      "steps",
+                      "success",
+                      "trajectory"
+                    ],
+                    "path": "/episodes",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/panel/radii_cm",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/panel/angle_magnitudes_degrees",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/panel/episodes_per_condition",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/panel/total_episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/panel/control_dt_seconds",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/panel/max_episode_steps",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/panel/conditions",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/summary/baseline_negative_successes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/baseline_positive_successes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/reflection_equivariant_negative_successes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/baseline_negative_never_reached",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/reflection_equivariant_negative_never_reached",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/baseline_negative_reached_but_hold_broken",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/reflection_equivariant_negative_reached_but_hold_broken",
+                    "type": "number"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "e61468f844511e41337e49b0bebec4a0d68959c4dd8bfa0d7f49fc7459588886"
+            },
+            "module": "research.lab.representation_control_comparison"
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": {
+          "campaign_lab_manifest": [
+            {
+              "fingerprint": "90aa86ce1ec4439ce7c8aa263ca31db546575b5698370395539e4cdda314b1c0",
+              "path": "research/lab/mirrored_target_diagnostics.py"
+            },
+            {
+              "fingerprint": "5bf94f5d5c6ff8f55e6ca26a1223385a2430c0e251e24e147be62d34cbd4aed4",
+              "path": "research/lab/representation_control_comparison.py"
+            }
+          ],
+          "campaign_lab_publication": {
+            "commit": "4d2a8b66ed68b9e50337ccb89ea152ec4e06d45d",
+            "fingerprint": "4b8d1ee61d9375564fe50914667871650bc31af2d4be089acada75c3f34745aa",
+            "manifest": [
+              {
+                "fingerprint": "90aa86ce1ec4439ce7c8aa263ca31db546575b5698370395539e4cdda314b1c0",
+                "path": "research/lab/mirrored_target_diagnostics.py"
+              },
+              {
+                "fingerprint": "5bf94f5d5c6ff8f55e6ca26a1223385a2430c0e251e24e147be62d34cbd4aed4",
+                "path": "research/lab/representation_control_comparison.py"
+              }
+            ]
+          },
+          "code_parent_commit": "6cb1e1566831b95403871f0037e7c655449216a9",
+          "effective_parameters": {
+            "algorithm": {
+              "name": "ppo"
+            },
+            "policy": {
+              "activation": "tanh",
+              "net_arch": [
+                64,
+                64
+              ]
+            },
+            "ppo": {
+              "batch_size": 64,
+              "ent_coef": 0.01,
+              "gae_lambda": 0.95,
+              "gamma": 0.99,
+              "learning_rate": 0.0003,
+              "n_steps": 1024
+            },
+            "training": {
+              "checkpoint_every_steps": 5000,
+              "n_envs": 1
+            }
+          },
+          "module_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "5bf94f5d5c6ff8f55e6ca26a1223385a2430c0e251e24e147be62d34cbd4aed4",
+              "path": "research/lab/representation_control_comparison.py"
+            }
+          ],
+          "module_paths": [
+            "research/lab/representation_control_comparison.py"
+          ],
+          "scientific_commit": null,
+          "scientific_manifest": [],
+          "scientific_paths": []
+        }
+      },
+      "task_reference_contract": null
+    },
+    "failure": null,
+    "id": "M3",
+    "inquiry_id": "I1",
+    "kind": "measurement",
+    "progress": "completed",
+    "request": {
+      "measurement": {
+        "description": "Compare T1 on matched mirrored targets under the baseline controller and an exact reflection-equivariant observation/control intervention that swaps inverse-kinematic branch residuals and reflects actions, recording transit, settling, action, and complete-hold diagnostics for all conditions.",
+        "measurements": [
+          {
+            "args": [
+              "--model",
+              "research\\checkpoints\\candidates\\3ac5a413-ac79-4850-9c3a-83a3f0b41457\\t1\\checkpoint-100352\\model.zip",
+              "--artifact",
+              "research\\evaluations\\3ac5a413-ac79-4850-9c3a-83a3f0b41457\\representation-control-comparison-i1.json",
+              "--seed",
+              "9200"
+            ],
+            "artifact": "research\\evaluations\\3ac5a413-ac79-4850-9c3a-83a3f0b41457\\representation-control-comparison-i1.json",
+            "instrument": "python_module",
+            "label": "I1-representation-control-comparison-T1-checkpoint-100352",
+            "module": "research.lab.representation_control_comparison"
+          }
+        ],
+        "rationale": "M2 established a negative-angle deficit but could not distinguish learned branch/representation asymmetry from directional transit. The intervention maps each negative episode into the positive-angle policy frame using the exact physical reflection, including the branch swap required by the wrapped IK representation, then maps policy torques back to the negative dynamics. Recovery toward the matched positive outcome supports a representation or branch-selection cause; persistent matched failures support a dynamics/control limitation. The panel uses identical radii, angle magnitudes, seeds, and full trajectory diagnostics across baseline negative, baseline positive, and intervened negative conditions."
+      }
+    },
+    "request_fingerprint": "5bd627d15ec10140a73250819e0411494e5ad50ee8657c7e672f6cb003443abf",
+    "session_id": "S3",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T1:checkpoint-100352 remains the strongest evidence-backed candidate at 94.375% on M1. No working, best-known, or retained role has been assigned; M2 is diagnostic evidence, not a candidate.",
     "completed_operations": [
@@ -1553,6 +2361,21 @@
     "path": "research/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "a9cfdf73-46e7-4de1-8a80-584241536543",
+    "id": "S3",
+    "inquiry_id": "I1",
+    "kind": "inquiry",
+    "objective": "Advance I1 toward an evidence-supported answer to its scientific question: Is the negative-angle failure sector primarily caused by a learned observation/branch-selection asymmetry in the wrapped inverse-kinematic residual representation, rather than by an intrinsically harder directional transit under the symmetric arm dynamics?",
+    "operation_ids": [
+      "M3"
+    ],
+    "scientific_parent_commit": "6cb1e1566831b95403871f0037e7c655449216a9"
+  },
   "terminal_state": null
 }
