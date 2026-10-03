@@ -1666,14 +1666,14 @@
   "counters": {
     "event": 12,
     "inquiry": 3,
-    "measurement": 6,
-    "session": 6,
+    "measurement": 7,
+    "session": 7,
     "training": 2
   },
   "human_goal": {
     "source": "research/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -5367,9 +5367,808 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-03T12:35:40Z",
+      "error": null,
+      "id": "M7",
+      "inquiry_id": "I3",
+      "kind": "measurement",
+      "request": {
+        "description": "Materialize the exact M3 reflection wrapper as a frozen runtime around T1:checkpoint-100352 and evaluate that copied artifact on the full held-out development panel with transit, settling, action, and complete-hold diagnostics.",
+        "measurements": [
+          {
+            "args": [
+              "--source",
+              "research\\checkpoints\\candidates\\3ac5a413-ac79-4850-9c3a-83a3f0b41457\\t1\\checkpoint-100352",
+              "--destination",
+              "models\\candidates\\i3-reflection-wrapped-t1",
+              "--artifact",
+              "research\\evaluations\\3ac5a413-ac79-4850-9c3a-83a3f0b41457\\frozen-reflection-runtime.json",
+              "--seed",
+              "4200",
+              "--episodes",
+              "160"
+            ],
+            "artifact": "research\\evaluations\\3ac5a413-ac79-4850-9c3a-83a3f0b41457\\frozen-reflection-runtime.json",
+            "instrument": "python_module",
+            "label": "I3-frozen-reflection-runtime-T1-checkpoint-100352",
+            "module": "research.lab.freeze_reflection_runtime"
+          }
+        ],
+        "rationale": "M6 demonstrated 160/160 held-out success for the wrapper but evaluated a research-time controller rather than a frozen candidate artifact. This operation copies the unchanged T1 weights and normalization, freezes the exact existing M3 observation/action mapping into policy_runtime.pkl, validates the runtime against its bound files, and evaluates the frozen copy under the unchanged official mechanics and 100-sample uninterrupted hold. It tests deployment compatibility directly without retraining through the reflection-equivariant interface rejected by T2."
+      },
+      "result": {
+        "measurements": [
+          {
+            "args": [
+              "--source",
+              "research\\checkpoints\\candidates\\3ac5a413-ac79-4850-9c3a-83a3f0b41457\\t1\\checkpoint-100352",
+              "--destination",
+              "models\\candidates\\i3-reflection-wrapped-t1",
+              "--artifact",
+              "research\\evaluations\\3ac5a413-ac79-4850-9c3a-83a3f0b41457\\frozen-reflection-runtime.json",
+              "--seed",
+              "4200",
+              "--episodes",
+              "160"
+            ],
+            "instrument": "python_module",
+            "label": "I3-frozen-reflection-runtime-T1-checkpoint-100352",
+            "metrics": {
+              "evaluation_artifact": "research/evaluations/3ac5a413-ac79-4850-9c3a-83a3f0b41457/python-module-M7-1-frozen-reflection-runtime.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 14,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/measurement",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/source_artifact",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/frozen_artifact",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/frozen_model_sha256",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/frozen_runtime_sha256",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/frozen_wrapper",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/seed",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/control_dt_seconds",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/max_episode_steps",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/summary",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/negative_angle_summary",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 160,
+                    "field_names": [
+                      "final_distance_cm",
+                      "first_reach_step",
+                      "hold_interruptions",
+                      "in_tolerance_steps",
+                      "max_held_steps",
+                      "min_distance_cm",
+                      "outcome_class",
+                      "peak_action_abs",
+                      "peak_endpoint_speed_cm_s",
+                      "post_reach_peak_action_abs",
+                      "pre_reach_peak_action_abs",
+                      "reward_total",
+                      "seed",
+                      "steps",
+                      "success",
+                      "target_angle_degrees",
+                      "target_radius_cm"
+                    ],
+                    "path": "/episodes_diagnostics",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/summary/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/successes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/never_reached",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/reached_but_hold_broken",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/negative_angle_summary/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/negative_angle_summary/successes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/negative_angle_summary/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/negative_angle_summary/never_reached",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/negative_angle_summary/reached_but_hold_broken",
+                    "type": "number"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "6e2cc4c5c5e3a615fbdaf1d651df914f9515b8155433a4bbcef2240f393b1789"
+            },
+            "module": "research.lab.freeze_reflection_runtime"
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": {
+          "campaign_lab_manifest": [
+            {
+              "fingerprint": "97289490064f6659a5e6ec6af49e7d05079b1d3f7711977ecb6c696ec5e0ffd7",
+              "path": "research/lab/freeze_reflection_runtime.py"
+            },
+            {
+              "fingerprint": "90aa86ce1ec4439ce7c8aa263ca31db546575b5698370395539e4cdda314b1c0",
+              "path": "research/lab/mirrored_target_diagnostics.py"
+            },
+            {
+              "fingerprint": "53a25d54d2824bc88294a246566d2d1c2dbb79deb358cd82546edbbb4e77bdc6",
+              "path": "research/lab/reflection_wrapped_heldout.py"
+            },
+            {
+              "fingerprint": "5bf94f5d5c6ff8f55e6ca26a1223385a2430c0e251e24e147be62d34cbd4aed4",
+              "path": "research/lab/representation_control_comparison.py"
+            }
+          ],
+          "campaign_lab_publication": {
+            "commit": "367944dcd97457abe5b796e99fd62543cc7b7038",
+            "fingerprint": "b478da61631482702ab7fc61b800fcb2b82f82fb07c0cc00bee87b6e04e087fd",
+            "manifest": [
+              {
+                "fingerprint": "97289490064f6659a5e6ec6af49e7d05079b1d3f7711977ecb6c696ec5e0ffd7",
+                "path": "research/lab/freeze_reflection_runtime.py"
+              },
+              {
+                "fingerprint": "90aa86ce1ec4439ce7c8aa263ca31db546575b5698370395539e4cdda314b1c0",
+                "path": "research/lab/mirrored_target_diagnostics.py"
+              },
+              {
+                "fingerprint": "53a25d54d2824bc88294a246566d2d1c2dbb79deb358cd82546edbbb4e77bdc6",
+                "path": "research/lab/reflection_wrapped_heldout.py"
+              },
+              {
+                "fingerprint": "5bf94f5d5c6ff8f55e6ca26a1223385a2430c0e251e24e147be62d34cbd4aed4",
+                "path": "research/lab/representation_control_comparison.py"
+              }
+            ]
+          },
+          "code_parent_commit": "e86ad3c91b37cb36b64d346cf70ab939a231866c",
+          "effective_parameters": {
+            "algorithm": {
+              "name": "ppo"
+            },
+            "policy": {
+              "activation": "tanh",
+              "net_arch": [
+                64,
+                64
+              ]
+            },
+            "ppo": {
+              "batch_size": 64,
+              "ent_coef": 0.01,
+              "gae_lambda": 0.95,
+              "gamma": 0.99,
+              "learning_rate": 0.0003,
+              "n_steps": 1024
+            },
+            "training": {
+              "checkpoint_every_steps": 5000,
+              "n_envs": 1
+            }
+          },
+          "module_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "97289490064f6659a5e6ec6af49e7d05079b1d3f7711977ecb6c696ec5e0ffd7",
+              "path": "research/lab/freeze_reflection_runtime.py"
+            }
+          ],
+          "module_paths": [
+            "research/lab/freeze_reflection_runtime.py"
+          ],
+          "scientific_commit": null,
+          "scientific_manifest": [],
+          "scientific_paths": []
+        }
+      },
+      "session_id": "S7",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "evaluation_semantics": null,
+      "measurements": [
+        {
+          "args": [
+            "--source",
+            "research\\checkpoints\\candidates\\3ac5a413-ac79-4850-9c3a-83a3f0b41457\\t1\\checkpoint-100352",
+            "--destination",
+            "models\\candidates\\i3-reflection-wrapped-t1",
+            "--artifact",
+            "research\\evaluations\\3ac5a413-ac79-4850-9c3a-83a3f0b41457\\frozen-reflection-runtime.json",
+            "--seed",
+            "4200",
+            "--episodes",
+            "160"
+          ],
+          "artifact": "research/evaluations/3ac5a413-ac79-4850-9c3a-83a3f0b41457/frozen-reflection-runtime.json",
+          "instrument": "python_module",
+          "label": "I3-frozen-reflection-runtime-T1-checkpoint-100352",
+          "module": "research.lab.freeze_reflection_runtime"
+        }
+      ],
+      "module_provenance": {
+        "campaign_lab_manifest": [
+          {
+            "fingerprint": "97289490064f6659a5e6ec6af49e7d05079b1d3f7711977ecb6c696ec5e0ffd7",
+            "path": "research/lab/freeze_reflection_runtime.py"
+          },
+          {
+            "fingerprint": "90aa86ce1ec4439ce7c8aa263ca31db546575b5698370395539e4cdda314b1c0",
+            "path": "research/lab/mirrored_target_diagnostics.py"
+          },
+          {
+            "fingerprint": "53a25d54d2824bc88294a246566d2d1c2dbb79deb358cd82546edbbb4e77bdc6",
+            "path": "research/lab/reflection_wrapped_heldout.py"
+          },
+          {
+            "fingerprint": "5bf94f5d5c6ff8f55e6ca26a1223385a2430c0e251e24e147be62d34cbd4aed4",
+            "path": "research/lab/representation_control_comparison.py"
+          }
+        ],
+        "campaign_lab_publication": {
+          "commit": "367944dcd97457abe5b796e99fd62543cc7b7038",
+          "fingerprint": "b478da61631482702ab7fc61b800fcb2b82f82fb07c0cc00bee87b6e04e087fd",
+          "manifest": [
+            {
+              "fingerprint": "97289490064f6659a5e6ec6af49e7d05079b1d3f7711977ecb6c696ec5e0ffd7",
+              "path": "research/lab/freeze_reflection_runtime.py"
+            },
+            {
+              "fingerprint": "90aa86ce1ec4439ce7c8aa263ca31db546575b5698370395539e4cdda314b1c0",
+              "path": "research/lab/mirrored_target_diagnostics.py"
+            },
+            {
+              "fingerprint": "53a25d54d2824bc88294a246566d2d1c2dbb79deb358cd82546edbbb4e77bdc6",
+              "path": "research/lab/reflection_wrapped_heldout.py"
+            },
+            {
+              "fingerprint": "5bf94f5d5c6ff8f55e6ca26a1223385a2430c0e251e24e147be62d34cbd4aed4",
+              "path": "research/lab/representation_control_comparison.py"
+            }
+          ]
+        },
+        "code_parent_commit": "e86ad3c91b37cb36b64d346cf70ab939a231866c",
+        "effective_parameters": {
+          "algorithm": {
+            "name": "ppo"
+          },
+          "policy": {
+            "activation": "tanh",
+            "net_arch": [
+              64,
+              64
+            ]
+          },
+          "ppo": {
+            "batch_size": 64,
+            "ent_coef": 0.01,
+            "gae_lambda": 0.95,
+            "gamma": 0.99,
+            "learning_rate": 0.0003,
+            "n_steps": 1024
+          },
+          "training": {
+            "checkpoint_every_steps": 5000,
+            "n_envs": 1
+          }
+        },
+        "module_manifest": [
+          {
+            "exists": true,
+            "fingerprint": "97289490064f6659a5e6ec6af49e7d05079b1d3f7711977ecb6c696ec5e0ffd7",
+            "path": "research/lab/freeze_reflection_runtime.py"
+          }
+        ],
+        "module_paths": [
+          "research/lab/freeze_reflection_runtime.py"
+        ],
+        "scientific_commit": null,
+        "scientific_manifest": [],
+        "scientific_paths": []
+      },
+      "paired_comparisons": [],
+      "partial_results": [
+        {
+          "args": [
+            "--source",
+            "research\\checkpoints\\candidates\\3ac5a413-ac79-4850-9c3a-83a3f0b41457\\t1\\checkpoint-100352",
+            "--destination",
+            "models\\candidates\\i3-reflection-wrapped-t1",
+            "--artifact",
+            "research\\evaluations\\3ac5a413-ac79-4850-9c3a-83a3f0b41457\\frozen-reflection-runtime.json",
+            "--seed",
+            "4200",
+            "--episodes",
+            "160"
+          ],
+          "instrument": "python_module",
+          "label": "I3-frozen-reflection-runtime-T1-checkpoint-100352",
+          "metrics": {
+            "evaluation_artifact": "research/evaluations/3ac5a413-ac79-4850-9c3a-83a3f0b41457/python-module-M7-1-frozen-reflection-runtime.json",
+            "evaluation_artifact_contents": {
+              "scope": "structure_only",
+              "sections": [
+                {
+                  "entries": 14,
+                  "path": "",
+                  "type": "object"
+                },
+                {
+                  "path": "/schema_version",
+                  "type": "number"
+                },
+                {
+                  "path": "/measurement",
+                  "type": "string"
+                },
+                {
+                  "path": "/source_artifact",
+                  "type": "string"
+                },
+                {
+                  "path": "/frozen_artifact",
+                  "type": "string"
+                },
+                {
+                  "path": "/frozen_model_sha256",
+                  "type": "string"
+                },
+                {
+                  "path": "/frozen_runtime_sha256",
+                  "type": "string"
+                },
+                {
+                  "path": "/frozen_wrapper",
+                  "type": "string"
+                },
+                {
+                  "path": "/seed",
+                  "type": "number"
+                },
+                {
+                  "path": "/episodes",
+                  "type": "number"
+                },
+                {
+                  "path": "/control_dt_seconds",
+                  "type": "number"
+                },
+                {
+                  "path": "/max_episode_steps",
+                  "type": "number"
+                },
+                {
+                  "entries": 5,
+                  "path": "/summary",
+                  "type": "object"
+                },
+                {
+                  "entries": 5,
+                  "path": "/negative_angle_summary",
+                  "type": "object"
+                },
+                {
+                  "entries": 160,
+                  "field_names": [
+                    "final_distance_cm",
+                    "first_reach_step",
+                    "hold_interruptions",
+                    "in_tolerance_steps",
+                    "max_held_steps",
+                    "min_distance_cm",
+                    "outcome_class",
+                    "peak_action_abs",
+                    "peak_endpoint_speed_cm_s",
+                    "post_reach_peak_action_abs",
+                    "pre_reach_peak_action_abs",
+                    "reward_total",
+                    "seed",
+                    "steps",
+                    "success",
+                    "target_angle_degrees",
+                    "target_radius_cm"
+                  ],
+                  "path": "/episodes_diagnostics",
+                  "type": "array"
+                },
+                {
+                  "path": "/summary/episodes",
+                  "type": "number"
+                },
+                {
+                  "path": "/summary/successes",
+                  "type": "number"
+                },
+                {
+                  "path": "/summary/success_percent",
+                  "type": "number"
+                },
+                {
+                  "path": "/summary/never_reached",
+                  "type": "number"
+                },
+                {
+                  "path": "/summary/reached_but_hold_broken",
+                  "type": "number"
+                },
+                {
+                  "path": "/negative_angle_summary/episodes",
+                  "type": "number"
+                },
+                {
+                  "path": "/negative_angle_summary/successes",
+                  "type": "number"
+                },
+                {
+                  "path": "/negative_angle_summary/success_percent",
+                  "type": "number"
+                },
+                {
+                  "path": "/negative_angle_summary/never_reached",
+                  "type": "number"
+                },
+                {
+                  "path": "/negative_angle_summary/reached_but_hold_broken",
+                  "type": "number"
+                }
+              ],
+              "truncated": false
+            },
+            "evaluation_artifact_fingerprint": "6e2cc4c5c5e3a615fbdaf1d651df914f9515b8155433a4bbcef2240f393b1789"
+          },
+          "module": "research.lab.freeze_reflection_runtime"
+        }
+      ],
+      "result": {
+        "measurements": [
+          {
+            "args": [
+              "--source",
+              "research\\checkpoints\\candidates\\3ac5a413-ac79-4850-9c3a-83a3f0b41457\\t1\\checkpoint-100352",
+              "--destination",
+              "models\\candidates\\i3-reflection-wrapped-t1",
+              "--artifact",
+              "research\\evaluations\\3ac5a413-ac79-4850-9c3a-83a3f0b41457\\frozen-reflection-runtime.json",
+              "--seed",
+              "4200",
+              "--episodes",
+              "160"
+            ],
+            "instrument": "python_module",
+            "label": "I3-frozen-reflection-runtime-T1-checkpoint-100352",
+            "metrics": {
+              "evaluation_artifact": "research/evaluations/3ac5a413-ac79-4850-9c3a-83a3f0b41457/python-module-M7-1-frozen-reflection-runtime.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 14,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/measurement",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/source_artifact",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/frozen_artifact",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/frozen_model_sha256",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/frozen_runtime_sha256",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/frozen_wrapper",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/seed",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/control_dt_seconds",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/max_episode_steps",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/summary",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/negative_angle_summary",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 160,
+                    "field_names": [
+                      "final_distance_cm",
+                      "first_reach_step",
+                      "hold_interruptions",
+                      "in_tolerance_steps",
+                      "max_held_steps",
+                      "min_distance_cm",
+                      "outcome_class",
+                      "peak_action_abs",
+                      "peak_endpoint_speed_cm_s",
+                      "post_reach_peak_action_abs",
+                      "pre_reach_peak_action_abs",
+                      "reward_total",
+                      "seed",
+                      "steps",
+                      "success",
+                      "target_angle_degrees",
+                      "target_radius_cm"
+                    ],
+                    "path": "/episodes_diagnostics",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/summary/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/successes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/never_reached",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/reached_but_hold_broken",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/negative_angle_summary/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/negative_angle_summary/successes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/negative_angle_summary/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/negative_angle_summary/never_reached",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/negative_angle_summary/reached_but_hold_broken",
+                    "type": "number"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "6e2cc4c5c5e3a615fbdaf1d651df914f9515b8155433a4bbcef2240f393b1789"
+            },
+            "module": "research.lab.freeze_reflection_runtime"
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": {
+          "campaign_lab_manifest": [
+            {
+              "fingerprint": "97289490064f6659a5e6ec6af49e7d05079b1d3f7711977ecb6c696ec5e0ffd7",
+              "path": "research/lab/freeze_reflection_runtime.py"
+            },
+            {
+              "fingerprint": "90aa86ce1ec4439ce7c8aa263ca31db546575b5698370395539e4cdda314b1c0",
+              "path": "research/lab/mirrored_target_diagnostics.py"
+            },
+            {
+              "fingerprint": "53a25d54d2824bc88294a246566d2d1c2dbb79deb358cd82546edbbb4e77bdc6",
+              "path": "research/lab/reflection_wrapped_heldout.py"
+            },
+            {
+              "fingerprint": "5bf94f5d5c6ff8f55e6ca26a1223385a2430c0e251e24e147be62d34cbd4aed4",
+              "path": "research/lab/representation_control_comparison.py"
+            }
+          ],
+          "campaign_lab_publication": {
+            "commit": "367944dcd97457abe5b796e99fd62543cc7b7038",
+            "fingerprint": "b478da61631482702ab7fc61b800fcb2b82f82fb07c0cc00bee87b6e04e087fd",
+            "manifest": [
+              {
+                "fingerprint": "97289490064f6659a5e6ec6af49e7d05079b1d3f7711977ecb6c696ec5e0ffd7",
+                "path": "research/lab/freeze_reflection_runtime.py"
+              },
+              {
+                "fingerprint": "90aa86ce1ec4439ce7c8aa263ca31db546575b5698370395539e4cdda314b1c0",
+                "path": "research/lab/mirrored_target_diagnostics.py"
+              },
+              {
+                "fingerprint": "53a25d54d2824bc88294a246566d2d1c2dbb79deb358cd82546edbbb4e77bdc6",
+                "path": "research/lab/reflection_wrapped_heldout.py"
+              },
+              {
+                "fingerprint": "5bf94f5d5c6ff8f55e6ca26a1223385a2430c0e251e24e147be62d34cbd4aed4",
+                "path": "research/lab/representation_control_comparison.py"
+              }
+            ]
+          },
+          "code_parent_commit": "e86ad3c91b37cb36b64d346cf70ab939a231866c",
+          "effective_parameters": {
+            "algorithm": {
+              "name": "ppo"
+            },
+            "policy": {
+              "activation": "tanh",
+              "net_arch": [
+                64,
+                64
+              ]
+            },
+            "ppo": {
+              "batch_size": 64,
+              "ent_coef": 0.01,
+              "gae_lambda": 0.95,
+              "gamma": 0.99,
+              "learning_rate": 0.0003,
+              "n_steps": 1024
+            },
+            "training": {
+              "checkpoint_every_steps": 5000,
+              "n_envs": 1
+            }
+          },
+          "module_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "97289490064f6659a5e6ec6af49e7d05079b1d3f7711977ecb6c696ec5e0ffd7",
+              "path": "research/lab/freeze_reflection_runtime.py"
+            }
+          ],
+          "module_paths": [
+            "research/lab/freeze_reflection_runtime.py"
+          ],
+          "scientific_commit": null,
+          "scientific_manifest": [],
+          "scientific_paths": []
+        }
+      },
+      "task_reference_contract": null
+    },
+    "failure": null,
+    "id": "M7",
+    "inquiry_id": "I3",
+    "kind": "measurement",
+    "progress": "completed",
+    "request": {
+      "measurement": {
+        "description": "Materialize the exact M3 reflection wrapper as a frozen runtime around T1:checkpoint-100352 and evaluate that copied artifact on the full held-out development panel with transit, settling, action, and complete-hold diagnostics.",
+        "measurements": [
+          {
+            "args": [
+              "--source",
+              "research\\checkpoints\\candidates\\3ac5a413-ac79-4850-9c3a-83a3f0b41457\\t1\\checkpoint-100352",
+              "--destination",
+              "models\\candidates\\i3-reflection-wrapped-t1",
+              "--artifact",
+              "research\\evaluations\\3ac5a413-ac79-4850-9c3a-83a3f0b41457\\frozen-reflection-runtime.json",
+              "--seed",
+              "4200",
+              "--episodes",
+              "160"
+            ],
+            "artifact": "research\\evaluations\\3ac5a413-ac79-4850-9c3a-83a3f0b41457\\frozen-reflection-runtime.json",
+            "instrument": "python_module",
+            "label": "I3-frozen-reflection-runtime-T1-checkpoint-100352",
+            "module": "research.lab.freeze_reflection_runtime"
+          }
+        ],
+        "rationale": "M6 demonstrated 160/160 held-out success for the wrapper but evaluated a research-time controller rather than a frozen candidate artifact. This operation copies the unchanged T1 weights and normalization, freezes the exact existing M3 observation/action mapping into policy_runtime.pkl, validates the runtime against its bound files, and evaluates the frozen copy under the unchanged official mechanics and 100-sample uninterrupted hold. It tests deployment compatibility directly without retraining through the reflection-equivariant interface rejected by T2."
+      }
+    },
+    "request_fingerprint": "0848e52154b7be63902f9616e0b1bda6b16dd644d5e6eb229816f4952366ad2f",
+    "session_id": "S7",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T1:checkpoint-100352 remains the strongest evidence-backed ordinary learned candidate at 94.375% on M1, M4, and M5. T2:checkpoint-120832 remains rejected at 64.375%. The M6 reflection-wrapped controller is a validated intervention, not yet an assigned candidate role. No working, best-known, or retained role is assigned.",
     "completed_operations": [
@@ -5408,6 +6207,21 @@
     "path": "research/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "c6f2af10-875d-4b88-b0e8-63f3a09642db",
+    "id": "S7",
+    "inquiry_id": "I3",
+    "kind": "inquiry",
+    "objective": "Advance I3 toward an evidence-supported answer to its scientific question: Can the exact M3 reflection wrapper be converted into a frozen, assessment-compatible runtime around T1:checkpoint-100352, preserving its 100% held-out complete-hold behavior, without retraining through the reflection-equivariant learning interface that failed in T2?",
+    "operation_ids": [
+      "M7"
+    ],
+    "scientific_parent_commit": "e86ad3c91b37cb36b64d346cf70ab939a231866c"
+  },
   "terminal_state": null
 }
