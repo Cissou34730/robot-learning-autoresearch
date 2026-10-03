@@ -5655,38 +5655,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I3",
-        "outcome": "frozen_reflection_runtime_validated",
-        "reason": "M7 resolves I3 at the deployment-compatibility level. The exact M3 reflection wrapper was frozen into a new assessment-compatible runtime around T1:checkpoint-100352, with immutable model and runtime hashes recorded, and the frozen artifact achieved 160/160 successes on the full 160-episode held-out panel. All 82 negative-angle episodes succeeded, with zero never-reached and zero reached-but-hold-broken outcomes. The artifact recorded first reach, endpoint speed, action magnitude, in-tolerance samples, maximum held steps, interruptions, and complete 100-sample holds under the unchanged 0.02-second control interval and 500-step episode limit. This validates the frozen candidate route without retraining through T2's rejected reflection-equivariant interface. The evidence remains development-only and does not establish the official 200-episode result; the next decision is whether to assign this explicit candidate as best-known before requesting official assessment."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I3",
-        "outcome": "frozen_reflection_runtime_validated",
-        "reason": "M7 resolves I3 at the deployment-compatibility level. The exact M3 reflection wrapper was frozen into a new assessment-compatible runtime around T1:checkpoint-100352, with immutable model and runtime hashes recorded, and the frozen artifact achieved 160/160 successes on the full 160-episode held-out panel. All 82 negative-angle episodes succeeded, with zero never-reached and zero reached-but-hold-broken outcomes. The artifact recorded first reach, endpoint speed, action magnitude, in-tolerance samples, maximum held steps, interruptions, and complete 100-sample holds under the unchanged 0.02-second control interval and 500-step episode limit. This validates the frozen candidate route without retraining through T2's rejected reflection-equivariant interface. The evidence remains development-only and does not establish the official 200-episode result; the next decision is whether to assign this explicit candidate as best-known before requesting official assessment.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E13",
-    "inquiry_id": "I3",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "frozen_reflection_runtime_validated",
-        "reason": "M7 resolves I3 at the deployment-compatibility level. The exact M3 reflection wrapper was frozen into a new assessment-compatible runtime around T1:checkpoint-100352, with immutable model and runtime hashes recorded, and the frozen artifact achieved 160/160 successes on the full 160-episode held-out panel. All 82 negative-angle episodes succeeded, with zero never-reached and zero reached-but-hold-broken outcomes. The artifact recorded first reach, endpoint speed, action magnitude, in-tolerance samples, maximum held steps, interruptions, and complete 100-sample holds under the unchanged 0.02-second control interval and 500-step episode limit. This validates the frozen candidate route without retraining through T2's rejected reflection-equivariant interface. The evidence remains development-only and does not establish the official 200-episode result; the next decision is whether to assign this explicit candidate as best-known before requesting official assessment."
-      }
-    },
-    "request_fingerprint": "f2d9385895b91d9c51c9e9522d0f3468e7e5a7f663b82ed8efaf03d13d7ebc0e",
-    "session_id": "S7",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T1:checkpoint-100352 remains the strongest evidence-backed ordinary learned candidate at 94.375% on M1, M4, and M5. T2:checkpoint-120832 remains rejected at 64.375%. The M6 reflection-wrapped controller is a validated intervention, not yet an assigned candidate role. No working, best-known, or retained role is assigned.",
     "completed_operations": [
