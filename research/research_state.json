@@ -836,7 +836,7 @@
     }
   },
   "counters": {
-    "event": 2,
+    "event": 3,
     "inquiry": 1,
     "measurement": 2,
     "session": 2,
@@ -845,7 +845,7 @@
   "human_goal": {
     "source": "research/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -1488,28 +1488,157 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-03T05:42:38Z",
+      "error": null,
+      "id": "E3",
+      "inquiry_id": null,
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "T1:checkpoint-100352 remains the strongest evidence-backed candidate at 94.375% on M1. No working, best-known, or retained role has been assigned; M2 is diagnostic evidence, not a candidate.",
+        "completed_operations": [
+          "M2",
+          "E2"
+        ],
+        "cumulative_resource_use": "One fresh training operation requested 120000 steps and completed 120832 simulator steps. M1 measured 160 held-out episodes at seed 4200. M2 measured 32 matched mirrored-target episodes at seed 9100 and recorded full trajectory/action diagnostics. No official assessment has been requested.",
+        "current_goal_gap": "T1:checkpoint-100352 achieved 94.375% on the 160-episode held-out development panel, with 9 failures. M2's matched 32-episode panel produced 12/16 success for negative angles versus 16/16 for positive mirrors; three negative cases never reached tolerance and one reached it for only one sample. These targeted results do not replace the protected 200-episode official assessment.",
+        "current_synthesis": "Observed evidence: T1 learned rapidly after about 75,000 steps and reached 94.375% on M1; successful M1 episodes reached tolerance by steps 5-21 and completed the 100-sample hold. M2 matched equal-radius targets at four angle magnitudes and found all 16 positive-angle episodes succeeded, while 12 of 16 negative-angle episodes succeeded. The negative failures were three never-reached cases and one reached-but-hold-broken case, so the residual is concentrated in directional transit/settling rather than ordinary long-hold decay. M2 also recorded sign-dependent initial actions and trajectory/action differences, making a learned observation/branch-selection asymmetry plausible. However, because the policy responds with different actions on the two mirrored targets, M2 alone cannot separate representation-induced asymmetry from genuinely harder directional transit under coupled dynamics and torque limits. No official success or causal attribution is claimed.",
+        "decision_frontier": "In the fresh I1 inquiry session, determine whether the negative-angle failures are primarily caused by wrapped inverse-kinematic residuals or learned branch selection, versus physical directional transit and control limits. Discriminating evidence must compare a representation/control intervention under matched target geometry and retain transit, settling, action, and complete-hold diagnostics. Select a representation-directed route only if the asymmetry is tied to the observation/branch encoding; select a dynamics/control route if failures persist independently of that representation.",
+        "evidence_references": [
+          "T1",
+          "M1",
+          "M2",
+          "E2"
+        ],
+        "human_goal_connection": "The campaign remains 3.625 percentage points below the 98% complete uninterrupted-hold objective. M2 identifies a concentrated negative-angle failure mechanism as the immediate route to recovering that gap, but does not establish official performance.",
+        "next_direction_or_closure": "Goal review opened bounded inquiry I1 on the negative-angle asymmetry. After this checkpoint starts the fresh inquiry session, the next action should be one bounded comparison or intervention that tests the representation/branch-selection explanation against the competing directional-transit explanation before requesting official assessment."
+      },
+      "result": {
+        "session_id": "S2",
+        "status": "checkpointed"
+      },
+      "session_id": "S2",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "197a11cdb48197b10f4338e8db01bbc073d401a7",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "T1:checkpoint-100352 remains the strongest evidence-backed candidate at 94.375% on M1. No working, best-known, or retained role has been assigned; M2 is diagnostic evidence, not a candidate.",
+        "completed_operations": [
+          "M2",
+          "E2"
+        ],
+        "cumulative_resource_use": "One fresh training operation requested 120000 steps and completed 120832 simulator steps. M1 measured 160 held-out episodes at seed 4200. M2 measured 32 matched mirrored-target episodes at seed 9100 and recorded full trajectory/action diagnostics. No official assessment has been requested.",
+        "current_goal_gap": "T1:checkpoint-100352 achieved 94.375% on the 160-episode held-out development panel, with 9 failures. M2's matched 32-episode panel produced 12/16 success for negative angles versus 16/16 for positive mirrors; three negative cases never reached tolerance and one reached it for only one sample. These targeted results do not replace the protected 200-episode official assessment.",
+        "current_synthesis": "Observed evidence: T1 learned rapidly after about 75,000 steps and reached 94.375% on M1; successful M1 episodes reached tolerance by steps 5-21 and completed the 100-sample hold. M2 matched equal-radius targets at four angle magnitudes and found all 16 positive-angle episodes succeeded, while 12 of 16 negative-angle episodes succeeded. The negative failures were three never-reached cases and one reached-but-hold-broken case, so the residual is concentrated in directional transit/settling rather than ordinary long-hold decay. M2 also recorded sign-dependent initial actions and trajectory/action differences, making a learned observation/branch-selection asymmetry plausible. However, because the policy responds with different actions on the two mirrored targets, M2 alone cannot separate representation-induced asymmetry from genuinely harder directional transit under coupled dynamics and torque limits. No official success or causal attribution is claimed.",
+        "decision_frontier": "In the fresh I1 inquiry session, determine whether the negative-angle failures are primarily caused by wrapped inverse-kinematic residuals or learned branch selection, versus physical directional transit and control limits. Discriminating evidence must compare a representation/control intervention under matched target geometry and retain transit, settling, action, and complete-hold diagnostics. Select a representation-directed route only if the asymmetry is tied to the observation/branch encoding; select a dynamics/control route if failures persist independently of that representation.",
+        "evidence_references": [
+          "T1",
+          "M1",
+          "M2",
+          "E2"
+        ],
+        "human_goal_connection": "The campaign remains 3.625 percentage points below the 98% complete uninterrupted-hold objective. M2 identifies a concentrated negative-angle failure mechanism as the immediate route to recovering that gap, but does not establish official performance.",
+        "inquiry_id": null,
+        "next_direction_or_closure": "Goal review opened bounded inquiry I1 on the negative-angle asymmetry. After this checkpoint starts the fresh inquiry session, the next action should be one bounded comparison or intervention that tests the representation/branch-selection explanation against the competing directional-transit explanation before requesting official assessment.",
+        "session_id": "S2"
+      },
+      "presentation": {
+        "backend_session_id": "94dd836c-f227-4ad3-b0a0-d9656dad9af8",
+        "campaign_id": "3ac5a413-ac79-4850-9c3a-83a3f0b41457",
+        "campaign_usage": "12m09s | 14.17 AIU | prompt 1.9m (85% cached) | output 32.7k",
+        "session_id": "S2",
+        "session_kind": "goal_review",
+        "session_usage": "4m00s | 7.25 AIU | prompt 1.2m (89% cached) | output 16.2k"
+      },
+      "result": {
+        "session_id": "S2",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "ffc8870c92496c5613c420e53a742946a1f13f4e",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E3",
+    "inquiry_id": null,
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "T1:checkpoint-100352 remains the strongest evidence-backed candidate at 94.375% on M1. No working, best-known, or retained role has been assigned; M2 is diagnostic evidence, not a candidate.",
+        "completed_operations": [
+          "M2",
+          "E2"
+        ],
+        "cumulative_resource_use": "One fresh training operation requested 120000 steps and completed 120832 simulator steps. M1 measured 160 held-out episodes at seed 4200. M2 measured 32 matched mirrored-target episodes at seed 9100 and recorded full trajectory/action diagnostics. No official assessment has been requested.",
+        "current_goal_gap": "T1:checkpoint-100352 achieved 94.375% on the 160-episode held-out development panel, with 9 failures. M2's matched 32-episode panel produced 12/16 success for negative angles versus 16/16 for positive mirrors; three negative cases never reached tolerance and one reached it for only one sample. These targeted results do not replace the protected 200-episode official assessment.",
+        "current_synthesis": "Observed evidence: T1 learned rapidly after about 75,000 steps and reached 94.375% on M1; successful M1 episodes reached tolerance by steps 5-21 and completed the 100-sample hold. M2 matched equal-radius targets at four angle magnitudes and found all 16 positive-angle episodes succeeded, while 12 of 16 negative-angle episodes succeeded. The negative failures were three never-reached cases and one reached-but-hold-broken case, so the residual is concentrated in directional transit/settling rather than ordinary long-hold decay. M2 also recorded sign-dependent initial actions and trajectory/action differences, making a learned observation/branch-selection asymmetry plausible. However, because the policy responds with different actions on the two mirrored targets, M2 alone cannot separate representation-induced asymmetry from genuinely harder directional transit under coupled dynamics and torque limits. No official success or causal attribution is claimed.",
+        "decision_frontier": "In the fresh I1 inquiry session, determine whether the negative-angle failures are primarily caused by wrapped inverse-kinematic residuals or learned branch selection, versus physical directional transit and control limits. Discriminating evidence must compare a representation/control intervention under matched target geometry and retain transit, settling, action, and complete-hold diagnostics. Select a representation-directed route only if the asymmetry is tied to the observation/branch encoding; select a dynamics/control route if failures persist independently of that representation.",
+        "evidence_references": [
+          "T1",
+          "M1",
+          "M2",
+          "E2"
+        ],
+        "human_goal_connection": "The campaign remains 3.625 percentage points below the 98% complete uninterrupted-hold objective. M2 identifies a concentrated negative-angle failure mechanism as the immediate route to recovering that gap, but does not establish official performance.",
+        "next_direction_or_closure": "Goal review opened bounded inquiry I1 on the negative-angle asymmetry. After this checkpoint starts the fresh inquiry session, the next action should be one bounded comparison or intervention that tests the representation/branch-selection explanation against the competing directional-transit explanation before requesting official assessment."
+      }
+    },
+    "request_fingerprint": "0e07b4bdc8ee1ecf45de8558b49347b0d38da6a4d265b42ae84ba51a1d9dbe0a",
+    "session_id": "S2",
+    "supersedes": null
+  },
   "pi_checkpoint": {
-    "candidates_and_roles": "T1:checkpoint-100352 is the strongest evidence-backed candidate by held-out evaluation, at 94.375%, but no working or best-known role has been assigned yet.",
+    "candidates_and_roles": "T1:checkpoint-100352 remains the strongest evidence-backed candidate at 94.375% on M1. No working, best-known, or retained role has been assigned; M2 is diagnostic evidence, not a candidate.",
     "completed_operations": [
-      "T1",
-      "M1"
+      "M2",
+      "E2"
     ],
-    "cumulative_resource_use": "One fresh training operation requested 120000 steps and completed 120832 simulator steps across its candidate checkpoints. One held-out research evaluation measured 160 episodes at seed 4200. No official assessment has been requested.",
-    "current_goal_gap": "The strongest evaluated candidate is 3.625 percentage points below the 98% target, with 9 failures out of 160. Six failures never entered the 1 cm tolerance and three entered it for only 1-2 control samples; all nine targets had angles between -118.8 and -150.6 degrees. This panel does not establish official performance or causal attribution.",
-    "current_synthesis": "Observed evidence: T1 learned rapidly after about 75,000 steps and produced a 94.375% held-out success rate for T1:checkpoint-100352. In the M1 panel, successful episodes reached tolerance by steps 5-21 and completed the 100-sample hold; failures were localized to one negative-angle sector, with no failure pattern indicating ordinary long-hold decay. Interpretation: the dominant current limitation is localized directional reach/settling behavior, not a broad inability to sustain the complete hold. Competing explanations remain consequential: wrapped inverse-kinematic residuals or learned branch selection may create a policy asymmetry, or the coupled dynamics and torque limits may make this sector genuinely harder. The single held-out panel and endpoint-only diagnostics cannot distinguish these explanations, cannot establish within-interval behavior, and cannot claim official success.",
-    "decision_frontier": "In a fresh goal-review inquiry, determine whether the negative-angle failure sector is primarily a policy representation/branch-selection asymmetry or a physical transit limitation. Evidence that would discriminate includes matched geometric comparisons across mirrored target angles and trajectory/action diagnostics showing whether the policy diverges before reaching tolerance or reaches and then loses it. A representation-directed intervention is justified only if the asymmetry persists under matched dynamics and is linked to the observation/branch encoding; a dynamics or control intervention is justified if failures track directional transit, speed, or torque behavior independent of representation.",
+    "cumulative_resource_use": "One fresh training operation requested 120000 steps and completed 120832 simulator steps. M1 measured 160 held-out episodes at seed 4200. M2 measured 32 matched mirrored-target episodes at seed 9100 and recorded full trajectory/action diagnostics. No official assessment has been requested.",
+    "current_goal_gap": "T1:checkpoint-100352 achieved 94.375% on the 160-episode held-out development panel, with 9 failures. M2's matched 32-episode panel produced 12/16 success for negative angles versus 16/16 for positive mirrors; three negative cases never reached tolerance and one reached it for only one sample. These targeted results do not replace the protected 200-episode official assessment.",
+    "current_synthesis": "Observed evidence: T1 learned rapidly after about 75,000 steps and reached 94.375% on M1; successful M1 episodes reached tolerance by steps 5-21 and completed the 100-sample hold. M2 matched equal-radius targets at four angle magnitudes and found all 16 positive-angle episodes succeeded, while 12 of 16 negative-angle episodes succeeded. The negative failures were three never-reached cases and one reached-but-hold-broken case, so the residual is concentrated in directional transit/settling rather than ordinary long-hold decay. M2 also recorded sign-dependent initial actions and trajectory/action differences, making a learned observation/branch-selection asymmetry plausible. However, because the policy responds with different actions on the two mirrored targets, M2 alone cannot separate representation-induced asymmetry from genuinely harder directional transit under coupled dynamics and torque limits. No official success or causal attribution is claimed.",
+    "decision_frontier": "In the fresh I1 inquiry session, determine whether the negative-angle failures are primarily caused by wrapped inverse-kinematic residuals or learned branch selection, versus physical directional transit and control limits. Discriminating evidence must compare a representation/control intervention under matched target geometry and retain transit, settling, action, and complete-hold diagnostics. Select a representation-directed route only if the asymmetry is tied to the observation/branch encoding; select a dynamics/control route if failures persist independently of that representation.",
     "evidence_references": [
       "T1",
-      "M1"
+      "M1",
+      "M2",
+      "E2"
     ],
-    "human_goal_connection": "The baseline reaches 94.375% on a 160-episode held-out task panel, below the required 98% official success. Improving the localized negative-angle failures is the immediate route toward the complete uninterrupted-hold objective.",
+    "human_goal_connection": "The campaign remains 3.625 percentage points below the 98% complete uninterrupted-hold objective. M2 identifies a concentrated negative-angle failure mechanism as the immediate route to recovering that gap, but does not establish official performance.",
     "inquiry_id": null,
-    "next_direction_or_closure": "End startup with this checkpoint and use goal review to open a bounded inquiry on the negative-angle failure asymmetry. The first inquiry action should produce matched, goal-relevant evidence that separates observation/branch representation from directional dynamics before changing the policy or reward.",
-    "scientific_commit": "0c0ca73138d02a43fa8cab9a85fcfc68098f07c3",
-    "session_id": "S1"
+    "next_direction_or_closure": "Goal review opened bounded inquiry I1 on the negative-angle asymmetry. After this checkpoint starts the fresh inquiry session, the next action should be one bounded comparison or intervention that tests the representation/branch-selection explanation against the competing directional-transit explanation before requesting official assessment.",
+    "scientific_commit": "ffc8870c92496c5613c420e53a742946a1f13f4e",
+    "session_id": "S2"
   },
   "schema_version": 6,
   "scientific_model": {
@@ -1517,22 +1646,6 @@
     "path": "research/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "94dd836c-f227-4ad3-b0a0-d9656dad9af8",
-    "id": "S2",
-    "inquiry_id": null,
-    "kind": "goal_review",
-    "objective": "Reassess the scientific direction toward the human goal using completed evidence. You may request measurements to resolve an uncertainty or develop the method before committing to an inquiry. Decide whether to request official assessment, open one bounded goal-linked inquiry, or conclude that no credible route remains.",
-    "operation_ids": [
-      "M2",
-      "E2"
-    ],
-    "scientific_parent_commit": "197a11cdb48197b10f4338e8db01bbc073d401a7"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
