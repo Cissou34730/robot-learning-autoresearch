@@ -33,7 +33,6 @@ def reach_observation(data) -> np.ndarray:
     shoulder_open = shoulder_for_elbow(elbow_open)
     elbow_folded = -elbow_open
     shoulder_folded = shoulder_for_elbow(elbow_folded)
-
     end_effector = data.site("end_effector").xpos.copy()
     return np.concatenate(
         [
