@@ -6036,38 +6036,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I4",
-        "outcome": "no_contract_compliant_binding",
-        "reason": "M8 established that the exact M7 frozen artifact is complete and preserves the M7 model SHA-256 9eca03f678652077a9342d36728ec2b7b6d7740585d2fa30b2b3b3133f6a3502 and runtime SHA-256 7b6290a3a07726e92e757026701631101d330a71e59e8e88f86053bbca0632cc, but it is not an explicit registry candidate. The live role validator rejected the exact proposed candidate ID as unknown, and the supported operation kinds contain no candidate-registration operation. Assigning the underlying T1 candidate would bind a different ordinary runtime, while creating or changing a candidate record outside the contract would alter artifact identity or scientific provenance. I4 is therefore resolved: no contract-compliant binding is possible without an inadmissible scientific or identity change."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I4",
-        "outcome": "no_contract_compliant_binding",
-        "reason": "M8 established that the exact M7 frozen artifact is complete and preserves the M7 model SHA-256 9eca03f678652077a9342d36728ec2b7b6d7740585d2fa30b2b3b3133f6a3502 and runtime SHA-256 7b6290a3a07726e92e757026701631101d330a71e59e8e88f86053bbca0632cc, but it is not an explicit registry candidate. The live role validator rejected the exact proposed candidate ID as unknown, and the supported operation kinds contain no candidate-registration operation. Assigning the underlying T1 candidate would bind a different ordinary runtime, while creating or changing a candidate record outside the contract would alter artifact identity or scientific provenance. I4 is therefore resolved: no contract-compliant binding is possible without an inadmissible scientific or identity change.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E17",
-    "inquiry_id": "I4",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "no_contract_compliant_binding",
-        "reason": "M8 established that the exact M7 frozen artifact is complete and preserves the M7 model SHA-256 9eca03f678652077a9342d36728ec2b7b6d7740585d2fa30b2b3b3133f6a3502 and runtime SHA-256 7b6290a3a07726e92e757026701631101d330a71e59e8e88f86053bbca0632cc, but it is not an explicit registry candidate. The live role validator rejected the exact proposed candidate ID as unknown, and the supported operation kinds contain no candidate-registration operation. Assigning the underlying T1 candidate would bind a different ordinary runtime, while creating or changing a candidate record outside the contract would alter artifact identity or scientific provenance. I4 is therefore resolved: no contract-compliant binding is possible without an inadmissible scientific or identity change."
-      }
-    },
-    "request_fingerprint": "75cff1b8f59b5fbd9ebc38de35956345d89f3699de96856db816f215c3fde8e5",
-    "session_id": "S9",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T1:checkpoint-100352 remains the strongest registered ordinary learned candidate at 94.375% on the shared 160-episode development panel. T2:checkpoint-120832 remains rejected at 64.375%. The M7 frozen artifact at models\\candidates\\i3-reflection-wrapped-t1 is the strongest current development route, but no working, best-known, or retained role is assigned. I4 must resolve its explicit candidate registration before assessment.",
     "completed_operations": [
