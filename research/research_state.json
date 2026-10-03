@@ -1813,38 +1813,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I1",
-        "outcome": "representation_directed_route_selected",
-        "reason": "M3 resolved I1 at the bounded causal-comparison level. On 16 matched mirrored target pairs, baseline negative episodes reproduced the 12/16 result from M2, including three never-reached cases and one reached-but-hold-broken case, while the exact reflection-equivariant observation/control intervention achieved 16/16 negative successes, zero never-reached cases, and zero hold-broken cases. Intervened negative first-reach steps matched the positive mirror on every pair and all completed the 100-step hold, showing recovery of both transit and complete-hold behavior under unchanged physical dynamics. The intervention reflected joint state, endpoint error, velocities, swapped the wrapped IK branch residual pairs, and reflected actions; its raw action trajectories are retained in the artifact and are exactly reflection-consistent under the correct comparison. The artifact's aggregate canonical trajectory-action error field used an incorrect sign in its post hoc comparison, so that field is not used for interpretation. This evidence selects a representation/branch-directed route over a dynamics/control route for the next policy intervention, while making no official 200-episode success claim: T1 remains at 94.375% on M1 and the M3 panel is targeted diagnostic evidence."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I1",
-        "outcome": "representation_directed_route_selected",
-        "reason": "M3 resolved I1 at the bounded causal-comparison level. On 16 matched mirrored target pairs, baseline negative episodes reproduced the 12/16 result from M2, including three never-reached cases and one reached-but-hold-broken case, while the exact reflection-equivariant observation/control intervention achieved 16/16 negative successes, zero never-reached cases, and zero hold-broken cases. Intervened negative first-reach steps matched the positive mirror on every pair and all completed the 100-step hold, showing recovery of both transit and complete-hold behavior under unchanged physical dynamics. The intervention reflected joint state, endpoint error, velocities, swapped the wrapped IK branch residual pairs, and reflected actions; its raw action trajectories are retained in the artifact and are exactly reflection-consistent under the correct comparison. The artifact's aggregate canonical trajectory-action error field used an incorrect sign in its post hoc comparison, so that field is not used for interpretation. This evidence selects a representation/branch-directed route over a dynamics/control route for the next policy intervention, while making no official 200-episode success claim: T1 remains at 94.375% on M1 and the M3 panel is targeted diagnostic evidence.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E4",
-    "inquiry_id": "I1",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "representation_directed_route_selected",
-        "reason": "M3 resolved I1 at the bounded causal-comparison level. On 16 matched mirrored target pairs, baseline negative episodes reproduced the 12/16 result from M2, including three never-reached cases and one reached-but-hold-broken case, while the exact reflection-equivariant observation/control intervention achieved 16/16 negative successes, zero never-reached cases, and zero hold-broken cases. Intervened negative first-reach steps matched the positive mirror on every pair and all completed the 100-step hold, showing recovery of both transit and complete-hold behavior under unchanged physical dynamics. The intervention reflected joint state, endpoint error, velocities, swapped the wrapped IK branch residual pairs, and reflected actions; its raw action trajectories are retained in the artifact and are exactly reflection-consistent under the correct comparison. The artifact's aggregate canonical trajectory-action error field used an incorrect sign in its post hoc comparison, so that field is not used for interpretation. This evidence selects a representation/branch-directed route over a dynamics/control route for the next policy intervention, while making no official 200-episode success claim: T1 remains at 94.375% on M1 and the M3 panel is targeted diagnostic evidence."
-      }
-    },
-    "request_fingerprint": "5d8d1a72c34dd98d74573f468d2fd46f22c435f0b4931e309a463f78e2fe5ed0",
-    "session_id": "S3",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T1:checkpoint-100352 remains the strongest evidence-backed candidate at 94.375% on M1. No working, best-known, or retained role has been assigned; M2 is diagnostic evidence, not a candidate.",
     "completed_operations": [
