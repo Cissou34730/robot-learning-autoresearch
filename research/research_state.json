@@ -1,13 +1,5 @@
 {
-  "active_inquiry": {
-    "closure_condition": "Close when a bounded representation/control comparison produces evidence sufficient to select, reject, or reframe the intervention route, including matched negative/positive outcomes and transit-versus-hold diagnostics; do not claim official success from development panels.",
-    "goal_connection": "Resolving this distinction selects the credible route to recover the missing success margin: a representation-directed policy intervention if the asymmetry is encoded in the policy response, or a dynamics/control intervention if matched failures persist independently of representation. The target is at least 98% complete-hold episode success.",
-    "id": "I1",
-    "opened_in_session": "S2",
-    "question": "Is the negative-angle failure sector primarily caused by a learned observation/branch-selection asymmetry in the wrapped inverse-kinematic residual representation, rather than by an intrinsically harder directional transit under the symmetric arm dynamics?",
-    "rationale": "M2 matched 16 mirrored target pairs at equal radii and angle magnitudes. All 16 positive-angle episodes succeeded, while only 12 negative-angle episodes succeeded: three negative cases never reached tolerance and one reached it for one sample before the hold broke. This localizes the residual gap to negative-direction behavior and is consistent with policy branch-selection or wrapped-residual asymmetry, but the policy's differing actions still leave directional transit as a competing explanation. A bounded inquiry is therefore justified; official assessment is premature because T1 remains 94.375% on its held-out panel and M2 is a targeted diagnostic rather than the protected 200-episode assessment.",
-    "reframes": []
-  },
+  "active_inquiry": null,
   "campaign": {
     "base_commit": "c50cd2a2625981fc9d4cdf9c63654c09fdc54be9",
     "id": "3ac5a413-ac79-4850-9c3a-83a3f0b41457",
@@ -836,7 +828,7 @@
     }
   },
   "counters": {
-    "event": 3,
+    "event": 4,
     "inquiry": 1,
     "measurement": 3,
     "session": 3,
@@ -1796,9 +1788,63 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-03T05:48:08Z",
+      "error": null,
+      "id": "E4",
+      "inquiry_id": "I1",
+      "kind": "inquiry",
+      "request": {
+        "action": "close",
+        "outcome": "representation_directed_route_selected",
+        "reason": "M3 resolved I1 at the bounded causal-comparison level. On 16 matched mirrored target pairs, baseline negative episodes reproduced the 12/16 result from M2, including three never-reached cases and one reached-but-hold-broken case, while the exact reflection-equivariant observation/control intervention achieved 16/16 negative successes, zero never-reached cases, and zero hold-broken cases. Intervened negative first-reach steps matched the positive mirror on every pair and all completed the 100-step hold, showing recovery of both transit and complete-hold behavior under unchanged physical dynamics. The intervention reflected joint state, endpoint error, velocities, swapped the wrapped IK branch residual pairs, and reflected actions; its raw action trajectories are retained in the artifact and are exactly reflection-consistent under the correct comparison. The artifact's aggregate canonical trajectory-action error field used an incorrect sign in its post hoc comparison, so that field is not used for interpretation. This evidence selects a representation/branch-directed route over a dynamics/control route for the next policy intervention, while making no official 200-episode success claim: T1 remains at 94.375% on M1 and the M3 panel is targeted diagnostic evidence."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I1",
+        "outcome": "representation_directed_route_selected",
+        "reason": "M3 resolved I1 at the bounded causal-comparison level. On 16 matched mirrored target pairs, baseline negative episodes reproduced the 12/16 result from M2, including three never-reached cases and one reached-but-hold-broken case, while the exact reflection-equivariant observation/control intervention achieved 16/16 negative successes, zero never-reached cases, and zero hold-broken cases. Intervened negative first-reach steps matched the positive mirror on every pair and all completed the 100-step hold, showing recovery of both transit and complete-hold behavior under unchanged physical dynamics. The intervention reflected joint state, endpoint error, velocities, swapped the wrapped IK branch residual pairs, and reflected actions; its raw action trajectories are retained in the artifact and are exactly reflection-consistent under the correct comparison. The artifact's aggregate canonical trajectory-action error field used an incorrect sign in its post hoc comparison, so that field is not used for interpretation. This evidence selects a representation/branch-directed route over a dynamics/control route for the next policy intervention, while making no official 200-episode success claim: T1 remains at 94.375% on M1 and the M3 panel is targeted diagnostic evidence.",
+        "status": "completed"
+      },
+      "session_id": "S3",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "close",
+        "inquiry_id": "I1",
+        "outcome": "representation_directed_route_selected",
+        "reason": "M3 resolved I1 at the bounded causal-comparison level. On 16 matched mirrored target pairs, baseline negative episodes reproduced the 12/16 result from M2, including three never-reached cases and one reached-but-hold-broken case, while the exact reflection-equivariant observation/control intervention achieved 16/16 negative successes, zero never-reached cases, and zero hold-broken cases. Intervened negative first-reach steps matched the positive mirror on every pair and all completed the 100-step hold, showing recovery of both transit and complete-hold behavior under unchanged physical dynamics. The intervention reflected joint state, endpoint error, velocities, swapped the wrapped IK branch residual pairs, and reflected actions; its raw action trajectories are retained in the artifact and are exactly reflection-consistent under the correct comparison. The artifact's aggregate canonical trajectory-action error field used an incorrect sign in its post hoc comparison, so that field is not used for interpretation. This evidence selects a representation/branch-directed route over a dynamics/control route for the next policy intervention, while making no official 200-episode success claim: T1 remains at 94.375% on M1 and the M3 panel is targeted diagnostic evidence."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I1",
+        "outcome": "representation_directed_route_selected",
+        "reason": "M3 resolved I1 at the bounded causal-comparison level. On 16 matched mirrored target pairs, baseline negative episodes reproduced the 12/16 result from M2, including three never-reached cases and one reached-but-hold-broken case, while the exact reflection-equivariant observation/control intervention achieved 16/16 negative successes, zero never-reached cases, and zero hold-broken cases. Intervened negative first-reach steps matched the positive mirror on every pair and all completed the 100-step hold, showing recovery of both transit and complete-hold behavior under unchanged physical dynamics. The intervention reflected joint state, endpoint error, velocities, swapped the wrapped IK branch residual pairs, and reflected actions; its raw action trajectories are retained in the artifact and are exactly reflection-consistent under the correct comparison. The artifact's aggregate canonical trajectory-action error field used an incorrect sign in its post hoc comparison, so that field is not used for interpretation. This evidence selects a representation/branch-directed route over a dynamics/control route for the next policy intervention, while making no official 200-episode success claim: T1 remains at 94.375% on M1 and the M3 panel is targeted diagnostic evidence.",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E4",
+    "inquiry_id": "I1",
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "close",
+        "outcome": "representation_directed_route_selected",
+        "reason": "M3 resolved I1 at the bounded causal-comparison level. On 16 matched mirrored target pairs, baseline negative episodes reproduced the 12/16 result from M2, including three never-reached cases and one reached-but-hold-broken case, while the exact reflection-equivariant observation/control intervention achieved 16/16 negative successes, zero never-reached cases, and zero hold-broken cases. Intervened negative first-reach steps matched the positive mirror on every pair and all completed the 100-step hold, showing recovery of both transit and complete-hold behavior under unchanged physical dynamics. The intervention reflected joint state, endpoint error, velocities, swapped the wrapped IK branch residual pairs, and reflected actions; its raw action trajectories are retained in the artifact and are exactly reflection-consistent under the correct comparison. The artifact's aggregate canonical trajectory-action error field used an incorrect sign in its post hoc comparison, so that field is not used for interpretation. This evidence selects a representation/branch-directed route over a dynamics/control route for the next policy intervention, while making no official 200-episode success claim: T1 remains at 94.375% on M1 and the M3 panel is targeted diagnostic evidence."
+      }
+    },
+    "request_fingerprint": "5d8d1a72c34dd98d74573f468d2fd46f22c435f0b4931e309a463f78e2fe5ed0",
+    "session_id": "S3",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T1:checkpoint-100352 remains the strongest evidence-backed candidate at 94.375% on M1. No working, best-known, or retained role has been assigned; M2 is diagnostic evidence, not a candidate.",
     "completed_operations": [
@@ -1839,7 +1885,8 @@
     "kind": "inquiry",
     "objective": "Advance I1 toward an evidence-supported answer to its scientific question: Is the negative-angle failure sector primarily caused by a learned observation/branch-selection asymmetry in the wrapped inverse-kinematic residual representation, rather than by an intrinsically harder directional transit under the symmetric arm dynamics?",
     "operation_ids": [
-      "M3"
+      "M3",
+      "E4"
     ],
     "scientific_parent_commit": "6cb1e1566831b95403871f0037e7c655449216a9"
   },
