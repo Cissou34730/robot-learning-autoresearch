@@ -11,20 +11,6 @@ from robot_learning.robots.two_joint_arm import FOREARM_LENGTH, UPPER_ARM_LENGTH
 OBSERVATION_SIZE = 11
 
 
-def reflection_observation(observation: np.ndarray) -> np.ndarray:
-    """Map a physical state into the positive-y policy frame."""
-    observation = np.asarray(observation, dtype=np.float32)
-    if observation.shape != (OBSERVATION_SIZE,):
-        raise ValueError(
-            f"expected an {OBSERVATION_SIZE}-value observation, got {observation.shape}"
-        )
-    reflected = observation.copy()
-    reflected[:4] *= -1.0
-    reflected[4:7] *= np.array([1.0, -1.0, 1.0], dtype=np.float32)
-    reflected[7:11] = -observation[[9, 10, 7, 8]]
-    return reflected
-
-
 def reach_observation(data) -> np.ndarray:
     def wrap_to_pi(angle: float) -> float:
         return float((angle + np.pi) % (2.0 * np.pi) - np.pi)
