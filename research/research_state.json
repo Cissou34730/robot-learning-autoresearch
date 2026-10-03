@@ -1,5 +1,13 @@
 {
-  "active_inquiry": null,
+  "active_inquiry": {
+    "closure_condition": "Close when a bounded representation/control comparison produces evidence sufficient to select, reject, or reframe the intervention route, including matched negative/positive outcomes and transit-versus-hold diagnostics; do not claim official success from development panels.",
+    "goal_connection": "Resolving this distinction selects the credible route to recover the missing success margin: a representation-directed policy intervention if the asymmetry is encoded in the policy response, or a dynamics/control intervention if matched failures persist independently of representation. The target is at least 98% complete-hold episode success.",
+    "id": "I1",
+    "opened_in_session": "S2",
+    "question": "Is the negative-angle failure sector primarily caused by a learned observation/branch-selection asymmetry in the wrapped inverse-kinematic residual representation, rather than by an intrinsically harder directional transit under the symmetric arm dynamics?",
+    "rationale": "M2 matched 16 mirrored target pairs at equal radii and angle magnitudes. All 16 positive-angle episodes succeeded, while only 12 negative-angle episodes succeeded: three negative cases never reached tolerance and one reached it for one sample before the hold broke. This localizes the residual gap to negative-direction behavior and is consistent with policy branch-selection or wrapped-residual asymmetry, but the policy's differing actions still leave directional transit as a competing explanation. A bounded inquiry is therefore justified; official assessment is premature because T1 remains 94.375% on its held-out panel and M2 is a targeted diagnostic rather than the protected 200-episode assessment.",
+    "reframes": []
+  },
   "campaign": {
     "base_commit": "c50cd2a2625981fc9d4cdf9c63654c09fdc54be9",
     "id": "3ac5a413-ac79-4850-9c3a-83a3f0b41457",
@@ -828,8 +836,8 @@
     }
   },
   "counters": {
-    "event": 1,
-    "inquiry": 0,
+    "event": 2,
+    "inquiry": 1,
     "measurement": 2,
     "session": 2,
     "training": 1
@@ -1457,9 +1465,69 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-03T05:41:22Z",
+      "error": null,
+      "id": "E2",
+      "inquiry_id": "I1",
+      "kind": "inquiry",
+      "request": {
+        "action": "open",
+        "closure_condition": "Close when a bounded representation/control comparison produces evidence sufficient to select, reject, or reframe the intervention route, including matched negative/positive outcomes and transit-versus-hold diagnostics; do not claim official success from development panels.",
+        "goal_connection": "Resolving this distinction selects the credible route to recover the missing success margin: a representation-directed policy intervention if the asymmetry is encoded in the policy response, or a dynamics/control intervention if matched failures persist independently of representation. The target is at least 98% complete-hold episode success.",
+        "question": "Is the negative-angle failure sector primarily caused by a learned observation/branch-selection asymmetry in the wrapped inverse-kinematic residual representation, rather than by an intrinsically harder directional transit under the symmetric arm dynamics?",
+        "rationale": "M2 matched 16 mirrored target pairs at equal radii and angle magnitudes. All 16 positive-angle episodes succeeded, while only 12 negative-angle episodes succeeded: three negative cases never reached tolerance and one reached it for one sample before the hold broke. This localizes the residual gap to negative-direction behavior and is consistent with policy branch-selection or wrapped-residual asymmetry, but the policy's differing actions still leave directional transit as a competing explanation. A bounded inquiry is therefore justified; official assessment is premature because T1 remains 94.375% on its held-out panel and M2 is a targeted diagnostic rather than the protected 200-episode assessment."
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I1",
+        "status": "completed"
+      },
+      "session_id": "S2",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "open",
+        "inquiry": {
+          "closure_condition": "Close when a bounded representation/control comparison produces evidence sufficient to select, reject, or reframe the intervention route, including matched negative/positive outcomes and transit-versus-hold diagnostics; do not claim official success from development panels.",
+          "goal_connection": "Resolving this distinction selects the credible route to recover the missing success margin: a representation-directed policy intervention if the asymmetry is encoded in the policy response, or a dynamics/control intervention if matched failures persist independently of representation. The target is at least 98% complete-hold episode success.",
+          "id": "I1",
+          "opened_in_session": "S2",
+          "question": "Is the negative-angle failure sector primarily caused by a learned observation/branch-selection asymmetry in the wrapped inverse-kinematic residual representation, rather than by an intrinsically harder directional transit under the symmetric arm dynamics?",
+          "rationale": "M2 matched 16 mirrored target pairs at equal radii and angle magnitudes. All 16 positive-angle episodes succeeded, while only 12 negative-angle episodes succeeded: three negative cases never reached tolerance and one reached it for one sample before the hold broke. This localizes the residual gap to negative-direction behavior and is consistent with policy branch-selection or wrapped-residual asymmetry, but the policy's differing actions still leave directional transit as a competing explanation. A bounded inquiry is therefore justified; official assessment is premature because T1 remains 94.375% on its held-out panel and M2 is a targeted diagnostic rather than the protected 200-episode assessment.",
+          "reframes": []
+        }
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I1",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E2",
+    "inquiry_id": null,
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "open",
+        "closure_condition": "Close when a bounded representation/control comparison produces evidence sufficient to select, reject, or reframe the intervention route, including matched negative/positive outcomes and transit-versus-hold diagnostics; do not claim official success from development panels.",
+        "goal_connection": "Resolving this distinction selects the credible route to recover the missing success margin: a representation-directed policy intervention if the asymmetry is encoded in the policy response, or a dynamics/control intervention if matched failures persist independently of representation. The target is at least 98% complete-hold episode success.",
+        "question": "Is the negative-angle failure sector primarily caused by a learned observation/branch-selection asymmetry in the wrapped inverse-kinematic residual representation, rather than by an intrinsically harder directional transit under the symmetric arm dynamics?",
+        "rationale": "M2 matched 16 mirrored target pairs at equal radii and angle magnitudes. All 16 positive-angle episodes succeeded, while only 12 negative-angle episodes succeeded: three negative cases never reached tolerance and one reached it for one sample before the hold broke. This localizes the residual gap to negative-direction behavior and is consistent with policy branch-selection or wrapped-residual asymmetry, but the policy's differing actions still leave directional transit as a competing explanation. A bounded inquiry is therefore justified; official assessment is premature because T1 remains 94.375% on its held-out panel and M2 is a targeted diagnostic rather than the protected 200-episode assessment."
+      }
+    },
+    "request_fingerprint": "f1e02ddb02029a8fdaf679f96d656d62d3f02fc5d9bd12614bba4a3794cca16d",
+    "session_id": "S2",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T1:checkpoint-100352 is the strongest evidence-backed candidate by held-out evaluation, at 94.375%, but no working or best-known role has been assigned yet.",
     "completed_operations": [
@@ -1498,7 +1566,8 @@
     "kind": "goal_review",
     "objective": "Reassess the scientific direction toward the human goal using completed evidence. You may request measurements to resolve an uncertainty or develop the method before committing to an inquiry. Decide whether to request official assessment, open one bounded goal-linked inquiry, or conclude that no credible route remains.",
     "operation_ids": [
-      "M2"
+      "M2",
+      "E2"
     ],
     "scientific_parent_commit": "197a11cdb48197b10f4338e8db01bbc073d401a7"
   },
