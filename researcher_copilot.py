@@ -52,6 +52,9 @@ EXIT_TIMEOUT = 5
 EXIT_RUNTIME_FAILURE = 6
 EXIT_INTERRUPTED = 130
 
+SHUTDOWN_TIMEOUT_SECONDS = 30.0
+FORCE_STOP_TIMEOUT_SECONDS = 10.0
+
 _RESET = "\033[0m"
 _DIM = "\033[90m"
 # The model's own words: one bright block behind a matching gutter, so a line it
@@ -1394,6 +1397,48 @@ async def open_session(client, args, options: dict):
     return await client.create_session(session_id=args.session_id, **options)
 
 
+async def shutdown_runtime(client, session, console: Console, *, abort: bool) -> None:
+    interruption = None
+
+    async def graceful_shutdown() -> None:
+        if session is not None:
+            if abort:
+                await session.abort()
+            await session.disconnect()
+        await client.stop()
+
+    try:
+        await asyncio.wait_for(graceful_shutdown(), timeout=SHUTDOWN_TIMEOUT_SECONDS)
+    except TimeoutError:
+        console.line(
+            f"  ! Copilot shutdown timed out after {SHUTDOWN_TIMEOUT_SECONDS:g}s; "
+            "forcing the adapter-owned runtime to stop"
+        )
+    except asyncio.CancelledError as error:
+        interruption = error
+        console.line(
+            "  ! Copilot shutdown interrupted; "
+            "forcing the adapter-owned runtime to stop"
+        )
+    except Exception as error:  # noqa: BLE001 - SDK cleanup needs owned-runtime recovery
+        console.line(
+            f"  ! Copilot shutdown failed: {error}; "
+            "forcing the adapter-owned runtime to stop"
+        )
+    else:
+        return
+
+    try:
+        await asyncio.wait_for(client.force_stop(), timeout=FORCE_STOP_TIMEOUT_SECONDS)
+    except TimeoutError as error:
+        raise RuntimeError(
+            f"Copilot forced shutdown timed out after {FORCE_STOP_TIMEOUT_SECONDS:g}s"
+        ) from error
+    console.line("  ! Copilot owned runtime force-stopped; session data preserved")
+    if interruption is not None:
+        raise interruption
+
+
 async def run(args) -> int:
     from copilot import CopilotClient
 
@@ -1404,7 +1449,11 @@ async def run(args) -> int:
     if stop_requested():
         return EXIT_INTERRUPTED
 
-    async with CopilotClient(working_directory=str(ROOT)) as client:
+    client = CopilotClient(working_directory=str(ROOT))
+    session = None
+    abort_session = False
+    try:
+        await client.start()
         status = await client.get_auth_status()
         if not getattr(status, "isAuthenticated", False):
             print(
@@ -1438,11 +1487,11 @@ async def run(args) -> int:
                 return_when=asyncio.FIRST_COMPLETED,
             )
             if stop_task in done:
-                await session.abort()
+                abort_session = True
                 console.line("  ! session interrupted")
                 return EXIT_INTERRUPTED
             if finished_task not in done:
-                await session.abort()
+                abort_session = True
                 console.line(f"  ! session timed out after {args.timeout}s")
                 console.summary(
                     session.session_id,
@@ -1452,7 +1501,7 @@ async def run(args) -> int:
                 )
                 return EXIT_TIMEOUT
         except TimeoutError:
-            await session.abort()
+            abort_session = True
             console.line(f"  ! session timed out after {args.timeout}s")
             console.summary(
                 session.session_id,
@@ -1462,14 +1511,16 @@ async def run(args) -> int:
             )
             return EXIT_TIMEOUT
         except KeyboardInterrupt:
-            await session.abort()
+            abort_session = True
             console.line("  ! session interrupted")
             return EXIT_INTERRUPTED
+        except asyncio.CancelledError:
+            abort_session = True
+            raise
         finally:
             finished_task.cancel()
             stop_task.cancel()
             await asyncio.gather(finished_task, stop_task, return_exceptions=True)
-            await session.disconnect()
 
         console.summary(
             session.session_id,
@@ -1478,6 +1529,8 @@ async def run(args) -> int:
             elapsed_seconds=time.monotonic() - started,
         )
         return EXIT_SESSION_ERROR if console.session_error else EXIT_OK
+    finally:
+        await shutdown_runtime(client, session, console, abort=abort_session)
 
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:

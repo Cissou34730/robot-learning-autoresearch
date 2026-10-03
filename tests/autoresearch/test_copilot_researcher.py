@@ -5,10 +5,12 @@ bounded research phase succeeded, and none of these tests start a real session.
 """
 
 import asyncio
+import json
 import sys
 import types
 from pathlib import Path
 from types import SimpleNamespace
+from unittest.mock import AsyncMock
 
 import pytest
 
@@ -443,11 +445,14 @@ class FakeClient:
         self.created = []
         self.resumed = []
 
-    async def __aenter__(self):
-        return self
+    async def start(self):
+        pass
 
-    async def __aexit__(self, *exc):
-        return False
+    async def stop(self):
+        pass
+
+    async def force_stop(self):
+        pass
 
     async def get_auth_status(self):
         return SimpleNamespace(isAuthenticated=self.authenticated)
@@ -594,6 +599,161 @@ def test_a_runtime_failure_becomes_an_exit_code_not_a_traceback(monkeypatch, cap
 
     assert code == adapter.EXIT_RUNTIME_FAILURE
     assert "runtime binary is missing" in capsys.readouterr().err
+
+
+@pytest.mark.parametrize(
+    ("completion", "stalled_step", "failure", "expected_code"),
+    [
+        ("finished", None, None, adapter.EXIT_OK),
+        ("finished", "disconnect", "timeout", adapter.EXIT_OK),
+        ("finished", "stop", "timeout", adapter.EXIT_OK),
+        ("finished", "stop", "error", adapter.EXIT_OK),
+        ("finished", "force_stop", "timeout", adapter.EXIT_RUNTIME_FAILURE),
+        ("finished", "force_stop", "error", adapter.EXIT_RUNTIME_FAILURE),
+        ("timeout", "abort", "timeout", adapter.EXIT_TIMEOUT),
+        ("interrupted", "abort", "timeout", adapter.EXIT_INTERRUPTED),
+        ("session_error", "stop", "timeout", adapter.EXIT_SESSION_ERROR),
+    ],
+)
+def test_shutdown_is_bounded_without_repeating_or_losing_pi_work(
+    monkeypatch, tmp_path, capsys, completion, stalled_step, failure, expected_code
+):
+    client = FakeClient()
+    client.start = AsyncMock()
+    client.stop = AsyncMock()
+    client.force_stop = AsyncMock()
+    session = SimpleNamespace(
+        session_id="phase-1",
+        send=AsyncMock(),
+        abort=AsyncMock(),
+        disconnect=AsyncMock(),
+    )
+    client.create_session = AsyncMock(return_value=session)
+
+    async def stall():
+        await asyncio.Event().wait()
+
+    if stalled_step == "force_stop":
+        client.stop.side_effect = stall
+    if stalled_step:
+        target = session if stalled_step in {"abort", "disconnect"} else client
+        getattr(target, stalled_step).side_effect = (
+            stall if failure == "timeout" else RuntimeError("cleanup failed")
+        )
+
+    def options(args, console, finished):
+        if completion == "session_error":
+            console.session_error = True
+        if completion not in {"timeout", "interrupted"}:
+            session.send.side_effect = lambda prompt: finished.set()
+        return {}
+
+    async def stop_request():
+        if completion != "interrupted":
+            await asyncio.Event().wait()
+
+    install_fake_sdk(monkeypatch, client)
+    monkeypatch.setattr(adapter, "ROOT", tmp_path)
+    monkeypatch.setattr(adapter, "session_options", options)
+    monkeypatch.setattr(adapter, "stop_requested", lambda: False)
+    monkeypatch.setattr(adapter, "wait_for_stop_request", stop_request)
+    monkeypatch.setattr(adapter, "worktree_status", dict)
+    monkeypatch.setattr(adapter, "offload_snapshot", set)
+    monkeypatch.setattr(adapter, "offloaded_since", lambda before: (0, 0))
+    monkeypatch.setattr(adapter, "SHUTDOWN_TIMEOUT_SECONDS", 0.01)
+    monkeypatch.setattr(adapter, "FORCE_STOP_TIMEOUT_SECONDS", 0.01)
+    run = asyncio.run
+    monkeypatch.setattr(
+        adapter.asyncio, "run", lambda coro: run(asyncio.wait_for(coro, timeout=1))
+    )
+    campaign_id = "11111111-1111-1111-1111-111111111111"
+    research = tmp_path / "research"
+    research.mkdir()
+    preserved = {
+        research / "operation_request.json": b'{"saved":"request"}\n',
+        research / "research_state.json": b'{"saved":"state"}\n',
+    }
+    for path, content in preserved.items():
+        path.write_bytes(content)
+
+    code = adapter.main(
+        [
+            "p",
+            "--session-id",
+            session.session_id,
+            "--campaign-id",
+            campaign_id,
+            "--timeout",
+            "0.01",
+        ]
+    )
+
+    assert code == expected_code
+    client.start.assert_awaited_once()
+    client.create_session.assert_awaited_once_with(session_id=session.session_id)
+    session.send.assert_awaited_once_with("p")
+    assert client.resumed == []
+    assert session.abort.await_count == int(completion in {"timeout", "interrupted"})
+    assert client.force_stop.await_count == int(stalled_step is not None)
+    if stalled_step is None:
+        session.disconnect.assert_awaited_once()
+        client.stop.assert_awaited_once()
+    for path, content in preserved.items():
+        assert path.read_bytes() == content
+    rows = (
+        (tmp_path / "reports" / "session_usage" / f"{campaign_id}.jsonl")
+        .read_text(encoding="utf-8")
+        .splitlines()
+    )
+    assert len(rows) == 1
+    usage = json.loads(rows[0])
+    assert usage["exit_code"] == expected_code
+    assert usage["duration_seconds"] < 0.5
+    output = capsys.readouterr()
+    if stalled_step:
+        assert "forcing the adapter-owned runtime" in output.out
+    if stalled_step == "force_stop":
+        assert "Copilot runtime failure:" in output.err
+        assert "force-stopped" not in output.out
+
+
+@pytest.mark.parametrize("cancellation_step", ["send", "disconnect"])
+def test_task_cancellation_still_cleans_up_owned_runtime(
+    monkeypatch, cancellation_step
+):
+    client = FakeClient()
+    client.force_stop = AsyncMock()
+
+    async def stall():
+        await asyncio.Event().wait()
+
+    session = SimpleNamespace(
+        session_id="phase-1",
+        send=AsyncMock(),
+        abort=AsyncMock(side_effect=stall),
+        disconnect=AsyncMock(),
+    )
+    getattr(session, cancellation_step).side_effect = asyncio.CancelledError()
+
+    def options(args, console, finished):
+        if cancellation_step == "disconnect":
+            session.send.side_effect = lambda prompt: finished.set()
+        return {}
+
+    install_fake_sdk(monkeypatch, client)
+    monkeypatch.setattr(adapter, "open_session", AsyncMock(return_value=session))
+    monkeypatch.setattr(adapter, "session_options", options)
+    monkeypatch.setattr(adapter, "stop_requested", lambda: False)
+    monkeypatch.setattr(adapter, "worktree_status", dict)
+    monkeypatch.setattr(adapter, "offload_snapshot", set)
+    monkeypatch.setattr(adapter, "SHUTDOWN_TIMEOUT_SECONDS", 0.01)
+    args = adapter.parse_args(["p", "--session-id", session.session_id])
+
+    with pytest.raises(asyncio.CancelledError):
+        asyncio.run(asyncio.wait_for(adapter.run(args), timeout=1))
+
+    assert session.abort.await_count == int(cancellation_step == "send")
+    client.force_stop.assert_awaited_once()
 
 
 # --- the boundary with the science ------------------------------------------

@@ -1270,3 +1270,35 @@ separate from harness changes so their outcomes are not conflated.
 - **Disposition:** implemented for observation; scientific effect unassessed.
   No campaign was started, resumed or reset. Campaign evidence and scientific
   code were not changed.
+
+## 2026-10-03: bounded Copilot runtime shutdown
+
+- **RCA and approval:** campaign `3ac5a413` stopped at the PI-to-Runner
+  handoff. S6 completed its final turn, destroyed its session, and prepared
+  the CLI runtime for shutdown at 08:13:00 CEST. The adapter and runtime
+  remained alive. The saved measurement request was not accepted or executed,
+  and the invocation usage row was not written. The exact blocked SDK call
+  was not established. The maintainer stopped the campaign and approved this
+  repair.
+- **Harness defect:** the PI-turn timeout did not bound session disconnection
+  or client shutdown. The launcher waited for the adapter process to exit.
+- **Exact scope:** `researcher_copilot.py` uses explicit client lifetime
+  management. Abort, when requested, session disconnection, and graceful
+  client shutdown share a 30-second timeout. A timeout or cleanup error is
+  reported before the SDK force-stops only this client's owned runtime.
+  Forced cleanup has a separate 10-second timeout.
+- **Preserved behavior:** successful forced cleanup preserves the original
+  PI exit status. Failed forced cleanup reports a runtime failure. Usage is
+  recorded after cleanup. Session data and saved operation requests are not
+  deleted, rewritten, or regenerated. There is no replacement PI session,
+  automatic campaign restart, or change to scientific operation validation.
+- **Implementation checks:** targeted adapter cases cover normal shutdown,
+  stalled disconnection and client shutdown, cleanup errors, failed forced
+  cleanup, stalled abort, and cancellation during the turn or cleanup.
+  They check usage
+  recording, saved artifacts, and the original PI result without starting
+  a real session.
+- **Disposition:** provisionally retained operational repair, not a
+  scientific intervention.
+  Campaign-level behavior remains unassessed. The startup-baseline review
+  remains pending; this repair does not change its training budget.
