@@ -732,7 +732,7 @@ function New-ScientificSessionPrompt {
         )
     }
     elseif ($State.scientific_session.kind -eq "startup") {
-        "None. Startup permits selecting and investigating a scientific question before checkpointing. Only formal inquiry opening requires the subsequent goal-review session."
+        "None. Establish and checkpoint the most credible initial scientific direction; inquiry selection follows in goal review."
     }
     elseif ($State.scientific_session.kind -eq "inquiry") {
         "The inquiry has closed. Preserve its outcome and the resulting campaign decision."
@@ -1088,7 +1088,7 @@ try {
                 "goal_review"
             }
             $objective = if ($kind -eq "startup") {
-                "Establish the most credible first scientific direction toward the human goal from the scientific model and scientific work in this session. Checkpoint when that work reaches a stable decision; formal inquiry opening belongs to goal review."
+                "Establish and checkpoint the most credible first scientific direction toward the human goal from the scientific model and evidence produced in this session; inquiry selection follows in goal review."
             }
             elseif ($kind -eq "goal_review") {
                 "Reassess the scientific direction toward the human goal using completed evidence. You may request measurements to resolve an uncertainty or develop the method before committing to an inquiry. Decide whether to request official assessment or open one bounded goal-linked inquiry."

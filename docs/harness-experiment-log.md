@@ -37,9 +37,9 @@ demonstrated solution to training-shaped progression. The brief-only context
 compaction below removes duplicate presentation while retaining all candidates,
 completed operations, and artifact inventories. Its campaign effect on PI cost
 and scientific decisions remains unassessed; that compaction did not change
-prompts or SDK settings. The startup-wording correction below now distinguishes
-selecting and investigating a scientific question from formally opening an
-inquiry. It does not change phase permissions or prescribe an instrument.
+prompts or SDK settings. The October 2 startup-wording clarification is now
+withdrawn by the exact working-reference restoration below. Phase permissions
+are unchanged.
 Campaign `48993cfd` exercised that clarification with a completed plant probe
 before checkpointing or training. Its later M5 closure nevertheless lost a
 substantial outer-reaching gain behind an aggregate regression, despite
@@ -441,12 +441,12 @@ its scientific breadth or achieve its result.
 
 | Item | Status / boundary |
 |---|---|
-| Full 120,000-step startup baseline | **Next review, before another harness change.** Shorter startup requests and non-training work are already permitted, but the PI still selects a full baseline. Review startup purpose, training-budget cues and candidate-publication coupling. No fix is selected or approved; current behavior is unchanged. |
-| Counterevidence preservation and official-assessment readiness | Guidance `e4736da` withdrawn and rolled back in the working tree, not yet committed. Scientific effect remains unassessed. The residual-evidence concerns remain open. No replacement readiness prompt is added; the approved contract repair is separate. |
+| Full 120,000-step startup baseline | **Review remains open.** The two startup strings are restored verbatim from the successful reference below. Shorter startup requests and non-training work remain permitted. Training-budget cues and candidate-publication coupling remain unresolved; no budget or publication change is made by this restoration. |
+| Counterevidence preservation and official-assessment readiness | Guidance `e4736da` withdrawn and its rollback published in `b275861`. Scientific effect remains unassessed. The residual-evidence concerns remain open. No replacement readiness prompt is added; the approved contract repair is separate. |
 | Shorter startup training | Tactical change implemented below. The PI may request any positive integer up to the maintainer's per-run allocation during startup, never a larger request. Training remains optional; inquiry requests still use the full allocation. Existing rollout rounding is retained. Campaign effect is unassessed. |
 | Reliable measurement-evidence inspection | Discoverability provisionally retained. In `48993cfd`, M5 feedback advertised diagnostics, but the PI closed without inspecting the strata and incorrectly claimed no outer-reaching gain. In `2381bcbf`, M3/M4 diagnostic reads stopped at lines 1-310, were described as full inspection, and remaining non-entry cases were lost in the synthesis. Decision-linked inspection and interpretation remain unresolved. |
 | Context flooding | Brief-only compaction implemented below: 57.39% smaller on the completed campaign, with all candidates and inventory references preserved. Campaign benefit remains unassessed; prompt replay and SDK output handling are unchanged and remain separate possible work. |
-| Training-shaped inquiry commitments and scientific continuity | Open, with a positive local observation in `2381bcbf`: one inquiry sustained diagnostics and two successive method interventions. The question-based objective was active, but causation is unproved. Both aggregate losses and aggregate gains have obscured consequential subgroup evidence in handoffs. The withdrawn goal-review guidance addressed decision framing, not method development or trial-shaped commitments; no replacement is selected. Startup clarification is retained, and scientific-model framing remains an unproven lead. |
+| Training-shaped inquiry commitments and scientific continuity | Open, with a positive local observation in `2381bcbf`: one inquiry sustained diagnostics and two successive method interventions. The question-based objective was active, but causation is unproved. Both aggregate losses and aggregate gains have obscured consequential subgroup evidence in handoffs. The withdrawn goal-review guidance addressed decision framing, not method development or trial-shaped commitments; no replacement is selected. Startup wording is restored verbatim from `inquiery-harnes-success-2`; its effect is unassessed. Scientific-model framing remains an unproven lead. |
 | Checkpoint nomination and evidence selection | Deferred behind progression; available training facts are not proof of development performance. |
 | Operation-submission handoff clarification | Still unimplemented. |
 | Explicit protection of the old protocol log | Still unimplemented; read-access policy is a separate decision. |
@@ -1495,3 +1495,33 @@ separate from harness changes so their outcomes are not conflated.
   is claimed from this operational repair.
 - **Publication:** the maintainer authorized commit and push of the repair,
   tests and documentation. The maintainer will reset the campaign separately.
+
+## 2026-10-03: restore the successful-reference startup text exactly
+
+- **Approval:** the maintainer rejected new or adapted instructions and
+  approved restoring the two original startup blocks verbatim.
+- **Source:** tag `inquiery-harnes-success-2`, commit `3a8f034`, the successful
+  reference for campaign `77a975a5` that began with a candidate-free dynamics
+  measurement.
+- **Exact scope:** restore only the startup active-inquiry description and
+  startup session objective in `run_research.ps1`. Withdraw the two-string
+  October 2 clarification. No whole-commit rollback or replacement wording.
+  The preliminary scientific-model instructions and the startup section in
+  `research/program.md` already match the reference and are not changed.
+- **Retained:** startup training below the maintainer allocation remains
+  allowed. Training acceptance and dispatch, phase permissions, scientific
+  implementation, other session instructions, read controls, and the removal
+  of the invented campaign ending are unchanged.
+- **Observation target:** establish whether a fresh startup builds its first
+  scientific direction from the physical model and unresolved questions,
+  rather than treating an unchanged-recipe baseline as a prerequisite.
+  This is one text-restoration trial, not a new scientific requirement.
+- **Evidence limits:** the original wording also occurred in training-first
+  openings and was sometimes read as requiring a planning-only checkpoint.
+  Exact source restoration does not guarantee identical PI behavior.
+- **Campaign boundary:** existing state and requests are not rewritten.
+  A saved session retains its existing objective. This comparison requires
+  a fresh campaign started by the maintainer; no reset or launch is performed.
+- **Checks:** both restored strings match the reference exactly. The launcher
+  parses, the existing startup phase-contract case passes, and the touched
+  files pass the whitespace check. No new test or instruction gate is added.
