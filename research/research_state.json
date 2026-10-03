@@ -5325,44 +5325,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "open",
-        "inquiry": {
-          "closure_condition": "Close when a frozen candidate artifact using the exact M3 wrapper has been produced and evaluated with the unchanged task mechanics and complete 100-sample hold semantics on held-out development evidence with transit, settling, action, and uninterrupted-hold diagnostics; consider official assessment only if the artifact is accepted as an explicit best-known candidate and the development evidence remains credible.",
-          "goal_connection": "M6 recovered the full 3.625-point development gap: the learned T1 controller under the exact M3 observation/action wrapper achieved 160/160 held-out successes, including 82/82 negative-angle targets, with zero never-reached and zero hold-broken episodes. Converting this validated intervention into a frozen candidate is the most direct route to the at-least-98% complete uninterrupted-hold objective, while avoiding the T2 training/interface regression.",
-          "id": "I3",
-          "opened_in_session": "S6",
-          "question": "Can the exact M3 reflection wrapper be converted into a frozen, assessment-compatible runtime around T1:checkpoint-100352, preserving its 100% held-out complete-hold behavior, without retraining through the reflection-equivariant learning interface that failed in T2?",
-          "rationale": "M5 ruled out later ordinary T1 checkpoints as a recovery route: none exceeded T1:checkpoint-100352's 94.375% shared-panel result. M6 then showed that the exact reflection intervention, applied around the already-trained baseline rather than learned through T2's canonical interface, achieved 100% on all 160 held-out episodes and eliminated all nine baseline failures. This distinguishes the validated controller mechanism from the failed training recipe. The remaining scientific and engineering uncertainty is deployment compatibility: whether the intervention can be frozen into the candidate runtime and assessed as the learned policy without changing the official task or weakening complete-hold semantics.",
-          "reframes": []
-        }
-      },
-      "result": {
-        "action": "open",
-        "inquiry_id": "I3",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E11",
-    "inquiry_id": null,
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "open",
-        "closure_condition": "Close when a frozen candidate artifact using the exact M3 wrapper has been produced and evaluated with the unchanged task mechanics and complete 100-sample hold semantics on held-out development evidence with transit, settling, action, and uninterrupted-hold diagnostics; consider official assessment only if the artifact is accepted as an explicit best-known candidate and the development evidence remains credible.",
-        "goal_connection": "M6 recovered the full 3.625-point development gap: the learned T1 controller under the exact M3 observation/action wrapper achieved 160/160 held-out successes, including 82/82 negative-angle targets, with zero never-reached and zero hold-broken episodes. Converting this validated intervention into a frozen candidate is the most direct route to the at-least-98% complete uninterrupted-hold objective, while avoiding the T2 training/interface regression.",
-        "question": "Can the exact M3 reflection wrapper be converted into a frozen, assessment-compatible runtime around T1:checkpoint-100352, preserving its 100% held-out complete-hold behavior, without retraining through the reflection-equivariant learning interface that failed in T2?",
-        "rationale": "M5 ruled out later ordinary T1 checkpoints as a recovery route: none exceeded T1:checkpoint-100352's 94.375% shared-panel result. M6 then showed that the exact reflection intervention, applied around the already-trained baseline rather than learned through T2's canonical interface, achieved 100% on all 160 held-out episodes and eliminated all nine baseline failures. This distinguishes the validated controller mechanism from the failed training recipe. The remaining scientific and engineering uncertainty is deployment compatibility: whether the intervention can be frozen into the candidate runtime and assessed as the learned policy without changing the official task or weakening complete-hold semantics."
-      }
-    },
-    "request_fingerprint": "53777c4f7acd868d3259bf49e19207be30386b6dce9aa7d7bf43680cd5898f71",
-    "session_id": "S6",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T1:checkpoint-100352 remains the strongest evidence-backed candidate at 94.375% on M1 and M4. T2:checkpoint-120832 is archived as a rejected reflection-equivariant trained candidate at 64.375% on M4. No working, best-known, or retained role is assigned. M3 remains diagnostic evidence rather than a deployable trained policy.",
     "completed_operations": [
