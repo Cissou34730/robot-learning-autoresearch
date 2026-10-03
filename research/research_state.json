@@ -1,13 +1,5 @@
 {
-  "active_inquiry": {
-    "closure_condition": "Close when the existing candidate-role contract either accepts a precise binding of the M7 frozen artifact as a candidate or establishes that no contract-compliant binding is possible without an inadmissible scientific change; do not request official assessment until the assessed artifact is exactly the validated M7 runtime.",
-    "goal_connection": "The frozen M7 runtime is the only current route above the 98% development target, but official assessment requires an explicitly registered best-known candidate. Resolving this identity and artifact-binding gap is necessary before official assessment can measure the strongest route rather than the weaker ordinary T1 runtime.",
-    "id": "I4",
-    "opened_in_session": "S8",
-    "question": "Can the validated M7 frozen reflection-wrapped runtime be represented as an explicit registered candidate, with its exact artifact identity and hashes preserved, without changing the weights, wrapper, task mechanics, or complete-hold semantics?",
-    "rationale": "M7 validated 160/160 complete holds using the frozen m3_reflection runtime, while the registry contains only the underlying T1 candidate. The role validator rejects unregistered candidates, and assigning T1 would bind assessment to its ordinary 94.375% runtime. This is a bounded deployment-identity question, not a request to retrain or alter the task.",
-    "reframes": []
-  },
+  "active_inquiry": null,
   "campaign": {
     "base_commit": "c50cd2a2625981fc9d4cdf9c63654c09fdc54be9",
     "id": "3ac5a413-ac79-4850-9c3a-83a3f0b41457",
@@ -1664,7 +1656,7 @@
     }
   },
   "counters": {
-    "event": 16,
+    "event": 17,
     "inquiry": 4,
     "measurement": 8,
     "session": 9,
@@ -6019,9 +6011,63 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-03T12:49:34Z",
+      "error": null,
+      "id": "E17",
+      "inquiry_id": "I4",
+      "kind": "inquiry",
+      "request": {
+        "action": "close",
+        "outcome": "no_contract_compliant_binding",
+        "reason": "M8 established that the exact M7 frozen artifact is complete and preserves the M7 model SHA-256 9eca03f678652077a9342d36728ec2b7b6d7740585d2fa30b2b3b3133f6a3502 and runtime SHA-256 7b6290a3a07726e92e757026701631101d330a71e59e8e88f86053bbca0632cc, but it is not an explicit registry candidate. The live role validator rejected the exact proposed candidate ID as unknown, and the supported operation kinds contain no candidate-registration operation. Assigning the underlying T1 candidate would bind a different ordinary runtime, while creating or changing a candidate record outside the contract would alter artifact identity or scientific provenance. I4 is therefore resolved: no contract-compliant binding is possible without an inadmissible scientific or identity change."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I4",
+        "outcome": "no_contract_compliant_binding",
+        "reason": "M8 established that the exact M7 frozen artifact is complete and preserves the M7 model SHA-256 9eca03f678652077a9342d36728ec2b7b6d7740585d2fa30b2b3b3133f6a3502 and runtime SHA-256 7b6290a3a07726e92e757026701631101d330a71e59e8e88f86053bbca0632cc, but it is not an explicit registry candidate. The live role validator rejected the exact proposed candidate ID as unknown, and the supported operation kinds contain no candidate-registration operation. Assigning the underlying T1 candidate would bind a different ordinary runtime, while creating or changing a candidate record outside the contract would alter artifact identity or scientific provenance. I4 is therefore resolved: no contract-compliant binding is possible without an inadmissible scientific or identity change.",
+        "status": "completed"
+      },
+      "session_id": "S9",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "close",
+        "inquiry_id": "I4",
+        "outcome": "no_contract_compliant_binding",
+        "reason": "M8 established that the exact M7 frozen artifact is complete and preserves the M7 model SHA-256 9eca03f678652077a9342d36728ec2b7b6d7740585d2fa30b2b3b3133f6a3502 and runtime SHA-256 7b6290a3a07726e92e757026701631101d330a71e59e8e88f86053bbca0632cc, but it is not an explicit registry candidate. The live role validator rejected the exact proposed candidate ID as unknown, and the supported operation kinds contain no candidate-registration operation. Assigning the underlying T1 candidate would bind a different ordinary runtime, while creating or changing a candidate record outside the contract would alter artifact identity or scientific provenance. I4 is therefore resolved: no contract-compliant binding is possible without an inadmissible scientific or identity change."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I4",
+        "outcome": "no_contract_compliant_binding",
+        "reason": "M8 established that the exact M7 frozen artifact is complete and preserves the M7 model SHA-256 9eca03f678652077a9342d36728ec2b7b6d7740585d2fa30b2b3b3133f6a3502 and runtime SHA-256 7b6290a3a07726e92e757026701631101d330a71e59e8e88f86053bbca0632cc, but it is not an explicit registry candidate. The live role validator rejected the exact proposed candidate ID as unknown, and the supported operation kinds contain no candidate-registration operation. Assigning the underlying T1 candidate would bind a different ordinary runtime, while creating or changing a candidate record outside the contract would alter artifact identity or scientific provenance. I4 is therefore resolved: no contract-compliant binding is possible without an inadmissible scientific or identity change.",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E17",
+    "inquiry_id": "I4",
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "close",
+        "outcome": "no_contract_compliant_binding",
+        "reason": "M8 established that the exact M7 frozen artifact is complete and preserves the M7 model SHA-256 9eca03f678652077a9342d36728ec2b7b6d7740585d2fa30b2b3b3133f6a3502 and runtime SHA-256 7b6290a3a07726e92e757026701631101d330a71e59e8e88f86053bbca0632cc, but it is not an explicit registry candidate. The live role validator rejected the exact proposed candidate ID as unknown, and the supported operation kinds contain no candidate-registration operation. Assigning the underlying T1 candidate would bind a different ordinary runtime, while creating or changing a candidate record outside the contract would alter artifact identity or scientific provenance. I4 is therefore resolved: no contract-compliant binding is possible without an inadmissible scientific or identity change."
+      }
+    },
+    "request_fingerprint": "75cff1b8f59b5fbd9ebc38de35956345d89f3699de96856db816f215c3fde8e5",
+    "session_id": "S9",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T1:checkpoint-100352 remains the strongest registered ordinary learned candidate at 94.375% on the shared 160-episode development panel. T2:checkpoint-120832 remains rejected at 64.375%. The M7 frozen artifact at models\\candidates\\i3-reflection-wrapped-t1 is the strongest current development route, but no working, best-known, or retained role is assigned. I4 must resolve its explicit candidate registration before assessment.",
     "completed_operations": [
@@ -6073,7 +6119,8 @@
     "kind": "inquiry",
     "objective": "Advance I4 toward an evidence-supported answer to its scientific question: Can the validated M7 frozen reflection-wrapped runtime be represented as an explicit registered candidate, with its exact artifact identity and hashes preserved, without changing the weights, wrapper, task mechanics, or complete-hold semantics?",
     "operation_ids": [
-      "M8"
+      "M8",
+      "E17"
     ],
     "scientific_parent_commit": "2574480ed28a52b1ddf0e80f2f414d3dddfa7180"
   },
