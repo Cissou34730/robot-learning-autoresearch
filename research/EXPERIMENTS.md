@@ -21,3 +21,4 @@
 | M5 | measurement | - | completed |
 | M6 | measurement | - | completed |
 | E11 | inquiry | I3 | completed |
+| E12 | checkpoint | - | checkpointed |
