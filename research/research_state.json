@@ -1,5 +1,13 @@
 {
-  "active_inquiry": null,
+  "active_inquiry": {
+    "closure_condition": "Close when a fresh 120000-step candidate using the reflection-equivariant policy interface has been evaluated on the held-out development panel and matched mirrored-target diagnostics with transit, settling, action, and complete-hold outcomes, sufficient to select or reject the route for official-assessment consideration without claiming official success from development evidence.",
+    "goal_connection": "The strongest learned candidate is 3.625 percentage points below the 98% complete uninterrupted-hold objective. If canonical mirrored-state and branch-residual encoding with corresponding action reflection improves broad held-out success while retaining transit, settling, and 100-sample hold behavior, it is the direct credible route to closing that gap.",
+    "id": "I2",
+    "opened_in_session": "S4",
+    "question": "Does training a policy with the validated reflection-equivariant observation and physical-action interface preserve M3's negative-angle recovery across the held-out official target distribution without changing the task mechanics or complete-hold semantics?",
+    "rationale": "M3 recovered all four targeted negative-angle failures under unchanged dynamics by reflecting joint state, endpoint error, velocities, swapping the wrapped inverse-kinematic branch residuals, and reflecting actions, but that controller was not a trained candidate. The PI-owned policy-I/O implementation now applies the same transform during learning and exported inference, using target sign to select the canonical frame and mapping actions back to physical coordinates. This inquiry tests whether the learned policy retains that mechanistic advantage across the broader task distribution rather than assuming the targeted diagnostic generalizes.",
+    "reframes": []
+  },
   "campaign": {
     "base_commit": "c50cd2a2625981fc9d4cdf9c63654c09fdc54be9",
     "id": "3ac5a413-ac79-4850-9c3a-83a3f0b41457",
@@ -828,16 +836,16 @@
     }
   },
   "counters": {
-    "event": 5,
-    "inquiry": 1,
+    "event": 6,
+    "inquiry": 2,
     "measurement": 3,
-    "session": 3,
+    "session": 4,
     "training": 1
   },
   "human_goal": {
     "source": "research/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -1847,9 +1855,69 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-03T05:52:17Z",
+      "error": null,
+      "id": "E6",
+      "inquiry_id": "I2",
+      "kind": "inquiry",
+      "request": {
+        "action": "open",
+        "closure_condition": "Close when a fresh 120000-step candidate using the reflection-equivariant policy interface has been evaluated on the held-out development panel and matched mirrored-target diagnostics with transit, settling, action, and complete-hold outcomes, sufficient to select or reject the route for official-assessment consideration without claiming official success from development evidence.",
+        "goal_connection": "The strongest learned candidate is 3.625 percentage points below the 98% complete uninterrupted-hold objective. If canonical mirrored-state and branch-residual encoding with corresponding action reflection improves broad held-out success while retaining transit, settling, and 100-sample hold behavior, it is the direct credible route to closing that gap.",
+        "question": "Does training a policy with the validated reflection-equivariant observation and physical-action interface preserve M3's negative-angle recovery across the held-out official target distribution without changing the task mechanics or complete-hold semantics?",
+        "rationale": "M3 recovered all four targeted negative-angle failures under unchanged dynamics by reflecting joint state, endpoint error, velocities, swapping the wrapped inverse-kinematic branch residuals, and reflecting actions, but that controller was not a trained candidate. The PI-owned policy-I/O implementation now applies the same transform during learning and exported inference, using target sign to select the canonical frame and mapping actions back to physical coordinates. This inquiry tests whether the learned policy retains that mechanistic advantage across the broader task distribution rather than assuming the targeted diagnostic generalizes."
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I2",
+        "status": "completed"
+      },
+      "session_id": "S4",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "open",
+        "inquiry": {
+          "closure_condition": "Close when a fresh 120000-step candidate using the reflection-equivariant policy interface has been evaluated on the held-out development panel and matched mirrored-target diagnostics with transit, settling, action, and complete-hold outcomes, sufficient to select or reject the route for official-assessment consideration without claiming official success from development evidence.",
+          "goal_connection": "The strongest learned candidate is 3.625 percentage points below the 98% complete uninterrupted-hold objective. If canonical mirrored-state and branch-residual encoding with corresponding action reflection improves broad held-out success while retaining transit, settling, and 100-sample hold behavior, it is the direct credible route to closing that gap.",
+          "id": "I2",
+          "opened_in_session": "S4",
+          "question": "Does training a policy with the validated reflection-equivariant observation and physical-action interface preserve M3's negative-angle recovery across the held-out official target distribution without changing the task mechanics or complete-hold semantics?",
+          "rationale": "M3 recovered all four targeted negative-angle failures under unchanged dynamics by reflecting joint state, endpoint error, velocities, swapping the wrapped inverse-kinematic branch residuals, and reflecting actions, but that controller was not a trained candidate. The PI-owned policy-I/O implementation now applies the same transform during learning and exported inference, using target sign to select the canonical frame and mapping actions back to physical coordinates. This inquiry tests whether the learned policy retains that mechanistic advantage across the broader task distribution rather than assuming the targeted diagnostic generalizes.",
+          "reframes": []
+        }
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I2",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E6",
+    "inquiry_id": null,
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "open",
+        "closure_condition": "Close when a fresh 120000-step candidate using the reflection-equivariant policy interface has been evaluated on the held-out development panel and matched mirrored-target diagnostics with transit, settling, action, and complete-hold outcomes, sufficient to select or reject the route for official-assessment consideration without claiming official success from development evidence.",
+        "goal_connection": "The strongest learned candidate is 3.625 percentage points below the 98% complete uninterrupted-hold objective. If canonical mirrored-state and branch-residual encoding with corresponding action reflection improves broad held-out success while retaining transit, settling, and 100-sample hold behavior, it is the direct credible route to closing that gap.",
+        "question": "Does training a policy with the validated reflection-equivariant observation and physical-action interface preserve M3's negative-angle recovery across the held-out official target distribution without changing the task mechanics or complete-hold semantics?",
+        "rationale": "M3 recovered all four targeted negative-angle failures under unchanged dynamics by reflecting joint state, endpoint error, velocities, swapping the wrapped inverse-kinematic branch residuals, and reflecting actions, but that controller was not a trained candidate. The PI-owned policy-I/O implementation now applies the same transform during learning and exported inference, using target sign to select the canonical frame and mapping actions back to physical coordinates. This inquiry tests whether the learned policy retains that mechanistic advantage across the broader task distribution rather than assuming the targeted diagnostic generalizes."
+      }
+    },
+    "request_fingerprint": "87fdb5686e343de6296ea0d145a19e967c464d63593713a82f2e7ff48c49c970",
+    "session_id": "S4",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T1:checkpoint-100352 remains the strongest evidence-backed learned candidate at 94.375% on M1. No working, best-known, or retained role is assigned. M3 is diagnostic evidence and the reflection-equivariant controller is an intervention specification, not a candidate policy.",
     "completed_operations": [
@@ -1880,6 +1948,21 @@
     "path": "research/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "75ad7ba7-7d4f-4359-85cf-d8081ee035b4",
+    "id": "S4",
+    "inquiry_id": null,
+    "kind": "goal_review",
+    "objective": "Reassess the scientific direction toward the human goal using completed evidence. You may request measurements to resolve an uncertainty or develop the method before committing to an inquiry. Decide whether to request official assessment, open one bounded goal-linked inquiry, or conclude that no credible route remains.",
+    "operation_ids": [
+      "E6"
+    ],
+    "scientific_parent_commit": "6b7b0fb2f77a80527cbd29255d13528c111b846d"
+  },
   "terminal_state": null
 }
