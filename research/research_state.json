@@ -845,7 +845,7 @@
   "human_goal": {
     "source": "research/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -1914,6 +1914,42 @@
       "status": "failed",
       "superseded_by": "E8",
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-03T05:56:49Z",
+      "error": null,
+      "id": "E8",
+      "inquiry_id": null,
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "T1:checkpoint-100352 remains the strongest evidence-backed learned candidate at 94.375% on M1. No working, best-known, or retained role is assigned. M3 remains diagnostic evidence and its reflection-equivariant controller remains an intervention specification; I2 has not yet produced a trained candidate.",
+        "completed_operations": [
+          "E6"
+        ],
+        "cumulative_resource_use": "One fresh baseline training operation requested 120000 steps and completed 120832 simulator steps. M1 measured 160 held-out episodes at seed 4200. M2 measured 32 matched mirrored-target episodes at seed 9100. M3 measured 48 targeted comparison episodes at seed 9200 with transit, settling, action, and complete-hold diagnostics. The reflection-equivariant policy-I/O implementation was added and locally checked; the exact targeted Ruff check passes, but no I2 training or measurement has completed. No official assessment has been requested.",
+        "current_goal_gap": "T1:checkpoint-100352 remains at 94.375% on the 160-episode held-out development panel, or 9 failures, which is 3.625 percentage points below the 98% objective. M3 recovered the targeted negative-angle failures only under its diagnostic reflection intervention; no trained reflection-equivariant candidate or official 200-episode assessment exists yet.",
+        "current_synthesis": "T1 learned the complete reach-and-hold task but retained a concentrated negative-angle deficit. M2 showed sign-dependent policy actions without separating learned representation asymmetry from directional transit. M3 showed that exact reflection of joint state, velocities, endpoint error, target-relative state, and physical actions, with swapped and sign-reflected wrapped IK branch residuals, recovered the targeted negative failures under unchanged dynamics: 16/16 intervened negative successes versus 12/16 baseline negative successes, with zero never-reached, zero hold-broken, matched first-reach behavior, and complete 100-sample holds. This supports a learned representation/branch-selection asymmetry as the primary cause in that targeted panel, while remaining bounded evidence that does not establish official success or retention by a trained policy. The policy-I/O implementation now applies the same canonical observation and physical-action mapping during training and exported inference; E6 records the resulting goal-linked inquiry I2 to test generalization.",
+        "decision_frontier": "In the fresh I2 inquiry session, determine whether a policy trained with the reflection-equivariant interface preserves M3's recovery across the held-out target distribution without changing task mechanics or complete-hold semantics. The discriminating evidence is a fresh 120000-step learned candidate evaluated on the held-out panel and matched mirrored targets, retaining transit, settling, action, and uninterrupted-hold diagnostics. Broad development improvement with preserved hold behavior supports assessment consideration; failure or regression rejects or redirects the route. Development evidence alone cannot establish the official 200-episode result.",
+        "evidence_references": [
+          "T1",
+          "M1",
+          "M2",
+          "M3",
+          "E2",
+          "E4",
+          "E6"
+        ],
+        "human_goal_connection": "The campaign remains below the human goal of at least 98% complete uninterrupted-hold success. M3 selected a credible representation-directed route, and E6 opened I2 to test whether that route improves a learned policy across the broader task distribution.",
+        "next_direction_or_closure": "End this goal-review session with the checkpoint required after opening I2. In the fresh I2 session, train one reflection-equivariant policy using the fixed 120000-step allocation, then obtain the specified held-out and matched mirrored-target development evidence before considering route closure or official assessment."
+      },
+      "result": {
+        "session_id": "S4",
+        "status": "checkpointed"
+      },
+      "session_id": "S4",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": "E7"
     }
   ],
   "pending_operation": {
@@ -1974,8 +2010,11 @@
         "session_kind": "goal_review",
         "session_usage": "4m41s | 11.18 AIU | prompt 2.4m (92% cached) | output 14.9k"
       },
-      "result": null,
-      "scientific_commit": null,
+      "result": {
+        "session_id": "S4",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "e96124cfe0af340d91389dd041c9dce0ae14fcb6",
       "scientific_manifest": [
         {
           "exists": true,
@@ -1997,7 +2036,7 @@
     "id": "E8",
     "inquiry_id": null,
     "kind": "checkpoint",
-    "progress": "accepted",
+    "progress": "completed",
     "request": {
       "checkpoint": {
         "candidates_and_roles": "T1:checkpoint-100352 remains the strongest evidence-backed learned candidate at 94.375% on M1. No working, best-known, or retained role is assigned. M3 remains diagnostic evidence and its reflection-equivariant controller remains an intervention specification; I2 has not yet produced a trained candidate.",
@@ -2026,28 +2065,28 @@
     "supersedes": "E7"
   },
   "pi_checkpoint": {
-    "candidates_and_roles": "T1:checkpoint-100352 remains the strongest evidence-backed learned candidate at 94.375% on M1. No working, best-known, or retained role is assigned. M3 is diagnostic evidence and the reflection-equivariant controller is an intervention specification, not a candidate policy.",
+    "candidates_and_roles": "T1:checkpoint-100352 remains the strongest evidence-backed learned candidate at 94.375% on M1. No working, best-known, or retained role is assigned. M3 remains diagnostic evidence and its reflection-equivariant controller remains an intervention specification; I2 has not yet produced a trained candidate.",
     "completed_operations": [
-      "M3",
-      "E4"
+      "E6"
     ],
-    "cumulative_resource_use": "One fresh training operation requested 120000 steps and completed 120832 simulator steps. M1 measured 160 held-out episodes at seed 4200. M2 measured 32 matched mirrored-target episodes at seed 9100. M3 measured 48 episodes across baseline negative, baseline positive, and reflection-equivariant negative conditions at seed 9200, with full trajectory, transit, settling, action, and hold diagnostics. No official assessment has been requested.",
-    "current_goal_gap": "T1:checkpoint-100352 remains at 94.375% on the 160-episode held-out development panel, or 9 failures, which is 3.625 percentage points below the 98% objective. M3's targeted 48-episode comparison retained the baseline 12/16 negative versus 16/16 positive asymmetry, while the reflection-equivariant negative condition achieved 16/16 with zero never-reached and zero hold-broken episodes. Neither M1 nor M3 is the protected 200-episode official assessment.",
-    "current_synthesis": "T1 learned the complete reach-and-hold task but retained a concentrated negative-angle deficit. M2 showed sign-dependent policy actions and could not distinguish learned observation/branch selection from directional transit. M3 made the exact physical reflection explicit in the policy interface: reflected joint positions and velocities, endpoint error, and target-relative state; swapped and sign-reflected the wrapped inverse-kinematic branch residuals; and reflected the returned actions. On 16 matched target pairs, baseline negative episodes reproduced 12/16 success with three never-reached and one reached-but-hold-broken case. The intervention recovered all four failures: 16/16 negative successes, zero never-reached, zero hold-broken, and first-reach steps matching the positive mirror on every pair, with all 100 hold samples completed. This supports a learned representation/branch-selection asymmetry as the primary cause of the targeted deficit and rejects physical directional difficulty as the sufficient explanation under this comparison. The artifact's aggregate canonical trajectory-action error field has an incorrect post hoc sign convention and is excluded from interpretation; the raw trajectories and corrected comparison establish the symmetry. The result is bounded to the targeted panel and does not establish official success or prove that a trained policy will retain the intervention without runtime wrapping.",
-    "decision_frontier": "In the fresh post-I1 session, convert the validated reflection-equivariant route into a learned-policy intervention without changing the official task or weakening complete-hold semantics. The key comparison is whether a policy trained with a representation that canonically encodes mirrored states and branch residuals, with corresponding physical action mapping, preserves the M3 recovery across the official target distribution and improves the held-out success margin. Retain transit, settling, action, and complete-hold diagnostics; do not request official assessment until the intervention has credible development evidence.",
+    "cumulative_resource_use": "One fresh baseline training operation requested 120000 steps and completed 120832 simulator steps. M1 measured 160 held-out episodes at seed 4200. M2 measured 32 matched mirrored-target episodes at seed 9100. M3 measured 48 targeted comparison episodes at seed 9200 with transit, settling, action, and complete-hold diagnostics. The reflection-equivariant policy-I/O implementation was added and locally checked; the exact targeted Ruff check passes, but no I2 training or measurement has completed. No official assessment has been requested.",
+    "current_goal_gap": "T1:checkpoint-100352 remains at 94.375% on the 160-episode held-out development panel, or 9 failures, which is 3.625 percentage points below the 98% objective. M3 recovered the targeted negative-angle failures only under its diagnostic reflection intervention; no trained reflection-equivariant candidate or official 200-episode assessment exists yet.",
+    "current_synthesis": "T1 learned the complete reach-and-hold task but retained a concentrated negative-angle deficit. M2 showed sign-dependent policy actions without separating learned representation asymmetry from directional transit. M3 showed that exact reflection of joint state, velocities, endpoint error, target-relative state, and physical actions, with swapped and sign-reflected wrapped IK branch residuals, recovered the targeted negative failures under unchanged dynamics: 16/16 intervened negative successes versus 12/16 baseline negative successes, with zero never-reached, zero hold-broken, matched first-reach behavior, and complete 100-sample holds. This supports a learned representation/branch-selection asymmetry as the primary cause in that targeted panel, while remaining bounded evidence that does not establish official success or retention by a trained policy. The policy-I/O implementation now applies the same canonical observation and physical-action mapping during training and exported inference; E6 records the resulting goal-linked inquiry I2 to test generalization.",
+    "decision_frontier": "In the fresh I2 inquiry session, determine whether a policy trained with the reflection-equivariant interface preserves M3's recovery across the held-out target distribution without changing task mechanics or complete-hold semantics. The discriminating evidence is a fresh 120000-step learned candidate evaluated on the held-out panel and matched mirrored targets, retaining transit, settling, action, and uninterrupted-hold diagnostics. Broad development improvement with preserved hold behavior supports assessment consideration; failure or regression rejects or redirects the route. Development evidence alone cannot establish the official 200-episode result.",
     "evidence_references": [
       "T1",
       "M1",
       "M2",
       "M3",
       "E2",
-      "E4"
+      "E4",
+      "E6"
     ],
-    "human_goal_connection": "The campaign remains below the human goal of at least 98% complete uninterrupted-hold success. M3 resolved the immediate causal distinction needed to choose the next intervention: a representation/branch-directed policy route is credible because an exact reflection-equivariant observation/control transform recovered the negative-angle failures under unchanged dynamics. This is a route-selection result, not official success.",
-    "inquiry_id": "I1",
-    "next_direction_or_closure": "End the closed I1 session with this checkpoint. The next fresh session should implement and train the representation-directed policy route within the fixed 120000-step allocation, then evaluate matched negative/positive outcomes and broader held-out complete-hold performance before considering official assessment.",
-    "scientific_commit": "fac3d6f555a3a726e1658c1662c2463f5698c575",
-    "session_id": "S3"
+    "human_goal_connection": "The campaign remains below the human goal of at least 98% complete uninterrupted-hold success. M3 selected a credible representation-directed route, and E6 opened I2 to test whether that route improves a learned policy across the broader task distribution.",
+    "inquiry_id": null,
+    "next_direction_or_closure": "End this goal-review session with the checkpoint required after opening I2. In the fresh I2 session, train one reflection-equivariant policy using the fixed 120000-step allocation, then obtain the specified held-out and matched mirrored-target development evidence before considering route closure or official assessment.",
+    "scientific_commit": "e96124cfe0af340d91389dd041c9dce0ae14fcb6",
+    "session_id": "S4"
   },
   "schema_version": 6,
   "scientific_model": {
@@ -2055,21 +2094,6 @@
     "path": "research/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "75ad7ba7-7d4f-4359-85cf-d8081ee035b4",
-    "id": "S4",
-    "inquiry_id": null,
-    "kind": "goal_review",
-    "objective": "Reassess the scientific direction toward the human goal using completed evidence. You may request measurements to resolve an uncertainty or develop the method before committing to an inquiry. Decide whether to request official assessment, open one bounded goal-linked inquiry, or conclude that no credible route remains.",
-    "operation_ids": [
-      "E6"
-    ],
-    "scientific_parent_commit": "6b7b0fb2f77a80527cbd29255d13528c111b846d"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
