@@ -1749,3 +1749,31 @@ separate from harness changes so their outcomes are not conflated.
   activity and are not covered by the pre-launch preservation check. No live
   campaign or HEAD inspection was done after that report. Historical claims
   retain their dated original references; no live findings were incorporated.
+
+## 2026-10-04: remove startup action and training cues
+
+- **RCA and approval:** the latest campaign went directly from startup context
+  to an unchanged-recipe full-allocation training request. The phrase "first
+  useful scientific action" supplied no scientific criterion for usefulness,
+  while the standalone training ceiling gave one operation a concrete,
+  prominent cue. The maintainer approved removing both from the startup prompt
+  and rejected replacement budget guidance or another training-specific line.
+- **Exact change:** the startup objective retains initial-direction scientific
+  work, reusable tools and PI-owned methods. It no longer selects a "first
+  useful scientific action" or requires a record summary in that objective.
+  Startup displays no training allocation. Inquiry allocation wording and all
+  mechanical allocation validation remain unchanged.
+- **Documentation:** `research/program.md`, the lifecycle redesign and the
+  canonical HTML describe the corrected startup purpose. Earlier tracking
+  entries remain unchanged as history of the superseded wording.
+- **Boundary:** no operation type, sequence, training size, measurement,
+  implementation, or adequacy rule is prescribed. No allocation behavior,
+  schema, dependency, campaign artifact, scientific implementation, or Runner
+  judgment changes.
+- **Checks:** the launcher parses successfully. Active startup source, program
+  and lifecycle descriptions no longer instruct a "first useful scientific
+  action" or display a startup "Training ceiling." The already-running campaign's generated
+  `research/brief.md` retains its original saved objective and was not
+  rewritten. No campaign, training, reset, assessment, or operation executed.
+- **Disposition:** implemented for observation. Scientific effectiveness
+  remains unassessed.

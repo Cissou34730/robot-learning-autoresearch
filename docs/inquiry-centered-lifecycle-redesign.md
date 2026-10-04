@@ -84,7 +84,7 @@ documentation.
 2. Start an initial scientific session.
 3. Let the PI establish the most credible initial direction from the human
    goal, the scientific model, and available evidence.
-4. Let that session choose the first useful scientific action.
+4. Let that session use scientific work to establish or refine that direction.
 
 A baseline is not an architectural phase. A campaign may choose to train and
 measure an initial reference policy, but `working` and `best_known` remain empty

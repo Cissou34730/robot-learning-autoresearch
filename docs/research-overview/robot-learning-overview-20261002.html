@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Maintainer reference for the implemented robot-learning process, historical changes, campaign observations, decisions, uncertainties, and deferred work.">
-  <title>Robot-learning research process</title>
+  <meta name="description" content="Robot AutoResearch reference for the current harness, two-joint-arm scenario, actor boundaries, process, evidence, history, and open work.">
+  <title>Robot AutoResearch process reference</title>
   <script>
     (() => {
       const param = new URLSearchParams(window.location.search).get("scoutTheme");
@@ -200,12 +200,13 @@
   <main>
     <header>
       <div class="topline">
-        <span class="eyebrow">Robot learning / process reference</span>
+        <span class="eyebrow">Robot AutoResearch / process reference</span>
         <button id="theme-toggle" type="button">Change theme</button>
       </div>
-      <h1>Robot-learning research process</h1>
-      <p class="intro">The PI develops a learned controller for a fixed robot task.</p>
-      <p class="intro">This page explains the phases, requests, records, and decisions that support that work.</p>
+      <h1>Robot AutoResearch</h1>
+      <p class="intro">Robot AutoResearch is a harness for an independent Principal Investigator (PI).</p>
+      <p class="intro">The human owns the goal. The PI owns the science and training. The Runner gates and executes operations.</p>
+      <p class="intro">The two-joint arm is the current reference scenario. This page presents current status, the scenario, the process, its boundaries, and its history.</p>
       <p class="snapshot">
         Documentation reviewed: <time datetime="2026-10-04T10:38:00+02:00">4 October 2026, 10:38 CEST</time>, before the maintainer's later campaign launch.
         This page does not update itself.
@@ -214,7 +215,7 @@
       <p class="snapshot">The report index covers earlier campaigns through <code>3ac5a413</code>. At the pre-launch review, the working records belonged to <code>c7040992</code>, with no terminal state. They were not the archived state of <code>3ac5a413</code>. This page does not report live campaign findings.</p>
       <nav class="page-nav" aria-label="Page navigation">
         <a href="#status-heading">Reading guide</a>
-        <a href="#task-heading">Human goal</a>
+        <a href="#task-heading">Current scenario</a>
         <a href="#loop-heading">Current process</a>
         <a href="#roles-heading">Ownership</a>
         <a href="#operation-heading">Operations</a>
@@ -251,7 +252,7 @@
       <article class="card">
         <span class="tag">Implemented</span>
         <h3 style="margin-top: 12px">Startup direction and instruction delivery</h3>
-        <p>Startup establishes the initial scientific direction and chooses the first useful action. It can build or adapt reusable tools and PI-owned methods.</p>
+        <p>Startup establishes or refines the initial scientific direction through scientific work. It can build or adapt reusable tools and PI-owned methods.</p>
         <p>The full unchanged PI persona leads every phase prompt, including continuation, retry, and repair.</p>
         <p class="small muted">Approved source batch <code>7f86168</code>, implemented for observation. Scientific effectiveness remains unassessed. No campaign was executed for this review.</p>
         <p class="small"><a href="#startup-current">Read the current startup behavior</a></p>
@@ -276,8 +277,9 @@
     </div>
 
     <section class="section" aria-labelledby="task-heading">
-      <p class="section-label">01 / CURRENT CONTRACT / THE FIXED HUMAN GOAL</p>
+      <p class="section-label">01 / CURRENT REFERENCE SCENARIO / THE HUMAN GOAL</p>
       <h2 id="task-heading">Reach the target. Then stay there.</h2>
+      <p>The two-joint arm is the working example used to develop and examine the harness.</p>
       <p>The human fixes the robot, the official task, and the success rule. The PI cannot change them.</p>
       <div class="grid four">
         <div class="card metric-card"><div class="metric">6&ndash;20 cm</div><p class="metric-label">Target distance from the base.<br>Targets cover the full angle range.</p></div>
@@ -323,7 +325,7 @@
         <div class="diagram loop" tabindex="0" aria-label="Scrollable campaign loop diagram">
           <svg viewBox="0 0 1000 680" role="img" aria-labelledby="loop-title loop-description">
             <title id="loop-title">Current lifecycle with an operational inquiry-cap pause</title>
-            <desc id="loop-description">Write the scientific model once. Startup establishes an initial direction, chooses the first useful action, and saves the scientific session record before goal review. Goal review permits inquiry opening or official assessment. Inquiry measurements and training return to the same session. Continuing or reframing requires a session record and a fresh session. Closing and saving the record returns to goal review. The launcher pauses at the inquiry cap after active scientific work is recorded. A pause is not a campaign conclusion. Official pass or fail ends the campaign.</desc>
+            <desc id="loop-description">Write the scientific model once. Startup establishes or refines an initial direction through scientific work before goal review. Goal review permits inquiry opening or official assessment. Inquiry measurements and training return to the same session. Continuing or reframing requires a session record and a fresh session. Closing and saving the record returns to goal review. The launcher pauses at the inquiry cap after active scientific work is recorded. A pause is not a campaign conclusion. Official pass or fail ends the campaign.</desc>
             <defs>
               <marker id="flow-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 Z" class="tip"/></marker>
               <marker id="return-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 Z" class="return-tip"/></marker>
@@ -440,12 +442,12 @@
 
     <section class="section" aria-labelledby="roles-heading">
       <p class="section-label">03 / CURRENT CONTRACT / RESPONSIBILITY AND OWNERSHIP</p>
-      <h2 id="roles-heading">The PI decides the science. The Runner executes the requests.</h2>
+      <h2 id="roles-heading">The human owns the goal. The PI owns the science. The Runner operates the process.</h2>
       <div class="grid three">
         <article class="card role">
-          <h3>Maintainer</h3>
-          <p>Defines the goal and protected task.</p>
-          <p>Changes the harness and training allocation.</p>
+          <h3>Human</h3>
+          <p>Defines the goal, robot, protected task, and success rule.</p>
+          <p>Maintains the harness and sets operational limits.</p>
           <p>Starts, stops, and resets campaigns.</p>
         </article>
         <article class="card role pi">
@@ -463,6 +465,7 @@
           <p>Does not judge scientific readiness.</p>
         </article>
       </div>
+      <p class="small muted" style="margin-top: 12px">The human can also maintain the harness. Maintainer is an engineering function, not a fourth campaign actor.</p>
       <div class="card table-wrap" style="margin-top: 16px">
         <h3>The two environment files are both PI-owned</h3>
         <p class="small muted" style="margin-bottom: 12px">The split separates shared research mechanics from training-specific code. It is not a human/PI ownership split.</p>
@@ -610,7 +613,7 @@
             <tbody>
               <tr><td>Preliminary scientific model</td><td>The PI writes a physical reference before campaign evidence. The document then stays fixed.</td><td>The reference does not guarantee correct later interpretation or good decisions.</td></tr>
               <tr><td>Question-based inquiry objective<span class="commit"><code>6d60f1f</code></span></td><td>A fresh inquiry session uses the scientific question as its objective. The closure condition remains separate and unchanged.</td><td>Campaign observations do not isolate this wording as a cause of scientific continuity.</td></tr>
-              <tr><td>Startup purpose and persona<span class="commit">4 October: <code>7f86168</code></span></td><td>Startup establishes the initial direction and first useful action. It can build reusable tools. The full persona starts initial, continuation, retry, and repair prompts.</td><td>Implemented for observation. Scientific effectiveness remains unassessed.</td></tr>
+              <tr><td>Startup purpose and persona<span class="commit">4 October: <code>7f86168</code> plus approved follow-up</span></td><td>Startup establishes or refines the initial direction through scientific work. It can build reusable tools. The full persona starts initial, continuation, retry, and repair prompts.</td><td>The follow-up removes the undefined "first useful action" instruction and the startup prompt's training-specific allocation cue. Scientific effectiveness remains unassessed.</td></tr>
               <tr><td>Copilot adapter instructions<span class="commit">4 October: <code>7f86168</code></span></td><td>The redundant scientific instruction block is removed. The adapter handles runtime and permissions. Phase prompts and the program supply scientific instructions.</td><td>This removal is implemented, not a scientific result.</td></tr>
               <tr><td>Two restored scientific passages<span class="commit">4 October restoration</span></td><td>The original operation-selection and measurement-purpose paragraphs are present verbatim under Inquiry work.</td><td>The restoration itself added no startup rule or launcher change. The later startup batch is separate. Behavioral effect remains unassessed.</td></tr>
               <tr><td>Goal-review measurements<span class="commit"><code>c68627d</code>, later cap repair</span></td><td>Measurements return to the same session. The inquiry count no longer changes their permission.</td><td>Permission is not a prescribed measurement or an assessment-readiness gate.</td></tr>
@@ -629,13 +632,13 @@
       </div>
       <div class="card" id="startup-current" style="margin-top: 16px">
         <h3>Current startup purpose and instruction delivery</h3>
-        <p><strong>Startup establishes a credible initial scientific direction.</strong> The direction comes from the human goal, physical model, and available evidence. The PI chooses the first useful action and explains why it advances that direction.</p>
+        <p><strong>Startup establishes or refines a credible initial scientific direction through scientific work.</strong> The direction comes from the human goal, physical model, and available evidence.</p>
         <p>Startup can build or adapt reusable scientific tools and PI-owned methods. Subsequent inquiries can use these tools and methods. The PI can also use current tools that fit the chosen direction.</p>
         <p><strong>The complete unchanged persona starts every phase prompt.</strong> Continuation, retry, and repair keep that persona. Startup does not display Active inquiry or the old inquiry-handoff instruction. The adapter supplies no scientific instruction block.</p>
         <p><strong>A scientific session record is not a policy checkpoint.</strong> The record preserves actual work, results, remaining uncertainties, and the next action. A policy checkpoint contains saved model weights. The current <code>checkpoint</code> operation and fields remain unchanged.</p>
         <p>The preliminary phase can read all scientific sources under <code>robot_learning\</code>, including protected benchmark implementation. SDK reads and explicit shell reads use this phase distinction. Later phases retain reserved-read restrictions.</p>
         <p>Maintainer documents and harness scripts stay reserved in every phase. Read access does not change write authority or direct-execution restrictions. These are tool controls, not OS isolation.</p>
-        <p>The training ceiling remains unchanged. The prompt states that ceiling in one short line. The correction adds no compulsory tool, measurement, or training run. It adds no scientific-adequacy gate.</p>
+        <p>The startup prompt names neither training nor a training allocation. The mechanical allocation contract remains unchanged. The correction adds no compulsory tool, measurement, or training run. It adds no scientific-adequacy gate.</p>
         <p class="small muted">This batch is implemented for observation in <code>7f86168</code>. Existing saved campaign objectives were not rewritten. Scientific effects remain unassessed.</p>
         <p class="small"><a href="../../research/program.md">Program</a> &middot; <a href="../../research/instruments.md">Instruments</a> &middot; <a href="../../AGENTS.md">Ownership and commands</a> &middot; <a href="../harness-experiment-log.md">4 October tracking entries</a></p>
       </div>
@@ -735,7 +738,7 @@
         <table>
           <thead><tr><th scope="col">Topic</th><th scope="col">Status</th><th scope="col">Remaining question or scope</th></tr></thead>
           <tbody>
-            <tr><td>Startup behavior and full 120,000-step baseline</td><td><span class="tag">Open</span></td><td>The instruction correction is implemented. Its effect remains unassessed. Shorter startup requests are already permitted. No allocation change or budget fix is selected.</td></tr>
+            <tr><td>Startup behavior and full 120,000-step baseline</td><td><span class="tag">Open</span></td><td>The startup prompt no longer selects a "first useful action" or displays a training allocation. Its effect remains unassessed. The mechanical allocation contract is unchanged.</td></tr>
             <tr><td>Assessment calibration and counterevidence</td><td><span class="tag">Open</span></td><td>The readiness approach is withdrawn. Residual-failure concerns remain. Replacement guidance is unresolved and not approved.</td></tr>
             <tr><td>Publication independent of training</td><td><span class="tag">Proposal</span></td><td>Suggested independent candidate publication is not approved or implemented. M7 was unregistered. M8 did not exclude every producer route. Zero-completed-step schemas expose an undocumented, untested possibility, not a validated export-only solution.</td></tr>
             <tr><td>Reliable evidence inspection and interpretation</td><td><span class="tag">Open</span></td><td>Inventories are implemented, not a complete remedy. In <code>d7080d95</code>, S8 read its detailed diagnostic correctly but still treated a favorable panel as sufficient assessment readiness.</td></tr>
@@ -831,7 +834,7 @@
             <li><a href="robot-campaign-3ac5a413-20261003.html#sources">3ac5a413 report sources</a>: campaign-scoped measurements, completed-operation references, M7 paths and hashes, E19 in S10, and usage accounting. Its links to mutable root files reflect the report's original inspection, not guaranteed current contents.</li>
             <li>The other linked reports cite their own campaign records and historical source snapshots. Git identifies code provenance. It is not scientific evidence.</li>
             <li>The earlier coordinator confirmation established readiness-block removal while retaining <code>2e897c7</code>. The later log records the rollback in <code>b275861</code>. The maintainer confirmed publication of the 4 October startup source batch as <code>7f86168</code>.</li>
-            <li><a href="../inquiry-centered-lifecycle-redesign.md"><code>docs\inquiry-centered-lifecycle-redesign.md</code></a>: historical design context for initial direction and first useful action. Its scientific-exhaustion option is superseded, not current policy.</li>
+            <li><a href="../inquiry-centered-lifecycle-redesign.md"><code>docs\inquiry-centered-lifecycle-redesign.md</code></a>: historical design context for establishing or refining the initial direction through scientific work. Its scientific-exhaustion option is superseded, not current policy.</li>
             <li><code>.github\skills\simplified-languages</code>: local writing guidance used for this polish. The user-added skill files were read, not modified or registered.</li>
           </ul>
           <h3 style="margin-top: 20px">Applicability and review boundaries</h3>
