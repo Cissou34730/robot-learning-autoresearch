@@ -441,7 +441,7 @@ its scientific breadth or achieve its result.
 
 | Item | Status / boundary |
 |---|---|
-| Full 120,000-step startup baseline | **Behavior remains unresolved.** The two-string restoration failed in fresh startup `2573991c`. Only the two historical scientific passages documented below are now restored; their behavioral effect is unassessed. Shorter startup requests and non-training work remain permitted. Training-budget cues and candidate-publication coupling remain unresolved; no budget or publication change is made. |
+| Full 120,000-step startup baseline | **Instruction correction implemented below; scientific effect remains unresolved.** Fresh startup `2573991c` trained first after the two-string restoration. Startup `c7040992` only planned and checkpointed before goal review opened a baseline inquiry. The change clarifies initial direction, first-action selection and reusable tools. It does not change the allocation or candidate publication. |
 | Counterevidence preservation and official-assessment readiness | Guidance `e4736da` withdrawn and its rollback published in `b275861`. Scientific effect remains unassessed. The residual-evidence concerns remain open. No replacement readiness prompt is added; the approved contract repair is separate. |
 | Shorter startup training | Tactical change implemented below. The PI may request any positive integer up to the maintainer's per-run allocation during startup, never a larger request. Training remains optional; inquiry requests still use the full allocation. Existing rollout rounding is retained. Campaign effect is unassessed. |
 | Reliable measurement-evidence inspection | Discoverability provisionally retained. In `48993cfd`, M5 feedback advertised diagnostics, but the PI closed without inspecting the strata and incorrectly claimed no outer-reaching gain. In `2381bcbf`, M3/M4 diagnostic reads stopped at lines 1-310, were described as full inspection, and remaining non-entry cases were lost in the synthesis. Decision-linked inspection and interpretation remain unresolved. |
@@ -450,7 +450,7 @@ its scientific breadth or achieve its result.
 | Checkpoint nomination and evidence selection | Deferred behind progression; available training facts are not proof of development performance. |
 | Operation-submission handoff clarification | Still unimplemented. |
 | Explicit protection of the old protocol log | Still unimplemented; read-access policy is a separate decision. |
-| Console clarity and maintainer-file read controls | Console work remains deferred. Copilot read/view and explicit shell-reader targets use the shared reserved-path policy after checking PI ownership. PI-owned scientific files and required scientific Markdown remain readable; execution restrictions are unchanged. This is not an OS sandbox or demonstrated scientific remedy. |
+| Console clarity and maintainer-file read controls | Console work remains deferred. Phase-specific scientific-source reads are implemented below: preliminary can inspect protected benchmark implementation, while later phases retain reserved-read restrictions. Maintainer documents and harness files remain reserved in every phase. Execution and write restrictions remain unchanged. This is not an OS sandbox or demonstrated scientific remedy. |
 | Independent frozen-policy publication | **Proposal only.** Publication independent of training is not approved or implemented; campaign recovery is not authorized. |
 | Scientific-exhaustion / no-credible-route outcome | **Removed from future requests and instructions.** Obsolete pending execution is rejected. Historical E19 remains readable and unchanged. Directly affected checks pass; scientific effect remains unassessed. |
 | Fifteen-inquiry cap | **Decoupled; value unchanged.** The launcher pauses after active work is checkpointed, without a terminal state. Measurements keep their permission. Only an explicit maintainer increase at that paused boundary resumes execution. Later cap removal remains pending. E19 at four of fifteen inquiries was not cap-triggered. |
@@ -1604,3 +1604,148 @@ separate from harness changes so their outcomes are not conflated.
 - **Checks:** both passages match their historical source exactly. Removing
   only those two additions reproduces the prior instruction file. Campaign
   state and request SHA256 hashes are unchanged.
+
+## 2026-10-04: clarify startup purpose and instruction delivery
+
+- **Approval:** the maintainer approved a change, not another historical
+  rollback. The complete existing persona must start every prompt and must
+  not disappear from continuations, retries or repairs. Startup must explicitly
+  include reusable scientific tools without imposing the same tool-building
+  sequence on every campaign.
+- **Original purpose:** the agreed redesign describes an initial scientific
+  session that establishes the most credible direction from the human goal,
+  physical model and available evidence, then chooses the first useful
+  scientific action. A baseline is optional. Tool and method design are
+  possible routes, not compulsory startup deliverables.
+- **Observed failure:** startup `c7040992` read context, named competing
+  explanations and submitted E1 without empirical investigation. Its shell
+  action validated checkpoint JSON. S2 opened a baseline inquiry and S3 trained
+  and measured. The record correctly distinguished absent policy artifacts
+  from its own session summary. The failure was a planning-only interpretation,
+  not demonstrated confusion between saved weights and a scientific record.
+- **Instruction RCA:** `cd579a6` added the checkpoint-before-goal-review wording.
+  `eb1118e` later restored that wording and removed the October 2 distinction
+  between scientific investigation and formal inquiry opening. The shared
+  prompt also displayed inquiry framing during startup, placed the persona
+  after context and allocation, and omitted it from the preliminary retry.
+  The Copilot adapter added a separate, redundant scientific instruction block.
+  These are verified instruction defects, not an isolated cause of every
+  training-first opening.
+- **Approved implementation:** use the agreed startup objective with initial
+  direction, reusable scientific tools and PI-owned methods where needed,
+  first-action selection, and a record of actual work and remaining uncertainty.
+  Omit startup inquiry framing. Keep the full persona first. Remove scientific
+  instructions from the adapter instead of copying redundant text elsewhere.
+  Shorten the startup allocation line without changing its value or validation.
+- **Record terminology:** human-facing prompts and contracts distinguish the
+  scientific session record from a policy checkpoint. The existing `checkpoint`
+  operation and `pi_checkpoint` fields remain unchanged. The Runner checks
+  operational contracts, not scientific adequacy.
+- **Access boundary:** preliminary can read scientific sources under
+  `robot_learning/`, including protected benchmark implementation. Later phases
+  retain reserved-read restrictions. SDK reads and explicit shell readers use
+  the same phase distinction. Maintainer documents and harness files remain
+  reserved; write and direct-execution restrictions remain unchanged.
+- **Language guidance:** used the repository's
+  `.github\skills\simplified-languages` guide for the new HTML explanation.
+  The guide is readable locally but is not registered in this CLI session.
+  The maintainer's untracked skill files were not modified. The supplied checker
+  found no structural errors and flagged two uses of the technical noun
+  "training." Its vocabulary checks do not certify formal STE compliance.
+- **Boundary:** no new phase, marker, schema, dependency, scientific-adequacy
+  gate, campaign recovery, reset or execution. Campaign artifacts and existing
+  saved objectives are not rewritten. Update this log and the overview HTML
+  before code changes; use only directly affected existing checks.
+- **Checks:** 171 directly affected existing cases passed, with 36 unrelated
+  phase cases deselected. Touched-file Ruff passed. The launcher parses.
+  Offline rendering exercised scientific initial/retry prompts and the actual
+  preliminary initial/retry flow with mocked operations. Every prompt starts
+  with the complete persona, and startup omits active-inquiry framing.
+  The complete persona is unchanged from the committed launcher. HTML structure
+  and scoped whitespace checks passed. Campaign state, scientific model,
+  parameters and completed-operation history retain their original hashes;
+  the operation request remains absent. No source-wording test or new test
+  infrastructure was added.
+- **Disposition:** implemented for observation. Scientific effectiveness
+  remains unassessed.
+
+## 2026-10-04: make the full process overview coherent
+
+- **Reason / approval:** the maintainer requested a bounded review of the
+  full overview, not another harness intervention. The old "Current harness
+  changes" heading mixed implemented behavior, withdrawn revisions and
+  proposals. Red/green labels implied incompatible meanings, and notes mixed
+  current guidance with historical observations and decisions.
+- **Exact scope:** only
+  `docs\research-overview\robot-learning-overview-20261002.html` and this
+  documentation-tracking entry. Existing edits in both documents were
+  preserved. No skill was modified or registered.
+- **Organization / vocabulary:** label the current goal, process, ownership,
+  operation and evidence sections explicitly. Separate the implementation
+  inventory, maintainer decisions, folded historical revisions and checks,
+  unresolved work, and historical campaign reports. Define Implemented,
+  Historical, Withdrawn, Decision, Observation, Open, Proposal and Deferred.
+  All status badges use one neutral treatment. Color does not encode
+  scientific success or failure; implementation and scientific effect are
+  separate claims. Preserve the self-contained Clawpilot theme and navigation.
+- **Stale claims corrected:** the report index ends at `3ac5a413`; the working
+  state and brief now concern `c7040992` with no terminal state. Root campaign
+  files are not permanent sources for the older report. Keep M7's path and
+  hashes as recorded historical references, not current-file assertions.
+  Move the withdrawn readiness block's residual-failure guidance out of the
+  current-runtime explanation. Mark old code line references, startup wording,
+  relocation/read-access notes and engineering checks as historical or
+  superseded. The rollback chronology distinguishes the initial uncommitted
+  removal from the later recorded publication in `b275861`.
+- **Current behavior retained:** startup establishes the most credible initial
+  direction and first useful action, with reusable scientific tools and
+  PI-owned methods where needed. The full unchanged persona leads every
+  phase prompt, including continuation, retry and repair. Startup has no
+  Active inquiry section or old handoff instruction. The adapter handles
+  runtime and permissions. Scientific session records remain distinct from
+  saved policy weights; `checkpoint` and `pi_checkpoint` are unchanged.
+  Preliminary reads include all scientific sources under `robot_learning`,
+  including protected benchmark implementation. Later reserved reads,
+  maintainer-file reservations, writes and direct-execution restrictions
+  remain as implemented. No mandatory instrument or scientific-adequacy gate
+  is added or described as current policy.
+- **Evidence / retained information:** cross-check current claims against
+  `AGENTS.md`, the program and instruments, launcher and adapter source,
+  this log, the relevant historical design, and linked campaign records.
+  Preserve original report links and IDs, commit and campaign references,
+  quantified observations, M7 hashes, decision rationale, uncertainties and
+  unimplemented proposals. Campaign observations remain evidence-limited,
+  not a controlled comparison or proof of a harness change's effectiveness.
+- **Concurrent publication:** source edits were uncommitted at the initial
+  snapshot. External commit `7f86168` appeared during this review and includes
+  the startup source batch. Their contents still match the initial hashes.
+  The maintainer subsequently confirmed commit and push as `7f86168`,
+  `Clarify startup purpose and instruction delivery`, with
+  `origin/inquiry-centered-lifecycle` verified to match. Exactly the six
+  core/contract/test files were included; neither documentation file was
+  staged or changed by that publication.
+  Update publication wording without reverting or changing those sources.
+  This documentation review did not stage, commit or push anything.
+- **Validation:** balanced HTML, 20 unique IDs, 36 local/internal links and
+  ARIA references pass inspection. Original IDs, links, commit/campaign
+  references and recorded hashes remain. Theme variables and the initial
+  theme script are unchanged; component colors use Clawpilot variables.
+  Browser checks exercised the actual page in light and dark themes at
+  320, 760 and 1,280 pixels, including expanded details, theme toggling and
+  internal navigation. No content overflow occurred outside intended
+  scroll containers. A fresh load produced no JavaScript console errors.
+  Direct `file:` access was blocked, so an attached localhost server was
+  used without installing packages. Scoped whitespace checks pass. Formal
+  ASD-STE100 compliance is not claimed.
+- **Preservation / disposition:** at completion of the pre-launch review
+  (4 October, 10:38 CEST), campaign state, scientific model, parameters and
+  completed-operation history matched the supplied initial SHA-256 values;
+  the operation request was absent. Existing source, contract and test
+  contents were unchanged by this work. This is a documentation-only correction.
+  Scientific effectiveness remains unassessed. This review executed no
+  campaign, training, assessment, viewer, repository-wide test or dependency
+  change. The maintainer subsequently reported starting a campaign themselves.
+  Later campaign-artifact or HEAD changes can be external maintainer or Runner
+  activity and are not covered by the pre-launch preservation check. No live
+  campaign or HEAD inspection was done after that report. Historical claims
+  retain their dated original references; no live findings were incorporated.
