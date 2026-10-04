@@ -437,16 +437,16 @@ its scientific breadth or achieve its result.
 
 ## Current backlog and remaining work
 
-### Current backlog (2026-10-03)
+### Current backlog (2026-10-04)
 
 | Item | Status / boundary |
 |---|---|
-| Full 120,000-step startup baseline | **Review remains open.** The two startup strings are restored verbatim from the successful reference below. Shorter startup requests and non-training work remain permitted. Training-budget cues and candidate-publication coupling remain unresolved; no budget or publication change is made by this restoration. |
+| Full 120,000-step startup baseline | **Behavior remains unresolved.** The two-string restoration failed in fresh startup `2573991c`. Only the two historical scientific passages documented below are now restored; their behavioral effect is unassessed. Shorter startup requests and non-training work remain permitted. Training-budget cues and candidate-publication coupling remain unresolved; no budget or publication change is made. |
 | Counterevidence preservation and official-assessment readiness | Guidance `e4736da` withdrawn and its rollback published in `b275861`. Scientific effect remains unassessed. The residual-evidence concerns remain open. No replacement readiness prompt is added; the approved contract repair is separate. |
 | Shorter startup training | Tactical change implemented below. The PI may request any positive integer up to the maintainer's per-run allocation during startup, never a larger request. Training remains optional; inquiry requests still use the full allocation. Existing rollout rounding is retained. Campaign effect is unassessed. |
 | Reliable measurement-evidence inspection | Discoverability provisionally retained. In `48993cfd`, M5 feedback advertised diagnostics, but the PI closed without inspecting the strata and incorrectly claimed no outer-reaching gain. In `2381bcbf`, M3/M4 diagnostic reads stopped at lines 1-310, were described as full inspection, and remaining non-entry cases were lost in the synthesis. Decision-linked inspection and interpretation remain unresolved. |
 | Context flooding | Brief-only compaction implemented below: 57.39% smaller on the completed campaign, with all candidates and inventory references preserved. Campaign benefit remains unassessed; prompt replay and SDK output handling are unchanged and remain separate possible work. |
-| Training-shaped inquiry commitments and scientific continuity | Open, with a positive local observation in `2381bcbf`: one inquiry sustained diagnostics and two successive method interventions. The question-based objective was active, but causation is unproved. Both aggregate losses and aggregate gains have obscured consequential subgroup evidence in handoffs. The withdrawn goal-review guidance addressed decision framing, not method development or trial-shaped commitments; no replacement is selected. Startup wording was restored verbatim from `inquiery-harnes-success-2`, but the first observed fresh startup `2573991c` still chose baseline training before empirical investigation. Scientific-model framing remains an unproven lead. |
+| Training-shaped inquiry commitments and scientific continuity | Open, with a positive local observation in `2381bcbf`: one inquiry sustained diagnostics and two successive method interventions. The question-based objective was active, but causation is unproved. Both aggregate losses and aggregate gains have obscured consequential subgroup evidence in handoffs. Startup `2573991c` still chose baseline training after the exact two-string restoration. The two requested model reviews identified missing operation-selection and measurement-purpose guidance, but not a single proven cause of the startup drift. Only those two historical passages are restored; no replacement readiness guidance is added. |
 | Checkpoint nomination and evidence selection | Deferred behind progression; available training facts are not proof of development performance. |
 | Operation-submission handoff clarification | Still unimplemented. |
 | Explicit protection of the old protocol log | Still unimplemented; read-access policy is a separate decision. |
@@ -1562,3 +1562,45 @@ separate from harness changes so their outcomes are not conflated.
   restrictions and reserved maintainer reads. Touched-file Ruff and
   whitespace checks pass. Campaign state and request SHA256 hashes are
   unchanged. The runtime delta is two added lines.
+
+## 2026-10-04: restore only two historical scientific passages
+
+- **RCA:** `eb1118e` restored two startup strings, but fresh campaign
+  `2573991c` still requested an unchanged-recipe baseline before empirical
+  investigation. Its request named competing mechanisms while admitting
+  that training tested the current recipe, not either mechanism separately.
+  The successful opening instead used a candidate-free physical probe to
+  distinguish stabilization capability from learning and coverage. The
+  two-string restoration did not recover that decision process.
+- **Opus 5.5 review:** the same public startup wording produced both probe-first
+  and training-planned or training-requested openings. `6d6d41e` removed the
+  explicit non-default-operation principle and measurement-purpose passage;
+  `7cff9f6` restored causal-memory meanings but not these passages. Both were
+  already absent at the successful startup base, so their absence alone is
+  not an established cause of the behavioral divergence.
+- **Sonnet 5.5 Meta-Prompting review:** the actual successful startup base is
+  `e26fbc4`, not the campaign-end tree containing PI-authored scientific
+  changes. Equal phase prompts do not establish equal full inputs: the
+  generated physical model and available implementation reads differed.
+  Later read denials may affect the latest model, but cannot explain earlier
+  training-first drift. The separate owned-read correction is not a startup
+  repair.
+- **Approval and exact source:** after rejecting the assistant's newly proposed
+  candidate-absence sentence, the maintainer approved restoring only the two
+  historical passages verbatim from `6d6d41e^:research/program.md`:
+  the operation-selection paragraph at lines 144-147 and the measurement-purpose
+  paragraph at lines 177-178.
+- **Placement and boundary:** restore both paragraphs in `research\program.md`
+  under Inquiry work. The original lifecycle forced baseline training before
+  these inquiry principles applied. No startup-specific applicability clause
+  or new candidate-absence rule is added. The original "causal research map"
+  wording is retained without reviving a former artifact or schema.
+- **Unchanged:** launcher prompts, phase permissions, training allocation,
+  read controls, scientific implementation, and campaign state and requests.
+  No test infrastructure, campaign reset, launch, or scientific operation.
+- **Disposition:** both passages restored verbatim. Startup behavior remains
+  unresolved; no scientific effectiveness is claimed. The tracking log and
+  existing overview HTML were updated before the instruction restoration.
+- **Checks:** both passages match their historical source exactly. Removing
+  only those two additions reproduces the prior instruction file. Campaign
+  state and request SHA256 hashes are unchanged.

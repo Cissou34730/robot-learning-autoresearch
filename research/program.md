@@ -91,9 +91,17 @@ understanding before choosing an intervention. An unknown that cannot affect
 the direction may be set aside explicitly. No intervention category is
 privileged in advance.
 
+Begin from the human objective, current evidence and causal research map. Choose
+the operation that best advances the active inquiry; no operation is the
+default. The launcher states which operations are legal from the current
+state; each is a valid scientific choice when the evidence supports it.
+
 Measurement and training are peer instruments. Either returns factual results
 to the same active bounded session without implying a required successor
 action.
+
+Measurements may characterize behavior, compare policies, examine learning
+dynamics, test an explanation or reveal that the question itself should change.
 
 The maintainer controls the per-run training allocation through the launcher's
 `-Timesteps` option, which defaults to 120,000 steps. During startup, that
