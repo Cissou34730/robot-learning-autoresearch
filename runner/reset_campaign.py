@@ -585,6 +585,10 @@ def publish_reset_changes(
                 "models/",
             )
         )
+        and (
+            (paths.ROOT / path).exists()
+            or git("--literal-pathspecs", "ls-files", "--", path).strip()
+        )
     ]
     ordinary = [path for path in scope if path not in forced]
     stageable = repository.stage_existing_or_tracked(ordinary)
