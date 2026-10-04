@@ -6,9 +6,8 @@ import argparse
 import re
 import sys
 
-from research import runner_paths as paths
-from research import runner_repository as repository
 from robot_learning.training.progress import parse_training_records
+from runner import paths, repository
 
 
 def training_log_paths(operation_id: str) -> list[tuple[int, object]]:

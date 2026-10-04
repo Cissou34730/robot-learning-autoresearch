@@ -1,6 +1,6 @@
 """Frozen task metrics shared by evaluation and checkpoint selection."""
 
-from robot_learning.benchmark.spec import HOLD_SECONDS, SUCCESS_THRESHOLD
+from contracts.task_spec import HOLD_SECONDS, SUCCESS_THRESHOLD
 
 
 def milestone_steps(hold_seconds: float, control_dt: float) -> int:

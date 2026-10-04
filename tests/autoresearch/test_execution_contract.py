@@ -9,14 +9,11 @@ from pathlib import Path
 
 import pytest
 
-from research import run_experiment
-from research import runner_execution as execution
-from research import runner_paths as paths
-from research import runner_repository as repository
+from runner import execution, paths, repository, run_experiment
 
 
 def _configure(monkeypatch, tmp_path: Path, *, session_kind: str = "startup") -> dict:
-    research = tmp_path / "research"
+    research = tmp_path / "campaigns"
     research.mkdir()
     for name, value in {
         "ROOT": tmp_path,
@@ -38,7 +35,7 @@ def _configure(monkeypatch, tmp_path: Path, *, session_kind: str = "startup") ->
     )
     state["scientific_model"] = {
         "status": "ready",
-        "path": "research/scientific_model.md",
+        "path": "pi_workspace/scientific_model.md",
         "commit": "a" * 40,
     }
     repository.start_scientific_session(
@@ -147,7 +144,7 @@ def test_changed_maintainer_allocation_refuses_pending_training_without_mutation
 def test_protected_files_are_rejected_from_training_delta(monkeypatch, tmp_path):
     state = _configure(monkeypatch, tmp_path)
     monkeypatch.setattr(
-        repository, "scientific_delta", lambda _parent: ["research/run_experiment.py"]
+        repository, "scientific_delta", lambda _parent: ["runner/run_experiment.py"]
     )
     with pytest.raises(ValueError, match="human-owned"):
         run_experiment.accept_operation(_training(), state)
@@ -158,7 +155,7 @@ def test_check_operation_rejects_scientific_ownership_without_state_mutation(
 ):
     _configure(monkeypatch, tmp_path)
     monkeypatch.setattr(
-        repository, "scientific_delta", lambda _parent: ["research/run_experiment.py"]
+        repository, "scientific_delta", lambda _parent: ["runner/run_experiment.py"]
     )
     _write_request(_training())
     before = repository.read_state()
@@ -232,7 +229,7 @@ def test_check_operation_rejects_missing_python_module_without_acceptance(
                 "measurements": [
                     {
                         "instrument": "python_module",
-                        "module": "research.lab.missing_diagnostic",
+                        "module": "robot_learning.lab.missing_diagnostic",
                         "args": ["--output", str(artifact)],
                         "artifact": repository.repo_relative_path(artifact),
                     }
@@ -268,13 +265,13 @@ def test_check_operation_rejects_invalid_current_params_without_acceptance(
 
 def test_frozen_training_surface_rejects_tampering(monkeypatch, tmp_path):
     state = _configure(monkeypatch, tmp_path)
-    source = tmp_path / "robot_learning" / "scenario" / "reward.py"
+    source = tmp_path / "robot_learning" / "training" / "reward.py"
     source.parent.mkdir(parents=True)
     source.write_text("reward = 1\n", encoding="utf-8")
     monkeypatch.setattr(
         repository,
         "scientific_delta",
-        lambda _parent: ["robot_learning/scenario/reward.py"],
+        lambda _parent: ["robot_learning/training/reward.py"],
     )
     run_experiment.accept_operation(_training(), state)
     source.write_text("reward = 2\n", encoding="utf-8")
@@ -285,13 +282,13 @@ def test_frozen_training_surface_rejects_tampering(monkeypatch, tmp_path):
 
 def test_published_training_recipe_is_revalidated_before_retry(monkeypatch, tmp_path):
     state = _configure(monkeypatch, tmp_path)
-    source = tmp_path / "robot_learning" / "scenario" / "reward.py"
+    source = tmp_path / "robot_learning" / "training" / "reward.py"
     source.parent.mkdir(parents=True)
     source.write_text("reward = 1\n", encoding="utf-8")
     monkeypatch.setattr(
         repository,
         "scientific_delta",
-        lambda _parent: ["robot_learning/scenario/reward.py"],
+        lambda _parent: ["robot_learning/training/reward.py"],
     )
     pending = run_experiment.accept_operation(_training(), state)
     pending["data"]["scientific_commit"] = "c" * 40
@@ -327,12 +324,12 @@ def test_parameter_only_training_delta_is_frozen_without_source_mismatch(
     monkeypatch, tmp_path
 ):
     state = _configure(monkeypatch, tmp_path)
-    params = tmp_path / "research" / "current_params.json"
+    params = tmp_path / "campaigns" / "current_params.json"
     params.write_text('{"training": {"n_envs": 1}}', encoding="utf-8")
     monkeypatch.setattr(
         repository,
         "scientific_delta",
-        lambda _parent: ["research/current_params.json"],
+        lambda _parent: ["robot_learning/training/current_params.json"],
     )
     monkeypatch.setattr(
         run_experiment.research_config,
@@ -343,7 +340,9 @@ def test_parameter_only_training_delta_is_frozen_without_source_mismatch(
     pending = run_experiment.accept_operation(_training(), state)
 
     assert pending["data"]["scientific_manifest"] == []
-    assert pending["data"]["scientific_paths"] == ["research/current_params.json"]
+    assert pending["data"]["scientific_paths"] == [
+        "robot_learning/training/current_params.json"
+    ]
     protocol_paths = run_experiment.protocol.validation_test_paths(
         pending["data"]["scientific_paths"]
     )

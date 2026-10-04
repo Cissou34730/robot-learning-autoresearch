@@ -65,7 +65,7 @@ For `comparison_semantics_fingerprint()`:
    ```
 
 5. include the value of this constant in the comparison fingerprint;
-6. keep hashing `robot_learning/policy_runtime.py` and
+6. keep hashing `contracts/policy_runtime.py` and
    `robot_learning/scenario/environment.py`;
 7. document next to the constant that it is incremented only when episode
    execution or the meaning/extraction of primary success changes, not when
@@ -93,7 +93,7 @@ the protocol correctly defines it as optional.
 
 ### Required implementation for Problem B
 
-In `research/runner_protocol.py`:
+In `runner/protocol.py`:
 
 1. keep candidate evidence resolution and incumbent evidence auto-resolution as
    currently implemented;
@@ -119,7 +119,7 @@ validation. Do not introduce a comparison service or class hierarchy.
 
 ### Documentation
 
-Update `research/instruments.md` only where required to make the following true:
+Update `contracts/instruments.md` only where required to make the following true:
 
 - the same primary-success compatibility rule applies to a requested paired
   comparison and to comparable evidence supporting a `best_known` replacement;
@@ -175,7 +175,7 @@ The information is useful; the duplication is not.
 
 ### Required implementation for Problem C
 
-In `research/build_research_brief.py`:
+In `runner/build_brief.py`:
 
 1. keep `## Current lineages and scientific recipes` near the top;
 2. keep the exact valid parent identifiers, artifact identity, origin, cumulative
@@ -204,7 +204,7 @@ Researcher to add an invalid per-measurement field.
 
 ### Required implementation for Problem D
 
-In `research/instruments.md` and the matching initial evaluation prompts in
+In `contracts/instruments.md` and the matching initial evaluation prompts in
 `run_research.ps1`, use this unambiguous contract:
 
 ```text
@@ -217,7 +217,7 @@ Do not add `reason` to measurement entries and do not change the JSON schema.
 
 ### Problem E: protocol decisions were not recorded
 
-Append one concise dated entry to `research/PROTOCOL_DECISIONS.md` covering the
+Append one concise dated entry to `docs/protocol-decisions.md` covering the
 completed remediation and these corrections. Record only the durable decisions:
 
 - the brief exposes authoritative lineage and complete scientific-recipe facts;
@@ -273,7 +273,7 @@ The corrections are complete when:
 - the brief retains exact recipe provenance without repeating identical lineage
   blocks;
 - the evaluation request has one clearly defined request-level `reason`;
-- the decisions are recorded once in `research/PROTOCOL_DECISIONS.md`;
+- the decisions are recorded once in `docs/protocol-decisions.md`;
 - no campaign, training, evaluator, Git workflow, reset, full suite, or full
   autoresearch suite was run;
 - no new architecture was introduced.

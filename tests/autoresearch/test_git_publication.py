@@ -12,8 +12,7 @@ from uuid import uuid4
 
 import pytest
 
-from research import runner_paths as paths
-from research import runner_repository as repository
+from runner import paths, repository
 
 
 def _remove_readonly(function, value, error):

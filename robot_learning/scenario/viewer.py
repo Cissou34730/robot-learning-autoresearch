@@ -9,7 +9,7 @@ from pathlib import Path
 
 from stable_baselines3.common.callbacks import BaseCallback
 
-from robot_learning.policy_runtime import load_runtime
+from contracts.policy_runtime import load_runtime
 from robot_learning.scenario.environment import make_evaluation_env
 
 

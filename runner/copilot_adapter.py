@@ -22,9 +22,9 @@ import time
 from datetime import UTC, datetime
 from pathlib import Path, PureWindowsPath
 
-from research.stop_control import stop_requested, wait_for_stop_request
+from runner.stop_control import stop_requested, wait_for_stop_request
 
-ROOT = Path(__file__).resolve().parent
+ROOT = Path(__file__).resolve().parent.parent
 UUID_PATTERN = re.compile(
     r"\b[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-"
     r"[0-9a-fA-F]{4}-[0-9a-fA-F]{12}\b"
@@ -134,7 +134,7 @@ EXECUTION_DENIAL = (
     "Direct execution of reserved harness and protected entry points is unavailable."
 )
 
-SUITE_DENIAL = "Repository-wide and end-to-end tests are unavailable in PI sessions."
+SUITE_DENIAL = "Human-owned tests are unavailable for direct execution in PI sessions."
 
 DEPENDENCY_DENIAL = (
     "Dependency installation and manifest changes are unavailable in PI sessions."
@@ -151,7 +151,7 @@ FILE_READ_DENIAL = (
 
 RESERVED_SCRIPT_NAMES = (
     "run_experiment.py",
-    "runner_assessment.py",
+    "assessment.py",
     "final_benchmark.py",
     "migrate_policy_runtime.py",
     "reset_campaign.py",
@@ -163,25 +163,34 @@ RESERVED_SCRIPT_PATHS = (
     "robot_learning/evaluate.py",
     "robot_learning/play.py",
     "robot_learning/train.py",
-    "research/runner_*.py",
-    "research/build_research_brief.py",
-    "research/query_training_log.py",
+    "runner",
+    "runner/*",
+    "benchmark",
+    "benchmark/*",
+    "runner/build_brief.py",
+    "runner/query_training_log.py",
     "researcher_*.py",
     "researcher_*.ps1",
+    "researcher_opencode",
+    "researcher_opencode/*",
+    "tools",
     "tools/campaign_report.py",
     "docs",
     "docs/*",
+    "tests",
+    "tests/*",
 )
 
 RESERVED_MODULES = (
-    "research.run_experiment",
-    "research.runner_assessment",
-    "research.migrate_policy_runtime",
-    "research.reset_campaign",
+    "runner.run_experiment",
+    "runner.assessment",
+    "runner.migrate_policy_runtime",
+    "runner.reset_campaign",
     "robot_learning.evaluate",
     "robot_learning.train",
     "robot_learning.play",
-    "robot_learning.benchmark.final_benchmark",
+    "benchmark.final_benchmark",
+    "benchmark.adapters.final_benchmark",
 )
 
 # These readers use the same reserved-path policy as execution.
@@ -370,24 +379,24 @@ def is_pi_writable_path(target: str, *, preliminary: bool = False) -> bool:
         return False
     protected_scenario = {
         "robot_learning/scenario/__init__.py",
-        "robot_learning/scenario/final_benchmark.py",
-        "robot_learning/scenario/task_reference.py",
+        "benchmark/adapters/final_benchmark.py",
+        "benchmark/adapters/task_reference.py",
     }
     if relative in protected_scenario:
         return False
     if preliminary:
-        return relative == "research/scientific_model.md"
+        return relative == "pi_workspace/scientific_model.md"
     return relative in {
         "robot_learning/train.py",
         "robot_learning/evaluate.py",
         "robot_learning/play.py",
-        "research/current_params.json",
-        "research/operation_request.json",
+        "robot_learning/training/current_params.json",
+        "pi_workspace/operation_request.json",
     } or relative.startswith(
         (
             "robot_learning/scenario/",
             "robot_learning/training/",
-            "research/lab/",
+            "robot_learning/lab/",
         )
     )
 
@@ -881,7 +890,7 @@ def command_denial(command: str, *, preliminary: bool = False) -> str | None:
             return EXECUTION_DENIAL
         if name == "git" and denied_git_subcommand(tokens):
             return GIT_DENIAL
-        if name == "pytest" and is_repository_wide_pytest(tokens):
+        if name == "pytest":
             return SUITE_DENIAL
     return None
 
@@ -1226,7 +1235,7 @@ class Console:
 
     def file_changed(self, operation: str, path: str) -> None:
         operation_request = (
-            Path(path).as_posix().endswith("research/operation_request.json")
+            Path(path).as_posix().endswith("pi_workspace/operation_request.json")
         )
         path = full_console_path(path)
         marker = {"created": "+", "deleted": "-"}.get(str(operation), "~")

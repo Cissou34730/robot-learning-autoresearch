@@ -8,15 +8,15 @@ paths and tells the Researcher to drop them from the proposal instead.
 
 import pytest
 
-from research import runner_protocol as protocol
-from research.runner_protocol import (
+from runner import protocol
+from runner.protocol import (
     NOT_OWNED_PATHS_REMEDY,
     TEST_SURFACE_REJECTION,
     is_researcher_owned,
     validate_research_delta_ownership,
 )
 
-RESEARCHER_PATH = "robot_learning/scenario/reward.py"
+RESEARCHER_PATH = "robot_learning/training/reward.py"
 TEST_PATHS = (
     "tests/scenario/test_reward.py",
     "tests/training/test_policy.py",
@@ -70,5 +70,5 @@ def test_the_remedy_sentence_is_exact():
 
 def test_a_scientific_delta_of_pi_owned_paths_still_validates():
     validate_research_delta_ownership(
-        ["robot_learning/scenario/reward.py", "robot_learning/training/algorithms.py"]
+        ["robot_learning/training/reward.py", "robot_learning/training/algorithms.py"]
     )

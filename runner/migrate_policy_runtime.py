@@ -48,8 +48,8 @@ def migrate(source: Path, destination: Path, revision: str, *, identity_actions=
                     raise ValueError("Unsafe archive member")
             contents.extractall(checkout)
         shutil.copyfile(
-            ROOT / "robot_learning/policy_runtime.py",
-            checkout / "robot_learning/policy_runtime.py",
+            ROOT / "contracts/policy_runtime.py",
+            checkout / "contracts/policy_runtime.py",
         )
         interface = checkout / "robot_learning/scenario/policy_io.py"
         if not interface.exists():
@@ -59,7 +59,7 @@ def migrate(source: Path, destination: Path, revision: str, *, identity_actions=
                     "--identity-actions is required only if it applied network outputs directly."
                 )
             interface.write_text(
-                "from robot_learning.policy_runtime import PolicyIO\n"
+                "from contracts.policy_runtime import PolicyIO\n"
                 "from robot_learning.scenario.observations import reach_observation\n"
                 "def identity(action): return action\n"
                 "def make_policy_io(): return PolicyIO(reach_observation, identity)\n",
@@ -75,7 +75,7 @@ def migrate(source: Path, destination: Path, revision: str, *, identity_actions=
                 "-c",
                 (
                     "from pathlib import Path; "
-                    "from robot_learning.policy_runtime import save_runtime, load_runtime; "
+                    "from contracts.policy_runtime import save_runtime, load_runtime; "
                     "from robot_learning.scenario.policy_io import make_policy_io; "
                     "from robot_learning.training.algorithms import load_policy; "
                     "from robot_learning.training.normalization import load_observation_normalizer; "
@@ -83,7 +83,7 @@ def migrate(source: Path, destination: Path, revision: str, *, identity_actions=
                     "save_runtime(p, policy_io=make_policy_io(), loader=load_policy, "
                     "normalizer=load_observation_normalizer(p), stats_path=s if s.exists() else None); "
                     "r=load_runtime(p); "
-                    "from robot_learning.benchmark.final_benchmark import official_environment; "
+                    "from benchmark.final_benchmark import official_environment; "
                     "e=official_environment(); e.reset(seed=0); "
                     "o=r.io.observe(e.data); "
                     "assert o.shape == r.observation_space.shape, 'Historical observation contract mismatches policy'; "

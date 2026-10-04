@@ -101,7 +101,7 @@ its scientific breadth or achieve its result.
 
 ## 2026-09-29: inquiry closure
 
-- **Commit / scope:** `b4f1cdf`; `research/program.md`, `run_research.ps1`.
+- **Commit / scope:** `b4f1cdf`; `contracts/program.md`, `run_research.ps1`.
 - **Rationale / change:** separate inquiry closure from campaign completion.
   Use the inquiry's own decision-sufficient result as the positive closure
   criterion; exhaustive certainty is not required. Update session objectives
@@ -117,7 +117,7 @@ its scientific breadth or achieve its result.
 
 ## 2026-09-29: broad Meta-Prompting rollout and reversal
 
-- **Commit / scope:** `40ec8e3`; `research/program.md`, `run_research.ps1`.
+- **Commit / scope:** `40ec8e3`; `contracts/program.md`, `run_research.ps1`.
 - **Rationale / change:** recenter active inquiries on scientific decisions,
   expose resource use, and state a positive criterion for training.
 - **Implementation checks:** parsing, 16 focused tests, and prompt probes
@@ -161,7 +161,7 @@ its scientific breadth or achieve its result.
 ## 2026-09-29: goal-review correction and concise-goal revision
 
 - **Commits / scope:** `b5ddb3f`, refined by `0c8ae6a`;
-  `run_research.ps1`, `research/build_research_brief.py`.
+  `run_research.ps1`, `runner/build_brief.py`.
 - **Rationale / change:** make goal review independently own the next campaign
   decision. Label the previous next direction as a non-binding proposal;
   describe the gap as observed failure rather than a remedy; have closure
@@ -185,9 +185,9 @@ its scientific breadth or achieve its result.
 - **Decision:** keep `b4f1cdf`; reverse `6c73715`, `b5ddb3f`, and `0c8ae6a`
   without rewriting commit history.
 - **Scope:** restore `run_research.ps1` and
-  `research/build_research_brief.py`; `research/program.md` already matches
+  `runner/build_brief.py`; `contracts/program.md` already matches
   the closure-only baseline. Introduce this separate maintainer log instead of
-  extending the poorly maintained `research/PROTOCOL_DECISIONS.md`.
+  extending the poorly maintained `docs/protocol-decisions.md`.
 - **Verification:** all three harness files exactly match `b4f1cdf`.
   Campaign state, operation request, evidence, configuration, and scientific
   source files were fingerprint-checked and remained unchanged. PowerShell
@@ -199,7 +199,7 @@ its scientific breadth or achieve its result.
 
 - **Commit / baseline / scope:** `c0cfcb6` on `4a48da9`, whose harness matches
   `b4f1cdf`.
-  `run_research.ps1` and `research/build_research_brief.py`; this log records
+  `run_research.ps1` and `runner/build_brief.py`; this log records
   the change.
 - **Rationale:** the failed campaign promoted a conjectured explanation into
   the next intervention inquiry. Once the inquiry required a trained
@@ -376,7 +376,7 @@ its scientific breadth or achieve its result.
   that it caused later campaign behavior.
 - **Change:** define the scientific meanings of the existing
   `current_synthesis`, `decision_frontier`, and `next_direction_or_closure`
-  fields in `research/program.md`. Restore the cautions against treating a
+  fields in `contracts/program.md`. Restore the cautions against treating a
   useful policy as causal proof or a failed recipe as broad method
   invalidation. Inject the saved frontier directly into the session prompt
   and connect operation choice and checkpoint preservation to it.
@@ -517,7 +517,7 @@ separate from harness changes so their outcomes are not conflated.
   `AGENTS.md` and user-wide instructions are unchanged.
 - **Inquiry alignment change and expected improvement:** replace the generic
   resolution sentence in the phase prompt with the approved robotics/RL-grounded
-  guidance and align `research/program.md`. Question, goal connection, and
+  guidance and align `contracts/program.md`. Question, goal connection, and
   closure describe one campaign-relevant decision. New evidence must clarify
   what changes for that decision and why the next action addresses its remaining
   question. Expected benefit is an explicit, coherent continuation or transition,
@@ -850,7 +850,7 @@ separate from harness changes so their outcomes are not conflated.
   and measurement-rendering paths had not been exercised before either first
   training request.
 - **Approved reversal:** remove only the complete 44-line "Artifact contents
-  metadata" addition from `research/instruments.md`, restoring that document
+  metadata" addition from `contracts/instruments.md`, restoring that document
   to its pre-`f986a2c` content. Do not replace it with different guidance,
   remove selected schema fields, or add a required physical probe.
 - **Retained implementation:** artifact inventory generation, its 4096-byte
@@ -898,11 +898,11 @@ separate from harness changes so their outcomes are not conflated.
 - **Implementation commit:** the commit containing this entry,
   `Restore artifact inventory contract after startup trial`.
 - **Approved restoration:** restore the exact 44-line metadata section from
-  `f986a2c` in `research/instruments.md`. No executable code, phase prompt,
+  `f986a2c` in `contracts/instruments.md`. No executable code, phase prompt,
   scientific model, training recipe, or campaign operation changes.
 - **Archived model references:** the winning campaign
   `77a975a5-9917-4178-ad06-ede00161560f` published
-  `research/scientific_model.md` in `7d88b15`; its frozen content is also
+  `pi_workspace/scientific_model.md` in `7d88b15`; its frozen content is also
   retained by `inquiery-harnes-success-2`. The training-first startup
   `010714c2-5abd-4836-96bd-364caaf82042` published its model in `d189d5a`.
   These archived documents, not a later campaign's worktree file, support
@@ -938,8 +938,8 @@ separate from harness changes so their outcomes are not conflated.
 ## 2026-10-02: assess evidence-led progression in the completed campaign
 
 - **Reference:** campaign `010714c2-5abd-4836-96bd-364caaf82042`; authoritative
-  operation records and terminal result in `research/research_state.json`,
-  detailed measurements under `research/evaluations/010714c2-5abd-4836-96bd-364caaf82042/`,
+  operation records and terminal result in `runner/state/research_state.json`,
+  detailed measurements under `campaigns/evaluations/010714c2-5abd-4836-96bd-364caaf82042/`,
   and PI resource records in
   `reports/session_usage/010714c2-5abd-4836-96bd-364caaf82042.jsonl`.
 - **Observed result:** official assessment failed at 189/200 (94.5%) for
@@ -983,7 +983,7 @@ separate from harness changes so their outcomes are not conflated.
 
 - **Implementation commit:** the commit containing this entry,
   `Compact repeated research brief content`.
-- **Approved scope:** `research/build_research_brief.py`, directly affected
+- **Approved scope:** `runner/build_brief.py`, directly affected
   tests in `tests/autoresearch/test_research_brief.py`, and this log. No phase
   prompt, scientific contract, authoritative campaign record, artifact,
   fingerprint, session-continuity rule, or SDK offloading threshold changes.
@@ -995,7 +995,7 @@ separate from harness changes so their outcomes are not conflated.
 - **Change:** list every candidate in one compact table with origin,
   per-operation and accumulated steps, training success/reward, and evaluation
   references. Full archive locations and metadata remain explicitly
-  addressable through `research/research_state.json`'s candidate registry.
+  addressable through `runner/state/research_state.json`'s candidate registry.
   Training events retain initialization, parent, seed, requested/completed
   steps, and mechanical provenance but reference the table instead of
   repeating checkpoint statistics. Render each exact structural inventory
@@ -1064,7 +1064,7 @@ separate from harness changes so their outcomes are not conflated.
 ## 2026-10-02: M5 tradeoff lost in inquiry closure
 
 - **Reference:** campaign `48993cfd-1808-4db6-a7b8-000fd5daba50`; M5 paired
-  artifacts under `research/evaluations/48993cfd-1808-4db6-a7b8-000fd5daba50/`;
+  artifacts under `campaigns/evaluations/48993cfd-1808-4db6-a7b8-000fd5daba50/`;
   E9/E10 closure and checkpoint, followed by E11/E12 opening I3. The maintainer
   stopped the campaign. This entry assesses that scientific handoff, not a
   terminal assessment or the result of later training.
@@ -1213,7 +1213,7 @@ separate from harness changes so their outcomes are not conflated.
   maintainer overrides, and completed-result publication remain unchanged.
 - **PI contract:** startup prompts identify the ceiling and permit shorter
   positive requests; other phase allocation prompts remain unchanged.
-  `research/program.md` and `research/instruments.md` state the same contract.
+  `contracts/program.md` and `contracts/instruments.md` state the same contract.
   No new request field, automatic run length, training requirement, phase
   transition, scientific implementation, dependency, or cumulative budget.
 - **Rollout rounding:** completed steps may still exceed requested steps at
@@ -1310,7 +1310,7 @@ separate from harness changes so their outcomes are not conflated.
   repair.
 - **Harness defect:** the PI-turn timeout did not bound session disconnection
   or client shutdown. The launcher waited for the adapter process to exit.
-- **Exact scope:** `researcher_copilot.py` uses explicit client lifetime
+- **Exact scope:** `runner/copilot_adapter.py` uses explicit client lifetime
   management. Abort, when requested, session disconnection, and graceful
   client shutdown share a 30-second timeout. A timeout or cleanup error is
   reported before the SDK force-stops only this client's owned runtime.
@@ -1424,12 +1424,12 @@ separate from harness changes so their outcomes are not conflated.
   establishing no credible route as alternative campaign objectives to avoid
   endless inquiry. Core commit `034daed` and lifecycle commit `6d6d41e`
   implement that unrequested alternative objective.
-- **Instruction and execution path:** `research\program.md:19-21,63`,
-  `research\instruments.md:313-318` and `run_research.ps1:1099` explicitly
-  instruct `no_credible_route`. `research\runner_protocol.py:779-805` accepts
-  the action with a nonempty reason. `research\run_experiment.py:774-788`
+- **Instruction and execution path:** `contracts\program.md:19-21,63`,
+  `contracts\instruments.md:313-318` and `run_research.ps1:1099` explicitly
+  instruct `no_credible_route`. `runner\protocol.py:779-805` accepts
+  the action with a nonempty reason. `runner\run_experiment.py:774-788`
   writes `terminal_state`; `run_research.ps1:1058-1073` breaks the loop.
-- **Separate cap violation:** `research\runner_protocol.py:837-844` blocks
+- **Separate cap violation:** `runner\protocol.py:837-844` blocks
   goal-review measurements at the cap. `run_research.ps1:759-769` forces a
   terminal decision. Actual E19 at four of fifteen inquiries was not
   cap-triggered.
@@ -1508,7 +1508,7 @@ separate from harness changes so their outcomes are not conflated.
   startup session objective in `run_research.ps1`. Withdraw the two-string
   October 2 clarification. No whole-commit rollback or replacement wording.
   The preliminary scientific-model instructions and the startup section in
-  `research/program.md` already match the reference and are not changed.
+  `contracts/program.md` already match the reference and are not changed.
 - **Retained:** startup training below the maintainer allocation remains
   allowed. Training acceptance and dispatch, phase permissions, scientific
   implementation, other session instructions, read controls, and the removal
@@ -1587,10 +1587,10 @@ separate from harness changes so their outcomes are not conflated.
   repair.
 - **Approval and exact source:** after rejecting the assistant's newly proposed
   candidate-absence sentence, the maintainer approved restoring only the two
-  historical passages verbatim from `6d6d41e^:research/program.md`:
+  historical passages verbatim from `6d6d41e^:contracts/program.md`:
   the operation-selection paragraph at lines 144-147 and the measurement-purpose
   paragraph at lines 177-178.
-- **Placement and boundary:** restore both paragraphs in `research\program.md`
+- **Placement and boundary:** restore both paragraphs in `contracts\program.md`
   under Inquiry work. The original lifecycle forced baseline training before
   these inquiry principles applied. No startup-specific applicability clause
   or new candidate-absence rule is added. The original "causal research map"
@@ -1763,7 +1763,7 @@ separate from harness changes so their outcomes are not conflated.
   useful scientific action" or requires a record summary in that objective.
   Startup displays no training allocation. Inquiry allocation wording and all
   mechanical allocation validation remain unchanged.
-- **Documentation:** `research/program.md`, the lifecycle redesign and the
+- **Documentation:** `contracts/program.md`, the lifecycle redesign and the
   canonical HTML describe the corrected startup purpose. Earlier tracking
   entries remain unchanged as history of the superseded wording.
 - **Boundary:** no operation type, sequence, training size, measurement,
@@ -1773,7 +1773,58 @@ separate from harness changes so their outcomes are not conflated.
 - **Checks:** the launcher parses successfully. Active startup source, program
   and lifecycle descriptions no longer instruct a "first useful scientific
   action" or display a startup "Training ceiling." The already-running campaign's generated
-  `research/brief.md` retains its original saved objective and was not
+  `campaigns/brief.md` retains its original saved objective and was not
   rewritten. No campaign, training, reset, assessment, or operation executed.
 - **Disposition:** implemented for observation. Scientific effectiveness
   remains unassessed.
+
+## 2026-10-04: enforce documented ownership of `docs/`
+
+- **Bug:** `b275861` declared the whole `docs/` tree human-owned and reserved
+  from PI access, but `runner/protocol.py` continued to classify only
+  protected source paths and `tests/` as human-owned. The existing ownership
+  registry test exposed the mismatch during campaign training validation.
+- **Impact:** one protected-harness validation failure was routed through the
+  operation repair flow and repeatedly superseded the same unchanged training
+  request. The disposable campaign, its generated artifacts and its 261
+  campaign commits were removed; this entry is the retained record of the
+  failure.
+- **Correction:** add `docs/` to the Runner's human-owned prefixes. This aligns
+  delta validation and clean-worktree enforcement with `AGENTS.md`. Existing
+  adapter restrictions already keep `docs/` unreadable and unwritable by the
+  PI, so no permission expansion or scientific instruction changes.
+- **Boundary:** no campaign state, operation request, PI-owned scientific file,
+  training behavior, recovery behavior, HTML overview, schema or dependency
+  changes.
+- **Disposition:** ownership drift corrected as a harness bug. The repeated
+  reaccept loop remains a Runner defect to address separately.
+
+## 2026-10-04: fully reserve the human-owned test surface
+
+- **Problem:** `tests/` was protected from PI modification and scientific
+  deltas, but the PI adapter still allowed test source inspection and targeted
+  `pytest` execution. That exposed human-owned validation semantics despite the
+  ownership boundary.
+- **Correction:** reserve the complete `tests/` tree from PI reads in every
+  phase and reject every direct PI `pytest` invocation. Runner-owned validation
+  remains available and unchanged.
+- **Boundary:** no PI-owned scientific path, training allocation, evaluation
+  panel, campaign state, operation contract, dependency, or scientific
+  instruction changes.
+- **Disposition:** retained as a boundary-consistency correction.
+
+## 2026-10-04: structural ownership-boundary refactor
+
+- **Problem:** human contracts, hidden benchmark code, Runner machinery,
+  PI-owned science and generated campaign evidence were mixed across
+  `research/` and `robot_learning/`, forcing ownership enforcement to depend on
+  scattered exception lists.
+- **Correction:** move the approved surfaces into `contracts/`, `benchmark/`,
+  `runner/`, `pi_workspace/`, `campaigns/` and unrestricted PI-owned
+  `robot_learning/` prefixes, and mechanically migrate recorded path strings.
+- **Boundary:** no scientific behavior, allocation rule, lifecycle semantic,
+  physics, reward value, success criterion, observation layout, dependency or
+  official assessment changed. The failed in-flight campaign was removed
+  rather than migrated.
+- **Disposition:** retained as a structural boundary correction; scientific
+  effectiveness is not assessed.

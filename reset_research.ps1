@@ -66,7 +66,7 @@ try {
         if ($BaselineRef) { $arguments += @("--baseline-ref", $BaselineRef) }
         if ($Clean) { $arguments += "--clean" }
     }
-    uv run python research/reset_campaign.py @arguments
+    uv run python runner/reset_campaign.py @arguments
     if ($LASTEXITCODE -ne 0) {
         throw "Research reset failed. Review the reported recovery information before retrying."
     }

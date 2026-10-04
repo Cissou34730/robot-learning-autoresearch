@@ -4,8 +4,8 @@ This file records the structural choices made with the human about the
 simulation, learning setup, reward, researcher freedom, and experiment
 selection protocol. It records both active decisions and the choices they
 superseded. It does not instruct the Researcher and does not replace
-`research/program.md`, `research/scenario.md`, `research/instruments.md` or
-`research/current_params.json`.
+`contracts/program.md`, `contracts/scenario.md`, `contracts/instruments.md` or
+`robot_learning/training/current_params.json`.
 
 ## 2026-09-26 - Inquiry lifecycle, causal map, persistent PI and campaign lab
 
@@ -24,7 +24,7 @@ superseded. It does not instruct the Researcher and does not replace
   owns inquiry and experiment-preparation decisions across launcher restarts.
   It has explicit allocated/started state; a failed resume never creates a
   replacement. Post-training and local phase sessions remain separate.
-- **Campaign laboratory:** `research/lab/` is a narrow Researcher-owned surface
+- **Campaign laboratory:** `robot_learning/lab/` is a narrow Researcher-owned surface
   with its own commit, manifest and fingerprint. It is excluded from scientific
   recipe identity and keep/revert/restore operations, survives failed policy
   interventions, and is removed by campaign reset.
@@ -90,7 +90,7 @@ superseded. It does not instruct the Researcher and does not replace
   the defect, not the researcher's compliance with it.
 - **Unchanged:** Human-owned paths are still rejected, researcher-owned paths are
   still accepted, and the researcher's live changes remain listed in the
-  proposal's `code_changes`. `research/program.md`, `research/instruments.md` and
+  proposal's `code_changes`. `contracts/program.md`, `contracts/instruments.md` and
   `AGENTS.md` state that tests are outside the researcher's surface.
 
 ## 2026-09-17 - Audit remediation
@@ -134,7 +134,7 @@ superseded. It does not instruct the Researcher and does not replace
 - **Comparison accounting placement:** Deterministic episode identity,
   distinct-coverage counting, and conflicting-outcome rejection are correctness
   properties of measurement, not scientific choices. They live in the protected
-  `robot_learning/benchmark/paired_evidence.py`, so restoring a research recipe
+  `benchmark/paired_evidence.py`, so restoring a research recipe
   cannot silently revert the shared-episode fix. The optional statistic and the
   decision to request a comparison remain the Researcher's.
 - **Development versus official panel:** The research-evaluation default seed and
@@ -430,8 +430,8 @@ superseded. It does not instruct the Researcher and does not replace
 ## 2026-08-28 — Current progressive hold reward
 
 - **Status:** Relocated on 2026-08-29. The reward is now code in
-  `robot_learning/scenario/reward.py`; its coefficients left
-  `research/current_params.json` with unchanged numerical values.
+  `robot_learning/training/reward.py`; its coefficients left
+  `robot_learning/training/current_params.json` with unchanged numerical values.
 
 - **Decision:** Keep the original approach and centering terms as differences
   of potentials, plus an action-energy cost:
@@ -645,7 +645,7 @@ superseded. It does not instruct the Researcher and does not replace
 
 - **Status:** Partially revised on 2026-08-29. The researcher still owns
   evaluation design and both lineages, but may no longer change the benchmark,
-  the official robot, or `research/run_experiment.py`.
+  the official robot, or `runner/run_experiment.py`.
 
 - **Decision:** Training produces a neutral inventory of periodic checkpoints.
   It performs no development ranking and does not retain an automatic top three.
@@ -674,7 +674,7 @@ superseded. It does not instruct the Researcher and does not replace
   top-three retention, or deletion based on model quality.
 - **Evaluation request:** After training, the compact brief exposes all saved
   candidate names and the current champion when one exists. The researcher writes
-  `research/evaluation_request.json` with the candidates, episode counts, seeds,
+  `runner/state/evaluation_request.json` with the candidates, episode counts, seeds,
   and labels it wants measured. The runner executes only that plan.
 - **No tournament:** The automatic paired tournament and its automatic candidate
   decision have been removed. Paired statistical helpers remain available only
@@ -727,8 +727,8 @@ superseded. It does not instruct the Researcher and does not replace
   scenario submodule.
 - **Boundary:** `robot_learning/train.py`, `robot_learning/evaluate.py`,
   `robot_learning/play.py`, the generic training helpers/callbacks,
-  `robot_learning/training/research_config.py`, `research/run_experiment.py` and
-  `research/build_research_brief.py` contain no import of the reach environment,
+  `robot_learning/training/research_config.py`, `runner/run_experiment.py` and
+  `runner/build_brief.py` contain no import of the reach environment,
   reward, observations, robot assets or benchmark modules, and no import of
   MuJoCo. An architecture test parses each of these modules and fails if such a
   dependency reappears.
@@ -737,7 +737,7 @@ superseded. It does not instruct the Researcher and does not replace
   universal metric schema. This repository remains one repository, one scenario.
 - **Reason:** Replacing the robot or the task should require replacing the
   scenario package, the protected benchmark, the physics assets and
-  `research/scenario.md` — not redesigning the experiment runner, training
+  `contracts/scenario.md` — not redesigning the experiment runner, training
   lifecycle, checkpointing, lineage, recovery or final-benchmark lifecycle.
 - **Compatibility:** `robot_learning/environments/reach_env.py`,
   `robot_learning/rewards/reach_reward.py` and
@@ -750,10 +750,10 @@ superseded. It does not instruct the Researcher and does not replace
 
 ## 2026-08-29 — The reward is research code, not runtime configuration
 
-- **Decision:** `research/current_params.json` holds generic runtime knobs only:
+- **Decision:** `robot_learning/training/current_params.json` holds generic runtime knobs only:
   `algorithm`, `ppo`, `sac`, `policy`, `training`. The `reward` section was
   removed and its ten coefficients moved, unchanged, into
-  `robot_learning/scenario/reward.py`.
+  `robot_learning/training/reward.py`.
 - **Decision:** The reward returns a scalar `total` plus a free-form
   `components` mapping. No generic module validates reward component names,
   their number, or the mathematical form of the reward.
@@ -768,12 +768,12 @@ superseded. It does not instruct the Researcher and does not replace
 
 ## 2026-08-29 — Split the protocol from the current problem
 
-- **Decision:** `research/program.md` contains reusable autonomous-research
-  methodology only. `research/scenario.md` contains the current problem: the
+- **Decision:** `contracts/program.md` contains reusable autonomous-research
+  methodology only. `contracts/scenario.md` contains the current problem: the
   objective, protected robot mechanics, researcher-mutable scenario files,
   terminology, and scenario-specific diagnosis.
-- **Decision:** Every researcher phase that reads `research/program.md` also
-  reads `research/scenario.md`. A test enforces this on `run_research.ps1`.
+- **Decision:** Every researcher phase that reads `contracts/program.md` also
+  reads `contracts/scenario.md`. A test enforces this on `run_research.ps1`.
 - **Decision:** `program.md` uses scenario-independent wording (task feasibility,
   success region, task acquisition and stability). No task number — distance,
   tolerance, hold duration, episode count or success percentage — appears in it.
@@ -784,12 +784,12 @@ superseded. It does not instruct the Researcher and does not replace
 
 - **Decision:** The generic core does not define the task success percentage.
   The threshold is read inside `robot_learning/scenario/evaluation.py` from the
-  human-owned `robot_learning/benchmark/final_contract.py`.
+  human-owned `benchmark/final_contract.py`.
 - **Decision:** Pooling several evaluations into a summary is a scenario
-  operation (`summarize_research_evaluations`). `research/run_experiment.py`
+  operation (`summarize_research_evaluations`). `runner/run_experiment.py`
   no longer interprets `failed_episode_progress`, hold progress, best-window
   fields, distance traces or target geometry; the same applies to
-  `research/build_research_brief.py`.
+  `runner/build_brief.py`.
 - **Decision:** The final benchmark returns an explicit `goal_reached` boolean.
   The runner acts on that boolean and never on a percentage.
 - **Compatibility:** The persisted field name `seeds_passing_98_percent` and the
@@ -833,7 +833,7 @@ superseded. It does not instruct the Researcher and does not replace
 ## 2026-08-29 — The whole GOAL_REACHED path is human-owned
 
 - **Problem:** After the scenario separation, the completion path ran through
-  `robot_learning/scenario/final_benchmark.py`, which converts the protected
+  `benchmark/adapters/final_benchmark.py`, which converts the protected
   result into `goal_reached`. That file was ordinary research code, so a
   proposal could have returned `goal_reached = True` without passing the
   human-owned benchmark.
@@ -858,7 +858,7 @@ superseded. It does not instruct the Researcher and does not replace
 
 ## 2026-08-29 — The runner enforces the protocol and is not researcher-owned
 
-- **Decision:** `research/run_experiment.py` is protected from research
+- **Decision:** `runner/run_experiment.py` is protected from research
   proposals, together with the import-routing files that resolve the protected
   benchmark and robot: the `__init__.py` of `robot_learning`,
   `robot_learning/benchmark`, `robot_learning/robots` and
@@ -902,8 +902,8 @@ superseded. It does not instruct the Researcher and does not replace
 - **Decision:** Do not add an external integrity check, sandbox, filesystem
   permissions, signature verification, or any other security mechanism. This
   limitation is accepted and documented rather than mitigated.
-- **Documentation:** `research/program.md` states the protected surface and this
-  assumption to the researcher; `research/scenario.md` lists the exact paths.
+- **Documentation:** `contracts/program.md` states the protected surface and this
+  assumption to the researcher; `contracts/scenario.md` lists the exact paths.
 - **Reason:** The threat model is researcher error and protocol drift, not
   adversarial behavior. A security framework would add substantial machinery
   without changing the outcome for the failure mode we actually have.
@@ -916,7 +916,7 @@ superseded. It does not instruct the Researcher and does not replace
   SAC replay-buffer save/load/copy paths are removed.
   `robot_learning/training/algorithms.py` keeps only `load_policy`, because the
   protected benchmark imports it.
-- **Decision:** `research/current_params.json` means the effective configuration
+- **Decision:** `robot_learning/training/current_params.json` means the effective configuration
   of the currently active training method. The dormant `sac` block is removed
   and no dormant configuration for a hypothetical future algorithm replaces it.
 - **Decision:** The configuration is no longer pushed into the researcher's
@@ -936,7 +936,7 @@ superseded. It does not instruct the Researcher and does not replace
   explanation of failure. The researcher was reading conclusions the harness had
   already drawn instead of measurements.
 - **Decision:** Hypothesis-family history is removed from
-  `research/build_research_brief.py`. `_legacy_family()`, the family summary
+  `runner/build_brief.py`. `_legacy_family()`, the family summary
   table and the postmortem-lesson extraction that fed it are deleted. The
   `family` field stays in the experiment protocol and the brief prints the value
   the researcher declared; the harness derives nothing from it.
@@ -944,14 +944,14 @@ superseded. It does not instruct the Researcher and does not replace
   `render_scenario_evidence()` is removed everywhere, including from the
   runner's evidence card. `render_training_progress_metric()` moves unchanged to
   `robot_learning/scenario/progress.py`; it is still the single scenario-owned
-  live console metric. `research/brief.md` is now the only brief in the
+  live console metric. `campaigns/brief.md` is now the only brief in the
   repository.
 - **Decision:** `robot_learning/scenario/evaluation.py` executes the requested
   panel, records the observable signals this scenario chooses, and aggregates
   them mechanically. It draws no conclusion. `failed_episode_progress`,
   `failure_diagnostics`, `distance_trace_cm`, hold-progress ranking and the
   best-window fields leave the research path entirely. The hold helpers in
-  `robot_learning/benchmark/metrics.py` remain for the human-owned benchmark
+  `benchmark/metrics.py` remain for the human-owned benchmark
   tests; only the unused `evaluation_rank()`, which read
   `failed_episode_progress`, is deleted.
 - **Baseline observability:** per episode — index, seed, success, steps,
@@ -1026,14 +1026,14 @@ superseded. It does not instruct the Researcher and does not replace
   configuration schema. Stable-Baselines3 and the installed environment already
   form a discoverable capability surface.
 - **Boundary unchanged:** `robot_learning/train.py`, `robot_learning/training/*`,
-  `research/current_params.json` and `pyproject.toml` remain researcher-owned. A
+  `robot_learning/training/current_params.json` and `pyproject.toml` remain researcher-owned. A
   future algorithm replacement is an ordinary scientific mutation, not a human
   framework-extension step.
 - **Reason:** Pre-exposing SAC and a full hyperparameter list biased the
   researcher towards easy mutations before diagnosis. Removing that bias must not
   create the reverse bias of locking PPO in.
 - **Supersedes:** "SAC parameters remain available to the researcher, but SAC is
-  not active" and "`research/current_params.json` holds generic runtime knobs
+  not active" and "`robot_learning/training/current_params.json` holds generic runtime knobs
   only: `algorithm`, `ppo`, `sac`, `policy`, `training`".
 
 ## 2026-08-29 — Opaque effective configuration and minimal proposals
@@ -1074,7 +1074,7 @@ superseded. It does not instruct the Researcher and does not replace
   active learning method). `tests/research/` and the root-level test files are
   removed.
 - **Decision:** `tests/benchmark/` and `tests/autoresearch/` are human-owned and
-  immutable during a campaign. `research/run_experiment.py` rejects a proposal
+  immutable during a campaign. `runner/run_experiment.py` rejects a proposal
   that creates, modifies, renames or deletes any file under those two prefixes.
   The check is prefix-based and normalizes Windows separators, so it covers
   files that do not exist yet.
@@ -1129,11 +1129,11 @@ superseded. It does not instruct the Researcher and does not replace
   scientific instrumentation, not a fixed evaluator. Changing what it measures
   is ordinary research and needs no generic-harness change.
 - **Decision:** The detailed evaluation artifact is the authoritative record of
-  one completed measurement. Artifacts live in `research/evaluations/`, are
+  one completed measurement. Artifacts live in `campaigns/evaluations/`, are
   Git-versioned, and survive the checkpoints they describe: a discarded model may
   be deleted, its completed measurements may not. `research_state.json` keeps
   only the mechanics it needs, `results.jsonl` is a compact index of experiment
-  identity, score and artifact references, and `research/brief.md` is compact
+  identity, score and artifact references, and `campaigns/brief.md` is compact
   context that points at artifacts instead of reproducing them.
 - **Decision:** Measurement identity is candidate, episodes, seed and an
   evaluation-semantics fingerprint, so re-instrumenting and re-measuring the same
@@ -1175,7 +1175,7 @@ superseded. It does not instruct the Researcher and does not replace
   service, trace collector, storage layer, artifact pruning, import-graph
   analysis or plugin system. The only generic extension point is the
   `research_evidence` channel plus the researcher-owned evaluation code.
-- **Known tradeoff:** `research/evaluations/` grows monotonically. This is
+- **Known tradeoff:** `campaigns/evaluations/` grows monotonically. This is
   accepted for now and recorded as an operational concern, not a defect.
 
 ## 2026-08-30 - Phase-aware proposal validation at the orchestration boundary
@@ -1190,7 +1190,7 @@ superseded. It does not instruct the Researcher and does not replace
   decision accepts only a lineage proposal; an open new-experiment phase accepts
   only a training proposal. Evaluation and final-benchmark phases reject a
   research proposal.
-- **Decision:** `research/run_experiment.py --check-proposal` is the single,
+- **Decision:** `runner/run_experiment.py --check-proposal` is the single,
   non-mutating proposal preflight. It uses the same phase and schema validation
   as execution and returns a short protocol-level result.
 - **Decision:** The PowerShell loop validates researcher output, not merely file
@@ -1211,11 +1211,11 @@ superseded. It does not instruct the Researcher and does not replace
 
 ## 2026-08-30 - PowerShell prompts are phase adapters, not a second protocol
 
-- **Decision:** `research/program.md` and `research/scenario.md` remain the
+- **Decision:** `contracts/program.md` and `contracts/scenario.md` remain the
   durable scientific and scenario instructions. Each PowerShell prompt carries
   only the current phase, context to read, expected deliverable and operational
   prohibitions needed to return control to the launcher.
-- **Decision:** The Researcher never invokes `research/run_experiment.py`.
+- **Decision:** The Researcher never invokes `runner/run_experiment.py`.
   PowerShell validates and executes researcher deliverables after the model
   session exits. If `results.jsonl` changes during a new-hypothesis session, the
   loop stops instead of treating the unauthorized execution as normal progress.
@@ -1230,7 +1230,7 @@ superseded. It does not instruct the Researcher and does not replace
 
 - **Decision:** OpenCode is replaced by the official GitHub Copilot SDK
   (`github-copilot-sdk`, declared in the `researcher` dependency group) behind a
-  single repository-owned adapter, `researcher_copilot.py`. `run_research.ps1`
+  single repository-owned adapter, `runner/copilot_adapter.py`. `run_research.ps1`
   changes only inside `Invoke-ResearcherSession`; `researcher_session.ps1` is
   untouched and still observes a session as process, deliverable presence and
   deliverable validity.
@@ -1251,7 +1251,7 @@ superseded. It does not instruct the Researcher and does not replace
   recent session" behaviour.
 - **Decision:** The adapter refuses, at the tool boundary, the three actions
   that have corrupted or ended runs: mutating Git, invoking
-  `research/run_experiment.py` or training directly, and repository-wide test
+  `runner/run_experiment.py` or training directly, and repository-wide test
   runs. Read-only Git stays available. Each refusal returns the sanctioned
   alternative to the model, so it retries differently rather than stopping the
   campaign.
@@ -1271,9 +1271,9 @@ superseded. It does not instruct the Researcher and does not replace
 ## 2026-09-02 - Researcher context and instruments have single owners
 
 - **Decision:** `AGENTS.md` owns repository operation and path ownership;
-  `research/program.md` owns the Researcher role and fixed protocol;
-  `research/scenario.md` owns only the current scientific problem and immutable
-  task semantics; `research/instruments.md` is the scenario-neutral authority
+  `contracts/program.md` owns the Researcher role and fixed protocol;
+  `contracts/scenario.md` owns only the current scientific problem and immutable
+  task semantics; `contracts/instruments.md` is the scenario-neutral authority
   for available capabilities and request contracts.
 - **Decision:** Every initial and retry Researcher session loads those four
   documents plus the current generated brief. The PowerShell prompts remain
@@ -1390,13 +1390,13 @@ Deviation B: Removing the Runner's challenger/incumbent comparability check is
 deliberate. Evidence comparability for a `best_known` designation is the
 Researcher's scientific responsibility. The Runner still verifies model
 identity and artifact integrity, but it does not compare scores or decide
-whether the evidence supports the designation. `research/program.md` states
+whether the evidence supports the designation. `contracts/program.md` states
 this responsibility explicitly.
 
 Deviation C: The remediation issue asked to remove a rule requiring an
 independent panel below 98% success. No such rule exists anywhere in the
 harness. The figure appears only in Researcher-authored prose in
-`research/postmortems.md`. There was therefore nothing to remove, and no such
+`campaigns/postmortems.md`. There was therefore nothing to remove, and no such
 rule must be introduced.
 
 Reason: These deviations preserve the intended separation between executable

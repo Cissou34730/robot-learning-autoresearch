@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import pytest
 
-from research import query_training_log
+from runner import query_training_log
 
 
 def test_training_log_lookup_uses_the_training_operation_id(monkeypatch, tmp_path):

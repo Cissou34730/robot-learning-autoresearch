@@ -7,14 +7,11 @@ from pathlib import Path
 
 import pytest
 
-from research import run_experiment
-from research import runner_paths as paths
-from research import runner_protocol as protocol
-from research import runner_repository as repository
+from runner import paths, protocol, repository, run_experiment
 
 
 def _configure(monkeypatch, tmp_path: Path) -> dict:
-    research = tmp_path / "research"
+    research = tmp_path / "campaigns"
     research.mkdir()
     for name, value in {
         "ROOT": tmp_path,
@@ -36,7 +33,7 @@ def _configure(monkeypatch, tmp_path: Path) -> dict:
     )
     state["scientific_model"] = {
         "status": "ready",
-        "path": "research/scientific_model.md",
+        "path": "pi_workspace/scientific_model.md",
         "commit": "a" * 40,
     }
     repository.start_scientific_session(

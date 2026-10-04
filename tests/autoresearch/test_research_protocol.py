@@ -7,14 +7,13 @@ from pathlib import Path
 
 import pytest
 
-from research import runner_protocol as protocol
-from research import runner_repository as repository
-from research.runner_execution import requested_paired_comparisons
-from robot_learning.paired_evidence import paired_comparison as paired_counts
+from benchmark.paired_evidence import paired_comparison as paired_counts
 from robot_learning.scenario.evaluation import (
     summarize_research_evaluations as summarize_evaluations,
 )
 from robot_learning.training.comparison import exact_mcnemar_pvalue, paired_comparison
+from runner import protocol, repository
+from runner.execution import requested_paired_comparisons
 
 
 def _evaluation(seed: int, outcomes: list[bool]) -> dict:
@@ -118,7 +117,7 @@ def _frozen_plan(candidate: Path, reference: Path) -> list[dict]:
 
 
 def test_frozen_paired_evidence_preserves_artifact_identity(monkeypatch, tmp_path):
-    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
+    monkeypatch.setattr("runner.paths.ROOT", tmp_path)
     candidate = tmp_path / "candidate.json"
     reference = tmp_path / "reference.json"
     _write_panel(candidate, [(0, 10, True), (1, 11, False)])
@@ -141,17 +140,17 @@ SEMANTICS_TREE = (
     "robot_learning/scenario/__init__.py",
     "robot_learning/scenario/evaluation.py",
     "robot_learning/scenario/environment.py",
-    "robot_learning/scenario/reward.py",
-    "robot_learning/scenario/training_environment.py",
+    "robot_learning/training/reward.py",
+    "robot_learning/training/environment.py",
     "robot_learning/scenario/observations.py",
     "robot_learning/scenario/policy_io.py",
     "robot_learning/scenario/viewer.py",
     "robot_learning/scenario/progress.py",
-    "robot_learning/scenario/final_benchmark.py",
-    "robot_learning/scenario/task_reference.py",
+    "benchmark/adapters/final_benchmark.py",
+    "benchmark/adapters/task_reference.py",
     "robot_learning/training/algorithms.py",
     "robot_learning/training/normalization.py",
-    "research/build_research_brief.py",
+    "runner/build_brief.py",
     "run_research.ps1",
     *protocol.EVALUATION_RUNTIME_PATHS,
 )
@@ -171,28 +170,28 @@ def _semantics_tree(root: Path) -> None:
         ("robot_learning/scenario/environment.py", True),
         ("robot_learning/scenario/measurement_config.json", True),
         *[(relative, True) for relative in protocol.EVALUATION_RUNTIME_PATHS],
-        ("robot_learning/scenario/reward.py", False),
-        ("robot_learning/scenario/training_environment.py", False),
+        ("robot_learning/training/reward.py", False),
+        ("robot_learning/training/environment.py", False),
         ("robot_learning/scenario/observations.py", False),
         ("robot_learning/scenario/policy_io.py", False),
         ("robot_learning/training/algorithms.py", False),
         ("robot_learning/training/normalization.py", False),
         ("robot_learning/scenario/viewer.py", False),
         ("robot_learning/scenario/progress.py", False),
-        ("robot_learning/scenario/final_benchmark.py", False),
-        ("robot_learning/scenario/task_reference.py", False),
+        ("benchmark/adapters/final_benchmark.py", False),
+        ("benchmark/adapters/task_reference.py", False),
         ("robot_learning/scenario/__init__.py", False),
         ("robot_learning/scenario/__pycache__/evaluation.cpython-313.pyc", False),
         ("robot_learning/scenario/evaluation.py.tmp", False),
         ("robot_learning/scenario/.mypy_cache/state.json", False),
-        ("research/build_research_brief.py", False),
+        ("runner/build_brief.py", False),
         ("run_research.ps1", False),
     ],
 )
 def test_evaluation_semantics_cover_only_measurement_semantics(
     monkeypatch, tmp_path, relative, changes_identity
 ):
-    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
+    monkeypatch.setattr("runner.paths.ROOT", tmp_path)
     _semantics_tree(tmp_path)
     before = protocol.evaluation_semantics_fingerprint()
     path = tmp_path / relative
@@ -203,7 +202,7 @@ def test_evaluation_semantics_cover_only_measurement_semantics(
 
 
 def test_measurement_artifact_fingerprint_detects_replacement(monkeypatch, tmp_path):
-    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
+    monkeypatch.setattr("runner.paths.ROOT", tmp_path)
     artifact = tmp_path / "measurement.json"
     artifact.write_text(json.dumps(_evaluation(10, [True, False])), encoding="utf-8")
     record = {

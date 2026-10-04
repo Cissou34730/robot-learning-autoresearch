@@ -79,11 +79,11 @@ An external controller does not need to send a console control signal. The
 launcher polls child completion and both stop inputs every 100 ms. The active
 child also polls the external request:
 
-- `research/run_experiment.py` raises `KeyboardInterrupt` on its main thread.
+- `runner/run_experiment.py` raises `KeyboardInterrupt` on its main thread.
   Existing runner handling stops training or evaluation cooperatively, persists
   partial state, writes `RECOVERY_PENDING` or `RESTART_PENDING` when applicable,
   and returns 130.
-- `researcher_copilot.py` calls `session.abort()`, then always disconnects.
+- `runner/copilot_adapter.py` calls `session.abort()`, then always disconnects.
 - `researcher_opencode/src/adapter.ts` resolves its existing interrupt outcome,
   calls `session.abort()`, and drains its runtime handles.
 

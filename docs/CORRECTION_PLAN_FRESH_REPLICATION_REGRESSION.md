@@ -43,8 +43,8 @@ Perform these steps before changing harness code.
    campaign. Preserve the campaign as it ended; do not reset or rewrite it.
 3. Commit only its durable tracked and untracked campaign artifacts, including
    updated result/state/history files and completed evaluation artifacts when
-   present. Do not commit transient `research/proposal.json` or
-   `research/evaluation_request.json` controls.
+   present. Do not commit transient `runner/state/proposal.json` or
+   `runner/state/evaluation_request.json` controls.
 4. Create and switch to a new branch named
    `codex/research-strategy-remediation` from that campaign snapshot.
 5. Add this plan on the new branch and commit it alone with message:
@@ -84,8 +84,8 @@ selection as sufficient scientific understanding by itself.
 
 ### Files
 
-- `research/program.md`
-- `research/instruments.md`
+- `contracts/program.md`
+- `contracts/instruments.md`
 - `run_research.ps1`
 - focused prompt/documentation tests already covering these files
 
@@ -115,7 +115,7 @@ next direction only.
 In the initial post-training prompt in `run_research.ps1`, add one short
 instruction requiring the Researcher to establish both the model decision and,
 when further research is needed, the next scientific direction. Keep instrument
-descriptions in `research/instruments.md`; do not duplicate their schemas in the
+descriptions in `contracts/instruments.md`; do not duplicate their schemas in the
 PowerShell prompt.
 
 Do not change retry prompts except where an existing assertion expects the old
@@ -144,9 +144,9 @@ objective.
 
 ### Files
 
-- `research/program.md`
-- `research/instruments.md`
-- `research/build_research_brief.py`
+- `contracts/program.md`
+- `contracts/instruments.md`
+- `runner/build_brief.py`
 - `tests/autoresearch/test_console_presentation.py`
 - existing focused Scientific strategy tests
 
@@ -164,7 +164,7 @@ Do not add a field, heading, state object, or schema version.
 Define their semantics as follows:
 
 - The campaign objective is always to improve learned behavior toward the
-  human-defined objective in `research/scenario.md`. It is not authored or
+  human-defined objective in `contracts/scenario.md`. It is not authored or
   replaced by the Scientific strategy.
 - `Direction` is the current temporary investigation, not the campaign
   objective.
@@ -182,7 +182,7 @@ In the generated brief:
 
 1. keep the existing current phase/latest-event section;
 2. add one compact generic factual line stating that the campaign objective is
-   the objective defined by `research/scenario.md`;
+   the objective defined by `contracts/scenario.md`;
 3. label the existing Researcher-authored strategy as a revisable current
    investigation;
 4. keep the current lineage identities, valid parents, recipes, parameters, and
@@ -190,7 +190,7 @@ In the generated brief:
 5. do not perform a broad section reorder or remove lineage information.
 
 Do not copy scenario-specific objective text into the brief builder. Reference
-`research/scenario.md` as the authoritative objective.
+`contracts/scenario.md` as the authoritative objective.
 
 ### Validation
 
@@ -233,8 +233,8 @@ interpretation.
 
 ### Files
 
-- `research/program.md`
-- `research/instruments.md`
+- `contracts/program.md`
+- `contracts/instruments.md`
 - `run_research.ps1`
 - focused prompt/documentation tests
 
@@ -285,7 +285,7 @@ falsely suggests that an investigation is incomplete.
 
 ### Files
 
-- `research/build_research_brief.py`
+- `runner/build_brief.py`
 - `tests/autoresearch/test_console_presentation.py`
 
 ### Exact change
@@ -334,7 +334,7 @@ transfer selection and must not change initialization or lineage behavior.
 
 ### Files
 
-- `research/runner_protocol.py`
+- `runner/protocol.py`
 - `tests/autoresearch/test_research_protocol.py`
 
 ### Exact change
@@ -366,7 +366,7 @@ Add focused tests proving:
 
 ## Documentation record
 
-Update `research/PROTOCOL_DECISIONS.md` in the relevant implementation commits.
+Update `docs/protocol-decisions.md` in the relevant implementation commits.
 Record only these decisions:
 
 - evidence sufficiency covers both the current model decision and the next

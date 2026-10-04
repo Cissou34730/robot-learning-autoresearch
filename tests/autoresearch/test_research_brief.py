@@ -5,22 +5,22 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from research import build_research_brief as brief
-from research import runner_repository as repository
+from runner import build_brief as brief
+from runner import repository
 
 
 def _state() -> dict:
     state = repository.empty_campaign_state(
         campaign={"id": "campaign", "started_at": "now", "base_commit": "base"},
         human_goal={
-            "source": "research/scenario.md",
+            "source": "contracts/scenario.md",
             "summary": "Reach and hold with at least 98% official success.",
         },
         last_verdict="measurement completed",
     )
     state["scientific_model"] = {
         "status": "ready",
-        "path": "research/scientific_model.md",
+        "path": "pi_workspace/scientific_model.md",
         "commit": "a" * 40,
     }
     state["active_inquiry"] = {
@@ -93,7 +93,7 @@ def _state() -> dict:
 def test_brief_leads_with_goal_evidence_gap_inquiry_and_checkpoint(
     monkeypatch, tmp_path: Path
 ):
-    research = tmp_path / "research"
+    research = tmp_path / "campaigns"
     research.mkdir()
     state = _state()
     (research / "research_state.json").write_text(json.dumps(state), encoding="utf-8")
@@ -124,7 +124,7 @@ def test_operation_feedback_is_factual_and_operation_specific():
                     "instrument": "research_evaluation",
                     "label": "candidate panel",
                     "metrics": {
-                        "evaluation_artifact": "research/evaluations/panel.json",
+                        "evaluation_artifact": "campaigns/evaluations/panel.json",
                         "success_percent": 97.5,
                         "episodes": 200,
                         "episode_results": evidence["episode_results"],
@@ -163,7 +163,7 @@ def test_operation_feedback_is_factual_and_operation_specific():
     measurement_lines = "\n".join(
         brief._event_detail_lines(measurement, inventory_refs=inventory_refs)
     )
-    assert "research/evaluations/panel.json" in measurement_lines
+    assert "campaigns/evaluations/panel.json" in measurement_lines
     assert "success_percent=97.5" in measurement_lines
     assert "Paired comparisons" in measurement_lines
     key = brief._artifact_inventory_key(contents)
@@ -185,7 +185,7 @@ def test_candidate_registry_preserves_every_checkpoint_and_transfer_statistics()
         "T2:checkpoint-10": {
             "origin_operation": "T2",
             "training_steps": 110,
-            "evaluation_artifacts": ["research/evaluations/paired.json"],
+            "evaluation_artifacts": ["campaigns/evaluations/paired.json"],
         },
         "T2:checkpoint-20": {
             "origin_operation": "T2",
@@ -254,7 +254,7 @@ def test_artifact_inventory_references_share_only_exact_structures():
                 {
                     "label": label,
                     "metrics": {
-                        "evaluation_artifact": f"research/evaluations/{label}.json",
+                        "evaluation_artifact": f"campaigns/evaluations/{label}.json",
                         "evaluation_artifact_contents": inventory,
                     },
                 }
@@ -295,7 +295,7 @@ def test_artifact_inventory_references_share_only_exact_structures():
 def test_failed_and_superseded_attempts_are_history_not_evidence(
     monkeypatch, tmp_path: Path
 ):
-    research = tmp_path / "research"
+    research = tmp_path / "campaigns"
     research.mkdir()
     state = _state()
     completed = state["operation_events"][0]
@@ -328,7 +328,7 @@ def test_failed_and_superseded_attempts_are_history_not_evidence(
 
 
 def test_brief_rejects_unknown_state_fields(monkeypatch, tmp_path: Path):
-    research = tmp_path / "research"
+    research = tmp_path / "campaigns"
     research.mkdir()
     state = _state()
     state["unknown_control_field"] = None

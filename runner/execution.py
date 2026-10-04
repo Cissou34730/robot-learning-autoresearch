@@ -18,9 +18,7 @@ import tempfile
 import time
 from pathlib import Path
 
-from research import runner_console as console
-from research import runner_paths as paths
-from research import runner_repository as repository
+from runner import console, paths, repository
 
 TRAIN_TIMEOUT_SECONDS = 12 * 60 * 60
 TRAIN_STALL_SECONDS = 30 * 60
@@ -107,9 +105,7 @@ def run_module(module: str, *args: str, timeout: int | None = None) -> str:
         check=False,
     )
     if result.returncode != 0:
-        raise RuntimeError(
-            f"{module} failed:\n{result.stdout}\n{result.stderr}"
-        )
+        raise RuntimeError(f"{module} failed:\n{result.stdout}\n{result.stderr}")
     return result.stdout
 
 
@@ -126,8 +122,7 @@ def run_command(*command: str, timeout: int | None = None) -> str:
     )
     if result.returncode != 0:
         raise RuntimeError(
-            f"{' '.join(command)} failed:\n"
-            f"{result.stdout}\n{result.stderr}"
+            f"{' '.join(command)} failed:\n{result.stdout}\n{result.stderr}"
         )
     return result.stdout
 
@@ -184,6 +179,11 @@ def validate_active_configuration() -> dict:
 
 
 def run_validation_suites(selected_tests: tuple[str, ...]) -> None:
+    selected_tests = tuple(
+        path for path in selected_tests if (paths.ROOT / path).exists()
+    )
+    if not selected_tests:
+        return
     run_module(
         "pytest",
         "-q",
@@ -302,8 +302,7 @@ def announce_training_checkpoints(
         "TRAINING RESULTS",
         operation_id,
         "\n".join(
-            f"{candidate:<{candidate_width}} | {summary}"
-            for candidate, summary in rows
+            f"{candidate:<{candidate_width}} | {summary}" for candidate, summary in rows
         ),
     )
 
@@ -589,7 +588,7 @@ def evaluate_artifact(
     task_reference: bool = False,
 ) -> dict:
     if task_reference and (seed is None or episodes is None):
-        from research import runner_assessment as assessment
+        from runner import assessment
 
         contract = assessment.task_reference_contract()
         seed = int(contract["seed"]) if seed is None else seed
@@ -603,15 +602,13 @@ def evaluate_artifact(
             if episodes is None
             else episodes
         )
-    output_path = output_path or paths.RESEARCH_DIR / "last_evaluation.json"
+    output_path = output_path or paths.RUNNER_STATE_DIR / "last_evaluation.json"
     output_path.unlink(missing_ok=True)
     progress_path = output_path.with_suffix(output_path.suffix + ".progress")
     stale_temporary_progress = progress_path.with_suffix(progress_path.suffix + ".tmp")
     progress_path.unlink(missing_ok=True)
     stale_temporary_progress.unlink(missing_ok=True)
-    module = (
-        "research.runner_assessment" if task_reference else "robot_learning.evaluate"
-    )
+    module = "runner.assessment" if task_reference else "robot_learning.evaluate"
     command = [
         sys.executable,
         "-m",
@@ -731,7 +728,7 @@ def requested_paired_comparisons(
     *,
     evidence_plan: list[dict] | None = None,
 ) -> list[dict]:
-    from robot_learning.paired_evidence import paired_comparison
+    from benchmark.paired_evidence import paired_comparison
 
     comparisons = request.get("paired_comparisons", [])
     if not isinstance(comparisons, list):

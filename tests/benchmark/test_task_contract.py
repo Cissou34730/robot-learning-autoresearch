@@ -3,15 +3,15 @@ import hashlib
 import numpy as np
 import pytest
 
-from robot_learning.benchmark import final_contract
-from robot_learning.benchmark.final_benchmark import official_environment
-from robot_learning.benchmark.metrics import (
+from benchmark import final_contract
+from benchmark.final_benchmark import official_environment
+from benchmark.metrics import (
     achieved_goal,
     episode_hold_progress,
     maximum_consecutive_hold_steps,
     summarize_hold_progress,
 )
-from robot_learning.robots.two_joint_arm import TWO_JOINT_ARM_XML_PATH
+from contracts.robots.two_joint_arm import TWO_JOINT_ARM_XML_PATH
 
 
 def test_robot_physics_asset_is_frozen():
@@ -33,8 +33,8 @@ def test_final_task_contract_is_fixed():
 
 
 def test_official_environment_uses_final_contract_not_research_defaults(monkeypatch):
-    monkeypatch.setattr("robot_learning.benchmark.spec.HOLD_SECONDS", 0.5)
-    monkeypatch.setattr("robot_learning.benchmark.spec.SUCCESS_THRESHOLD", 0.2)
+    monkeypatch.setattr("contracts.task_spec.HOLD_SECONDS", 0.5)
+    monkeypatch.setattr("contracts.task_spec.SUCCESS_THRESHOLD", 0.2)
 
     env = official_environment()
     control_dt = env.model.opt.timestep * env.frame_skip

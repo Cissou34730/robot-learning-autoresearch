@@ -6,8 +6,8 @@ import types
 import numpy as np
 import pytest
 
-from research.runner_repository import artifact_fingerprint, copy_artifact
-from robot_learning.policy_runtime import PolicyIO, load_runtime, save_runtime
+from contracts.policy_runtime import PolicyIO, load_runtime, save_runtime
+from runner.repository import artifact_fingerprint, copy_artifact
 
 
 def scientific_module(monkeypatch, size, scale=0.1):
@@ -16,7 +16,7 @@ def scientific_module(monkeypatch, size, scale=0.1):
     exec(  # noqa: S102 -- a disposable scientific module tests by-value capture
         "import numpy as np\n"
         "from gymnasium.spaces import Box\n"
-        "from robot_learning.policy_runtime import PolicyIO\n"
+        "from contracts.policy_runtime import PolicyIO\n"
         f"SIZE = {size}\nSCALE = {scale}\n"
         "def observe(data): return np.full(SIZE, 0.25, dtype=np.float32)\n"
         "def action(value): return np.asarray(value) * SCALE\n"
@@ -41,7 +41,7 @@ def stateful_module(monkeypatch, size, weight=0.75):
     exec(  # noqa: S102 -- a disposable scientific module tests by-value capture
         "import numpy as np\n"
         "from gymnasium.spaces import Box\n"
-        "from robot_learning.policy_runtime import PolicyIO\n"
+        "from contracts.policy_runtime import PolicyIO\n"
         f"SIZE = {size}\nWEIGHT = {weight}\n"
         "def observe(data): return np.full(SIZE, 0.25, dtype=np.float32)\n"
         "def make_io():\n"
@@ -78,7 +78,7 @@ def observation_coupled_module(monkeypatch, size):
     exec(  # noqa: S102 -- a disposable scientific module tests by-value capture
         "import numpy as np\n"
         "from gymnasium.spaces import Box\n"
-        "from robot_learning.policy_runtime import PolicyIO\n"
+        "from contracts.policy_runtime import PolicyIO\n"
         f"SIZE = {size}\n"
         "def make_io():\n"
         " latest = None\n"
@@ -195,8 +195,8 @@ def test_policy_io_callbacks_retain_shared_reassigned_state(monkeypatch, tmp_pat
 
 
 def test_environment_owns_each_policy_io_episode_reset(monkeypatch, tmp_path):
-    from robot_learning.benchmark.final_benchmark import official_environment
-    from robot_learning.benchmark.reference_evaluation import (
+    from benchmark.final_benchmark import official_environment
+    from benchmark.reference_evaluation import (
         task_reference_environment,
     )
     from robot_learning.scenario.environment import make_evaluation_env
@@ -232,8 +232,8 @@ def test_environment_owns_each_policy_io_episode_reset(monkeypatch, tmp_path):
 def test_all_evaluation_paths_use_each_policys_inputs_and_same_task(
     monkeypatch, tmp_path
 ):
-    from robot_learning.benchmark.final_benchmark import official_environment
-    from robot_learning.benchmark.reference_evaluation import task_reference_environment
+    from benchmark.final_benchmark import official_environment
+    from benchmark.reference_evaluation import task_reference_environment
     from robot_learning.scenario.environment import make_evaluation_env
 
     for factory in (
@@ -261,8 +261,8 @@ def test_all_evaluation_paths_use_each_policys_inputs_and_same_task(
 def test_all_evaluation_environments_apply_saved_action_mapping_once(
     monkeypatch, tmp_path
 ):
-    from robot_learning.benchmark.final_benchmark import official_environment
-    from robot_learning.benchmark.reference_evaluation import (
+    from benchmark.final_benchmark import official_environment
+    from benchmark.reference_evaluation import (
         task_reference_environment,
     )
     from robot_learning.scenario.environment import make_evaluation_env
@@ -323,7 +323,7 @@ def test_copy_and_identity_include_executable_contract(monkeypatch, tmp_path):
 
 
 def test_candidate_without_manifest_requires_its_runtime(tmp_path):
-    from research.runner_execution import candidate_directories
+    from runner.execution import candidate_directories
 
     candidate = tmp_path / "checkpoint-100"
     candidate.mkdir()
@@ -343,8 +343,8 @@ def test_real_sb3_checkpoint_preserves_normalization_and_prediction(
 
     from robot_learning.scenario import observations
     from robot_learning.scenario.environment import make_evaluation_env
-    from robot_learning.scenario.training_environment import make_training_env
     from robot_learning.training.checkpoint import save_checkpoint
+    from robot_learning.training.environment import make_training_env
 
     venv = VecNormalize(DummyVecEnv([make_training_env]), norm_reward=False)
     model = PPO(

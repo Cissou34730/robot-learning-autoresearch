@@ -24,7 +24,7 @@ Treat the following as implementation requirements:
 
 Implementation does not authorize launching, resuming, or resetting any real campaign, modifying the live scientific intervention, running a real training job, evaluating a real campaign model, or running a real benchmark. Copilot must stop after software validation. Preserve the reference worktree and the current campaign artifacts. Run implementation tests only against temporary fixtures, stubbed training/evaluation processes, and temporary repositories.
 
-At inspection time, this worktree was on `codex/research-reasoning-memory`, with completed experiment 12 and an unfinished proposal for experiment 13. `research/research_state.json`, `robot_learning/scenario/reward.py`, and `tests/scenario/test_reward.py` had uncommitted changes; ignored `research/proposal.json` also existed. These are interrupted-campaign state and scientific work. Leave them exactly where they are in the source worktree. Do not stash, commit, reset, clean, restore, copy, or delete them. They are not inputs to the harness implementation.
+At inspection time, this worktree was on `codex/research-reasoning-memory`, with completed experiment 12 and an unfinished proposal for experiment 13. `runner/state/research_state.json`, `robot_learning/training/reward.py`, and `tests/scenario/test_reward.py` had uncommitted changes; ignored `runner/state/proposal.json` also existed. These are interrupted-campaign state and scientific work. Leave them exactly where they are in the source worktree. Do not stash, commit, reset, clean, restore, copy, or delete them. They are not inputs to the harness implementation.
 
 The inspected HEAD was `c252e7d`. The implementation steps below are technical work packages, not a renumbering of the three previously agreed remediation points:
 
@@ -67,16 +67,16 @@ The following existing behavior must be changed deliberately rather than worked 
 
 | Current location | Current behavior | Required consequence |
 | --- | --- | --- |
-| `research/program.md`, `Fixed cycle` | Training must be followed by evaluation, then a separate closure phase; phases cannot be skipped. | Replace the two post-training phases with one analysis phase that can request measurements or close the experiment. |
-| `research/runner_protocol.py`, `requested_measurements()` | Every evaluation request requires at least one measurement. | Keep this requirement for an actual measurement request, but allow analysis to finish using a lineage decision without submitting an evaluation request. |
+| `contracts/program.md`, `Fixed cycle` | Training must be followed by evaluation, then a separate closure phase; phases cannot be skipped. | Replace the two post-training phases with one analysis phase that can request measurements or close the experiment. |
+| `runner/protocol.py`, `requested_measurements()` | Every evaluation request requires at least one measurement. | Keep this requirement for an actual measurement request, but allow analysis to finish using a lineage decision without submitting an evaluation request. |
 | `run_research.ps1` | `pending_evaluation_request` always causes an evaluation-design session; closure gets a separate session. | Dispatch one analysis session which may produce either an evaluation request or a closure decision. |
-| `research/run_experiment.py`, `apply_previous_result_decision()` | Selecting a candidate copies it over `ACCEPTED_DIR` and updates the same state used for the champion. | Preserve working lineage and best-known lineage independently. |
-| `research/runner_protocol.py`, `training_parent()` | `accepted` and retained IDs are training parents; evaluation calls the accepted artifact `champion`. | Expose the same role identifiers for training, evaluation, and lineage selection. |
-| `research/run_experiment.py`, `execute_pending_evaluations()` | `measured[0]` becomes `candidate_metrics` and the apparent experiment score. | Record checkpoint-specific evidence. Do not turn the first measured checkpoint into the experiment's representative or best model. |
-| `research/build_research_brief.py` | Displays accepted state prominently, five recent cards, then compressed memory. | Lead with the current result and working direction; expose all campaign experiments through a factual compact index. |
-| `research/run_experiment.py` and `runner_repository.py` | The result is appended before closure; subsequent lineage decisions mostly update state. | Persist the completed decision into the authoritative experiment record and regenerate its derived views. |
-| `research/program.md`, final benchmark paragraph | A failed official benchmark sends the Researcher back to research. | Finish the campaign after a completed official assessment, whether it succeeds or fails. |
-| `research/instruments.md` | Already supports `training`, `continuation`, `replication`, log queries, and optional paired comparisons. | Preserve these capabilities and make their availability explicit in the appropriate phase prompts. |
+| `runner/run_experiment.py`, `apply_previous_result_decision()` | Selecting a candidate copies it over `ACCEPTED_DIR` and updates the same state used for the champion. | Preserve working lineage and best-known lineage independently. |
+| `runner/protocol.py`, `training_parent()` | `accepted` and retained IDs are training parents; evaluation calls the accepted artifact `champion`. | Expose the same role identifiers for training, evaluation, and lineage selection. |
+| `runner/run_experiment.py`, `execute_pending_evaluations()` | `measured[0]` becomes `candidate_metrics` and the apparent experiment score. | Record checkpoint-specific evidence. Do not turn the first measured checkpoint into the experiment's representative or best model. |
+| `runner/build_brief.py` | Displays accepted state prominently, five recent cards, then compressed memory. | Lead with the current result and working direction; expose all campaign experiments through a factual compact index. |
+| `runner/run_experiment.py` and `runner_repository.py` | The result is appended before closure; subsequent lineage decisions mostly update state. | Persist the completed decision into the authoritative experiment record and regenerate its derived views. |
+| `contracts/program.md`, final benchmark paragraph | A failed official benchmark sends the Researcher back to research. | Finish the campaign after a completed official assessment, whether it succeeds or fails. |
+| `contracts/instruments.md` | Already supports `training`, `continuation`, `replication`, log queries, and optional paired comparisons. | Preserve these capabilities and make their availability explicit in the appropriate phase prompts. |
 
 Use these function names as navigation anchors, not fixed line numbers. Read their callers before changing signatures.
 
@@ -104,8 +104,8 @@ Within analysis, the Researcher may inspect logs, inspect existing artifacts, pe
 
 There are still two phase deliverable filenames. Reuse them:
 
-- `research/evaluation_request.json`: request another measurement round for the open experiment.
-- `research/proposal.json`: either the preparation proposal or, during analysis, the lineage-only closure decision.
+- `runner/state/evaluation_request.json`: request another measurement round for the open experiment.
+- `runner/state/proposal.json`: either the preparation proposal or, during analysis, the lineage-only closure decision.
 
 Exactly one actionable deliverable may be submitted by an analysis session. The postmortem accompanies a closure decision. The Runner must reject conflicting deliverables before executing either one.
 
@@ -117,11 +117,11 @@ Make it possible to pursue a promising model without replacing the best-known mo
 
 ### Files
 
-- `research/runner_paths.py`
-- `research/runner_repository.py`
-- `research/runner_protocol.py`
-- `research/run_experiment.py`
-- `research/runner_execution.py`, only where parent metadata is consumed
+- `runner/paths.py`
+- `runner/repository.py`
+- `runner/protocol.py`
+- `runner/run_experiment.py`
+- `runner/execution.py`, only where parent metadata is consumed
 - `tests/autoresearch/test_execution_contract.py`
 - `tests/autoresearch/test_research_protocol.py`
 - `tests/autoresearch/test_policy_runtime.py`, only for artifact-retention integration
@@ -207,9 +207,9 @@ Allow the Researcher to decide what evidence is useful before spending evaluatio
 
 ### Files
 
-- `research/run_experiment.py`
-- `research/runner_protocol.py`
-- `research/runner_repository.py`
+- `runner/run_experiment.py`
+- `runner/protocol.py`
+- `runner/repository.py`
 - `run_research.ps1`
 - `researcher_session.ps1`, only if its generic deliverable status interface requires adjustment
 - `tests/autoresearch/test_researcher_session.py`
@@ -276,9 +276,9 @@ Let the Researcher pursue, retain, or abandon a scientific direction using avail
 
 ### Files
 
-- `research/runner_protocol.py`, especially `plan_previous_result_decision()` and `training_parent()`
-- `research/run_experiment.py`, especially closure planning/application
-- `research/runner_repository.py`
+- `runner/protocol.py`, especially `plan_previous_result_decision()` and `training_parent()`
+- `runner/run_experiment.py`, especially closure planning/application
+- `runner/repository.py`
 - `tests/autoresearch/test_lineage_roles.py`
 - `tests/autoresearch/test_research_protocol.py`
 
@@ -341,11 +341,11 @@ Make the latest learning, previous results, and live research direction easy to 
 
 ### Files
 
-- `research/runner_repository.py`
-- `research/run_experiment.py`
-- `research/build_research_brief.py`
-- `research/runner_console.py`
-- `research/runner_protocol.py`, for memory/evidence parsing only
+- `runner/repository.py`
+- `runner/run_experiment.py`
+- `runner/build_brief.py`
+- `runner/console.py`
+- `runner/protocol.py`, for memory/evidence parsing only
 - `tests/autoresearch/test_scientific_reasoning.py`
 - `tests/autoresearch/test_research_context.py`
 - `tests/autoresearch/test_console_presentation.py`
@@ -422,13 +422,13 @@ Keep the overall research objective visible while making the next executable act
 
 ### Files
 
-- `research/program.md`
-- `research/instruments.md`
+- `contracts/program.md`
+- `contracts/instruments.md`
 - `run_research.ps1`
 - `AGENTS.md`, for role/path and command references affected by this change
 - `README.md`, for the human-facing lifecycle summary
-- `research/PROTOCOL_DECISIONS.md`
-- `researcher_copilot.py`, only if an existing phase name or command guard must recognize the updated lifecycle; preserve model/tool permissions
+- `docs/protocol-decisions.md`
+- `runner/copilot_adapter.py`, only if an existing phase name or command guard must recognize the updated lifecycle; preserve model/tool permissions
 - `tests/autoresearch/test_research_protocol.py`
 - `tests/autoresearch/test_researcher_session.py`
 - `tests/autoresearch/test_copilot_researcher.py`, only for affected dispatch/guard behavior
@@ -448,7 +448,7 @@ Keep the overall research objective visible while making the next executable act
 
 - Document exact updated request schemas, conditional fields, role IDs, the restoration action, and phase availability.
 - Document that a measurement request returns to analysis and closure is a separate choice in that same phase.
-- Give the log-query tool's actual invocation and output contract. Use a PowerShell-compatible single-line example: `uv run python research/query_training_log.py --experiment <id> --from-step <start> --to-step <end>`.
+- Give the log-query tool's actual invocation and output contract. Use a PowerShell-compatible single-line example: `uv run python runner/query_training_log.py --experiment <id> --from-step <start> --to-step <end>`.
 - Make saved-parent selection explicit. Distinguish continuing a recipe from applying a changed recipe to existing weights.
 - Preserve the scientific scope of each instrument and clearly label development evidence versus terminal assessment.
 - Do not put a candidate-versus-best-known measurement request in a default example. Use neutral placeholders and the field table; no instrument or model is preselected in the template.
@@ -498,12 +498,12 @@ Preserve a clear distinction between development measurements and the final task
 
 ### Files
 
-- `research/run_experiment.py`, `execute_pending_final_benchmark()`
-- `research/runner_protocol.py`
-- `research/runner_repository.py`
+- `runner/run_experiment.py`, `execute_pending_final_benchmark()`
+- `runner/protocol.py`
+- `runner/repository.py`
 - `run_research.ps1`
-- `research/build_research_brief.py`
-- `research/runner_console.py`
+- `runner/build_brief.py`
+- `runner/console.py`
 - `tests/autoresearch/test_research_protocol.py`
 - `tests/autoresearch/test_researcher_session.py`
 - `tests/autoresearch/test_execution_contract.py`
@@ -537,9 +537,9 @@ Preserve artifacts, accepted deliverables, and history across interruption at th
 
 ### Files
 
-- `research/run_experiment.py`
-- `research/runner_repository.py`
-- `research/runner_protocol.py`
+- `runner/run_experiment.py`
+- `runner/repository.py`
+- `runner/protocol.py`
 - `run_research.ps1`
 - `researcher_session.ps1`, if required by the updated deliverable route
 - `tests/autoresearch/test_execution_contract.py`
@@ -569,15 +569,15 @@ Allow the new harness to consume a prepared baseline without changing its traine
 
 ### Files
 
-- `research/runner_repository.py`
-- `research/runner_protocol.py`
-- `research/run_experiment.py`, for an explicit maintenance entry point if needed
+- `runner/repository.py`
+- `runner/protocol.py`
+- `runner/run_experiment.py`, for an explicit maintenance entry point if needed
 - `reset_research.ps1`
-- `research/build_research_brief.py`
+- `runner/build_brief.py`
 - `tests/autoresearch/test_reset_research.py`
 - `tests/autoresearch/test_campaign_boundary.py`
 - `tests/autoresearch/test_lineage_roles.py`
-- `researcher_copilot.py` and `tests/autoresearch/test_copilot_researcher.py`, only to preserve the human-only boundary of the maintenance command
+- `runner/copilot_adapter.py` and `tests/autoresearch/test_copilot_researcher.py`, only to preserve the human-only boundary of the maintenance command
 
 ### Version 3 compatibility
 

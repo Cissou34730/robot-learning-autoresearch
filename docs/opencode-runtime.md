@@ -2,7 +2,7 @@
 
 An optional second runtime for a bounded PI session.
 
-`researcher_copilot.py` is unchanged and remains the default. The OpenCode
+`runner/copilot_adapter.py` is unchanged and remains the default. The OpenCode
 runtime lives beside it and is selected explicitly, so an existing command
 behaves exactly as it did before. Neither adapter knows about the other: both
 accept the same argument list and produce the same console, and the launcher

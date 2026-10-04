@@ -1,6 +1,6 @@
 """Adapter between the generic runner and the protected final benchmark.
 
-The protected implementation stays untouched in `robot_learning/benchmark/`.
+The protected implementation stays untouched in `benchmark/`.
 Only this module translates its result into the single boolean the generic
 AutoResearch lifecycle needs.
 """
@@ -8,10 +8,10 @@ AutoResearch lifecycle needs.
 from collections.abc import Callable
 from pathlib import Path
 
-from robot_learning.benchmark.final_benchmark import (
+from benchmark.final_benchmark import (
     evaluate_final_model as _protected_evaluate_final_model,
 )
-from robot_learning.benchmark.final_contract import FINAL_SUCCESS_PERCENT
+from benchmark.final_contract import FINAL_SUCCESS_PERCENT
 
 
 def research_panel_overlaps_protected(seed: int, episodes: int) -> bool:
@@ -21,7 +21,7 @@ def research_panel_overlaps_protected(seed: int, episodes: int) -> bool:
     The protected seed range stays inside this adapter; the generic Runner never
     reads it and the validation error never names it.
     """
-    from robot_learning.benchmark import final_contract
+    from benchmark import final_contract
 
     research_start = seed
     research_stop = seed + episodes

@@ -25,9 +25,9 @@ import gymnasium as gym
 import mujoco
 import numpy as np
 
-from robot_learning.benchmark import final_contract, reference_contract
-from robot_learning.policy_runtime import load_runtime
-from robot_learning.robots.two_joint_arm import TWO_JOINT_ARM_XML_PATH
+from benchmark import final_contract, reference_contract
+from contracts.policy_runtime import load_runtime
+from contracts.robots.two_joint_arm import TWO_JOINT_ARM_XML_PATH
 
 TASK_REFERENCE_EVALUATION_KIND = "task_reference"
 

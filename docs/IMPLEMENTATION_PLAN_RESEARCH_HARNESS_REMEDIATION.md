@@ -49,9 +49,9 @@ state machine, data store, service, plugin system, or generic framework.
 
 ## Constraints for the whole implementation
 
-- Keep `research/results.jsonl` and `research/research_state.json` as the existing
+- Keep `campaigns/results.jsonl` and `runner/state/research_state.json` as the existing
   sources of persisted campaign facts.
-- Keep `research/brief.md` derived. Do not add another persisted state file.
+- Keep `campaigns/brief.md` derived. Do not add another persisted state file.
 - Keep the existing research phases and JSON deliverables.
 - Do not add a new evaluation phase, request type, metric schema, lineage role, or
   command.
@@ -83,7 +83,7 @@ scientific recipe, not only Python source code.
 
 ### Required changes
 
-#### `research/build_research_brief.py`
+#### `runner/build_brief.py`
 
 Add a compact section near the top of the generated brief named:
 
@@ -123,13 +123,13 @@ model.
 Keep the section compact. Parameters may be rendered as one stable JSON object per
 lineage. Do not duplicate full evaluation contents.
 
-#### `research/instruments.md`
+#### `contracts/instruments.md`
 
 Clarify the existing lineage contract without changing its JSON schema:
 
 - keep the field name `code.action` for compatibility;
 - state that this action applies to the complete researcher-owned scientific
-  recipe: researcher-owned source, tests, and `research/current_params.json`;
+  recipe: researcher-owned source, tests, and `robot_learning/training/current_params.json`;
 - define:
   - `keep`: keep the experiment's complete scientific recipe;
   - `revert`: restore the scientific parent's complete recipe;
@@ -139,7 +139,7 @@ Clarify the existing lineage contract without changing its JSON schema:
 
 Do not introduce a renamed JSON field or a schema migration.
 
-#### `research/program.md`
+#### `contracts/program.md`
 
 Use “scientific recipe” where the current text could make the Researcher believe
 that lineage `code.action` affects source files but not parameters. Keep the
@@ -194,7 +194,7 @@ evidence guard itself.
 
 ### Required changes
 
-#### `research/runner_protocol.py`
+#### `runner/protocol.py`
 
 In validation of a `best_known` replacement:
 
@@ -213,7 +213,7 @@ In validation of a `best_known` replacement:
 Remove only the requirement that incumbent paths appear in the proposal. Do not
 change the meaning of the proposed model's `best_known.evidence` list.
 
-#### `research/instruments.md`
+#### `contracts/instruments.md`
 
 Update the lineage-decision entry so it states:
 
@@ -221,7 +221,7 @@ Update the lineage-decision entry so it states:
 - incumbent evidence is resolved from the current lineage state by the Runner;
 - comparable evidence is still required on both sides.
 
-#### `research/build_research_brief.py`
+#### `runner/build_brief.py`
 
 Ensure the Step 1 lineage section exposes the incumbent evidence paths the Runner
 will use. Do not add a second evidence section.
@@ -261,7 +261,7 @@ can distinguish the competing explanations.
 
 ### Required changes
 
-#### `research/program.md`
+#### `contracts/program.md`
 
 Clarify the existing post-training lifecycle:
 
@@ -289,7 +289,7 @@ State explicitly:
 Do not add an inter-experiment investigation state or make any instrument
 mandatory.
 
-#### `research/instruments.md`
+#### `contracts/instruments.md`
 
 Describe the existing evaluation request and researcher-owned instrumentation as
 available during post-training analysis and its refinement rounds. Keep the
@@ -343,7 +343,7 @@ success measurements cannot be paired.
 
 ### Required changes
 
-#### `research/runner_protocol.py`
+#### `runner/protocol.py`
 
 Keep `evaluation_semantics_fingerprint()` unchanged in purpose.
 
@@ -352,7 +352,7 @@ explicit small tuple of paths in this repository; do not build dependency
 discovery. The tuple must cover the code that determines episode execution and
 primary success extraction, and must exclude:
 
-- `robot_learning/scenario/reward.py`;
+- `robot_learning/training/reward.py`;
 - researcher-only diagnostic payload definitions that do not change primary
   success.
 
@@ -383,13 +383,13 @@ checks.
 Update only the existing serialization/read paths that need to carry
 `comparison_semantics`. Likely affected files are:
 
-- `research/runner_execution.py`;
-- `research/runner_protocol.py`;
-- `research/run_experiment.py` only if it directly assembles the persisted record.
+- `runner/execution.py`;
+- `runner/protocol.py`;
+- `runner/run_experiment.py` only if it directly assembles the persisted record.
 
 Do not move responsibilities between modules as part of this work.
 
-#### `research/instruments.md`
+#### `contracts/instruments.md`
 
 Explain briefly that paired primary-success comparison requires matching primary
 comparison semantics; detailed diagnostic artifacts retain their broader
@@ -433,8 +433,8 @@ Change only retry prompts used with `-Continue` after an invalid deliverable.
 
 For those retry prompts:
 
-- remove the blanket instruction to reread `AGENTS.md`, `research/program.md`,
-  `research/scenario.md`, `research/instruments.md`, and `research/brief.md`;
+- remove the blanket instruction to reread `AGENTS.md`, `contracts/program.md`,
+  `contracts/scenario.md`, `contracts/instruments.md`, and `campaigns/brief.md`;
 - state that the same session context remains available;
 - include the exact validator error;
 - ask the Researcher to correct only the invalid or missing deliverable;
@@ -476,7 +476,7 @@ set whose outcome could change its interpretation or lineage decision.
 
 ### Required changes
 
-#### `research/program.md`
+#### `contracts/program.md`
 
 State these neutral rules:
 
@@ -493,7 +493,7 @@ State these neutral rules:
 Do not add a numeric gate, mandatory comparison, mandatory task-reference request,
 or Runner-selected evaluation plan.
 
-#### `research/instruments.md`
+#### `contracts/instruments.md`
 
 Keep all instruments equally documented. Add no recommendation to any individual
 instrument entry. Put the “smallest decision-relevant set” rule once in the common

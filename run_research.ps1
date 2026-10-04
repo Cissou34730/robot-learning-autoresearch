@@ -69,7 +69,7 @@ $piPersona = @(
     "The human supplies the goal and protected boundary, not the research program. Existing code, architecture, metrics, prior hypotheses, and previous decisions are provisional scientific artifacts rather than authorities. Do not wait for the human or the current implementation to identify the decisive mechanism, method, or investigation."
 ) -join " "
 $scientificModelUseGuidance = @(
-    "Use research/scientific_model.md as the campaign's initial physical model. Test its interpretation against observed behavior and carry forward what the campaign learns; do not treat it as an intervention menu or a passive reference."
+    "Use pi_workspace/scientific_model.md as the campaign's initial physical model. Test its interpretation against observed behavior and carry forward what the campaign learns; do not treat it as an intervention menu or a passive reference."
     "Use its physical consequences and unknowns to form competing mechanistic explanations. When an unresolved mechanism could change the scientific direction, seek evidence that discriminates between those explanations; when it cannot, state why it is not consequential."
 ) -join " "
 $startupPhaseObjective = @'
@@ -184,7 +184,7 @@ function Invoke-Runner {
     $uv = Get-Command uv -CommandType Application -ErrorAction Stop |
         Select-Object -First 1
     $runnerArguments = @(
-        "run", "python", "research/run_experiment.py", "--timesteps", "$Timesteps"
+        "run", "python", "runner/run_experiment.py", "--timesteps", "$Timesteps"
     )
     $runnerArguments += $Arguments
     $exitCode = Invoke-CooperativeProcess -FilePath $uv.Source `
@@ -357,7 +357,7 @@ if (-not $createdNew) {
 }
 
 function Assert-ResearchRuntime {
-    uv run python -c "import research.run_experiment"
+    uv run python -c "import runner.run_experiment"
     if ($LASTEXITCODE -ne 0) {
         throw "The research runtime is internally inconsistent. No PI session or Runner operation was started."
     }
@@ -396,7 +396,7 @@ function Invoke-PISession {
         }
         $script:PISessionInvocation += 1
     }
-    $state = Get-Content "research\research_state.json" -Raw | ConvertFrom-Json
+    $state = Get-Content "runner\state\research_state.json" -Raw | ConvertFrom-Json
     $displaySession = if ($Preliminary) {
         "campaign preparation"
     }
@@ -452,7 +452,7 @@ function Invoke-PISession {
         $uv = Get-Command uv -CommandType Application -ErrorAction Stop |
             Select-Object -First 1
         $copilotArgs = @(
-            "run", "--group", "researcher", "python", "researcher_copilot.py"
+            "run", "--group", "researcher", "python", "runner/copilot_adapter.py"
         )
         $copilotArgs += $sessionArgs
         $copilotArgs += $Prompt
@@ -464,7 +464,7 @@ function Invoke-PISession {
 
 function Update-ResearchBrief {
     Enter-TrustedMutableInvocation
-    uv run python research/build_research_brief.py
+    uv run python runner/build_brief.py
     if ($LASTEXITCODE -ne 0) {
         throw "Could not build the compact PI research brief."
     }
@@ -476,7 +476,7 @@ function Get-HumanGoalSummary {
     if ($State.human_goal.summary) {
         return [string]$State.human_goal.summary
     }
-    $scenario = Get-Content "research\scenario.md" -Raw
+    $scenario = Get-Content "contracts\scenario.md" -Raw
     $match = [regex]::Match(
         $scenario,
         '(?ms)^## Success criterion\s+(?<body>.*?)(?=^## |\z)'
@@ -484,7 +484,7 @@ function Get-HumanGoalSummary {
     if ($match.Success) {
         return (($match.Groups["body"].Value -replace '\s+', ' ').Trim())
     }
-    return "The protected human goal is defined in research/scenario.md."
+    return "The protected human goal is defined in contracts/scenario.md."
 }
 
 function Get-LatestSessionResult {
@@ -697,10 +697,10 @@ function New-ScientificSessionPrompt {
         "The latest scientific session record cites: $($checkpoint.evidence_references -join ', ')."
     }
     elseif ($State.model_roles.best_known) {
-        "The explicit best-known model is $($State.model_roles.best_known); inspect its referenced measurements in research/brief.md."
+        "The explicit best-known model is $($State.model_roles.best_known); inspect its referenced measurements in campaigns/brief.md."
     }
     elseif ($completedEvents.Count -gt 0) {
-        "Completed operation evidence exists in research/brief.md, but no best-known model has been assigned."
+        "Completed operation evidence exists in campaigns/brief.md, but no best-known model has been assigned."
     }
     else {
         "No development operation has completed in this campaign."
@@ -757,7 +757,7 @@ function New-ScientificSessionPrompt {
         @(
             "The sole legal next action is the checkpoint operation that saves the scientific session record."
             "Do not request training, measurement, model-role changes, restoration, another inquiry change, or a campaign conclusion in this session."
-            "Use the scientific session record contract in research/instruments.md and preserve the transition decision, evidence, remaining goal gap, and next direction."
+            "Use the scientific session record contract in contracts/instruments.md and preserve the transition decision, evidence, remaining goal gap, and next direction."
         )
     }
     else {
@@ -769,7 +769,7 @@ function New-ScientificSessionPrompt {
                 "When evidence resolves or redirects the active inquiry, record that decision explicitly rather than drifting to another question."
             }
             "When the current line of work reaches a stable decision, preserve the synthesis, consequential competing explanations, claim limits, supporting evidence, remaining gap, decision frontier, and next direction in a scientific session record."
-            "When ready to act, use the matching contract in research/instruments.md to submit one scientific action."
+            "When ready to act, use the matching contract in contracts/instruments.md to submit one scientific action."
         )
     }
 
@@ -793,7 +793,7 @@ function New-ScientificSessionPrompt {
         $scientificModelUseGuidance
         "Direct every decision toward the human goal and distinguish evidence from conjecture."
         $actionGuidance
-        "Begin with research/brief.md and the latest scientific session record. Consult research/scenario.md, research/scientific_model.md, and other evidence only as the scientific question requires."
+        "Begin with campaigns/brief.md and the latest scientific session record. Consult contracts/scenario.md, pi_workspace/scientific_model.md, and other evidence only as the scientific question requires."
     ) | Where-Object { $_ }
     return ($sections -join "`n`n")
 }
@@ -801,7 +801,7 @@ function New-ScientificSessionPrompt {
 function Test-OperationRequest {
     Enter-TrustedMutableInvocation
     $validationOutput = @(
-        uv run python research/run_experiment.py --timesteps $Timesteps --check-operation 2>&1
+        uv run python runner/run_experiment.py --timesteps $Timesteps --check-operation 2>&1
     )
     $exitCode = $LASTEXITCODE
     $script:OperationValidationFeedback = (
@@ -821,7 +821,7 @@ function Test-OperationRequest {
 function Test-ScientificModelDeliverable {
     Enter-TrustedMutableInvocation
     $validationOutput = @(
-        uv run python research/run_experiment.py --check-scientific-model-deliverable 2>&1
+        uv run python runner/run_experiment.py --check-scientific-model-deliverable 2>&1
     )
     if ($LASTEXITCODE -ne 0) {
         $script:ScientificModelValidationFeedback = (
@@ -841,9 +841,9 @@ function Invoke-ScientificModelPhase {
         $piPersona
         "Human goal: $goal"
         "Current objective: $scientificModelPhaseObjective"
-        "Base the model on research/scenario.md and the relevant human-authored implementation."
+        "Base the model on contracts/scenario.md and the relevant human-authored implementation."
         "The document must contain substantive registers headed Established facts, Physical consequences, and Unknowns. Distinguish repository facts from reasoned implications and unresolved quantities."
-        "Include only what is justified before campaign evidence exists. Write the result to research/scientific_model.md."
+        "Include only what is justified before campaign evidence exists. Write the result to pi_workspace/scientific_model.md."
     ) -join "`n`n"
 
     $script:PISessionId = $null
@@ -857,7 +857,7 @@ function Invoke-ScientificModelPhase {
             $piPersona
             "Human goal: $goal"
             "The scientific model could not be accepted: $script:ScientificModelValidationFeedback"
-            "Correct research/scientific_model.md while preserving valid content and ensuring all three required registers are substantive."
+            "Correct pi_workspace/scientific_model.md while preserving valid content and ensuring all three required registers are substantive."
         ) -join "`n`n"
         Invoke-PISession -Prompt $retry -Phase "scientific model" -Continue -Preliminary
         if (Test-StopAfterOperation $script:PIExitCode "PI session") {
@@ -923,7 +923,7 @@ function Invoke-PendingOperation {
             return 130
         }
 
-        $request = Get-Content "research\operation_request.json" -Raw |
+        $request = Get-Content "pi_workspace\operation_request.json" -Raw |
             ConvertFrom-Json
         $replacementRequested = -not $request._runner_accepted_operation
         if ($replacementRequested -and -not (Test-OperationRequest)) {
@@ -939,7 +939,7 @@ function Invoke-PendingOperation {
             if (Test-StopAfterOperation $script:PIExitCode "PI session") {
                 return 130
             }
-            $request = Get-Content "research\operation_request.json" -Raw |
+            $request = Get-Content "pi_workspace\operation_request.json" -Raw |
                 ConvertFrom-Json
             $replacementRequested = -not $request._runner_accepted_operation
             if ($replacementRequested -and -not (Test-OperationRequest)) {
@@ -965,7 +965,7 @@ function Invoke-PendingOperation {
         return 130
     }
     if ($exitCode -ne 0) {
-        $failed = Get-Content "research\research_state.json" -Raw | ConvertFrom-Json
+        $failed = Get-Content "runner\state\research_state.json" -Raw | ConvertFrom-Json
         Stop-OnPublicationFailure -State $failed
         if ($failed.pending_operation.failure) {
             return 1
@@ -1000,7 +1000,7 @@ try {
         }
     }
 
-    $launchState = Get-Content "research\research_state.json" -Raw | ConvertFrom-Json
+    $launchState = Get-Content "runner\state\research_state.json" -Raw | ConvertFrom-Json
     $campaignAction = if (
         [int]$launchState.counters.session -eq 0 -and
         @($launchState.operation_events).Count -eq 0
@@ -1027,7 +1027,7 @@ try {
             break
         }
 
-        $state = Get-Content "research\research_state.json" -Raw | ConvertFrom-Json
+        $state = Get-Content "runner\state\research_state.json" -Raw | ConvertFrom-Json
 
         if ($state.scientific_model.status -eq "pending") {
             Write-Status "START | campaign preparation" -Color Magenta -Label session
@@ -1060,7 +1060,7 @@ try {
                     throw "The official assessment failed; its request remains durable."
                 }
                 Update-ResearchBrief
-                $state = Get-Content "research\research_state.json" -Raw |
+                $state = Get-Content "runner\state\research_state.json" -Raw |
                     ConvertFrom-Json
                 break
             }
@@ -1137,7 +1137,7 @@ try {
         Update-ResearchBrief
 
         $existingRequestProblem = ""
-        if (Test-Path "research\operation_request.json" -PathType Leaf) {
+        if (Test-Path "pi_workspace\operation_request.json" -PathType Leaf) {
             $exitCode = Invoke-Runner
             if (Test-StopAfterOperation $exitCode "research runner") {
                 break
@@ -1146,7 +1146,7 @@ try {
                 Update-ResearchBrief
                 continue
             }
-            $failed = Get-Content "research\research_state.json" -Raw |
+            $failed = Get-Content "runner\state\research_state.json" -Raw |
                 ConvertFrom-Json
             Stop-OnPublicationFailure -State $failed
             if ($failed.pending_operation.failure) {
@@ -1185,7 +1185,7 @@ try {
             break
         }
         if ($exitCode -ne 0) {
-            $failed = Get-Content "research\research_state.json" -Raw | ConvertFrom-Json
+            $failed = Get-Content "runner\state\research_state.json" -Raw | ConvertFrom-Json
             Stop-OnPublicationFailure -State $failed
             if (-not $failed.pending_operation.failure) {
                 throw "The Runner operation failed without recoverable pending state."

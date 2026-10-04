@@ -10,25 +10,27 @@ from pathlib import Path
 
 import pytest
 
-from research import reset_campaign
-from research import runner_paths as paths
-from research import runner_protocol as protocol
-from research import runner_repository as repository
+from runner import paths, protocol, repository, reset_campaign
 
 
 def _bind_paths(monkeypatch: pytest.MonkeyPatch, root: Path) -> Path:
-    research = root / "research"
+    research = root / "campaigns"
+    state = root / "runner" / "state"
+    workspace = root / "pi_workspace"
     values = {
         "ROOT": root,
+        "CAMPAIGNS_DIR": research,
+        "RUNNER_STATE_DIR": state,
+        "PI_WORKSPACE_DIR": workspace,
         "RESEARCH_DIR": research,
         "LOG_PATH": research / "EXPERIMENTS.md",
         "RESULTS_PATH": research / "results.jsonl",
-        "OPERATION_REQUEST_PATH": research / "operation_request.json",
-        "STATE_PATH": research / "research_state.json",
+        "OPERATION_REQUEST_PATH": workspace / "operation_request.json",
+        "STATE_PATH": state / "research_state.json",
         "TRAINING_LOG_DIR": research / "training_logs",
-        "SCIENTIFIC_MODEL_PATH": research / "scientific_model.md",
-        "RECOVERY_PENDING_PATH": research / "RECOVERY_PENDING",
-        "RESTART_PENDING_PATH": research / "RESTART_PENDING",
+        "SCIENTIFIC_MODEL_PATH": workspace / "scientific_model.md",
+        "RECOVERY_PENDING_PATH": state / "RECOVERY_PENDING",
+        "RESTART_PENDING_PATH": state / "RESTART_PENDING",
         "CANDIDATE_ROOT": root / "models" / "candidates",
         "EVALUATION_DIR": research / "evaluations",
     }
@@ -40,14 +42,14 @@ def _bind_paths(monkeypatch: pytest.MonkeyPatch, root: Path) -> Path:
 def _candidate(fingerprint: str) -> dict:
     return {
         "id": "T1:checkpoint-10",
-        "artifact": "research/checkpoints/candidates/source/t1/checkpoint-10",
+        "artifact": "campaigns/checkpoints/candidates/source/t1/checkpoint-10",
         "fingerprint": fingerprint,
         "origin_operation": "T1",
         "name": "checkpoint-10",
         "parameters": {"algorithm": {"name": "ppo"}},
         "scientific_commit": "a" * 40,
         "training_steps": 10,
-        "evaluation_artifacts": ["research/evaluations/source/panel.json"],
+        "evaluation_artifacts": ["campaigns/evaluations/source/panel.json"],
     }
 
 
@@ -62,7 +64,7 @@ def _prepared_source_state(candidate: dict) -> dict:
     )
     state["scientific_model"] = {
         "status": "ready",
-        "path": "research/scientific_model.md",
+        "path": "pi_workspace/scientific_model.md",
         "commit": "b" * 40,
     }
     state["candidates"] = {candidate["id"]: copy.deepcopy(candidate)}
@@ -78,16 +80,16 @@ def _prepared_source_state(candidate: dict) -> dict:
 def test_fresh_campaign_writes_only_schema6_memory(monkeypatch, tmp_path):
     research = _bind_paths(monkeypatch, tmp_path)
     obsolete = (
-        "operation_request.json",
-        "postmortems.md",
-        "archive.md",
-        "last_train_summary.md",
-        "last_evaluation.json",
-        "brief.md",
-        "scientific_model.md",
+        "pi_workspace/operation_request.json",
+        "campaigns/postmortems.md",
+        "campaigns/archive.md",
+        "runner/state/last_train_summary.md",
+        "runner/state/last_evaluation.json",
+        "campaigns/brief.md",
+        "pi_workspace/scientific_model.md",
     )
     for relative in obsolete:
-        target = research / relative
+        target = tmp_path / relative
         target.parent.mkdir(parents=True, exist_ok=True)
         target.write_text("stale\n", encoding="utf-8")
     (research / "checkpoints" / "accepted").mkdir(parents=True)
@@ -103,7 +105,7 @@ def test_fresh_campaign_writes_only_schema6_memory(monkeypatch, tmp_path):
     assert set(state) == repository.STATE_FIELDS
     assert state["scientific_model"] == {
         "status": "pending",
-        "path": "research/scientific_model.md",
+        "path": "pi_workspace/scientific_model.md",
         "commit": None,
     }
     assert state["model_roles"] == {
@@ -124,7 +126,7 @@ def test_fresh_campaign_writes_only_schema6_memory(monkeypatch, tmp_path):
     ) == repository.render_operation_log([])
     assert not (research / "checkpoints").exists()
     for relative in obsolete:
-        assert not (research / relative).exists()
+        assert not (tmp_path / relative).exists()
     with pytest.raises(ValueError, match="scientific model must be ready"):
         repository.start_scientific_session(
             state, kind="goal_review", objective="Choose the first operation."
@@ -133,12 +135,12 @@ def test_fresh_campaign_writes_only_schema6_memory(monkeypatch, tmp_path):
 
 def test_recipe_import_excludes_campaign_memory_and_laboratory(monkeypatch):
     source_recipe = [
-        "robot_learning/scenario/reward.py",
+        "robot_learning/training/reward.py",
         "robot_learning/training/algorithms.py",
         "robot_learning/train.py",
         "robot_learning/evaluate.py",
         "robot_learning/play.py",
-        "research/current_params.json",
+        "robot_learning/training/current_params.json",
     ]
     later_science = "robot_learning/scenario/later_extension.py"
     monkeypatch.setattr(repository, "require_resolvable_commit", lambda commit: None)
@@ -148,9 +150,9 @@ def test_recipe_import_excludes_campaign_memory_and_laboratory(monkeypatch):
         lambda commit: [
             *source_recipe,
             later_science,
-            "research/lab/diagnostic.py",
-            "research/research_state.json",
-            "research/evaluations/source/evidence.json",
+            "robot_learning/lab/diagnostic.py",
+            "runner/state/research_state.json",
+            "campaigns/evaluations/source/evidence.json",
             "robot_learning/scenario/__init__.py",
             "tests/autoresearch/test_scenario_boundary.py",
         ],
@@ -172,7 +174,7 @@ def test_recipe_import_excludes_campaign_memory_and_laboratory(monkeypatch):
         "plan_recipe_paths",
         lambda _commit: {
             "parent": "source",
-            "restore": ["research/evaluations/source/evidence.json"],
+            "restore": ["campaigns/evaluations/source/evidence.json"],
             "remove_created": [],
         },
     )
@@ -186,13 +188,13 @@ def test_fresh_recipe_ref_restores_recipe_into_empty_schema6_campaign(
     root = tmp_path
     source = "a" * 40
     recipe = {
-        "robot_learning/scenario/reward.py": "SOURCE_REWARD = True\n",
+        "robot_learning/training/reward.py": "SOURCE_REWARD = True\n",
         "robot_learning/scenario/source_only.py": "SOURCE_ONLY = True\n",
         "robot_learning/training/algorithms.py": "SOURCE_ALGORITHM = True\n",
         "robot_learning/train.py": "SOURCE_TRAIN = True\n",
         "robot_learning/evaluate.py": "SOURCE_EVALUATE = True\n",
         "robot_learning/play.py": "SOURCE_PLAY = True\n",
-        "research/current_params.json": '{"algorithm":{"name":"ppo"}}\n',
+        "robot_learning/training/current_params.json": '{"algorithm":{"name":"ppo"}}\n',
     }
     for relative, content in recipe.items():
         target = root / relative
@@ -217,23 +219,23 @@ def test_fresh_recipe_ref_restores_recipe_into_empty_schema6_campaign(
     source_state["official_assessment"] = {"candidate": candidate["id"]}
     source_state["terminal_state"] = {"status": "goal_reached"}
     source_memory = {
-        "research/research_state.json": json.dumps(source_state),
-        "research/results.jsonl": '{"id":"T1","status":"completed"}\n',
-        "research/EXPERIMENTS.md": "# Source campaign history\n",
-        "research/scientific_model.md": "# Source scientific model\n",
-        "research/operation_request.json": '{"kind":"training"}\n',
-        "research/postmortems.md": "# Source postmortem\n",
-        "research/brief.md": "# Source bounded-session context\n",
-        "research/evaluations/source/evidence.json": '{"success_rate":0.97}\n',
-        "research/checkpoints/candidates/source/t1/checkpoint-10/model.zip": (
+        "runner/state/research_state.json": json.dumps(source_state),
+        "campaigns/results.jsonl": '{"id":"T1","status":"completed"}\n',
+        "campaigns/EXPERIMENTS.md": "# Source campaign history\n",
+        "pi_workspace/scientific_model.md": "# Source scientific model\n",
+        "pi_workspace/operation_request.json": '{"kind":"training"}\n',
+        "campaigns/postmortems.md": "# Source postmortem\n",
+        "campaigns/brief.md": "# Source bounded-session context\n",
+        "campaigns/evaluations/source/evidence.json": '{"success_rate":0.97}\n',
+        "campaigns/checkpoints/candidates/source/t1/checkpoint-10/model.zip": (
             "trained policy"
         ),
         "models/candidates/source/model.zip": "disposable trained policy",
-        "research/lab/source_diagnostic.py": "SOURCE_EVIDENCE = True\n",
-        "research/GOAL_REACHED": "stale goal marker\n",
-        "research/RECOVERY_PENDING": "stale recovery marker\n",
-        "research/RESTART_PENDING": "stale restart marker\n",
-        "research/BASELINE_PENDING": "stale baseline marker\n",
+        "robot_learning/lab/source_diagnostic.py": "SOURCE_EVIDENCE = True\n",
+        "runner/state/GOAL_REACHED": "stale goal marker\n",
+        "runner/state/RECOVERY_PENDING": "stale recovery marker\n",
+        "runner/state/RESTART_PENDING": "stale restart marker\n",
+        "runner/state/BASELINE_PENDING": "stale baseline marker\n",
     }
     for relative, content in source_memory.items():
         target = root / relative
@@ -302,7 +304,7 @@ def test_fresh_recipe_ref_restores_recipe_into_empty_schema6_campaign(
     )
 
     state = json.loads(
-        (root / "research/research_state.json").read_text(encoding="utf-8")
+        (root / "runner/state/research_state.json").read_text(encoding="utf-8")
     )
     assert resolved_source == source
     assert returned_backup == backup
@@ -314,7 +316,7 @@ def test_fresh_recipe_ref_restores_recipe_into_empty_schema6_campaign(
     assert state["campaign"]["base_commit"] == "new-head"
     assert state["scientific_model"] == {
         "status": "pending",
-        "path": "research/scientific_model.md",
+        "path": "pi_workspace/scientific_model.md",
         "commit": None,
     }
     assert state["active_inquiry"] is None
@@ -341,22 +343,22 @@ def test_fresh_recipe_ref_restores_recipe_into_empty_schema6_campaign(
     for relative, content in recipe.items():
         assert (root / relative).read_text(encoding="utf-8") == content
     assert not later.exists()
-    assert (root / "research/results.jsonl").read_text(encoding="utf-8") == ""
-    assert (root / "research/EXPERIMENTS.md").read_text(
+    assert (root / "campaigns/results.jsonl").read_text(encoding="utf-8") == ""
+    assert (root / "campaigns/EXPERIMENTS.md").read_text(
         encoding="utf-8"
     ) == repository.render_operation_log([])
     for relative in (
-        "research/scientific_model.md",
-        "research/operation_request.json",
-        "research/postmortems.md",
-        "research/brief.md",
-        "research/evaluations",
-        "research/checkpoints",
-        "research/lab",
-        "research/GOAL_REACHED",
-        "research/RECOVERY_PENDING",
-        "research/RESTART_PENDING",
-        "research/BASELINE_PENDING",
+        "pi_workspace/scientific_model.md",
+        "pi_workspace/operation_request.json",
+        "campaigns/postmortems.md",
+        "campaigns/brief.md",
+        "campaigns/evaluations",
+        "campaigns/checkpoints",
+        "robot_learning/lab",
+        "runner/state/GOAL_REACHED",
+        "runner/state/RECOVERY_PENDING",
+        "runner/state/RESTART_PENDING",
+        "runner/state/BASELINE_PENDING",
         "models/candidates",
     ):
         assert not (root / relative).exists()
@@ -441,8 +443,8 @@ def test_baseline_source_requires_one_schema6_prepared_candidate(monkeypatch):
     state = _prepared_source_state(candidate)
     artifact = candidate["artifact"]
     committed = {
-        "research/research_state.json",
-        "research/scientific_model.md",
+        "runner/state/research_state.json",
+        "pi_workspace/scientific_model.md",
         candidate["evaluation_artifacts"][0],
         *(f"{artifact}/{name}" for name in contents),
     }
@@ -460,7 +462,7 @@ def test_baseline_source_requires_one_schema6_prepared_candidate(monkeypatch):
     )
 
     def committed_bytes(_commit: str, relative: str) -> bytes:
-        if relative == "research/scientific_model.md":
+        if relative == "pi_workspace/scientific_model.md":
             return b"scientific model"
         name = relative.rsplit("/", 1)[-1]
         if name not in contents:
@@ -475,7 +477,7 @@ def test_baseline_source_requires_one_schema6_prepared_candidate(monkeypatch):
 
     assert restored_state == state
     assert restored_candidate == candidate
-    assert set(restore) == committed - {"research/research_state.json"}
+    assert set(restore) == committed - {"runner/state/research_state.json"}
     assert recipe["parent"] == candidate["scientific_commit"]
 
     legacy = copy.deepcopy(state)
@@ -490,13 +492,13 @@ def test_baseline_source_requires_one_schema6_prepared_candidate(monkeypatch):
     [
         (
             "artifact",
-            "robot_learning/benchmark/reference",
+            "benchmark/reference",
             "approved checkpoint archive root",
         ),
         (
             "evaluation_artifacts",
-            ["research/program.md"],
-            "below research/evaluations",
+            ["contracts/program.md"],
+            "below campaigns/evaluations",
         ),
         (
             "evaluation_artifacts",
@@ -532,7 +534,7 @@ def test_invalid_baseline_target_is_rejected_before_backup(monkeypatch):
         lambda _commit: (
             state,
             candidate,
-            ["research/program.md"],
+            ["contracts/program.md"],
             {"parent": "source", "restore": [], "remove_created": []},
         ),
     )
@@ -598,7 +600,7 @@ def test_clean_reset_refuses_and_preserves_unrelated_untracked_files(monkeypatch
     def fake_git(*arguments: str, **_kwargs) -> str:
         calls.append(arguments)
         if arguments[:2] == ("ls-files", "--others"):
-            return "docs/inquiry-centered-lifecycle-redesign.md\0research/brief.md\0"
+            return "docs/inquiry-centered-lifecycle-redesign.md\0campaigns/brief.md\0"
         return ""
 
     monkeypatch.setattr(reset_campaign, "git", fake_git)

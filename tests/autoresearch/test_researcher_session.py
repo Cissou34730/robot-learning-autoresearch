@@ -6,14 +6,11 @@ import json
 import sys
 from pathlib import Path
 
-from research import run_experiment
-from research import runner_execution as execution
-from research import runner_paths as paths
-from research import runner_repository as repository
+from runner import execution, paths, repository, run_experiment
 
 
 def _configure(monkeypatch, tmp_path: Path) -> dict:
-    research = tmp_path / "research"
+    research = tmp_path / "campaigns"
     research.mkdir()
     for name, value in {
         "ROOT": tmp_path,
@@ -46,14 +43,14 @@ def _configure(monkeypatch, tmp_path: Path) -> dict:
     state = repository.empty_campaign_state(
         campaign={"id": "campaign", "started_at": "now", "base_commit": "base"},
         human_goal={
-            "source": "research/scenario.md",
+            "source": "contracts/scenario.md",
             "summary": "Reach the protected task objective.",
         },
         last_verdict="fresh campaign",
     )
     state["scientific_model"] = {
         "status": "ready",
-        "path": "research/scientific_model.md",
+        "path": "pi_workspace/scientific_model.md",
         "commit": "a" * 40,
     }
     repository.write_state(state)
@@ -179,7 +176,7 @@ def test_launcher_runner_flow_uses_peer_operations_and_no_post_training_gate(
             "training": {
                 "initialization": "fresh",
                 "seed": 7,
-                "steps": 10,
+                "steps": 120_000,
                 "description": "Train the current scientific recipe.",
                 "rationale": "The learning dynamics inform the inquiry.",
             }

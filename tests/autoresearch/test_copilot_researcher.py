@@ -14,10 +14,10 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-import researcher_copilot as adapter
+import runner.copilot_adapter as adapter
 
 ROOT = Path(__file__).resolve().parents[2]
-SOURCE = (ROOT / "researcher_copilot.py").read_text(encoding="utf-8")
+SOURCE = (ROOT / "runner/copilot_adapter.py").read_text(encoding="utf-8")
 
 
 # --- model identity ---------------------------------------------------------
@@ -62,7 +62,7 @@ def test_mutating_git_is_refused(command):
         "git status --short",
         "git diff --name-only",
         "git log --oneline -5",
-        "git show HEAD:robot_learning/scenario/reward.py",
+        "git show HEAD:robot_learning/training/reward.py",
         "git rev-parse HEAD",
         "git ls-files",
         "git.exe status --short",
@@ -76,14 +76,14 @@ def test_read_only_git_stays_available(command):
 @pytest.mark.parametrize(
     "command",
     [
-        "uv run python research/run_experiment.py",
-        "uv run python -m research.run_experiment --check-operation",
-        "uv run python research/run_experiment.py --execute-pending",
-        "uv run python research/run_experiment.py --run-official-assessment",
-        "uv run python research/migrate_policy_runtime.py --help",
-        "uv run python -m research.migrate_policy_runtime --help",
-        "uv run python research/reset_campaign.py --mode fresh",
-        "uv run python -m research.reset_campaign --mode fresh",
+        "uv run python runner/run_experiment.py",
+        "uv run python -m runner.run_experiment --check-operation",
+        "uv run python runner/run_experiment.py --execute-pending",
+        "uv run python runner/run_experiment.py --run-official-assessment",
+        "uv run python runner/migrate_policy_runtime.py --help",
+        "uv run python -m runner.migrate_policy_runtime --help",
+        "uv run python runner/reset_campaign.py --mode fresh",
+        "uv run python -m runner.reset_campaign --mode fresh",
         "uv run python -m robot_learning.train",
         "uv run python -m robot_learning.evaluate --official-benchmark --model x.zip",
         "uv run python robot_learning/evaluate.py --task-reference --model x.zip",
@@ -160,35 +160,18 @@ def test_uv_run_value_options_consume_only_their_values():
     assert adapter.command_denial("uv run --python 3.12 pytest") == adapter.SUITE_DENIAL
 
 
-def test_a_targeted_test_run_remains_permitted():
-    # AGENTS.md and research/instruments.md allow targeted tests and focused
-    # checks, so the command layer refuses only repository-wide runs.
+def test_targeted_test_runs_are_refused():
     existing = "tests/autoresearch/test_copilot_researcher.py"
-    assert adapter.command_denial(f"uv run pytest {existing}") is None
-    assert adapter.command_denial(f"uv run pytest {existing}::test_x") is None
-    assert adapter.command_denial(f"uv run pytest --maxfail 1 {existing}") is None
-    # A flag-only option consumes nothing and must not hide the selector.
-    assert adapter.command_denial(f"uv run pytest -q {existing}") is None
-    # The value-less options pytest itself declares are recognised, including
-    # ones a hand-maintained list omitted.
-    for flag in ("--strict", "--disable-plugin-autoload", "--trace-config"):
-        assert adapter.command_denial(f"uv run pytest {flag} {existing}") is None
-    for flag in (
-        "--markers",
-        "--no-showlocals",
-        "--stepwise-reset",
-        "--traceconfig",
-        "--fulltrace",
-        "-h",
-        "-V",
-    ):
-        assert adapter.command_denial(f"uv run pytest {flag} {existing}") is None
-    # Repeated and combined short flags consume nothing either.
-    assert adapter.command_denial(f"uv run pytest -q -q {existing}") is None
-    assert adapter.command_denial(f"uv run pytest -qq {existing}") is None
-    assert adapter.command_denial(f"uv run pytest -qx {existing}") is None
-    # An inline option value likewise leaves the selector visible.
-    assert adapter.command_denial(f"uv run pytest --maxfail=1 {existing}") is None
+    commands = (
+        f"uv run pytest {existing}",
+        f"uv run pytest {existing}::test_x",
+        f"uv run pytest --maxfail 1 {existing}",
+        f"uv run pytest -q {existing}",
+        f"uv run pytest --strict {existing}",
+        f"uv run pytest --maxfail=1 {existing}",
+    )
+    for command in commands:
+        assert adapter.command_denial(command) == adapter.SUITE_DENIAL
 
 
 @pytest.mark.parametrize(
@@ -240,12 +223,11 @@ def test_uv_global_options_cannot_hide_dependency_management(command):
 def test_uv_run_uses_the_fixed_environment_without_being_obstructed():
     for command in (
         "uv run python analysis.py",
-        "uv run pytest -W error tests/autoresearch/test_copilot_researcher.py",
         "uv run python analysis.py -w 5",
         "uv --offline run python analysis.py",
         "uv -n run python analysis.py",
         "uv --project . run python analysis.py",
-        "uv --project=. run ruff check robot_learning/scenario/reward.py",
+        "uv --project=. run ruff check robot_learning/training/reward.py",
         r"C:\Tools\uv.exe --offline run python analysis.py",
     ):
         assert adapter.command_denial(command) is None
@@ -253,9 +235,9 @@ def test_uv_run_uses_the_fixed_environment_without_being_obstructed():
 
 def test_ordinary_research_commands_are_not_obstructed():
     for command in (
-        "uv run ruff check robot_learning/scenario/reward.py",
+        "uv run ruff check robot_learning/training/reward.py",
         "uv run python -c \"import json; print('ok')\"",
-        "Get-Content research/brief.md",
+        "Get-Content campaigns/brief.md",
     ):
         assert adapter.command_denial(command) is None
 
@@ -263,14 +245,14 @@ def test_ordinary_research_commands_are_not_obstructed():
 @pytest.mark.parametrize(
     ("command", "expected", "preliminary"),
     [
-        ("Get-Content research/run_experiment.py", adapter.FILE_READ_DENIAL, False),
+        ("Get-Content runner/run_experiment.py", adapter.FILE_READ_DENIAL, False),
         (
-            "rg request_official_assessment research/runner_protocol.py",
+            "rg request_official_assessment runner/protocol.py",
             adapter.FILE_READ_DENIAL,
             False,
         ),
         (
-            "Select-String -Path research/program.md -Pattern official_assessment",
+            "Select-String -Path contracts/program.md -Pattern official_assessment",
             None,
             False,
         ),
@@ -278,15 +260,19 @@ def test_ordinary_research_commands_are_not_obstructed():
         ("cat robot_learning/train.py", None, False),
         (r"Get-Content -LiteralPath robot_learning\evaluate.py", None, False),
         ("rg policy robot_learning/play.py", None, False),
-        ("cat research/lab/run_experiment.py", None, False),
+        ("cat robot_learning/lab/run_experiment.py", None, False),
         (
-            r"Get-Content robot_learning\scenario\final_benchmark.py",
+            r"Get-Content benchmark\adapters\final_benchmark.py",
             adapter.FILE_READ_DENIAL,
             False,
         ),
-        (r"Get-Content robot_learning\scenario\final_benchmark.py", None, True),
-        (r"rg success robot_learning\benchmark\final_benchmark.py", None, True),
-        (r"Get-Content research\run_experiment.py", adapter.FILE_READ_DENIAL, True),
+        (
+            r"Get-Content benchmark\adapters\final_benchmark.py",
+            adapter.FILE_READ_DENIAL,
+            True,
+        ),
+        (r"rg success benchmark\final_benchmark.py", adapter.FILE_READ_DENIAL, True),
+        (r"Get-Content runner\run_experiment.py", adapter.FILE_READ_DENIAL, True),
     ],
 )
 def test_reader_targets_distinguish_reserved_files_from_scientific_sources(
@@ -298,8 +284,8 @@ def test_reader_targets_distinguish_reserved_files_from_scientific_sources(
 def test_the_execution_target_is_resolved_through_the_launcher_prefix():
     resolve = adapter.execution_target
 
-    assert resolve(["uv", "run", "python", "research/run_experiment.py"]) == (
-        "research/run_experiment.py"
+    assert resolve(["uv", "run", "python", "runner/run_experiment.py"]) == (
+        "runner/run_experiment.py"
     )
     assert resolve(["uv", "run", "--group", "researcher", "python", "x.py"]) == "x.py"
     assert resolve(["uv", "run", "--locked", "git", "commit"]) == "git"
@@ -340,12 +326,16 @@ def test_the_shell_request_is_read_from_every_segment_it_reports():
     [
         ("git push", False, adapter.GIT_DENIAL),
         (
-            r"Get-Content robot_learning\scenario\final_benchmark.py",
+            r"Get-Content benchmark\adapters\final_benchmark.py",
             False,
             adapter.FILE_READ_DENIAL,
         ),
-        (r"Get-Content robot_learning\scenario\final_benchmark.py", True, None),
-        (r"Get-Content research\runner_protocol.py", True, adapter.FILE_READ_DENIAL),
+        (
+            r"Get-Content benchmark\adapters\final_benchmark.py",
+            True,
+            adapter.FILE_READ_DENIAL,
+        ),
+        (r"Get-Content runner\protocol.py", True, adapter.FILE_READ_DENIAL),
     ],
 )
 def test_shell_permissions_respect_the_command_and_session_phase(
@@ -400,7 +390,7 @@ def test_write_permissions_enforce_the_pi_owned_surface(capsys):
     denied = PermissionRequestWrite(
         can_offer_session_approval=False,
         diff="",
-        file_name="research/run_experiment.py",
+        file_name="runner/run_experiment.py",
         intention="runner edit",
         tool_call_id="write-denied",
     )
@@ -415,17 +405,19 @@ def test_write_permissions_enforce_the_pi_owned_surface(capsys):
 
 def test_preliminary_write_permission_only_allows_the_scientific_model():
     assert (
-        adapter.file_edit_denial("research/scientific_model.md", preliminary=True)
+        adapter.file_edit_denial("pi_workspace/scientific_model.md", preliminary=True)
         is None
     )
     assert (
-        adapter.file_edit_denial("research/operation_request.json", preliminary=True)
+        adapter.file_edit_denial(
+            "pi_workspace/operation_request.json", preliminary=True
+        )
         == adapter.FILE_EDIT_DENIAL
     )
-    assert adapter.file_edit_denial("research/operation_request.json") is None
+    assert adapter.file_edit_denial("pi_workspace/operation_request.json") is None
     assert (
         adapter.file_edit_denial(
-            "robot_learning/scenario/final_benchmark.py", preliminary=True
+            "benchmark/adapters/final_benchmark.py", preliminary=True
         )
         == adapter.FILE_EDIT_DENIAL
     )
@@ -434,12 +426,13 @@ def test_preliminary_write_permission_only_allows_the_scientific_model():
 @pytest.mark.parametrize(
     ("path", "preliminary_readable"),
     [
-        ("research/run_experiment.py", False),
-        ("research/runner_protocol.py", False),
-        ("researcher_copilot.py", False),
-        ("robot_learning/scenario/final_benchmark.py", True),
-        (str(ROOT / "robot_learning" / "benchmark" / "final_benchmark.py"), True),
+        ("runner/run_experiment.py", False),
+        ("runner/protocol.py", False),
+        ("runner/copilot_adapter.py", False),
+        ("benchmark/adapters/final_benchmark.py", False),
+        (str(ROOT / "benchmark" / "final_benchmark.py"), False),
         ("docs/harness-experiment-log.md", False),
+        ("tests/autoresearch/test_copilot_researcher.py", False),
         (r"DOCS\IMPLEMENTATION_PLAN_CAMPAIGN_CORRECTNESS.md", False),
         (
             str(
@@ -482,18 +475,18 @@ def test_reserved_read_permissions_respect_session_phase(
     "path",
     [
         "AGENTS.md",
-        "research/program.md",
-        "research/instruments.md",
-        "research/scientific_model.md",
-        "research/brief.md",
+        "contracts/program.md",
+        "contracts/instruments.md",
+        "pi_workspace/scientific_model.md",
+        "campaigns/brief.md",
         "robot_learning/train.py",
         "robot_learning/evaluate.py",
         "robot_learning/play.py",
         str(ROOT / "robot_learning" / "train.py"),
-        "research/lab/diagnostic.py",
-        "research/lab/run_experiment.py",
+        "robot_learning/lab/diagnostic.py",
+        "robot_learning/lab/run_experiment.py",
         "robot_learning/scenario/environment.py",
-        "robot_learning/robots/two_joint_arm.xml",
+        "contracts/robots/two_joint_arm.xml",
     ],
 )
 def test_scientific_corpus_remains_readable(path):
@@ -511,9 +504,11 @@ def test_scientific_corpus_remains_readable(path):
     [
         r"Get-Content docs\harness-experiment-log.md",
         r"Get-Content -LiteralPath='docs\harness-experiment-log.md'",
-        r"cat research\runner_protocol.py",
+        r"cat runner\protocol.py",
         r"rg -n route docs\harness-experiment-log.md",
         r"Select-String -Path docs\harness-experiment-log.md -Pattern route",
+        r"Get-Content tests\autoresearch\test_copilot_researcher.py",
+        r"rg -n adapter tests\autoresearch",
     ],
 )
 @pytest.mark.parametrize("preliminary", [False, True])
@@ -525,7 +520,7 @@ def test_explicit_shell_reads_use_the_reserved_path_policy(command, preliminary)
 
 
 def test_searching_scientific_code_for_a_reserved_name_is_not_a_reserved_read():
-    assert adapter.command_denial(r"rg run_research.ps1 research\lab") is None
+    assert adapter.command_denial(r"rg run_research.ps1 robot_learning\lab") is None
 
 
 # --- the session profile ----------------------------------------------------
@@ -817,7 +812,7 @@ def test_shutdown_is_bounded_without_repeating_or_losing_pi_work(
         adapter.asyncio, "run", lambda coro: run(asyncio.wait_for(coro, timeout=1))
     )
     campaign_id = "11111111-1111-1111-1111-111111111111"
-    research = tmp_path / "research"
+    research = tmp_path / "campaigns"
     research.mkdir()
     preserved = {
         research / "operation_request.json": b'{"saved":"request"}\n',

@@ -3,12 +3,12 @@
 This module owns every behavior shared by training and evaluation: the MuJoCo
 model, target sampling, success and hold semantics, observations and reward.
 Training-only target construction lives in
-`robot_learning/scenario/training_environment.py` so it can change without
+`robot_learning/training/environment.py` so it can change without
 altering how a saved policy is measured.
 
 The benchmark constants are defaults, not a contract: research may train on a
 different distribution, tolerance or horizon. The human-defined task is
-enforced only by the protected benchmark in `robot_learning/benchmark/`.
+enforced only by the protected benchmark in `benchmark/`.
 """
 
 from typing import Any, ClassVar
@@ -17,17 +17,17 @@ import gymnasium as gym
 import mujoco
 import numpy as np
 
-from robot_learning.benchmark.spec import (
+from contracts.robots.two_joint_arm import TWO_JOINT_ARM_XML_PATH
+from contracts.task_spec import (
     FRAME_SKIP,
     HOLD_SECONDS,
     MAX_EPISODE_STEPS,
     SUCCESS_THRESHOLD,
     TARGET_RADIUS_RANGE,
 )
-from robot_learning.robots.two_joint_arm import TWO_JOINT_ARM_XML_PATH
 from robot_learning.scenario.observations import OBSERVATION_SIZE
 from robot_learning.scenario.policy_io import make_policy_io
-from robot_learning.scenario.reward import reach_reward
+from robot_learning.training.reward import reach_reward
 
 
 class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):

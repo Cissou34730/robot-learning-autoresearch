@@ -6,7 +6,7 @@ observation space declared by the scenario environment.
 
 import numpy as np
 
-from robot_learning.robots.two_joint_arm import FOREARM_LENGTH, UPPER_ARM_LENGTH
+from contracts.robots.two_joint_arm import FOREARM_LENGTH, UPPER_ARM_LENGTH
 
 OBSERVATION_SIZE = 11
 

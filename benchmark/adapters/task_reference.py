@@ -1,6 +1,6 @@
 """Adapter between the generic runner and the protected task-reference panel.
 
-The protected implementation stays untouched in `robot_learning/benchmark/`.
+The protected implementation stays untouched in `benchmark/`.
 This module exists only so the generic core keeps importing the scenario
 boundary and never reaches into the benchmark package.
 """
@@ -8,10 +8,10 @@ boundary and never reaches into the benchmark package.
 from collections.abc import Callable
 from pathlib import Path
 
-from robot_learning.benchmark.reference_evaluation import (
+from benchmark.reference_evaluation import (
     evaluate_task_reference_model as _protected_evaluate_task_reference_model,
 )
-from robot_learning.benchmark.reference_evaluation import (
+from benchmark.reference_evaluation import (
     task_reference_panel as _protected_task_reference_panel,
 )
 

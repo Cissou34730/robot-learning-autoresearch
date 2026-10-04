@@ -3,9 +3,9 @@
 Repository operational contract for the PI environment, command authority,
 file ownership, validation, and evidence use.
 
-The PI lifecycle is described in `research/program.md`, the current task in
-`research/scenario.md`, and the available capability surface in
-`research/instruments.md`.
+The PI lifecycle is described in `contracts/program.md`, the current task in
+`contracts/scenario.md`, and the available capability surface in
+`contracts/instruments.md`.
 
 ## Environment
 
@@ -34,35 +34,40 @@ uv run ruff <arguments>
 
 The PI session may inspect files and, when the current bounded objective
 requires understanding code state or a code delta, use read-only Git. It may
-edit its owned surface, run lightweight analysis, and run targeted tests. It may
-not install dependencies, execute training or protected evaluation directly,
-open the viewer, run repository-wide or end-to-end tests, or use mutating Git
-commands. Heavy scientific operations are requested through the contracts in
-`research/instruments.md`.
+edit its owned surface and run lightweight analysis. It may not inspect,
+modify, or directly execute the human-owned test suite; install dependencies;
+execute training or protected evaluation directly; open the viewer; or use
+mutating Git commands. Runner validation and heavy scientific operations are
+requested through the contracts in `contracts/instruments.md`.
 
 ## Layout
 
-- `robot_learning/benchmark/` - human-owned final and task-reference contracts
-  and evaluators.
+- `contracts/` - human-owned task, robot, and runtime contracts that are
+  PI-readable but not PI-writable.
+- `benchmark/` - human-owned final and task-reference contracts
+  and evaluators, hidden from the PI.
+- `runner/` - human-owned lifecycle runner, protocol enforcement and state,
+  hidden from the PI.
+- `pi_workspace/` - bounded PI/Runner exchange files.
+- `campaigns/` - Runner-written, PI-readable campaign evidence.
 - `robot_learning/scenario/` - current scenario implementation and scientific
-  measurement code, with protected adapters to the human-owned panels. The
-  protected `scenario/__init__.py` is a minimal package initializer, not a
-  scientific extension point; PI-owned scenario modules import each
-  other directly.
+  measurement code. The protected `scenario/__init__.py` is a minimal package
+  initializer, not a scientific extension point; PI-owned scenario modules
+  import each other directly.
 - `robot_learning/training/` - learning-method implementation and artifact
   support.
 - `robot_learning/train.py`, `evaluate.py`, `play.py` - generic application
   entry points.
-- `research/current_params.json` - active runtime configuration overrides.
-- `research/results.jsonl` - authoritative completed-operation history.
-- `research/EXPERIMENTS.md` - generated human-readable history.
-- `research/brief.md` - generated current PI context.
-- `research/scientific_model.md` - campaign-start PI model of the robot
+- `robot_learning/training/current_params.json` - active runtime configuration overrides.
+- `campaigns/results.jsonl` - authoritative completed-operation history.
+- `campaigns/EXPERIMENTS.md` - generated human-readable history.
+- `campaigns/brief.md` - generated current PI context.
+- `pi_workspace/scientific_model.md` - campaign-start PI model of the robot
   and task, frozen after the preliminary phase.
-- `research/lab/` - campaign-scoped PI laboratory tools and analyses,
+- `robot_learning/lab/` - campaign-scoped PI laboratory tools and analyses,
   separate from policy and training recipes.
-- `research/evaluations/` - durable detailed development measurements.
-- `research/checkpoints/candidates/` and `research/checkpoints/retained/` -
+- `campaigns/evaluations/` - durable detailed development measurements.
+- `campaigns/checkpoints/candidates/` and `campaigns/checkpoints/retained/` -
   archived training candidates and durable explicitly assigned model roles.
 - `models/candidates/` - disposable training candidates.
 - `tests/` - human-owned validation, outside the PI-owned scientific surface.
@@ -72,34 +77,37 @@ commands. Heavy scientific operations are requested through the contracts in
 The PI must not modify these paths during a scientific session:
 
 - `docs/` - maintainer documents and campaign reports;
-- `AGENTS.md`, `research/program.md`, `research/scenario.md`,
-  `research/instruments.md`, `research/scientific_model.md` (after its
+- `contracts/` - human-owned contracts readable by the PI;
+- `campaigns/` - Runner-written evidence readable by the PI;
+- `runner/` - lifecycle runner and protocol enforcement;
+- `benchmark/` - final and task-reference evaluation implementation;
+- `tools/` - maintainer utilities;
+- `researcher_opencode/` - optional runtime implementation;
+- `AGENTS.md`, `contracts/program.md`, `contracts/scenario.md`,
+  `contracts/instruments.md`, `pi_workspace/scientific_model.md` (after its
   campaign-start PI session);
 - `run_research.ps1`, `researcher_mutex.ps1`, `researcher_session.ps1`,
-  `researcher_copilot.py`;
+  `runner/copilot_adapter.py`;
 - `tools/campaign_report.py`;
-- `research/run_experiment.py`, `research/reset_campaign.py`, `research/runner_*.py`,
-  `research/build_research_brief.py`, `research/query_training_log.py`;
+- `runner/run_experiment.py`, `runner/reset_campaign.py`, `runner/*.py`,
+  `runner/build_brief.py`, `runner/query_training_log.py`;
 - `pyproject.toml`, `uv.lock`;
-- `robot_learning/benchmark/`;
-- `robot_learning/policy_runtime.py`, `research/migrate_policy_runtime.py`;
-- `robot_learning/robots/two_joint_arm.py` and
-  `robot_learning/robots/two_joint_arm.xml`;
-- `robot_learning/__init__.py`, `robot_learning/robots/__init__.py` and
+- `contracts/policy_runtime.py`, `runner/migrate_policy_runtime.py`;
+- `contracts/robots/two_joint_arm.py` and
+  `contracts/robots/two_joint_arm.xml`;
+- `robot_learning/__init__.py`, `contracts/robots/__init__.py` and
   `robot_learning/scenario/__init__.py` (minimal protected package initializer);
-- `robot_learning/scenario/final_benchmark.py` and
-  `robot_learning/scenario/task_reference.py`;
 - `tests/` - every test path; the PI does not create, modify or maintain
   test files.
 
 A protected path takes precedence over any PI-owned prefix.
 
-The preliminary phase can inspect scientific sources under `robot_learning/`,
-including protected benchmark implementation, to construct the physical model.
+The preliminary phase can inspect scientific sources under `robot_learning/`
+to construct the physical model.
 Later phases reject read/view requests and explicit shell-reader targets
 matched by the shared reserved-script policy. Maintainer documents under
-`docs/` and harness scripts remain reserved in every phase.
-`AGENTS.md` and the scientific Markdown under `research/` remain readable.
+`docs/`, `tests/`, and harness scripts remain reserved in every phase.
+`AGENTS.md`, `contracts/`, and `campaigns/` remain readable.
 PI-owned scientific files remain readable, including entry points whose
 direct execution is restricted. Read access does not change write authority.
 Direct-execution restrictions remain unchanged. This is a tool-level restriction,
@@ -111,11 +119,11 @@ not an operating-system filesystem sandbox.
 - `robot_learning/training/`;
 - `robot_learning/train.py`, `robot_learning/evaluate.py`,
   `robot_learning/play.py`;
-- `research/current_params.json`;
-- `research/lab/`;
-- the preliminary deliverable `research/scientific_model.md` (only while its
+- `robot_learning/training/current_params.json`;
+- `robot_learning/lab/`;
+- the preliminary deliverable `pi_workspace/scientific_model.md` (only while its
   preliminary session is active);
-- `research/operation_request.json` while a bounded scientific session is
+- `pi_workspace/operation_request.json` while a bounded scientific session is
   active.
 
 Within this surface, the PI has unrestricted scientific authority.
@@ -124,11 +132,12 @@ replacement. It may create, rewrite, combine, or remove PI-owned
 implementations and tools; the existing architecture carries no authority.
 
 Tests are not part of the PI-owned surface. The PI does not
-create, modify or maintain test files, and any path under `tests/` in its delta
-is rejected as a path it does not own: it must drop those paths from the
-operation rather than edit or restore them.
+inspect, create, modify, maintain, or directly execute test files. Any path
+under `tests/` in its delta is rejected as a path it does not own: it must drop
+those paths from the operation rather than edit or restore them. The Runner
+retains responsibility for validation.
 
-Durable campaign analysis and diagnostic tooling belongs under `research/lab/`.
+Durable campaign analysis and diagnostic tooling belongs under `robot_learning/lab/`.
 It is separate from policy and training recipes. Scientific runtime changes
 remain in the scenario and training surface.
 
@@ -149,7 +158,7 @@ enumeration counts.
 
 ## Persistence and Git
 
-The campaign artifacts, especially `research/brief.md`, the durable scientific
+The campaign artifacts, especially `campaigns/brief.md`, the durable scientific
 session record, completed operation records, and their artifacts, are the
 authoritative sources of scientific evidence. Failed operations are execution
 history, not evidence.

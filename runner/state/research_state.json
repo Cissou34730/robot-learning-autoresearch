@@ -16,7 +16,7 @@
     "training": 0
   },
   "human_goal": {
-    "source": "research/scenario.md"
+    "source": "contracts/scenario.md"
   },
   "last_verdict": "fresh campaign initialized; scientific model pending",
   "model_roles": {
@@ -31,7 +31,7 @@
   "schema_version": 6,
   "scientific_model": {
     "commit": "a7c2cb4ee145a63963987511f100558e580afc6c",
-    "path": "research/scientific_model.md",
+    "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
   "scientific_session": null,

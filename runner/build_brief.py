@@ -6,11 +6,12 @@ import json
 import re
 from pathlib import Path
 
-from research import runner_repository
+from runner import paths
+from runner import repository as runner_repository
 
 ROOT = Path(__file__).resolve().parent.parent
-RESEARCH_DIR = ROOT / "research"
-BRIEF_PATH = RESEARCH_DIR / "brief.md"
+RESEARCH_DIR = paths.CAMPAIGNS_DIR
+BRIEF_PATH = paths.CAMPAIGNS_DIR / "brief.md"
 
 
 def _compact(value: object) -> str:
@@ -30,7 +31,7 @@ def _human_goal(state: dict) -> str:
     summary = state["human_goal"].get("summary")
     if isinstance(summary, str) and summary.strip():
         return summary.strip()
-    scenario_path = RESEARCH_DIR / "scenario.md"
+    scenario_path = ROOT / "contracts" / "scenario.md"
     if scenario_path.is_file():
         success = _markdown_section(
             scenario_path.read_text(encoding="utf-8"), "Success criterion"
@@ -354,7 +355,7 @@ def _candidate_lines(state: dict) -> list[str]:
         [
             (
                 "- Archive paths and full candidate metadata: "
-                "`research/research_state.json`, `candidates[candidate ID]`. "
+                "`runner/state/research_state.json`, `candidates[candidate ID]`. "
                 "The table includes every candidate; training statistics are not "
                 "development measurements."
             ),
@@ -441,7 +442,11 @@ def _execution_history_lines(state: dict) -> list[str]:
 
 
 def render_research_brief() -> str:
-    state_path = RESEARCH_DIR / "research_state.json"
+    state_path = (
+        RESEARCH_DIR / "research_state.json"
+        if RESEARCH_DIR != paths.CAMPAIGNS_DIR
+        else paths.STATE_PATH
+    )
     if not state_path.is_file():
         raise RuntimeError("research state is missing")
     state = json.loads(state_path.read_text(encoding="utf-8"))

@@ -2,7 +2,7 @@
 
 from pathlib import Path
 
-from robot_learning.policy_runtime import frozen_scientific_modules, save_runtime
+from contracts.policy_runtime import frozen_scientific_modules, save_runtime
 from robot_learning.scenario.policy_io import make_policy_io
 from robot_learning.training.algorithms import load_policy
 from robot_learning.training.normalization import load_observation_normalizer

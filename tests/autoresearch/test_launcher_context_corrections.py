@@ -11,10 +11,7 @@ from pathlib import Path
 
 import pytest
 
-from research import run_experiment
-from research import runner_assessment as assessment
-from research import runner_protocol as protocol
-from research import runner_repository as repository
+from runner import assessment, protocol, repository, run_experiment
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -27,7 +24,7 @@ def _ready_state(monkeypatch, *, session_kind: str = "startup") -> dict:
     )
     state["scientific_model"] = {
         "status": "ready",
-        "path": "research/scientific_model.md",
+        "path": "pi_workspace/scientific_model.md",
         "commit": "a" * 40,
     }
     if session_kind == "inquiry":
@@ -129,7 +126,7 @@ def test_every_new_operation_rejects_a_human_owned_scientific_delta(monkeypatch,
     monkeypatch.setattr(
         repository,
         "scientific_delta",
-        lambda _parent: ["research/run_experiment.py"],
+        lambda _parent: ["runner/run_experiment.py"],
     )
 
     with pytest.raises(ValueError, match="human-owned"):
@@ -203,7 +200,7 @@ def test_protected_assessment_requires_clean_committed_runtime(monkeypatch):
     monkeypatch.setattr(
         repository,
         "status_paths",
-        lambda _scope: ["robot_learning/scenario/task_reference.py"],
+        lambda _scope: ["benchmark/adapters/task_reference.py"],
     )
     with pytest.raises(ValueError, match="uncommitted changes"):
         protocol.require_trusted_assessment_runtime(
@@ -214,7 +211,7 @@ def test_protected_assessment_requires_clean_committed_runtime(monkeypatch):
     monkeypatch.setattr(
         repository,
         "tracked_paths",
-        lambda _scope: ["robot_learning/benchmark/final_contract.py"],
+        lambda _scope: ["benchmark/final_contract.py"],
     )
     observed: list[list[str]] = []
     monkeypatch.setattr(
@@ -226,8 +223,8 @@ def test_protected_assessment_requires_clean_committed_runtime(monkeypatch):
         protocol.OFFICIAL_ASSESSMENT_ADAPTER_PATH
     )
     assert protocol.OFFICIAL_ASSESSMENT_ADAPTER_PATH in observed[0]
-    assert "robot_learning/policy_runtime.py" in observed[0]
-    assert "robot_learning/benchmark/final_contract.py" in observed[0]
+    assert "contracts/policy_runtime.py" in observed[0]
+    assert "benchmark/final_contract.py" in observed[0]
 
 
 @pytest.mark.parametrize(
@@ -235,13 +232,13 @@ def test_protected_assessment_requires_clean_committed_runtime(monkeypatch):
     [
         (
             protocol.TASK_REFERENCE_ADAPTER_PATH,
-            "robot_learning.scenario.task_reference",
+            "benchmark.adapters.task_reference",
             "task_reference_panel",
             assessment.task_reference_contract,
         ),
         (
             protocol.OFFICIAL_ASSESSMENT_ADAPTER_PATH,
-            "robot_learning.scenario.final_benchmark",
+            "benchmark.adapters.final_benchmark",
             "evaluate_final_model",
             lambda: assessment.evaluate_official_model(Path("model.zip")),
         ),
@@ -284,7 +281,7 @@ def test_runner_import_does_not_load_pi_owned_training_or_scenario_code():
             str(ROOT / ".venv" / "Scripts" / "python.exe"),
             "-c",
             (
-                "import sys; import research.run_experiment; "
+                "import sys; import runner.run_experiment; "
                 "blocked=sorted(name for name in sys.modules "
                 "if name.startswith(('robot_learning.training', "
                 "'robot_learning.scenario'))); "

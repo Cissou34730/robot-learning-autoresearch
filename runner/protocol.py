@@ -6,60 +6,59 @@ import hashlib
 import re
 from pathlib import Path
 
-from research import runner_paths as paths
-from research import runner_repository as repository
+from runner import paths, repository
 
 PROTECTED_BENCHMARK_PATHS = {
-    "robot_learning/policy_runtime.py",
-    "research/run_experiment.py",
     "robot_learning/__init__.py",
-    "robot_learning/robots/__init__.py",
-    "robot_learning/robots/two_joint_arm.py",
-    "robot_learning/robots/two_joint_arm.xml",
     "robot_learning/scenario/__init__.py",
-    "robot_learning/scenario/final_benchmark.py",
-    "robot_learning/scenario/task_reference.py",
 }
-PROTECTED_BENCHMARK_PREFIXES = ("robot_learning/benchmark/",)
+PROTECTED_BENCHMARK_PREFIXES = ("benchmark/", "contracts/")
 PROTECTED_RUNNER_PATHS = {
     "tools/campaign_report.py",
-    "research/migrate_policy_runtime.py",
-    "research/reset_campaign.py",
-    "research/build_research_brief.py",
-    "research/query_training_log.py",
+    "runner/migrate_policy_runtime.py",
+    "runner/reset_campaign.py",
+    "runner/build_brief.py",
+    "runner/query_training_log.py",
     "researcher_session.ps1",
     "run_research.ps1",
     "researcher_mutex.ps1",
 }
-PROTECTED_RUNTIME_PATHS = {"researcher_copilot.py"}
-PROTECTED_RUNTIME_PREFIXES = ("researcher_opencode/",)
-PROTECTED_MEASUREMENT_PATHS = {"robot_learning/paired_evidence.py"}
+PROTECTED_RUNTIME_PATHS = {"runner/copilot_adapter.py"}
+PROTECTED_RUNTIME_PREFIXES = ("runner/", "tools/", "researcher_opencode/")
+PROTECTED_MEASUREMENT_PATHS = {"benchmark/paired_evidence.py"}
 PROTECTED_CONTEXT_PATHS = {
     "AGENTS.md",
-    "research/instruments.md",
-    "research/program.md",
-    "research/scenario.md",
+    "contracts/instruments.md",
+    "contracts/program.md",
+    "contracts/scenario.md",
 }
-CAMPAIGN_SCOPED_PROTECTED_CONTEXT_PATHS = {"research/scientific_model.md"}
-PROTECTED_RUNNER_PREFIXES = ("research/runner_",)
+CAMPAIGN_SCOPED_PROTECTED_CONTEXT_PATHS = {"pi_workspace/scientific_model.md"}
+PROTECTED_RUNNER_PREFIXES = ("runner/",)
 PROTECTED_TEST_PREFIXES = ("tests/",)
+HUMAN_OWNED_PREFIXES = (
+    "benchmark/",
+    "campaigns/",
+    "contracts/",
+    "docs/",
+    "runner/",
+    "tools/",
+    "researcher_opencode/",
+    *PROTECTED_TEST_PREFIXES,
+)
 VALIDATED_TEST_PATHS = ("tests/benchmark", "tests/autoresearch")
 AUTORESEARCH_BOUNDARY_TEST_PATHS = (
     "tests/autoresearch/test_ownership_registry.py",
     "tests/autoresearch/test_policy_runtime.py",
 )
 RESEARCHER_VALIDATED_TEST_PATHS = (*AUTORESEARCH_BOUNDARY_TEST_PATHS,)
-RESEARCHER_OWNED_PREFIXES = (
-    "robot_learning/scenario/",
-    "robot_learning/training/",
-)
-CAMPAIGN_LAB_PREFIXES = ("research/lab/",)
+RESEARCHER_OWNED_PREFIXES = ("robot_learning/",)
+CAMPAIGN_LAB_PREFIXES = ("robot_learning/lab/",)
 RESEARCHER_OWNED_PATHS = {
     "robot_learning/evaluate.py",
     "robot_learning/play.py",
     "robot_learning/train.py",
 }
-PARAMETER_ONLY_PATHS = {"research/current_params.json"}
+PARAMETER_ONLY_PATHS = {"robot_learning/training/current_params.json"}
 DEPENDENCY_METADATA_PATHS = {"pyproject.toml", "uv.lock"}
 EVALUATION_SEMANTICS_ROOT = "robot_learning/scenario"
 PRESENTATION_ONLY_PATHS = {
@@ -67,8 +66,8 @@ PRESENTATION_ONLY_PATHS = {
     "robot_learning/scenario/viewer.py",
 }
 TRAINING_ONLY_PATHS = {
-    "robot_learning/scenario/reward.py",
-    "robot_learning/scenario/training_environment.py",
+    "robot_learning/training/reward.py",
+    "robot_learning/training/environment.py",
 }
 MODEL_CONTAINED_RUNTIME_PATHS = {
     "robot_learning/scenario/observations.py",
@@ -77,10 +76,10 @@ MODEL_CONTAINED_RUNTIME_PATHS = {
     "robot_learning/training/normalization.py",
 }
 EVALUATION_RUNTIME_PATHS = (
-    "robot_learning/policy_runtime.py",
+    "contracts/policy_runtime.py",
     "robot_learning/evaluate.py",
-    "robot_learning/benchmark/spec.py",
-    "robot_learning/benchmark/metrics.py",
+    "contracts/task_spec.py",
+    "benchmark/metrics.py",
 )
 GENERATED_FILE_SUFFIXES = (".pyc", ".pyo", ".tmp")
 GENERATED_DIRECTORY_NAMES = {"__pycache__"}
@@ -136,14 +135,14 @@ SESSION_OPERATION_MATRIX = {
 }
 TRUSTED_RUNTIME_PATHS = {
     "robot_learning/__init__.py",
-    "robot_learning/policy_runtime.py",
-    "robot_learning/robots/__init__.py",
-    "robot_learning/robots/two_joint_arm.py",
-    "robot_learning/robots/two_joint_arm.xml",
+    "contracts/policy_runtime.py",
+    "contracts/robots/__init__.py",
+    "contracts/robots/two_joint_arm.py",
+    "contracts/robots/two_joint_arm.xml",
     "robot_learning/scenario/__init__.py",
 }
-TASK_REFERENCE_ADAPTER_PATH = "robot_learning/scenario/task_reference.py"
-OFFICIAL_ASSESSMENT_ADAPTER_PATH = "robot_learning/scenario/final_benchmark.py"
+TASK_REFERENCE_ADAPTER_PATH = "benchmark/adapters/task_reference.py"
+OFFICIAL_ASSESSMENT_ADAPTER_PATH = "benchmark/adapters/final_benchmark.py"
 
 
 def is_protected_source(path: str) -> bool:
@@ -164,7 +163,7 @@ def is_protected_source(path: str) -> bool:
 
 def is_human_owned(path: str) -> bool:
     relative = path.replace("\\", "/")
-    return is_protected_source(relative) or relative.startswith(PROTECTED_TEST_PREFIXES)
+    return is_protected_source(relative) or relative.startswith(HUMAN_OWNED_PREFIXES)
 
 
 def is_researcher_owned(path: str) -> bool:
@@ -175,6 +174,7 @@ def is_researcher_owned(path: str) -> bool:
         relative in RESEARCHER_OWNED_PATHS
         or relative.startswith(RESEARCHER_OWNED_PREFIXES)
         or relative.startswith(CAMPAIGN_LAB_PREFIXES)
+        or relative == "pi_workspace/operation_request.json"
     )
 
 
@@ -263,7 +263,8 @@ def require_trusted_assessment_runtime(adapter_path: str) -> None:
     trusted = [
         *TRUSTED_RUNTIME_PATHS,
         adapter_path,
-        *repository.tracked_paths("robot_learning/benchmark"),
+        *repository.tracked_paths("benchmark"),
+        *repository.tracked_paths("contracts"),
     ]
     repository.require_paths_at_head(trusted)
 
@@ -408,10 +409,16 @@ def validate_measurement_request(request: dict) -> None:
             _nonempty(entry, "candidate", "task_reference candidate")
         else:
             module = _nonempty(entry, "module", "python_module module")
-            if not module.startswith(("research.lab.", "robot_learning.scenario.")):
+            if not module.startswith(
+                (
+                    "robot_learning.lab.",
+                    "robot_learning.scenario.",
+                    "robot_learning.training.",
+                )
+            ):
                 raise ValueError(
-                    "python_module must be under research.lab or "
-                    "robot_learning.scenario"
+                    "python_module must be under robot_learning.lab, "
+                    "robot_learning.scenario, or robot_learning.training"
                 )
             arguments = entry.get("args")
             if not isinstance(arguments, list) or not all(
@@ -421,9 +428,12 @@ def validate_measurement_request(request: dict) -> None:
             artifact = repository.canonical_repo_path(
                 _nonempty(entry, "artifact", "python_module artifact")
             )
-            if not artifact.startswith("research/evaluations/"):
+            evaluation_prefix = (
+                repository.repo_relative_path(paths.EVALUATION_DIR) + "/"
+            )
+            if not artifact.startswith(evaluation_prefix):
                 raise ValueError(
-                    "python_module artifact must be under research/evaluations"
+                    f"python_module artifact must be under {evaluation_prefix.rstrip('/')}"
                 )
     comparisons = request.get("paired_comparisons", [])
     if not isinstance(comparisons, list):

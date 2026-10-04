@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
-  "description": "Optional OpenCode runtime for one bounded Researcher session. Runs alongside researcher_copilot.py; it does not replace it.",
+  "description": "Optional OpenCode runtime for one bounded Researcher session. Runs alongside runner/copilot_adapter.py; it does not replace it.",
   "engines": {
     "node": ">=22.6.0"
   },

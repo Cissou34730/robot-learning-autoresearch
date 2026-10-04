@@ -5,9 +5,9 @@ from pathlib import Path
 
 import pytest
 
-from research import runner_protocol as protocol
-from robot_learning.benchmark import final_contract
-from robot_learning.scenario.final_benchmark import research_panel_overlaps_protected
+from benchmark import final_contract
+from benchmark.adapters.final_benchmark import research_panel_overlaps_protected
+from runner import protocol
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -41,19 +41,20 @@ def test_official_panel_overlap_is_rejected():
 
 
 def test_generic_runner_does_not_read_the_protected_panel():
-    for relative in ("research/runner_protocol.py", "research/run_experiment.py"):
+    for relative in ("runner/protocol.py", "runner/run_experiment.py"):
         tree = ast.parse((ROOT / relative).read_text(encoding="utf-8"))
         for node in ast.walk(tree):
             if isinstance(node, ast.ImportFrom) and node.module:
-                assert not node.module.startswith("robot_learning.benchmark"), (
+                assert not (
+                    node.module.startswith("benchmark")
+                    and not node.module.startswith("benchmark.adapters")
+                ), (
                     relative,
                     node.module,
                 )
 
-    # `runner_protocol` is not a sanctioned scenario importer either.
-    tree = ast.parse(
-        (ROOT / "research" / "runner_protocol.py").read_text(encoding="utf-8")
-    )
+    # `runner.protocol` is not a sanctioned scenario importer either.
+    tree = ast.parse((ROOT / "runner" / "protocol.py").read_text(encoding="utf-8"))
     for node in ast.walk(tree):
         if isinstance(node, ast.ImportFrom) and node.module:
             assert not node.module.startswith("robot_learning.scenario"), node.module

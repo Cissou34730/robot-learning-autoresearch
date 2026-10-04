@@ -31,10 +31,10 @@ repeat comparisons.
 Restores:
 
 - the candidate's scientific recipe, limited to the researcher-owned scientific
-  surface and `research/current_params.json`;
+  surface and `robot_learning/training/current_params.json`;
 - the candidate inference artifact, including `policy_runtime.pkl`, from
-  `research/checkpoints/candidates/` or `research/checkpoints/retained/`;
-- committed candidate evaluation evidence under `research/evaluations/`;
+  `campaigns/checkpoints/candidates/` or `campaigns/checkpoints/retained/`;
+- committed candidate evaluation evidence under `campaigns/evaluations/`;
 - the scientific model used by the prepared source.
 
 Preserves the current harness, protocol, instrument catalog, protected runtime,

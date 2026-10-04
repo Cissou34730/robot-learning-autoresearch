@@ -45,7 +45,7 @@ Push immediately after each commit. Do not amend, squash, or combine them.
 
 ## Commit 1 — Rebalance research brief attention order
 
-### Modify `research/build_research_brief.py`
+### Modify `runner/build_brief.py`
 
 In `_render_v4_research_brief`, do not change any helper function or rendered
 content. Change only the order of existing blocks.
@@ -164,7 +164,7 @@ Run only:
 
 ```text
 uv run pytest -q tests/autoresearch/test_research_context.py tests/autoresearch/test_console_presentation.py tests/autoresearch/test_scientific_reasoning.py
-uv run ruff check research/build_research_brief.py tests/autoresearch/test_research_context.py tests/autoresearch/test_console_presentation.py
+uv run ruff check runner/build_brief.py tests/autoresearch/test_research_context.py tests/autoresearch/test_console_presentation.py
 ```
 
 Commit with `rebalance research brief attention order`, then push.
@@ -173,7 +173,7 @@ Commit with `rebalance research brief attention order`, then push.
 
 ## Commit 2 — Clarify mechanism-driven research reasoning
 
-### Replace `research/scenario.md` completely
+### Replace `contracts/scenario.md` completely
 
 Replace the complete file with exactly:
 
@@ -218,13 +218,13 @@ unchanged official task.
 
 This replacement deliberately contains no `task_reference`, task-reference
 panel, final benchmark, Runner, evaluator, panel seed, or episode-count wording.
-Do not move the removed scenario-specific panel values into `research/program.md`
-or `research/instruments.md`. Do not change any implementation of those
-instruments. `research/instruments.md` continues to document the generic
+Do not move the removed scenario-specific panel values into `contracts/program.md`
+or `contracts/instruments.md`. Do not change any implementation of those
+instruments. `contracts/instruments.md` continues to document the generic
 `task_reference` capability without adding scenario values such as distance,
 tolerance, hold duration, or panel size.
 
-### Modify `research/program.md`
+### Modify `contracts/program.md`
 
 #### A. Replace the complete body of `## Scientific memory and direction`
 
@@ -232,7 +232,7 @@ Replace everything after that heading and before `## Lifecycle` with exactly:
 
 ```markdown
 The campaign objective is always to improve learned behavior toward the
-human-defined objective in `research/scenario.md`; the Scientific strategy does
+human-defined objective in `contracts/scenario.md`; the Scientific strategy does
 not author or replace that objective. `Direction` is the current temporary
 investigation. When a measured `best_known` model exists, `Direction` must name
 its highest-priority unresolved behavioral gap and the causal question currently
@@ -247,7 +247,7 @@ only when the Researcher states a plausible causal link to the measured
 behavioral gap.
 
 Maintain the current campaign's **Scientific strategy** section in
-`research/postmortems.md`, using the exact format in `research/instruments.md`.
+`campaigns/postmortems.md`, using the exact format in `contracts/instruments.md`.
 Separate this revisable synthesis from the historical experiment entries.
 Preserve past observations and decisions; revise current interpretations with
 new evidence rather than rewriting what was believed at the time.
@@ -279,10 +279,10 @@ measured behavioral gap being addressed. Compare the selected causal explanation
 with at least one plausible alternative, then choose the intervention that most
 clearly distinguishes them. Only after choosing the mechanism and intervention,
 choose continuation, replication, or training with fresh or transfer
-initialization and write `research/proposal.json`. Make scientific code or
+initialization and write `runner/state/proposal.json`. Make scientific code or
 parameter changes only when the selected operation calls for them. The phase is
 incomplete until that deliverable exists and satisfies the contract in
-`research/instruments.md`.
+`contracts/instruments.md`.
 
 Before submitting, establish or update the Scientific strategy. The proposal's
 existing `reasoning` fields record inspected evidence, the competing explanation,
@@ -354,7 +354,7 @@ then ends the campaign after either `goal_reached` or `goal_not_reached`; a fail
 official verdict is never development feedback for another hypothesis.
 ```
 
-### Modify `research/instruments.md`
+### Modify `contracts/instruments.md`
 
 Do not change the proposal JSON example or any field name.
 
@@ -398,7 +398,7 @@ Replace the paragraph beginning `The campaign objective remains...` and ending
 
 ```markdown
 The campaign objective remains the human-defined objective in
-`research/scenario.md`; this strategy cannot replace it. `Direction` names the
+`contracts/scenario.md`; this strategy cannot replace it. `Direction` names the
 highest-priority unresolved measured behavioral gap of `best_known` and the
 current causal question. Before a best-known model exists, it uses the most
 relevant measured campaign behavior. `Lessons and limits` records scoped
@@ -429,7 +429,7 @@ Under `## Request the official benchmark`, replace the paragraph beginning
 
 ```markdown
 After applying the lineage decision, the Runner benchmarks the frozen best-known
-model. Read the terminal verdict in `research/brief.md` under **Current status →
+model. Read the terminal verdict in `campaigns/brief.md` under **Current status →
 Reported result**. Request this assessment only when it is the highest-value next
 action according to the available development evidence. The closure rationale
 must explain why terminal assessment is more valuable now than further
@@ -447,16 +447,16 @@ prompts. Replace only the three initial prompt arrays below.
 ```powershell
         $analysisPrompt = @(
             $analysisPhasePrompt
-            "Read AGENTS.md, research/program.md, research/scenario.md, research/instruments.md, and research/brief.md."
+            "Read AGENTS.md, contracts/program.md, contracts/scenario.md, contracts/instruments.md, and campaigns/brief.md."
             "Inspect what happened during training and compare the result with the proposal's expected and contradicting observations. State separately what the exact intervention established and whether the broader causal mechanism is resolved or remains open."
             "Use measured policy behavior, not a conflicting training proxy, to choose the next scientific problem unless you state a causal link from that proxy to the measured behavioral gap. Keep secondary findings as open questions unless evidence makes one the highest-priority gap."
             "State the scientific question before requesting evidence. Request only measurements whose possible outcomes can change the interpretation, model/lineage decision, or next scientific direction. Reuse compatible existing evidence. Comparison and task-reference measurement are optional."
             "Available evidence tools include checkpoint inventory and raw-log query, structured-artifact analysis, code inspection, lightweight local analysis, researcher measurement instrumentation, research measurement, task-reference measurement, and optional paired comparison."
             "Current candidates and eligible saved lineages can be remeasured through the existing request flow. If the relevant quantity is not currently emitted, you may modify researcher-owned measurement instrumentation before requesting it. Additional measurement rounds are optional and available only while closing this trained experiment."
             "When the campaign continues, establish a concrete next direction anchored to the campaign objective and the highest-priority unresolved measured behavior of best_known. Preserve a broader mechanism as open when only one concrete intervention failed."
-            "Choose exactly one outcome: write research/evaluation_request.json for another measurement round, or append the experiment postmortem and write a closure-only research/proposal.json choosing working lineage, code action, retention, and optionally best known. Candidate-only measurement and closure without new measurements are valid."
+            "Choose exactly one outcome: write runner/state/evaluation_request.json for another measurement round, or append the experiment postmortem and write a closure-only runner/state/proposal.json choosing working lineage, code action, retention, and optionally best known. Candidate-only measurement and closure without new measurements are valid."
             "Set request_final_benchmark to true only when terminal assessment of best_known is the highest-value next action according to the available development evidence, and explain why it is more valuable now than further research. A true value ends the campaign after either goal_reached or goal_not_reached and its result cannot select a later hypothesis."
-            "Do not run training, measurements, Git mutations, final assessment, or research/run_experiment.py; the launcher validates and executes the accepted deliverable."
+            "Do not run training, measurements, Git mutations, final assessment, or runner/run_experiment.py; the launcher validates and executes the accepted deliverable."
         ) -join " "
 ```
 
@@ -465,13 +465,13 @@ prompts. Replace only the three initial prompt arrays below.
 ```powershell
         $decisionPrompt = @(
             "Current phase: close experiment $($researchState.pending_researcher_decision.experiment) and resolve its lineage and scientific recipe. Do not exit without the required deliverables."
-            "Read AGENTS.md, research/program.md, research/scenario.md, research/instruments.md, and research/brief.md."
+            "Read AGENTS.md, contracts/program.md, contracts/scenario.md, contracts/instruments.md, and campaigns/brief.md."
             "Inspect the detailed evidence referenced for this experiment as needed to support the postmortem and lineage decision, preferring targeted extraction over full-artifact reads."
             "Use campaign artifacts for scientific evidence; inspect read-only Git only if the current experiment's scientific recipe delta is needed to justify keep or revert."
             "In the postmortem and Scientific strategy, state separately what the exact intervention established and whether its broader causal mechanism remains open. When the campaign continues, keep the next direction anchored to the highest-priority unresolved measured behavior of best_known."
             "Set request_final_benchmark to true only when terminal assessment is the highest-value next action according to available development evidence; explain why it is more valuable now than further research. A true value ends the campaign after either verdict and cannot provide feedback for another hypothesis."
-            "Expected deliverables: the required experiment entry in research/postmortems.md and the lineage-only research/proposal.json, using the contracts in research/instruments.md."
-            "Do not design another evaluation, modify the next learning method, propose the next experiment, or invoke research/run_experiment.py; the launcher validates and executes the decision."
+            "Expected deliverables: the required experiment entry in campaigns/postmortems.md and the lineage-only runner/state/proposal.json, using the contracts in contracts/instruments.md."
+            "Do not design another evaluation, modify the next learning method, propose the next experiment, or invoke runner/run_experiment.py; the launcher validates and executes the decision."
         ) -join " "
 ```
 
@@ -480,15 +480,15 @@ prompts. Replace only the three initial prompt arrays below.
 ```powershell
     $researchPrompt = @(
         "Current phase: prepare experiment $nextExperiment. The previous experiment is closed and no evaluation or lineage decision is pending. Do not exit without the required deliverable."
-        "Read AGENTS.md, research/program.md, research/scenario.md, research/instruments.md, and research/brief.md."
+        "Read AGENTS.md, contracts/program.md, contracts/scenario.md, contracts/instruments.md, and campaigns/brief.md."
         "Start from the campaign objective and the highest-priority unresolved measured behavioral gap of best_known. Compare the selected causal explanation with at least one plausible alternative, then choose the intervention that most clearly distinguishes them."
         "Only after choosing the mechanism and intervention, choose continuation, replication, or training with fresh or transfer initialization. Base fresh or transfer on semantic compatibility with the parent policy and learned representation; unchanged tensor dimensions alone do not establish compatibility."
         "Available evidence tools include checkpoint inventory and raw-log query, structured-artifact analysis, code inspection, lightweight local analysis, and focused researcher-owned tests."
         "Use the brief and campaign artifacts for scientific evidence; inspect read-only Git only if the selected operation requires understanding the current code state or delta."
         "Code or configuration edits are required only when the selected operation calls for them."
-        "Expected deliverable: research/proposal.json for experiment $nextExperiment, using the unchanged contract in research/instruments.md, plus any edits called for by the selected operation."
-        "Do not exit after analysis or diagnosis: this phase is incomplete until research/proposal.json has been written."
-        "Do not start training or evaluation, write a lineage decision, or invoke research/run_experiment.py; the launcher validates and executes the proposal."
+        "Expected deliverable: runner/state/proposal.json for experiment $nextExperiment, using the unchanged contract in contracts/instruments.md, plus any edits called for by the selected operation."
+        "Do not exit after analysis or diagnosis: this phase is incomplete until runner/state/proposal.json has been written."
+        "Do not start training or evaluation, write a lineage decision, or invoke runner/run_experiment.py; the launcher validates and executes the proposal."
     ) -join " "
 ```
 
@@ -617,7 +617,7 @@ Do not run Ruff: no Python production file changes in this commit. Commit with
 
 ## Commit 3 — Record research reasoning rebalance decision
 
-### Modify `research/PROTOCOL_DECISIONS.md`
+### Modify `docs/protocol-decisions.md`
 
 Append exactly:
 

@@ -8,11 +8,8 @@ from pathlib import Path
 
 import pytest
 
-from research import run_experiment
-from research import runner_execution as execution
-from research import runner_paths as paths
-from research import runner_repository as repository
-from research.stop_control import (
+from runner import execution, paths, repository, run_experiment
+from runner.stop_control import (
     STOP_REQUEST_ENV,
     interrupt_on_stop_request,
     stop_request_path,
@@ -60,7 +57,7 @@ def test_async_researcher_bridge_completes_when_request_appears(tmp_path):
 
 
 def test_runner_preserves_an_early_training_interrupt_for_resume(monkeypatch, tmp_path):
-    research = tmp_path / "research"
+    research = tmp_path / "campaigns"
     research.mkdir()
     for name, value in {
         "ROOT": tmp_path,
@@ -92,7 +89,7 @@ def test_runner_preserves_an_early_training_interrupt_for_resume(monkeypatch, tm
     )
     state["scientific_model"] = {
         "status": "ready",
-        "path": "research/scientific_model.md",
+        "path": "pi_workspace/scientific_model.md",
         "commit": "a" * 40,
     }
     repository.start_scientific_session(

@@ -169,25 +169,25 @@ function Test-PIWritablePath {
     $relative = ($Path -replace '\\', '/').TrimStart('/').ToLowerInvariant()
     if ($relative -in @(
         "robot_learning/scenario/__init__.py",
-        "robot_learning/scenario/final_benchmark.py",
-        "robot_learning/scenario/task_reference.py"
+        "benchmark/adapters/final_benchmark.py",
+        "benchmark/adapters/task_reference.py"
     )) {
         return $false
     }
     if ($Preliminary) {
-        return $relative -eq "research/scientific_model.md"
+        return $relative -eq "pi_workspace/scientific_model.md"
     }
     return (
         $relative -in @(
             "robot_learning/train.py",
             "robot_learning/evaluate.py",
             "robot_learning/play.py",
-            "research/current_params.json",
-            "research/operation_request.json"
+            "robot_learning/training/current_params.json",
+            "pi_workspace/operation_request.json"
         ) -or
         $relative.StartsWith("robot_learning/scenario/") -or
         $relative.StartsWith("robot_learning/training/") -or
-        $relative.StartsWith("research/lab/")
+        $relative.StartsWith("robot_learning/lab/")
     )
 }
 
@@ -236,23 +236,23 @@ function Test-LauncherSnapshotExcludedPath {
         return $true
     }
     if ($relative -in @(
-        "research/research_state.json",
-        "research/results.jsonl",
-        "research/experiments.md",
-        "research/goal_reached",
-        "research/recovery_pending",
-        "research/restart_pending",
-        "research/brief.md",
-        "research/last_train_summary.md",
-        "research/last_evaluation.json"
+        "runner/state/research_state.json",
+        "campaigns/results.jsonl",
+        "campaigns/experiments.md",
+        "runner/state/goal_reached",
+        "runner/state/recovery_pending",
+        "runner/state/restart_pending",
+        "campaigns/brief.md",
+        "runner/state/last_train_summary.md",
+        "runner/state/last_evaluation.json"
     )) {
         return $true
     }
     return (
-        $relative.StartsWith("research/training_logs/") -or
-        $relative.StartsWith("research/evaluations/") -or
-        $relative.StartsWith("research/checkpoints/candidates/") -or
-        $relative.StartsWith("research/checkpoints/retained/") -or
+        $relative.StartsWith("campaigns/training_logs/") -or
+        $relative.StartsWith("campaigns/evaluations/") -or
+        $relative.StartsWith("campaigns/checkpoints/candidates/") -or
+        $relative.StartsWith("campaigns/checkpoints/retained/") -or
         $relative.StartsWith("models/candidates/")
     )
 }

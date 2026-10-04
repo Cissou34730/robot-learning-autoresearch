@@ -18,7 +18,7 @@ from collections import deque
 from collections.abc import Iterator
 from pathlib import Path, PureWindowsPath
 
-from research import runner_paths as paths
+from runner import paths
 
 STATE_SCHEMA_VERSION = 6
 DEFAULT_MAX_INQUIRIES = 15
@@ -26,21 +26,21 @@ WINDOWS_COMMAND_LINE_LIMIT = 32_767
 ARTIFACT_CONTENTS_MAX_BYTES = 4_096
 
 RUNNER_CONTROL_PATHS = {
-    "research/operation_request.json",
-    "research/RECOVERY_PENDING",
-    "research/RESTART_PENDING",
+    "pi_workspace/operation_request.json",
+    "runner/state/RECOVERY_PENDING",
+    "runner/state/RESTART_PENDING",
 }
 RUNNER_MEMORY_PATHS = {
-    "research/research_state.json",
-    "research/results.jsonl",
-    "research/EXPERIMENTS.md",
-    "research/scientific_model.md",
-    "research/GOAL_REACHED",
+    "runner/state/research_state.json",
+    "campaigns/results.jsonl",
+    "campaigns/EXPERIMENTS.md",
+    "pi_workspace/scientific_model.md",
+    "runner/state/GOAL_REACHED",
 }
 RUNNER_MEMORY_PREFIXES = (
-    "research/evaluations/",
-    "research/checkpoints/candidates/",
-    "research/checkpoints/retained/",
+    "campaigns/evaluations/",
+    "campaigns/checkpoints/candidates/",
+    "campaigns/checkpoints/retained/",
 )
 
 ARTIFACT_FILES = ("model.zip", "artifact.json")
@@ -318,7 +318,7 @@ def is_runner_owned(path: str) -> bool:
 
 
 def scientific_change_paths(changed: list[str]) -> list[str]:
-    from research import runner_protocol as protocol
+    from runner import protocol
 
     return [
         path
@@ -332,7 +332,7 @@ def researcher_change_paths(changed: list[str]) -> list[str]:
 
 
 def campaign_lab_change_paths(changed: list[str]) -> list[str]:
-    from research import runner_protocol as protocol
+    from runner import protocol
 
     return [path for path in changed if protocol.is_campaign_lab(path)]
 
@@ -343,7 +343,7 @@ def committed_change_paths(parent: str) -> list[str]:
 
 
 def scientific_delta(parent: str) -> list[str]:
-    from research import runner_protocol as protocol
+    from runner import protocol
 
     committed = scientific_change_paths(
         committed_change_paths(parent) if parent else []
@@ -527,10 +527,10 @@ def publish_scientific_recipe(operation_id: str, scope: list[str]) -> str:
 def campaign_lab_manifest() -> list[dict]:
     tracked = [
         line.strip()
-        for line in git("ls-files", "--", "research/lab").splitlines()
+        for line in git("ls-files", "--", "robot_learning/lab").splitlines()
         if line.strip()
     ]
-    changed = campaign_lab_change_paths(status_paths(("research/lab",)))
+    changed = campaign_lab_change_paths(status_paths(("robot_learning/lab",)))
     manifest: list[dict] = []
     for relative in sorted({*tracked, *changed}):
         path = resolve_repo_path(relative)
@@ -541,9 +541,9 @@ def campaign_lab_manifest() -> list[dict]:
 
 def publish_campaign_laboratory(operation_id: str) -> dict | None:
     """Publish PI-authored diagnostic tools independently from policy recipes."""
-    changed = campaign_lab_change_paths(status_paths(("research/lab",)))
+    changed = campaign_lab_change_paths(status_paths(("robot_learning/lab",)))
     if changed:
-        from research import runner_execution as execution
+        from runner import execution
 
         execution.validate_changed_sources(changed)
         commit_paths(
@@ -552,7 +552,7 @@ def publish_campaign_laboratory(operation_id: str) -> dict | None:
     manifest = campaign_lab_manifest()
     if not manifest:
         return None
-    commit = git("log", "-1", "--format=%H", "--", "research/lab").strip()
+    commit = git("log", "-1", "--format=%H", "--", "robot_learning/lab").strip()
     if not commit:
         commit = git("rev-parse", "HEAD").strip()
     return {
@@ -1707,7 +1707,7 @@ def validate_research_state(state: dict, *, allow_missing_artifact: bool) -> Non
     if model["status"] not in {"pending", "ready"}:
         raise ValueError("scientific_model status must be pending or ready")
     _nonempty(model, "path", "scientific_model path")
-    if model["path"] != "research/scientific_model.md":
+    if model["path"] != "pi_workspace/scientific_model.md":
         raise ValueError("scientific_model path is unsupported")
     if model["status"] == "ready":
         _nonempty(model, "commit", "scientific_model commit")
@@ -1902,7 +1902,7 @@ def read_state() -> dict:
 
 
 def read_committed_state(revision: str) -> dict:
-    state = json.loads(git("show", f"{revision}:research/research_state.json"))
+    state = json.loads(git("show", f"{revision}:runner/state/research_state.json"))
     validate_research_state(state, allow_missing_artifact=True)
     return state
 
@@ -1930,10 +1930,10 @@ def empty_campaign_state(
     state = {
         "schema_version": STATE_SCHEMA_VERSION,
         "campaign": campaign_copy,
-        "human_goal": copy.deepcopy(human_goal or {"source": "research/scenario.md"}),
+        "human_goal": copy.deepcopy(human_goal or {"source": "contracts/scenario.md"}),
         "scientific_model": {
             "status": "pending",
-            "path": "research/scientific_model.md",
+            "path": "pi_workspace/scientific_model.md",
             "commit": None,
         },
         "active_inquiry": None,
@@ -2089,7 +2089,7 @@ def synchronize_max_inquiries(state: dict, requested: int) -> bool:
 def require_scientific_model_publication_pending(state: dict) -> None:
     if state["scientific_model"] != {
         "status": "pending",
-        "path": "research/scientific_model.md",
+        "path": "pi_workspace/scientific_model.md",
         "commit": None,
     }:
         raise ValueError("the scientific model can be published only once from pending")
@@ -2112,7 +2112,7 @@ def mark_scientific_model_ready(state: dict, commit: str) -> None:
     require_resolvable_commit(commit)
     state["scientific_model"] = {
         "status": "ready",
-        "path": "research/scientific_model.md",
+        "path": "pi_workspace/scientific_model.md",
         "commit": commit,
     }
 

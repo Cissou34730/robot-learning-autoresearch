@@ -4,7 +4,7 @@
 
 This is the follow-up implementation plan for the campaign run after `IMPLEMENTATION_PLAN_RESEARCH_WORKFLOW.md`. Implement this document in full, in the order below. The previous document explains the existing workflow; this document supersedes its conflicting requirements and repairs incomplete implementation. Do not reimplement the whole lifecycle.
 
-The human's objective is a learned robot policy meeting the task in `research/scenario.md`. The Researcher chooses how to investigate, train, measure, continue, retain, or abandon a scientific direction. The Runner executes those choices and preserves their integrity. The Runner must not choose the scientific winner, mandate a comparison, impose a number of experiments per direction, or require a new training intervention when unchanged continuation is appropriate.
+The human's objective is a learned robot policy meeting the task in `contracts/scenario.md`. The Researcher chooses how to investigate, train, measure, continue, retain, or abandon a scientific direction. The Runner executes those choices and preserves their integrity. The Runner must not choose the scientific winner, mandate a comparison, impose a number of experiments per direction, or require a new training intervention when unchanged continuation is appropriate.
 
 The recent campaign showed improvements in the Researcher's behavior and in the harness workflow: hypotheses followed earlier observations, several experiments transferred from an existing policy, measurements addressed behavioral questions, and poor interventions were abandoned. Preserve these methodological and harness gains when correcting the remaining defects. This does not mean preserving the campaign's trained models, scientific interventions, parameters, or experiment-6 smoothing in the next campaign. The remaining defects concern preservation of models and recipes when explicitly selected, expression of scientifically valid comparisons and closures, incomplete feedback on hypotheses, and residual instructional bias.
 
@@ -36,11 +36,11 @@ Keep the configured Researcher model, reasoning effort, training budget, checkpo
 - New implementation branch: `codex/campaign-correctness-remediation`.
 - Implementation stays in this same worktree. Do not create another worktree.
 
-First read `AGENTS.md`, this plan, `research/program.md`, `research/instruments.md`, and the previous implementation plan. Record the actual HEAD, branch, working-tree status, and relevant existing ignored phase files. If another implementation has changed the starting code, inspect its diff and report the discrepancy before choosing a different base. Do not silently build on another campaign or an unrelated branch.
+First read `AGENTS.md`, this plan, `contracts/program.md`, `contracts/instruments.md`, and the previous implementation plan. Record the actual HEAD, branch, working-tree status, and relevant existing ignored phase files. If another implementation has changed the starting code, inspect its diff and report the discrepancy before choosing a different base. Do not silently build on another campaign or an unrelated branch.
 
 At inspection, the following interrupted-campaign changes were present:
 
-- Modified `research/EXPERIMENTS.md`, `research/postmortems.md`, `research/research_state.json`, and `research/results.jsonl`.
+- Modified `campaigns/EXPERIMENTS.md`, `campaigns/postmortems.md`, `runner/state/research_state.json`, and `campaigns/results.jsonl`.
 - Three untracked experiment-6 evaluation JSON files under campaign `90890200-b313-4f38-b010-de1eaaeb3d98`.
 - Ignored campaign files, including phase deliverables and challenger artifacts, may also be present.
 
@@ -68,7 +68,7 @@ Use function names as navigation anchors; line numbers will change.
 
 | Location | Verified behavior | Required repair |
 | --- | --- | --- |
-| `runner_protocol._v4_lineage_record`, `plan_v4_previous_result_decision` | New v4 role records retain candidate paths under `research/checkpoints/challengers/`. | Materialize selected/retained artifacts at durable Git-tracked paths before closing. |
+| `runner_protocol._v4_lineage_record`, `plan_v4_previous_result_decision` | New v4 role records retain candidate paths under `campaigns/checkpoints/challengers/`. | Materialize selected/retained artifacts at durable Git-tracked paths before closing. |
 | `run_experiment.apply_pending_v4_closure` | Assigns role records but does not perform the copies that the legacy closure path performs. | Implement durable materialization in the v4 path, including restart and push failure handling. |
 | `.gitignore`, `runner_repository.RUNNER_MEMORY_PREFIXES` | Challengers are ignored; accepted and retained paths are tracked. | Keep disposable challengers ignored; persist chosen artifacts through the tracked archive. Checking the legacy path is not proof that v4 persists models. |
 | `runner_protocol.training_parent`, `run_experiment.run_training_experiment` | Resolves an old parent model and step count while loading current worktree configuration. | An unchanged continuation must restore the selected parent's complete recipe before effective configuration is loaded. |
@@ -90,16 +90,16 @@ A state JSON that points to ignored model files is not durable persistence. A lo
 
 ### Files
 
-- `research/runner_repository.py`: artifact copy, memory paths, commit/publication, role references.
-- `research/runner_paths.py`: reuse `campaign_retained_root()`.
-- `research/runner_protocol.py`: v4 closure plan and lineage record construction.
-- `research/run_experiment.py`: serialized closure plan, application, recovery, cleanup.
+- `runner/repository.py`: artifact copy, memory paths, commit/publication, role references.
+- `runner/paths.py`: reuse `campaign_retained_root()`.
+- `runner/protocol.py`: v4 closure plan and lineage record construction.
+- `runner/run_experiment.py`: serialized closure plan, application, recovery, cleanup.
 - `tests/autoresearch/test_lineage_roles.py`, `test_post_training_analysis.py`, `test_execution_contract.py`.
 - `AGENTS.md`, only the artifact-location description affected by this change.
 
 ### Required implementation
 
-1. Use the existing Git-tracked `research/checkpoints/retained/<campaign-id>/` archive for new durable v4 policies. Give each newly materialized policy a stable physical directory derived from its source experiment, checkpoint, and complete fingerprint. Retained user-facing IDs remain labels in state; they need not be directory names.
+1. Use the existing Git-tracked `campaigns/checkpoints/retained/<campaign-id>/` archive for new durable v4 policies. Give each newly materialized policy a stable physical directory derived from its source experiment, checkpoint, and complete fingerprint. Retained user-facing IDs remain labels in state; they need not be directory names.
 2. Copy weights, `artifact.json`, `policy_runtime.pkl`, and any saved normalization/replay files using the existing complete-artifact contract. Do not copy only weights or rename the internal files.
 3. Resolve working, best-known, explicit retentions, and pre-decision role aliases before mutations. Deduplicate copies when several references point to the same immutable artifact.
 4. Include source, destination, expected fingerprint, and resulting role records in `pending_closure_operation`. Build and validate the full plan before copying, restoring code, updating state, or cleaning artifacts.
@@ -131,16 +131,16 @@ The selected parent's weights and its recipe are distinct persisted facts. Ordin
 
 ### Files
 
-- `research/runner_protocol.py`: `training_parent`, `plan_lineage_restore`, preparation/continuation validation.
-- `research/runner_repository.py`: scientific surface restoration and recipe provenance.
-- `research/run_experiment.py`: preparation acceptance and configuration-loading order.
-- `research/runner_execution.py`: only parent metadata/configuration handoff where needed.
+- `runner/protocol.py`: `training_parent`, `plan_lineage_restore`, preparation/continuation validation.
+- `runner/repository.py`: scientific surface restoration and recipe provenance.
+- `runner/run_experiment.py`: preparation acceptance and configuration-loading order.
+- `runner/execution.py`: only parent metadata/configuration handoff where needed.
 - `tests/autoresearch/test_lineage_roles.py`, `test_research_protocol.py`, `test_execution_contract.py`.
 
 ### Required implementation
 
 1. Reuse the existing lineage record: artifact identity, `scientific_commit`, effective `parameters`, original checkpoint, and cumulative steps. Resolve `training_parent` once at proposal acceptance and freeze this identity for execution/recovery.
-2. Validate an unchanged continuation against the Researcher-authored delta first. It must contain no parameter override or scientific edit. Do not classify the Runner's subsequent restoration of the old recipe as a Researcher intervention. The scientific restoration set must include `research/current_params.json`: the current `is_researcher_owned()` code-prefix predicate and parameter-only classification are separate, so using that predicate alone would omit the JSON.
+2. Validate an unchanged continuation against the Researcher-authored delta first. It must contain no parameter override or scientific edit. Do not classify the Runner's subsequent restoration of the old recipe as a Researcher intervention. The scientific restoration set must include `robot_learning/training/current_params.json`: the current `is_researcher_owned()` code-prefix predicate and parameter-only classification are separate, so using that predicate alone would omit the JSON.
 3. Plan restoration through the current authoritative scientific ownership rules. Restore scientific source, runtime configuration, associated scientific tests, and added/deleted scientific files together. Preserve harness files, dependencies, protected task files, and all campaign memory.
 4. Restore the parent's recorded effective runtime parameters as well as its code revision. Do not assume that the currently checked-out JSON equals the effective parameters recorded for the selected model.
 5. Apply the validated restoration before loading effective training configuration and before importing/reusing scientific modules for execution. Account for Python module caching: use the existing fresh training/validation subprocesses after restoration rather than executing already-imported stale science.
@@ -171,11 +171,11 @@ Experiments 2, 4, and 5 encountered refusals to compare a new candidate with an 
 
 ### Files
 
-- `research/runner_protocol.py`: `_development_evidence_catalog`, `resolved_measurement_models`, `validate_paired_comparison_plan`, `_validated_designation_evidence`, best-known planning.
-- `research/run_experiment.py`: measurement acceptance, completed measurement persistence, comparison inputs.
-- `research/runner_repository.py`: measurement records and canonical evidence references.
-- `research/runner_execution.py`: `requested_paired_comparisons` and its input loading.
-- `research/build_research_brief.py`, `research/runner_console.py`: available evidence and actionable validation feedback.
+- `runner/protocol.py`: `_development_evidence_catalog`, `resolved_measurement_models`, `validate_paired_comparison_plan`, `_validated_designation_evidence`, best-known planning.
+- `runner/run_experiment.py`: measurement acceptance, completed measurement persistence, comparison inputs.
+- `runner/repository.py`: measurement records and canonical evidence references.
+- `runner/execution.py`: `requested_paired_comparisons` and its input loading.
+- `runner/build_brief.py`, `runner/console.py`: available evidence and actionable validation feedback.
 - `tests/autoresearch/test_lineage_roles.py`, `test_post_training_analysis.py`, `test_execution_contract.py`, `test_research_protocol.py`.
 
 ### One evidence resolution path
@@ -226,7 +226,7 @@ This step uses smoothing as the concrete regression case for the general rule th
 
 - `robot_learning/scenario/environment.py`, `robot_learning/scenario/policy_io.py`.
 - `robot_learning/training/checkpoint.py`, only if export wiring needs correction.
-- `robot_learning/policy_runtime.py`, only if the existing `PolicyIO.action/reset` contract needs a correctness fix.
+- `contracts/policy_runtime.py`, only if the existing `PolicyIO.action/reset` contract needs a correctness fix.
 - `tests/scenario/test_environment.py`, related researcher-owned scientific tests.
 - `tests/autoresearch/test_policy_runtime.py`; short boundary checks in `tests/benchmark/` if necessary to verify their existing runtime calls.
 
@@ -260,10 +260,10 @@ Preparation already requires `reasoning.expected_observation`, `contradicting_ob
 
 ### Files
 
-- `research/runner_protocol.py`: postmortem parsing/validation.
-- `research/run_experiment.py`: snapshot the assessment into the closed result.
-- `research/runner_repository.py`: result update and `experiment_log_row`.
-- `research/build_research_brief.py`, `research/runner_console.py`.
+- `runner/protocol.py`: postmortem parsing/validation.
+- `runner/run_experiment.py`: snapshot the assessment into the closed result.
+- `runner/repository.py`: result update and `experiment_log_row`.
+- `runner/build_brief.py`, `runner/console.py`.
 - `tests/autoresearch/test_scientific_reasoning.py`, `test_research_context.py`, `test_console_presentation.py`, `test_post_training_analysis.py`.
 
 ### Required contract and memory behavior
@@ -300,7 +300,7 @@ Continuation already exists in the schema. Its absence in two observed campaigns
 
 ### Files
 
-- `research/program.md`, `research/instruments.md`.
+- `contracts/program.md`, `contracts/instruments.md`.
 - `run_research.ps1`, including initial and retry prompts.
 - `AGENTS.md`, only operational wording that contradicts the updated behavior.
 - `README.md`, for lifecycle and maintenance descriptions.
@@ -350,18 +350,18 @@ The first restores scientific recipe then clears campaign state. The second reta
 ### Files
 
 - `reset_research.ps1`: public parameters, PowerShell entry point, human-facing result.
-- Add `research/reset_campaign.py`: a narrow human-only reset implementation using existing repository/protocol helpers.
-- `research/runner_repository.py`, `runner_protocol.py`: reuse common scientific restoration, fingerprint/state validation, and derived history helpers.
-- `research/runner_paths.py`, only if the existing path helpers need an additional durable artifact path.
-- `researcher_copilot.py`, only to add the maintenance helper to existing script/module execution guards; corresponding focused guard tests in `tests/autoresearch/test_copilot_researcher.py`.
-- `README.md`, `AGENTS.md`, `research/PROTOCOL_DECISIONS.md`.
+- Add `runner/reset_campaign.py`: a narrow human-only reset implementation using existing repository/protocol helpers.
+- `runner/repository.py`, `runner_protocol.py`: reuse common scientific restoration, fingerprint/state validation, and derived history helpers.
+- `runner/paths.py`, only if the existing path helpers need an additional durable artifact path.
+- `runner/copilot_adapter.py`, only to add the maintenance helper to existing script/module execution guards; corresponding focused guard tests in `tests/autoresearch/test_copilot_researcher.py`.
+- `README.md`, `AGENTS.md`, `docs/protocol-decisions.md`.
 - `tests/autoresearch/test_reset_research.py`, `test_lineage_roles.py`, `test_campaign_boundary.py`.
 
 ### Refactoring boundary
 
 Keep PowerShell as the existing human command, forwarding validated arguments through `uv run` to one Python reset entry point. Move reset state serialization, artifact identity, recipe path planning, and history generation into Python so they use the same implementation as the Runner. Preserve existing filesystem confinement, dirty-tree refusal, file-lock handling, and commit/push behavior. Enforce stopped-campaign exclusion through the same named mutex used by `run_research.ps1` (`Local\RobotLearningAutoresearch`); the PowerShell wrapper acquires and holds it for the maintenance operation and releases it in `finally`. Do not rename or redesign the campaign lock. Do not implement a second fingerprint or scientific surface definition in the wrapper.
 
-This helper is maintenance code and human-owned. Add `research/reset_campaign.py` to the explicit protected Runner paths and its script/module invocations to existing execution guards, with a focused test. It is not a new Researcher instrument. Resolve its configuration without importing/executing historical researcher modules during reset planning. Use subprocess validation after restoration when runtime imports are required.
+This helper is maintenance code and human-owned. Add `runner/reset_campaign.py` to the explicit protected Runner paths and its script/module invocations to existing execution guards, with a focused test. It is not a new Researcher instrument. Resolve its configuration without importing/executing historical researcher modules during reset planning. Use subprocess validation after restoration when runtime imports are required.
 
 ### Fresh with a recipe source
 
@@ -393,7 +393,7 @@ This helper is maintenance code and human-owned. Add `research/reset_campaign.py
 
 The reward constants at this revision are `PROGRESS_COEFFICIENT=10.0`, `CLOSENESS_COEFFICIENT=4.0`, `CLOSENESS_LENGTH_SCALE=0.05`, `ACTION_COST_COEFFICIENT=0.01`, `HOLD_PROGRESS_BONUS=50.0`, `HOLD_PROGRESS_EXPONENT=1.0`, `HOLD_EXIT_FORFEIT_FRACTION=0.0`, `OUTSIDE_BAND_WIDTH=0.01`, `OUTSIDE_BAND_PENALTY=0.1`, and `HOLD_COMPLETE_BONUS=50.0`. Restore their source implementation, not just these numbers.
 
-These values are historical provenance, not new defaults to hard-code. A read-only diff during plan preparation found no differences between `fef60b8ab90c0c04c4f00d8a676e05527d74dfd8` (pre-training reset) and `c46ec8951612b03c8906045803e33f5f98f2cae7` under `robot_learning/`, `tests/scenario/`, `tests/training/`, or `research/current_params.json`. The selected artifact's effective runtime configuration matches the table. Recheck this provenance before presenting the human command; no restoration or live model evaluation is needed to verify it. If an unexpected difference is found, report it rather than silently selecting another recipe.
+These values are historical provenance, not new defaults to hard-code. A read-only diff during plan preparation found no differences between `fef60b8ab90c0c04c4f00d8a676e05527d74dfd8` (pre-training reset) and `c46ec8951612b03c8906045803e33f5f98f2cae7` under `robot_learning/`, `tests/scenario/`, `tests/training/`, or `robot_learning/training/current_params.json`. The selected artifact's effective runtime configuration matches the table. Recheck this provenance before presenting the human command; no restoration or live model evaluation is needed to verify it. If an unexpected difference is found, report it rather than silently selecting another recipe.
 
 ### Existing trained-baseline mode
 
@@ -423,7 +423,7 @@ Commit/push: `feat: restore a scientific recipe before fresh campaign reset`.
 
 ### Files
 
-- `research/PROTOCOL_DECISIONS.md`: append dated decisions and reasons.
+- `docs/protocol-decisions.md`: append dated decisions and reasons.
 - `README.md`, `AGENTS.md`: reconcile operational ownership, saved artifact locations, reset commands, and validation scope.
 - Relevant tests already listed, with at most narrowly focused additions under existing domain directories.
 

@@ -2,22 +2,42 @@
 
 from __future__ import annotations
 
+import atexit
 import json
+import os
+import shutil
 import subprocess
 import sys
+import tempfile
 from pathlib import Path
 
 import pytest
 
-from research import run_experiment
-from research import runner_execution as execution
-from research import runner_paths as paths
-from research import runner_protocol as protocol
-from research import runner_repository as repository
+from runner import execution, paths, protocol, repository, run_experiment
+
+
+def _init_git_worktree(path: Path) -> None:
+    git_dir = Path(os.environ.get("TEMP", str(path.parent))) / f"{path.name}.gitdir"
+    if git_dir.exists():
+        import shutil
+
+        shutil.rmtree(git_dir)
+    subprocess.run(
+        ["git", "-C", str(path), "init", "--quiet", "--separate-git-dir", str(git_dir)],
+        check=True,
+    )
+
+
+def _short_worktree(prefix: str) -> Path:
+    root = Path(__file__).resolve().parents[2] / ".pytest-worktrees"
+    root.mkdir(exist_ok=True)
+    path = Path(tempfile.mkdtemp(prefix=prefix, dir=root))
+    atexit.register(shutil.rmtree, path, ignore_errors=True)
+    return path
 
 
 def _configure(monkeypatch, tmp_path: Path) -> dict:
-    research = tmp_path / "research"
+    research = tmp_path / "campaigns"
     research.mkdir()
     replacements = {
         "ROOT": tmp_path,
@@ -26,7 +46,7 @@ def _configure(monkeypatch, tmp_path: Path) -> dict:
         "RESULTS_PATH": research / "results.jsonl",
         "LOG_PATH": research / "EXPERIMENTS.md",
         "OPERATION_REQUEST_PATH": research / "operation_request.json",
-        "SCIENTIFIC_MODEL_PATH": research / "scientific_model.md",
+        "SCIENTIFIC_MODEL_PATH": tmp_path / "pi_workspace" / "scientific_model.md",
         "TRAINING_LOG_DIR": research / "training_logs",
         "CANDIDATE_ROOT": tmp_path / "models" / "candidates",
         "EVALUATION_DIR": research / "evaluations",
@@ -46,14 +66,14 @@ def _configure(monkeypatch, tmp_path: Path) -> dict:
     state = repository.empty_campaign_state(
         campaign={"id": "campaign", "started_at": "now", "base_commit": "base"},
         human_goal={
-            "source": "research/scenario.md",
+            "source": "contracts/scenario.md",
             "summary": "Reach the protected task success threshold.",
         },
         last_verdict="fresh campaign",
     )
     state["scientific_model"] = {
         "status": "ready",
-        "path": "research/scientific_model.md",
+        "path": "pi_workspace/scientific_model.md",
         "commit": "a" * 40,
     }
     repository.write_state(state)
@@ -530,7 +550,7 @@ def test_python_module_uses_frozen_module_manifest_not_evaluation_semantics(
 ):
     state = _configure(monkeypatch, tmp_path)
     _start_session(state, "startup", "Run a PI-authored diagnostic.")
-    module = tmp_path / "research" / "lab" / "diagnostic.py"
+    module = tmp_path / "robot_learning" / "lab" / "diagnostic.py"
     module.parent.mkdir(parents=True)
     module.write_text("version = 1\n", encoding="utf-8")
     artifact = paths.campaign_evaluation_dir("campaign") / "diagnostic.json"
@@ -541,7 +561,7 @@ def test_python_module_uses_frozen_module_manifest_not_evaluation_semantics(
             "measurements": [
                 {
                     "instrument": "python_module",
-                    "module": "research.lab.diagnostic",
+                    "module": "robot_learning.lab.diagnostic",
                     "args": ["--output", str(artifact)],
                     "artifact": repository.repo_relative_path(artifact),
                 }
@@ -562,7 +582,7 @@ def test_generic_measurement_executes_pi_owned_tool_and_records_artifact(
 ):
     state = _configure(monkeypatch, tmp_path)
     session = _start_session(state, "startup", "Run a PI-authored diagnostic.")
-    module = tmp_path / "research" / "lab" / "diagnostic.py"
+    module = tmp_path / "robot_learning" / "lab" / "diagnostic.py"
     module.parent.mkdir(parents=True)
     module.write_text("def main():\n    return None\n", encoding="utf-8")
     artifact = paths.campaign_evaluation_dir("campaign") / "diagnostic.json"
@@ -573,7 +593,7 @@ def test_generic_measurement_executes_pi_owned_tool_and_records_artifact(
             "measurements": [
                 {
                     "instrument": "python_module",
-                    "module": "research.lab.diagnostic",
+                    "module": "robot_learning.lab.diagnostic",
                     "args": ["--output", str(artifact)],
                     "artifact": repository.repo_relative_path(artifact),
                 }
@@ -621,7 +641,7 @@ def test_identical_raw_measurement_after_completion_allocates_next_operation(
 ):
     state = _configure(monkeypatch, tmp_path)
     _start_session(state, "startup", "Repeat one bounded diagnostic.")
-    module = tmp_path / "research" / "lab" / "diagnostic.py"
+    module = tmp_path / "robot_learning" / "lab" / "diagnostic.py"
     module.parent.mkdir(parents=True)
     module.write_text("def main():\n    return None\n", encoding="utf-8")
     artifact = paths.campaign_evaluation_dir("campaign") / "diagnostic.json"
@@ -632,7 +652,7 @@ def test_identical_raw_measurement_after_completion_allocates_next_operation(
             "measurements": [
                 {
                     "instrument": "python_module",
-                    "module": "research.lab.diagnostic",
+                    "module": "robot_learning.lab.diagnostic",
                     "args": ["--output", str(artifact)],
                     "artifact": repository.repo_relative_path(artifact),
                 }
@@ -698,7 +718,7 @@ def test_completed_python_module_recovery_rejects_mutated_archived_evidence(
 ):
     state = _configure(monkeypatch, tmp_path)
     _start_session(state, "startup", "Recover one completed diagnostic.")
-    module = tmp_path / "research" / "lab" / "diagnostic.py"
+    module = tmp_path / "robot_learning" / "lab" / "diagnostic.py"
     module.parent.mkdir(parents=True)
     module.write_text("def main():\n    return None\n", encoding="utf-8")
     artifact = paths.campaign_evaluation_dir("campaign") / "diagnostic.json"
@@ -709,7 +729,7 @@ def test_completed_python_module_recovery_rejects_mutated_archived_evidence(
             "measurements": [
                 {
                     "instrument": "python_module",
-                    "module": "research.lab.diagnostic",
+                    "module": "robot_learning.lab.diagnostic",
                     "args": ["--output", str(artifact)],
                     "artifact": repository.repo_relative_path(artifact),
                 }
@@ -1032,13 +1052,13 @@ def test_failed_operation_can_be_reaccepted_with_repaired_provenance(
 ):
     state = _configure(monkeypatch, tmp_path)
     _start_session(state, "startup", "Repair a failed training operation.")
-    source = tmp_path / "robot_learning" / "scenario" / "reward.py"
+    source = tmp_path / "robot_learning" / "training" / "reward.py"
     source.parent.mkdir(parents=True)
     source.write_text("reward = 1\n", encoding="utf-8")
     monkeypatch.setattr(
         repository,
         "scientific_delta",
-        lambda _parent: ["robot_learning/scenario/reward.py"],
+        lambda _parent: ["robot_learning/training/reward.py"],
     )
     monkeypatch.setattr(run_experiment.research_config, "load_experiment_config", dict)
     request = {
@@ -1262,7 +1282,7 @@ def test_model_roles_change_only_through_explicit_evidence_backed_operation(
                         "label": "recorded evidence",
                         "metrics": {
                             "evaluation_artifact": (
-                                "research/evaluations/campaign/evidence.json"
+                                "campaigns/evaluations/campaign/evidence.json"
                             ),
                             "evaluation_artifact_fingerprint": "e" * 64,
                             "model_fingerprint": candidate["fingerprint"],
@@ -1309,7 +1329,7 @@ def test_checkpoint_and_model_role_requests_reject_noncompleted_evidence(
     with pytest.raises(ValueError, match="status == completed"):
         protocol.validate_operation_request(checkpoint, state)
 
-    evidence_file = tmp_path / "research" / "evaluations" / "untracked.json"
+    evidence_file = tmp_path / "campaigns" / "evaluations" / "untracked.json"
     evidence_file.parent.mkdir(parents=True)
     evidence_file.write_text("{}", encoding="utf-8")
     checkpoint["checkpoint"]["evidence_references"] = [
@@ -1451,10 +1471,10 @@ def test_recipe_restoration_rejects_worktree_changes_after_acceptance(
     candidate = _candidate("T1:checkpoint-10", artifact)
     state["candidates"][candidate["id"]] = candidate
     repository.write_state(state)
-    source = tmp_path / "robot_learning" / "scenario" / "reward.py"
+    source = tmp_path / "robot_learning" / "training" / "reward.py"
     source.parent.mkdir(parents=True)
     source.write_text("reward = 1\n", encoding="utf-8")
-    changed = ["robot_learning/scenario/reward.py"]
+    changed = ["robot_learning/training/reward.py"]
     monkeypatch.setattr(repository, "require_resolvable_commit", lambda _commit: None)
     monkeypatch.setattr(repository, "scientific_delta", lambda _commit: list(changed))
     monkeypatch.setattr(repository, "tracked_at_commit", lambda _commit, _path: True)
@@ -1466,6 +1486,7 @@ def test_recipe_restoration_rejects_worktree_changes_after_acceptance(
     }
     run_experiment.accept_operation(request, state)
     addition = tmp_path / "robot_learning" / "scenario" / "new_tool.py"
+    addition.parent.mkdir(parents=True, exist_ok=True)
     addition.write_text("new = True\n", encoding="utf-8")
     changed.append("robot_learning/scenario/new_tool.py")
     with pytest.raises(run_experiment.FrozenOperationMismatch, match="inputs changed"):
@@ -1585,31 +1606,29 @@ def test_recipe_restore_removes_additions_and_restores_edits_and_deletions(
     deleted = source / "deleted.py"
     edited.write_text("value = 1\n", encoding="utf-8")
     deleted.write_text("present = True\n", encoding="utf-8")
-    subprocess.run(["git", "init", "--quiet"], cwd=tmp_path, check=True)
-    subprocess.run(
-        ["git", "config", "user.email", "test@example.com"], cwd=tmp_path, check=True
-    )
-    subprocess.run(
-        ["git", "config", "user.name", "Test User"], cwd=tmp_path, check=True
-    )
-    subprocess.run(["git", "add", "."], cwd=tmp_path, check=True)
-    subprocess.run(
-        ["git", "commit", "--quiet", "-m", "recipe"], cwd=tmp_path, check=True
-    )
-    commit = subprocess.run(
-        ["git", "rev-parse", "HEAD"],
-        cwd=tmp_path,
-        check=True,
-        capture_output=True,
-        text=True,
-        encoding="utf-8",
-    ).stdout.strip()
+    snapshot = {
+        "robot_learning/scenario/edited.py": "value = 1\n",
+        "robot_learning/scenario/deleted.py": "present = True\n",
+    }
     edited.write_text("value = 2\n", encoding="utf-8")
     deleted.unlink()
     added = source / "added.py"
     added.write_text("extra = True\n", encoding="utf-8")
 
-    plan = protocol.plan_recipe_paths(commit)
+    def restore_paths(commit: str, restorable: list[str]) -> None:
+        assert commit == "source"
+        for relative in restorable:
+            target = tmp_path / relative
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_text(snapshot[relative], encoding="utf-8")
+
+    monkeypatch.setattr(repository, "restore_paths", restore_paths)
+    monkeypatch.setattr(repository, "git", lambda *_args, **_kwargs: "")
+    plan = {
+        "parent": "source",
+        "restore": list(snapshot),
+        "remove_created": ["robot_learning/scenario/added.py"],
+    }
     repository.apply_recipe_restore(plan)
 
     assert repository.recipe_paths_match_commit(plan)
@@ -1648,35 +1667,42 @@ def test_task_reference_uses_frozen_protected_contract(monkeypatch, tmp_path):
 
 
 def test_mark_scientific_model_ready_commits_exact_content(monkeypatch, tmp_path):
-    research = tmp_path / "research"
+    research = tmp_path / "campaigns"
     research.mkdir()
     for name, value in {
         "ROOT": tmp_path,
         "RESEARCH_DIR": research,
-        "STATE_PATH": research / "research_state.json",
+        "STATE_PATH": tmp_path / "runner" / "state" / "research_state.json",
         "RESULTS_PATH": research / "results.jsonl",
         "LOG_PATH": research / "EXPERIMENTS.md",
-        "OPERATION_REQUEST_PATH": research / "operation_request.json",
-        "SCIENTIFIC_MODEL_PATH": research / "scientific_model.md",
+        "OPERATION_REQUEST_PATH": tmp_path / "pi_workspace" / "operation_request.json",
+        "SCIENTIFIC_MODEL_PATH": tmp_path / "pi_workspace" / "scientific_model.md",
     }.items():
         monkeypatch.setattr(paths, name, value)
-    subprocess.run(["git", "init", "--quiet"], cwd=tmp_path, check=True)
-    subprocess.run(
-        ["git", "config", "user.email", "test@example.com"], cwd=tmp_path, check=True
-    )
-    subprocess.run(
-        ["git", "config", "user.name", "Test User"], cwd=tmp_path, check=True
-    )
-    (tmp_path / "seed.txt").write_text("seed\n", encoding="utf-8")
-    subprocess.run(["git", "add", "seed.txt"], cwd=tmp_path, check=True)
-    subprocess.run(["git", "commit", "--quiet", "-m", "seed"], cwd=tmp_path, check=True)
     state = repository.empty_campaign_state(
         campaign={"id": "campaign", "started_at": "now", "base_commit": "base"},
         last_verdict="fresh campaign",
     )
     repository.write_state(state)
     content = "exact scientific model\nwith two lines\n"
+    paths.SCIENTIFIC_MODEL_PATH.parent.mkdir(parents=True, exist_ok=True)
     paths.SCIENTIFIC_MODEL_PATH.write_text(content, encoding="utf-8")
+    committed: dict[str, str | list[str]] = {}
+
+    def commit_paths(message: str, scope: list[str]) -> None:
+        committed["message"] = message
+        committed["scope"] = scope
+        committed["content"] = paths.SCIENTIFIC_MODEL_PATH.read_text(encoding="utf-8")
+
+    def require_path_at_commit(commit: str, relative: str) -> None:
+        assert commit == "model-commit"
+        assert relative == "pi_workspace/scientific_model.md"
+        assert committed["content"] == content
+
+    monkeypatch.setattr(repository, "commit_paths", commit_paths)
+    monkeypatch.setattr(repository, "git", lambda *_args, **_kwargs: "model-commit\n")
+    monkeypatch.setattr(repository, "require_path_at_commit", require_path_at_commit)
+    monkeypatch.setattr(repository, "commit_runner_memory", lambda _message: True)
     monkeypatch.setattr(repository, "push_head", lambda: None)
     monkeypatch.setattr(
         sys, "argv", ["run_experiment.py", "--mark-scientific-model-ready"]
@@ -1685,26 +1711,14 @@ def test_mark_scientific_model_ready_commits_exact_content(monkeypatch, tmp_path
     assert run_experiment.main() == 0
     persisted = repository.read_state()
     commit = persisted["scientific_model"]["commit"]
-    committed = subprocess.run(
-        ["git", "show", f"{commit}:research/scientific_model.md"],
-        cwd=tmp_path,
-        check=True,
-        capture_output=True,
-        text=True,
-        encoding="utf-8",
-    ).stdout
-    assert committed == content
-    state_at_commit = subprocess.run(
-        ["git", "show", "HEAD:research/research_state.json"],
-        cwd=tmp_path,
-        check=True,
-        capture_output=True,
-        text=True,
-        encoding="utf-8",
-    ).stdout
-    assert json.loads(state_at_commit)["scientific_model"] == {
+    assert committed == {
+        "message": repository.campaign_commit_message("scientific model"),
+        "scope": ["pi_workspace/scientific_model.md"],
+        "content": content,
+    }
+    assert persisted["scientific_model"] == {
         "status": "ready",
-        "path": "research/scientific_model.md",
+        "path": "pi_workspace/scientific_model.md",
         "commit": commit,
     }
     with pytest.raises(ValueError, match="only once from pending"):
@@ -1860,9 +1874,9 @@ def test_completed_runner_results_are_strict_but_metrics_remain_extensible(
             "measurements": [
                 {
                     "instrument": "python_module",
-                    "module": "research.lab.diagnostic",
+                    "module": "robot_learning.lab.diagnostic",
                     "args": [],
-                    "artifact": "research/evaluations/campaign/diagnostic.json",
+                    "artifact": "campaigns/evaluations/campaign/diagnostic.json",
                 }
             ],
         },
@@ -1871,12 +1885,12 @@ def test_completed_runner_results_are_strict_but_metrics_remain_extensible(
             "measurements": [
                 {
                     "instrument": "python_module",
-                    "module": "research.lab.diagnostic",
+                    "module": "robot_learning.lab.diagnostic",
                     "args": [],
                     "label": "diagnostic",
                     "metrics": {
                         "evaluation_artifact": (
-                            "research/evaluations/campaign/diagnostic.json"
+                            "campaigns/evaluations/campaign/diagnostic.json"
                         ),
                         "evaluation_artifact_fingerprint": "f" * 64,
                         "scientific_metric": {
@@ -1899,8 +1913,8 @@ def test_completed_runner_results_are_strict_but_metrics_remain_extensible(
                     "reference_model_fingerprint": "r" * 64,
                     "shared_episode_seeds": [100],
                     "source_artifacts": [
-                        "research/evaluations/campaign/candidate.json",
-                        "research/evaluations/campaign/reference.json",
+                        "campaigns/evaluations/campaign/candidate.json",
+                        "campaigns/evaluations/campaign/reference.json",
                     ],
                 }
             ],
@@ -1910,17 +1924,17 @@ def test_completed_runner_results_are_strict_but_metrics_remain_extensible(
                 "scientific_paths": [],
                 "scientific_commit": None,
                 "effective_parameters": {},
-                "module_paths": ["research/lab/diagnostic.py"],
+                "module_paths": ["robot_learning/lab/diagnostic.py"],
                 "module_manifest": [
                     {
-                        "path": "research/lab/diagnostic.py",
+                        "path": "robot_learning/lab/diagnostic.py",
                         "exists": True,
                         "fingerprint": "m" * 64,
                     }
                 ],
                 "campaign_lab_manifest": [
                     {
-                        "path": "research/lab/diagnostic.py",
+                        "path": "robot_learning/lab/diagnostic.py",
                         "fingerprint": "m" * 64,
                     }
                 ],
@@ -1928,7 +1942,7 @@ def test_completed_runner_results_are_strict_but_metrics_remain_extensible(
                     "commit": "b" * 40,
                     "manifest": [
                         {
-                            "path": "research/lab/diagnostic.py",
+                            "path": "robot_learning/lab/diagnostic.py",
                             "fingerprint": "m" * 64,
                         }
                     ],
@@ -1998,7 +2012,7 @@ def test_completed_runner_results_are_strict_but_metrics_remain_extensible(
                 "code_parent_commit": "b" * 40,
                 "changed_files": [
                     {
-                        "path": "robot_learning/scenario/reward.py",
+                        "path": "robot_learning/training/reward.py",
                         "exists": True,
                         "fingerprint": "f" * 64,
                     }

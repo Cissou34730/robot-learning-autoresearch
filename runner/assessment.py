@@ -7,12 +7,12 @@ import json
 from collections.abc import Callable
 from pathlib import Path
 
-from research import runner_protocol as protocol
+from runner import protocol
 
 
 def task_reference_contract() -> dict:
     protocol.require_trusted_assessment_runtime(protocol.TASK_REFERENCE_ADAPTER_PATH)
-    from robot_learning.scenario.task_reference import task_reference_panel
+    from benchmark.adapters.task_reference import task_reference_panel
 
     return task_reference_panel()
 
@@ -24,7 +24,7 @@ def evaluate_task_reference_model(
     progress_callback: Callable[[int, int], None] | None = None,
 ) -> dict:
     protocol.require_trusted_assessment_runtime(protocol.TASK_REFERENCE_ADAPTER_PATH)
-    from robot_learning.scenario.task_reference import evaluate_task_reference_model
+    from benchmark.adapters.task_reference import evaluate_task_reference_model
 
     kwargs = {"progress_callback": progress_callback}
     if algorithm is not None:
@@ -44,7 +44,7 @@ def evaluate_official_model(
     protocol.require_trusted_assessment_runtime(
         protocol.OFFICIAL_ASSESSMENT_ADAPTER_PATH
     )
-    from robot_learning.scenario.final_benchmark import evaluate_final_model
+    from benchmark.adapters.final_benchmark import evaluate_final_model
 
     kwargs = {"progress_callback": progress_callback}
     if algorithm is not None:

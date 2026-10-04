@@ -42,8 +42,8 @@ Python-to-TypeScript bridge or implement a custom REST/SSE client.
 | --- | --- | --- |
 | [run_research.ps1](../run_research.ps1) | `Invoke-ResearcherSession` creates a UUID per phase and reuses it on retry; invokes the adapter and reads its exit code | Add explicit backend selection; keep the existing Copilot command as default and preserve phase arguments and retry decisions |
 | [researcher_session.ps1](../researcher_session.ps1) | Observes process result, deliverable presence, and validity independently | Keep behavior unchanged |
-| [researcher_copilot.py](../researcher_copilot.py) | Runtime lifecycle, command guardrails, console, usage recording | Retain the adapter; use its behavior as the reference for the separate OpenCode adapter |
-| [research/runner_protocol.py](../research/runner_protocol.py) | Explicitly protects the Python adapter and dependency metadata | Retain existing protection and additionally protect the OpenCode runtime and its dependency/configuration surface |
+| [runner/copilot_adapter.py](../runner/copilot_adapter.py) | Runtime lifecycle, command guardrails, console, usage recording | Retain the adapter; use its behavior as the reference for the separate OpenCode adapter |
+| [runner/protocol.py](../runner/protocol.py) | Explicitly protects the Python adapter and dependency metadata | Retain existing protection and additionally protect the OpenCode runtime and its dependency/configuration surface |
 | [tools/campaign_report.py](../tools/campaign_report.py) | Reads per-invocation usage, currently including AIU | Support legacy Copilot and new OpenCode accounting without conflating units |
 | [pyproject.toml](../pyproject.toml) | Researcher group contains Copilot SDK and `jello` | Retain both dependencies and the fixed Python stack; add OpenCode dependencies separately |
 

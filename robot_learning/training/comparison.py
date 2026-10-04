@@ -1,7 +1,7 @@
 """Researcher-owned inferential statistics over protected paired counts.
 
 Episode identity, conflict rejection, shared-panel reconciliation and the paired
-contingency counts are protected in `robot_learning.paired_evidence`. This module
+contingency counts are protected in `benchmark.paired_evidence`. This module
 is the researcher-owned choice of what to do with those counts, so a Researcher
 may replace the statistic without weakening measurement integrity.
 
@@ -11,7 +11,7 @@ research-side presentation of them, not part of the durable measurement contract
 
 import math
 
-from robot_learning.paired_evidence import paired_comparison as paired_counts
+from benchmark.paired_evidence import paired_comparison as paired_counts
 
 
 def exact_mcnemar_pvalue(candidate_wins: int, reference_wins: int) -> float:

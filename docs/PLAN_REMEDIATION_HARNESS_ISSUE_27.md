@@ -31,7 +31,7 @@ biais, ne pas ajouter de contrôles Runner.**
 
 | Étape | Vérification |
 | --- | --- |
-| 1 | `research/program.md` impose bien l'ancrage `best_known` ; `run_research.ps1` le répète dans les trois prompts (post-training, lineage decision, new hypothesis). |
+| 1 | `contracts/program.md` impose bien l'ancrage `best_known` ; `run_research.ps1` le répète dans les trois prompts (post-training, lineage decision, new hypothesis). |
 | 2 | `program.md` contient bien « request only measurements… », « Minimize redundant… », « Prefer the simplest evidence sufficient… » ; les prompts `post-training analysis` et `evaluation design` répliquent la minimisation. |
 | 4 | Les prompts demandent une comparaison binaire « expected vs contradicting ». |
 | 5 | `program.md` § *Experiment preparation* impose bien « Only after choosing the mechanism and intervention, choose continuation, replication, or training ». |
@@ -55,7 +55,7 @@ biais, ne pas ajouter de contrôles Runner.**
    `run_research.ps1`. L'étape 3 est donc surtout un travail de prompt + la règle
    « un seul mécanisme causal manipulé » à ajouter dans `program.md`.
 
-3. **Étape 4 : ne pas créer un second vocabulaire.** `research/instruments.md`
+3. **Étape 4 : ne pas créer un second vocabulaire.** `contracts/instruments.md`
    impose déjà pour `Hypothesis assessment` le vocabulaire
    *supported / partly supported / contradicted / unresolved*. L'issue en propose
    un autre (*supported / partially supported / weakened / contradicted /
@@ -89,7 +89,7 @@ biais, ne pas ajouter de contrôles Runner.**
 *Constat.* `evaluation_semantics` hache l'arborescence `robot_learning/scenario/`
 (hors fichiers protégés, hors `PRESENTATION_ONLY_PATHS`, hors
 `MODEL_CONTAINED_RUNTIME_PATHS`) plus `policy_runtime.py` et `evaluate.py`. Elle
-inclut donc `robot_learning/scenario/reward.py`.
+inclut donc `robot_learning/training/reward.py`.
 
 *Problème.* Le reward est l'intervention la plus fréquente du Researcher, et il
 n'influence **pas** le succès d'une policy sauvegardée : dans
@@ -107,8 +107,8 @@ grâce à lui).
 `evaluation_semantics`), **et** on étend le principe de l'étape 8 : le reward
 sort de l'identité de mesure, exactement comme la distribution d'entraînement.
 Concrètement, on ajoute un ensemble nommé d'exclusions « training-only »
-contenant `robot_learning/scenario/reward.py` et le nouveau
-`robot_learning/scenario/training_environment.py`.
+contenant `robot_learning/training/reward.py` et le nouveau
+`robot_learning/training/environment.py`.
 
 *Garde-fou.* Le mécanisme d'inclusion par défaut (`rglob` sur `scenario/`) est
 conservé : tout nouveau fichier de scénario compte automatiquement dans
@@ -132,7 +132,7 @@ l'identité de modèle et l'intégrité de fichier.
 L'issue demande de « ne pas imposer de panel indépendant sous 98 % ». Aucune
 règle de ce type n'existe dans `program.md`, `instruments.md` ou
 `run_research.ps1` : le seuil de 98 % apparaît uniquement dans du texte
-**rédigé par le Researcher** dans `research/postmortems.md`. Aucun changement de
+**rédigé par le Researcher** dans `campaigns/postmortems.md`. Aucun changement de
 harnais n'est requis. On se contente de ne pas réintroduire une telle règle.
 
 ---
@@ -170,7 +170,7 @@ découpage de l'issue.
 
 Couvre les étapes 1 et 2.
 
-**`research/program.md`**
+**`contracts/program.md`**
 
 - § *Scientific memory and direction* : remplacer l'obligation
   « Direction must name its highest-priority unresolved behavioral gap » par :
@@ -208,7 +208,7 @@ Couvre les étapes 1 et 2.
   élargie si cela aide à comprendre le résultat ou à choisir la suite ; conserver
   la possibilité de clore sans nouvelle mesure.
 
-**`research/instruments.md`**
+**`contracts/instruments.md`**
 
 - Uniquement la description opérationnelle : aucune préférence scientifique entre
   instruments ; conserver la limite technique de trois modèles distincts par
@@ -228,7 +228,7 @@ quantité minimale de mesure.
 
 Couvre les étapes 3 et 4.
 
-**`research/program.md`**
+**`contracts/program.md`**
 
 - Rendre explicite (sans nouvelle phase) : quand la prochaine hypothèse dépend
   d'un comportement non encore observé sur une policy sauvegardée, chercher
@@ -245,7 +245,7 @@ Couvre les étapes 3 et 4.
 - Conserver `expected_observation`, `contradicting_observation` et la distinction
   « intervention précise » / « mécanisme général ».
 
-**`research/instruments.md`**
+**`contracts/instruments.md`**
 
 - Aligner le libellé de `Hypothesis assessment` sur ce vocabulaire unique
   (remplacer « supported, partly supported, contradicted, or unresolved »).
@@ -277,7 +277,7 @@ intervention.
 
 Couvre l'étape 5.
 
-**`research/program.md`** — § *Experiment preparation*, nouvel ordre :
+**`contracts/program.md`** — § *Experiment preparation*, nouvel ordre :
 
 1. choisir la question scientifique ;
 2. choisir l'opération adaptée ;
@@ -290,7 +290,7 @@ Couvre l'étape 5.
 **`run_research.ps1`** — prompt `new hypothesis` : refléter le même ordre
 (supprimer « Only after choosing the mechanism and intervention… »).
 
-**`research/instruments.md`** — sans changer le schéma, préciser le sens des
+**`contracts/instruments.md`** — sans changer le schéma, préciser le sens des
 `kind` existants : `continuation` = prédiction sur la poursuite, le plateau ou la
 dégradation ; `replication` = prédiction sur la reproductibilité ou la variance ;
 `training` = prédiction causale sur l'intervention. Aucune opération recommandée
@@ -306,7 +306,7 @@ uniquement).
 
 Couvre l'étape 6, étendu au second bloc de checkpoints (§ 2.2 point 5).
 
-**`research/build_research_brief.py`**
+**`runner/build_brief.py`**
 
 - `_render_v4_research_brief()` : afficher individuellement **tous les
   checkpoints mesurés** ; ne plus émettre une ligne de tableau complète par
@@ -335,7 +335,7 @@ visibles ; tous les identifiants restent présents dans le brief.
 
 Couvre l'étape 7 + écart A. **Lot le plus risqué : à faire seul, après L4.**
 
-**`research/runner_protocol.py`**
+**`runner/protocol.py`**
 
 - Supprimer `COMPARISON_SEMANTICS_PATHS`, `COMPARISON_SEMANTICS_VERSION_PATH`,
   `comparison_semantics_fingerprint()`, la lecture de
@@ -349,20 +349,20 @@ Couvre l'étape 7 + écart A. **Lot le plus risqué : à faire seul, après L4.*
 - Conserver `model_fingerprint`, `evaluation_artifact_fingerprint`, et le rejet
   d'un fichier de résultat modifié après mesure.
 - Écart A : ajouter un ensemble nommé (p. ex. `TRAINING_ONLY_PATHS`) exclu de
-  `evaluation_semantics_paths()`, contenant `robot_learning/scenario/reward.py`
-  et `robot_learning/scenario/training_environment.py` (créé en L6). Documenter
+  `evaluation_semantics_paths()`, contenant `robot_learning/training/reward.py`
+  et `robot_learning/training/environment.py` (créé en L6). Documenter
   en une ligne pourquoi : ces fichiers ne déterminent ni le rejeu d'une policy
   sauvegardée ni son succès. Conserver l'inclusion par défaut de tout autre
   fichier de `scenario/`.
 
-**`research/run_experiment.py`, `research/runner_execution.py`,
-`research/runner_console.py`**
+**`runner/run_experiment.py`, `runner/execution.py`,
+`runner/console.py`**
 
 - Ne plus produire ni propager `comparison_semantics`,
   `candidate_evaluation_semantics`, `reference_evaluation_semantics`. Produire
   uniquement `evaluation_semantics`.
 
-**`research/instruments.md`**
+**`contracts/instruments.md`**
 
 - Réécrire le paragraphe de compatibilité des mesures historiques : un seul
   contrat, plus de « primary comparison semantics ».
@@ -391,7 +391,7 @@ partagé, la mécanique réellement utilisée par l'évaluation et
 distribution d'entraînement. Mettre à jour le docstring du module (il annonce
 aujourd'hui `make_training_env()`).
 
-**Nouveau `robot_learning/scenario/training_environment.py`** — uniquement les
+**Nouveau `robot_learning/training/environment.py`** — uniquement les
 paramètres et comportements spécifiques au training, une éventuelle sous-classe
 pour les variations de sampling/curriculum, et `make_training_env()`. Aucune
 abstraction, registry ou système de plugins.
@@ -415,7 +415,7 @@ l'évaluateur ou de la mécanique partagée **le change**.
 
 Couvre l'étape 9 + écart B.
 
-**`research/instruments.md`** — nouveau contrat de clôture :
+**`contracts/instruments.md`** — nouveau contrat de clôture :
 
 ```json
 "best_known": {
@@ -430,7 +430,7 @@ le Runner retrouve automatiquement les mesures enregistrées pour ce modèle ; u
 nouveau `best_known` doit posséder au moins une mesure, mais le Runner ne juge
 pas si elle est scientifiquement suffisante.
 
-**`research/runner_protocol.py`** — lors du remplacement : résoudre le modèle par
+**`runner/protocol.py`** — lors du remplacement : résoudre le modèle par
 son identifiant ; récupérer ses mesures dans l'état courant ; vérifier identité
 de modèle et intégrité des fichiers ; enregistrer ces preuves dans la lignée ;
 ne plus demander de chemins au Researcher. Retirer la validation de
@@ -447,7 +447,7 @@ If best_known remains unchanged, omit the best_known field.
 Do not restate or reselect it.
 ```
 
-**`research/program.md`** — écart B : indiquer que la comparabilité des preuves
+**`contracts/program.md`** — écart B : indiquer que la comparabilité des preuves
 soutenant une désignation `best_known` est une responsabilité du Researcher, le
 Runner ne vérifiant que l'identité de modèle et l'intégrité des fichiers.
 
@@ -462,14 +462,14 @@ disponibles.
 
 ### L8 — `docs: record targeted harness corrections`
 
-- `research/PROTOCOL_DECISIONS.md` : consigner les raisons des corrections, en
+- `docs/protocol-decisions.md` : consigner les raisons des corrections, en
   incluant explicitement les écarts A, B et C.
-- `research/program.md` : relecture finale de cohérence (méthode scientifique).
-- `research/instruments.md` : relecture finale des contrats opérationnels.
+- `contracts/program.md` : relecture finale de cohérence (méthode scientifique).
+- `contracts/instruments.md` : relecture finale des contrats opérationnels.
 - `AGENTS.md` : mettre à jour uniquement si L5/L6 rendent une phrase fausse
   (p. ex. mention de l'empreinte de comparaison ou de la disposition de
   `scenario/`).
-- **Ne pas modifier `research/scenario.md`.**
+- **Ne pas modifier `contracts/scenario.md`.**
 
 ---
 
@@ -512,9 +512,9 @@ après L5 car il réutilise `_development_evidence_catalog`.
 
    Chaque lot n'exécute que les suites qu'il touche.
 4. **Ne pas toucher** aux artefacts de campagne :
-   `research/research_state.json`, `research/results.jsonl`,
-   `research/EXPERIMENTS.md`, `research/brief.md`, `research/postmortems.md`,
-   `research/evaluations/`, `research/checkpoints/`, `models/`.
+   `runner/state/research_state.json`, `campaigns/results.jsonl`,
+   `campaigns/EXPERIMENTS.md`, `campaigns/brief.md`, `campaigns/postmortems.md`,
+   `campaigns/evaluations/`, `campaigns/checkpoints/`, `models/`.
    Ils sont déjà modifiés dans l'arbre de travail par la campagne en cours et
    doivent le rester.
 5. Ne pas ajouter de champ JSON, de phase, de fichier de contrôle ni de contrôle

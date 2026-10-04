@@ -15,8 +15,8 @@ from pathlib import Path
 
 import numpy as np
 
-from robot_learning.paired_evidence import episode_outcomes
-from robot_learning.policy_runtime import load_runtime
+from benchmark.paired_evidence import episode_outcomes
+from contracts.policy_runtime import load_runtime
 from robot_learning.scenario.environment import make_evaluation_env
 
 # Bumped when the meaning of a scenario evaluation summary changes.

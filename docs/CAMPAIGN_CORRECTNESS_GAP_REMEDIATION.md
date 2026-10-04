@@ -27,12 +27,12 @@ worktree and do not launch a campaign.
 
 The checkout may contain interrupted-campaign files belonging to the human:
 
-- `research/EXPERIMENTS.md`;
-- `research/postmortems.md`;
-- `research/research_state.json`;
-- `research/results.jsonl`;
+- `campaigns/EXPERIMENTS.md`;
+- `campaigns/postmortems.md`;
+- `runner/state/research_state.json`;
+- `campaigns/results.jsonl`;
 - untracked files under
-  `research/evaluations/90890200-b313-4f38-b010-de1eaaeb3d98/`.
+  `campaigns/evaluations/90890200-b313-4f38-b010-de1eaaeb3d98/`.
 
 Before editing, record their path inventory and content hashes. After every
 implementation commit and at final delivery, verify that their content is
@@ -55,7 +55,7 @@ fixtures only.
 
 ### 3.1 Reset backup path is invalid in a linked Git worktree
 
-`research/reset_campaign.py` currently defines the backup root as
+`runner/reset_campaign.py` currently defines the backup root as
 `ROOT / ".git" / "research-reset-backups"`. In a linked worktree, `.git` is a
 file, not a directory. The reset therefore fails before creating its backup.
 Existing tests use ordinary repositories or monkeypatch this path and do not
@@ -127,7 +127,7 @@ administrative directory from `<checkout>/.git`.
 
 ### Files
 
-- `research/reset_campaign.py`
+- `runner/reset_campaign.py`
 - `reset_research.ps1` only if its parameter or error surface must change
 - `tests/autoresearch/test_reset_research.py`
 - `README.md`
@@ -177,7 +177,7 @@ is not an operational recovery contract.
 
 ### Files
 
-- `research/reset_campaign.py`
+- `runner/reset_campaign.py`
 - `reset_research.ps1`
 - `tests/autoresearch/test_reset_research.py`
 - `docs/reset-research.md`
@@ -252,12 +252,12 @@ silently admit later source/configuration edits.
 
 ### Files
 
-- `research/run_experiment.py`
-- `research/runner_protocol.py`
-- `research/runner_repository.py` if shared hashing helpers belong there
+- `runner/run_experiment.py`
+- `runner/protocol.py`
+- `runner/repository.py` if shared hashing helpers belong there
 - `tests/autoresearch/test_execution_contract.py`
 - `tests/autoresearch/test_scientific_reasoning.py`
-- `research/PROTOCOL_DECISIONS.md`
+- `docs/protocol-decisions.md`
 
 ### Required implementation
 
@@ -276,7 +276,7 @@ silently admit later source/configuration edits.
    exact restored recipe manifest and effective configuration fingerprint. Do
    not confuse this Runner-managed restoration with a Researcher intervention.
 5. On every resume, select behavior from the frozen operation, not from mutable
-   live proposal content. If `research/proposal.json` is present, it must match
+   live proposal content. If `runner/state/proposal.json` is present, it must match
    the frozen proposal exactly; otherwise reject it with a precise recovery
    error.
 6. Verify the current scientific surface against the manifest appropriate to
@@ -321,11 +321,11 @@ episode boundary must trigger one policy-I/O reset.
 
 ### Files
 
-- `robot_learning/policy_runtime.py`
+- `contracts/policy_runtime.py`
 - environment/evaluator call sites only where required to establish one owner
 - `tests/autoresearch/test_policy_runtime.py`
 - focused benchmark/scenario tests that already cover episode reset behavior
-- `research/PROTOCOL_DECISIONS.md`
+- `docs/protocol-decisions.md`
 
 ### Required implementation
 
@@ -370,14 +370,14 @@ already frozen into that model has changed.
 
 ### Files
 
-- `research/runner_protocol.py`
-- `research/runner_execution.py` only if artifact metadata needs an explicitly
+- `runner/protocol.py`
+- `runner/execution.py` only if artifact metadata needs an explicitly
   named context field
-- `research/runner_repository.py` only for shared evidence metadata
+- `runner/repository.py` only for shared evidence metadata
 - `tests/autoresearch/test_research_protocol.py`
 - `tests/autoresearch/test_post_training_analysis.py`
-- `research/instruments.md`
-- `research/PROTOCOL_DECISIONS.md`
+- `contracts/instruments.md`
+- `docs/protocol-decisions.md`
 
 ### Required implementation
 
@@ -443,15 +443,15 @@ bounded. Do not synthesize conclusions or scores.
 
 ### Files
 
-- `research/runner_repository.py`
-- `research/build_research_brief.py`
+- `runner/repository.py`
+- `runner/build_brief.py`
 - `tests/autoresearch/test_console_presentation.py`
 - `tests/autoresearch/test_research_context.py`
-- `research/PROTOCOL_DECISIONS.md`
+- `docs/protocol-decisions.md`
 
 ### Required implementation
 
-1. Keep one row per experiment in `research/EXPERIMENTS.md`.
+1. Keep one row per experiment in `campaigns/EXPERIMENTS.md`.
 2. Report measured checkpoints/panels factually, but do not append one textual
    `unmeasured` entry per unmeasured checkpoint.
 3. Replace that repetition with one compact count, for example
@@ -459,7 +459,7 @@ bounded. Do not synthesize conclusions or scores.
    infer model quality.
 4. Preserve the selected working/best-known/code decisions and the Researcher's
    hypothesis assessment in each experiment row.
-5. In `research/brief.md`, retain detailed evidence references for the current
+5. In `campaigns/brief.md`, retain detailed evidence references for the current
    unresolved experiment and the evidence attached to reusable lineage roles.
 6. Summarize older evidence by experiment/panel/count with links to the durable
    result or postmortem source rather than enumerating every historical artifact
@@ -554,7 +554,7 @@ real campaign as validation.
 
 ## 11. Final documentation and decision log
 
-Update `research/PROTOCOL_DECISIONS.md` with factual decisions only:
+Update `docs/protocol-decisions.md` with factual decisions only:
 
 - reset storage is resolved through the actual Git administrative directory;
 - reset failure has a supported, path-confined recovery operation;

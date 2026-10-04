@@ -1,6 +1,6 @@
 """Generic runtime configuration for training and research orchestration.
 
-`research/current_params.json` is the effective configuration of the currently
+`robot_learning/training/current_params.json` is the effective configuration of the currently
 active training method, not a catalog of available methods or interventions.
 It holds runtime knobs only. Scenario science - reward, observations, task
 mechanics, evaluation semantics - lives in `robot_learning/scenario/` and is
@@ -17,11 +17,11 @@ import json
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-CONFIG_PATH = REPO_ROOT / "research" / "current_params.json"
+CONFIG_PATH = REPO_ROOT / "robot_learning" / "training" / "current_params.json"
 
 # Development-panel defaults shared by the runner and the evaluation CLI. They
 # are deliberately distinct from the official benchmark panel in
-# `robot_learning/benchmark/final_contract.py`. If the two coincide, a
+# `benchmark/final_contract.py`. If the two coincide, a
 # development `research_evaluation` reproduces the terminal verdict panel and the
 # official result is no longer held out. Keep these values decoupled from the
 # official constants; `tests/autoresearch/test_panel_independence.py` fails loudly

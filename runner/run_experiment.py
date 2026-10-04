@@ -13,13 +13,8 @@ from collections.abc import Callable
 from pathlib import Path
 from typing import Any
 
-from research import runner_assessment as assessment
-from research import runner_console as console
-from research import runner_execution as execution
-from research import runner_paths as paths
-from research import runner_protocol as protocol
-from research import runner_repository as repository
-from research.stop_control import interrupt_on_stop_request
+from runner import assessment, console, execution, paths, protocol, repository
+from runner.stop_control import interrupt_on_stop_request
 
 PROPOSAL_ERRORS = (
     json.JSONDecodeError,
@@ -145,7 +140,7 @@ def _protected_panel_overlap(seed: int, episodes: int) -> bool:
     protocol.require_trusted_assessment_runtime(
         protocol.OFFICIAL_ASSESSMENT_ADAPTER_PATH
     )
-    from robot_learning.scenario.final_benchmark import (
+    from benchmark.adapters.final_benchmark import (
         research_panel_overlaps_protected,
     )
 
@@ -380,9 +375,9 @@ def _new_pending_operation(
     supersedes: str | None = None,
 ) -> dict:
     kind = protocol.validate_operation_request(request, state)
+    _validate_new_operation_scientific_delta(state)
     if kind == "training":
         _training_allocation(request["training"], state)
-    _validate_new_operation_scientific_delta(state)
     identifier = protocol.allocate_operation_id(kind, state)
     session = protocol.require_active_session(state)
     pending = {
@@ -1026,7 +1021,7 @@ def execute_measurement(state: dict, pending: dict) -> int:
         isinstance(module_provenance, dict)
         and module_provenance["campaign_lab_publication"] is None
         and any(
-            spec["module"].startswith("research.lab.")
+            spec["module"].startswith("robot_learning.lab.")
             for spec in planned
             if spec["instrument"] == "python_module"
         )
@@ -1787,9 +1782,9 @@ def check_operation() -> int:
 def check_scientific_model_deliverable(*, quiet: bool = False) -> int:
     try:
         if not paths.SCIENTIFIC_MODEL_PATH.is_file():
-            raise FileNotFoundError("research/scientific_model.md is missing")
+            raise FileNotFoundError("pi_workspace/scientific_model.md is missing")
         if not paths.SCIENTIFIC_MODEL_PATH.read_text(encoding="utf-8").strip():
-            raise ValueError("research/scientific_model.md is empty")
+            raise ValueError("pi_workspace/scientific_model.md is empty")
     except (OSError, UnicodeError, ValueError) as error:
         print(f"SCIENTIFIC_MODEL_DELIVERABLE_INVALID: {error}")
         return 1
@@ -2001,10 +1996,10 @@ def main() -> int:
         repository.require_scientific_model_publication_pending(state)
         repository.commit_paths(
             repository.campaign_commit_message("scientific model"),
-            ["research/scientific_model.md"],
+            ["pi_workspace/scientific_model.md"],
         )
         commit = repository.git("rev-parse", "HEAD").strip()
-        repository.require_path_at_commit(commit, "research/scientific_model.md")
+        repository.require_path_at_commit(commit, "pi_workspace/scientific_model.md")
         repository.mark_scientific_model_ready(state, commit)
         repository.write_state(state)
         if not repository.commit_runner_memory("publish scientific model"):
@@ -2099,7 +2094,7 @@ def main() -> int:
                         f"ERROR: pending operation "
                         f"{state['pending_operation']['id']} failed; run "
                         "--reaccept-pending after implementation repair or replace "
-                        "research/operation_request.json"
+                        "pi_workspace/operation_request.json"
                     )
                     return 1
                 accept_operation(request, state)
@@ -2112,7 +2107,7 @@ def main() -> int:
         print("ERROR: there is no pending Runner operation")
         return 1
     if not paths.OPERATION_REQUEST_PATH.is_file():
-        print("ERROR: research/operation_request.json not found")
+        print("ERROR: pi_workspace/operation_request.json not found")
         return 1
     try:
         request = json.loads(paths.OPERATION_REQUEST_PATH.read_text(encoding="utf-8"))

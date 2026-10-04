@@ -7,7 +7,7 @@ import json
 from collections import Counter, defaultdict
 from pathlib import Path
 
-from research import runner_repository
+from runner import repository as runner_repository
 
 ROOT = Path(__file__).resolve().parents[1]
 NA = "unavailable"
@@ -99,7 +99,7 @@ def usage_total(rows: list[dict], field: str) -> str:
 
 
 def load_campaign(repo: Path, campaign_id: str | None = None) -> dict:
-    state = read_json(repo / "research" / "research_state.json")
+    state = read_json(repo / "runner" / "state" / "research_state.json")
     runner_repository.validate_research_state(state, allow_missing_artifact=True)
     current_id = str(state["campaign"]["id"])
     if campaign_id is not None and campaign_id != current_id:
@@ -108,7 +108,7 @@ def load_campaign(repo: Path, campaign_id: str | None = None) -> dict:
             f"campaign {current_id!r} in {repo}"
         )
 
-    history = read_rows(repo / "research" / "results.jsonl")
+    history = read_rows(repo / "campaigns" / "results.jsonl")
     history_events: list[dict] = []
     history_ids: set[str] = set()
     for index, row in enumerate(history, 1):

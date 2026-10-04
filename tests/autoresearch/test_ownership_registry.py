@@ -10,7 +10,7 @@ from pathlib import Path
 
 import pytest
 
-from research import runner_protocol as protocol
+from runner import protocol
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -29,28 +29,28 @@ def test_a_missing_declared_path_is_reported(monkeypatch):
 
 
 def test_campaign_lab_is_owned_but_not_part_of_recipe_identity():
-    path = "research/lab/diagnose.py"
+    path = "robot_learning/lab/diagnose.py"
     assert protocol.is_researcher_owned(path)
     assert protocol.is_campaign_lab(path)
-    from research import runner_repository as repository
+    from runner import repository
 
     assert repository.scientific_change_paths([path]) == []
     assert repository.researcher_change_paths([path]) == [path]
 
 
 def test_campaign_lab_publication_has_separate_provenance(monkeypatch, tmp_path):
-    from research import runner_repository as repository
+    from runner import repository
 
-    lab = tmp_path / "research" / "lab"
+    lab = tmp_path / "robot_learning" / "lab"
     lab.mkdir(parents=True)
     (lab / "diagnose.py").write_text("VALUE = 1\n", encoding="utf-8")
     committed = []
     validated = []
-    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
+    monkeypatch.setattr("runner.paths.ROOT", tmp_path)
     monkeypatch.setattr(
         repository,
         "status_paths",
-        lambda scope: ["research/lab/diagnose.py"],
+        lambda scope: ["robot_learning/lab/diagnose.py"],
     )
     monkeypatch.setattr(
         repository,
@@ -58,31 +58,33 @@ def test_campaign_lab_publication_has_separate_provenance(monkeypatch, tmp_path)
         lambda message, scope: committed.append((message, scope)) or True,
     )
     monkeypatch.setattr(
-        "research.runner_execution.validate_changed_sources",
+        "runner.execution.validate_changed_sources",
         lambda scope: validated.append(scope),
     )
     monkeypatch.setattr(repository, "git", lambda *args: "lab-commit\n")
 
     provenance = repository.publish_campaign_laboratory("M2")
 
-    assert validated == [["research/lab/diagnose.py"]]
-    assert committed == [("camp: M2 measurement tools", ["research/lab/diagnose.py"])]
+    assert validated == [["robot_learning/lab/diagnose.py"]]
+    assert committed == [
+        ("camp: M2 measurement tools", ["robot_learning/lab/diagnose.py"])
+    ]
     assert provenance["commit"] == "lab-commit"
-    assert provenance["manifest"][0]["path"] == "research/lab/diagnose.py"
+    assert provenance["manifest"][0]["path"] == "robot_learning/lab/diagnose.py"
 
 
 def test_campaign_lab_is_validated_before_it_is_committed(monkeypatch, tmp_path):
-    from research import runner_repository as repository
+    from runner import repository
 
-    lab = tmp_path / "research" / "lab"
+    lab = tmp_path / "robot_learning" / "lab"
     lab.mkdir(parents=True)
     (lab / "broken.py").write_text("def broken(:\n", encoding="utf-8")
     committed = []
-    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
+    monkeypatch.setattr("runner.paths.ROOT", tmp_path)
     monkeypatch.setattr(
         repository,
         "status_paths",
-        lambda scope: ["research/lab/broken.py"],
+        lambda scope: ["robot_learning/lab/broken.py"],
     )
     monkeypatch.setattr(
         repository,

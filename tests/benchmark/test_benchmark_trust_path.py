@@ -7,33 +7,29 @@ from pathlib import Path
 
 import pytest
 
-from research import run_experiment
-from research import runner_assessment as assessment
-from research import runner_paths as paths
-from research import runner_protocol as protocol
-from research import runner_repository as repository
-from robot_learning.scenario import final_benchmark as scenario_final_benchmark
+from benchmark.adapters import final_benchmark as scenario_final_benchmark
+from runner import assessment, paths, protocol, repository, run_experiment
 
 OFFICIAL_TASK_PATHS = (
-    "robot_learning/policy_runtime.py",
-    "research/run_experiment.py",
-    "research/runner_assessment.py",
+    "contracts/policy_runtime.py",
+    "runner/run_experiment.py",
+    "runner/assessment.py",
     "robot_learning/__init__.py",
-    "robot_learning/benchmark/__init__.py",
-    "robot_learning/benchmark/final_benchmark.py",
-    "robot_learning/benchmark/final_contract.py",
-    "robot_learning/benchmark/reference_contract.py",
-    "robot_learning/benchmark/reference_evaluation.py",
-    "robot_learning/robots/__init__.py",
-    "robot_learning/robots/two_joint_arm.py",
-    "robot_learning/robots/two_joint_arm.xml",
+    "benchmark/__init__.py",
+    "benchmark/final_benchmark.py",
+    "benchmark/final_contract.py",
+    "benchmark/reference_contract.py",
+    "benchmark/reference_evaluation.py",
+    "contracts/robots/__init__.py",
+    "contracts/robots/two_joint_arm.py",
+    "contracts/robots/two_joint_arm.xml",
     "robot_learning/scenario/__init__.py",
-    "robot_learning/scenario/final_benchmark.py",
-    "robot_learning/scenario/task_reference.py",
+    "benchmark/adapters/final_benchmark.py",
+    "benchmark/adapters/task_reference.py",
 )
 
 PI_OWNED_PATHS = (
-    "robot_learning/scenario/reward.py",
+    "robot_learning/training/reward.py",
     "robot_learning/scenario/observations.py",
     "robot_learning/scenario/environment.py",
     "robot_learning/scenario/evaluation.py",
@@ -48,7 +44,7 @@ def test_protected_surface_covers_the_whole_benchmark_package():
     root = Path(__file__).resolve().parents[2]
     package_files = [
         path.relative_to(root).as_posix()
-        for path in (root / "robot_learning" / "benchmark").rglob("*")
+        for path in (root / "benchmark").rglob("*")
         if path.is_file()
     ]
 
@@ -86,7 +82,7 @@ def test_runner_assessment_is_the_trusted_official_entry(monkeypatch, tmp_path):
         assessment.protocol, "require_trusted_assessment_runtime", trust
     )
     monkeypatch.setattr(
-        "robot_learning.scenario.final_benchmark.evaluate_final_model", protected
+        "benchmark.adapters.final_benchmark.evaluate_final_model", protected
     )
     callback = lambda _completed, _total: None
 
@@ -147,15 +143,15 @@ def test_protected_scenario_adapter_applies_the_official_threshold(
 
 
 def _requested_assessment_state(monkeypatch, tmp_path):
-    research = tmp_path / "research"
+    research = tmp_path / "campaigns"
     research.mkdir()
     for name, value in {
         "ROOT": tmp_path,
-        "STATE_PATH": research / "research_state.json",
+        "STATE_PATH": tmp_path / "runner" / "state" / "research_state.json",
         "RESULTS_PATH": research / "results.jsonl",
         "LOG_PATH": research / "EXPERIMENTS.md",
-        "OPERATION_REQUEST_PATH": research / "operation_request.json",
-        "GOAL_PATH": research / "GOAL_REACHED",
+        "OPERATION_REQUEST_PATH": tmp_path / "pi_workspace" / "operation_request.json",
+        "GOAL_PATH": tmp_path / "runner" / "state" / "GOAL_REACHED",
     }.items():
         monkeypatch.setattr(paths, name, value)
     monkeypatch.setattr(repository, "git", lambda *args: "a" * 40 + "\n")
@@ -183,7 +179,7 @@ def _requested_assessment_state(monkeypatch, tmp_path):
     )
     state["scientific_model"] = {
         "status": "ready",
-        "path": "research/scientific_model.md",
+        "path": "pi_workspace/scientific_model.md",
         "commit": "a" * 40,
     }
     state["candidates"][candidate["id"]] = candidate

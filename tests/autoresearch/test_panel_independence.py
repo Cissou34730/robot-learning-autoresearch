@@ -9,8 +9,8 @@ protected episodes are rejected.
 
 import pytest
 
-from robot_learning.benchmark import final_contract
-from robot_learning.benchmark.final_benchmark import official_environment
+from benchmark import final_contract
+from benchmark.final_benchmark import official_environment
 from robot_learning.scenario.environment import make_evaluation_env
 from robot_learning.training import research_config
 
@@ -58,10 +58,10 @@ def test_default_development_target_sequence_differs_from_the_official_one():
 
 
 def test_explicit_official_panel_is_rejected():
-    from research import runner_protocol as protocol
-    from robot_learning.scenario.final_benchmark import (
+    from benchmark.adapters.final_benchmark import (
         research_panel_overlaps_protected,
     )
+    from runner import protocol
 
     request = {
         "description": "Measure the requested development panel.",

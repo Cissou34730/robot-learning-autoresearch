@@ -7,7 +7,7 @@ import json
 
 import pytest
 
-from research import runner_repository as repository
+from runner import repository
 from tools import campaign_report
 
 
@@ -50,19 +50,19 @@ def _campaign_repository(tmp_path):
         },
         last_verdict="official assessment goal reached",
         human_goal={
-            "source": "research/scenario.md",
+            "source": "contracts/scenario.md",
             "summary": "Reach and hold on the protected task.",
         },
     )
     state["scientific_model"] = {
         "status": "ready",
-        "path": "research/scientific_model.md",
+        "path": "pi_workspace/scientific_model.md",
         "commit": "c" * 40,
     }
     candidate_id = "T2:checkpoint-10"
     candidate = {
         "id": candidate_id,
-        "artifact": "research/checkpoints/candidates/campaign/t2/checkpoint-10",
+        "artifact": "campaigns/checkpoints/candidates/campaign/t2/checkpoint-10",
         "fingerprint": "d" * 64,
         "origin_operation": "T2",
         "name": "checkpoint-10",
@@ -70,7 +70,7 @@ def _campaign_repository(tmp_path):
         "scientific_commit": "e" * 40,
         "training_steps": 10,
         "evaluation_artifacts": [
-            "research/evaluations/campaign/development-panel.json"
+            "campaigns/evaluations/campaign/development-panel.json"
         ],
     }
     measurement_request = {
@@ -107,7 +107,7 @@ def _campaign_repository(tmp_path):
                     "success_percent": 50.0,
                     "evaluation_semantics": "semantics-v1",
                     "evaluation_artifact": (
-                        "research/evaluations/campaign/development-panel.json"
+                        "campaigns/evaluations/campaign/development-panel.json"
                     ),
                     "evaluation_artifact_fingerprint": "f" * 64,
                     "model_fingerprint": candidate["fingerprint"],
@@ -124,7 +124,7 @@ def _campaign_repository(tmp_path):
                     "success_percent": 50.0,
                     "evaluation_semantics": "semantics-v1",
                     "evaluation_artifact": (
-                        "research/evaluations/campaign/development-panel-repeat.json"
+                        "campaigns/evaluations/campaign/development-panel-repeat.json"
                     ),
                     "evaluation_artifact_fingerprint": "1" * 64,
                     "model_fingerprint": candidate["fingerprint"],
@@ -314,10 +314,14 @@ def _campaign_repository(tmp_path):
         "completed_at": "2026-01-01T01:00:00Z",
     }
 
-    research = tmp_path / "research"
-    research.mkdir()
-    (research / "research_state.json").write_text(json.dumps(state), encoding="utf-8")
-    (research / "results.jsonl").write_text(
+    runner_state = tmp_path / "runner" / "state"
+    runner_state.mkdir(parents=True)
+    campaigns = tmp_path / "campaigns"
+    campaigns.mkdir()
+    (runner_state / "research_state.json").write_text(
+        json.dumps(state), encoding="utf-8"
+    )
+    (campaigns / "results.jsonl").write_text(
         "".join(
             json.dumps({"campaign_id": campaign_id, **event}) + "\n"
             for event in state["operation_events"]
@@ -412,7 +416,7 @@ def test_report_accounts_for_schema6_lifecycle_without_retired_shapes(tmp_path):
 def test_report_requires_exact_current_schema6_state(tmp_path):
     state = _campaign_repository(tmp_path)
     state["schema_version"] = 5
-    (tmp_path / "research" / "research_state.json").write_text(
+    (tmp_path / "runner" / "state" / "research_state.json").write_text(
         json.dumps(state), encoding="utf-8"
     )
 
@@ -421,7 +425,7 @@ def test_report_requires_exact_current_schema6_state(tmp_path):
 
     state["schema_version"] = 6
     state["pending_analysis"] = copy.deepcopy(state["pending_operation"])
-    (tmp_path / "research" / "research_state.json").write_text(
+    (tmp_path / "runner" / "state" / "research_state.json").write_text(
         json.dumps(state), encoding="utf-8"
     )
     with pytest.raises(RuntimeError, match="pending_analysis"):
@@ -431,7 +435,7 @@ def test_report_requires_exact_current_schema6_state(tmp_path):
 @pytest.mark.parametrize("defect", ["duplicate", "reordered", "content", "foreign"])
 def test_report_rejects_non_exact_results_history(tmp_path, defect):
     state = _campaign_repository(tmp_path)
-    path = tmp_path / "research" / "results.jsonl"
+    path = tmp_path / "campaigns" / "results.jsonl"
     rows = [
         {"campaign_id": state["campaign"]["id"], **event}
         for event in state["operation_events"]
@@ -465,7 +469,7 @@ def test_report_rejects_dangling_supersession(tmp_path):
     )
     failed["superseded_by"] = "T999"
     successor["supersedes"] = None
-    (tmp_path / "research" / "research_state.json").write_text(
+    (tmp_path / "runner" / "state" / "research_state.json").write_text(
         json.dumps(state), encoding="utf-8"
     )
 
@@ -476,7 +480,7 @@ def test_report_rejects_dangling_supersession(tmp_path):
 def test_report_rejects_unknown_role_candidate(tmp_path):
     state = _campaign_repository(tmp_path)
     state["model_roles"]["working"] = "T999:missing"
-    (tmp_path / "research" / "research_state.json").write_text(
+    (tmp_path / "runner" / "state" / "research_state.json").write_text(
         json.dumps(state), encoding="utf-8"
     )
 

@@ -52,6 +52,6 @@ def scientific_memory(monkeypatch, tmp_path):
         ),
         encoding="utf-8",
     )
-    monkeypatch.setattr("research.runner_paths.ROOT", tmp_path)
-    monkeypatch.setattr("research.runner_paths.POSTMORTEM_PATH", memory)
+    monkeypatch.setattr("runner.paths.ROOT", tmp_path)
+    monkeypatch.setattr("runner.paths.POSTMORTEM_PATH", memory)
     return memory

@@ -14,25 +14,25 @@ from types import SimpleNamespace
 import numpy as np
 import pytest
 
-from research.runner_protocol import (
+from benchmark import final_contract, reference_contract
+from benchmark.reference_evaluation import (
+    TaskReferenceEnv,
+    evaluate_task_reference_model,
+    task_reference_panel,
+)
+from runner.protocol import (
     TASK_REFERENCE_ENTRY_FIELDS,
     task_reference_artifact_name,
     validate_measurement_request,
     validate_research_delta_ownership,
 )
-from robot_learning.benchmark import final_contract, reference_contract
-from robot_learning.benchmark.reference_evaluation import (
-    TaskReferenceEnv,
-    evaluate_task_reference_model,
-    task_reference_panel,
-)
 
 ROOT = Path(__file__).resolve().parents[2]
 
 PROTECTED_REFERENCE_PATHS = (
-    "robot_learning/benchmark/reference_contract.py",
-    "robot_learning/benchmark/reference_evaluation.py",
-    "robot_learning/scenario/task_reference.py",
+    "benchmark/reference_contract.py",
+    "benchmark/reference_evaluation.py",
+    "benchmark/adapters/task_reference.py",
 )
 
 
@@ -59,7 +59,7 @@ def stub_policy_loading(monkeypatch) -> None:
 
     env = TaskReferenceEnv()
     monkeypatch.setattr(
-        "robot_learning.benchmark.reference_evaluation.load_runtime",
+        "benchmark.reference_evaluation.load_runtime",
         lambda model_path, algorithm=None: SimpleNamespace(
             io=make_policy_io(),
             observation_space=env.observation_space,
@@ -236,7 +236,7 @@ def test_reference_evaluation_is_factual_and_declares_no_success(monkeypatch, tm
 
 
 def test_reference_evaluation_is_independent_of_researcher_task_code():
-    relative = "robot_learning/benchmark/reference_evaluation.py"
+    relative = "benchmark/reference_evaluation.py"
     source = (ROOT / relative).read_text(encoding="utf-8")
     imported = [
         node.module
@@ -250,14 +250,12 @@ def test_reference_evaluation_is_independent_of_researcher_task_code():
             "robot_learning.scenario",
             "robot_learning.scenario.environment",
             "robot_learning.scenario.evaluation",
-            "robot_learning.scenario.reward",
+            "robot_learning.training.reward",
         ), f"{relative} imports researcher-owned task mechanics via {module}"
 
 
 def test_final_benchmark_does_not_depend_on_the_task_reference():
-    source = (ROOT / "robot_learning/benchmark/final_benchmark.py").read_text(
-        encoding="utf-8"
-    )
+    source = (ROOT / "benchmark/final_benchmark.py").read_text(encoding="utf-8")
 
     assert "reference_contract" not in source
     assert "reference_evaluation" not in source

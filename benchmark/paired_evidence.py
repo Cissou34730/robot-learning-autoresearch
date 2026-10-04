@@ -25,8 +25,7 @@ def episode_outcomes(evaluations: list[dict]) -> dict[tuple[str, int], bool]:
             success = bool(episode["success"])
             if identity in outcomes and outcomes[identity] != success:
                 raise ValueError(
-                    "conflicting deterministic measurements for episode "
-                    f"{identity[1]}"
+                    f"conflicting deterministic measurements for episode {identity[1]}"
                 )
             outcomes[identity] = success
     return outcomes

@@ -11,14 +11,14 @@ from pathlib import Path
 
 import pytest
 
-from research import runner_protocol as protocol
-from robot_learning.paired_evidence import (
+from benchmark.paired_evidence import (
     episode_outcomes,
     paired_comparison,
 )
+from runner import protocol
 
 ROOT = Path(__file__).resolve().parents[2]
-PROTECTED_ACCOUNTING = "robot_learning/paired_evidence.py"
+PROTECTED_ACCOUNTING = "benchmark/paired_evidence.py"
 
 
 def _evaluation(seed: int, outcomes: list[bool], semantics: str = "semantics") -> dict:
@@ -42,19 +42,19 @@ def test_accounting_module_is_protected_and_never_researcher_owned():
 def test_statistic_is_researcher_owned_and_the_module_is_not_protected():
     assert not protocol.is_protected_source("robot_learning/training/comparison.py")
     assert protocol.is_researcher_owned("robot_learning/training/comparison.py")
-    import robot_learning.paired_evidence as protected
+    import benchmark.paired_evidence as protected
 
     assert not hasattr(protected, "exact_mcnemar_pvalue")
 
 
 def test_evaluator_and_runner_import_the_protected_accounting():
     for relative in (
-        "research/runner_execution.py",
+        "runner/execution.py",
         "robot_learning/scenario/evaluation.py",
     ):
         source = (ROOT / relative).read_text(encoding="utf-8")
         assert "robot_learning.training.comparison" not in source, relative
-        assert "robot_learning.paired_evidence" in source, relative
+        assert "benchmark.paired_evidence" in source, relative
 
 
 def test_distinct_episode_coverage_is_counted_once_across_overlapping_panels():

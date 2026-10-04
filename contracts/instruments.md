@@ -2,12 +2,12 @@
 
 This document specifies exact request shapes, acceptance conditions, and
 outputs. It does not recommend when or whether to use an instrument.
-Scientific decisions belong to the PI under `research/program.md`; ownership
+Scientific decisions belong to the PI under `contracts/program.md`; ownership
 and command authority are defined in `AGENTS.md`.
 
 ## Operation request envelope
 
-Write `research/operation_request.json` as one JSON object containing exactly
+Write `pi_workspace/operation_request.json` as one JSON object containing exactly
 one top-level operation kind:
 
 ```text
@@ -127,9 +127,9 @@ A `python_module` entry has this interface:
 ```
 
 `instrument` is `python_module`. `module`, `args`, and `artifact` are required;
-`label` is optional. The module is under `research.lab` or
-`robot_learning.scenario`. The artifact is a campaign-scoped JSON path under
-`research/evaluations/`.
+`label` is optional. The module is under `robot_learning.lab`,
+`robot_learning.scenario`, or `robot_learning.training`. The artifact is a
+campaign-scoped JSON path under `campaigns/evaluations/`.
 
 A paired-comparison entry has this interface:
 
@@ -321,6 +321,6 @@ result. No other campaign-conclusion action is supported.
 
 ## Scientific-model publication
 
-Before other campaign work, `research/scientific_model.md` must contain
+Before other campaign work, `pi_workspace/scientific_model.md` must contain
 substantive `Established facts`, `Physical consequences`, and `Unknowns`
 registers. Once accepted, it remains fixed for the campaign.

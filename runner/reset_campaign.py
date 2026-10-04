@@ -24,49 +24,47 @@ from pathlib import Path, PureWindowsPath
 if __package__ in {None, ""}:
     sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from research import runner_paths as paths
-from research import runner_protocol as protocol
-from research import runner_repository as repository
+from runner import paths, protocol, repository
 
 EPHEMERAL_PATHS = (
-    "research/operation_request.json",
-    "research/GOAL_REACHED",
-    "research/RECOVERY_PENDING",
-    "research/RESTART_PENDING",
-    "research/proposal.json",
-    "research/evaluation_request.json",
-    "research/training_logs",
-    "research/evaluations",
-    "research/last_train_summary.md",
-    "research/last_evaluation.json",
-    "research/brief.md",
+    "pi_workspace/operation_request.json",
+    "runner/state/GOAL_REACHED",
+    "runner/state/RECOVERY_PENDING",
+    "runner/state/RESTART_PENDING",
+    "runner/state/proposal.json",
+    "runner/state/evaluation_request.json",
+    "campaigns/training_logs",
+    "campaigns/evaluations",
+    "runner/state/last_train_summary.md",
+    "runner/state/last_evaluation.json",
+    "campaigns/brief.md",
     "models/candidates",
 )
 CAMPAIGN_PATHS = (
-    "research/lab",
-    "research/EXPERIMENTS.md",
-    "research/results.jsonl",
-    "research/research_state.json",
-    "research/scientific_model.md",
-    "research/checkpoints",
-    "research/postmortems.md",
-    "research/archive.md",
-    "research/BASELINE_PENDING",
+    "robot_learning/lab",
+    "campaigns/EXPERIMENTS.md",
+    "campaigns/results.jsonl",
+    "runner/state/research_state.json",
+    "pi_workspace/scientific_model.md",
+    "campaigns/checkpoints",
+    "campaigns/postmortems.md",
+    "campaigns/archive.md",
+    "runner/state/BASELINE_PENDING",
     *EPHEMERAL_PATHS,
 )
 TASK_COMPATIBILITY_PATHS = (
-    "robot_learning/benchmark/final_contract.py",
-    "robot_learning/benchmark/reference_contract.py",
-    "robot_learning/benchmark/spec.py",
-    "robot_learning/robots/two_joint_arm.py",
-    "robot_learning/robots/two_joint_arm.xml",
+    "benchmark/final_contract.py",
+    "benchmark/reference_contract.py",
+    "contracts/task_spec.py",
+    "contracts/robots/two_joint_arm.py",
+    "contracts/robots/two_joint_arm.xml",
 )
 RESET_OPERATION_VERSION = 1
 BASELINE_ARTIFACT_ROOTS = (
-    "research/checkpoints/candidates",
-    "research/checkpoints/retained",
+    "campaigns/checkpoints/candidates",
+    "campaigns/checkpoints/retained",
 )
-BASELINE_EVALUATION_ROOT = "research/evaluations"
+BASELINE_EVALUATION_ROOT = "campaigns/evaluations"
 
 
 def git(*arguments: str, text: bool = True) -> str | bytes:
@@ -193,7 +191,7 @@ def validate_evaluation_artifact_path(relative: str) -> str:
     normalized = canonical_import_path(relative, "baseline evaluation artifact path")
     if not path_is_below(normalized, BASELINE_EVALUATION_ROOT):
         raise ValueError(
-            "baseline evaluation artifact must be below research/evaluations: "
+            "baseline evaluation artifact must be below campaigns/evaluations: "
             f"{normalized}"
         )
     return normalized
@@ -433,9 +431,11 @@ def verify_task_compatibility(commit: str) -> None:
 
 def verify_recipe_source(commit: str) -> None:
     files = commit_files(commit)
-    if "research/current_params.json" not in files:
-        raise ValueError("recipe source is missing research/current_params.json")
-    git_json(commit, "research/current_params.json")
+    if "robot_learning/training/current_params.json" not in files:
+        raise ValueError(
+            "recipe source is missing robot_learning/training/current_params.json"
+        )
+    git_json(commit, "robot_learning/training/current_params.json")
     verify_task_compatibility(commit)
 
 
@@ -470,7 +470,7 @@ def baseline_restore_paths(commit: str, candidate: dict) -> list[str]:
     required = {
         *(f"{artifact}/{name}" for name in repository.INFERENCE_ARTIFACT_FILES),
         *evaluation_artifacts,
-        "research/scientific_model.md",
+        "pi_workspace/scientific_model.md",
     }
     missing = sorted(required - source)
     if missing:
@@ -484,7 +484,7 @@ def baseline_restore_paths(commit: str, candidate: dict) -> list[str]:
 
 
 def verify_baseline_source(commit: str) -> tuple[dict, dict, list[str], dict]:
-    state = git_json(commit, "research/research_state.json")
+    state = git_json(commit, "runner/state/research_state.json")
     if state.get("schema_version") != repository.STATE_SCHEMA_VERSION:
         raise ValueError("BaselineRef must use schema 6")
     repository.validate_research_state(state, allow_missing_artifact=True)
@@ -502,8 +502,8 @@ def verify_baseline_source(commit: str) -> tuple[dict, dict, list[str], dict]:
         raise ValueError("BaselineRef must contain a ready scientific model")
     model_commit = str(state["scientific_model"]["commit"])
     resolve_commit(model_commit, "BaselineRef scientific model commit")
-    if git_bytes(model_commit, "research/scientific_model.md") != git_bytes(
-        commit, "research/scientific_model.md"
+    if git_bytes(model_commit, "pi_workspace/scientific_model.md") != git_bytes(
+        commit, "pi_workspace/scientific_model.md"
     ):
         raise ValueError(
             "BaselineRef scientific model differs from its recorded commit"
@@ -572,13 +572,24 @@ def publish_reset_changes(
     message: str,
     scope: list[str],
     purpose: str,
-    force_add: list[str] | None = None,
 ) -> str | None:
-    forced = list(dict.fromkeys(force_add or []))
+    forced = [
+        path
+        for path in scope
+        if purpose == "campaign"
+        and path.startswith(
+            (
+                "campaigns/checkpoints",
+                "campaigns/evaluations",
+                "campaigns/training_logs",
+                "models/",
+            )
+        )
+    ]
     ordinary = [path for path in scope if path not in forced]
     stageable = repository.stage_existing_or_tracked(ordinary)
     if forced:
-        git("add", "-f", "--", *forced)
+        git("add", "-f", "-A", "--", *forced)
         stageable.extend(forced)
     if (
         not stageable
@@ -831,7 +842,9 @@ def write_fresh_campaign(recipe_source: str | None) -> dict:
         remove_path(relative)
     base_commit = str(git("rev-parse", "HEAD")).strip()
     state = empty_state(base_commit, recipe_source)
-    paths.RESEARCH_DIR.mkdir(parents=True, exist_ok=True)
+    paths.CAMPAIGNS_DIR.mkdir(parents=True, exist_ok=True)
+    paths.PI_WORKSPACE_DIR.mkdir(parents=True, exist_ok=True)
+    paths.RUNNER_STATE_DIR.mkdir(parents=True, exist_ok=True)
     write_campaign_memory(state)
     return state
 

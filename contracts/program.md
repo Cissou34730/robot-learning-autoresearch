@@ -16,7 +16,7 @@ whether the campaign is making progress.
 
 ## Objective and hierarchy
 
-The human goal defined by `research/scenario.md` is the campaign's only
+The human goal defined by `contracts/scenario.md` is the campaign's only
 objective. Science, methods, training, measurements, and tools are instruments
 for reaching that goal. An unsuccessful recipe, inquiry, or implementation
 barrier does not establish a scientific ending for the campaign.
@@ -35,7 +35,7 @@ an inquiry is not the campaign.
 ## Campaign startup
 
 A fresh campaign begins with a dedicated preliminary PI session. That session
-constructs `research/scientific_model.md` from the human-authored robot,
+constructs `pi_workspace/scientific_model.md` from the human-authored robot,
 physics, sensing, task, and assessment implementation. The model separates
 established facts, physical consequences, and unknowns, then remains fixed as
 the campaign's initial physical model. It is not passive background: later
@@ -171,12 +171,12 @@ or no-credible-route campaign ending.
 
 ## Context routing
 
-`research/brief.md` is the compact current context. Its source references route
+`campaigns/brief.md` is the compact current context. Its source references route
 deeper inspection:
 
-- `research/scenario.md` defines the human goal and protected assessment;
-- `research/scientific_model.md` is the campaign-start physical reference;
-- `research/instruments.md` defines mechanical operation contracts;
+- `contracts/scenario.md` defines the human goal and protected assessment;
+- `pi_workspace/scientific_model.md` is the campaign-start physical reference;
+- `contracts/instruments.md` defines mechanical operation contracts;
 - the scientific session record and referenced artifacts preserve current
   evidence;
 - `AGENTS.md` defines ownership, commands, and operational boundaries.

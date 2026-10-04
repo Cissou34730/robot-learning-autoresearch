@@ -39,8 +39,8 @@ commit associated with each old artifact. The human-only migration tool exports
 a new copy using that code in a temporary checkout, without switching branches:
 
 ```powershell
-uv run python research/migrate_policy_runtime.py `
-  --artifact research/checkpoints/accepted --output ../migrated-champion `
+uv run python runner/migrate_policy_runtime.py `
+  --artifact campaigns/checkpoints/accepted --output ../migrated-champion `
   --source-ref <scientific-commit> --identity-actions
 ```
 

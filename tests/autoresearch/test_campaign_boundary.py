@@ -5,8 +5,9 @@ from __future__ import annotations
 import json
 import uuid
 
-from research import runner_paths, runner_protocol
-from research import runner_repository as repository
+from runner import paths as runner_paths
+from runner import protocol as runner_protocol
+from runner import repository
 
 
 def _campaign(identifier: str) -> dict:
@@ -122,4 +123,4 @@ def test_operation_history_preserves_campaign_attribution(monkeypatch, tmp_path)
 
 
 def test_runner_memory_includes_terminal_goal_marker():
-    assert repository.is_runner_memory("research/GOAL_REACHED")
+    assert repository.is_runner_memory("runner/state/GOAL_REACHED")

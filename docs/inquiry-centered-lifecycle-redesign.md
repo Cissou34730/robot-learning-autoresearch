@@ -263,7 +263,7 @@ model-role operations. Training never changes them automatically.
 
 ## Instruments and scientific tooling
 
-`research/instruments.md` remains protected and human/Runner-owned.
+`contracts/instruments.md` remains protected and human/Runner-owned.
 
 It documents:
 
@@ -385,7 +385,7 @@ Remove or consolidate:
 
 ## Prompt architecture
 
-The active prompt is imperative. `research/program.md` is informative.
+The active prompt is imperative. `contracts/program.md` is informative.
 
 Every scientific-session prompt begins with:
 
@@ -401,15 +401,15 @@ goal-directed continuation and stopping imperatives.
 Control-plane limits, counters, schema versions, backend/session mechanics,
 ownership enforcement, retry machinery, and operation catalogs are not
 scientific context and are not injected into the active PI prompt. Instrument
-formats remain available on demand in `research/instruments.md`.
+formats remain available on demand in `contracts/instruments.md`.
 
 It also acts as a source router:
 
-- `research/scenario.md`: human goal, protected task, official assessment;
-- `research/scientific_model.md`: physical robot/task reference;
-- `research/instruments.md`: instrument invocation contracts;
-- `research/brief.md` and inquiry checkpoint: current evidence and state;
-- `research/program.md`: deeper lifecycle rationale when needed;
+- `contracts/scenario.md`: human goal, protected task, official assessment;
+- `pi_workspace/scientific_model.md`: physical robot/task reference;
+- `contracts/instruments.md`: instrument invocation contracts;
+- `campaigns/brief.md` and inquiry checkpoint: current evidence and state;
+- `contracts/program.md`: deeper lifecycle rationale when needed;
 - `AGENTS.md`: ownership, commands, and operational boundaries.
 
 The PI is not forced to reread every document. It queries detailed context when
@@ -417,7 +417,7 @@ the current work requires it.
 
 ## Documentation redesign
 
-### `research/program.md`
+### `contracts/program.md`
 
 Explain:
 
@@ -429,7 +429,7 @@ Explain:
 - inquiry closure and campaign goal review;
 - science as an instrument rather than a target.
 
-### `research/scenario.md`
+### `contracts/scenario.md`
 
 Remain the protected definition of:
 
@@ -442,13 +442,13 @@ Remain the protected definition of:
 The human goal is extracted prominently into every generated scientific
 context.
 
-### `research/instruments.md`
+### `contracts/instruments.md`
 
 Describe invocation mechanics only, including any revised generic measurement
 and training instruments. It remains protected and does not prescribe
 scientific choices.
 
-### `research/brief.md`
+### `campaigns/brief.md`
 
 Lead with:
 
