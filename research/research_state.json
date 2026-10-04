@@ -1,5 +1,13 @@
 {
-  "active_inquiry": null,
+  "active_inquiry": {
+    "closure_condition": "Close when a completed baseline training-and-measurement route yields episode-level success and failure decomposition under the official radius and angle distribution, including time to first entry, entry velocity, maximum consecutive hold, exits, radius and angle conditioning, and branch behavior where available, sufficient to select or reject the leading intervention direction; if the baseline is not measurable, record that bounded result and the specific method-development blocker.",
+    "goal_connection": "The human goal requires at least 196 successful complete holds in the fixed 200-episode official assessment. With no candidate or development measurement, mechanism localization is necessary before selecting a recipe or requesting assessment.",
+    "id": "I1",
+    "opened_in_session": "S2",
+    "question": "Can a baseline policy be trained and measured under the official target distribution well enough to distinguish failure to reach, failure to settle, and failure to maintain the uninterrupted hold, and thereby identify whether the next intervention should target training coverage, motion generation and braking, or hold stabilization?",
+    "rationale": "The scientific model establishes that reachability alone is insufficient and identifies three consequential explanations: outer-only training may fail on inner radii, dynamic approach and braking may fail near difficult configurations, or residual motion and discrete sampling may break the hold. No completed operation discriminates among them, so official assessment would be premature and a direct intervention would be speculative. A baseline mechanism-localization inquiry is the smallest goal-linked action that can establish measurable behavior and redirect the campaign using episode-level evidence rather than proxy reward or training completion.",
+    "reframes": []
+  },
   "campaign": {
     "base_commit": "95d0ff595153b4192d0ce8b85c84f4c92187fce4",
     "id": "c7040992-41c7-4094-a2a1-7d1069662603",
@@ -9,16 +17,16 @@
   },
   "candidates": {},
   "counters": {
-    "event": 1,
-    "inquiry": 0,
+    "event": 2,
+    "inquiry": 1,
     "measurement": 0,
-    "session": 1,
+    "session": 2,
     "training": 0
   },
   "human_goal": {
     "source": "research/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -51,9 +59,69 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-04T06:02:47Z",
+      "error": null,
+      "id": "E2",
+      "inquiry_id": "I1",
+      "kind": "inquiry",
+      "request": {
+        "action": "open",
+        "closure_condition": "Close when a completed baseline training-and-measurement route yields episode-level success and failure decomposition under the official radius and angle distribution, including time to first entry, entry velocity, maximum consecutive hold, exits, radius and angle conditioning, and branch behavior where available, sufficient to select or reject the leading intervention direction; if the baseline is not measurable, record that bounded result and the specific method-development blocker.",
+        "goal_connection": "The human goal requires at least 196 successful complete holds in the fixed 200-episode official assessment. With no candidate or development measurement, mechanism localization is necessary before selecting a recipe or requesting assessment.",
+        "question": "Can a baseline policy be trained and measured under the official target distribution well enough to distinguish failure to reach, failure to settle, and failure to maintain the uninterrupted hold, and thereby identify whether the next intervention should target training coverage, motion generation and braking, or hold stabilization?",
+        "rationale": "The scientific model establishes that reachability alone is insufficient and identifies three consequential explanations: outer-only training may fail on inner radii, dynamic approach and braking may fail near difficult configurations, or residual motion and discrete sampling may break the hold. No completed operation discriminates among them, so official assessment would be premature and a direct intervention would be speculative. A baseline mechanism-localization inquiry is the smallest goal-linked action that can establish measurable behavior and redirect the campaign using episode-level evidence rather than proxy reward or training completion."
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I1",
+        "status": "completed"
+      },
+      "session_id": "S2",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "open",
+        "inquiry": {
+          "closure_condition": "Close when a completed baseline training-and-measurement route yields episode-level success and failure decomposition under the official radius and angle distribution, including time to first entry, entry velocity, maximum consecutive hold, exits, radius and angle conditioning, and branch behavior where available, sufficient to select or reject the leading intervention direction; if the baseline is not measurable, record that bounded result and the specific method-development blocker.",
+          "goal_connection": "The human goal requires at least 196 successful complete holds in the fixed 200-episode official assessment. With no candidate or development measurement, mechanism localization is necessary before selecting a recipe or requesting assessment.",
+          "id": "I1",
+          "opened_in_session": "S2",
+          "question": "Can a baseline policy be trained and measured under the official target distribution well enough to distinguish failure to reach, failure to settle, and failure to maintain the uninterrupted hold, and thereby identify whether the next intervention should target training coverage, motion generation and braking, or hold stabilization?",
+          "rationale": "The scientific model establishes that reachability alone is insufficient and identifies three consequential explanations: outer-only training may fail on inner radii, dynamic approach and braking may fail near difficult configurations, or residual motion and discrete sampling may break the hold. No completed operation discriminates among them, so official assessment would be premature and a direct intervention would be speculative. A baseline mechanism-localization inquiry is the smallest goal-linked action that can establish measurable behavior and redirect the campaign using episode-level evidence rather than proxy reward or training completion.",
+          "reframes": []
+        }
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I1",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E2",
+    "inquiry_id": null,
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "open",
+        "closure_condition": "Close when a completed baseline training-and-measurement route yields episode-level success and failure decomposition under the official radius and angle distribution, including time to first entry, entry velocity, maximum consecutive hold, exits, radius and angle conditioning, and branch behavior where available, sufficient to select or reject the leading intervention direction; if the baseline is not measurable, record that bounded result and the specific method-development blocker.",
+        "goal_connection": "The human goal requires at least 196 successful complete holds in the fixed 200-episode official assessment. With no candidate or development measurement, mechanism localization is necessary before selecting a recipe or requesting assessment.",
+        "question": "Can a baseline policy be trained and measured under the official target distribution well enough to distinguish failure to reach, failure to settle, and failure to maintain the uninterrupted hold, and thereby identify whether the next intervention should target training coverage, motion generation and braking, or hold stabilization?",
+        "rationale": "The scientific model establishes that reachability alone is insufficient and identifies three consequential explanations: outer-only training may fail on inner radii, dynamic approach and braking may fail near difficult configurations, or residual motion and discrete sampling may break the hold. No completed operation discriminates among them, so official assessment would be premature and a direct intervention would be speculative. A baseline mechanism-localization inquiry is the smallest goal-linked action that can establish measurable behavior and redirect the campaign using episode-level evidence rather than proxy reward or training completion."
+      }
+    },
+    "request_fingerprint": "5fafdc4d3abd246ea415d3fd8e77fadc971b2d6e53f198f1aa5c96a2bbd2bf1f",
+    "session_id": "S2",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No candidates or model roles exist. No training or measurement operation has completed.",
     "completed_operations": [],
@@ -74,6 +142,21 @@
     "path": "research/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "49db4bec-5cc4-4096-9d5d-cef49fbf1df5",
+    "id": "S2",
+    "inquiry_id": null,
+    "kind": "goal_review",
+    "objective": "Reassess the scientific direction toward the human goal using completed evidence. You may request measurements to resolve an uncertainty or develop the method before committing to an inquiry. Decide whether to request official assessment or open one bounded goal-linked inquiry.",
+    "operation_ids": [
+      "E2"
+    ],
+    "scientific_parent_commit": "3975d413e5eed5fe5a222756feb47acc58a1fbc5"
+  },
   "terminal_state": null
 }
