@@ -84,44 +84,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "open",
-        "inquiry": {
-          "closure_condition": "Close when a completed baseline training-and-measurement route yields episode-level success and failure decomposition under the official radius and angle distribution, including time to first entry, entry velocity, maximum consecutive hold, exits, radius and angle conditioning, and branch behavior where available, sufficient to select or reject the leading intervention direction; if the baseline is not measurable, record that bounded result and the specific method-development blocker.",
-          "goal_connection": "The human goal requires at least 196 successful complete holds in the fixed 200-episode official assessment. With no candidate or development measurement, mechanism localization is necessary before selecting a recipe or requesting assessment.",
-          "id": "I1",
-          "opened_in_session": "S2",
-          "question": "Can a baseline policy be trained and measured under the official target distribution well enough to distinguish failure to reach, failure to settle, and failure to maintain the uninterrupted hold, and thereby identify whether the next intervention should target training coverage, motion generation and braking, or hold stabilization?",
-          "rationale": "The scientific model establishes that reachability alone is insufficient and identifies three consequential explanations: outer-only training may fail on inner radii, dynamic approach and braking may fail near difficult configurations, or residual motion and discrete sampling may break the hold. No completed operation discriminates among them, so official assessment would be premature and a direct intervention would be speculative. A baseline mechanism-localization inquiry is the smallest goal-linked action that can establish measurable behavior and redirect the campaign using episode-level evidence rather than proxy reward or training completion.",
-          "reframes": []
-        }
-      },
-      "result": {
-        "action": "open",
-        "inquiry_id": "I1",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E2",
-    "inquiry_id": null,
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "open",
-        "closure_condition": "Close when a completed baseline training-and-measurement route yields episode-level success and failure decomposition under the official radius and angle distribution, including time to first entry, entry velocity, maximum consecutive hold, exits, radius and angle conditioning, and branch behavior where available, sufficient to select or reject the leading intervention direction; if the baseline is not measurable, record that bounded result and the specific method-development blocker.",
-        "goal_connection": "The human goal requires at least 196 successful complete holds in the fixed 200-episode official assessment. With no candidate or development measurement, mechanism localization is necessary before selecting a recipe or requesting assessment.",
-        "question": "Can a baseline policy be trained and measured under the official target distribution well enough to distinguish failure to reach, failure to settle, and failure to maintain the uninterrupted hold, and thereby identify whether the next intervention should target training coverage, motion generation and braking, or hold stabilization?",
-        "rationale": "The scientific model establishes that reachability alone is insufficient and identifies three consequential explanations: outer-only training may fail on inner radii, dynamic approach and braking may fail near difficult configurations, or residual motion and discrete sampling may break the hold. No completed operation discriminates among them, so official assessment would be premature and a direct intervention would be speculative. A baseline mechanism-localization inquiry is the smallest goal-linked action that can establish measurable behavior and redirect the campaign using episode-level evidence rather than proxy reward or training completion."
-      }
-    },
-    "request_fingerprint": "5fafdc4d3abd246ea415d3fd8e77fadc971b2d6e53f198f1aa5c96a2bbd2bf1f",
-    "session_id": "S2",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "No candidates or model roles exist. No training or measurement operation has completed.",
     "completed_operations": [],
