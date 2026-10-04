@@ -228,7 +228,10 @@ training request must still satisfy the current session's allocation contract
 before dispatch; completed results can finish publication without a new
 training allocation.
 
-## Durable checkpoint
+## Scientific session record
+
+The `checkpoint` operation saves the scientific session record. It does not
+save policy weights. A policy checkpoint is a separate training artifact.
 
 ```json
 {
@@ -255,8 +258,8 @@ training allocation.
 Every field is required. String fields are non-empty. `completed_operations`
 exactly matches the active session's completed operation IDs. Every evidence
 reference is a completed operation identity. Artifact paths are outputs of
-those operations, not independent evidence references. An accepted checkpoint
-ends the current scientific session.
+those operations, not independent evidence references. An accepted scientific
+session record ends the current scientific session.
 
 ## Model-role operation
 

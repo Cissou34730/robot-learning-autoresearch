@@ -72,6 +72,9 @@ $scientificModelUseGuidance = @(
     "Use research/scientific_model.md as the campaign's initial physical model. Test its interpretation against observed behavior and carry forward what the campaign learns; do not treat it as an intervention menu or a passive reference."
     "Use its physical consequences and unknowns to form competing mechanistic explanations. When an unresolved mechanism could change the scientific direction, seek evidence that discriminates between those explanations; when it cannot, state why it is not consequential."
 ) -join " "
+$startupPhaseObjective = @'
+Establish the most credible initial scientific direction toward the human goal from the scientific model and available evidence. Use scientific work in this session to establish or refine that direction, including building or adapting reusable scientific tools and PI-owned methods where needed. These capabilities can support subsequent inquiries. Choose the first useful scientific action and explain why it advances the direction. Preserve the work actually performed, resulting understanding, remaining uncertainties and chosen next action in the scientific session record.
+'@
 $scientificModelPhaseObjective = @'
 Construct the campaign's physical and scientific model before any training or campaign evidence exists. Work from first principles and the human-authored implementation to explain the robot as an embodied dynamical system: how its morphology, actuation, sensing, control loop, simulator, and task geometry jointly determine the behaviors that are possible, constrained, or scientifically uncertain.
 
@@ -691,7 +694,7 @@ function New-ScientificSessionPrompt {
         [string]$State.official_assessment.summary
     }
     elseif ($checkpoint -and $checkpoint.evidence_references.Count -gt 0) {
-        "The latest checkpoint cites: $($checkpoint.evidence_references -join ', ')."
+        "The latest scientific session record cites: $($checkpoint.evidence_references -join ', ')."
     }
     elseif ($State.model_roles.best_known) {
         "The explicit best-known model is $($State.model_roles.best_known); inspect its referenced measurements in research/brief.md."
@@ -706,7 +709,7 @@ function New-ScientificSessionPrompt {
         [string]$checkpoint.current_goal_gap
     }
     else {
-        "No PI-interpreted goal gap has been checkpointed yet."
+        "No PI-interpreted goal gap has been recorded yet."
     }
     $synthesis = if ($checkpoint -and $checkpoint.current_synthesis) {
         [string]$checkpoint.current_synthesis
@@ -718,7 +721,7 @@ function New-ScientificSessionPrompt {
         [string]$checkpoint.decision_frontier
     }
     else {
-        "No scientific decision frontier has been checkpointed yet."
+        "No scientific decision frontier has been recorded yet."
     }
     $transition = Get-RequiredSessionSummaryTransition -State $State
     $inquiry = if ($transition) {
@@ -730,9 +733,6 @@ function New-ScientificSessionPrompt {
             "Goal relevance: $($State.active_inquiry.goal_connection) " +
             "Closure condition: $($State.active_inquiry.closure_condition)"
         )
-    }
-    elseif ($State.scientific_session.kind -eq "startup") {
-        "None. Establish and checkpoint the most credible initial scientific direction; inquiry selection follows in goal review."
     }
     elseif ($State.scientific_session.kind -eq "inquiry") {
         "The inquiry has closed. Preserve its outcome and the resulting campaign decision."
@@ -755,9 +755,9 @@ function New-ScientificSessionPrompt {
     }
     $actionGuidance = if ($transition) {
         @(
-            "The sole legal next action is the checkpoint operation that saves the current session summary."
+            "The sole legal next action is the checkpoint operation that saves the scientific session record."
             "Do not request training, measurement, model-role changes, restoration, another inquiry change, or a campaign conclusion in this session."
-            "Use the checkpoint contract in research/instruments.md and preserve the transition decision, evidence, remaining goal gap, and next direction."
+            "Use the scientific session record contract in research/instruments.md and preserve the transition decision, evidence, remaining goal gap, and next direction."
         )
     }
     else {
@@ -765,34 +765,38 @@ function New-ScientificSessionPrompt {
             "Choose the operation whose result would most improve the next decision toward the human goal."
             "Relate the selected operation to the unresolved scientific distinction or method-development need. The decision frontier records the question and discriminating evidence, not merely a candidate implementation."
             "Existing PI-owned implementations have no privileged status; inspect, modify, or replace them when that is the most credible scientific action before submitting an operation."
-            "When evidence resolves or redirects the active inquiry, record that decision explicitly rather than drifting to another question."
-            "When the current line of work reaches a stable decision, preserve the synthesis, consequential competing explanations, claim limits, supporting evidence, remaining gap, decision frontier, and next direction in a checkpoint."
+            if ($session.kind -ne "startup") {
+                "When evidence resolves or redirects the active inquiry, record that decision explicitly rather than drifting to another question."
+            }
+            "When the current line of work reaches a stable decision, preserve the synthesis, consequential competing explanations, claim limits, supporting evidence, remaining gap, decision frontier, and next direction in a scientific session record."
             "When ready to act, use the matching contract in research/instruments.md to submit one scientific action."
         )
     }
 
     $trainingAllocation = if ($session.kind -eq "startup") {
-        "Maintainer training ceiling: $Timesteps requested steps per startup run. You may request any positive integer up to this ceiling, but neither the PI nor the Runner may raise it. Actual completed steps may round up to the learning algorithm's rollout boundary."
+        "Training ceiling: $Timesteps requested steps per run."
     }
     else {
         "Maintainer training allocation: $Timesteps steps per run. Training requests must match this allocation; neither the PI nor the Runner may independently change it."
     }
 
     $sections = @(
+        $piPersona
         "Human goal: $goal"
         "Current evidence relative to the goal: $bestEvidence $(Get-LatestSessionResult -State $State)"
         "Current scientific understanding: $synthesis"
         "Scientific decision frontier: $frontier"
         "Current goal gap: $gap"
-        "Active inquiry: $inquiry"
+        if ($session.kind -ne "startup") {
+            "Active inquiry: $inquiry"
+        }
         "Current objective: $objective"
         $trainingAllocation
         $correction
-        $piPersona
         $scientificModelUseGuidance
         "Direct every decision toward the human goal and distinguish evidence from conjecture."
         $actionGuidance
-        "Begin with research/brief.md and the latest checkpoint. Consult research/scenario.md, research/scientific_model.md, and other evidence only as the scientific question requires."
+        "Begin with research/brief.md and the latest scientific session record. Consult research/scenario.md, research/scientific_model.md, and other evidence only as the scientific question requires."
     ) | Where-Object { $_ }
     return ($sections -join "`n`n")
 }
@@ -837,8 +841,8 @@ function Invoke-ScientificModelPhase {
 
     $goal = Get-HumanGoalSummary -State $State
     $prompt = @(
-        "Human goal: $goal"
         $piPersona
+        "Human goal: $goal"
         "Current objective: $scientificModelPhaseObjective"
         "Base the model on research/scenario.md and the relevant human-authored implementation."
         "The document must contain substantive registers headed Established facts, Physical consequences, and Unknowns. Distinguish repository facts from reasoned implications and unresolved quantities."
@@ -853,6 +857,7 @@ function Invoke-ScientificModelPhase {
     }
     if (-not (Test-ScientificModelDeliverable)) {
         $retry = @(
+            $piPersona
             "Human goal: $goal"
             "The scientific model could not be accepted: $script:ScientificModelValidationFeedback"
             "Correct research/scientific_model.md while preserving valid content and ensuring all three required registers are substantive."
@@ -1088,7 +1093,7 @@ try {
                 "goal_review"
             }
             $objective = if ($kind -eq "startup") {
-                "Establish and checkpoint the most credible first scientific direction toward the human goal from the scientific model and evidence produced in this session; inquiry selection follows in goal review."
+                $startupPhaseObjective
             }
             elseif ($kind -eq "goal_review") {
                 "Reassess the scientific direction toward the human goal using completed evidence. You may request measurements to resolve an uncertainty or develop the method before committing to an inquiry. Decide whether to request official assessment or open one bounded goal-linked inquiry."

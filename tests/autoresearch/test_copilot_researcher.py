@@ -97,6 +97,7 @@ def test_read_only_git_stays_available(command):
 )
 def test_execution_belongs_to_the_launcher(command):
     assert adapter.command_denial(command) == adapter.EXECUTION_DENIAL
+    assert adapter.command_denial(command, preliminary=True) == adapter.EXECUTION_DENIAL
 
 
 def test_a_repository_wide_test_run_is_refused():
@@ -260,25 +261,38 @@ def test_ordinary_research_commands_are_not_obstructed():
 
 
 @pytest.mark.parametrize(
-    ("command", "expected"),
+    ("command", "expected", "preliminary"),
     [
-        ("Get-Content research/run_experiment.py", adapter.FILE_READ_DENIAL),
+        ("Get-Content research/run_experiment.py", adapter.FILE_READ_DENIAL, False),
         (
             "rg request_official_assessment research/runner_protocol.py",
             adapter.FILE_READ_DENIAL,
+            False,
         ),
-        ("Select-String -Path research/program.md -Pattern official_assessment", None),
-        ("python -c \"print(operation['campaign_conclusion'])\"", None),
-        ("cat robot_learning/train.py", None),
-        (r"Get-Content -LiteralPath robot_learning\evaluate.py", None),
-        ("rg policy robot_learning/play.py", None),
-        ("cat research/lab/run_experiment.py", None),
+        (
+            "Select-String -Path research/program.md -Pattern official_assessment",
+            None,
+            False,
+        ),
+        ("python -c \"print(operation['campaign_conclusion'])\"", None, False),
+        ("cat robot_learning/train.py", None, False),
+        (r"Get-Content -LiteralPath robot_learning\evaluate.py", None, False),
+        ("rg policy robot_learning/play.py", None, False),
+        ("cat research/lab/run_experiment.py", None, False),
+        (
+            r"Get-Content robot_learning\scenario\final_benchmark.py",
+            adapter.FILE_READ_DENIAL,
+            False,
+        ),
+        (r"Get-Content robot_learning\scenario\final_benchmark.py", None, True),
+        (r"rg success robot_learning\benchmark\final_benchmark.py", None, True),
+        (r"Get-Content research\run_experiment.py", adapter.FILE_READ_DENIAL, True),
     ],
 )
 def test_reader_targets_distinguish_reserved_files_from_scientific_sources(
-    command, expected
+    command, expected, preliminary
 ):
-    assert adapter.command_denial(command) == expected
+    assert adapter.command_denial(command, preliminary=preliminary) == expected
 
 
 def test_the_execution_target_is_resolved_through_the_launcher_prefix():
@@ -321,17 +335,34 @@ def test_the_shell_request_is_read_from_every_segment_it_reports():
     assert adapter.command_denial(adapter.shell_command_text(request)) is not None
 
 
-def test_a_refused_shell_call_answers_with_a_rejection(capsys):
+@pytest.mark.parametrize(
+    ("command", "preliminary", "expected"),
+    [
+        ("git push", False, adapter.GIT_DENIAL),
+        (
+            r"Get-Content robot_learning\scenario\final_benchmark.py",
+            False,
+            adapter.FILE_READ_DENIAL,
+        ),
+        (r"Get-Content robot_learning\scenario\final_benchmark.py", True, None),
+        (r"Get-Content research\runner_protocol.py", True, adapter.FILE_READ_DENIAL),
+    ],
+)
+def test_shell_permissions_respect_the_command_and_session_phase(
+    command, preliminary, expected, capsys
+):
     pytest.importorskip("copilot")
-    from copilot.rpc import PermissionDecisionReject
+    from copilot.rpc import PermissionDecisionApproveOnce, PermissionDecisionReject
     from copilot.session_events import PermissionRequestShell
 
     console = adapter.Console()
-    _, on_permission = adapter.build_handlers(console, asyncio.Event())
+    _, on_permission = adapter.build_handlers(
+        console, asyncio.Event(), preliminary=preliminary
+    )
     request = PermissionRequestShell(
         can_offer_session_approval=False,
         commands=[],
-        full_command_text="git push",
+        full_command_text=command,
         has_write_file_redirection=False,
         intention="publish",
         possible_paths=[],
@@ -341,9 +372,13 @@ def test_a_refused_shell_call_answers_with_a_rejection(capsys):
 
     decision = on_permission(request, {})
 
-    assert isinstance(decision, PermissionDecisionReject)
-    assert decision.feedback == adapter.GIT_DENIAL
-    assert "call-3" in console.denied_calls
+    if expected is None:
+        assert isinstance(decision, PermissionDecisionApproveOnce)
+        assert "call-3" not in console.denied_calls
+    else:
+        assert isinstance(decision, PermissionDecisionReject)
+        assert decision.feedback == expected
+        assert "call-3" in console.denied_calls
     capsys.readouterr()
 
 
@@ -388,39 +423,58 @@ def test_preliminary_write_permission_only_allows_the_scientific_model():
         == adapter.FILE_EDIT_DENIAL
     )
     assert adapter.file_edit_denial("research/operation_request.json") is None
+    assert (
+        adapter.file_edit_denial(
+            "robot_learning/scenario/final_benchmark.py", preliminary=True
+        )
+        == adapter.FILE_EDIT_DENIAL
+    )
 
 
 @pytest.mark.parametrize(
-    "path",
+    ("path", "preliminary_readable"),
     [
-        "research/run_experiment.py",
-        "research/runner_protocol.py",
-        "researcher_copilot.py",
-        "robot_learning/scenario/final_benchmark.py",
-        "docs/harness-experiment-log.md",
-        r"DOCS\IMPLEMENTATION_PLAN_CAMPAIGN_CORRECTNESS.md",
-        str(
-            ROOT
-            / "docs"
-            / "research-overview"
-            / "robot-learning-overview-20261002.html"
+        ("research/run_experiment.py", False),
+        ("research/runner_protocol.py", False),
+        ("researcher_copilot.py", False),
+        ("robot_learning/scenario/final_benchmark.py", True),
+        (str(ROOT / "robot_learning" / "benchmark" / "final_benchmark.py"), True),
+        ("docs/harness-experiment-log.md", False),
+        (r"DOCS\IMPLEMENTATION_PLAN_CAMPAIGN_CORRECTNESS.md", False),
+        (
+            str(
+                ROOT
+                / "docs"
+                / "research-overview"
+                / "robot-learning-overview-20261002.html"
+            ),
+            False,
         ),
     ],
 )
-def test_reserved_read_permissions_are_rejected(path, capsys):
+@pytest.mark.parametrize("preliminary", [False, True])
+def test_reserved_read_permissions_respect_session_phase(
+    path, preliminary_readable, preliminary, capsys
+):
     pytest.importorskip("copilot")
-    from copilot.rpc import PermissionDecisionReject
+    from copilot.rpc import PermissionDecisionApproveOnce, PermissionDecisionReject
     from copilot.session_events import PermissionRequestRead
 
     console = adapter.Console()
-    _, on_permission = adapter.build_handlers(console, asyncio.Event())
+    _, on_permission = adapter.build_handlers(
+        console, asyncio.Event(), preliminary=preliminary
+    )
     request = PermissionRequestRead(
         intention="inspect a file", path=path, tool_call_id="read-denied"
     )
     decision = on_permission(request, {})
-    assert isinstance(decision, PermissionDecisionReject)
-    assert decision.feedback == adapter.FILE_READ_DENIAL
-    assert "read-denied" in console.denied_calls
+    if preliminary and preliminary_readable:
+        assert isinstance(decision, PermissionDecisionApproveOnce)
+        assert "read-denied" not in console.denied_calls
+    else:
+        assert isinstance(decision, PermissionDecisionReject)
+        assert decision.feedback == adapter.FILE_READ_DENIAL
+        assert "read-denied" in console.denied_calls
     capsys.readouterr()
 
 
@@ -462,8 +516,12 @@ def test_scientific_corpus_remains_readable(path):
         r"Select-String -Path docs\harness-experiment-log.md -Pattern route",
     ],
 )
-def test_explicit_shell_reads_use_the_reserved_path_policy(command):
-    assert adapter.command_denial(command) == adapter.FILE_READ_DENIAL
+@pytest.mark.parametrize("preliminary", [False, True])
+def test_explicit_shell_reads_use_the_reserved_path_policy(command, preliminary):
+    assert (
+        adapter.command_denial(command, preliminary=preliminary)
+        == adapter.FILE_READ_DENIAL
+    )
 
 
 def test_searching_scientific_code_for_a_reserved_name_is_not_a_reserved_read():
@@ -473,9 +531,13 @@ def test_searching_scientific_code_for_a_reserved_name_is_not_a_reserved_read():
 # --- the session profile ----------------------------------------------------
 
 
-def test_the_session_runs_a_trimmed_tool_profile_inside_the_worktree():
+@pytest.mark.parametrize("preliminary", [False, True])
+def test_the_session_runs_a_trimmed_tool_profile_inside_the_worktree(preliminary):
     pytest.importorskip("copilot")
-    args = adapter.parse_args(["p", "--session-id", "s", "--reasoning", "medium"])
+    arguments = ["p", "--session-id", "s", "--reasoning", "medium"]
+    if preliminary:
+        arguments.append("--preliminary")
+    args = adapter.parse_args(arguments)
 
     options = adapter.session_options(args, adapter.Console(), asyncio.Event())
 
@@ -488,6 +550,7 @@ def test_the_session_runs_a_trimmed_tool_profile_inside_the_worktree():
     assert options["enable_skills"] is False
     assert options["enable_session_store"] is False
     assert options["enable_mcp_apps"] is False
+    assert "system_message" not in options
     allowed = options["available_tools"].to_list()
     assert "builtin:view" in allowed
     assert "builtin:apply_patch" in allowed

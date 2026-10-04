@@ -94,11 +94,15 @@ The PI must not modify these paths during a scientific session:
 
 A protected path takes precedence over any PI-owned prefix.
 
-The Copilot adapter also rejects read/view requests and explicit shell-reader
-targets matched by its shared reserved-script policy, including `docs/`.
+The preliminary phase can inspect scientific sources under `robot_learning/`,
+including protected benchmark implementation, to construct the physical model.
+Later phases reject read/view requests and explicit shell-reader targets
+matched by the shared reserved-script policy. Maintainer documents under
+`docs/` and harness scripts remain reserved in every phase.
 `AGENTS.md` and the scientific Markdown under `research/` remain readable.
 PI-owned scientific files remain readable, including entry points whose
-direct execution is restricted. This is a tool-level restriction,
+direct execution is restricted. Read access does not change write authority.
+Direct-execution restrictions remain unchanged. This is a tool-level restriction,
 not an operating-system filesystem sandbox.
 
 ## PI-owned paths
@@ -145,8 +149,8 @@ enumeration counts.
 
 ## Persistence and Git
 
-The campaign artifacts, especially `research/brief.md`, the durable PI
-checkpoint, completed operation records, and their artifacts, are the
+The campaign artifacts, especially `research/brief.md`, the durable scientific
+session record, completed operation records, and their artifacts, are the
 authoritative sources of scientific evidence. Failed operations are execution
 history, not evidence.
 

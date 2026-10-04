@@ -128,24 +128,16 @@ READ_ONLY_GIT = frozenset(
     }
 )
 
-GIT_DENIAL = (
-    "This action is unavailable. Use read-only Git only when code inspection "
-    "requires it; use the restoration contract in research/instruments.md when "
-    "a saved recipe is needed."
-)
+GIT_DENIAL = "Mutating or unsupported Git commands are unavailable in PI sessions."
 
 EXECUTION_DENIAL = (
-    "This action is unavailable. Use the matching execution contract in "
-    "research/instruments.md."
+    "Direct execution of reserved harness and protected entry points is unavailable."
 )
 
-SUITE_DENIAL = (
-    "Repository-wide tests are unavailable here. Use targeted checks that address "
-    "uncertainty introduced by the scientific work."
-)
+SUITE_DENIAL = "Repository-wide and end-to-end tests are unavailable in PI sessions."
 
 DEPENDENCY_DENIAL = (
-    "Dependency changes are unavailable. Use the installed project environment."
+    "Dependency installation and manifest changes are unavailable in PI sessions."
 )
 
 FILE_EDIT_DENIAL = (
@@ -153,8 +145,8 @@ FILE_EDIT_DENIAL = (
 )
 
 FILE_READ_DENIAL = (
-    "Reserved harness and maintainer files are unavailable for inspection. "
-    "Use AGENTS.md, the scientific contracts, and campaign evidence instead."
+    "Reserved harness, maintainer, and protected scientific files are unavailable "
+    "for inspection in this phase."
 )
 
 RESERVED_SCRIPT_NAMES = (
@@ -308,29 +300,6 @@ SEPARATORS = (";", "&&", "||", "|", "\n", "\r")
 LARGE_OUTPUT_DIR = ROOT / ".copilot" / "large-output"
 LARGE_OUTPUT_MAX_BYTES = 262_144
 
-CAMPAIGN_CONTEXT_GUIDANCE = """- Begin with research/brief.md and follow its evidence references as the
-  scientific question requires.
-- Existing PI-owned implementations have no privileged status; inspect, modify,
-  or replace them as the scientific work requires."""
-PRELIMINARY_CONTEXT_GUIDANCE = """- Build the preliminary scientific model only from research/scenario.md and
-  relevant human-authored implementation."""
-
-POLICY = f"""
-<pi_operating_context>
-{CAMPAIGN_CONTEXT_GUIDANCE}
-- Work within the scientific surface defined in AGENTS.md.
-- Use targeted local analysis when it resolves uncertainty in the scientific work.
-- When external execution or restoration is needed, follow the matching contract
-  in research/instruments.md instead of executing it directly.
-</pi_operating_context>
-""".strip()
-
-
-def policy_for_context(preliminary: bool) -> str:
-    if preliminary:
-        return POLICY.replace(CAMPAIGN_CONTEXT_GUIDANCE, PRELIMINARY_CONTEXT_GUIDANCE)
-    return POLICY
-
 
 def normalize_model(model: str) -> str:
     """OpenCode named the provider inside the model; the SDK names only the model."""
@@ -429,7 +398,11 @@ def file_edit_denial(target: str, *, preliminary: bool = False) -> str | None:
     return FILE_EDIT_DENIAL
 
 
-def file_read_denial(target: str) -> str | None:
+def file_read_denial(target: str, *, preliminary: bool = False) -> str | None:
+    if preliminary:
+        relative = _repository_relative_target(target)
+        if relative is not None and relative.startswith("robot_learning/"):
+            return None
     if is_pi_writable_path(target):
         return None
     if is_reserved_execution(target):
@@ -852,10 +825,11 @@ def is_dependency_management(tokens: list[str]) -> bool:
     return executable in {"install-module", "install-package"}
 
 
-def command_denial(command: str) -> str | None:
+def command_denial(command: str, *, preliminary: bool = False) -> str | None:
     """The reason this command is refused, or None when it may run.
 
-    Explicit reader targets and execution use the same reserved-path policy.
+    Explicit readers use the current phase's reserved-read policy.
+    Direct execution stays restricted in every phase.
     This is a tool boundary, not a sandbox --
     `uv run python -c` can still do anything the researcher could.
     """
@@ -897,7 +871,7 @@ def command_denial(command: str) -> str | None:
                 if pattern_pending:
                     pattern_pending = False
                     continue
-                if file_read_denial(path):
+                if file_read_denial(path, preliminary=preliminary):
                     return FILE_READ_DENIAL
         target = execution_target(tokens)
         if not target:
@@ -1165,9 +1139,7 @@ class Console:
                 if isinstance(paths, str):
                     rendered_paths = [full_console_path(paths)]
                 elif isinstance(paths, list):
-                    rendered_paths = [
-                        full_console_path(str(path)) for path in paths
-                    ]
+                    rendered_paths = [full_console_path(str(path)) for path in paths]
                 else:
                     rendered_paths = [str(ROOT.resolve())]
                 parts = []
@@ -1221,9 +1193,7 @@ class Console:
                 targets = []
                 for line in patch.splitlines():
                     if line.startswith(prefixes):
-                        targets.append(
-                            full_console_path(line.split(": ", 1)[1])
-                        )
+                        targets.append(full_console_path(line.split(": ", 1)[1]))
                 if targets:
                     detail = ", ".join(targets)
         detail = " ".join(detail.split())
@@ -1263,11 +1233,7 @@ class Console:
         if self.changed_files.get(path) != marker:
             self.changed_files[path] = marker
             self._turn_files += 1
-            suffix = (
-                " | PI operation request updated"
-                if operation_request
-                else ""
-            )
+            suffix = " | PI operation request updated" if operation_request else ""
             self.line(f"  {marker} {path}{suffix}")
 
     def error(self, message: str) -> None:
@@ -1394,7 +1360,7 @@ def build_handlers(
     def on_permission_request(request, invocation):
         del invocation
         if isinstance(request, PermissionRequestRead):
-            reason = file_read_denial(request.path)
+            reason = file_read_denial(request.path, preliminary=preliminary)
             if reason:
                 console.denied(reason, getattr(request, "tool_call_id", None))
                 return PermissionDecisionReject(feedback=reason)
@@ -1407,7 +1373,9 @@ def build_handlers(
                 console.denied(reason, getattr(request, "tool_call_id", None))
                 return PermissionDecisionReject(feedback=reason)
         elif isinstance(request, PermissionRequestShell):
-            reason = command_denial(shell_command_text(request))
+            reason = command_denial(
+                shell_command_text(request), preliminary=preliminary
+            )
             if reason:
                 console.denied(reason, getattr(request, "tool_call_id", None))
                 return PermissionDecisionReject(feedback=reason)
@@ -1439,10 +1407,6 @@ def session_options(args, console: Console, finished: asyncio.Event) -> dict:
             "enabled": True,
             "max_size_bytes": LARGE_OUTPUT_MAX_BYTES,
             "output_directory": str(LARGE_OUTPUT_DIR),
-        },
-        "system_message": {
-            "mode": "append",
-            "content": policy_for_context(args.preliminary),
         },
     }
 

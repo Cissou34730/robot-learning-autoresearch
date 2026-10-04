@@ -42,14 +42,15 @@ the campaign's initial physical model. It is not passive background: later
 scientific sessions test its interpretation against observed behavior and
 carry forward what the campaign learns.
 
-The first scientific session establishes the most credible initial direction
-from the human goal and the scientific model. Its physical consequences and
-unknowns support competing mechanistic explanations. When an unresolved
-mechanism could change the scientific direction, the PI seeks evidence that
-discriminates between those explanations rather than merely citing the model
-or defaulting to a local adjustment. Evidence produced during that work can
-refine the direction before the session ends with a checkpoint and the
-campaign enters goal review.
+The first scientific session establishes the most credible initial scientific
+direction toward the human goal from the scientific model and available
+evidence. The PI uses scientific work in this session to establish or refine
+that direction, including building or adapting reusable scientific tools and
+PI-owned methods where needed. These capabilities can support subsequent
+inquiries. The PI chooses the first useful scientific action and explains why
+it advances the direction. The scientific session record preserves the work
+actually performed, resulting understanding, remaining uncertainties and
+chosen next action. The campaign then enters goal review.
 
 Working and best-known roles remain empty until the PI explicitly assigns
 candidates using completed evidence.
@@ -64,7 +65,8 @@ campaign-level decisions:
 
 Opening an inquiry records its question, connection to the human goal, closure
 condition, and rationale. The opening goal-review session then ends at a
-durable checkpoint, and a fresh inquiry session continues from that state.
+durable scientific session record, and a fresh inquiry session continues from
+that state.
 Goal review permits measurement,
 model-role assignment, inquiry opening, campaign conclusion, and the checkpoint
 required after opening an inquiry. Measurements return to the same session.
@@ -124,11 +126,16 @@ checkpoints its decision, the campaign returns to goal review.
 
 A scientific session is bounded by one coherent objective rather than by an
 operation count. It may span several evidence-producing actions and ends when
-the PI records a durable checkpoint or makes a terminal goal-level decision.
+the PI saves a scientific session record through the `checkpoint` operation or
+makes a terminal goal-level decision.
 
-The checkpoint preserves the human-goal connection, current synthesis,
-supporting evidence, remaining gap, decision frontier, and next direction or
-closure assessment. A later fresh session continues from that durable state.
+The scientific session record preserves the human-goal connection, current
+synthesis, supporting evidence, remaining gap, decision frontier, and next
+direction or closure assessment. A later fresh session continues from that
+durable state.
+The record is not a policy checkpoint containing saved model weights.
+It preserves scientific work; submitting the record does not itself establish
+scientific progress.
 
 `current_synthesis` distinguishes observations from interpretations and
 preserves consequential competing explanations, supporting and contradictory
@@ -173,7 +180,8 @@ deeper inspection:
 - `research/scenario.md` defines the human goal and protected assessment;
 - `research/scientific_model.md` is the campaign-start physical reference;
 - `research/instruments.md` defines mechanical operation contracts;
-- the PI checkpoint and referenced artifacts preserve current evidence;
+- the scientific session record and referenced artifacts preserve current
+  evidence;
 - `AGENTS.md` defines ownership, commands, and operational boundaries.
 
 Detailed sources remain available on demand; every session need not reread
