@@ -1,5 +1,13 @@
 {
-  "active_inquiry": null,
+  "active_inquiry": {
+    "closure_condition": "Evaluate the intervention on the same 160-episode development panel and close the inquiry when the result establishes whether negative-sector reach and complete uninterrupted holds improve without a material regression elsewhere, thereby deciding whether a separate braking intervention is warranted.",
+    "goal_connection": "The strongest candidate is at 151/160 development successes (94.375%), with nine failures concentrated at negative angles despite feasible IK branches and successful mirrored controls. Improving this reach and branch-coverage deficit is the direct path toward the required 196/200 official successes; braking remains secondary until reach coverage is tested.",
+    "id": "I2",
+    "opened_in_session": "S6",
+    "question": "Can a single reach-focused 120000-step training intervention improve complete-hold success in the negative-angle failure sector by increasing exposure to negative-angle targets and feasible alternative IK branches, without reducing the candidate's existing success on the rest of the official target distribution?",
+    "rationale": "M3 resolves the primary mechanism as pre-entry, target-angle-dependent directional reach and learned branch-coverage failure: seven failures never entered tolerance, while only two brief high-speed entries indicate a limited secondary braking risk. A bounded reach-focused intervention is therefore more goal-relevant than official assessment or braking optimization at this stage.",
+    "reframes": []
+  },
   "campaign": {
     "base_commit": "369d5b63e038d89f7daa5349118733fc56582084",
     "id": "4a73a283-c537-41d8-a4d8-ea23e48c1aaa",
@@ -830,16 +838,16 @@
     }
   },
   "counters": {
-    "event": 7,
-    "inquiry": 1,
+    "event": 8,
+    "inquiry": 2,
     "measurement": 3,
-    "session": 5,
+    "session": 6,
     "training": 1
   },
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -1909,9 +1917,69 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-05T15:30:24Z",
+      "error": null,
+      "id": "E8",
+      "inquiry_id": "I2",
+      "kind": "inquiry",
+      "request": {
+        "action": "open",
+        "closure_condition": "Evaluate the intervention on the same 160-episode development panel and close the inquiry when the result establishes whether negative-sector reach and complete uninterrupted holds improve without a material regression elsewhere, thereby deciding whether a separate braking intervention is warranted.",
+        "goal_connection": "The strongest candidate is at 151/160 development successes (94.375%), with nine failures concentrated at negative angles despite feasible IK branches and successful mirrored controls. Improving this reach and branch-coverage deficit is the direct path toward the required 196/200 official successes; braking remains secondary until reach coverage is tested.",
+        "question": "Can a single reach-focused 120000-step training intervention improve complete-hold success in the negative-angle failure sector by increasing exposure to negative-angle targets and feasible alternative IK branches, without reducing the candidate's existing success on the rest of the official target distribution?",
+        "rationale": "M3 resolves the primary mechanism as pre-entry, target-angle-dependent directional reach and learned branch-coverage failure: seven failures never entered tolerance, while only two brief high-speed entries indicate a limited secondary braking risk. A bounded reach-focused intervention is therefore more goal-relevant than official assessment or braking optimization at this stage."
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I2",
+        "status": "completed"
+      },
+      "session_id": "S6",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "open",
+        "inquiry": {
+          "closure_condition": "Evaluate the intervention on the same 160-episode development panel and close the inquiry when the result establishes whether negative-sector reach and complete uninterrupted holds improve without a material regression elsewhere, thereby deciding whether a separate braking intervention is warranted.",
+          "goal_connection": "The strongest candidate is at 151/160 development successes (94.375%), with nine failures concentrated at negative angles despite feasible IK branches and successful mirrored controls. Improving this reach and branch-coverage deficit is the direct path toward the required 196/200 official successes; braking remains secondary until reach coverage is tested.",
+          "id": "I2",
+          "opened_in_session": "S6",
+          "question": "Can a single reach-focused 120000-step training intervention improve complete-hold success in the negative-angle failure sector by increasing exposure to negative-angle targets and feasible alternative IK branches, without reducing the candidate's existing success on the rest of the official target distribution?",
+          "rationale": "M3 resolves the primary mechanism as pre-entry, target-angle-dependent directional reach and learned branch-coverage failure: seven failures never entered tolerance, while only two brief high-speed entries indicate a limited secondary braking risk. A bounded reach-focused intervention is therefore more goal-relevant than official assessment or braking optimization at this stage.",
+          "reframes": []
+        }
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I2",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E8",
+    "inquiry_id": null,
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "open",
+        "closure_condition": "Evaluate the intervention on the same 160-episode development panel and close the inquiry when the result establishes whether negative-sector reach and complete uninterrupted holds improve without a material regression elsewhere, thereby deciding whether a separate braking intervention is warranted.",
+        "goal_connection": "The strongest candidate is at 151/160 development successes (94.375%), with nine failures concentrated at negative angles despite feasible IK branches and successful mirrored controls. Improving this reach and branch-coverage deficit is the direct path toward the required 196/200 official successes; braking remains secondary until reach coverage is tested.",
+        "question": "Can a single reach-focused 120000-step training intervention improve complete-hold success in the negative-angle failure sector by increasing exposure to negative-angle targets and feasible alternative IK branches, without reducing the candidate's existing success on the rest of the official target distribution?",
+        "rationale": "M3 resolves the primary mechanism as pre-entry, target-angle-dependent directional reach and learned branch-coverage failure: seven failures never entered tolerance, while only two brief high-speed entries indicate a limited secondary braking risk. A bounded reach-focused intervention is therefore more goal-relevant than official assessment or braking optimization at this stage."
+      }
+    },
+    "request_fingerprint": "b63400478a527c8e769d6d62a93a31c866d000b1760fc2f232d12b32e8687afd",
+    "session_id": "S6",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No working, best-known, or retained role is assigned. T1:checkpoint-100352 remains the strongest measured candidate at 94.375% on M1, while M3 is behavioral diagnosis rather than evidence that the candidate meets the human goal.",
     "completed_operations": [
@@ -1940,6 +2008,21 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "1d2a6630-3898-4191-acca-af0b479fc219",
+    "id": "S6",
+    "inquiry_id": null,
+    "kind": "goal_review",
+    "objective": "Reassess the scientific direction toward the human goal using completed evidence. You may request measurements to resolve an uncertainty or develop the method before committing to an inquiry. Decide whether to request official assessment or open one bounded goal-linked inquiry.",
+    "operation_ids": [
+      "E8"
+    ],
+    "scientific_parent_commit": "06c82c99a8661c8e5dec91d3c2aaf40a5ebd51e9"
+  },
   "terminal_state": null
 }
