@@ -199,6 +199,7 @@ function Test-LauncherSnapshotExcludedPath {
     $excludedDirectories = @(
         ".git",
         ".copilot",
+        ".py-git-probe",
         ".pytest_cache",
         ".ruff_cache",
         ".mypy_cache",
@@ -283,7 +284,10 @@ function Get-LauncherProtectedFiles {
     $files = @{}
     while ($directories.Count -gt 0) {
         $directory = $directories.Dequeue()
-        foreach ($entry in Get-ChildItem -LiteralPath $directory.FullName -Force) {
+        foreach (
+            $entry in Get-ChildItem -LiteralPath $directory.FullName -Force `
+                -ErrorAction Stop
+        ) {
             $relative = ConvertTo-RepositoryRelativePath `
                 -Path $entry.FullName -Root $rootPath
             if (Test-LauncherSnapshotExcludedPath -Path $relative) {

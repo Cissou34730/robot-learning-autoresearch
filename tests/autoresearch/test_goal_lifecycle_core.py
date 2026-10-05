@@ -577,6 +577,31 @@ def test_python_module_uses_frozen_module_manifest_not_evaluation_semantics(
         run_experiment.execute_pending_operation()
 
 
+def test_python_module_campaign_scope_error_states_expected_prefix(
+    monkeypatch, tmp_path
+):
+    state = _configure(monkeypatch, tmp_path)
+    _start_session(state, "startup", "Run a PI-authored diagnostic.")
+    request = {
+        "description": "Run the current diagnostic implementation.",
+        "rationale": "Its factual output informs the next decision.",
+        "measurements": [
+            {
+                "instrument": "python_module",
+                "module": "robot_learning.lab.diagnostic",
+                "args": [],
+                "artifact": "campaigns/evaluations/diagnostic.json",
+            }
+        ],
+    }
+
+    with pytest.raises(
+        ValueError,
+        match=r"start with campaigns/evaluations/campaign/",
+    ):
+        protocol.planned_measurements(request, state)
+
+
 def test_generic_measurement_executes_pi_owned_tool_and_records_artifact(
     monkeypatch, tmp_path
 ):

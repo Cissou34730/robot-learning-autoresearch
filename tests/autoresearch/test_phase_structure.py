@@ -205,6 +205,42 @@ Assert-PITrustSnapshot -Snapshot $snapshot -Root $root
 
 
 @powershell_only
+def test_launcher_trust_snapshot_excludes_git_probe_directory(tmp_path):
+    root = _short_temp_repo(tmp_path)
+    _trust_test_repository(root)
+    probe = root / ".py-git-probe" / "probe"
+    probe.mkdir(parents=True)
+    marker = probe / "marker.txt"
+    marker.write_text("initial\n", encoding="utf-8")
+    quoted_root = str(root).replace("'", "''")
+    completed = _run_launcher_trust_script(
+        tmp_path,
+        f"""
+$root = '{quoted_root}'
+$snapshot = New-PITrustSnapshot -Root $root
+Set-Content -LiteralPath (Join-Path $root '.py-git-probe\\probe\\marker.txt') `
+    -Value 'changed'
+Assert-PITrustSnapshot -Snapshot $snapshot -Root $root
+""",
+    )
+    assert completed.returncode == 0, completed.stderr
+
+
+@powershell_only
+def test_launcher_protected_file_scan_fails_closed_on_enumeration_error(tmp_path):
+    missing = tmp_path / "missing-root"
+    quoted_root = str(missing).replace("'", "''")
+    completed = _run_launcher_trust_script(
+        tmp_path,
+        f"""
+Get-LauncherProtectedFiles -Root '{quoted_root}'
+""",
+    )
+    assert completed.returncode != 0
+    assert "missing-root" in completed.stderr
+
+
+@powershell_only
 @pytest.mark.parametrize(
     "relative",
     [

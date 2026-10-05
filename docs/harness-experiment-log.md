@@ -1844,3 +1844,31 @@ separate from harness changes so their outcomes are not conflated.
   training allocation, campaign state or campaign execution changed.
 - **Disposition:** retained as a recipe provenance and path-compatibility
   correction; scientific effectiveness remains unassessed.
+
+## 2026-10-05: fail closed on launcher snapshot enumeration errors
+
+- **Problem:** an ignored `.py-git-probe/` test artifact contained a directory
+  with an unreadable Windows ACL. The launcher trust snapshot attempted to
+  traverse it, emitted a non-terminating access error and continued into PI
+  campaign preparation with an incomplete protected-file inventory.
+- **Correction:** exclude the known Git probe root with the other generated
+  tool directories and make every unexpected directory-enumeration error
+  terminate snapshot construction.
+- **Boundary:** no campaign operation, training, evaluation, scientific
+  implementation, task contract, allocation or lifecycle policy changed.
+- **Disposition:** retained as a fail-closed launcher integrity correction.
+
+## 2026-10-05: align startup context with operation validation
+
+- **Problem:** the generated research brief described an active startup session
+  as goal review and did not expose the campaign-specific evaluation artifact
+  root. The PI consequently attempted an inquiry that startup validation
+  rejects, then used a non-scoped Python-module artifact path that it could not
+  derive from its visible context.
+- **Correction:** report the actual session kind and mechanically available
+  operation kinds, publish the exact campaign evaluation root, clarify the
+  Python-module path contract and include the required prefix in validation
+  feedback.
+- **Boundary:** no lifecycle transition, operation permission, scientific
+  choice, campaign state, training, evaluation or Runner judgment changed.
+- **Disposition:** retained as a PI-context and validator-alignment correction.

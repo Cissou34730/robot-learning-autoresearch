@@ -464,7 +464,8 @@ def planned_measurements(request: dict, state: dict) -> list[dict]:
             )
             if not artifact.startswith(campaign_prefix):
                 raise ValueError(
-                    "python_module artifact must be scoped to the current campaign"
+                    "python_module artifact must be scoped to the current campaign "
+                    f"and start with {campaign_prefix}"
                 )
             planned.append(
                 {

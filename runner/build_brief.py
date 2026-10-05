@@ -7,6 +7,7 @@ import re
 from pathlib import Path
 
 from runner import paths
+from runner import protocol as runner_protocol
 from runner import repository as runner_repository
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -277,7 +278,24 @@ def _goal_gap(state: dict) -> str:
 def _active_inquiry_lines(state: dict) -> list[str]:
     inquiry = state["active_inquiry"]
     if not isinstance(inquiry, dict):
-        return ["- None; the campaign is at goal review."]
+        session = state["scientific_session"]
+        if not isinstance(session, dict):
+            return ["- None; no bounded scientific session is active."]
+        if session["kind"] == "startup":
+            return [
+                (
+                    "- None; the current scientific session is `startup`. "
+                    "Goal review begins after the startup checkpoint."
+                )
+            ]
+        if session["kind"] == "goal_review":
+            return ["- None; the current scientific session is `goal_review`."]
+        return [
+            (
+                "- None; the inquiry has closed and the current `inquiry` session "
+                "must checkpoint before the next session."
+            )
+        ]
     return [
         f"- ID: `{inquiry['id']}`",
         f"- Question: {inquiry['question']}",
@@ -313,7 +331,15 @@ def _session_lines(state: dict) -> list[str]:
     session = state["scientific_session"]
     if not isinstance(session, dict):
         return ["- None; the next scientific work begins from durable state."]
+    allowed = sorted(runner_protocol.SESSION_OPERATION_MATRIX[session["kind"]])
+    evaluation_root = (
+        f"campaigns/evaluations/{runner_repository.current_campaign_id(state)}/"
+    )
     return [
+        f"- Session kind: `{session['kind']}`",
+        "- Available operation kinds: "
+        + ", ".join(f"`{operation}`" for operation in allowed),
+        f"- Campaign evaluation artifact root: `{evaluation_root}`",
         f"- Objective: {session['objective']}",
         f"- Inquiry: `{session['inquiry_id'] or '-'}`",
         "- Completed operations in the current work: "

@@ -108,6 +108,59 @@ def test_brief_leads_with_goal_evidence_gap_inquiry_and_checkpoint(
     assert text.count(state["pi_checkpoint"]["current_synthesis"]) == 1
 
 
+def test_startup_brief_exposes_phase_operations_and_artifact_root(
+    monkeypatch, tmp_path: Path
+):
+    research = tmp_path / "campaigns"
+    research.mkdir()
+    state = repository.empty_campaign_state(
+        campaign={"id": "campaign", "started_at": "now", "base_commit": "base"},
+        human_goal={
+            "source": "contracts/scenario.md",
+            "summary": "Reach the protected task success threshold.",
+        },
+        last_verdict="fresh campaign",
+    )
+    state["scientific_model"] = {
+        "status": "ready",
+        "path": "pi_workspace/scientific_model.md",
+        "commit": "a" * 40,
+    }
+    state["scientific_session"] = {
+        "id": "S1",
+        "kind": "startup",
+        "objective": "Establish the initial scientific direction.",
+        "inquiry_id": None,
+        "backend_session_id": "backend-S1",
+        "backend_descriptor": {
+            "adapter": "copilot",
+            "model": "gpt-5.6-luna",
+            "reasoning": "high",
+        },
+        "scientific_parent_commit": "b" * 40,
+        "operation_ids": [],
+    }
+    state["counters"]["session"] = 1
+    repository.validate_research_state(state, allow_missing_artifact=True)
+    (research / "research_state.json").write_text(json.dumps(state), encoding="utf-8")
+    monkeypatch.setattr(brief, "RESEARCH_DIR", research)
+
+    text = brief.render_research_brief()
+
+    assert "current scientific session is `startup`" in text
+    assert "campaign is at goal review" not in text
+    assert "- Session kind: `startup`" in text
+    assert "`checkpoint`" in text
+    assert "`measurement`" in text
+    assert (
+        "`inquiry`"
+        not in text.split("- Available operation kinds:", 1)[1].split("\n", 1)[0]
+    )
+    assert (
+        "- Campaign evaluation artifact root: `campaigns/evaluations/campaign/`"
+    ) in text
+
+
 def test_operation_feedback_is_factual_and_operation_specific():
     raw_value = "raw-measurement-value"
     evidence = {

@@ -129,7 +129,9 @@ A `python_module` entry has this interface:
 `instrument` is `python_module`. `module`, `args`, and `artifact` are required;
 `label` is optional. The module is under `robot_learning.lab`,
 `robot_learning.scenario`, or `robot_learning.training`. The artifact is a
-campaign-scoped JSON path under `campaigns/evaluations/`.
+campaign-scoped JSON path under
+`campaigns/evaluations/<current-campaign-id>/`. The exact current campaign
+evaluation root is published in `campaigns/brief.md`.
 
 A paired-comparison entry has this interface:
 
