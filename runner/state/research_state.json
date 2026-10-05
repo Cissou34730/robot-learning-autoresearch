@@ -1658,7 +1658,7 @@
     }
   },
   "counters": {
-    "event": 10,
+    "event": 11,
     "inquiry": 3,
     "measurement": 3,
     "session": 6,
@@ -1667,7 +1667,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -3945,20 +3945,160 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-05T21:43:58Z",
+      "error": null,
+      "id": "E11",
+      "inquiry_id": null,
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "No working, best-known, or retained candidate role is assigned. T1:checkpoint-100352 and T1:checkpoint-120832 are tied at 151/160 and do not establish goal attainment. T3:checkpoint-115712 and T3:checkpoint-120832 are not role candidates because their measured success was 47.5% and 35.625%.",
+        "completed_operations": [
+          "E10"
+        ],
+        "cumulative_resource_use": "T1 used one fresh 120000-step allocation and completed 120832 simulator steps through rollout rounding. M1 evaluated two T1 checkpoints on 160 shared episodes. M2 replayed that panel and ran a 40-case matched diagnostic. E2 and E4 resolved I1 without training allocation. E6 opened I2 without training allocation. T3 used one fresh 120000-step allocation and completed 120832 simulator steps. M3 evaluated two T3 checkpoints on the shared 160-episode panel and ran the 40-case matched diagnostic. E8 closed I2. E10 opened I3 without training allocation. No official assessment or model-role assignment has occurred.",
+        "current_goal_gap": "No candidate has a working, best-known, or retained role. T1 candidates remain tied at 151/160 on the shared panel. T3's coverage intervention fell to 76/160 at its best measured checkpoint and 57/160 at its terminal checkpoint. The exposed -151 to -119 degree sector remains unresolved, with failures involving reduced joint-limit margins, high-speed entry, and interrupted holds.",
+        "current_synthesis": "T1 learned complete holds on the restricted 0.14-0.20 m distribution, but M1 found identical 151/160 outcomes for its peak and terminal checkpoints. M2 and E4 localized the T1 failures to the negative-angle sector: 15/20 successes versus 20/20 matched controls, much smaller entry joint-limit margins, and somewhat higher speeds, while branch identity, Jacobian conditioning, and saturation did not separate groups. I2 tested expanded 0.06-0.20 m radial support with 50% sector sampling; T3 had zero training success at every checkpoint and broad degradation on M3. M3 found 6/20 sector success versus 19/20 controls, mean minimum joint-limit margins of 0.0083 versus 0.4905 rad, and 11.9 versus 0.1 hold interruptions per episode. Endpoint speed remained high and the low-velocity criterion was never reached, while saturation was comparable. E8 therefore rejected coverage alone and the behavior-unsafe 50% oversampling recipe, while identifying stabilization as consequential but not yet isolated from geometry-sensitive posture or trajectory exposure. E10 opened I3 to test that distinction.",
+        "decision_frontier": "In the fresh I3 session, determine whether a stabilization-focused redesign can preserve T1's learned reach behavior while reducing entry and terminal endpoint/joint velocity and uninterrupted-hold interruptions in the exposed sector, or whether the geometry-sensitive joint-limit exposure requires a targeted posture or trajectory intervention. The discriminator must avoid 50% sector oversampling, use the official full-radius and uniform-angle distribution or a behavior-safe equivalent, and compare shared-panel success with the established matched sector/control diagnostic. Official assessment remains unjustified until a candidate closes the research-panel gap toward 98%.",
+        "evidence_references": [
+          "T1",
+          "M1",
+          "E2",
+          "M2",
+          "E4",
+          "E6",
+          "T3",
+          "M3",
+          "E8",
+          "E10"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 complete uninterrupted 100-step holds in the protected 200-episode assessment. The best established research result is 151/160 successes (94.375%), leaving a 3.625 percentage-point gap; official assessment is therefore not justified.",
+        "next_direction_or_closure": "Goal review is complete and I3 is opened. In the fresh inquiry session, implement one bounded stabilization-focused intervention with T1's behavior-safe reach behavior as the reference, without repeating the rejected 50% sector-oversampling recipe. Measure the resulting candidate on the shared 160-episode panel and the 40-case matched sector/control diagnostic, including success, joint-limit margins, endpoint and joint velocity, and hold interruptions. Use the results to support stabilization, refute it in favor of targeted geometry-sensitive posture or trajectory work, or leave the distinction unresolved."
+      },
+      "result": {
+        "session_id": "S6",
+        "status": "checkpointed"
+      },
+      "session_id": "S6",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "2e144730c711020a871e9d7f97f21c5d11c5332c",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "No working, best-known, or retained candidate role is assigned. T1:checkpoint-100352 and T1:checkpoint-120832 are tied at 151/160 and do not establish goal attainment. T3:checkpoint-115712 and T3:checkpoint-120832 are not role candidates because their measured success was 47.5% and 35.625%.",
+        "completed_operations": [
+          "E10"
+        ],
+        "cumulative_resource_use": "T1 used one fresh 120000-step allocation and completed 120832 simulator steps through rollout rounding. M1 evaluated two T1 checkpoints on 160 shared episodes. M2 replayed that panel and ran a 40-case matched diagnostic. E2 and E4 resolved I1 without training allocation. E6 opened I2 without training allocation. T3 used one fresh 120000-step allocation and completed 120832 simulator steps. M3 evaluated two T3 checkpoints on the shared 160-episode panel and ran the 40-case matched diagnostic. E8 closed I2. E10 opened I3 without training allocation. No official assessment or model-role assignment has occurred.",
+        "current_goal_gap": "No candidate has a working, best-known, or retained role. T1 candidates remain tied at 151/160 on the shared panel. T3's coverage intervention fell to 76/160 at its best measured checkpoint and 57/160 at its terminal checkpoint. The exposed -151 to -119 degree sector remains unresolved, with failures involving reduced joint-limit margins, high-speed entry, and interrupted holds.",
+        "current_synthesis": "T1 learned complete holds on the restricted 0.14-0.20 m distribution, but M1 found identical 151/160 outcomes for its peak and terminal checkpoints. M2 and E4 localized the T1 failures to the negative-angle sector: 15/20 successes versus 20/20 matched controls, much smaller entry joint-limit margins, and somewhat higher speeds, while branch identity, Jacobian conditioning, and saturation did not separate groups. I2 tested expanded 0.06-0.20 m radial support with 50% sector sampling; T3 had zero training success at every checkpoint and broad degradation on M3. M3 found 6/20 sector success versus 19/20 controls, mean minimum joint-limit margins of 0.0083 versus 0.4905 rad, and 11.9 versus 0.1 hold interruptions per episode. Endpoint speed remained high and the low-velocity criterion was never reached, while saturation was comparable. E8 therefore rejected coverage alone and the behavior-unsafe 50% oversampling recipe, while identifying stabilization as consequential but not yet isolated from geometry-sensitive posture or trajectory exposure. E10 opened I3 to test that distinction.",
+        "decision_frontier": "In the fresh I3 session, determine whether a stabilization-focused redesign can preserve T1's learned reach behavior while reducing entry and terminal endpoint/joint velocity and uninterrupted-hold interruptions in the exposed sector, or whether the geometry-sensitive joint-limit exposure requires a targeted posture or trajectory intervention. The discriminator must avoid 50% sector oversampling, use the official full-radius and uniform-angle distribution or a behavior-safe equivalent, and compare shared-panel success with the established matched sector/control diagnostic. Official assessment remains unjustified until a candidate closes the research-panel gap toward 98%.",
+        "evidence_references": [
+          "T1",
+          "M1",
+          "E2",
+          "M2",
+          "E4",
+          "E6",
+          "T3",
+          "M3",
+          "E8",
+          "E10"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 complete uninterrupted 100-step holds in the protected 200-episode assessment. The best established research result is 151/160 successes (94.375%), leaving a 3.625 percentage-point gap; official assessment is therefore not justified.",
+        "inquiry_id": null,
+        "next_direction_or_closure": "Goal review is complete and I3 is opened. In the fresh inquiry session, implement one bounded stabilization-focused intervention with T1's behavior-safe reach behavior as the reference, without repeating the rejected 50% sector-oversampling recipe. Measure the resulting candidate on the shared 160-episode panel and the 40-case matched sector/control diagnostic, including success, joint-limit margins, endpoint and joint velocity, and hold interruptions. Use the results to support stabilization, refute it in favor of targeted geometry-sensitive posture or trajectory work, or leave the distinction unresolved.",
+        "session_id": "S6"
+      },
+      "presentation": {
+        "backend_session_id": "474a2286-0af6-4263-9fe3-665bd978e28c",
+        "campaign_id": "3d0d131d-3cb5-41fc-8c57-64e7521b3051",
+        "campaign_usage": "21m59s | 47.43 AIU | prompt 8.3m (88% cached) | output 72.1k",
+        "session_id": "S6",
+        "session_kind": "goal_review",
+        "session_usage": "1m36s | 3.35 AIU | prompt 384.8k (78% cached) | output 5.3k"
+      },
+      "result": {
+        "session_id": "S6",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "39c69c84d3cda330a8055a5cdc432a1874ff8ce0",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E11",
+    "inquiry_id": null,
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "No working, best-known, or retained candidate role is assigned. T1:checkpoint-100352 and T1:checkpoint-120832 are tied at 151/160 and do not establish goal attainment. T3:checkpoint-115712 and T3:checkpoint-120832 are not role candidates because their measured success was 47.5% and 35.625%.",
+        "completed_operations": [
+          "E10"
+        ],
+        "cumulative_resource_use": "T1 used one fresh 120000-step allocation and completed 120832 simulator steps through rollout rounding. M1 evaluated two T1 checkpoints on 160 shared episodes. M2 replayed that panel and ran a 40-case matched diagnostic. E2 and E4 resolved I1 without training allocation. E6 opened I2 without training allocation. T3 used one fresh 120000-step allocation and completed 120832 simulator steps. M3 evaluated two T3 checkpoints on the shared 160-episode panel and ran the 40-case matched diagnostic. E8 closed I2. E10 opened I3 without training allocation. No official assessment or model-role assignment has occurred.",
+        "current_goal_gap": "No candidate has a working, best-known, or retained role. T1 candidates remain tied at 151/160 on the shared panel. T3's coverage intervention fell to 76/160 at its best measured checkpoint and 57/160 at its terminal checkpoint. The exposed -151 to -119 degree sector remains unresolved, with failures involving reduced joint-limit margins, high-speed entry, and interrupted holds.",
+        "current_synthesis": "T1 learned complete holds on the restricted 0.14-0.20 m distribution, but M1 found identical 151/160 outcomes for its peak and terminal checkpoints. M2 and E4 localized the T1 failures to the negative-angle sector: 15/20 successes versus 20/20 matched controls, much smaller entry joint-limit margins, and somewhat higher speeds, while branch identity, Jacobian conditioning, and saturation did not separate groups. I2 tested expanded 0.06-0.20 m radial support with 50% sector sampling; T3 had zero training success at every checkpoint and broad degradation on M3. M3 found 6/20 sector success versus 19/20 controls, mean minimum joint-limit margins of 0.0083 versus 0.4905 rad, and 11.9 versus 0.1 hold interruptions per episode. Endpoint speed remained high and the low-velocity criterion was never reached, while saturation was comparable. E8 therefore rejected coverage alone and the behavior-unsafe 50% oversampling recipe, while identifying stabilization as consequential but not yet isolated from geometry-sensitive posture or trajectory exposure. E10 opened I3 to test that distinction.",
+        "decision_frontier": "In the fresh I3 session, determine whether a stabilization-focused redesign can preserve T1's learned reach behavior while reducing entry and terminal endpoint/joint velocity and uninterrupted-hold interruptions in the exposed sector, or whether the geometry-sensitive joint-limit exposure requires a targeted posture or trajectory intervention. The discriminator must avoid 50% sector oversampling, use the official full-radius and uniform-angle distribution or a behavior-safe equivalent, and compare shared-panel success with the established matched sector/control diagnostic. Official assessment remains unjustified until a candidate closes the research-panel gap toward 98%.",
+        "evidence_references": [
+          "T1",
+          "M1",
+          "E2",
+          "M2",
+          "E4",
+          "E6",
+          "T3",
+          "M3",
+          "E8",
+          "E10"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 complete uninterrupted 100-step holds in the protected 200-episode assessment. The best established research result is 151/160 successes (94.375%), leaving a 3.625 percentage-point gap; official assessment is therefore not justified.",
+        "next_direction_or_closure": "Goal review is complete and I3 is opened. In the fresh inquiry session, implement one bounded stabilization-focused intervention with T1's behavior-safe reach behavior as the reference, without repeating the rejected 50% sector-oversampling recipe. Measure the resulting candidate on the shared 160-episode panel and the 40-case matched sector/control diagnostic, including success, joint-limit margins, endpoint and joint velocity, and hold interruptions. Use the results to support stabilization, refute it in favor of targeted geometry-sensitive posture or trajectory work, or leave the distinction unresolved."
+      }
+    },
+    "request_fingerprint": "5df2644739e814d67d6f01c6ac79ebbf6ea783e20fb854ecca472aa789f6f41e",
+    "session_id": "S6",
+    "supersedes": null
+  },
   "pi_checkpoint": {
-    "candidates_and_roles": "No working, best-known, or retained candidate role is assigned. T1:checkpoint-100352 and T1:checkpoint-120832 remain tied at 151/160 and are not evidence of goal attainment. T3:checkpoint-115712 and T3:checkpoint-120832 are not role candidates because their measured success was 47.5% and 35.625%, respectively.",
+    "candidates_and_roles": "No working, best-known, or retained candidate role is assigned. T1:checkpoint-100352 and T1:checkpoint-120832 are tied at 151/160 and do not establish goal attainment. T3:checkpoint-115712 and T3:checkpoint-120832 are not role candidates because their measured success was 47.5% and 35.625%.",
     "completed_operations": [
-      "T3",
-      "M3",
-      "E8"
+      "E10"
     ],
-    "cumulative_resource_use": "T1 used one 120000-step fresh allocation and completed 120832 simulator steps through rollout rounding. M1 evaluated two T1 checkpoints on 160 shared episodes. M2 replayed that panel and ran a 40-case matched diagnostic. E4 resolved I1 without training allocation. E6 opened I2 without training allocation. T3 used one additional 120000-step fresh allocation and completed 120832 simulator steps. M3 evaluated two T3 checkpoints on the shared 160-episode panel and ran the 40-case matched diagnostic. E8 closed I2. No official assessment or model role assignment has occurred.",
-    "current_goal_gap": "No candidate has a working, best-known, or retained role. T1 candidates remain tied at 151/160 on the shared panel. T3's coverage intervention was substantially worse: its reward-peak checkpoint achieved 76/160 and its terminal checkpoint 57/160. The exposed negative-angle sector remains unresolved, with failures involving both entry and uninterrupted-hold dynamics.",
-    "current_synthesis": "T1 learned complete holds on the restricted 0.14-0.20 m distribution, but M1 found identical 151/160 outcomes for its peak and terminal checkpoints. M2 and E4 localized the T1 failures to -151 to -119 degrees: the sector achieved 15/20 versus 20/20 matched controls, with much smaller entry joint-limit margins and somewhat higher speeds, while branch identity, Jacobian conditioning, and saturation did not separate the groups. I2 then tested expanded 0.06-0.20 m radial support with 50% sampling in that sector. T3 had zero training success at every checkpoint and broad degradation on M3; the best checkpoint reached 47.5% on the shared panel and the terminal reached 35.625%. M3's matched diagnostic found 6/20 sector success versus 19/20 controls, mean minimum joint-limit margins of 0.0083 versus 0.4905 rad, and 11.9 versus 0.1 hold interruptions per episode. Endpoint speed remained high and the low-velocity criterion was never reached, while action saturation was comparable. The evidence rejects the T3 coverage recipe and shows that coverage alone is not sufficient. Persistent high-speed entry and interruptions make stabilization a consequential coupled mechanism, but T3's zero training success and broad degradation prevent a pure stabilization claim; the oversampling recipe also introduced a behavior-unsafe training-distribution effect.",
-    "decision_frontier": "In the fresh session, determine whether a stabilization-focused redesign can preserve the T1 policy's learned reach behavior while reducing entry and terminal velocity and uninterrupted-hold interruptions in the exposed sector, or whether the geometry-sensitive joint-limit exposure requires a more targeted posture or trajectory intervention. The next discriminating operation should avoid the rejected 50% sector oversampling recipe, use the official full-radius distribution or a behavior-safe approximation, and measure shared-panel success together with sector success, joint-limit margins, endpoint and joint velocity, and hold interruptions. Official assessment remains unjustified unless a candidate first closes the research-panel gap toward 98%.",
+    "cumulative_resource_use": "T1 used one fresh 120000-step allocation and completed 120832 simulator steps through rollout rounding. M1 evaluated two T1 checkpoints on 160 shared episodes. M2 replayed that panel and ran a 40-case matched diagnostic. E2 and E4 resolved I1 without training allocation. E6 opened I2 without training allocation. T3 used one fresh 120000-step allocation and completed 120832 simulator steps. M3 evaluated two T3 checkpoints on the shared 160-episode panel and ran the 40-case matched diagnostic. E8 closed I2. E10 opened I3 without training allocation. No official assessment or model-role assignment has occurred.",
+    "current_goal_gap": "No candidate has a working, best-known, or retained role. T1 candidates remain tied at 151/160 on the shared panel. T3's coverage intervention fell to 76/160 at its best measured checkpoint and 57/160 at its terminal checkpoint. The exposed -151 to -119 degree sector remains unresolved, with failures involving reduced joint-limit margins, high-speed entry, and interrupted holds.",
+    "current_synthesis": "T1 learned complete holds on the restricted 0.14-0.20 m distribution, but M1 found identical 151/160 outcomes for its peak and terminal checkpoints. M2 and E4 localized the T1 failures to the negative-angle sector: 15/20 successes versus 20/20 matched controls, much smaller entry joint-limit margins, and somewhat higher speeds, while branch identity, Jacobian conditioning, and saturation did not separate groups. I2 tested expanded 0.06-0.20 m radial support with 50% sector sampling; T3 had zero training success at every checkpoint and broad degradation on M3. M3 found 6/20 sector success versus 19/20 controls, mean minimum joint-limit margins of 0.0083 versus 0.4905 rad, and 11.9 versus 0.1 hold interruptions per episode. Endpoint speed remained high and the low-velocity criterion was never reached, while saturation was comparable. E8 therefore rejected coverage alone and the behavior-unsafe 50% oversampling recipe, while identifying stabilization as consequential but not yet isolated from geometry-sensitive posture or trajectory exposure. E10 opened I3 to test that distinction.",
+    "decision_frontier": "In the fresh I3 session, determine whether a stabilization-focused redesign can preserve T1's learned reach behavior while reducing entry and terminal endpoint/joint velocity and uninterrupted-hold interruptions in the exposed sector, or whether the geometry-sensitive joint-limit exposure requires a targeted posture or trajectory intervention. The discriminator must avoid 50% sector oversampling, use the official full-radius and uniform-angle distribution or a behavior-safe equivalent, and compare shared-panel success with the established matched sector/control diagnostic. Official assessment remains unjustified until a candidate closes the research-panel gap toward 98%.",
     "evidence_references": [
       "T1",
       "M1",
@@ -3968,13 +4108,14 @@
       "E6",
       "T3",
       "M3",
-      "E8"
+      "E8",
+      "E10"
     ],
-    "human_goal_connection": "The campaign objective is at least 196 complete uninterrupted 100-step holds in the protected 200-episode assessment. The best established research result remains 151/160 successes (94.375%) from T1, so the policy is 3.625 percentage points below the target and no official assessment is justified.",
-    "inquiry_id": "I2",
-    "next_direction_or_closure": "I2 is closed. Begin the fresh inquiry session by designing one bounded stabilization-focused intervention that preserves the behavior-safe aspects of T1 while directly reducing high-speed entry and hold interruptions; do not repeat the rejected 50% sector-oversampling recipe. Evaluate the resulting policy on the shared research panel and the established matched sector/control diagnostic before considering any role assignment or official assessment.",
-    "scientific_commit": "2ae957048288bce9d40a5999f866d40df0ae9c23",
-    "session_id": "S5"
+    "human_goal_connection": "The human goal requires at least 196 complete uninterrupted 100-step holds in the protected 200-episode assessment. The best established research result is 151/160 successes (94.375%), leaving a 3.625 percentage-point gap; official assessment is therefore not justified.",
+    "inquiry_id": null,
+    "next_direction_or_closure": "Goal review is complete and I3 is opened. In the fresh inquiry session, implement one bounded stabilization-focused intervention with T1's behavior-safe reach behavior as the reference, without repeating the rejected 50% sector-oversampling recipe. Measure the resulting candidate on the shared 160-episode panel and the 40-case matched sector/control diagnostic, including success, joint-limit margins, endpoint and joint velocity, and hold interruptions. Use the results to support stabilization, refute it in favor of targeted geometry-sensitive posture or trajectory work, or leave the distinction unresolved.",
+    "scientific_commit": "39c69c84d3cda330a8055a5cdc432a1874ff8ce0",
+    "session_id": "S6"
   },
   "schema_version": 6,
   "scientific_model": {
@@ -3982,21 +4123,6 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "474a2286-0af6-4263-9fe3-665bd978e28c",
-    "id": "S6",
-    "inquiry_id": null,
-    "kind": "goal_review",
-    "objective": "Reassess the scientific direction toward the human goal using completed evidence. You may request measurements to resolve an uncertainty or develop the method before committing to an inquiry. Decide whether to request official assessment or open one bounded goal-linked inquiry.",
-    "operation_ids": [
-      "E10"
-    ],
-    "scientific_parent_commit": "2e144730c711020a871e9d7f97f21c5d11c5332c"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
