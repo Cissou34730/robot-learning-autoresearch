@@ -16,3 +16,4 @@
 | T3 | training | I2 | completed |
 | M3 | measurement | I2 | completed |
 | E8 | inquiry | I2 | completed |
+| E9 | checkpoint | I2 | checkpointed |
