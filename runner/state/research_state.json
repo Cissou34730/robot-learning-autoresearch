@@ -1,5 +1,13 @@
 {
-  "active_inquiry": null,
+  "active_inquiry": {
+    "closure_condition": "The inquiry will close when a reusable radius-stratified trajectory diagnostic provides evidence that discriminates the competing mechanisms, or when that evidence redirects the inquiry to a different goal-linked cause and supports a specific next intervention and its success-preserving criterion.",
+    "goal_connection": "Resolving this distinction directs the next 120000-step intervention toward the mechanism limiting official success while protecting the already strong inner-radius reach-and-hold behavior.",
+    "id": "I1",
+    "opened_in_session": "S2",
+    "question": "For targets at radii 14-20 cm, is the policy's non-reach primarily caused by geometry-conditioned control failure near the extended Jacobian singularity, including inverse-kinematic branch choice, torque saturation, and braking, or by insufficient learning coverage of the outer-target mapping?",
+    "rationale": "M1 achieved 61.25% overall, with 58 of 62 failures never entering tolerance and no successes at 18-20 cm, while all targets below 10 cm succeeded. The physical model predicts both singularity-sensitive braking and multiple usable inverse-kinematic branches, but the current aggregate diagnostics cannot distinguish those mechanisms from inadequate outer-target optimization. Official assessment is therefore not justified; trajectory telemetry is the highest-value next step before spending another full training allocation.",
+    "reframes": []
+  },
   "campaign": {
     "base_commit": "95dba40b8a3e683f653fb348605342bacb4cc709",
     "id": "d5a9984a-1928-4627-9d33-477274fa583e",
@@ -828,16 +836,16 @@
     }
   },
   "counters": {
-    "event": 1,
-    "inquiry": 0,
+    "event": 2,
+    "inquiry": 1,
     "measurement": 1,
-    "session": 1,
+    "session": 2,
     "training": 1
   },
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -1218,9 +1226,69 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-05T15:53:54Z",
+      "error": null,
+      "id": "E2",
+      "inquiry_id": "I1",
+      "kind": "inquiry",
+      "request": {
+        "action": "open",
+        "closure_condition": "The inquiry will close when a reusable radius-stratified trajectory diagnostic provides evidence that discriminates the competing mechanisms, or when that evidence redirects the inquiry to a different goal-linked cause and supports a specific next intervention and its success-preserving criterion.",
+        "goal_connection": "Resolving this distinction directs the next 120000-step intervention toward the mechanism limiting official success while protecting the already strong inner-radius reach-and-hold behavior.",
+        "question": "For targets at radii 14-20 cm, is the policy's non-reach primarily caused by geometry-conditioned control failure near the extended Jacobian singularity, including inverse-kinematic branch choice, torque saturation, and braking, or by insufficient learning coverage of the outer-target mapping?",
+        "rationale": "M1 achieved 61.25% overall, with 58 of 62 failures never entering tolerance and no successes at 18-20 cm, while all targets below 10 cm succeeded. The physical model predicts both singularity-sensitive braking and multiple usable inverse-kinematic branches, but the current aggregate diagnostics cannot distinguish those mechanisms from inadequate outer-target optimization. Official assessment is therefore not justified; trajectory telemetry is the highest-value next step before spending another full training allocation."
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I1",
+        "status": "completed"
+      },
+      "session_id": "S2",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "open",
+        "inquiry": {
+          "closure_condition": "The inquiry will close when a reusable radius-stratified trajectory diagnostic provides evidence that discriminates the competing mechanisms, or when that evidence redirects the inquiry to a different goal-linked cause and supports a specific next intervention and its success-preserving criterion.",
+          "goal_connection": "Resolving this distinction directs the next 120000-step intervention toward the mechanism limiting official success while protecting the already strong inner-radius reach-and-hold behavior.",
+          "id": "I1",
+          "opened_in_session": "S2",
+          "question": "For targets at radii 14-20 cm, is the policy's non-reach primarily caused by geometry-conditioned control failure near the extended Jacobian singularity, including inverse-kinematic branch choice, torque saturation, and braking, or by insufficient learning coverage of the outer-target mapping?",
+          "rationale": "M1 achieved 61.25% overall, with 58 of 62 failures never entering tolerance and no successes at 18-20 cm, while all targets below 10 cm succeeded. The physical model predicts both singularity-sensitive braking and multiple usable inverse-kinematic branches, but the current aggregate diagnostics cannot distinguish those mechanisms from inadequate outer-target optimization. Official assessment is therefore not justified; trajectory telemetry is the highest-value next step before spending another full training allocation.",
+          "reframes": []
+        }
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I1",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E2",
+    "inquiry_id": null,
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "open",
+        "closure_condition": "The inquiry will close when a reusable radius-stratified trajectory diagnostic provides evidence that discriminates the competing mechanisms, or when that evidence redirects the inquiry to a different goal-linked cause and supports a specific next intervention and its success-preserving criterion.",
+        "goal_connection": "Resolving this distinction directs the next 120000-step intervention toward the mechanism limiting official success while protecting the already strong inner-radius reach-and-hold behavior.",
+        "question": "For targets at radii 14-20 cm, is the policy's non-reach primarily caused by geometry-conditioned control failure near the extended Jacobian singularity, including inverse-kinematic branch choice, torque saturation, and braking, or by insufficient learning coverage of the outer-target mapping?",
+        "rationale": "M1 achieved 61.25% overall, with 58 of 62 failures never entering tolerance and no successes at 18-20 cm, while all targets below 10 cm succeeded. The physical model predicts both singularity-sensitive braking and multiple usable inverse-kinematic branches, but the current aggregate diagnostics cannot distinguish those mechanisms from inadequate outer-target optimization. Official assessment is therefore not justified; trajectory telemetry is the highest-value next step before spending another full training allocation."
+      }
+    },
+    "request_fingerprint": "33a551a04ff0eaffed3a3340fcd8339f323a5ef3e342fb4df423c12c81d1ff0f",
+    "session_id": "S2",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No working or best-known role is assigned yet. T1:checkpoint-120832 is the strongest measured candidate at 61.25% on M1, but it is far below the human goal and its causal failure mode remains unresolved.",
     "completed_operations": [
@@ -1247,6 +1315,21 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "4e8251db-e16e-4eca-a1a9-196894759946",
+    "id": "S2",
+    "inquiry_id": null,
+    "kind": "goal_review",
+    "objective": "Reassess the scientific direction toward the human goal using completed evidence. You may request measurements to resolve an uncertainty or develop the method before committing to an inquiry. Decide whether to request official assessment or open one bounded goal-linked inquiry.",
+    "operation_ids": [
+      "E2"
+    ],
+    "scientific_parent_commit": "06040926662a7e8d232aaefb3a7807103e9bc710"
+  },
   "terminal_state": null
 }
