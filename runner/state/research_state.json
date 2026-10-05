@@ -838,14 +838,14 @@
   "counters": {
     "event": 3,
     "inquiry": 1,
-    "measurement": 1,
-    "session": 2,
+    "measurement": 2,
+    "session": 3,
     "training": 1
   },
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -1281,9 +1281,1225 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-05T16:00:16Z",
+      "error": null,
+      "id": "M2",
+      "inquiry_id": "I1",
+      "kind": "measurement",
+      "request": {
+        "description": "Run a reusable radius-stratified trajectory diagnostic on T1 across the same 160-episode research panel, recording joint state, raw and commanded actions, commanded torque, Cartesian error and motion, IK branch proximity, Jacobian singular values, tolerance entry and interruption, braking metrics, and action saturation.",
+        "measurements": [
+          {
+            "args": [
+              "--model",
+              "campaigns\\checkpoints\\candidates\\d5a9984a-1928-4627-9d33-477274fa583e\\t1\\checkpoint-120832\\model.zip",
+              "--episodes",
+              "160",
+              "--seed",
+              "4200",
+              "--artifact",
+              "campaigns\\evaluations\\d5a9984a-1928-4627-9d33-477274fa583e\\i1-radius-trajectory-T1-checkpoint-120832-160ep-seed4200.json"
+            ],
+            "artifact": "campaigns\\evaluations\\d5a9984a-1928-4627-9d33-477274fa583e\\i1-radius-trajectory-T1-checkpoint-120832-160ep-seed4200.json",
+            "instrument": "python_module",
+            "label": "I1 radius-stratified trajectory diagnostic for T1",
+            "module": "robot_learning.lab.radius_trajectory_diagnostic"
+          }
+        ],
+        "rationale": "I1 remains unresolved because M1 exposes radius-dependent outcomes but not the mechanism of non-reach. Reusing M1's episode seeds permits direct comparison while the per-step telemetry distinguishes insufficient outer mapping from geometry-conditioned branch, saturation, singularity, or stopping failures. The diagnostic leaves the official environment, policy, target distribution, and success semantics unchanged."
+      },
+      "result": {
+        "measurements": [
+          {
+            "args": [
+              "--model",
+              "campaigns\\checkpoints\\candidates\\d5a9984a-1928-4627-9d33-477274fa583e\\t1\\checkpoint-120832\\model.zip",
+              "--episodes",
+              "160",
+              "--seed",
+              "4200",
+              "--artifact",
+              "campaigns\\evaluations\\d5a9984a-1928-4627-9d33-477274fa583e\\i1-radius-trajectory-T1-checkpoint-120832-160ep-seed4200.json"
+            ],
+            "instrument": "python_module",
+            "label": "I1 radius-stratified trajectory diagnostic for T1",
+            "metrics": {
+              "evaluation_artifact": "campaigns/evaluations/d5a9984a-1928-4627-9d33-477274fa583e/python-module-M2-1-i1-radius-trajectory-T1-checkpoint-120832-160ep-seed4200.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 15,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/instrument",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/model",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/seed",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/official_benchmark",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/control_dt_seconds",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/action_limit",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/motor_gear",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/tolerance_cm",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/radius_bins_cm",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 18,
+                    "path": "/summary",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/radius_stratified_summary",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 160,
+                    "field_names": [
+                      "branch_counts",
+                      "branch_switches",
+                      "clipped_action_steps",
+                      "episode",
+                      "episode_seed",
+                      "final_distance_cm",
+                      "first_entry_radial_speed_mps",
+                      "first_entry_speed_mps",
+                      "hold_interruptions",
+                      "minimum_distance_cm",
+                      "minimum_jacobian_sigma",
+                      "peak_speed_mps",
+                      "reward_total",
+                      "saturated_action_steps",
+                      "speed_at_minimum_distance_mps",
+                      "steps",
+                      "success",
+                      "target_angle_degrees",
+                      "target_radius_cm",
+                      "terminated",
+                      "tolerance_entry_step",
+                      "trajectory",
+                      "truncated"
+                    ],
+                    "path": "/episode_trajectories",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 8,
+                    "path": "/units",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/summary/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/successes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/entered_tolerance",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/never_entered_tolerance",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/entry_rate_percent",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/success_among_entries_percent",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/summary/first_entry_speed_mps",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/summary/first_entry_radial_speed_mps",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/summary/minimum_distance_cm",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/summary/speed_at_minimum_distance_mps",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/summary/peak_speed_mps",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/summary/minimum_jacobian_sigma",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/summary/saturated_action_episode_percent",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/clipped_action_episode_percent",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/summary/branch_counts",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/summary/branch_switches",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/hold_interruptions",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 18,
+                    "path": "/radius_stratified_summary/6-10cm",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 18,
+                    "path": "/radius_stratified_summary/10-14cm",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 18,
+                    "path": "/radius_stratified_summary/14-18cm",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 18,
+                    "path": "/radius_stratified_summary/18-20cm",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/units/position",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/units/velocity",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/units/joint_position",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/units/joint_velocity",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/units/action",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/units/torque",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/units/distance",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/units/time",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/summary/first_entry_speed_mps/count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/first_entry_speed_mps/mean",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/first_entry_speed_mps/median",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/first_entry_speed_mps/maximum",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/first_entry_radial_speed_mps/count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/first_entry_radial_speed_mps/mean",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/first_entry_radial_speed_mps/median",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/first_entry_radial_speed_mps/maximum",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/minimum_distance_cm/count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/minimum_distance_cm/mean",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/minimum_distance_cm/median",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/minimum_distance_cm/maximum",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/speed_at_minimum_distance_mps/count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/speed_at_minimum_distance_mps/mean",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/speed_at_minimum_distance_mps/median",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/speed_at_minimum_distance_mps/maximum",
+                    "type": "number"
+                  }
+                ],
+                "truncated": true
+              },
+              "evaluation_artifact_fingerprint": "8582940fb851c002f955002e731a6d6a9d576b6fdd66cdcc9aaa8ade1a953619"
+            },
+            "module": "robot_learning.lab.radius_trajectory_diagnostic"
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": {
+          "campaign_lab_manifest": [
+            {
+              "fingerprint": "d517d35491f79c6f3778af8ffa396c646d746beaa7025d20afe701898c6d267f",
+              "path": "robot_learning/lab/radius_trajectory_diagnostic.py"
+            }
+          ],
+          "campaign_lab_publication": {
+            "commit": "bc957324afffe5b3e511bc509b85a229145deaeb",
+            "fingerprint": "982eeb3aa8d6707efa211879dc82a62f53b79c449e517c5c4597657db54e6bff",
+            "manifest": [
+              {
+                "fingerprint": "d517d35491f79c6f3778af8ffa396c646d746beaa7025d20afe701898c6d267f",
+                "path": "robot_learning/lab/radius_trajectory_diagnostic.py"
+              }
+            ]
+          },
+          "code_parent_commit": "db98d935f3a0409a958ae5c03e4ce2f46b1dcaf9",
+          "effective_parameters": {
+            "algorithm": {
+              "name": "ppo"
+            },
+            "policy": {
+              "activation": "tanh",
+              "net_arch": [
+                64,
+                64
+              ]
+            },
+            "ppo": {
+              "batch_size": 64,
+              "ent_coef": 0.01,
+              "gae_lambda": 0.95,
+              "gamma": 0.99,
+              "learning_rate": 0.0003,
+              "n_steps": 1024
+            },
+            "training": {
+              "checkpoint_every_steps": 5000,
+              "n_envs": 1
+            }
+          },
+          "module_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "d517d35491f79c6f3778af8ffa396c646d746beaa7025d20afe701898c6d267f",
+              "path": "robot_learning/lab/radius_trajectory_diagnostic.py"
+            }
+          ],
+          "module_paths": [
+            "robot_learning/lab/radius_trajectory_diagnostic.py"
+          ],
+          "scientific_commit": null,
+          "scientific_manifest": [],
+          "scientific_paths": []
+        }
+      },
+      "session_id": "S3",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "evaluation_semantics": null,
+      "measurements": [
+        {
+          "args": [
+            "--model",
+            "campaigns\\checkpoints\\candidates\\d5a9984a-1928-4627-9d33-477274fa583e\\t1\\checkpoint-120832\\model.zip",
+            "--episodes",
+            "160",
+            "--seed",
+            "4200",
+            "--artifact",
+            "campaigns\\evaluations\\d5a9984a-1928-4627-9d33-477274fa583e\\i1-radius-trajectory-T1-checkpoint-120832-160ep-seed4200.json"
+          ],
+          "artifact": "campaigns/evaluations/d5a9984a-1928-4627-9d33-477274fa583e/i1-radius-trajectory-T1-checkpoint-120832-160ep-seed4200.json",
+          "instrument": "python_module",
+          "label": "I1 radius-stratified trajectory diagnostic for T1",
+          "module": "robot_learning.lab.radius_trajectory_diagnostic"
+        }
+      ],
+      "module_provenance": {
+        "campaign_lab_manifest": [
+          {
+            "fingerprint": "d517d35491f79c6f3778af8ffa396c646d746beaa7025d20afe701898c6d267f",
+            "path": "robot_learning/lab/radius_trajectory_diagnostic.py"
+          }
+        ],
+        "campaign_lab_publication": {
+          "commit": "bc957324afffe5b3e511bc509b85a229145deaeb",
+          "fingerprint": "982eeb3aa8d6707efa211879dc82a62f53b79c449e517c5c4597657db54e6bff",
+          "manifest": [
+            {
+              "fingerprint": "d517d35491f79c6f3778af8ffa396c646d746beaa7025d20afe701898c6d267f",
+              "path": "robot_learning/lab/radius_trajectory_diagnostic.py"
+            }
+          ]
+        },
+        "code_parent_commit": "db98d935f3a0409a958ae5c03e4ce2f46b1dcaf9",
+        "effective_parameters": {
+          "algorithm": {
+            "name": "ppo"
+          },
+          "policy": {
+            "activation": "tanh",
+            "net_arch": [
+              64,
+              64
+            ]
+          },
+          "ppo": {
+            "batch_size": 64,
+            "ent_coef": 0.01,
+            "gae_lambda": 0.95,
+            "gamma": 0.99,
+            "learning_rate": 0.0003,
+            "n_steps": 1024
+          },
+          "training": {
+            "checkpoint_every_steps": 5000,
+            "n_envs": 1
+          }
+        },
+        "module_manifest": [
+          {
+            "exists": true,
+            "fingerprint": "d517d35491f79c6f3778af8ffa396c646d746beaa7025d20afe701898c6d267f",
+            "path": "robot_learning/lab/radius_trajectory_diagnostic.py"
+          }
+        ],
+        "module_paths": [
+          "robot_learning/lab/radius_trajectory_diagnostic.py"
+        ],
+        "scientific_commit": null,
+        "scientific_manifest": [],
+        "scientific_paths": []
+      },
+      "paired_comparisons": [],
+      "partial_results": [
+        {
+          "args": [
+            "--model",
+            "campaigns\\checkpoints\\candidates\\d5a9984a-1928-4627-9d33-477274fa583e\\t1\\checkpoint-120832\\model.zip",
+            "--episodes",
+            "160",
+            "--seed",
+            "4200",
+            "--artifact",
+            "campaigns\\evaluations\\d5a9984a-1928-4627-9d33-477274fa583e\\i1-radius-trajectory-T1-checkpoint-120832-160ep-seed4200.json"
+          ],
+          "instrument": "python_module",
+          "label": "I1 radius-stratified trajectory diagnostic for T1",
+          "metrics": {
+            "evaluation_artifact": "campaigns/evaluations/d5a9984a-1928-4627-9d33-477274fa583e/python-module-M2-1-i1-radius-trajectory-T1-checkpoint-120832-160ep-seed4200.json",
+            "evaluation_artifact_contents": {
+              "scope": "structure_only",
+              "sections": [
+                {
+                  "entries": 15,
+                  "path": "",
+                  "type": "object"
+                },
+                {
+                  "path": "/schema_version",
+                  "type": "number"
+                },
+                {
+                  "path": "/instrument",
+                  "type": "string"
+                },
+                {
+                  "path": "/model",
+                  "type": "string"
+                },
+                {
+                  "path": "/episodes",
+                  "type": "number"
+                },
+                {
+                  "path": "/seed",
+                  "type": "number"
+                },
+                {
+                  "path": "/official_benchmark",
+                  "type": "boolean"
+                },
+                {
+                  "path": "/control_dt_seconds",
+                  "type": "number"
+                },
+                {
+                  "path": "/action_limit",
+                  "type": "number"
+                },
+                {
+                  "path": "/motor_gear",
+                  "type": "number"
+                },
+                {
+                  "path": "/tolerance_cm",
+                  "type": "number"
+                },
+                {
+                  "entries": 4,
+                  "path": "/radius_bins_cm",
+                  "type": "array"
+                },
+                {
+                  "entries": 18,
+                  "path": "/summary",
+                  "type": "object"
+                },
+                {
+                  "entries": 4,
+                  "path": "/radius_stratified_summary",
+                  "type": "object"
+                },
+                {
+                  "entries": 160,
+                  "field_names": [
+                    "branch_counts",
+                    "branch_switches",
+                    "clipped_action_steps",
+                    "episode",
+                    "episode_seed",
+                    "final_distance_cm",
+                    "first_entry_radial_speed_mps",
+                    "first_entry_speed_mps",
+                    "hold_interruptions",
+                    "minimum_distance_cm",
+                    "minimum_jacobian_sigma",
+                    "peak_speed_mps",
+                    "reward_total",
+                    "saturated_action_steps",
+                    "speed_at_minimum_distance_mps",
+                    "steps",
+                    "success",
+                    "target_angle_degrees",
+                    "target_radius_cm",
+                    "terminated",
+                    "tolerance_entry_step",
+                    "trajectory",
+                    "truncated"
+                  ],
+                  "path": "/episode_trajectories",
+                  "type": "array"
+                },
+                {
+                  "entries": 8,
+                  "path": "/units",
+                  "type": "object"
+                },
+                {
+                  "path": "/summary/episodes",
+                  "type": "number"
+                },
+                {
+                  "path": "/summary/successes",
+                  "type": "number"
+                },
+                {
+                  "path": "/summary/success_percent",
+                  "type": "number"
+                },
+                {
+                  "path": "/summary/entered_tolerance",
+                  "type": "number"
+                },
+                {
+                  "path": "/summary/never_entered_tolerance",
+                  "type": "number"
+                },
+                {
+                  "path": "/summary/entry_rate_percent",
+                  "type": "number"
+                },
+                {
+                  "path": "/summary/success_among_entries_percent",
+                  "type": "number"
+                },
+                {
+                  "entries": 4,
+                  "path": "/summary/first_entry_speed_mps",
+                  "type": "object"
+                },
+                {
+                  "entries": 4,
+                  "path": "/summary/first_entry_radial_speed_mps",
+                  "type": "object"
+                },
+                {
+                  "entries": 4,
+                  "path": "/summary/minimum_distance_cm",
+                  "type": "object"
+                },
+                {
+                  "entries": 4,
+                  "path": "/summary/speed_at_minimum_distance_mps",
+                  "type": "object"
+                },
+                {
+                  "entries": 4,
+                  "path": "/summary/peak_speed_mps",
+                  "type": "object"
+                },
+                {
+                  "entries": 4,
+                  "path": "/summary/minimum_jacobian_sigma",
+                  "type": "object"
+                },
+                {
+                  "path": "/summary/saturated_action_episode_percent",
+                  "type": "number"
+                },
+                {
+                  "path": "/summary/clipped_action_episode_percent",
+                  "type": "number"
+                },
+                {
+                  "entries": 2,
+                  "path": "/summary/branch_counts",
+                  "type": "object"
+                },
+                {
+                  "path": "/summary/branch_switches",
+                  "type": "number"
+                },
+                {
+                  "path": "/summary/hold_interruptions",
+                  "type": "number"
+                },
+                {
+                  "entries": 18,
+                  "path": "/radius_stratified_summary/6-10cm",
+                  "type": "object"
+                },
+                {
+                  "entries": 18,
+                  "path": "/radius_stratified_summary/10-14cm",
+                  "type": "object"
+                },
+                {
+                  "entries": 18,
+                  "path": "/radius_stratified_summary/14-18cm",
+                  "type": "object"
+                },
+                {
+                  "entries": 18,
+                  "path": "/radius_stratified_summary/18-20cm",
+                  "type": "object"
+                },
+                {
+                  "path": "/units/position",
+                  "type": "string"
+                },
+                {
+                  "path": "/units/velocity",
+                  "type": "string"
+                },
+                {
+                  "path": "/units/joint_position",
+                  "type": "string"
+                },
+                {
+                  "path": "/units/joint_velocity",
+                  "type": "string"
+                },
+                {
+                  "path": "/units/action",
+                  "type": "string"
+                },
+                {
+                  "path": "/units/torque",
+                  "type": "string"
+                },
+                {
+                  "path": "/units/distance",
+                  "type": "string"
+                },
+                {
+                  "path": "/units/time",
+                  "type": "string"
+                },
+                {
+                  "path": "/summary/first_entry_speed_mps/count",
+                  "type": "number"
+                },
+                {
+                  "path": "/summary/first_entry_speed_mps/mean",
+                  "type": "number"
+                },
+                {
+                  "path": "/summary/first_entry_speed_mps/median",
+                  "type": "number"
+                },
+                {
+                  "path": "/summary/first_entry_speed_mps/maximum",
+                  "type": "number"
+                },
+                {
+                  "path": "/summary/first_entry_radial_speed_mps/count",
+                  "type": "number"
+                },
+                {
+                  "path": "/summary/first_entry_radial_speed_mps/mean",
+                  "type": "number"
+                },
+                {
+                  "path": "/summary/first_entry_radial_speed_mps/median",
+                  "type": "number"
+                },
+                {
+                  "path": "/summary/first_entry_radial_speed_mps/maximum",
+                  "type": "number"
+                },
+                {
+                  "path": "/summary/minimum_distance_cm/count",
+                  "type": "number"
+                },
+                {
+                  "path": "/summary/minimum_distance_cm/mean",
+                  "type": "number"
+                },
+                {
+                  "path": "/summary/minimum_distance_cm/median",
+                  "type": "number"
+                },
+                {
+                  "path": "/summary/minimum_distance_cm/maximum",
+                  "type": "number"
+                },
+                {
+                  "path": "/summary/speed_at_minimum_distance_mps/count",
+                  "type": "number"
+                },
+                {
+                  "path": "/summary/speed_at_minimum_distance_mps/mean",
+                  "type": "number"
+                },
+                {
+                  "path": "/summary/speed_at_minimum_distance_mps/median",
+                  "type": "number"
+                },
+                {
+                  "path": "/summary/speed_at_minimum_distance_mps/maximum",
+                  "type": "number"
+                }
+              ],
+              "truncated": true
+            },
+            "evaluation_artifact_fingerprint": "8582940fb851c002f955002e731a6d6a9d576b6fdd66cdcc9aaa8ade1a953619"
+          },
+          "module": "robot_learning.lab.radius_trajectory_diagnostic"
+        }
+      ],
+      "result": {
+        "measurements": [
+          {
+            "args": [
+              "--model",
+              "campaigns\\checkpoints\\candidates\\d5a9984a-1928-4627-9d33-477274fa583e\\t1\\checkpoint-120832\\model.zip",
+              "--episodes",
+              "160",
+              "--seed",
+              "4200",
+              "--artifact",
+              "campaigns\\evaluations\\d5a9984a-1928-4627-9d33-477274fa583e\\i1-radius-trajectory-T1-checkpoint-120832-160ep-seed4200.json"
+            ],
+            "instrument": "python_module",
+            "label": "I1 radius-stratified trajectory diagnostic for T1",
+            "metrics": {
+              "evaluation_artifact": "campaigns/evaluations/d5a9984a-1928-4627-9d33-477274fa583e/python-module-M2-1-i1-radius-trajectory-T1-checkpoint-120832-160ep-seed4200.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 15,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/instrument",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/model",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/seed",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/official_benchmark",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/control_dt_seconds",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/action_limit",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/motor_gear",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/tolerance_cm",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/radius_bins_cm",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 18,
+                    "path": "/summary",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/radius_stratified_summary",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 160,
+                    "field_names": [
+                      "branch_counts",
+                      "branch_switches",
+                      "clipped_action_steps",
+                      "episode",
+                      "episode_seed",
+                      "final_distance_cm",
+                      "first_entry_radial_speed_mps",
+                      "first_entry_speed_mps",
+                      "hold_interruptions",
+                      "minimum_distance_cm",
+                      "minimum_jacobian_sigma",
+                      "peak_speed_mps",
+                      "reward_total",
+                      "saturated_action_steps",
+                      "speed_at_minimum_distance_mps",
+                      "steps",
+                      "success",
+                      "target_angle_degrees",
+                      "target_radius_cm",
+                      "terminated",
+                      "tolerance_entry_step",
+                      "trajectory",
+                      "truncated"
+                    ],
+                    "path": "/episode_trajectories",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 8,
+                    "path": "/units",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/summary/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/successes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/entered_tolerance",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/never_entered_tolerance",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/entry_rate_percent",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/success_among_entries_percent",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/summary/first_entry_speed_mps",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/summary/first_entry_radial_speed_mps",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/summary/minimum_distance_cm",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/summary/speed_at_minimum_distance_mps",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/summary/peak_speed_mps",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/summary/minimum_jacobian_sigma",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/summary/saturated_action_episode_percent",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/clipped_action_episode_percent",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/summary/branch_counts",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/summary/branch_switches",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/hold_interruptions",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 18,
+                    "path": "/radius_stratified_summary/6-10cm",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 18,
+                    "path": "/radius_stratified_summary/10-14cm",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 18,
+                    "path": "/radius_stratified_summary/14-18cm",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 18,
+                    "path": "/radius_stratified_summary/18-20cm",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/units/position",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/units/velocity",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/units/joint_position",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/units/joint_velocity",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/units/action",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/units/torque",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/units/distance",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/units/time",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/summary/first_entry_speed_mps/count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/first_entry_speed_mps/mean",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/first_entry_speed_mps/median",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/first_entry_speed_mps/maximum",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/first_entry_radial_speed_mps/count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/first_entry_radial_speed_mps/mean",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/first_entry_radial_speed_mps/median",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/first_entry_radial_speed_mps/maximum",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/minimum_distance_cm/count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/minimum_distance_cm/mean",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/minimum_distance_cm/median",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/minimum_distance_cm/maximum",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/speed_at_minimum_distance_mps/count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/speed_at_minimum_distance_mps/mean",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/speed_at_minimum_distance_mps/median",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/speed_at_minimum_distance_mps/maximum",
+                    "type": "number"
+                  }
+                ],
+                "truncated": true
+              },
+              "evaluation_artifact_fingerprint": "8582940fb851c002f955002e731a6d6a9d576b6fdd66cdcc9aaa8ade1a953619"
+            },
+            "module": "robot_learning.lab.radius_trajectory_diagnostic"
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": {
+          "campaign_lab_manifest": [
+            {
+              "fingerprint": "d517d35491f79c6f3778af8ffa396c646d746beaa7025d20afe701898c6d267f",
+              "path": "robot_learning/lab/radius_trajectory_diagnostic.py"
+            }
+          ],
+          "campaign_lab_publication": {
+            "commit": "bc957324afffe5b3e511bc509b85a229145deaeb",
+            "fingerprint": "982eeb3aa8d6707efa211879dc82a62f53b79c449e517c5c4597657db54e6bff",
+            "manifest": [
+              {
+                "fingerprint": "d517d35491f79c6f3778af8ffa396c646d746beaa7025d20afe701898c6d267f",
+                "path": "robot_learning/lab/radius_trajectory_diagnostic.py"
+              }
+            ]
+          },
+          "code_parent_commit": "db98d935f3a0409a958ae5c03e4ce2f46b1dcaf9",
+          "effective_parameters": {
+            "algorithm": {
+              "name": "ppo"
+            },
+            "policy": {
+              "activation": "tanh",
+              "net_arch": [
+                64,
+                64
+              ]
+            },
+            "ppo": {
+              "batch_size": 64,
+              "ent_coef": 0.01,
+              "gae_lambda": 0.95,
+              "gamma": 0.99,
+              "learning_rate": 0.0003,
+              "n_steps": 1024
+            },
+            "training": {
+              "checkpoint_every_steps": 5000,
+              "n_envs": 1
+            }
+          },
+          "module_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "d517d35491f79c6f3778af8ffa396c646d746beaa7025d20afe701898c6d267f",
+              "path": "robot_learning/lab/radius_trajectory_diagnostic.py"
+            }
+          ],
+          "module_paths": [
+            "robot_learning/lab/radius_trajectory_diagnostic.py"
+          ],
+          "scientific_commit": null,
+          "scientific_manifest": [],
+          "scientific_paths": []
+        }
+      },
+      "task_reference_contract": null
+    },
+    "failure": null,
+    "id": "M2",
+    "inquiry_id": "I1",
+    "kind": "measurement",
+    "progress": "completed",
+    "request": {
+      "measurement": {
+        "description": "Run a reusable radius-stratified trajectory diagnostic on T1 across the same 160-episode research panel, recording joint state, raw and commanded actions, commanded torque, Cartesian error and motion, IK branch proximity, Jacobian singular values, tolerance entry and interruption, braking metrics, and action saturation.",
+        "measurements": [
+          {
+            "args": [
+              "--model",
+              "campaigns\\checkpoints\\candidates\\d5a9984a-1928-4627-9d33-477274fa583e\\t1\\checkpoint-120832\\model.zip",
+              "--episodes",
+              "160",
+              "--seed",
+              "4200",
+              "--artifact",
+              "campaigns\\evaluations\\d5a9984a-1928-4627-9d33-477274fa583e\\i1-radius-trajectory-T1-checkpoint-120832-160ep-seed4200.json"
+            ],
+            "artifact": "campaigns\\evaluations\\d5a9984a-1928-4627-9d33-477274fa583e\\i1-radius-trajectory-T1-checkpoint-120832-160ep-seed4200.json",
+            "instrument": "python_module",
+            "label": "I1 radius-stratified trajectory diagnostic for T1",
+            "module": "robot_learning.lab.radius_trajectory_diagnostic"
+          }
+        ],
+        "rationale": "I1 remains unresolved because M1 exposes radius-dependent outcomes but not the mechanism of non-reach. Reusing M1's episode seeds permits direct comparison while the per-step telemetry distinguishes insufficient outer mapping from geometry-conditioned branch, saturation, singularity, or stopping failures. The diagnostic leaves the official environment, policy, target distribution, and success semantics unchanged."
+      }
+    },
+    "request_fingerprint": "d5c47243e8be2a925ae8ad591411d3c25a071a13dfe49d318e9663f4f7f3cfd2",
+    "session_id": "S3",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No working, best-known, or retained role is assigned. T1:checkpoint-120832 is the strongest measured candidate at 61.25% on M1, but it is far below the human goal and its causal failure mode remains unresolved.",
     "completed_operations": [
@@ -1310,6 +2526,21 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "8f49c383-cc4c-4049-aff8-044f0a7db310",
+    "id": "S3",
+    "inquiry_id": "I1",
+    "kind": "inquiry",
+    "objective": "Advance I1 toward an evidence-supported answer to its scientific question: For targets at radii 14-20 cm, is the policy's non-reach primarily caused by geometry-conditioned control failure near the extended Jacobian singularity, including inverse-kinematic branch choice, torque saturation, and braking, or by insufficient learning coverage of the outer-target mapping?",
+    "operation_ids": [
+      "M2"
+    ],
+    "scientific_parent_commit": "db98d935f3a0409a958ae5c03e4ce2f46b1dcaf9"
+  },
   "terminal_state": null
 }
