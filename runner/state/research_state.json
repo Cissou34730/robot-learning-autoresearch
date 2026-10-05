@@ -3876,38 +3876,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I2",
-        "outcome": "I2 is resolved against coverage alone as a sufficient intervention and redirects the campaign to stabilization-focused policy learning. The T3 coverage run did not recover the localized failures: its best shared-panel checkpoint achieved 76/160 successes (47.5%) and the terminal checkpoint achieved 57/160 (35.625%), both far below the T1 baseline. In the matched diagnostic, the exposed sector achieved 6/20 successes versus 19/20 adjacent controls, with mean minimum joint-limit margin 0.0083 rad versus 0.4905 rad and 11.9 versus 0.1 hold interruptions per episode. Endpoint speed remained high and the low-velocity threshold was never reached, while action saturation was comparable. The intervention therefore did not close the geometry-sensitive gap and revealed persistent stopping and uninterrupted-hold failures that require stabilization attention; the broad T3 degradation also shows that the 50% sector oversampling recipe was not behavior-safe.",
-        "reason": "M3 directly tested the I2 intervention on the shared M1 panel and the established failing/control diagnostic. Neither T3 checkpoint approached the 98% goal or the 94.375% T1 baseline, so there is no evidence that expanded radial and negative-angle coverage alone recovers the policy. The failing-sector contrast remains strongly geometry-sensitive, but the much higher interruption rate and high endpoint speed after entry make dynamic settling a consequential coupled mechanism. Because T3 had zero training success at every checkpoint and broad panel degradation, it cannot identify a pure stabilization effect; it does establish that the current coverage recipe is rejected and that the next inquiry must separate stabilization redesign from distribution-induced training collapse."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I2",
-        "outcome": "I2 is resolved against coverage alone as a sufficient intervention and redirects the campaign to stabilization-focused policy learning. The T3 coverage run did not recover the localized failures: its best shared-panel checkpoint achieved 76/160 successes (47.5%) and the terminal checkpoint achieved 57/160 (35.625%), both far below the T1 baseline. In the matched diagnostic, the exposed sector achieved 6/20 successes versus 19/20 adjacent controls, with mean minimum joint-limit margin 0.0083 rad versus 0.4905 rad and 11.9 versus 0.1 hold interruptions per episode. Endpoint speed remained high and the low-velocity threshold was never reached, while action saturation was comparable. The intervention therefore did not close the geometry-sensitive gap and revealed persistent stopping and uninterrupted-hold failures that require stabilization attention; the broad T3 degradation also shows that the 50% sector oversampling recipe was not behavior-safe.",
-        "reason": "M3 directly tested the I2 intervention on the shared M1 panel and the established failing/control diagnostic. Neither T3 checkpoint approached the 98% goal or the 94.375% T1 baseline, so there is no evidence that expanded radial and negative-angle coverage alone recovers the policy. The failing-sector contrast remains strongly geometry-sensitive, but the much higher interruption rate and high endpoint speed after entry make dynamic settling a consequential coupled mechanism. Because T3 had zero training success at every checkpoint and broad panel degradation, it cannot identify a pure stabilization effect; it does establish that the current coverage recipe is rejected and that the next inquiry must separate stabilization redesign from distribution-induced training collapse.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E8",
-    "inquiry_id": "I2",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "I2 is resolved against coverage alone as a sufficient intervention and redirects the campaign to stabilization-focused policy learning. The T3 coverage run did not recover the localized failures: its best shared-panel checkpoint achieved 76/160 successes (47.5%) and the terminal checkpoint achieved 57/160 (35.625%), both far below the T1 baseline. In the matched diagnostic, the exposed sector achieved 6/20 successes versus 19/20 adjacent controls, with mean minimum joint-limit margin 0.0083 rad versus 0.4905 rad and 11.9 versus 0.1 hold interruptions per episode. Endpoint speed remained high and the low-velocity threshold was never reached, while action saturation was comparable. The intervention therefore did not close the geometry-sensitive gap and revealed persistent stopping and uninterrupted-hold failures that require stabilization attention; the broad T3 degradation also shows that the 50% sector oversampling recipe was not behavior-safe.",
-        "reason": "M3 directly tested the I2 intervention on the shared M1 panel and the established failing/control diagnostic. Neither T3 checkpoint approached the 98% goal or the 94.375% T1 baseline, so there is no evidence that expanded radial and negative-angle coverage alone recovers the policy. The failing-sector contrast remains strongly geometry-sensitive, but the much higher interruption rate and high endpoint speed after entry make dynamic settling a consequential coupled mechanism. Because T3 had zero training success at every checkpoint and broad panel degradation, it cannot identify a pure stabilization effect; it does establish that the current coverage recipe is rejected and that the next inquiry must separate stabilization redesign from distribution-induced training collapse."
-      }
-    },
-    "request_fingerprint": "ca3f316df82d2d36876df2b43ee880aa6e2f47796ccf5534028900adcada9c51",
-    "session_id": "S5",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "No working, best-known, or retained candidate role is assigned. T1:checkpoint-100352 and T1:checkpoint-120832 remain tied at 151/160 and are not evidence of goal attainment.",
     "completed_operations": [
