@@ -830,7 +830,7 @@
     }
   },
   "counters": {
-    "event": 0,
+    "event": 1,
     "inquiry": 0,
     "measurement": 1,
     "session": 1,
@@ -839,7 +839,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -1476,32 +1476,156 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-05T14:20:10Z",
+      "error": null,
+      "id": "E1",
+      "inquiry_id": null,
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "No working, best-known, or retained role is assigned. T1:checkpoint-100352 and T1:checkpoint-120832 are empirically tied on the shared panel; neither is eligible for goal-directed promotion without failure attribution.",
+        "completed_operations": [
+          "T1",
+          "M1"
+        ],
+        "cumulative_resource_use": "One fresh PPO training operation requested 120000 steps and completed 120832 rollout-aligned steps; one paired development measurement evaluated two candidates over 160 shared episode seeds each, for 320 candidate episodes total. No policy role or official assessment has been assigned.",
+        "current_goal_gap": "The best measured development performance is 94.375%, leaving a 3.625 percentage-point gap to 98%. The 9/160 failures are not yet attributed to inner-radius generalization, transit and braking, or late hold interruption because the available artifact inventory exposes diagnostic fields but not their values.",
+        "current_synthesis": "The baseline PPO recipe can learn substantial reach-and-hold behavior, but its training statistics overstate what is established: both the peak-training-success checkpoint (training success 0.97) and the terminal checkpoint (0.95) score exactly 94.375% on the same held-out panel. The paired comparison has zero discordant episodes, so checkpoint selection and additional late training did not change the measured outcome. This supports treating the current recipe as a useful baseline, not as a near-goal solution. The physical model's hypotheses about sampled-data braking, residual velocity, hold stability, and the omitted inner-radius range remain plausible but untested mechanistic explanations rather than conclusions.",
+        "decision_frontier": "Which mechanism accounts for the remaining 9/160 held-out failures: systematic failure on the underrepresented 0.06-0.14 m radii, transit/braking overshoot and settling delay, or late excursions during the 100-step hold? Discriminating evidence is the per-episode diagnostic values stratified by target radius and angle, especially first-reach step, minimum and final distance, maximum uninterrupted hold, and hold interruptions. The next intervention should be chosen only after this attribution.",
+        "evidence_references": [
+          "T1",
+          "M1"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 successes in the official 200-episode panel, with every success containing an uninterrupted 100-step hold. The current held-out development result is 151/160 successes (94.375%) for both evaluated checkpoints, so the evidence is below the required reliability and does not justify an official assessment.",
+        "next_direction_or_closure": "In the goal-review session, open an inquiry focused on failure-mode attribution and extract the existing M1 episode diagnostics into a decision-ready analysis. Use that analysis to decide between broadening target-radius coverage, changing stabilization/braking incentives, or both. Do not spend another full training run on the unchanged recipe before resolving this frontier."
+      },
+      "result": {
+        "session_id": "S1",
+        "status": "checkpointed"
+      },
+      "session_id": "S1",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
-  "pi_checkpoint": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "da4a9e6401e13d77a799c0607701f96e73e838d6",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "No working, best-known, or retained role is assigned. T1:checkpoint-100352 and T1:checkpoint-120832 are empirically tied on the shared panel; neither is eligible for goal-directed promotion without failure attribution.",
+        "completed_operations": [
+          "T1",
+          "M1"
+        ],
+        "cumulative_resource_use": "One fresh PPO training operation requested 120000 steps and completed 120832 rollout-aligned steps; one paired development measurement evaluated two candidates over 160 shared episode seeds each, for 320 candidate episodes total. No policy role or official assessment has been assigned.",
+        "current_goal_gap": "The best measured development performance is 94.375%, leaving a 3.625 percentage-point gap to 98%. The 9/160 failures are not yet attributed to inner-radius generalization, transit and braking, or late hold interruption because the available artifact inventory exposes diagnostic fields but not their values.",
+        "current_synthesis": "The baseline PPO recipe can learn substantial reach-and-hold behavior, but its training statistics overstate what is established: both the peak-training-success checkpoint (training success 0.97) and the terminal checkpoint (0.95) score exactly 94.375% on the same held-out panel. The paired comparison has zero discordant episodes, so checkpoint selection and additional late training did not change the measured outcome. This supports treating the current recipe as a useful baseline, not as a near-goal solution. The physical model's hypotheses about sampled-data braking, residual velocity, hold stability, and the omitted inner-radius range remain plausible but untested mechanistic explanations rather than conclusions.",
+        "decision_frontier": "Which mechanism accounts for the remaining 9/160 held-out failures: systematic failure on the underrepresented 0.06-0.14 m radii, transit/braking overshoot and settling delay, or late excursions during the 100-step hold? Discriminating evidence is the per-episode diagnostic values stratified by target radius and angle, especially first-reach step, minimum and final distance, maximum uninterrupted hold, and hold interruptions. The next intervention should be chosen only after this attribution.",
+        "evidence_references": [
+          "T1",
+          "M1"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 successes in the official 200-episode panel, with every success containing an uninterrupted 100-step hold. The current held-out development result is 151/160 successes (94.375%) for both evaluated checkpoints, so the evidence is below the required reliability and does not justify an official assessment.",
+        "inquiry_id": null,
+        "next_direction_or_closure": "In the goal-review session, open an inquiry focused on failure-mode attribution and extract the existing M1 episode diagnostics into a decision-ready analysis. Use that analysis to decide between broadening target-radius coverage, changing stabilization/braking incentives, or both. Do not spend another full training run on the unchanged recipe before resolving this frontier.",
+        "session_id": "S1"
+      },
+      "presentation": {
+        "backend_session_id": "1805b9f4-ed9d-44f8-ba0c-6a9534768c0b",
+        "campaign_id": "d527f78d-fdc5-4b9d-a8f3-3b458c97ece5",
+        "campaign_usage": "5m49s | 5.75 AIU | prompt 689.8k (84% cached) | output 15.1k",
+        "session_id": "S1",
+        "session_kind": "startup",
+        "session_usage": "3m15s | 3.11 AIU | prompt 387.1k (83% cached) | output 6.7k"
+      },
+      "result": {
+        "session_id": "S1",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "1997507d90cf78380966f0a3c243e78c9f23c689",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E1",
+    "inquiry_id": null,
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "No working, best-known, or retained role is assigned. T1:checkpoint-100352 and T1:checkpoint-120832 are empirically tied on the shared panel; neither is eligible for goal-directed promotion without failure attribution.",
+        "completed_operations": [
+          "T1",
+          "M1"
+        ],
+        "cumulative_resource_use": "One fresh PPO training operation requested 120000 steps and completed 120832 rollout-aligned steps; one paired development measurement evaluated two candidates over 160 shared episode seeds each, for 320 candidate episodes total. No policy role or official assessment has been assigned.",
+        "current_goal_gap": "The best measured development performance is 94.375%, leaving a 3.625 percentage-point gap to 98%. The 9/160 failures are not yet attributed to inner-radius generalization, transit and braking, or late hold interruption because the available artifact inventory exposes diagnostic fields but not their values.",
+        "current_synthesis": "The baseline PPO recipe can learn substantial reach-and-hold behavior, but its training statistics overstate what is established: both the peak-training-success checkpoint (training success 0.97) and the terminal checkpoint (0.95) score exactly 94.375% on the same held-out panel. The paired comparison has zero discordant episodes, so checkpoint selection and additional late training did not change the measured outcome. This supports treating the current recipe as a useful baseline, not as a near-goal solution. The physical model's hypotheses about sampled-data braking, residual velocity, hold stability, and the omitted inner-radius range remain plausible but untested mechanistic explanations rather than conclusions.",
+        "decision_frontier": "Which mechanism accounts for the remaining 9/160 held-out failures: systematic failure on the underrepresented 0.06-0.14 m radii, transit/braking overshoot and settling delay, or late excursions during the 100-step hold? Discriminating evidence is the per-episode diagnostic values stratified by target radius and angle, especially first-reach step, minimum and final distance, maximum uninterrupted hold, and hold interruptions. The next intervention should be chosen only after this attribution.",
+        "evidence_references": [
+          "T1",
+          "M1"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 successes in the official 200-episode panel, with every success containing an uninterrupted 100-step hold. The current held-out development result is 151/160 successes (94.375%) for both evaluated checkpoints, so the evidence is below the required reliability and does not justify an official assessment.",
+        "next_direction_or_closure": "In the goal-review session, open an inquiry focused on failure-mode attribution and extract the existing M1 episode diagnostics into a decision-ready analysis. Use that analysis to decide between broadening target-radius coverage, changing stabilization/braking incentives, or both. Do not spend another full training run on the unchanged recipe before resolving this frontier."
+      }
+    },
+    "request_fingerprint": "4c0987511005560d91a6c435fa361cda1083061be60163b9f0dfda7629e5e116",
+    "session_id": "S1",
+    "supersedes": null
+  },
+  "pi_checkpoint": {
+    "candidates_and_roles": "No working, best-known, or retained role is assigned. T1:checkpoint-100352 and T1:checkpoint-120832 are empirically tied on the shared panel; neither is eligible for goal-directed promotion without failure attribution.",
+    "completed_operations": [
+      "T1",
+      "M1"
+    ],
+    "cumulative_resource_use": "One fresh PPO training operation requested 120000 steps and completed 120832 rollout-aligned steps; one paired development measurement evaluated two candidates over 160 shared episode seeds each, for 320 candidate episodes total. No policy role or official assessment has been assigned.",
+    "current_goal_gap": "The best measured development performance is 94.375%, leaving a 3.625 percentage-point gap to 98%. The 9/160 failures are not yet attributed to inner-radius generalization, transit and braking, or late hold interruption because the available artifact inventory exposes diagnostic fields but not their values.",
+    "current_synthesis": "The baseline PPO recipe can learn substantial reach-and-hold behavior, but its training statistics overstate what is established: both the peak-training-success checkpoint (training success 0.97) and the terminal checkpoint (0.95) score exactly 94.375% on the same held-out panel. The paired comparison has zero discordant episodes, so checkpoint selection and additional late training did not change the measured outcome. This supports treating the current recipe as a useful baseline, not as a near-goal solution. The physical model's hypotheses about sampled-data braking, residual velocity, hold stability, and the omitted inner-radius range remain plausible but untested mechanistic explanations rather than conclusions.",
+    "decision_frontier": "Which mechanism accounts for the remaining 9/160 held-out failures: systematic failure on the underrepresented 0.06-0.14 m radii, transit/braking overshoot and settling delay, or late excursions during the 100-step hold? Discriminating evidence is the per-episode diagnostic values stratified by target radius and angle, especially first-reach step, minimum and final distance, maximum uninterrupted hold, and hold interruptions. The next intervention should be chosen only after this attribution.",
+    "evidence_references": [
+      "T1",
+      "M1"
+    ],
+    "human_goal_connection": "The human goal requires at least 196 successes in the official 200-episode panel, with every success containing an uninterrupted 100-step hold. The current held-out development result is 151/160 successes (94.375%) for both evaluated checkpoints, so the evidence is below the required reliability and does not justify an official assessment.",
+    "inquiry_id": null,
+    "next_direction_or_closure": "In the goal-review session, open an inquiry focused on failure-mode attribution and extract the existing M1 episode diagnostics into a decision-ready analysis. Use that analysis to decide between broadening target-radius coverage, changing stabilization/braking incentives, or both. Do not spend another full training run on the unchanged recipe before resolving this frontier.",
+    "scientific_commit": "1997507d90cf78380966f0a3c243e78c9f23c689",
+    "session_id": "S1"
+  },
   "schema_version": 6,
   "scientific_model": {
     "commit": "3ad7379d243e5323b50f4b5c4204ab18b7d16e2d",
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "1805b9f4-ed9d-44f8-ba0c-6a9534768c0b",
-    "id": "S1",
-    "inquiry_id": null,
-    "kind": "startup",
-    "objective": "Establish the most credible initial scientific direction toward the human goal from the scientific model and available evidence. Use scientific work in this session to establish or refine that direction, including building or adapting reusable scientific tools and PI-owned methods where needed. These capabilities can support subsequent inquiries. Choose the first useful scientific action and explain why it advances the direction. Preserve the work actually performed, resulting understanding, remaining uncertainties and chosen next action in the scientific session record.",
-    "operation_ids": [
-      "T1",
-      "M1"
-    ],
-    "scientific_parent_commit": "da4a9e6401e13d77a799c0607701f96e73e838d6"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
