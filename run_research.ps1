@@ -772,6 +772,15 @@ function New-ScientificSessionPrompt {
             "When ready to act, use the matching contract in contracts/instruments.md to submit one scientific action."
         )
     }
+    $startupHandoffGuidance = if ($session.kind -eq "startup") {
+        @(
+            "Before selecting the first action, read pi_workspace/scientific_model.md as the initial physical model."
+            "Carry its consequential physical implications and unknowns into the startup scientific synthesis, including which decisions they may affect. Treat that model as revisable in light of evidence; do not treat it as an intervention menu or require a measurement merely to restate it."
+        )
+    }
+    else {
+        @()
+    }
 
     $trainingAllocation = if ($session.kind -eq "startup") {
         "Training ceiling: $Timesteps requested steps per run."
@@ -793,10 +802,16 @@ function New-ScientificSessionPrompt {
         "Current objective: $objective"
         $trainingAllocation
         $correction
+        $startupHandoffGuidance
         $scientificModelUseGuidance
         "Direct every decision toward the human goal and distinguish evidence from conjecture."
         $actionGuidance
-        "Begin with campaigns/brief.md and the latest scientific session record. Consult contracts/scenario.md, pi_workspace/scientific_model.md, and other evidence only as the scientific question requires."
+        if ($session.kind -eq "startup") {
+            "Begin with pi_workspace/scientific_model.md, campaigns/brief.md and the latest scientific session record. Consult contracts/scenario.md and other evidence as needed."
+        }
+        else {
+            "Begin with campaigns/brief.md and the latest scientific session record. Consult contracts/scenario.md, pi_workspace/scientific_model.md, and other evidence only as the scientific question requires."
+        }
     ) | Where-Object { $_ }
     return ($sections -join "`n`n")
 }

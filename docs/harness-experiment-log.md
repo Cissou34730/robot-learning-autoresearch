@@ -455,6 +455,7 @@ its scientific breadth or achieve its result.
 | Scientific-exhaustion / no-credible-route outcome | **Removed from future requests and instructions.** Obsolete pending execution is rejected. Historical E19 remains readable and unchanged. Directly affected checks pass; scientific effect remains unassessed. |
 | Fifteen-inquiry cap | **Decoupled; value unchanged.** The launcher pauses after active work is checkpointed, without a terminal state. Measurements keep their permission. Only an explicit maintainer increase at that paused boundary resumes execution. Later cap removal remains pending. E19 at four of fifteen inquiries was not cap-triggered. |
 | Publication/recovery, maintainer training allocation, and goal-review role availability | Implemented; not active repair items. |
+| Independent prompt-stack review R1-R8 | **Backlog recorded below.** R1 is implemented first as a bounded startup handoff. R2-R8 remain unimplemented and separately scoped; none is a campaign operation or Runner scientific gate. |
 
 The startup allocation change is tactical, not a solution to scientific
 continuity. Counterevidence preservation and official-assessment readiness
@@ -2017,3 +2018,62 @@ separate from harness changes so their outcomes are not conflated.
   influence.
 - **Disposition:** retain the restored previous persona for the requested
   comparison. No additional harness change is made from this experiment.
+
+## 2026-10-05: independent prompt-stack review and follow-up directions
+
+- **Review context:** an independent, read-only review examined the complete
+  PI-facing prompt and instruction stack after repeated concern about early
+  training, loss of preliminary embodied-robotics reasoning, and inquiries
+  inheriting preselected operations. The submitted review is preserved
+  verbatim in `docs/prompt-instruction-stack-review-20261005.md`.
+- **Main diagnosis retained for discussion:** the instruction stack asks for
+  substantial scientific reasoning, but the preliminary model's consequential
+  conclusions are less concrete at startup action selection than operational
+  state, resource information and available actions. This is a design
+  hypothesis supported by static prompt analysis, not an established causal
+  result.
+- **Direction 1 - preliminary-to-startup handoff:** investigate a concise,
+  PI-authored carry-forward of consequential physical understanding into
+  startup. It must remain revisable and must not turn the frozen preliminary
+  model into an authority or require measurement before action.
+- **Direction 2 - scientific context before operation mechanics:** investigate
+  whether current understanding, evidence limits and the decision frontier
+  should be presented before operation types and resource mechanics. Keep
+  persona wording and universal goal-first ordering as separate decisions;
+  neither is approved by this entry.
+- **Direction 3 - inquiry meaning without procedural question-first rules:**
+  preserve the distinction between a scientific inquiry and an operation
+  request, but do not reintroduce a procedural requirement to formulate an
+  unresolved distinction, predicted findings or artificial alternatives before
+  every action. Question-centered inquiry framing was already implemented in
+  the 2026-10-02 experiment above and observed in campaign `2381bcbf`; its
+  isolated causal effect was not established.
+- **Decision pending:** no harness implementation is approved here. The
+  maintainer will decide whether these directions should be designed and
+  exercised together or one at a time. Campaign state and pending operation
+  state remain untouched.
+
+## 2026-10-05: implement R1 startup scientific-model handoff
+
+- **Source:** independent prompt-stack review preserved in
+  `docs/prompt-instruction-stack-review-20261005.md`, recommendations R1-R8.
+- **Approved scope:** implement R1 only. Before startup action selection, the
+  PI is explicitly told to read `pi_workspace/scientific_model.md` and carry
+  consequential physical implications and unknowns into its startup synthesis.
+  The model remains revisable and is not presented as an intervention menu.
+- **Unchanged:** persona wording, prompt ordering outside this startup-specific
+  guidance, inquiry semantics, instrument contracts, operation permissions,
+  training allocation, Runner validation, campaign state, and pending requests.
+  No measurement, training, reset, resume, or evaluation was executed.
+- **R2-R8 backlog:** R2 scientific-context ordering, R3 inquiry meaning,
+  R4 continuation/recovery classification, R5 candidate-free instrument
+  discoverability, R6 replacement-authority wording, R7 routing/backend
+  alignment, and R8 instruction ownership/repetition remain unimplemented.
+  Their proposed wording is not silently included in R1.
+- **Implementation checks:** PowerShell parsing passed. Static inspection
+  confirmed that the startup-only handoff and startup source-routing strings
+  are present while the non-startup source-routing branch remains unchanged.
+  Scientific effectiveness is unassessed.
+- **Disposition:** R1 implemented for observation. It is a bounded handoff
+  correction, not a requirement to measure first or formulate a procedural
+  question before acting.
