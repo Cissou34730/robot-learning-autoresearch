@@ -1541,44 +1541,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "open",
-        "inquiry": {
-          "closure_condition": "Close when a targeted angle-by-radius diagnostic of T1:checkpoint-100352 records joint trajectories, analytic branch feasibility under joint limits, conditioning, first-entry state, entry velocity, hold interruptions, and actuator commands or saturation for the negative-angle sector and matched successful cases, and the evidence supports one mechanism strongly enough to select a bounded intervention. Reframe if the measurement cannot discriminate these mechanisms.",
-          "goal_connection": "The strongest candidate achieves 151 of 160 development episodes (94.375%), below the required 196 of 200 official successes. Resolving this mechanism determines whether the next goal-directed intervention should improve branch coverage and directional reach or improve braking and hold stabilization.",
-          "id": "I1",
-          "opened_in_session": "S2",
-          "question": "Does the peak candidate's negative-angle failure cluster arise primarily before tolerance entry from infeasible or poorly selected IK branches and directional reach, or after entry from residual velocity, actuator saturation, and hold stabilization?",
-          "rationale": "The shared development panel shows nine failures concentrated between approximately -119 and -151 degrees across radii 7.7 to 18.8 cm. Seven failures never entered tolerance and two entered for only one or two samples, supporting a directional blind spot but not distinguishing branch selection, joint-limit or conditioning bottlenecks, and braking failure. The physical model predicts all three mechanisms are consequential because the reset is singular, both IK branches can differ under limits, and the hold requires low residual velocity. Official assessment is not justified by a 94.375% development result and would not resolve the causal question. The first inquiry action will therefore be a targeted geometry-and-trajectory measurement.",
-          "reframes": []
-        }
-      },
-      "result": {
-        "action": "open",
-        "inquiry_id": "I1",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E2",
-    "inquiry_id": null,
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "open",
-        "closure_condition": "Close when a targeted angle-by-radius diagnostic of T1:checkpoint-100352 records joint trajectories, analytic branch feasibility under joint limits, conditioning, first-entry state, entry velocity, hold interruptions, and actuator commands or saturation for the negative-angle sector and matched successful cases, and the evidence supports one mechanism strongly enough to select a bounded intervention. Reframe if the measurement cannot discriminate these mechanisms.",
-        "goal_connection": "The strongest candidate achieves 151 of 160 development episodes (94.375%), below the required 196 of 200 official successes. Resolving this mechanism determines whether the next goal-directed intervention should improve branch coverage and directional reach or improve braking and hold stabilization.",
-        "question": "Does the peak candidate's negative-angle failure cluster arise primarily before tolerance entry from infeasible or poorly selected IK branches and directional reach, or after entry from residual velocity, actuator saturation, and hold stabilization?",
-        "rationale": "The shared development panel shows nine failures concentrated between approximately -119 and -151 degrees across radii 7.7 to 18.8 cm. Seven failures never entered tolerance and two entered for only one or two samples, supporting a directional blind spot but not distinguishing branch selection, joint-limit or conditioning bottlenecks, and braking failure. The physical model predicts all three mechanisms are consequential because the reset is singular, both IK branches can differ under limits, and the hold requires low residual velocity. Official assessment is not justified by a 94.375% development result and would not resolve the causal question. The first inquiry action will therefore be a targeted geometry-and-trajectory measurement."
-      }
-    },
-    "request_fingerprint": "5117b933d347aaad00bdadf8ad6de61f3b69412e23b2a4e14946c8bbad94dbeb",
-    "session_id": "S2",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "No working, best-known, or retained role is assigned. T1:checkpoint-100352 is the strongest measured candidate so far (94.375% on M1), but its evidence is insufficient for the human goal and the startup session does not assign a policy role.",
     "completed_operations": [
