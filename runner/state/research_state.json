@@ -841,8 +841,8 @@
     "event": 3,
     "inquiry": 1,
     "measurement": 1,
-    "session": 2,
-    "training": 1
+    "session": 3,
+    "training": 3
   },
   "human_goal": {
     "source": "contracts/scenario.md"
@@ -1571,9 +1571,123 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-05T14:28:40Z",
+      "error": "ruff failed:\nI001 [*] Import block is un-sorted or un-formatted\n  --> robot_learning\\training\\environment.py:10:1\n   |\n 8 |   \"\"\"\n 9 |\n10 | / import gymnasium as gym\n11 | | import numpy as np\n12 | |\n13 | | from robot_learning.scenario.environment import TwoJointArmReachEnv\n   | |___________________________________________________________________^\nhelp: Organize imports\n   |\n14 |\n   -\n15 | TRAINING_TARGET_RADIUS_RANGE = (0.14, 0.20)\n   |\n\nFound 1 error.\n[*] 1 fixable with the `--fix` option.\n\n",
+      "id": "T2",
+      "inquiry_id": "I1",
+      "kind": "training",
+      "request": {
+        "description": "Fine-tune the terminal baseline with unchanged PPO, reward, radius range, plant, and hold semantics, while sampling the implicated -155 to -115 degree target sector with 50% probability and the full angular range with 50% probability.",
+        "initialization": "transfer",
+        "parent": "T1:checkpoint-120832",
+        "rationale": "This is the single bounded intervention that discriminates directional or IK-branch coverage from sector-specific transit, braking, or late-hold dynamics. Extra exposure to the implicated sector should improve first reach and complete holds if coverage is primary, while preserving half of training draws across the full angle range tests for regression outside the sector. The matched development measurement must report first-reach step, minimum and final distance, maximum uninterrupted hold, and hold interruptions by sector versus the rest of the official annulus.",
+        "seed": 0,
+        "steps": 120000
+      },
+      "result": {
+        "error": "ruff failed:\nI001 [*] Import block is un-sorted or un-formatted\n  --> robot_learning\\training\\environment.py:10:1\n   |\n 8 |   \"\"\"\n 9 |\n10 | / import gymnasium as gym\n11 | | import numpy as np\n12 | |\n13 | | from robot_learning.scenario.environment import TwoJointArmReachEnv\n   | |___________________________________________________________________^\nhelp: Organize imports\n   |\n14 |\n   -\n15 | TRAINING_TARGET_RADIUS_RANGE = (0.14, 0.20)\n   |\n\nFound 1 error.\n[*] 1 fixable with the `--fix` option.\n\n",
+        "status": "failed"
+      },
+      "session_id": "S3",
+      "status": "failed",
+      "superseded_by": "T3",
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "archived_candidates": null,
+      "candidate_dir": null,
+      "code_parent_commit": "8b9e7e3827c6a6157c3c6c0d7d0e1686a2f71421",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "parent": {
+        "artifact": "campaigns/checkpoints/candidates/d527f78d-fdc5-4b9d-a8f3-3b458c97ece5/t1/checkpoint-120832",
+        "fingerprint": "9826a7e92c85ac6be8596a0625298f197efcaea1861e176466303a6ee44b011c",
+        "id": "T1:checkpoint-120832",
+        "parameters": {
+          "algorithm": {
+            "name": "ppo"
+          },
+          "policy": {
+            "activation": "tanh",
+            "net_arch": [
+              64,
+              64
+            ]
+          },
+          "ppo": {
+            "batch_size": 64,
+            "ent_coef": 0.01,
+            "gae_lambda": 0.95,
+            "gamma": 0.99,
+            "learning_rate": 0.0003,
+            "n_steps": 1024
+          },
+          "training": {
+            "checkpoint_every_steps": 5000,
+            "n_envs": 1
+          }
+        },
+        "scientific_commit": "da4a9e6401e13d77a799c0607701f96e73e838d6",
+        "training_steps": 120832
+      },
+      "result": null,
+      "scientific_commit": null,
+      "scientific_manifest": [
+        {
+          "exists": true,
+          "fingerprint": "d007d1c326b97e0943e1165ed1eebd8fb9797e0008ad21c45c20614a3c4aba2a",
+          "path": "robot_learning/training/environment.py"
+        }
+      ],
+      "scientific_paths": [
+        "robot_learning/training/environment.py"
+      ]
+    },
+    "failure": null,
+    "id": "T3",
+    "inquiry_id": "I1",
+    "kind": "training",
+    "progress": "accepted",
+    "request": {
+      "training": {
+        "description": "Fine-tune the terminal baseline with unchanged PPO, reward, radius range, plant, and hold semantics, while sampling the implicated -155 to -115 degree target sector with 50% probability and the full angular range with 50% probability.",
+        "initialization": "transfer",
+        "parent": "T1:checkpoint-120832",
+        "rationale": "This is the single bounded intervention that discriminates directional or IK-branch coverage from sector-specific transit, braking, or late-hold dynamics. Extra exposure to the implicated sector should improve first reach and complete holds if coverage is primary, while preserving half of training draws across the full angle range tests for regression outside the sector. The matched development measurement must report first-reach step, minimum and final distance, maximum uninterrupted hold, and hold interruptions by sector versus the rest of the official annulus.",
+        "seed": 0,
+        "steps": 120000
+      }
+    },
+    "request_fingerprint": "0ea8edf30c46c61719fc56ef0f28d32f8c070fd86d979cd4438981a953944b02",
+    "session_id": "S3",
+    "supersedes": "T2"
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No working, best-known, or retained role is assigned. T1:checkpoint-100352 and T1:checkpoint-120832 remain empirically tied on the shared M1 panel; neither is promoted pending I1 failure attribution.",
     "completed_operations": [
@@ -1600,6 +1714,19 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "875776ea-9dc5-4cf9-bb89-eef1761b8a41",
+    "id": "S3",
+    "inquiry_id": "I1",
+    "kind": "inquiry",
+    "objective": "Advance I1 toward an evidence-supported answer to its scientific question: What mechanism causes the baseline's nine held-out failures, and can one bounded intervention aimed at the -155 to -115 degree directional sector improve complete-hold reliability without sacrificing the rest of the official annulus: a directional or IK-branch control blind spot, or transit/braking and late-hold instability within that sector?",
+    "operation_ids": [],
+    "scientific_parent_commit": "8b9e7e3827c6a6157c3c6c0d7d0e1686a2f71421"
+  },
   "terminal_state": null
 }
