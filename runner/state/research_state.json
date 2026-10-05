@@ -9,7 +9,7 @@
   },
   "candidates": {},
   "counters": {
-    "event": 0,
+    "event": 1,
     "inquiry": 0,
     "measurement": 2,
     "session": 1,
@@ -18,7 +18,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -273,31 +273,148 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": "M1"
+    },
+    {
+      "completed_at": "2026-10-05T12:55:20Z",
+      "error": null,
+      "id": "E1",
+      "inquiry_id": null,
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "No training candidate exists. Working, best-known, and retained roles remain unassigned.",
+        "completed_operations": [
+          "M2"
+        ],
+        "cumulative_resource_use": "One completed deterministic Python-module measurement (M2); no training steps, policy candidates, or protected evaluation episodes consumed.",
+        "current_goal_gap": "No learned candidate or development success evidence exists. The remaining gap is to determine whether a policy trained under the current PPO recipe can acquire both target-conditioned reach and sufficiently quiet regulation across the full official radius-angle distribution; no claim about learned success can be made from the nominal dynamics probe.",
+        "current_synthesis": "Observed evidence: all 40 valid IK configurations held for 100 checks under zero command, and all 160 injected-shoulder-velocity trials through 0.5 rad/s remained within the 1 cm checked tolerance. All 160 one-interval full motor-impulse trials exited tolerance immediately or within three checks; peak excursion increased with radius from 2.0 cm at 6 cm to 4.0 cm at 20 cm, with peak joint speed up to 6.08 rad/s. Interpretation: the nominal hold is physically stable once the arm is settled, while actuator-driven transients can destroy the hold rapidly and are more consequential at outer radii. Competing explanations remain: PPO may learn the required braking and near-zero regulation from the existing velocity and hold-progress signals, or the broad transient difficulty may require a different training distribution or control representation. M2 does not distinguish those learning explanations, does not measure approach trajectories, and does not establish robustness to disturbances absent from the task.",
+        "decision_frontier": "Can the current target-conditioned PPO setup learn a policy that reaches valid configurations and then reduces motor commands before the 1 cm boundary, with failures concentrated by transient geometry rather than an intrinsic hold instability? Discriminating evidence is a completed baseline training run followed by development evaluation with per-episode first-entry, longest-hold, interruption, and target-geometry diagnostics; a failure pattern dominated by outer-radius late exits would support a regulation or curriculum intervention, whereas broad failure before entry would redirect toward reach acquisition and branch coverage.",
+        "evidence_references": [
+          "M2"
+        ],
+        "human_goal_connection": "The human goal requires 98% success on complete uninterrupted 2-second holds. M2 tested the physical transition from a valid target configuration into and through the hold, identifying the control behavior that a learned policy must reproduce rather than merely reach.",
+        "next_direction_or_closure": "Enter goal review and open a bounded inquiry on learning the reach-to-low-velocity regulation transition. The first inquiry action should establish a reproducible baseline candidate under the current recipe and evaluate it with the existing hold-sensitive research diagnostics before changing reward, distribution, or policy representation."
+      },
+      "result": {
+        "session_id": "S1",
+        "status": "checkpointed"
+      },
+      "session_id": "S1",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
-  "pi_checkpoint": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "8f7ce0168bc864d8e5f34f1e733f9c7e8af52480",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "No training candidate exists. Working, best-known, and retained roles remain unassigned.",
+        "completed_operations": [
+          "M2"
+        ],
+        "cumulative_resource_use": "One completed deterministic Python-module measurement (M2); no training steps, policy candidates, or protected evaluation episodes consumed.",
+        "current_goal_gap": "No learned candidate or development success evidence exists. The remaining gap is to determine whether a policy trained under the current PPO recipe can acquire both target-conditioned reach and sufficiently quiet regulation across the full official radius-angle distribution; no claim about learned success can be made from the nominal dynamics probe.",
+        "current_synthesis": "Observed evidence: all 40 valid IK configurations held for 100 checks under zero command, and all 160 injected-shoulder-velocity trials through 0.5 rad/s remained within the 1 cm checked tolerance. All 160 one-interval full motor-impulse trials exited tolerance immediately or within three checks; peak excursion increased with radius from 2.0 cm at 6 cm to 4.0 cm at 20 cm, with peak joint speed up to 6.08 rad/s. Interpretation: the nominal hold is physically stable once the arm is settled, while actuator-driven transients can destroy the hold rapidly and are more consequential at outer radii. Competing explanations remain: PPO may learn the required braking and near-zero regulation from the existing velocity and hold-progress signals, or the broad transient difficulty may require a different training distribution or control representation. M2 does not distinguish those learning explanations, does not measure approach trajectories, and does not establish robustness to disturbances absent from the task.",
+        "decision_frontier": "Can the current target-conditioned PPO setup learn a policy that reaches valid configurations and then reduces motor commands before the 1 cm boundary, with failures concentrated by transient geometry rather than an intrinsic hold instability? Discriminating evidence is a completed baseline training run followed by development evaluation with per-episode first-entry, longest-hold, interruption, and target-geometry diagnostics; a failure pattern dominated by outer-radius late exits would support a regulation or curriculum intervention, whereas broad failure before entry would redirect toward reach acquisition and branch coverage.",
+        "evidence_references": [
+          "M2"
+        ],
+        "human_goal_connection": "The human goal requires 98% success on complete uninterrupted 2-second holds. M2 tested the physical transition from a valid target configuration into and through the hold, identifying the control behavior that a learned policy must reproduce rather than merely reach.",
+        "inquiry_id": null,
+        "next_direction_or_closure": "Enter goal review and open a bounded inquiry on learning the reach-to-low-velocity regulation transition. The first inquiry action should establish a reproducible baseline candidate under the current recipe and evaluate it with the existing hold-sensitive research diagnostics before changing reward, distribution, or policy representation.",
+        "session_id": "S1"
+      },
+      "presentation": {
+        "backend_session_id": "0586025c-13b0-42d0-8d6e-183a5aa311b2",
+        "campaign_id": "edc16754-3f16-45b9-bd0b-faea041c3db5",
+        "campaign_usage": "9m28s | 11.88 AIU | prompt 2.2m (93% cached) | output 33k",
+        "session_id": "S1",
+        "session_kind": "startup",
+        "session_usage": "7m42s | 9.81 AIU | prompt 2.1m (94% cached) | output 24.9k"
+      },
+      "result": {
+        "session_id": "S1",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "8ca1938a389dcb452d6e3b9032e895eeeed15033",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E1",
+    "inquiry_id": null,
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "No training candidate exists. Working, best-known, and retained roles remain unassigned.",
+        "completed_operations": [
+          "M2"
+        ],
+        "cumulative_resource_use": "One completed deterministic Python-module measurement (M2); no training steps, policy candidates, or protected evaluation episodes consumed.",
+        "current_goal_gap": "No learned candidate or development success evidence exists. The remaining gap is to determine whether a policy trained under the current PPO recipe can acquire both target-conditioned reach and sufficiently quiet regulation across the full official radius-angle distribution; no claim about learned success can be made from the nominal dynamics probe.",
+        "current_synthesis": "Observed evidence: all 40 valid IK configurations held for 100 checks under zero command, and all 160 injected-shoulder-velocity trials through 0.5 rad/s remained within the 1 cm checked tolerance. All 160 one-interval full motor-impulse trials exited tolerance immediately or within three checks; peak excursion increased with radius from 2.0 cm at 6 cm to 4.0 cm at 20 cm, with peak joint speed up to 6.08 rad/s. Interpretation: the nominal hold is physically stable once the arm is settled, while actuator-driven transients can destroy the hold rapidly and are more consequential at outer radii. Competing explanations remain: PPO may learn the required braking and near-zero regulation from the existing velocity and hold-progress signals, or the broad transient difficulty may require a different training distribution or control representation. M2 does not distinguish those learning explanations, does not measure approach trajectories, and does not establish robustness to disturbances absent from the task.",
+        "decision_frontier": "Can the current target-conditioned PPO setup learn a policy that reaches valid configurations and then reduces motor commands before the 1 cm boundary, with failures concentrated by transient geometry rather than an intrinsic hold instability? Discriminating evidence is a completed baseline training run followed by development evaluation with per-episode first-entry, longest-hold, interruption, and target-geometry diagnostics; a failure pattern dominated by outer-radius late exits would support a regulation or curriculum intervention, whereas broad failure before entry would redirect toward reach acquisition and branch coverage.",
+        "evidence_references": [
+          "M2"
+        ],
+        "human_goal_connection": "The human goal requires 98% success on complete uninterrupted 2-second holds. M2 tested the physical transition from a valid target configuration into and through the hold, identifying the control behavior that a learned policy must reproduce rather than merely reach.",
+        "next_direction_or_closure": "Enter goal review and open a bounded inquiry on learning the reach-to-low-velocity regulation transition. The first inquiry action should establish a reproducible baseline candidate under the current recipe and evaluate it with the existing hold-sensitive research diagnostics before changing reward, distribution, or policy representation."
+      }
+    },
+    "request_fingerprint": "09dbe9a2e25c0b3e6d05c5a0657b8ab790018dce1429dc32ea3f44393e4f0f3c",
+    "session_id": "S1",
+    "supersedes": null
+  },
+  "pi_checkpoint": {
+    "candidates_and_roles": "No training candidate exists. Working, best-known, and retained roles remain unassigned.",
+    "completed_operations": [
+      "M2"
+    ],
+    "cumulative_resource_use": "One completed deterministic Python-module measurement (M2); no training steps, policy candidates, or protected evaluation episodes consumed.",
+    "current_goal_gap": "No learned candidate or development success evidence exists. The remaining gap is to determine whether a policy trained under the current PPO recipe can acquire both target-conditioned reach and sufficiently quiet regulation across the full official radius-angle distribution; no claim about learned success can be made from the nominal dynamics probe.",
+    "current_synthesis": "Observed evidence: all 40 valid IK configurations held for 100 checks under zero command, and all 160 injected-shoulder-velocity trials through 0.5 rad/s remained within the 1 cm checked tolerance. All 160 one-interval full motor-impulse trials exited tolerance immediately or within three checks; peak excursion increased with radius from 2.0 cm at 6 cm to 4.0 cm at 20 cm, with peak joint speed up to 6.08 rad/s. Interpretation: the nominal hold is physically stable once the arm is settled, while actuator-driven transients can destroy the hold rapidly and are more consequential at outer radii. Competing explanations remain: PPO may learn the required braking and near-zero regulation from the existing velocity and hold-progress signals, or the broad transient difficulty may require a different training distribution or control representation. M2 does not distinguish those learning explanations, does not measure approach trajectories, and does not establish robustness to disturbances absent from the task.",
+    "decision_frontier": "Can the current target-conditioned PPO setup learn a policy that reaches valid configurations and then reduces motor commands before the 1 cm boundary, with failures concentrated by transient geometry rather than an intrinsic hold instability? Discriminating evidence is a completed baseline training run followed by development evaluation with per-episode first-entry, longest-hold, interruption, and target-geometry diagnostics; a failure pattern dominated by outer-radius late exits would support a regulation or curriculum intervention, whereas broad failure before entry would redirect toward reach acquisition and branch coverage.",
+    "evidence_references": [
+      "M2"
+    ],
+    "human_goal_connection": "The human goal requires 98% success on complete uninterrupted 2-second holds. M2 tested the physical transition from a valid target configuration into and through the hold, identifying the control behavior that a learned policy must reproduce rather than merely reach.",
+    "inquiry_id": null,
+    "next_direction_or_closure": "Enter goal review and open a bounded inquiry on learning the reach-to-low-velocity regulation transition. The first inquiry action should establish a reproducible baseline candidate under the current recipe and evaluate it with the existing hold-sensitive research diagnostics before changing reward, distribution, or policy representation.",
+    "scientific_commit": "8ca1938a389dcb452d6e3b9032e895eeeed15033",
+    "session_id": "S1"
+  },
   "schema_version": 6,
   "scientific_model": {
     "commit": "2149712863d8c3746f6546bb62ecac2b608608b1",
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "0586025c-13b0-42d0-8d6e-183a5aa311b2",
-    "id": "S1",
-    "inquiry_id": null,
-    "kind": "startup",
-    "objective": "Establish the most credible initial scientific direction toward the human goal from the scientific model and available evidence. Use scientific work in this session to establish or refine that direction, including building or adapting reusable scientific tools and PI-owned methods where needed. These capabilities can support subsequent inquiries. Choose the first useful scientific action and explain why it advances the direction. Preserve the work actually performed, resulting understanding, remaining uncertainties and chosen next action in the scientific session record.",
-    "operation_ids": [
-      "M2"
-    ],
-    "scientific_parent_commit": "8f7ce0168bc864d8e5f34f1e733f9c7e8af52480"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
