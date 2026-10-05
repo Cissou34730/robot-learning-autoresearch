@@ -1,5 +1,13 @@
 {
-  "active_inquiry": null,
+  "active_inquiry": {
+    "closure_condition": "Close this inquiry after one 120000-step coverage intervention and a shared research evaluation determine whether success improves toward the 98% requirement without a materially broader failure pattern, or whether persistent low-velocity or hold interruptions redirect the campaign to stabilization.",
+    "goal_connection": "The current candidates achieve only 151/160 successes and have not been assessed officially; closing the localized geometry-sensitive failures is necessary to reach at least 196/200 complete uninterrupted holds.",
+    "id": "I2",
+    "opened_in_session": "S4",
+    "question": "Does a 120000-step policy trained on the full official radius range with deliberately enriched exposure to the observed negative-angle joint-limit sector recover the localized failures without causing broader settling or uninterrupted-hold failures?",
+    "rationale": "M2 and E4 found the same nine failures, a 15/20 failing negative-angle sector versus 20/20 matched controls, and substantially smaller entry joint-limit margins, while branch identity, conditioning, and saturation were comparable. The supported next test is therefore to change only the training target distribution: expand radii from 0.14-0.20 m to 0.06-0.20 m and enrich the exposed negative-angle sector, while preserving the official uninterrupted-hold mechanics and measuring velocity and hold interruptions as contingent risks.",
+    "reframes": []
+  },
   "campaign": {
     "base_commit": "ce221fb1e34bd2f9c212c697a2353b86f19fe302",
     "id": "3d0d131d-3cb5-41fc-8c57-64e7521b3051",
@@ -830,16 +838,16 @@
     }
   },
   "counters": {
-    "event": 5,
-    "inquiry": 1,
+    "event": 6,
+    "inquiry": 2,
     "measurement": 2,
-    "session": 3,
+    "session": 4,
     "training": 1
   },
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -1984,9 +1992,69 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-05T21:22:06Z",
+      "error": null,
+      "id": "E6",
+      "inquiry_id": "I2",
+      "kind": "inquiry",
+      "request": {
+        "action": "open",
+        "closure_condition": "Close this inquiry after one 120000-step coverage intervention and a shared research evaluation determine whether success improves toward the 98% requirement without a materially broader failure pattern, or whether persistent low-velocity or hold interruptions redirect the campaign to stabilization.",
+        "goal_connection": "The current candidates achieve only 151/160 successes and have not been assessed officially; closing the localized geometry-sensitive failures is necessary to reach at least 196/200 complete uninterrupted holds.",
+        "question": "Does a 120000-step policy trained on the full official radius range with deliberately enriched exposure to the observed negative-angle joint-limit sector recover the localized failures without causing broader settling or uninterrupted-hold failures?",
+        "rationale": "M2 and E4 found the same nine failures, a 15/20 failing negative-angle sector versus 20/20 matched controls, and substantially smaller entry joint-limit margins, while branch identity, conditioning, and saturation were comparable. The supported next test is therefore to change only the training target distribution: expand radii from 0.14-0.20 m to 0.06-0.20 m and enrich the exposed negative-angle sector, while preserving the official uninterrupted-hold mechanics and measuring velocity and hold interruptions as contingent risks."
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I2",
+        "status": "completed"
+      },
+      "session_id": "S4",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "open",
+        "inquiry": {
+          "closure_condition": "Close this inquiry after one 120000-step coverage intervention and a shared research evaluation determine whether success improves toward the 98% requirement without a materially broader failure pattern, or whether persistent low-velocity or hold interruptions redirect the campaign to stabilization.",
+          "goal_connection": "The current candidates achieve only 151/160 successes and have not been assessed officially; closing the localized geometry-sensitive failures is necessary to reach at least 196/200 complete uninterrupted holds.",
+          "id": "I2",
+          "opened_in_session": "S4",
+          "question": "Does a 120000-step policy trained on the full official radius range with deliberately enriched exposure to the observed negative-angle joint-limit sector recover the localized failures without causing broader settling or uninterrupted-hold failures?",
+          "rationale": "M2 and E4 found the same nine failures, a 15/20 failing negative-angle sector versus 20/20 matched controls, and substantially smaller entry joint-limit margins, while branch identity, conditioning, and saturation were comparable. The supported next test is therefore to change only the training target distribution: expand radii from 0.14-0.20 m to 0.06-0.20 m and enrich the exposed negative-angle sector, while preserving the official uninterrupted-hold mechanics and measuring velocity and hold interruptions as contingent risks.",
+          "reframes": []
+        }
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I2",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E6",
+    "inquiry_id": null,
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "open",
+        "closure_condition": "Close this inquiry after one 120000-step coverage intervention and a shared research evaluation determine whether success improves toward the 98% requirement without a materially broader failure pattern, or whether persistent low-velocity or hold interruptions redirect the campaign to stabilization.",
+        "goal_connection": "The current candidates achieve only 151/160 successes and have not been assessed officially; closing the localized geometry-sensitive failures is necessary to reach at least 196/200 complete uninterrupted holds.",
+        "question": "Does a 120000-step policy trained on the full official radius range with deliberately enriched exposure to the observed negative-angle joint-limit sector recover the localized failures without causing broader settling or uninterrupted-hold failures?",
+        "rationale": "M2 and E4 found the same nine failures, a 15/20 failing negative-angle sector versus 20/20 matched controls, and substantially smaller entry joint-limit margins, while branch identity, conditioning, and saturation were comparable. The supported next test is therefore to change only the training target distribution: expand radii from 0.14-0.20 m to 0.06-0.20 m and enrich the exposed negative-angle sector, while preserving the official uninterrupted-hold mechanics and measuring velocity and hold interruptions as contingent risks."
+      }
+    },
+    "request_fingerprint": "745a848101f6a29f8c4a36779615f8dddfb80ab79f4c0609f4e803a21f580316",
+    "session_id": "S4",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No working, best-known, or retained role is assigned. T1:checkpoint-100352 and T1:checkpoint-120832 remain tied on M1's shared panel and are not goal-achieving evidence.",
     "completed_operations": [
@@ -2016,6 +2084,21 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "8f42cefa-9fb1-4aba-9acd-eed7cde872af",
+    "id": "S4",
+    "inquiry_id": null,
+    "kind": "goal_review",
+    "objective": "Reassess the scientific direction toward the human goal using completed evidence. You may request measurements to resolve an uncertainty or develop the method before committing to an inquiry. Decide whether to request official assessment or open one bounded goal-linked inquiry.",
+    "operation_ids": [
+      "E6"
+    ],
+    "scientific_parent_commit": "60cb35ae2840e740773a8e72101eef2bd44223bc"
+  },
   "terminal_state": null
 }
