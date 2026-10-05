@@ -841,8 +841,8 @@ function Invoke-ScientificModelPhase {
 
     $goal = Get-HumanGoalSummary -State $State
     $prompt = @(
-        $piPersona
         "Human goal: $goal"
+        $piPersona
         "Current objective: $scientificModelPhaseObjective"
         "Base the model on contracts/scenario.md and the relevant human-authored implementation."
         "The document must contain substantive registers headed Established facts, Physical consequences, and Unknowns. Distinguish repository facts from reasoned implications and unresolved quantities."
@@ -857,8 +857,8 @@ function Invoke-ScientificModelPhase {
     }
     if (-not (Test-ScientificModelDeliverable)) {
         $retry = @(
-            $piPersona
             "Human goal: $goal"
+            $piPersona
             "The scientific model could not be accepted: $script:ScientificModelValidationFeedback"
             "Correct pi_workspace/scientific_model.md while preserving valid content and ensuring all three required registers are substantive."
         ) -join "`n`n"

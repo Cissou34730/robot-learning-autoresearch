@@ -1917,3 +1917,23 @@ separate from harness changes so their outcomes are not conflated.
 - **Disposition:** `371bae1` is withdrawn after no observed improvement. The
   restored startup semantics are the behavioral baseline, not a demonstrated
   solution to training-first action selection.
+
+## 2026-10-05: restore scientific-model prompt ordering
+
+- **Observation:** the successful campaign's scientific-model prompt placed
+  the human goal before the unchanged PI persona. The current prompt placed
+  the persona first. Its scientific-model objective, required registers and
+  persona wording were otherwise unchanged.
+- **Decision:** restore the earlier ordering for the scientific-model phase
+  only: human goal first, then the complete PI persona. Apply the same ordering
+  to that phase's validation retry. Other phase prompts continue to lead with
+  the persona.
+- **Purpose:** test whether goal-first context reduces variation in preliminary
+  model framing. This ordering change does not prescribe plant-first analysis,
+  candidate-free measurement or any first campaign operation.
+- **Boundary:** no persona wording, scientific-model objective, operation
+  permission, training allocation, Runner judgment, campaign state or
+  scientific implementation changes. No campaign, training, reset,
+  measurement or evaluation is executed.
+- **Disposition:** implemented for observation; scientific effectiveness is
+  unassessed.
