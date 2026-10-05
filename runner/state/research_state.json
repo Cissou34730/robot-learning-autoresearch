@@ -838,7 +838,7 @@
     }
   },
   "counters": {
-    "event": 2,
+    "event": 3,
     "inquiry": 1,
     "measurement": 1,
     "session": 2,
@@ -847,7 +847,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -1539,28 +1539,149 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-05T14:25:15Z",
+      "error": null,
+      "id": "E3",
+      "inquiry_id": null,
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "No working, best-known, or retained role is assigned. T1:checkpoint-100352 and T1:checkpoint-120832 remain empirically tied on the shared M1 panel; neither is promoted pending I1 failure attribution.",
+        "completed_operations": [
+          "E2"
+        ],
+        "cumulative_resource_use": "One fresh PPO training operation requested 120000 steps and completed 120832 rollout-aligned steps; one paired development measurement evaluated two candidates over 160 shared episode seeds each, for 320 candidate episodes total. E2 opened I1 and allocated no training or measurement resources. No policy role or official assessment has been assigned.",
+        "current_goal_gap": "The best measured development performance is 94.375%, leaving a 3.625 percentage-point gap to 98%. Nine of 160 development episodes fail, and the goal-relevant question is whether eliminating their concentrated directional failure mode can recover the required reliability without creating failures elsewhere.",
+        "current_synthesis": "T1 established that the baseline PPO recipe learns substantial reach-and-hold behavior, but training statistics overstate established reliability. M1 established that the peak-training-success and terminal checkpoints are tied at 94.375% on the same held-out panel, with zero discordant episodes. The detailed M1 diagnostics show all nine failures in the -155 to -115 degree sector: 9/28 failures there versus 0/132 outside, spanning target radii of approximately 7.7 to 18.8 cm. Most sector failures never reach tolerance, while the few that do reach it sustain only 1-2 hold steps. This makes omitted inner-radius coverage alone insufficient as an explanation, but does not yet distinguish a directional or IK-branch control blind spot from sector-specific transit, braking, or hold instability. E2 therefore opened I1; that inquiry transition is recorded, not treated as a scientific resolution.",
+        "decision_frontier": "In inquiry I1, determine whether the concentrated -155 to -115 degree failures arise primarily from directional or IK-branch control coverage, or from transit/braking and late-hold dynamics within that sector. The discriminating evidence is a matched development measurement after one bounded 120000-step intervention, using first-reach step, minimum and final distance, maximum uninterrupted hold, and hold interruptions, with sector performance compared against the rest of the official annulus.",
+        "evidence_references": [
+          "T1",
+          "M1",
+          "E2"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 successes in the official 200-episode panel, with every success containing an uninterrupted 100-step hold. The best development result remains 151/160 successes (94.375%) for both evaluated checkpoints, so the evidence is below the required reliability and does not justify official assessment. E2 opened bounded inquiry I1 to identify the failure mechanism before spending another full training allocation.",
+        "next_direction_or_closure": "End the goal-review session with this checkpoint and begin I1. Do not request official assessment or another operation under the goal-review session. In I1, use at most one 120000-step goal-linked training intervention followed by one matched diagnostic development measurement, then close or redirect the inquiry based on whether the implicated sector improves without material regression outside it."
+      },
+      "result": {
+        "session_id": "S2",
+        "status": "checkpointed"
+      },
+      "session_id": "S2",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "90c4eacc71364642931776f59c5475a16965a7c1",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "No working, best-known, or retained role is assigned. T1:checkpoint-100352 and T1:checkpoint-120832 remain empirically tied on the shared M1 panel; neither is promoted pending I1 failure attribution.",
+        "completed_operations": [
+          "E2"
+        ],
+        "cumulative_resource_use": "One fresh PPO training operation requested 120000 steps and completed 120832 rollout-aligned steps; one paired development measurement evaluated two candidates over 160 shared episode seeds each, for 320 candidate episodes total. E2 opened I1 and allocated no training or measurement resources. No policy role or official assessment has been assigned.",
+        "current_goal_gap": "The best measured development performance is 94.375%, leaving a 3.625 percentage-point gap to 98%. Nine of 160 development episodes fail, and the goal-relevant question is whether eliminating their concentrated directional failure mode can recover the required reliability without creating failures elsewhere.",
+        "current_synthesis": "T1 established that the baseline PPO recipe learns substantial reach-and-hold behavior, but training statistics overstate established reliability. M1 established that the peak-training-success and terminal checkpoints are tied at 94.375% on the same held-out panel, with zero discordant episodes. The detailed M1 diagnostics show all nine failures in the -155 to -115 degree sector: 9/28 failures there versus 0/132 outside, spanning target radii of approximately 7.7 to 18.8 cm. Most sector failures never reach tolerance, while the few that do reach it sustain only 1-2 hold steps. This makes omitted inner-radius coverage alone insufficient as an explanation, but does not yet distinguish a directional or IK-branch control blind spot from sector-specific transit, braking, or hold instability. E2 therefore opened I1; that inquiry transition is recorded, not treated as a scientific resolution.",
+        "decision_frontier": "In inquiry I1, determine whether the concentrated -155 to -115 degree failures arise primarily from directional or IK-branch control coverage, or from transit/braking and late-hold dynamics within that sector. The discriminating evidence is a matched development measurement after one bounded 120000-step intervention, using first-reach step, minimum and final distance, maximum uninterrupted hold, and hold interruptions, with sector performance compared against the rest of the official annulus.",
+        "evidence_references": [
+          "T1",
+          "M1",
+          "E2"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 successes in the official 200-episode panel, with every success containing an uninterrupted 100-step hold. The best development result remains 151/160 successes (94.375%) for both evaluated checkpoints, so the evidence is below the required reliability and does not justify official assessment. E2 opened bounded inquiry I1 to identify the failure mechanism before spending another full training allocation.",
+        "inquiry_id": null,
+        "next_direction_or_closure": "End the goal-review session with this checkpoint and begin I1. Do not request official assessment or another operation under the goal-review session. In I1, use at most one 120000-step goal-linked training intervention followed by one matched diagnostic development measurement, then close or redirect the inquiry based on whether the implicated sector improves without material regression outside it.",
+        "session_id": "S2"
+      },
+      "presentation": {
+        "backend_session_id": "5fbae168-2682-4685-8f3f-4fc72440b2b9",
+        "campaign_id": "d527f78d-fdc5-4b9d-a8f3-3b458c97ece5",
+        "campaign_usage": "8m26s | 14.52 AIU | prompt 1.9m (82% cached) | output 22.4k",
+        "session_id": "S2",
+        "session_kind": "goal_review",
+        "session_usage": "2m37s | 8.77 AIU | prompt 1.2m (81% cached) | output 7.2k"
+      },
+      "result": {
+        "session_id": "S2",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "0b2abc5243817c3de9844f448ead6b4ff18f3668",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E3",
+    "inquiry_id": null,
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "No working, best-known, or retained role is assigned. T1:checkpoint-100352 and T1:checkpoint-120832 remain empirically tied on the shared M1 panel; neither is promoted pending I1 failure attribution.",
+        "completed_operations": [
+          "E2"
+        ],
+        "cumulative_resource_use": "One fresh PPO training operation requested 120000 steps and completed 120832 rollout-aligned steps; one paired development measurement evaluated two candidates over 160 shared episode seeds each, for 320 candidate episodes total. E2 opened I1 and allocated no training or measurement resources. No policy role or official assessment has been assigned.",
+        "current_goal_gap": "The best measured development performance is 94.375%, leaving a 3.625 percentage-point gap to 98%. Nine of 160 development episodes fail, and the goal-relevant question is whether eliminating their concentrated directional failure mode can recover the required reliability without creating failures elsewhere.",
+        "current_synthesis": "T1 established that the baseline PPO recipe learns substantial reach-and-hold behavior, but training statistics overstate established reliability. M1 established that the peak-training-success and terminal checkpoints are tied at 94.375% on the same held-out panel, with zero discordant episodes. The detailed M1 diagnostics show all nine failures in the -155 to -115 degree sector: 9/28 failures there versus 0/132 outside, spanning target radii of approximately 7.7 to 18.8 cm. Most sector failures never reach tolerance, while the few that do reach it sustain only 1-2 hold steps. This makes omitted inner-radius coverage alone insufficient as an explanation, but does not yet distinguish a directional or IK-branch control blind spot from sector-specific transit, braking, or hold instability. E2 therefore opened I1; that inquiry transition is recorded, not treated as a scientific resolution.",
+        "decision_frontier": "In inquiry I1, determine whether the concentrated -155 to -115 degree failures arise primarily from directional or IK-branch control coverage, or from transit/braking and late-hold dynamics within that sector. The discriminating evidence is a matched development measurement after one bounded 120000-step intervention, using first-reach step, minimum and final distance, maximum uninterrupted hold, and hold interruptions, with sector performance compared against the rest of the official annulus.",
+        "evidence_references": [
+          "T1",
+          "M1",
+          "E2"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 successes in the official 200-episode panel, with every success containing an uninterrupted 100-step hold. The best development result remains 151/160 successes (94.375%) for both evaluated checkpoints, so the evidence is below the required reliability and does not justify official assessment. E2 opened bounded inquiry I1 to identify the failure mechanism before spending another full training allocation.",
+        "next_direction_or_closure": "End the goal-review session with this checkpoint and begin I1. Do not request official assessment or another operation under the goal-review session. In I1, use at most one 120000-step goal-linked training intervention followed by one matched diagnostic development measurement, then close or redirect the inquiry based on whether the implicated sector improves without material regression outside it."
+      }
+    },
+    "request_fingerprint": "98e6bd01a4ee3ab7470d9801648fee6d5c885f277f80ad7884e13b5f9b5fa0fb",
+    "session_id": "S2",
+    "supersedes": null
+  },
   "pi_checkpoint": {
-    "candidates_and_roles": "No working, best-known, or retained role is assigned. T1:checkpoint-100352 and T1:checkpoint-120832 are empirically tied on the shared panel; neither is eligible for goal-directed promotion without failure attribution.",
+    "candidates_and_roles": "No working, best-known, or retained role is assigned. T1:checkpoint-100352 and T1:checkpoint-120832 remain empirically tied on the shared M1 panel; neither is promoted pending I1 failure attribution.",
     "completed_operations": [
-      "T1",
-      "M1"
+      "E2"
     ],
-    "cumulative_resource_use": "One fresh PPO training operation requested 120000 steps and completed 120832 rollout-aligned steps; one paired development measurement evaluated two candidates over 160 shared episode seeds each, for 320 candidate episodes total. No policy role or official assessment has been assigned.",
-    "current_goal_gap": "The best measured development performance is 94.375%, leaving a 3.625 percentage-point gap to 98%. The 9/160 failures are not yet attributed to inner-radius generalization, transit and braking, or late hold interruption because the available artifact inventory exposes diagnostic fields but not their values.",
-    "current_synthesis": "The baseline PPO recipe can learn substantial reach-and-hold behavior, but its training statistics overstate what is established: both the peak-training-success checkpoint (training success 0.97) and the terminal checkpoint (0.95) score exactly 94.375% on the same held-out panel. The paired comparison has zero discordant episodes, so checkpoint selection and additional late training did not change the measured outcome. This supports treating the current recipe as a useful baseline, not as a near-goal solution. The physical model's hypotheses about sampled-data braking, residual velocity, hold stability, and the omitted inner-radius range remain plausible but untested mechanistic explanations rather than conclusions.",
-    "decision_frontier": "Which mechanism accounts for the remaining 9/160 held-out failures: systematic failure on the underrepresented 0.06-0.14 m radii, transit/braking overshoot and settling delay, or late excursions during the 100-step hold? Discriminating evidence is the per-episode diagnostic values stratified by target radius and angle, especially first-reach step, minimum and final distance, maximum uninterrupted hold, and hold interruptions. The next intervention should be chosen only after this attribution.",
+    "cumulative_resource_use": "One fresh PPO training operation requested 120000 steps and completed 120832 rollout-aligned steps; one paired development measurement evaluated two candidates over 160 shared episode seeds each, for 320 candidate episodes total. E2 opened I1 and allocated no training or measurement resources. No policy role or official assessment has been assigned.",
+    "current_goal_gap": "The best measured development performance is 94.375%, leaving a 3.625 percentage-point gap to 98%. Nine of 160 development episodes fail, and the goal-relevant question is whether eliminating their concentrated directional failure mode can recover the required reliability without creating failures elsewhere.",
+    "current_synthesis": "T1 established that the baseline PPO recipe learns substantial reach-and-hold behavior, but training statistics overstate established reliability. M1 established that the peak-training-success and terminal checkpoints are tied at 94.375% on the same held-out panel, with zero discordant episodes. The detailed M1 diagnostics show all nine failures in the -155 to -115 degree sector: 9/28 failures there versus 0/132 outside, spanning target radii of approximately 7.7 to 18.8 cm. Most sector failures never reach tolerance, while the few that do reach it sustain only 1-2 hold steps. This makes omitted inner-radius coverage alone insufficient as an explanation, but does not yet distinguish a directional or IK-branch control blind spot from sector-specific transit, braking, or hold instability. E2 therefore opened I1; that inquiry transition is recorded, not treated as a scientific resolution.",
+    "decision_frontier": "In inquiry I1, determine whether the concentrated -155 to -115 degree failures arise primarily from directional or IK-branch control coverage, or from transit/braking and late-hold dynamics within that sector. The discriminating evidence is a matched development measurement after one bounded 120000-step intervention, using first-reach step, minimum and final distance, maximum uninterrupted hold, and hold interruptions, with sector performance compared against the rest of the official annulus.",
     "evidence_references": [
       "T1",
-      "M1"
+      "M1",
+      "E2"
     ],
-    "human_goal_connection": "The human goal requires at least 196 successes in the official 200-episode panel, with every success containing an uninterrupted 100-step hold. The current held-out development result is 151/160 successes (94.375%) for both evaluated checkpoints, so the evidence is below the required reliability and does not justify an official assessment.",
+    "human_goal_connection": "The human goal requires at least 196 successes in the official 200-episode panel, with every success containing an uninterrupted 100-step hold. The best development result remains 151/160 successes (94.375%) for both evaluated checkpoints, so the evidence is below the required reliability and does not justify official assessment. E2 opened bounded inquiry I1 to identify the failure mechanism before spending another full training allocation.",
     "inquiry_id": null,
-    "next_direction_or_closure": "In the goal-review session, open an inquiry focused on failure-mode attribution and extract the existing M1 episode diagnostics into a decision-ready analysis. Use that analysis to decide between broadening target-radius coverage, changing stabilization/braking incentives, or both. Do not spend another full training run on the unchanged recipe before resolving this frontier.",
-    "scientific_commit": "1997507d90cf78380966f0a3c243e78c9f23c689",
-    "session_id": "S1"
+    "next_direction_or_closure": "End the goal-review session with this checkpoint and begin I1. Do not request official assessment or another operation under the goal-review session. In I1, use at most one 120000-step goal-linked training intervention followed by one matched diagnostic development measurement, then close or redirect the inquiry based on whether the implicated sector improves without material regression outside it.",
+    "scientific_commit": "0b2abc5243817c3de9844f448ead6b4ff18f3668",
+    "session_id": "S2"
   },
   "schema_version": 6,
   "scientific_model": {
@@ -1568,21 +1689,6 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "5fbae168-2682-4685-8f3f-4fc72440b2b9",
-    "id": "S2",
-    "inquiry_id": null,
-    "kind": "goal_review",
-    "objective": "Reassess the scientific direction toward the human goal using completed evidence. You may request measurements to resolve an uncertainty or develop the method before committing to an inquiry. Decide whether to request official assessment or open one bounded goal-linked inquiry.",
-    "operation_ids": [
-      "E2"
-    ],
-    "scientific_parent_commit": "90c4eacc71364642931776f59c5475a16965a7c1"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
