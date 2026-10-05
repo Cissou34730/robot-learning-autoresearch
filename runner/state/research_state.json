@@ -836,7 +836,7 @@
     }
   },
   "counters": {
-    "event": 2,
+    "event": 3,
     "inquiry": 1,
     "measurement": 1,
     "session": 2,
@@ -845,7 +845,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -1249,28 +1249,149 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-05T15:55:34Z",
+      "error": null,
+      "id": "E3",
+      "inquiry_id": null,
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "No working, best-known, or retained role is assigned. T1:checkpoint-120832 is the strongest measured candidate at 61.25% on M1, but it is far below the human goal and its causal failure mode remains unresolved.",
+        "completed_operations": [
+          "E2"
+        ],
+        "cumulative_resource_use": "One fresh training run was requested at 120000 steps and completed 120832 rollout-aligned steps, followed by one 160-episode research evaluation. No additional training, official assessment, or policy-role assignment occurred in this goal-review session.",
+        "current_goal_gap": "M1 achieved 61.25% (98/160), leaving a large gap to the 98% objective. Failures are concentrated at large radius: 8/39 succeeded at 14-18 cm and 0/28 at 18-20 cm, while all 40 targets below 10 cm succeeded. Of 62 failures, 58 never entered tolerance and 4 did not complete the hold after entering.",
+        "current_synthesis": "T1 expanded training from 14-20 cm to the full 6-20 cm range but reached only 0.60 training success; M1 measured 61.25% research success. The observed monotonic radius collapse supports the physical model's prediction that the reset at the extended boundary and near-singular Jacobian make outer approaches difficult, while the low count of post-entry failures argues against a broadly unstable hold controller. The consequential alternatives remain unresolved: near-singular geometry may cause branch, saturation, or braking failure; the reset may place learning in an ineffective inverse-kinematic basin; or the narrow outer boundary may be insufficiently optimized. The aggregate M1 telemetry does not distinguish these mechanisms, and its useful policy result does not establish any one cause. E2 opened inquiry I1 to resolve this distinction.",
+        "decision_frontier": "For targets at radii 14-20 cm, determine whether non-reach is primarily geometry-conditioned control failure near the extended Jacobian singularity, including branch choice, torque saturation, and stopping dynamics, or insufficient learning of the outer-target mapping. Discriminating evidence must expose joint state, action or torque, Cartesian distance and motion, tolerance entry and interruption, and saturation by target radius. An intervention is credible only if it improves the outer-radius failure mode without sacrificing the established inner-radius reach-and-hold behavior.",
+        "evidence_references": [
+          "T1",
+          "M1",
+          "E2"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 successful episodes out of 200, including an uninterrupted 100-control-step hold. The current evidence is far below that threshold and localizes the dominant gap to outer-workspace reach, so the campaign must resolve its cause before selecting the next intervention.",
+        "next_direction_or_closure": "The goal-review decision is to continue with bounded inquiry I1 rather than request official assessment. In the fresh inquiry session, develop or adapt a reusable radius-stratified trajectory diagnostic for T1 that records joint state, actions or torques, Cartesian error and velocity, tolerance entry and hold interruptions, and saturation. Use the resulting mechanism-level evidence to choose between a geometry/control intervention and a learning-distribution or optimization intervention before spending another full 120000-step training allocation."
+      },
+      "result": {
+        "session_id": "S2",
+        "status": "checkpointed"
+      },
+      "session_id": "S2",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "06040926662a7e8d232aaefb3a7807103e9bc710",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "No working, best-known, or retained role is assigned. T1:checkpoint-120832 is the strongest measured candidate at 61.25% on M1, but it is far below the human goal and its causal failure mode remains unresolved.",
+        "completed_operations": [
+          "E2"
+        ],
+        "cumulative_resource_use": "One fresh training run was requested at 120000 steps and completed 120832 rollout-aligned steps, followed by one 160-episode research evaluation. No additional training, official assessment, or policy-role assignment occurred in this goal-review session.",
+        "current_goal_gap": "M1 achieved 61.25% (98/160), leaving a large gap to the 98% objective. Failures are concentrated at large radius: 8/39 succeeded at 14-18 cm and 0/28 at 18-20 cm, while all 40 targets below 10 cm succeeded. Of 62 failures, 58 never entered tolerance and 4 did not complete the hold after entering.",
+        "current_synthesis": "T1 expanded training from 14-20 cm to the full 6-20 cm range but reached only 0.60 training success; M1 measured 61.25% research success. The observed monotonic radius collapse supports the physical model's prediction that the reset at the extended boundary and near-singular Jacobian make outer approaches difficult, while the low count of post-entry failures argues against a broadly unstable hold controller. The consequential alternatives remain unresolved: near-singular geometry may cause branch, saturation, or braking failure; the reset may place learning in an ineffective inverse-kinematic basin; or the narrow outer boundary may be insufficiently optimized. The aggregate M1 telemetry does not distinguish these mechanisms, and its useful policy result does not establish any one cause. E2 opened inquiry I1 to resolve this distinction.",
+        "decision_frontier": "For targets at radii 14-20 cm, determine whether non-reach is primarily geometry-conditioned control failure near the extended Jacobian singularity, including branch choice, torque saturation, and stopping dynamics, or insufficient learning of the outer-target mapping. Discriminating evidence must expose joint state, action or torque, Cartesian distance and motion, tolerance entry and interruption, and saturation by target radius. An intervention is credible only if it improves the outer-radius failure mode without sacrificing the established inner-radius reach-and-hold behavior.",
+        "evidence_references": [
+          "T1",
+          "M1",
+          "E2"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 successful episodes out of 200, including an uninterrupted 100-control-step hold. The current evidence is far below that threshold and localizes the dominant gap to outer-workspace reach, so the campaign must resolve its cause before selecting the next intervention.",
+        "inquiry_id": null,
+        "next_direction_or_closure": "The goal-review decision is to continue with bounded inquiry I1 rather than request official assessment. In the fresh inquiry session, develop or adapt a reusable radius-stratified trajectory diagnostic for T1 that records joint state, actions or torques, Cartesian error and velocity, tolerance entry and hold interruptions, and saturation. Use the resulting mechanism-level evidence to choose between a geometry/control intervention and a learning-distribution or optimization intervention before spending another full 120000-step training allocation.",
+        "session_id": "S2"
+      },
+      "presentation": {
+        "backend_session_id": "4e8251db-e16e-4eca-a1a9-196894759946",
+        "campaign_id": "d5a9984a-1928-4627-9d33-477274fa583e",
+        "campaign_usage": "7m10s | 9.74 AIU | prompt 1.2m (83% cached) | output 21.5k",
+        "session_id": "S2",
+        "session_kind": "goal_review",
+        "session_usage": "1m44s | 2.44 AIU | prompt 312.4k (82% cached) | output 4.6k"
+      },
+      "result": {
+        "session_id": "S2",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "0ea429b6c397f996c4b3bb348e47fac50092d097",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E3",
+    "inquiry_id": null,
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "No working, best-known, or retained role is assigned. T1:checkpoint-120832 is the strongest measured candidate at 61.25% on M1, but it is far below the human goal and its causal failure mode remains unresolved.",
+        "completed_operations": [
+          "E2"
+        ],
+        "cumulative_resource_use": "One fresh training run was requested at 120000 steps and completed 120832 rollout-aligned steps, followed by one 160-episode research evaluation. No additional training, official assessment, or policy-role assignment occurred in this goal-review session.",
+        "current_goal_gap": "M1 achieved 61.25% (98/160), leaving a large gap to the 98% objective. Failures are concentrated at large radius: 8/39 succeeded at 14-18 cm and 0/28 at 18-20 cm, while all 40 targets below 10 cm succeeded. Of 62 failures, 58 never entered tolerance and 4 did not complete the hold after entering.",
+        "current_synthesis": "T1 expanded training from 14-20 cm to the full 6-20 cm range but reached only 0.60 training success; M1 measured 61.25% research success. The observed monotonic radius collapse supports the physical model's prediction that the reset at the extended boundary and near-singular Jacobian make outer approaches difficult, while the low count of post-entry failures argues against a broadly unstable hold controller. The consequential alternatives remain unresolved: near-singular geometry may cause branch, saturation, or braking failure; the reset may place learning in an ineffective inverse-kinematic basin; or the narrow outer boundary may be insufficiently optimized. The aggregate M1 telemetry does not distinguish these mechanisms, and its useful policy result does not establish any one cause. E2 opened inquiry I1 to resolve this distinction.",
+        "decision_frontier": "For targets at radii 14-20 cm, determine whether non-reach is primarily geometry-conditioned control failure near the extended Jacobian singularity, including branch choice, torque saturation, and stopping dynamics, or insufficient learning of the outer-target mapping. Discriminating evidence must expose joint state, action or torque, Cartesian distance and motion, tolerance entry and interruption, and saturation by target radius. An intervention is credible only if it improves the outer-radius failure mode without sacrificing the established inner-radius reach-and-hold behavior.",
+        "evidence_references": [
+          "T1",
+          "M1",
+          "E2"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 successful episodes out of 200, including an uninterrupted 100-control-step hold. The current evidence is far below that threshold and localizes the dominant gap to outer-workspace reach, so the campaign must resolve its cause before selecting the next intervention.",
+        "next_direction_or_closure": "The goal-review decision is to continue with bounded inquiry I1 rather than request official assessment. In the fresh inquiry session, develop or adapt a reusable radius-stratified trajectory diagnostic for T1 that records joint state, actions or torques, Cartesian error and velocity, tolerance entry and hold interruptions, and saturation. Use the resulting mechanism-level evidence to choose between a geometry/control intervention and a learning-distribution or optimization intervention before spending another full 120000-step training allocation."
+      }
+    },
+    "request_fingerprint": "c39bca403bbc64e10c9eea7290a7c4fc5ca2a65d152876ed456c16458964fde5",
+    "session_id": "S2",
+    "supersedes": null
+  },
   "pi_checkpoint": {
-    "candidates_and_roles": "No working or best-known role is assigned yet. T1:checkpoint-120832 is the strongest measured candidate at 61.25% on M1, but it is far below the human goal and its causal failure mode remains unresolved.",
+    "candidates_and_roles": "No working, best-known, or retained role is assigned. T1:checkpoint-120832 is the strongest measured candidate at 61.25% on M1, but it is far below the human goal and its causal failure mode remains unresolved.",
     "completed_operations": [
-      "T1",
-      "M1"
+      "E2"
     ],
-    "cumulative_resource_use": "One fresh training run requested at 120000 steps, completing 120832 rollout-aligned steps, and one 160-episode research evaluation. No official assessment requested; no best-known or retained model role assigned.",
-    "current_goal_gap": "M1 achieved 61.25% (98/160), leaving a large gap to 98%. The dominant measured failure is failure to reach: 62 episodes failed, 58 without any tolerance entry and only 4 after entering tolerance. Performance is strongly radius-dependent: 40/40 successes at 6-10 cm, 50/53 at 10-14 cm, 8/39 at 14-18 cm, and 0/28 at 18-20 cm. The policy therefore does not yet solve the outer-workspace portion of the official distribution, even though its hold behavior is usually successful once it reaches the target.",
-    "current_synthesis": "Observed evidence: expanding training from the prior 14-20 cm range to the full 6-20 cm range produced T1 training success of 0.60 and M1 research success of 61.25%. M1 shows a monotonic outer-radius collapse: every sampled target below 10 cm succeeded, while no target from 18-20 cm succeeded. Among failures, 58/62 never entered tolerance and 4/62 entered but did not complete the hold; thus the present gap is primarily an approach/reach gap, not evidence of a general hold instability. Interpretation: the model's prediction that near-extended configurations and Jacobian conditioning matter is supported, but the data do not identify whether the cause is outer-workspace singularity and braking, a learned inverse-kinematic branch/basin failure from the extended reset, or insufficient optimization coverage of the narrow outer boundary. Angle-quartile variation is smaller than the radius effect, so angle is not the leading discriminator. A useful policy result does not establish its cause, and M1 does not yet establish that any particular branch or torque mechanism is responsible.",
-    "decision_frontier": "For outer targets near 14-20 cm, is non-reach caused primarily by geometry-conditioned control failure near the extended Jacobian singularity (including branch choice, saturation, and stopping dynamics), or by insufficient learning of the outer-target mapping? Discriminating evidence must expose episode trajectories or equivalent joint/action/Cartesian telemetry, stratified by radius, so that failed episodes can be separated into wrong-branch motion, saturation/overshoot, and stalled or insufficiently directed motion. A candidate trained with an intervention should only be credited as progress if it improves this outer-radius failure mode without sacrificing the already strong inner-radius hold behavior.",
+    "cumulative_resource_use": "One fresh training run was requested at 120000 steps and completed 120832 rollout-aligned steps, followed by one 160-episode research evaluation. No additional training, official assessment, or policy-role assignment occurred in this goal-review session.",
+    "current_goal_gap": "M1 achieved 61.25% (98/160), leaving a large gap to the 98% objective. Failures are concentrated at large radius: 8/39 succeeded at 14-18 cm and 0/28 at 18-20 cm, while all 40 targets below 10 cm succeeded. Of 62 failures, 58 never entered tolerance and 4 did not complete the hold after entering.",
+    "current_synthesis": "T1 expanded training from 14-20 cm to the full 6-20 cm range but reached only 0.60 training success; M1 measured 61.25% research success. The observed monotonic radius collapse supports the physical model's prediction that the reset at the extended boundary and near-singular Jacobian make outer approaches difficult, while the low count of post-entry failures argues against a broadly unstable hold controller. The consequential alternatives remain unresolved: near-singular geometry may cause branch, saturation, or braking failure; the reset may place learning in an ineffective inverse-kinematic basin; or the narrow outer boundary may be insufficiently optimized. The aggregate M1 telemetry does not distinguish these mechanisms, and its useful policy result does not establish any one cause. E2 opened inquiry I1 to resolve this distinction.",
+    "decision_frontier": "For targets at radii 14-20 cm, determine whether non-reach is primarily geometry-conditioned control failure near the extended Jacobian singularity, including branch choice, torque saturation, and stopping dynamics, or insufficient learning of the outer-target mapping. Discriminating evidence must expose joint state, action or torque, Cartesian distance and motion, tolerance entry and interruption, and saturation by target radius. An intervention is credible only if it improves the outer-radius failure mode without sacrificing the established inner-radius reach-and-hold behavior.",
     "evidence_references": [
       "T1",
-      "M1"
+      "M1",
+      "E2"
     ],
-    "human_goal_connection": "The human goal requires at least 196 successful episodes out of 200, including an uninterrupted 100-control-step hold. T1 followed by M1 is the first evidence-backed characterization of the gap under the full official radius distribution.",
+    "human_goal_connection": "The human goal requires at least 196 successful episodes out of 200, including an uninterrupted 100-control-step hold. The current evidence is far below that threshold and localizes the dominant gap to outer-workspace reach, so the campaign must resolve its cause before selecting the next intervention.",
     "inquiry_id": null,
-    "next_direction_or_closure": "End startup and enter goal review. Open a bounded inquiry on outer-workspace non-reachability, then develop or adapt a reusable trajectory diagnostic that records joint state, action, Cartesian distance, tolerance entry, and saturation by target radius. Use that evidence to choose between a geometry/control intervention and a learning-distribution or optimization intervention before spending another full training run.",
-    "scientific_commit": "d912ecc611051c2338868ca6a9958bc9b66268d4",
-    "session_id": "S1"
+    "next_direction_or_closure": "The goal-review decision is to continue with bounded inquiry I1 rather than request official assessment. In the fresh inquiry session, develop or adapt a reusable radius-stratified trajectory diagnostic for T1 that records joint state, actions or torques, Cartesian error and velocity, tolerance entry and hold interruptions, and saturation. Use the resulting mechanism-level evidence to choose between a geometry/control intervention and a learning-distribution or optimization intervention before spending another full 120000-step training allocation.",
+    "scientific_commit": "0ea429b6c397f996c4b3bb348e47fac50092d097",
+    "session_id": "S2"
   },
   "schema_version": 6,
   "scientific_model": {
@@ -1278,21 +1399,6 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "4e8251db-e16e-4eca-a1a9-196894759946",
-    "id": "S2",
-    "inquiry_id": null,
-    "kind": "goal_review",
-    "objective": "Reassess the scientific direction toward the human goal using completed evidence. You may request measurements to resolve an uncertainty or develop the method before committing to an inquiry. Decide whether to request official assessment or open one bounded goal-linked inquiry.",
-    "operation_ids": [
-      "E2"
-    ],
-    "scientific_parent_commit": "06040926662a7e8d232aaefb3a7807103e9bc710"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
