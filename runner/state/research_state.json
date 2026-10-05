@@ -840,8 +840,8 @@
   "counters": {
     "event": 3,
     "inquiry": 1,
-    "measurement": 1,
-    "session": 2,
+    "measurement": 3,
+    "session": 3,
     "training": 1
   },
   "human_goal": {
@@ -1571,9 +1571,139 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-05T15:19:28Z",
+      "error": "ruff failed:\nI001 [*] Import block is un-sorted or un-formatted\n  --> robot_learning\\lab\\angle_diagnostic.py:3:1\n   |\n 1 |   \"\"\"Targeted geometry and trajectory diagnostic for the peak reach policy.\"\"\"\n 2 |\n 3 | / from __future__ import annotations\n 4 | |\n 5 | | import argparse\n 6 | | import json\n 7 | | from pathlib import Path\n 8 | |\n 9 | | import mujoco\n10 | | import numpy as np\n11 | |\n12 | | from contracts.task_spec import SUCCESS_THRESHOLD\n13 | | from contracts.policy_runtime import load_runtime\n14 | | from robot_learning.scenario.environment import make_evaluation_env\n15 | | from robot_learning.scenario.observations import FOREARM_LENGTH, UPPER_ARM_LENGTH\n   | |_________________________________________________________________________________^\nhelp: Organize imports\n   |\n11 |\n12 + from contracts.policy_runtime import load_runtime\n13 | from contracts.task_spec import SUCCESS_THRESHOLD\n   - from contracts.policy_runtime import load_runtime\n14 | from robot_learning.scenario.environment import make_evaluation_env\n15 | from robot_learning.scenario.observations import FOREARM_LENGTH, UPPER_ARM_LENGTH\n   -\n16 |\n   |\n\nFound 1 error.\n[*] 1 fixable with the `--fix` option.\n\n",
+      "id": "M2",
+      "inquiry_id": "I1",
+      "kind": "measurement",
+      "request": {
+        "description": "Run a targeted angle-by-radius trajectory diagnostic of T1:checkpoint-100352 using the nine prior negative-sector failure geometries, matched mirrored-angle controls at the same radii, and ten prior successful negative-sector references. Record analytic elbow-branch feasibility under the loaded joint limits, branch-posture conditioning and manipulability, joint and end-effector trajectories, first tolerance-entry state and velocity, hold interruptions, and per-control-step actuator commands and saturation.",
+        "measurements": [
+          {
+            "args": [
+              "--model",
+              "campaigns/checkpoints/candidates/4a73a283-c537-41d8-a4d8-ea23e48c1aaa/t1/checkpoint-100352/model.zip",
+              "--artifact",
+              "campaigns/evaluations/4a73a283-c537-41d8-a4d8-ea23e48c1aaa/i1-angle-diagnostic-t1-checkpoint-100352.json"
+            ],
+            "artifact": "campaigns/evaluations/4a73a283-c537-41d8-a4d8-ea23e48c1aaa/i1-angle-diagnostic-t1-checkpoint-100352.json",
+            "instrument": "python_module",
+            "label": "I1 targeted angle-by-radius trajectory diagnostic",
+            "module": "robot_learning.lab.angle_diagnostic"
+          }
+        ],
+        "rationale": "I1 asks whether the remaining goal gap is caused mainly before tolerance entry by branch feasibility or directional policy coverage, or after entry by braking and stabilization. The prior panel supplies nine failures from approximately -119 to -151 degrees, seven with no entry and two with only one or two held samples, plus successful controls in the same negative sector. Replaying those target geometries while adding same-radius mirrored-angle controls separates a directional reach or branch-coverage effect from a geometry-wide limitation. Analytic branch feasibility and conditioning identify joint-limit or singularity explanations; first-entry velocity, hold interruptions, and actuator saturation identify braking or stabilization explanations. This measurement is therefore the smallest direct test of the current decision frontier and does not spend training allocation."
+      },
+      "result": {
+        "error": "ruff failed:\nI001 [*] Import block is un-sorted or un-formatted\n  --> robot_learning\\lab\\angle_diagnostic.py:3:1\n   |\n 1 |   \"\"\"Targeted geometry and trajectory diagnostic for the peak reach policy.\"\"\"\n 2 |\n 3 | / from __future__ import annotations\n 4 | |\n 5 | | import argparse\n 6 | | import json\n 7 | | from pathlib import Path\n 8 | |\n 9 | | import mujoco\n10 | | import numpy as np\n11 | |\n12 | | from contracts.task_spec import SUCCESS_THRESHOLD\n13 | | from contracts.policy_runtime import load_runtime\n14 | | from robot_learning.scenario.environment import make_evaluation_env\n15 | | from robot_learning.scenario.observations import FOREARM_LENGTH, UPPER_ARM_LENGTH\n   | |_________________________________________________________________________________^\nhelp: Organize imports\n   |\n11 |\n12 + from contracts.policy_runtime import load_runtime\n13 | from contracts.task_spec import SUCCESS_THRESHOLD\n   - from contracts.policy_runtime import load_runtime\n14 | from robot_learning.scenario.environment import make_evaluation_env\n15 | from robot_learning.scenario.observations import FOREARM_LENGTH, UPPER_ARM_LENGTH\n   -\n16 |\n   |\n\nFound 1 error.\n[*] 1 fixable with the `--fix` option.\n\n",
+        "status": "failed"
+      },
+      "session_id": "S3",
+      "status": "failed",
+      "superseded_by": "M3",
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "evaluation_semantics": null,
+      "measurements": [
+        {
+          "args": [
+            "--model",
+            "campaigns/checkpoints/candidates/4a73a283-c537-41d8-a4d8-ea23e48c1aaa/t1/checkpoint-100352/model.zip",
+            "--artifact",
+            "campaigns/evaluations/4a73a283-c537-41d8-a4d8-ea23e48c1aaa/i1-angle-diagnostic-t1-checkpoint-100352.json"
+          ],
+          "artifact": "campaigns/evaluations/4a73a283-c537-41d8-a4d8-ea23e48c1aaa/i1-angle-diagnostic-t1-checkpoint-100352.json",
+          "instrument": "python_module",
+          "label": "I1 targeted angle-by-radius trajectory diagnostic",
+          "module": "robot_learning.lab.angle_diagnostic"
+        }
+      ],
+      "module_provenance": {
+        "campaign_lab_manifest": [
+          {
+            "fingerprint": "2b6289a549486246ae980a60ce593c565a91bb17752e15b549696481afafd2f5",
+            "path": "robot_learning/lab/angle_diagnostic.py"
+          }
+        ],
+        "campaign_lab_publication": null,
+        "code_parent_commit": "5817f453e48bae2f9cbf6fe3040b9513639a6559",
+        "effective_parameters": {
+          "algorithm": {
+            "name": "ppo"
+          },
+          "policy": {
+            "activation": "tanh",
+            "net_arch": [
+              64,
+              64
+            ]
+          },
+          "ppo": {
+            "batch_size": 64,
+            "ent_coef": 0.01,
+            "gae_lambda": 0.95,
+            "gamma": 0.99,
+            "learning_rate": 0.0003,
+            "n_steps": 1024
+          },
+          "training": {
+            "checkpoint_every_steps": 5000,
+            "n_envs": 1
+          }
+        },
+        "module_manifest": [
+          {
+            "exists": true,
+            "fingerprint": "2b6289a549486246ae980a60ce593c565a91bb17752e15b549696481afafd2f5",
+            "path": "robot_learning/lab/angle_diagnostic.py"
+          }
+        ],
+        "module_paths": [
+          "robot_learning/lab/angle_diagnostic.py"
+        ],
+        "scientific_commit": null,
+        "scientific_manifest": [],
+        "scientific_paths": []
+      },
+      "paired_comparisons": [],
+      "partial_results": [],
+      "result": null,
+      "task_reference_contract": null
+    },
+    "failure": null,
+    "id": "M3",
+    "inquiry_id": "I1",
+    "kind": "measurement",
+    "progress": "accepted",
+    "request": {
+      "measurement": {
+        "description": "Run a targeted angle-by-radius trajectory diagnostic of T1:checkpoint-100352 using the nine prior negative-sector failure geometries, matched mirrored-angle controls at the same radii, and ten prior successful negative-sector references. Record analytic elbow-branch feasibility under the loaded joint limits, branch-posture conditioning and manipulability, joint and end-effector trajectories, first tolerance-entry state and velocity, hold interruptions, and per-control-step actuator commands and saturation.",
+        "measurements": [
+          {
+            "args": [
+              "--model",
+              "campaigns/checkpoints/candidates/4a73a283-c537-41d8-a4d8-ea23e48c1aaa/t1/checkpoint-100352/model.zip",
+              "--artifact",
+              "campaigns/evaluations/4a73a283-c537-41d8-a4d8-ea23e48c1aaa/i1-angle-diagnostic-t1-checkpoint-100352.json"
+            ],
+            "artifact": "campaigns/evaluations/4a73a283-c537-41d8-a4d8-ea23e48c1aaa/i1-angle-diagnostic-t1-checkpoint-100352.json",
+            "instrument": "python_module",
+            "label": "I1 targeted angle-by-radius trajectory diagnostic",
+            "module": "robot_learning.lab.angle_diagnostic"
+          }
+        ],
+        "rationale": "I1 asks whether the remaining goal gap is caused mainly before tolerance entry by branch feasibility or directional policy coverage, or after entry by braking and stabilization. The prior panel supplies nine failures from approximately -119 to -151 degrees, seven with no entry and two with only one or two held samples, plus successful controls in the same negative sector. Replaying those target geometries while adding same-radius mirrored-angle controls separates a directional reach or branch-coverage effect from a geometry-wide limitation. Analytic branch feasibility and conditioning identify joint-limit or singularity explanations; first-entry velocity, hold interruptions, and actuator saturation identify braking or stabilization explanations. This measurement is therefore the smallest direct test of the current decision frontier and does not spend training allocation."
+      }
+    },
+    "request_fingerprint": "2462301c95a123891a336b4c5b62799e94b2c3b84ee0ffb43bd09d9ee4accd69",
+    "session_id": "S3",
+    "supersedes": "M2"
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No working, best-known, or retained role is assigned. T1:checkpoint-100352 remains the strongest measured candidate based on M1, at 94.375%, but the available evidence is insufficient to assign a policy role or request official assessment.",
     "completed_operations": [
@@ -1600,6 +1730,19 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "8cc3b6bb-96ac-45c5-95a6-8e29b9a4471f",
+    "id": "S3",
+    "inquiry_id": "I1",
+    "kind": "inquiry",
+    "objective": "Advance I1 toward an evidence-supported answer to its scientific question: Does the peak candidate's negative-angle failure cluster arise primarily before tolerance entry from infeasible or poorly selected IK branches and directional reach, or after entry from residual velocity, actuator saturation, and hold stabilization?",
+    "operation_ids": [],
+    "scientific_parent_commit": "5817f453e48bae2f9cbf6fe3040b9513639a6559"
+  },
   "terminal_state": null
 }
