@@ -1974,3 +1974,23 @@ separate from harness changes so their outcomes are not conflated.
   campaign supports its intended direction but does not establish causality.
   The startup-to-inquiry rush and the inaccurate distribution claim remain
   unresolved; this entry approves no further harness change.
+
+## 2026-10-05: make the PI persona robotics-first
+
+- **Decision:** replace the shared PI persona with the maintainer-approved
+  three-part wording. It identifies the PI with embodied robotics, names
+  reinforcement learning once among the available disciplines, and removes
+  the learned-policy destination from the opening identity.
+- **Authority:** the human defines the goal and protected boundary; the PI
+  owns everything else. Existing code, architecture, metrics, hypotheses and
+  prior decisions remain provisional scientific artifacts rather than
+  authorities.
+- **Preserved:** the scientific-model prompt remains goal-first and all other
+  phase prompts remain persona-first. Startup, inquiry, operation permissions,
+  Runner validation, training allocations and scientific implementation are
+  unchanged.
+- **Boundary:** this is a persona change, not a startup instruction or a
+  prescribed action-selection heuristic. No campaign, training, reset,
+  measurement or evaluation is executed.
+- **Disposition:** implemented for observation. Its effect on startup and
+  inquiry behavior is unassessed.
