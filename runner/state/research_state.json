@@ -30,9 +30,9 @@
   "pi_checkpoint": null,
   "schema_version": 6,
   "scientific_model": {
-    "commit": null,
+    "commit": "ac350cfbd3790d4d121408f667013d09829e4a50",
     "path": "pi_workspace/scientific_model.md",
-    "status": "pending"
+    "status": "ready"
   },
   "scientific_session": null,
   "terminal_state": null
