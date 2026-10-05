@@ -336,44 +336,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "open",
-        "inquiry": {
-          "closure_condition": "Close after one 120000-step fresh baseline training run and development evaluation with per-episode first-entry, longest-hold, interruption, truncation, and target-radius/angle diagnostics have established whether the baseline is adequate or which failure mechanism must determine the next bounded intervention.",
-          "goal_connection": "The human goal requires at least 98% complete uninterrupted holds. Establishing a reproducible baseline under the current setup is the shortest direct test of whether the existing method can produce a candidate, while the hold-sensitive diagnostics distinguish late regulation failures from broad reach failures before any intervention is chosen.",
-          "id": "I1",
-          "opened_in_session": "S2",
-          "question": "Can the current target-conditioned PPO observation, motor-action interface, reward, and full official target distribution learn both the reach and the low-velocity regulation required for uninterrupted 100-step holds, or do failures arise broadly before hold entry and therefore require a different reach-acquisition method?",
-          "rationale": "M2 established that settled configurations are physically stable but actuator-driven transients can quickly exit the 1 cm boundary, especially at larger radii. It did not test a learned approach, braking, branch coverage, or robustness across the task distribution. No candidate exists, so official assessment is not justified; a baseline inquiry is required to discriminate learnability of the existing reach-to-regulation method from the need to change training distribution, reward, or control representation.",
-          "reframes": []
-        }
-      },
-      "result": {
-        "action": "open",
-        "inquiry_id": "I1",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E2",
-    "inquiry_id": null,
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "open",
-        "closure_condition": "Close after one 120000-step fresh baseline training run and development evaluation with per-episode first-entry, longest-hold, interruption, truncation, and target-radius/angle diagnostics have established whether the baseline is adequate or which failure mechanism must determine the next bounded intervention.",
-        "goal_connection": "The human goal requires at least 98% complete uninterrupted holds. Establishing a reproducible baseline under the current setup is the shortest direct test of whether the existing method can produce a candidate, while the hold-sensitive diagnostics distinguish late regulation failures from broad reach failures before any intervention is chosen.",
-        "question": "Can the current target-conditioned PPO observation, motor-action interface, reward, and full official target distribution learn both the reach and the low-velocity regulation required for uninterrupted 100-step holds, or do failures arise broadly before hold entry and therefore require a different reach-acquisition method?",
-        "rationale": "M2 established that settled configurations are physically stable but actuator-driven transients can quickly exit the 1 cm boundary, especially at larger radii. It did not test a learned approach, braking, branch coverage, or robustness across the task distribution. No candidate exists, so official assessment is not justified; a baseline inquiry is required to discriminate learnability of the existing reach-to-regulation method from the need to change training distribution, reward, or control representation."
-      }
-    },
-    "request_fingerprint": "629cebd9b05c172b39904be7be945103b68da2f50450cb2078ce1d523cfae52a",
-    "session_id": "S2",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "No training candidate exists. Working, best-known, and retained roles remain unassigned.",
     "completed_operations": [
