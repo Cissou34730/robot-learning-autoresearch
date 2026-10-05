@@ -1,13 +1,5 @@
 {
-  "active_inquiry": {
-    "closure_condition": "Close the inquiry only after a targeted diagnostic measurement of the failing sector and matched successful controls reports branch proximity or identity, joint-limit and Jacobian margins, endpoint and joint velocity, action saturation, entry timing, and hold interruptions sufficiently to select branch/coverage or stabilization as the next goal-linked intervention.",
-    "goal_connection": "Resolving this distinction identifies whether the next 120000-step intervention should improve target and branch coverage or improve settling and hold stabilization, which is necessary to close the gap from 151/160 research-panel successes to at least 196/200 official successes.",
-    "id": "I1",
-    "opened_in_session": "S2",
-    "question": "Does the localized failure for targets near -151 to -119 degrees arise primarily from asymmetric inverse-kinematic branch selection and angular policy coverage, or from a dynamics and stabilization limitation that merely appears angular?",
-    "rationale": "The two evaluated candidates fail on the same nine seeds with angles concentrated in one negative sector and radii spanning the official range, while most failures either never enter tolerance or hold for only 1-2 steps. The physical model predicts branch, shoulder-limit, singularity-escape, and stopping-margin asymmetries, but M1 does not measure the quantities needed to distinguish them. Official assessment would quantify the gap without identifying the mechanism that can close it.",
-    "reframes": []
-  },
+  "active_inquiry": null,
   "campaign": {
     "base_commit": "ce221fb1e34bd2f9c212c697a2353b86f19fe302",
     "id": "3d0d131d-3cb5-41fc-8c57-64e7521b3051",
@@ -838,7 +830,7 @@
     }
   },
   "counters": {
-    "event": 3,
+    "event": 4,
     "inquiry": 1,
     "measurement": 2,
     "session": 3,
@@ -1934,9 +1926,63 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-05T21:19:11Z",
+      "error": null,
+      "id": "E4",
+      "inquiry_id": "I1",
+      "kind": "inquiry",
+      "request": {
+        "action": "close",
+        "outcome": "I1 is resolved in favor of an angular and geometry-coverage mechanism with joint-limit exposure, rather than a primary branch-identity or generic stabilization failure. The matched diagnostic used the elbow-positive branch at entry and terminal state in every case, with no observed branch switching. The failing sector achieved 15/20 successes versus 20/20 in matched adjacent controls. Failing-sector entries had a mean minimum joint-limit margin of about 0.12 rad versus 0.49 rad for controls, and somewhat higher endpoint and joint speeds, while Jacobian conditioning and action saturation were comparable. The next intervention should therefore expand target support to the official radius range and improve sampling of the exposed negative-angle sector; it should not first redesign generic hold stabilization.",
+        "reason": "M2 directly measured the closure variables on the 160-episode replay and a matched 40-case grid. The evidence supports angular/geometry coverage and limit-margin exposure as the goal-linked mechanism: branch identity is invariant across groups, conditioning is not materially worse in the failing sector, and high saturation is common to both failures and successful controls. The measurement does not prove that velocity is irrelevant, because failing entries are faster and the low-velocity criterion was never reached, but it makes velocity a coupled secondary risk rather than the primary discriminator. M2 therefore justifies a full-distribution and failing-sector coverage intervention before any stabilization-specific redesign."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I1",
+        "outcome": "I1 is resolved in favor of an angular and geometry-coverage mechanism with joint-limit exposure, rather than a primary branch-identity or generic stabilization failure. The matched diagnostic used the elbow-positive branch at entry and terminal state in every case, with no observed branch switching. The failing sector achieved 15/20 successes versus 20/20 in matched adjacent controls. Failing-sector entries had a mean minimum joint-limit margin of about 0.12 rad versus 0.49 rad for controls, and somewhat higher endpoint and joint speeds, while Jacobian conditioning and action saturation were comparable. The next intervention should therefore expand target support to the official radius range and improve sampling of the exposed negative-angle sector; it should not first redesign generic hold stabilization.",
+        "reason": "M2 directly measured the closure variables on the 160-episode replay and a matched 40-case grid. The evidence supports angular/geometry coverage and limit-margin exposure as the goal-linked mechanism: branch identity is invariant across groups, conditioning is not materially worse in the failing sector, and high saturation is common to both failures and successful controls. The measurement does not prove that velocity is irrelevant, because failing entries are faster and the low-velocity criterion was never reached, but it makes velocity a coupled secondary risk rather than the primary discriminator. M2 therefore justifies a full-distribution and failing-sector coverage intervention before any stabilization-specific redesign.",
+        "status": "completed"
+      },
+      "session_id": "S3",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "close",
+        "inquiry_id": "I1",
+        "outcome": "I1 is resolved in favor of an angular and geometry-coverage mechanism with joint-limit exposure, rather than a primary branch-identity or generic stabilization failure. The matched diagnostic used the elbow-positive branch at entry and terminal state in every case, with no observed branch switching. The failing sector achieved 15/20 successes versus 20/20 in matched adjacent controls. Failing-sector entries had a mean minimum joint-limit margin of about 0.12 rad versus 0.49 rad for controls, and somewhat higher endpoint and joint speeds, while Jacobian conditioning and action saturation were comparable. The next intervention should therefore expand target support to the official radius range and improve sampling of the exposed negative-angle sector; it should not first redesign generic hold stabilization.",
+        "reason": "M2 directly measured the closure variables on the 160-episode replay and a matched 40-case grid. The evidence supports angular/geometry coverage and limit-margin exposure as the goal-linked mechanism: branch identity is invariant across groups, conditioning is not materially worse in the failing sector, and high saturation is common to both failures and successful controls. The measurement does not prove that velocity is irrelevant, because failing entries are faster and the low-velocity criterion was never reached, but it makes velocity a coupled secondary risk rather than the primary discriminator. M2 therefore justifies a full-distribution and failing-sector coverage intervention before any stabilization-specific redesign."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I1",
+        "outcome": "I1 is resolved in favor of an angular and geometry-coverage mechanism with joint-limit exposure, rather than a primary branch-identity or generic stabilization failure. The matched diagnostic used the elbow-positive branch at entry and terminal state in every case, with no observed branch switching. The failing sector achieved 15/20 successes versus 20/20 in matched adjacent controls. Failing-sector entries had a mean minimum joint-limit margin of about 0.12 rad versus 0.49 rad for controls, and somewhat higher endpoint and joint speeds, while Jacobian conditioning and action saturation were comparable. The next intervention should therefore expand target support to the official radius range and improve sampling of the exposed negative-angle sector; it should not first redesign generic hold stabilization.",
+        "reason": "M2 directly measured the closure variables on the 160-episode replay and a matched 40-case grid. The evidence supports angular/geometry coverage and limit-margin exposure as the goal-linked mechanism: branch identity is invariant across groups, conditioning is not materially worse in the failing sector, and high saturation is common to both failures and successful controls. The measurement does not prove that velocity is irrelevant, because failing entries are faster and the low-velocity criterion was never reached, but it makes velocity a coupled secondary risk rather than the primary discriminator. M2 therefore justifies a full-distribution and failing-sector coverage intervention before any stabilization-specific redesign.",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E4",
+    "inquiry_id": "I1",
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "close",
+        "outcome": "I1 is resolved in favor of an angular and geometry-coverage mechanism with joint-limit exposure, rather than a primary branch-identity or generic stabilization failure. The matched diagnostic used the elbow-positive branch at entry and terminal state in every case, with no observed branch switching. The failing sector achieved 15/20 successes versus 20/20 in matched adjacent controls. Failing-sector entries had a mean minimum joint-limit margin of about 0.12 rad versus 0.49 rad for controls, and somewhat higher endpoint and joint speeds, while Jacobian conditioning and action saturation were comparable. The next intervention should therefore expand target support to the official radius range and improve sampling of the exposed negative-angle sector; it should not first redesign generic hold stabilization.",
+        "reason": "M2 directly measured the closure variables on the 160-episode replay and a matched 40-case grid. The evidence supports angular/geometry coverage and limit-margin exposure as the goal-linked mechanism: branch identity is invariant across groups, conditioning is not materially worse in the failing sector, and high saturation is common to both failures and successful controls. The measurement does not prove that velocity is irrelevant, because failing entries are faster and the low-velocity criterion was never reached, but it makes velocity a coupled secondary risk rather than the primary discriminator. M2 therefore justifies a full-distribution and failing-sector coverage intervention before any stabilization-specific redesign."
+      }
+    },
+    "request_fingerprint": "e11d504c161f021edd17d29732ad7f054ccfae7dec5e95939164fc107b252c9f",
+    "session_id": "S3",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No working, best-known, or retained role is assigned. T1:checkpoint-100352 and T1:checkpoint-120832 are tied on M1's shared panel and neither is goal-achieving evidence.",
     "completed_operations": [
@@ -1975,7 +2021,8 @@
     "kind": "inquiry",
     "objective": "Advance I1 toward an evidence-supported answer to its scientific question: Does the localized failure for targets near -151 to -119 degrees arise primarily from asymmetric inverse-kinematic branch selection and angular policy coverage, or from a dynamics and stabilization limitation that merely appears angular?",
     "operation_ids": [
-      "M2"
+      "M2",
+      "E4"
     ],
     "scientific_parent_commit": "5002600312c25bc49a49f1709f7b82e752f68b13"
   },
