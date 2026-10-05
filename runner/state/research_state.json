@@ -1,11 +1,11 @@
 {
   "active_inquiry": null,
   "campaign": {
-    "base_commit": "8256c8c7705a5080a722453b26eb13cd85b6e18f",
-    "id": "c8d51c20-a3e2-4ee2-9f61-59d6a489f937",
+    "base_commit": "a098f496f83bf0ee7f5d6a4993cf1299a62fba02",
+    "id": "7e34ccad-d5b3-4363-a3b9-747bb260ca95",
     "max_inquiries": 15,
     "recipe_source_commit": "8256c8c7705a5080a722453b26eb13cd85b6e18f",
-    "started_at": "2026-10-05T04:06:11.575846+00:00"
+    "started_at": "2026-10-05T04:29:50.131608+00:00"
   },
   "candidates": {},
   "counters": {
@@ -30,9 +30,9 @@
   "pi_checkpoint": null,
   "schema_version": 6,
   "scientific_model": {
-    "commit": "a1cf3ce26592e19235b3441191a80bbd78e843cf",
+    "commit": null,
     "path": "pi_workspace/scientific_model.md",
-    "status": "ready"
+    "status": "pending"
   },
   "scientific_session": null,
   "terminal_state": null
