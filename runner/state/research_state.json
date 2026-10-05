@@ -3947,44 +3947,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "open",
-        "inquiry": {
-          "closure_condition": "Evaluate the resulting candidate on the shared 160-episode research panel and the established 40-case matched sector/control diagnostic. Treat stabilization as supported only if sector success and shared-panel success improve over the T1 baseline, entry and terminal endpoint/joint velocity and hold interruptions decrease in the exposed sector, and the control sector does not materially regress. Treat it as unresolved or refuted if the panel regresses broadly, interruptions remain high despite lower velocity, or joint-limit margins remain the dominant separator without meaningful success recovery.",
-          "goal_connection": "Closing this distinction is necessary to move the established 94.375% research result toward the human requirement of at least 98% complete uninterrupted holds. A positive result would justify pursuing stabilization as the next route to the missing successes; a negative result would redirect effort to a geometry-sensitive posture or trajectory intervention rather than more generic coverage.",
-          "id": "I3",
-          "opened_in_session": "S6",
-          "question": "Can one stabilization-focused policy redesign, trained on the official full-radius and uniform-angle target distribution while preserving the T1 reach behavior, reduce high-speed entry and uninterrupted-hold interruptions in the exposed -151 to -119 degree sector without broadening failures elsewhere?",
-          "rationale": "T1 failures are localized to a negative-angle sector with reduced joint-limit margin and somewhat higher speed, while T3 showed that 50% sector oversampling is behavior-unsafe and left high speed and interruptions unresolved. The competing explanations are therefore residual-momentum/stop-control failure versus geometry-sensitive posture or trajectory exposure. A single full-distribution, stabilization-focused intervention that retains T1 as its behavioral parent and is measured on both the shared panel and matched diagnostic directly separates those explanations without repeating the rejected sampling recipe.",
-          "reframes": []
-        }
-      },
-      "result": {
-        "action": "open",
-        "inquiry_id": "I3",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E10",
-    "inquiry_id": null,
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "open",
-        "closure_condition": "Evaluate the resulting candidate on the shared 160-episode research panel and the established 40-case matched sector/control diagnostic. Treat stabilization as supported only if sector success and shared-panel success improve over the T1 baseline, entry and terminal endpoint/joint velocity and hold interruptions decrease in the exposed sector, and the control sector does not materially regress. Treat it as unresolved or refuted if the panel regresses broadly, interruptions remain high despite lower velocity, or joint-limit margins remain the dominant separator without meaningful success recovery.",
-        "goal_connection": "Closing this distinction is necessary to move the established 94.375% research result toward the human requirement of at least 98% complete uninterrupted holds. A positive result would justify pursuing stabilization as the next route to the missing successes; a negative result would redirect effort to a geometry-sensitive posture or trajectory intervention rather than more generic coverage.",
-        "question": "Can one stabilization-focused policy redesign, trained on the official full-radius and uniform-angle target distribution while preserving the T1 reach behavior, reduce high-speed entry and uninterrupted-hold interruptions in the exposed -151 to -119 degree sector without broadening failures elsewhere?",
-        "rationale": "T1 failures are localized to a negative-angle sector with reduced joint-limit margin and somewhat higher speed, while T3 showed that 50% sector oversampling is behavior-unsafe and left high speed and interruptions unresolved. The competing explanations are therefore residual-momentum/stop-control failure versus geometry-sensitive posture or trajectory exposure. A single full-distribution, stabilization-focused intervention that retains T1 as its behavioral parent and is measured on both the shared panel and matched diagnostic directly separates those explanations without repeating the rejected sampling recipe."
-      }
-    },
-    "request_fingerprint": "03cd2f5b7565de08fba9a4d768f7e896304ffaa30ff20ce9b75600f80801fb21",
-    "session_id": "S6",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "No working, best-known, or retained candidate role is assigned. T1:checkpoint-100352 and T1:checkpoint-120832 remain tied at 151/160 and are not evidence of goal attainment. T3:checkpoint-115712 and T3:checkpoint-120832 are not role candidates because their measured success was 47.5% and 35.625%, respectively.",
     "completed_operations": [
