@@ -1,5 +1,13 @@
 {
-  "active_inquiry": null,
+  "active_inquiry": {
+    "closure_condition": "Close after at most one 120000-step inquiry training intervention and one matched development measurement when per-episode diagnostics classify the baseline failure seeds by first reach, maximum uninterrupted hold, and interruptions, and the result establishes whether the intervention improves the implicated sector without a material regression outside it. If the intervention does not produce a mechanism-specific improvement, close the inquiry as a null result and redirect based on the measured failure class.",
+    "goal_connection": "The human goal requires at least 196 successes in the official 200-episode panel. M1 measured 151/160 successes for both checkpoints, with all nine shared failures in the -155 to -115 degree sector, 9/28 failures inside that sector versus 0/132 outside, and failed radii spanning approximately 7.7 to 18.8 cm. Resolving whether this is directional control coverage or a reach-and-hold dynamics problem identifies the intervention most likely to close the 98% gap without trading failures into other geometries.",
+    "id": "I1",
+    "opened_in_session": "S2",
+    "question": "What mechanism causes the baseline's nine held-out failures, and can one bounded intervention aimed at the -155 to -115 degree directional sector improve complete-hold reliability without sacrificing the rest of the official annulus: a directional or IK-branch control blind spot, or transit/braking and late-hold instability within that sector?",
+    "rationale": "The raw M1 diagnostics, beyond the structure-only inventory, show the same nine failure seeds for the peak and terminal checkpoints. In the peak checkpoint, six of nine failures never reach tolerance and three reach it but hold for only 1-2 steps; the terminal checkpoint has the same geometric failure set, with two of those three reaching before interruption. The failures are concentrated at angles -150.6 to -118.8 degrees and are distributed across inner, middle, and outer radii, while every sampled episode outside the -155 to -115 degree sector succeeds. This makes omitted inner-radius coverage alone an insufficient explanation, but does not yet distinguish directional/branch selection from sector-specific braking or stabilization. The inquiry is bounded to one goal-linked intervention and matched diagnostic evaluation before any official assessment decision.",
+    "reframes": []
+  },
   "campaign": {
     "base_commit": "2971ccb0ae670523e5f5c68463bd3ddb89ae4dab",
     "id": "d527f78d-fdc5-4b9d-a8f3-3b458c97ece5",
@@ -830,16 +838,16 @@
     }
   },
   "counters": {
-    "event": 1,
-    "inquiry": 0,
+    "event": 2,
+    "inquiry": 1,
     "measurement": 1,
-    "session": 1,
+    "session": 2,
     "training": 1
   },
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -1508,9 +1516,69 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-05T14:22:59Z",
+      "error": null,
+      "id": "E2",
+      "inquiry_id": "I1",
+      "kind": "inquiry",
+      "request": {
+        "action": "open",
+        "closure_condition": "Close after at most one 120000-step inquiry training intervention and one matched development measurement when per-episode diagnostics classify the baseline failure seeds by first reach, maximum uninterrupted hold, and interruptions, and the result establishes whether the intervention improves the implicated sector without a material regression outside it. If the intervention does not produce a mechanism-specific improvement, close the inquiry as a null result and redirect based on the measured failure class.",
+        "goal_connection": "The human goal requires at least 196 successes in the official 200-episode panel. M1 measured 151/160 successes for both checkpoints, with all nine shared failures in the -155 to -115 degree sector, 9/28 failures inside that sector versus 0/132 outside, and failed radii spanning approximately 7.7 to 18.8 cm. Resolving whether this is directional control coverage or a reach-and-hold dynamics problem identifies the intervention most likely to close the 98% gap without trading failures into other geometries.",
+        "question": "What mechanism causes the baseline's nine held-out failures, and can one bounded intervention aimed at the -155 to -115 degree directional sector improve complete-hold reliability without sacrificing the rest of the official annulus: a directional or IK-branch control blind spot, or transit/braking and late-hold instability within that sector?",
+        "rationale": "The raw M1 diagnostics, beyond the structure-only inventory, show the same nine failure seeds for the peak and terminal checkpoints. In the peak checkpoint, six of nine failures never reach tolerance and three reach it but hold for only 1-2 steps; the terminal checkpoint has the same geometric failure set, with two of those three reaching before interruption. The failures are concentrated at angles -150.6 to -118.8 degrees and are distributed across inner, middle, and outer radii, while every sampled episode outside the -155 to -115 degree sector succeeds. This makes omitted inner-radius coverage alone an insufficient explanation, but does not yet distinguish directional/branch selection from sector-specific braking or stabilization. The inquiry is bounded to one goal-linked intervention and matched diagnostic evaluation before any official assessment decision."
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I1",
+        "status": "completed"
+      },
+      "session_id": "S2",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "open",
+        "inquiry": {
+          "closure_condition": "Close after at most one 120000-step inquiry training intervention and one matched development measurement when per-episode diagnostics classify the baseline failure seeds by first reach, maximum uninterrupted hold, and interruptions, and the result establishes whether the intervention improves the implicated sector without a material regression outside it. If the intervention does not produce a mechanism-specific improvement, close the inquiry as a null result and redirect based on the measured failure class.",
+          "goal_connection": "The human goal requires at least 196 successes in the official 200-episode panel. M1 measured 151/160 successes for both checkpoints, with all nine shared failures in the -155 to -115 degree sector, 9/28 failures inside that sector versus 0/132 outside, and failed radii spanning approximately 7.7 to 18.8 cm. Resolving whether this is directional control coverage or a reach-and-hold dynamics problem identifies the intervention most likely to close the 98% gap without trading failures into other geometries.",
+          "id": "I1",
+          "opened_in_session": "S2",
+          "question": "What mechanism causes the baseline's nine held-out failures, and can one bounded intervention aimed at the -155 to -115 degree directional sector improve complete-hold reliability without sacrificing the rest of the official annulus: a directional or IK-branch control blind spot, or transit/braking and late-hold instability within that sector?",
+          "rationale": "The raw M1 diagnostics, beyond the structure-only inventory, show the same nine failure seeds for the peak and terminal checkpoints. In the peak checkpoint, six of nine failures never reach tolerance and three reach it but hold for only 1-2 steps; the terminal checkpoint has the same geometric failure set, with two of those three reaching before interruption. The failures are concentrated at angles -150.6 to -118.8 degrees and are distributed across inner, middle, and outer radii, while every sampled episode outside the -155 to -115 degree sector succeeds. This makes omitted inner-radius coverage alone an insufficient explanation, but does not yet distinguish directional/branch selection from sector-specific braking or stabilization. The inquiry is bounded to one goal-linked intervention and matched diagnostic evaluation before any official assessment decision.",
+          "reframes": []
+        }
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I1",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E2",
+    "inquiry_id": null,
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "open",
+        "closure_condition": "Close after at most one 120000-step inquiry training intervention and one matched development measurement when per-episode diagnostics classify the baseline failure seeds by first reach, maximum uninterrupted hold, and interruptions, and the result establishes whether the intervention improves the implicated sector without a material regression outside it. If the intervention does not produce a mechanism-specific improvement, close the inquiry as a null result and redirect based on the measured failure class.",
+        "goal_connection": "The human goal requires at least 196 successes in the official 200-episode panel. M1 measured 151/160 successes for both checkpoints, with all nine shared failures in the -155 to -115 degree sector, 9/28 failures inside that sector versus 0/132 outside, and failed radii spanning approximately 7.7 to 18.8 cm. Resolving whether this is directional control coverage or a reach-and-hold dynamics problem identifies the intervention most likely to close the 98% gap without trading failures into other geometries.",
+        "question": "What mechanism causes the baseline's nine held-out failures, and can one bounded intervention aimed at the -155 to -115 degree directional sector improve complete-hold reliability without sacrificing the rest of the official annulus: a directional or IK-branch control blind spot, or transit/braking and late-hold instability within that sector?",
+        "rationale": "The raw M1 diagnostics, beyond the structure-only inventory, show the same nine failure seeds for the peak and terminal checkpoints. In the peak checkpoint, six of nine failures never reach tolerance and three reach it but hold for only 1-2 steps; the terminal checkpoint has the same geometric failure set, with two of those three reaching before interruption. The failures are concentrated at angles -150.6 to -118.8 degrees and are distributed across inner, middle, and outer radii, while every sampled episode outside the -155 to -115 degree sector succeeds. This makes omitted inner-radius coverage alone an insufficient explanation, but does not yet distinguish directional/branch selection from sector-specific braking or stabilization. The inquiry is bounded to one goal-linked intervention and matched diagnostic evaluation before any official assessment decision."
+      }
+    },
+    "request_fingerprint": "76adb8e4b6107c3b70154e4b5d76415f7aafd4ebc5f648ba04ab52065ad86967",
+    "session_id": "S2",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No working, best-known, or retained role is assigned. T1:checkpoint-100352 and T1:checkpoint-120832 are empirically tied on the shared panel; neither is eligible for goal-directed promotion without failure attribution.",
     "completed_operations": [
@@ -1537,6 +1605,21 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "5fbae168-2682-4685-8f3f-4fc72440b2b9",
+    "id": "S2",
+    "inquiry_id": null,
+    "kind": "goal_review",
+    "objective": "Reassess the scientific direction toward the human goal using completed evidence. You may request measurements to resolve an uncertainty or develop the method before committing to an inquiry. Decide whether to request official assessment or open one bounded goal-linked inquiry.",
+    "operation_ids": [
+      "E2"
+    ],
+    "scientific_parent_commit": "90c4eacc71364642931776f59c5475a16965a7c1"
+  },
   "terminal_state": null
 }
