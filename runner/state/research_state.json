@@ -1877,38 +1877,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I1",
-        "outcome": "I1 is resolved in favor of a primarily pre-entry, target-angle-dependent directional reach and learned IK branch-coverage failure, with a secondary braking risk limited to the brief high-velocity entries.",
-        "reason": "M3 recorded the required joint trajectories, analytic branch feasibility under the +/-170 degree limits, conditioning, first-entry state and velocity, hold interruptions, and actuator saturation for nine negative-sector failures and matched successful controls. Every failure target had at least one feasible branch with finite, non-uniquely pathological conditioning, all matched mirrored-angle controls succeeded, and seven failures never entered tolerance. The two brief entries with approximately 0.825 m/s and 0.830 m/s entry speed establish a secondary braking risk, but the other brief entry was low-speed and the no-entry failures dominate the cluster. This discriminates the primary mechanism sufficiently to select a bounded intervention increasing negative-angle reach and feasible-branch coverage while preserving the official hold criterion."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I1",
-        "outcome": "I1 is resolved in favor of a primarily pre-entry, target-angle-dependent directional reach and learned IK branch-coverage failure, with a secondary braking risk limited to the brief high-velocity entries.",
-        "reason": "M3 recorded the required joint trajectories, analytic branch feasibility under the +/-170 degree limits, conditioning, first-entry state and velocity, hold interruptions, and actuator saturation for nine negative-sector failures and matched successful controls. Every failure target had at least one feasible branch with finite, non-uniquely pathological conditioning, all matched mirrored-angle controls succeeded, and seven failures never entered tolerance. The two brief entries with approximately 0.825 m/s and 0.830 m/s entry speed establish a secondary braking risk, but the other brief entry was low-speed and the no-entry failures dominate the cluster. This discriminates the primary mechanism sufficiently to select a bounded intervention increasing negative-angle reach and feasible-branch coverage while preserving the official hold criterion.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E6",
-    "inquiry_id": "I1",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "I1 is resolved in favor of a primarily pre-entry, target-angle-dependent directional reach and learned IK branch-coverage failure, with a secondary braking risk limited to the brief high-velocity entries.",
-        "reason": "M3 recorded the required joint trajectories, analytic branch feasibility under the +/-170 degree limits, conditioning, first-entry state and velocity, hold interruptions, and actuator saturation for nine negative-sector failures and matched successful controls. Every failure target had at least one feasible branch with finite, non-uniquely pathological conditioning, all matched mirrored-angle controls succeeded, and seven failures never entered tolerance. The two brief entries with approximately 0.825 m/s and 0.830 m/s entry speed establish a secondary braking risk, but the other brief entry was low-speed and the no-entry failures dominate the cluster. This discriminates the primary mechanism sufficiently to select a bounded intervention increasing negative-angle reach and feasible-branch coverage while preserving the official hold criterion."
-      }
-    },
-    "request_fingerprint": "b986fb325e648a1d44a8b236951521015df213ded58ef275628abee26cb8ed58",
-    "session_id": "S5",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "No working, best-known, or retained role is assigned. T1:checkpoint-100352 remains the strongest measured candidate at 94.375% on M1, while M3 is behavioral diagnosis rather than evidence that the candidate meets the human goal.",
     "completed_operations": [],
