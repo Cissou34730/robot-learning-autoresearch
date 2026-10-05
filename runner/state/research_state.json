@@ -180,7 +180,9 @@
     },
     "T1:checkpoint-120832": {
       "artifact": "campaigns/checkpoints/candidates/d5a9984a-1928-4627-9d33-477274fa583e/t1/checkpoint-120832",
-      "evaluation_artifacts": [],
+      "evaluation_artifacts": [
+        "campaigns/evaluations/d5a9984a-1928-4627-9d33-477274fa583e/evaluation-d5a9984a-1928-4627-9d33-477274fa583e-m1-T1-checkpoint-120832-160ep-seed4200-604d52985c97.json"
+      ],
       "fingerprint": "2ce20301df53b9ed620caa112b600310d57f81942ef267348c5702d75eb07b90",
       "id": "T1:checkpoint-120832",
       "name": "checkpoint-120832",
@@ -828,7 +830,7 @@
   "counters": {
     "event": 0,
     "inquiry": 0,
-    "measurement": 0,
+    "measurement": 1,
     "session": 1,
     "training": 1
   },
@@ -1051,9 +1053,397 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-05T15:50:13Z",
+      "error": null,
+      "id": "M1",
+      "inquiry_id": null,
+      "kind": "measurement",
+      "request": {
+        "description": "Evaluate the strongest late-training candidate on the held-out research panel with episode-level geometry and hold diagnostics.",
+        "measurements": [
+          {
+            "candidate": "T1:checkpoint-120832",
+            "episodes": 160,
+            "instrument": "research_evaluation",
+            "label": "T1-late-full-distribution-diagnostics",
+            "seed": 4200
+          }
+        ],
+        "rationale": "Training success reached 0.60 at T1:checkpoint-120832, but training statistics are not evidence under the official distribution or complete uninterrupted hold criterion. This measurement tests the candidate against the full 0.06-0.20 m radius range and records target geometry, first entry, maximum uninterrupted hold, interruptions, and final distance. Those observations discriminate whether the remaining goal gap is dominated by omitted-radius generalization, failure to reach, or failure to stabilize after reaching."
+      },
+      "result": {
+        "measurements": [
+          {
+            "candidate": "T1:checkpoint-120832",
+            "candidate_id": "T1:checkpoint-120832",
+            "instrument": "research_evaluation",
+            "label": "T1-late-full-distribution-diagnostics",
+            "metrics": {
+              "episodes": 160,
+              "evaluation_artifact": "campaigns/evaluations/d5a9984a-1928-4627-9d33-477274fa583e/evaluation-d5a9984a-1928-4627-9d33-477274fa583e-m1-T1-checkpoint-120832-160ep-seed4200-604d52985c97.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 8,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/model",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/seed",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/official_benchmark",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 160,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "reward_total",
+                      "steps",
+                      "success",
+                      "terminated",
+                      "truncated"
+                    ],
+                    "path": "/episode_results",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 160,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "final_distance_cm",
+                      "first_reach_step",
+                      "hold_interruptions",
+                      "in_tolerance_steps",
+                      "max_held_steps",
+                      "min_distance_cm",
+                      "target_angle_degrees",
+                      "target_radius_cm"
+                    ],
+                    "path": "/research_evidence/episode_diagnostics",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence/units",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/research_evidence/units/distance",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/time",
+                    "type": "string"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "80e31926663ab9a60c7e26eceaf861d6cafaf49e3629f9328fcbd6b43d880988",
+              "evaluation_semantics": "604d52985c97",
+              "model_fingerprint": "2ce20301df53b9ed620caa112b600310d57f81942ef267348c5702d75eb07b90",
+              "official_benchmark": false,
+              "schema_version": 5,
+              "seed": 4200,
+              "success_percent": 61.25,
+              "successes": 98
+            }
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": null
+      },
+      "session_id": "S1",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "evaluation_semantics": "604d52985c97",
+      "measurements": [
+        {
+          "artifact": "campaigns/checkpoints/candidates/d5a9984a-1928-4627-9d33-477274fa583e/t1/checkpoint-120832",
+          "candidate": "T1:checkpoint-120832",
+          "candidate_id": "T1:checkpoint-120832",
+          "episodes": 160,
+          "instrument": "research_evaluation",
+          "label": "T1-late-full-distribution-diagnostics",
+          "model_fingerprint": "2ce20301df53b9ed620caa112b600310d57f81942ef267348c5702d75eb07b90",
+          "seed": 4200
+        }
+      ],
+      "module_provenance": null,
+      "paired_comparisons": [],
+      "partial_results": [
+        {
+          "candidate": "T1:checkpoint-120832",
+          "candidate_id": "T1:checkpoint-120832",
+          "instrument": "research_evaluation",
+          "label": "T1-late-full-distribution-diagnostics",
+          "metrics": {
+            "episodes": 160,
+            "evaluation_artifact": "campaigns/evaluations/d5a9984a-1928-4627-9d33-477274fa583e/evaluation-d5a9984a-1928-4627-9d33-477274fa583e-m1-T1-checkpoint-120832-160ep-seed4200-604d52985c97.json",
+            "evaluation_artifact_contents": {
+              "scope": "structure_only",
+              "sections": [
+                {
+                  "entries": 8,
+                  "path": "",
+                  "type": "object"
+                },
+                {
+                  "path": "/schema_version",
+                  "type": "number"
+                },
+                {
+                  "path": "/model",
+                  "type": "string"
+                },
+                {
+                  "path": "/episodes",
+                  "type": "number"
+                },
+                {
+                  "path": "/seed",
+                  "type": "number"
+                },
+                {
+                  "path": "/official_benchmark",
+                  "type": "boolean"
+                },
+                {
+                  "path": "/success_percent",
+                  "type": "number"
+                },
+                {
+                  "entries": 160,
+                  "field_names": [
+                    "episode",
+                    "episode_seed",
+                    "reward_total",
+                    "steps",
+                    "success",
+                    "terminated",
+                    "truncated"
+                  ],
+                  "path": "/episode_results",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/research_evidence",
+                  "type": "object"
+                },
+                {
+                  "entries": 160,
+                  "field_names": [
+                    "episode",
+                    "episode_seed",
+                    "final_distance_cm",
+                    "first_reach_step",
+                    "hold_interruptions",
+                    "in_tolerance_steps",
+                    "max_held_steps",
+                    "min_distance_cm",
+                    "target_angle_degrees",
+                    "target_radius_cm"
+                  ],
+                  "path": "/research_evidence/episode_diagnostics",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/research_evidence/units",
+                  "type": "object"
+                },
+                {
+                  "path": "/research_evidence/units/distance",
+                  "type": "string"
+                },
+                {
+                  "path": "/research_evidence/units/time",
+                  "type": "string"
+                }
+              ],
+              "truncated": false
+            },
+            "evaluation_artifact_fingerprint": "80e31926663ab9a60c7e26eceaf861d6cafaf49e3629f9328fcbd6b43d880988",
+            "evaluation_semantics": "604d52985c97",
+            "model_fingerprint": "2ce20301df53b9ed620caa112b600310d57f81942ef267348c5702d75eb07b90",
+            "official_benchmark": false,
+            "schema_version": 5,
+            "seed": 4200,
+            "success_percent": 61.25,
+            "successes": 98
+          }
+        }
+      ],
+      "result": {
+        "measurements": [
+          {
+            "candidate": "T1:checkpoint-120832",
+            "candidate_id": "T1:checkpoint-120832",
+            "instrument": "research_evaluation",
+            "label": "T1-late-full-distribution-diagnostics",
+            "metrics": {
+              "episodes": 160,
+              "evaluation_artifact": "campaigns/evaluations/d5a9984a-1928-4627-9d33-477274fa583e/evaluation-d5a9984a-1928-4627-9d33-477274fa583e-m1-T1-checkpoint-120832-160ep-seed4200-604d52985c97.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 8,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/model",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/seed",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/official_benchmark",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 160,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "reward_total",
+                      "steps",
+                      "success",
+                      "terminated",
+                      "truncated"
+                    ],
+                    "path": "/episode_results",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 160,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "final_distance_cm",
+                      "first_reach_step",
+                      "hold_interruptions",
+                      "in_tolerance_steps",
+                      "max_held_steps",
+                      "min_distance_cm",
+                      "target_angle_degrees",
+                      "target_radius_cm"
+                    ],
+                    "path": "/research_evidence/episode_diagnostics",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence/units",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/research_evidence/units/distance",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/time",
+                    "type": "string"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "80e31926663ab9a60c7e26eceaf861d6cafaf49e3629f9328fcbd6b43d880988",
+              "evaluation_semantics": "604d52985c97",
+              "model_fingerprint": "2ce20301df53b9ed620caa112b600310d57f81942ef267348c5702d75eb07b90",
+              "official_benchmark": false,
+              "schema_version": 5,
+              "seed": 4200,
+              "success_percent": 61.25,
+              "successes": 98
+            }
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": null
+      },
+      "task_reference_contract": null
+    },
+    "failure": null,
+    "id": "M1",
+    "inquiry_id": null,
+    "kind": "measurement",
+    "progress": "completed",
+    "request": {
+      "measurement": {
+        "description": "Evaluate the strongest late-training candidate on the held-out research panel with episode-level geometry and hold diagnostics.",
+        "measurements": [
+          {
+            "candidate": "T1:checkpoint-120832",
+            "episodes": 160,
+            "instrument": "research_evaluation",
+            "label": "T1-late-full-distribution-diagnostics",
+            "seed": 4200
+          }
+        ],
+        "rationale": "Training success reached 0.60 at T1:checkpoint-120832, but training statistics are not evidence under the official distribution or complete uninterrupted hold criterion. This measurement tests the candidate against the full 0.06-0.20 m radius range and records target geometry, first entry, maximum uninterrupted hold, interruptions, and final distance. Those observations discriminate whether the remaining goal gap is dominated by omitted-radius generalization, failure to reach, or failure to stabilize after reaching."
+      }
+    },
+    "request_fingerprint": "64b44dc5641904d83c2c3597da6d90910932f9149ef9eebd2c218205209cff95",
+    "session_id": "S1",
+    "supersedes": null
+  },
   "pi_checkpoint": null,
   "schema_version": 6,
   "scientific_model": {
@@ -1073,7 +1463,8 @@
     "kind": "startup",
     "objective": "Establish the most credible initial scientific direction toward the human goal from the scientific model and available evidence. Use scientific work in this session to establish or refine that direction, including building or adapting reusable scientific tools and PI-owned methods where needed. These capabilities can support subsequent inquiries. Choose the first useful scientific action and explain why it advances the direction. Preserve the work actually performed, resulting understanding, remaining uncertainties and chosen next action in the scientific session record.",
     "operation_ids": [
-      "T1"
+      "T1",
+      "M1"
     ],
     "scientific_parent_commit": "99c247f0fc01f8740feaeba1b8c7f4cfb0f379dc"
   },
