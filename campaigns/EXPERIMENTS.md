@@ -10,3 +10,4 @@
 | M2 | measurement | I1 | failed |
 | M3 | measurement | I1 | completed |
 | E4 | checkpoint | I1 | checkpointed |
+| E5 | checkpoint | I1 | checkpointed |
