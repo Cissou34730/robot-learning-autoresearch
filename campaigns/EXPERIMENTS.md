@@ -15,3 +15,4 @@
 | T2 | training | I2 | failed |
 | T3 | training | I2 | completed |
 | M3 | measurement | I2 | completed |
+| E8 | inquiry | I2 | completed |
