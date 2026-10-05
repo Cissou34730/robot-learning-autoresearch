@@ -841,8 +841,8 @@
     "event": 7,
     "inquiry": 2,
     "measurement": 2,
-    "session": 4,
-    "training": 1
+    "session": 5,
+    "training": 3
   },
   "human_goal": {
     "source": "contracts/scenario.md"
@@ -2050,9 +2050,91 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-05T21:28:03Z",
+      "error": "ruff failed:\nI001 [*] Import block is un-sorted or un-formatted\n  --> robot_learning\\training\\environment.py:10:1\n   |\n 8 |   \"\"\"\n 9 |\n10 | / import numpy as np\n11 | | import gymnasium as gym\n12 | |\n13 | | from robot_learning.scenario.environment import TwoJointArmReachEnv\n   | |___________________________________________________________________^\n14 |\n15 |   TRAINING_TARGET_RADIUS_RANGE = (0.06, 0.20)\n   |\nhelp: Organize imports\n   |\n9  |\n10 + import gymnasium as gym\n11 | import numpy as np\n   - import gymnasium as gym\n12 |\n   |\n\nFound 1 error.\n[*] 1 fixable with the `--fix` option.\n\n",
+      "id": "T2",
+      "inquiry_id": "I2",
+      "kind": "training",
+      "request": {
+        "description": "Train a fresh PPO policy on the full official 0.06-0.20 m radius range with 50% of target angles sampled from the observed -151 to -119 degree failure sector and the remainder sampled uniformly over the full angular range.",
+        "initialization": "fresh",
+        "rationale": "I2 identifies the unresolved goal-linked distinction as coverage recovery versus persistent stabilization failure. M2 and E4 localized the failures to -151 to -119 degrees with reduced joint-limit margins, while branch identity, conditioning, and saturation did not separate failures from controls. This fresh 120000-step intervention changes only the training target distribution: it adds the previously absent 0.06-0.14 m radii and deliberately oversamples the exposed negative-angle sector, while preserving the official hold mechanics and reward. A subsequent shared research evaluation must compare success geography, entry and terminal joint-limit margins, velocity, and hold interruptions with the existing panel; persistent velocity or interruption failures will redirect I2 to stabilization.",
+        "seed": 1,
+        "steps": 120000
+      },
+      "result": {
+        "error": "ruff failed:\nI001 [*] Import block is un-sorted or un-formatted\n  --> robot_learning\\training\\environment.py:10:1\n   |\n 8 |   \"\"\"\n 9 |\n10 | / import numpy as np\n11 | | import gymnasium as gym\n12 | |\n13 | | from robot_learning.scenario.environment import TwoJointArmReachEnv\n   | |___________________________________________________________________^\n14 |\n15 |   TRAINING_TARGET_RADIUS_RANGE = (0.06, 0.20)\n   |\nhelp: Organize imports\n   |\n9  |\n10 + import gymnasium as gym\n11 | import numpy as np\n   - import gymnasium as gym\n12 |\n   |\n\nFound 1 error.\n[*] 1 fixable with the `--fix` option.\n\n",
+        "status": "failed"
+      },
+      "session_id": "S5",
+      "status": "failed",
+      "superseded_by": "T3",
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "archived_candidates": null,
+      "candidate_dir": null,
+      "code_parent_commit": "1e2dc74eb2d8ec2d3742f16c7df4e40ec4eb1637",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "parent": null,
+      "result": null,
+      "scientific_commit": null,
+      "scientific_manifest": [
+        {
+          "exists": true,
+          "fingerprint": "6ff891121bd99c65b0f5be9033894506ee4b6811eb0235bab6f0e1166b83834d",
+          "path": "robot_learning/training/environment.py"
+        }
+      ],
+      "scientific_paths": [
+        "robot_learning/training/environment.py"
+      ]
+    },
+    "failure": null,
+    "id": "T3",
+    "inquiry_id": "I2",
+    "kind": "training",
+    "progress": "accepted",
+    "request": {
+      "training": {
+        "description": "Train a fresh PPO policy on the full official 0.06-0.20 m radius range with 50% of target angles sampled from the observed -151 to -119 degree failure sector and the remainder sampled uniformly over the full angular range.",
+        "initialization": "fresh",
+        "rationale": "I2 identifies the unresolved goal-linked distinction as coverage recovery versus persistent stabilization failure. M2 and E4 localized the failures to -151 to -119 degrees with reduced joint-limit margins, while branch identity, conditioning, and saturation did not separate failures from controls. This fresh 120000-step intervention changes only the training target distribution: it adds the previously absent 0.06-0.14 m radii and deliberately oversamples the exposed negative-angle sector, while preserving the official hold mechanics and reward. A subsequent shared research evaluation must compare success geography, entry and terminal joint-limit margins, velocity, and hold interruptions with the existing panel; persistent velocity or interruption failures will redirect I2 to stabilization.",
+        "seed": 1,
+        "steps": 120000
+      }
+    },
+    "request_fingerprint": "104019bdf3ae85b57f3818281d46a9adea2107dc3db1b21337194c63000a2984",
+    "session_id": "S5",
+    "supersedes": "T2"
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No working, best-known, or retained candidate role is assigned. T1:checkpoint-100352 and T1:checkpoint-120832 remain tied at 151/160 and are not evidence of goal attainment.",
     "completed_operations": [
@@ -2082,6 +2164,19 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "601992fc-2d2f-417a-86f7-3aba7e44475b",
+    "id": "S5",
+    "inquiry_id": "I2",
+    "kind": "inquiry",
+    "objective": "Advance I2 toward an evidence-supported answer to its scientific question: Does a 120000-step policy trained on the full official radius range with deliberately enriched exposure to the observed negative-angle joint-limit sector recover the localized failures without causing broader settling or uninterrupted-hold failures?",
+    "operation_ids": [],
+    "scientific_parent_commit": "1e2dc74eb2d8ec2d3742f16c7df4e40ec4eb1637"
+  },
   "terminal_state": null
 }
