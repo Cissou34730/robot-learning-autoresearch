@@ -1,5 +1,13 @@
 {
-  "active_inquiry": null,
+  "active_inquiry": {
+    "closure_condition": "Close after one 120000-step fresh baseline training run and development evaluation with per-episode first-entry, longest-hold, interruption, truncation, and target-radius/angle diagnostics have established whether the baseline is adequate or which failure mechanism must determine the next bounded intervention.",
+    "goal_connection": "The human goal requires at least 98% complete uninterrupted holds. Establishing a reproducible baseline under the current setup is the shortest direct test of whether the existing method can produce a candidate, while the hold-sensitive diagnostics distinguish late regulation failures from broad reach failures before any intervention is chosen.",
+    "id": "I1",
+    "opened_in_session": "S2",
+    "question": "Can the current target-conditioned PPO observation, motor-action interface, reward, and full official target distribution learn both the reach and the low-velocity regulation required for uninterrupted 100-step holds, or do failures arise broadly before hold entry and therefore require a different reach-acquisition method?",
+    "rationale": "M2 established that settled configurations are physically stable but actuator-driven transients can quickly exit the 1 cm boundary, especially at larger radii. It did not test a learned approach, braking, branch coverage, or robustness across the task distribution. No candidate exists, so official assessment is not justified; a baseline inquiry is required to discriminate learnability of the existing reach-to-regulation method from the need to change training distribution, reward, or control representation.",
+    "reframes": []
+  },
   "campaign": {
     "base_commit": "756ae4bd23eff8c2eef39edfcc7deccf5ef440ce",
     "id": "edc16754-3f16-45b9-bd0b-faea041c3db5",
@@ -9,16 +17,16 @@
   },
   "candidates": {},
   "counters": {
-    "event": 1,
-    "inquiry": 0,
+    "event": 2,
+    "inquiry": 1,
     "measurement": 2,
-    "session": 1,
+    "session": 2,
     "training": 0
   },
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -303,9 +311,69 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-05T12:56:42Z",
+      "error": null,
+      "id": "E2",
+      "inquiry_id": "I1",
+      "kind": "inquiry",
+      "request": {
+        "action": "open",
+        "closure_condition": "Close after one 120000-step fresh baseline training run and development evaluation with per-episode first-entry, longest-hold, interruption, truncation, and target-radius/angle diagnostics have established whether the baseline is adequate or which failure mechanism must determine the next bounded intervention.",
+        "goal_connection": "The human goal requires at least 98% complete uninterrupted holds. Establishing a reproducible baseline under the current setup is the shortest direct test of whether the existing method can produce a candidate, while the hold-sensitive diagnostics distinguish late regulation failures from broad reach failures before any intervention is chosen.",
+        "question": "Can the current target-conditioned PPO observation, motor-action interface, reward, and full official target distribution learn both the reach and the low-velocity regulation required for uninterrupted 100-step holds, or do failures arise broadly before hold entry and therefore require a different reach-acquisition method?",
+        "rationale": "M2 established that settled configurations are physically stable but actuator-driven transients can quickly exit the 1 cm boundary, especially at larger radii. It did not test a learned approach, braking, branch coverage, or robustness across the task distribution. No candidate exists, so official assessment is not justified; a baseline inquiry is required to discriminate learnability of the existing reach-to-regulation method from the need to change training distribution, reward, or control representation."
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I1",
+        "status": "completed"
+      },
+      "session_id": "S2",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "open",
+        "inquiry": {
+          "closure_condition": "Close after one 120000-step fresh baseline training run and development evaluation with per-episode first-entry, longest-hold, interruption, truncation, and target-radius/angle diagnostics have established whether the baseline is adequate or which failure mechanism must determine the next bounded intervention.",
+          "goal_connection": "The human goal requires at least 98% complete uninterrupted holds. Establishing a reproducible baseline under the current setup is the shortest direct test of whether the existing method can produce a candidate, while the hold-sensitive diagnostics distinguish late regulation failures from broad reach failures before any intervention is chosen.",
+          "id": "I1",
+          "opened_in_session": "S2",
+          "question": "Can the current target-conditioned PPO observation, motor-action interface, reward, and full official target distribution learn both the reach and the low-velocity regulation required for uninterrupted 100-step holds, or do failures arise broadly before hold entry and therefore require a different reach-acquisition method?",
+          "rationale": "M2 established that settled configurations are physically stable but actuator-driven transients can quickly exit the 1 cm boundary, especially at larger radii. It did not test a learned approach, braking, branch coverage, or robustness across the task distribution. No candidate exists, so official assessment is not justified; a baseline inquiry is required to discriminate learnability of the existing reach-to-regulation method from the need to change training distribution, reward, or control representation.",
+          "reframes": []
+        }
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I1",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E2",
+    "inquiry_id": null,
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "open",
+        "closure_condition": "Close after one 120000-step fresh baseline training run and development evaluation with per-episode first-entry, longest-hold, interruption, truncation, and target-radius/angle diagnostics have established whether the baseline is adequate or which failure mechanism must determine the next bounded intervention.",
+        "goal_connection": "The human goal requires at least 98% complete uninterrupted holds. Establishing a reproducible baseline under the current setup is the shortest direct test of whether the existing method can produce a candidate, while the hold-sensitive diagnostics distinguish late regulation failures from broad reach failures before any intervention is chosen.",
+        "question": "Can the current target-conditioned PPO observation, motor-action interface, reward, and full official target distribution learn both the reach and the low-velocity regulation required for uninterrupted 100-step holds, or do failures arise broadly before hold entry and therefore require a different reach-acquisition method?",
+        "rationale": "M2 established that settled configurations are physically stable but actuator-driven transients can quickly exit the 1 cm boundary, especially at larger radii. It did not test a learned approach, braking, branch coverage, or robustness across the task distribution. No candidate exists, so official assessment is not justified; a baseline inquiry is required to discriminate learnability of the existing reach-to-regulation method from the need to change training distribution, reward, or control representation."
+      }
+    },
+    "request_fingerprint": "629cebd9b05c172b39904be7be945103b68da2f50450cb2078ce1d523cfae52a",
+    "session_id": "S2",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No training candidate exists. Working, best-known, and retained roles remain unassigned.",
     "completed_operations": [
@@ -330,6 +398,21 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "df28c076-af6f-4f53-9d36-9c4fed9b2b77",
+    "id": "S2",
+    "inquiry_id": null,
+    "kind": "goal_review",
+    "objective": "Reassess the scientific direction toward the human goal using completed evidence. You may request measurements to resolve an uncertainty or develop the method before committing to an inquiry. Decide whether to request official assessment or open one bounded goal-linked inquiry.",
+    "operation_ids": [
+      "E2"
+    ],
+    "scientific_parent_commit": "b0b1acd1547b1bab1c26f2edb58d0ccc6fe33d80"
+  },
   "terminal_state": null
 }
