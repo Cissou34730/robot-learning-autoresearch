@@ -165,6 +165,21 @@ def test_committed_human_harness_delta_does_not_block_scientific_operation(
     assert pending["data"]["scientific_paths"] == []
 
 
+def test_runner_state_mutation_is_not_a_scientific_delta(monkeypatch):
+    monkeypatch.setattr(repository, "committed_change_paths", lambda _parent: [])
+    monkeypatch.setattr(
+        repository,
+        "status_paths",
+        lambda _scope: [
+            "runner/state/research_state.json",
+            "pi_workspace/operation_request.json",
+            "runner/run_experiment.py",
+        ],
+    )
+
+    assert repository.scientific_delta("parent") == ["runner/run_experiment.py"]
+
+
 def test_uncommitted_human_harness_delta_still_blocks_scientific_operation(
     monkeypatch,
 ):

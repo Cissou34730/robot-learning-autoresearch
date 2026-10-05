@@ -357,8 +357,7 @@ def scientific_delta(parent: str) -> list[str]:
     uncommitted = [
         path
         for path in status_paths((".",))
-        if not protocol.is_campaign_lab(path)
-        and (not is_runner_owned(path) or protocol.is_human_owned(path))
+        if not protocol.is_campaign_lab(path) and not is_runner_owned(path)
     ]
     return list(dict.fromkeys([*committed_science, *uncommitted]))
 

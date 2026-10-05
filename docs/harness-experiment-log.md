@@ -1872,3 +1872,18 @@ separate from harness changes so their outcomes are not conflated.
 - **Boundary:** no lifecycle transition, operation permission, scientific
   choice, campaign state, training, evaluation or Runner judgment changed.
 - **Disposition:** retained as a PI-context and validator-alignment correction.
+
+## 2026-10-05: exclude active Runner state from scientific deltas
+
+- **Problem:** the ownership refactor moved campaign state under the wholly
+  human-owned `runner/` prefix while retaining an older scientific-delta
+  predicate that re-included Runner-owned paths when they were also
+  human-owned. Starting any bounded session therefore made the Runner's own
+  uncommitted state update appear as an invalid PI scientific change.
+- **Correction:** exclude Runner control and memory paths unconditionally from
+  scientific deltas. Uncommitted Runner source and every other human-owned path
+  remain rejected.
+- **Boundary:** no operation permission, lifecycle transition, scientific
+  implementation, campaign state, training, evaluation or Runner judgment
+  changed.
+- **Disposition:** retained as an ownership-refactor regression correction.
