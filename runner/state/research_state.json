@@ -838,7 +838,7 @@
     }
   },
   "counters": {
-    "event": 6,
+    "event": 7,
     "inquiry": 2,
     "measurement": 2,
     "session": 4,
@@ -847,7 +847,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -2015,31 +2015,161 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-05T21:23:22Z",
+      "error": null,
+      "id": "E7",
+      "inquiry_id": null,
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "No working, best-known, or retained candidate role is assigned. T1:checkpoint-100352 and T1:checkpoint-120832 remain tied at 151/160 and are not evidence of goal attainment.",
+        "completed_operations": [
+          "E6"
+        ],
+        "cumulative_resource_use": "One fresh T1 run used the 120000-step allocation and completed 120832 simulator steps through rollout rounding. M1 evaluated two candidates on a shared 160-episode panel. M2 replayed that panel and ran a 40-case matched diagnostic. E4 resolved I1 without training allocation. E6 opened I2 without training allocation. No policy role is assigned and no official assessment has been requested.",
+        "current_goal_gap": "The best measured candidates remain tied at 151/160 successes (94.375%), with no working or best-known role assigned and no protected official assessment. The nine shared failures cluster near -151 to -119 degrees and include both failures to enter tolerance and very short holds.",
+        "current_synthesis": "T1 learned complete holds on the restricted 0.14-0.20 m distribution. M1 found identical outcomes and identical failures for the 100352- and 120832-step candidates. M2 and E4 showed 15/20 success in the exposed negative-angle sector versus 20/20 matched controls, with much smaller entry joint-limit margins and somewhat higher speeds, while elbow-positive branch identity, Jacobian conditioning, and action saturation were comparable. The supported interpretation is that missing angular and radial coverage, with joint-limit exposure as the primary mechanism, is more consequential than branch identity or generic stabilization. This remains directional: velocity and hold interruption are coupled secondary risks because the low-velocity criterion was not reached, and the evidence does not establish that coverage alone will reach 98%.",
+        "decision_frontier": "The unresolved goal-linked distinction is whether the localized failures are recoverable through experience coverage or whether persistent velocity and hold interruptions require a stabilization redesign. The discriminating intervention is one 120000-step run that expands target radii to the official 0.06-0.20 m range and enriches the observed negative-angle sector without changing official hold mechanics; a shared research evaluation must compare success, failure geography, entry/terminal joint-limit margins, velocity, and interruptions against the existing panel.",
+        "evidence_references": [
+          "T1",
+          "M1",
+          "E2",
+          "M2",
+          "E4",
+          "E6"
+        ],
+        "human_goal_connection": "The objective is at least 196 complete uninterrupted 100-step holds in the protected 200-episode assessment. The current candidates achieve 151/160 on the research panel, so official assessment is not justified. I2 tests the most supported route to recover the localized geometry-sensitive failures.",
+        "next_direction_or_closure": "I2 is opened and this goal-review session is complete. In the fresh inquiry session, change only the PI-owned training target distribution and sampling recipe needed for official radial support and negative-angle exposure, then request the full 120000-step training allocation. Evaluate the resulting candidates on a shared research panel before considering official assessment; redirect to stabilization only if coverage-corrected policies retain velocity or uninterrupted-hold failures."
+      },
+      "result": {
+        "session_id": "S4",
+        "status": "checkpointed"
+      },
+      "session_id": "S4",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "60cb35ae2840e740773a8e72101eef2bd44223bc",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "No working, best-known, or retained candidate role is assigned. T1:checkpoint-100352 and T1:checkpoint-120832 remain tied at 151/160 and are not evidence of goal attainment.",
+        "completed_operations": [
+          "E6"
+        ],
+        "cumulative_resource_use": "One fresh T1 run used the 120000-step allocation and completed 120832 simulator steps through rollout rounding. M1 evaluated two candidates on a shared 160-episode panel. M2 replayed that panel and ran a 40-case matched diagnostic. E4 resolved I1 without training allocation. E6 opened I2 without training allocation. No policy role is assigned and no official assessment has been requested.",
+        "current_goal_gap": "The best measured candidates remain tied at 151/160 successes (94.375%), with no working or best-known role assigned and no protected official assessment. The nine shared failures cluster near -151 to -119 degrees and include both failures to enter tolerance and very short holds.",
+        "current_synthesis": "T1 learned complete holds on the restricted 0.14-0.20 m distribution. M1 found identical outcomes and identical failures for the 100352- and 120832-step candidates. M2 and E4 showed 15/20 success in the exposed negative-angle sector versus 20/20 matched controls, with much smaller entry joint-limit margins and somewhat higher speeds, while elbow-positive branch identity, Jacobian conditioning, and action saturation were comparable. The supported interpretation is that missing angular and radial coverage, with joint-limit exposure as the primary mechanism, is more consequential than branch identity or generic stabilization. This remains directional: velocity and hold interruption are coupled secondary risks because the low-velocity criterion was not reached, and the evidence does not establish that coverage alone will reach 98%.",
+        "decision_frontier": "The unresolved goal-linked distinction is whether the localized failures are recoverable through experience coverage or whether persistent velocity and hold interruptions require a stabilization redesign. The discriminating intervention is one 120000-step run that expands target radii to the official 0.06-0.20 m range and enriches the observed negative-angle sector without changing official hold mechanics; a shared research evaluation must compare success, failure geography, entry/terminal joint-limit margins, velocity, and interruptions against the existing panel.",
+        "evidence_references": [
+          "T1",
+          "M1",
+          "E2",
+          "M2",
+          "E4",
+          "E6"
+        ],
+        "human_goal_connection": "The objective is at least 196 complete uninterrupted 100-step holds in the protected 200-episode assessment. The current candidates achieve 151/160 on the research panel, so official assessment is not justified. I2 tests the most supported route to recover the localized geometry-sensitive failures.",
+        "inquiry_id": null,
+        "next_direction_or_closure": "I2 is opened and this goal-review session is complete. In the fresh inquiry session, change only the PI-owned training target distribution and sampling recipe needed for official radial support and negative-angle exposure, then request the full 120000-step training allocation. Evaluate the resulting candidates on a shared research panel before considering official assessment; redirect to stabilization only if coverage-corrected policies retain velocity or uninterrupted-hold failures.",
+        "session_id": "S4"
+      },
+      "presentation": {
+        "backend_session_id": "8f42cefa-9fb1-4aba-9acd-eed7cde872af",
+        "campaign_id": "3d0d131d-3cb5-41fc-8c57-64e7521b3051",
+        "campaign_usage": "14m20s | 32.33 AIU | prompt 5.4m (87% cached) | output 50.2k",
+        "session_id": "S4",
+        "session_kind": "goal_review",
+        "session_usage": "1m13s | 2.52 AIU | prompt 315.8k (79% cached) | output 3.3k"
+      },
+      "result": {
+        "session_id": "S4",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "392066a97487a747c9876a320745c9c9d1f9eea7",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E7",
+    "inquiry_id": null,
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "No working, best-known, or retained candidate role is assigned. T1:checkpoint-100352 and T1:checkpoint-120832 remain tied at 151/160 and are not evidence of goal attainment.",
+        "completed_operations": [
+          "E6"
+        ],
+        "cumulative_resource_use": "One fresh T1 run used the 120000-step allocation and completed 120832 simulator steps through rollout rounding. M1 evaluated two candidates on a shared 160-episode panel. M2 replayed that panel and ran a 40-case matched diagnostic. E4 resolved I1 without training allocation. E6 opened I2 without training allocation. No policy role is assigned and no official assessment has been requested.",
+        "current_goal_gap": "The best measured candidates remain tied at 151/160 successes (94.375%), with no working or best-known role assigned and no protected official assessment. The nine shared failures cluster near -151 to -119 degrees and include both failures to enter tolerance and very short holds.",
+        "current_synthesis": "T1 learned complete holds on the restricted 0.14-0.20 m distribution. M1 found identical outcomes and identical failures for the 100352- and 120832-step candidates. M2 and E4 showed 15/20 success in the exposed negative-angle sector versus 20/20 matched controls, with much smaller entry joint-limit margins and somewhat higher speeds, while elbow-positive branch identity, Jacobian conditioning, and action saturation were comparable. The supported interpretation is that missing angular and radial coverage, with joint-limit exposure as the primary mechanism, is more consequential than branch identity or generic stabilization. This remains directional: velocity and hold interruption are coupled secondary risks because the low-velocity criterion was not reached, and the evidence does not establish that coverage alone will reach 98%.",
+        "decision_frontier": "The unresolved goal-linked distinction is whether the localized failures are recoverable through experience coverage or whether persistent velocity and hold interruptions require a stabilization redesign. The discriminating intervention is one 120000-step run that expands target radii to the official 0.06-0.20 m range and enriches the observed negative-angle sector without changing official hold mechanics; a shared research evaluation must compare success, failure geography, entry/terminal joint-limit margins, velocity, and interruptions against the existing panel.",
+        "evidence_references": [
+          "T1",
+          "M1",
+          "E2",
+          "M2",
+          "E4",
+          "E6"
+        ],
+        "human_goal_connection": "The objective is at least 196 complete uninterrupted 100-step holds in the protected 200-episode assessment. The current candidates achieve 151/160 on the research panel, so official assessment is not justified. I2 tests the most supported route to recover the localized geometry-sensitive failures.",
+        "next_direction_or_closure": "I2 is opened and this goal-review session is complete. In the fresh inquiry session, change only the PI-owned training target distribution and sampling recipe needed for official radial support and negative-angle exposure, then request the full 120000-step training allocation. Evaluate the resulting candidates on a shared research panel before considering official assessment; redirect to stabilization only if coverage-corrected policies retain velocity or uninterrupted-hold failures."
+      }
+    },
+    "request_fingerprint": "da67d088e61bda5bbeb6c74325631ef9b83a262f78826ebf5873a7d256ebd3ce",
+    "session_id": "S4",
+    "supersedes": null
+  },
   "pi_checkpoint": {
-    "candidates_and_roles": "No working, best-known, or retained role is assigned. T1:checkpoint-100352 and T1:checkpoint-120832 remain tied on M1's shared panel and are not goal-achieving evidence.",
+    "candidates_and_roles": "No working, best-known, or retained candidate role is assigned. T1:checkpoint-100352 and T1:checkpoint-120832 remain tied at 151/160 and are not evidence of goal attainment.",
     "completed_operations": [
-      "M2",
-      "E4"
+      "E6"
     ],
-    "cumulative_resource_use": "One fresh T1 training run was requested at the 120000-step allocation and completed 120832 simulator steps through rollout rounding. M1 evaluated two T1 candidates on one shared 160-episode research panel. M2 replayed that panel and ran a 40-case matched angular/radius diagnostic without training allocation. E4 closed I1 without training allocation. No policy role has been assigned and no official assessment has been requested.",
-    "current_goal_gap": "The best measured candidates remain tied at 151/160 successes on the research panel, with neither assessed on the protected 200-episode panel and no candidate role assigned. The nine shared failures span the official radius range but cluster near -151 to -119 degrees.",
-    "current_synthesis": "T1 learned complete holds on the restricted 0.14-0.20 m training distribution. M1 found identical outcomes for checkpoint-100352 and checkpoint-120832: 151/160 successes and the same nine failures, including six with no tolerance entry and three with only 1-2 held steps. M2 replayed the 160-seed panel and added a matched 40-case grid. Every measured case selected the elbow-positive branch at entry and terminal state, with no observed branch switching. The failing sector achieved 15/20 successes versus 20/20 for adjacent matched controls. Its mean minimum joint-limit margin at entry was about 0.12 rad versus 0.49 rad for controls; endpoint and joint speeds were somewhat higher, while Jacobian conditioning and action saturation were comparable. Thus E4 closes I1 in favor of angular/geometry coverage with joint-limit exposure as the primary goal-linked mechanism, not branch identity or generic stabilization. This is a supported directional conclusion, not proof that velocity is irrelevant: the low-velocity criterion was never reached and velocity remains a coupled secondary risk.",
-    "decision_frontier": "Select and test a single 120000-step intervention that expands training target support from 0.14-0.20 m to the official 0.06-0.20 m range and improves sampling of the exposed negative-angle sector, while preserving the official uninterrupted-hold objective. The next measurement must determine whether this coverage intervention closes the nine-failure gap without introducing broader settling failures; generic stabilization redesign remains a contingent follow-up only if velocity or hold interruptions persist after coverage is corrected.",
+    "cumulative_resource_use": "One fresh T1 run used the 120000-step allocation and completed 120832 simulator steps through rollout rounding. M1 evaluated two candidates on a shared 160-episode panel. M2 replayed that panel and ran a 40-case matched diagnostic. E4 resolved I1 without training allocation. E6 opened I2 without training allocation. No policy role is assigned and no official assessment has been requested.",
+    "current_goal_gap": "The best measured candidates remain tied at 151/160 successes (94.375%), with no working or best-known role assigned and no protected official assessment. The nine shared failures cluster near -151 to -119 degrees and include both failures to enter tolerance and very short holds.",
+    "current_synthesis": "T1 learned complete holds on the restricted 0.14-0.20 m distribution. M1 found identical outcomes and identical failures for the 100352- and 120832-step candidates. M2 and E4 showed 15/20 success in the exposed negative-angle sector versus 20/20 matched controls, with much smaller entry joint-limit margins and somewhat higher speeds, while elbow-positive branch identity, Jacobian conditioning, and action saturation were comparable. The supported interpretation is that missing angular and radial coverage, with joint-limit exposure as the primary mechanism, is more consequential than branch identity or generic stabilization. This remains directional: velocity and hold interruption are coupled secondary risks because the low-velocity criterion was not reached, and the evidence does not establish that coverage alone will reach 98%.",
+    "decision_frontier": "The unresolved goal-linked distinction is whether the localized failures are recoverable through experience coverage or whether persistent velocity and hold interruptions require a stabilization redesign. The discriminating intervention is one 120000-step run that expands target radii to the official 0.06-0.20 m range and enriches the observed negative-angle sector without changing official hold mechanics; a shared research evaluation must compare success, failure geography, entry/terminal joint-limit margins, velocity, and interruptions against the existing panel.",
     "evidence_references": [
       "T1",
       "M1",
       "E2",
       "M2",
-      "E4"
+      "E4",
+      "E6"
     ],
-    "human_goal_connection": "The human objective requires at least 196 complete uninterrupted 100-step holds in the protected 200-episode assessment. Current candidates reach 151/160 successes (94.375%) on the research panel, so the campaign remains 3.625 percentage points below the 98% target and is not ready for official assessment. Resolving I1 identifies the next intervention most likely to recover the localized failures.",
-    "inquiry_id": "I1",
-    "next_direction_or_closure": "I1 is closed. In the fresh session, modify only the PI-owned training distribution and related sampling recipe needed to expose the policy to the official 0.06-0.20 m radii and the negative-angle joint-limit sector, then request one full 120000-step training run. Evaluate the resulting candidates on a shared research panel before considering official assessment. Preserve velocity and hold metrics in follow-up evaluation; do not infer 98% readiness from the diagnostic alone.",
-    "scientific_commit": "17d0ca5fbefa157569de34538c1e70e9c68d430d",
-    "session_id": "S3"
+    "human_goal_connection": "The objective is at least 196 complete uninterrupted 100-step holds in the protected 200-episode assessment. The current candidates achieve 151/160 on the research panel, so official assessment is not justified. I2 tests the most supported route to recover the localized geometry-sensitive failures.",
+    "inquiry_id": null,
+    "next_direction_or_closure": "I2 is opened and this goal-review session is complete. In the fresh inquiry session, change only the PI-owned training target distribution and sampling recipe needed for official radial support and negative-angle exposure, then request the full 120000-step training allocation. Evaluate the resulting candidates on a shared research panel before considering official assessment; redirect to stabilization only if coverage-corrected policies retain velocity or uninterrupted-hold failures.",
+    "scientific_commit": "392066a97487a747c9876a320745c9c9d1f9eea7",
+    "session_id": "S4"
   },
   "schema_version": 6,
   "scientific_model": {
@@ -2047,21 +2177,6 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "8f42cefa-9fb1-4aba-9acd-eed7cde872af",
-    "id": "S4",
-    "inquiry_id": null,
-    "kind": "goal_review",
-    "objective": "Reassess the scientific direction toward the human goal using completed evidence. You may request measurements to resolve an uncertainty or develop the method before committing to an inquiry. Decide whether to request official assessment or open one bounded goal-linked inquiry.",
-    "operation_ids": [
-      "E6"
-    ],
-    "scientific_parent_commit": "60cb35ae2840e740773a8e72101eef2bd44223bc"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
