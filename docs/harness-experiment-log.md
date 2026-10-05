@@ -1828,3 +1828,19 @@ separate from harness changes so their outcomes are not conflated.
   rather than migrated.
 - **Disposition:** retained as a structural boundary correction; scientific
   effectiveness is not assessed.
+
+## 2026-10-05: port baseline-distinct-episodes recipe to split layout
+
+- **Problem:** the reusable `baseline-distinct-episodes-v2` tag described a
+  valid scientific recipe, but its source commit predated the ownership
+  restructure and therefore exposed the old `research/` and
+  `robot_learning/scenario/` paths to `RecipeRef` validation.
+- **Correction:** preserve the complete recipe delta under the current
+  `robot_learning/scenario/` and `robot_learning/training/` layout, including
+  the 11-value observation representation, closeness-potential reward and
+  0.14-0.20 m training distribution. Publish the current-layout recipe as
+  `baseline-distinct-episodes-v3`.
+- **Boundary:** no Runner behavior, human task contract, evaluation semantics,
+  training allocation, campaign state or campaign execution changed.
+- **Disposition:** retained as a recipe provenance and path-compatibility
+  correction; scientific effectiveness remains unassessed.
