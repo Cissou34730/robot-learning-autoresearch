@@ -19,10 +19,13 @@ CLOSENESS_LENGTH_SCALE = 0.05
 ACTION_COST_COEFFICIENT = 0.01
 HOLD_PROGRESS_BONUS = 50.0
 HOLD_PROGRESS_EXPONENT = 1.0
-HOLD_EXIT_FORFEIT_FRACTION = 0.0
+HOLD_EXIT_FORFEIT_FRACTION = 0.25
 OUTSIDE_BAND_WIDTH = 0.01
-OUTSIDE_BAND_PENALTY = 0.1
+OUTSIDE_BAND_PENALTY = 0.5
 HOLD_COMPLETE_BONUS = 50.0
+STABILIZATION_DISTANCE_SCALE = 0.02
+ENDPOINT_SPEED_COST_COEFFICIENT = 1.0
+JOINT_SPEED_COST_COEFFICIENT = 0.02
 
 
 @dataclass(frozen=True)
@@ -53,6 +56,8 @@ def reach_reward(
     previous_held_steps: int = 0,
     hold_steps_required: int = 100,
     penalize_outside: bool = False,
+    endpoint_speed: float = 0.0,
+    joint_speed: float = 0.0,
 ) -> RewardResult:
     progress = PROGRESS_COEFFICIENT * (previous_distance - current_distance)
     reward = progress
@@ -90,6 +95,21 @@ def reach_reward(
         hold_complete = HOLD_COMPLETE_BONUS
     reward += hold_complete
 
+    stabilization_weight = float(
+        np.exp(-current_distance / STABILIZATION_DISTANCE_SCALE)
+    )
+    endpoint_speed_cost = -(
+        ENDPOINT_SPEED_COST_COEFFICIENT
+        * stabilization_weight
+        * float(endpoint_speed**2)
+    )
+    joint_speed_cost = -(
+        JOINT_SPEED_COST_COEFFICIENT
+        * stabilization_weight
+        * float(joint_speed**2)
+    )
+    reward += endpoint_speed_cost + joint_speed_cost
+
     action_cost = 0.0
     if action is not None:
         action_cost = -(ACTION_COST_COEFFICIENT * float(np.sum(np.square(action))))
@@ -103,6 +123,8 @@ def reach_reward(
             "hold_progress": float(hold_progress),
             "outside_band": float(outside_band),
             "hold_complete": float(hold_complete),
+            "endpoint_speed_cost": float(endpoint_speed_cost),
+            "joint_speed_cost": float(joint_speed_cost),
             "action_cost": float(action_cost),
         },
     )
