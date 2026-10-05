@@ -830,7 +830,7 @@
     }
   },
   "counters": {
-    "event": 6,
+    "event": 7,
     "inquiry": 1,
     "measurement": 3,
     "session": 5,
@@ -839,7 +839,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -1875,27 +1875,157 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-05T15:28:51Z",
+      "error": null,
+      "id": "E7",
+      "inquiry_id": "I1",
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "No working, best-known, or retained role is assigned. T1:checkpoint-100352 remains the strongest measured candidate at 94.375% on M1, while M3 is behavioral diagnosis rather than evidence that the candidate meets the human goal.",
+        "completed_operations": [
+          "E6"
+        ],
+        "cumulative_resource_use": "Startup used one fresh PPO run with 120000 requested steps and 120832 rollout-aligned completed steps. M1 used two 160-episode evaluations, 320 episode executions total, with shared seeds. M3 used 28 deterministic diagnostic episodes and no training allocation. E6 closed I1 and used no training allocation. No official assessment or additional training allocation was used in this inquiry session.",
+        "current_goal_gap": "The strongest measured candidate remains T1:checkpoint-100352 at 151 of 160 development successes (94.375%), below the corresponding 98% development target and not evidence for official assessment. Its nine failures occupy approximately -119 to -151 degrees and radii 7.7 to 18.8 cm; M3 reproduced those geometries as failures while all nine same-radius mirrored-angle controls succeeded.",
+        "current_synthesis": "M3 resolves I1's primary distinction in favor of a primarily pre-entry, target-angle-dependent directional reach and learned branch-coverage failure. Each negative-sector failure target had at least one analytically feasible IK branch under the +/-170 degree limits, with finite and non-uniquely pathological conditioning, so branch infeasibility and purely geometric exclusion do not explain the cluster. Seven failures never entered tolerance. Two brief entries had high end-effector speeds of approximately 0.825 m/s and 0.830 m/s with entry-time saturation, establishing a secondary braking risk; another brief entry was low-speed at approximately 0.091 m/s without entry-time saturation, so braking is not the primary explanation for the full cluster. The diagnostic is deterministic and targeted rather than an official-distribution estimate, and its analytic branch test does not prove which branch the policy intended to select.",
+        "decision_frontier": "The primary I1 frontier is resolved: feasible branches exist, matched mirrored angles succeed, and most failures occur before tolerance entry. The remaining consequential frontier is whether braking can improve without sacrificing newly covered negative-angle reach, especially for the two high-velocity brief entries. That question is deferred until a reach-focused intervention is tested on the same development panel; the intervention result will determine whether braking warrants a separate change.",
+        "evidence_references": [
+          "T1",
+          "M1",
+          "E2",
+          "M3",
+          "E6"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 successes out of 200 under the official distribution. T1:checkpoint-100352 achieved 151 of 160 development successes (94.375%), leaving a 3.625 percentage-point development gap. I1 is now closed because its result selects the next goal-directed intervention: improve negative-angle reach and feasible IK branch coverage before separately optimizing braking.",
+        "next_direction_or_closure": "I1 is closed. In the fresh session, submit one bounded 120000-step training intervention that increases exposure to the negative-angle failure sector and its feasible alternative branch while preserving the official mechanics and uninterrupted hold criterion. Evaluate the resulting candidate on the same development panel before any official-assessment request; compare its negative-sector reach and hold behavior with M3, then decide whether the secondary braking hypothesis requires a separate intervention."
+      },
+      "result": {
+        "session_id": "S5",
+        "status": "checkpointed"
+      },
+      "session_id": "S5",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "d1cc821d1eb305395824d43947fa58e74c0b430a",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "No working, best-known, or retained role is assigned. T1:checkpoint-100352 remains the strongest measured candidate at 94.375% on M1, while M3 is behavioral diagnosis rather than evidence that the candidate meets the human goal.",
+        "completed_operations": [
+          "E6"
+        ],
+        "cumulative_resource_use": "Startup used one fresh PPO run with 120000 requested steps and 120832 rollout-aligned completed steps. M1 used two 160-episode evaluations, 320 episode executions total, with shared seeds. M3 used 28 deterministic diagnostic episodes and no training allocation. E6 closed I1 and used no training allocation. No official assessment or additional training allocation was used in this inquiry session.",
+        "current_goal_gap": "The strongest measured candidate remains T1:checkpoint-100352 at 151 of 160 development successes (94.375%), below the corresponding 98% development target and not evidence for official assessment. Its nine failures occupy approximately -119 to -151 degrees and radii 7.7 to 18.8 cm; M3 reproduced those geometries as failures while all nine same-radius mirrored-angle controls succeeded.",
+        "current_synthesis": "M3 resolves I1's primary distinction in favor of a primarily pre-entry, target-angle-dependent directional reach and learned branch-coverage failure. Each negative-sector failure target had at least one analytically feasible IK branch under the +/-170 degree limits, with finite and non-uniquely pathological conditioning, so branch infeasibility and purely geometric exclusion do not explain the cluster. Seven failures never entered tolerance. Two brief entries had high end-effector speeds of approximately 0.825 m/s and 0.830 m/s with entry-time saturation, establishing a secondary braking risk; another brief entry was low-speed at approximately 0.091 m/s without entry-time saturation, so braking is not the primary explanation for the full cluster. The diagnostic is deterministic and targeted rather than an official-distribution estimate, and its analytic branch test does not prove which branch the policy intended to select.",
+        "decision_frontier": "The primary I1 frontier is resolved: feasible branches exist, matched mirrored angles succeed, and most failures occur before tolerance entry. The remaining consequential frontier is whether braking can improve without sacrificing newly covered negative-angle reach, especially for the two high-velocity brief entries. That question is deferred until a reach-focused intervention is tested on the same development panel; the intervention result will determine whether braking warrants a separate change.",
+        "evidence_references": [
+          "T1",
+          "M1",
+          "E2",
+          "M3",
+          "E6"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 successes out of 200 under the official distribution. T1:checkpoint-100352 achieved 151 of 160 development successes (94.375%), leaving a 3.625 percentage-point development gap. I1 is now closed because its result selects the next goal-directed intervention: improve negative-angle reach and feasible IK branch coverage before separately optimizing braking.",
+        "inquiry_id": "I1",
+        "next_direction_or_closure": "I1 is closed. In the fresh session, submit one bounded 120000-step training intervention that increases exposure to the negative-angle failure sector and its feasible alternative branch while preserving the official mechanics and uninterrupted hold criterion. Evaluate the resulting candidate on the same development panel before any official-assessment request; compare its negative-sector reach and hold behavior with M3, then decide whether the secondary braking hypothesis requires a separate intervention.",
+        "session_id": "S5"
+      },
+      "presentation": {
+        "backend_session_id": "318b8f93-1543-4d64-b51d-b331b14a3f94",
+        "campaign_id": "4a73a283-c537-41d8-a4d8-ea23e48c1aaa",
+        "campaign_usage": "15m34s | 26.39 AIU | prompt 3.6m (83% cached) | output 47.6k",
+        "session_id": "S5",
+        "session_kind": "inquiry",
+        "session_usage": "1m34s | 3.31 AIU | prompt 411.5k (79% cached) | output 4.4k"
+      },
+      "result": {
+        "session_id": "S5",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "47d8b496618f12517f3ff67a760d4f65304bf13e",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E7",
+    "inquiry_id": "I1",
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "No working, best-known, or retained role is assigned. T1:checkpoint-100352 remains the strongest measured candidate at 94.375% on M1, while M3 is behavioral diagnosis rather than evidence that the candidate meets the human goal.",
+        "completed_operations": [
+          "E6"
+        ],
+        "cumulative_resource_use": "Startup used one fresh PPO run with 120000 requested steps and 120832 rollout-aligned completed steps. M1 used two 160-episode evaluations, 320 episode executions total, with shared seeds. M3 used 28 deterministic diagnostic episodes and no training allocation. E6 closed I1 and used no training allocation. No official assessment or additional training allocation was used in this inquiry session.",
+        "current_goal_gap": "The strongest measured candidate remains T1:checkpoint-100352 at 151 of 160 development successes (94.375%), below the corresponding 98% development target and not evidence for official assessment. Its nine failures occupy approximately -119 to -151 degrees and radii 7.7 to 18.8 cm; M3 reproduced those geometries as failures while all nine same-radius mirrored-angle controls succeeded.",
+        "current_synthesis": "M3 resolves I1's primary distinction in favor of a primarily pre-entry, target-angle-dependent directional reach and learned branch-coverage failure. Each negative-sector failure target had at least one analytically feasible IK branch under the +/-170 degree limits, with finite and non-uniquely pathological conditioning, so branch infeasibility and purely geometric exclusion do not explain the cluster. Seven failures never entered tolerance. Two brief entries had high end-effector speeds of approximately 0.825 m/s and 0.830 m/s with entry-time saturation, establishing a secondary braking risk; another brief entry was low-speed at approximately 0.091 m/s without entry-time saturation, so braking is not the primary explanation for the full cluster. The diagnostic is deterministic and targeted rather than an official-distribution estimate, and its analytic branch test does not prove which branch the policy intended to select.",
+        "decision_frontier": "The primary I1 frontier is resolved: feasible branches exist, matched mirrored angles succeed, and most failures occur before tolerance entry. The remaining consequential frontier is whether braking can improve without sacrificing newly covered negative-angle reach, especially for the two high-velocity brief entries. That question is deferred until a reach-focused intervention is tested on the same development panel; the intervention result will determine whether braking warrants a separate change.",
+        "evidence_references": [
+          "T1",
+          "M1",
+          "E2",
+          "M3",
+          "E6"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 successes out of 200 under the official distribution. T1:checkpoint-100352 achieved 151 of 160 development successes (94.375%), leaving a 3.625 percentage-point development gap. I1 is now closed because its result selects the next goal-directed intervention: improve negative-angle reach and feasible IK branch coverage before separately optimizing braking.",
+        "next_direction_or_closure": "I1 is closed. In the fresh session, submit one bounded 120000-step training intervention that increases exposure to the negative-angle failure sector and its feasible alternative branch while preserving the official mechanics and uninterrupted hold criterion. Evaluate the resulting candidate on the same development panel before any official-assessment request; compare its negative-sector reach and hold behavior with M3, then decide whether the secondary braking hypothesis requires a separate intervention."
+      }
+    },
+    "request_fingerprint": "53f8706431de87f1ae69362058b19d42e67595f86341207f2bf3bad3a2c08a49",
+    "session_id": "S5",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No working, best-known, or retained role is assigned. T1:checkpoint-100352 remains the strongest measured candidate at 94.375% on M1, while M3 is behavioral diagnosis rather than evidence that the candidate meets the human goal.",
-    "completed_operations": [],
-    "cumulative_resource_use": "Startup used one fresh PPO run with 120000 requested steps and 120832 rollout-aligned completed steps. M1 used two 160-episode research evaluations, 320 episode executions total, with shared seeds. M3 used 28 deterministic diagnostic episodes and no training allocation. No official assessment or additional training allocation was used in this inquiry session.",
-    "current_goal_gap": "The best measured candidate is 3.625 percentage points below the corresponding 98% development target. Its nine failures occupy approximately -119 to -151 degrees and radii 7.7 to 18.8 cm. M3 reproduced those geometries as failures while all nine same-radius mirrored-angle controls succeeded.",
-    "current_synthesis": "M3 resolves the primary I1 distinction in favor of pre-entry directional reach and learned branch coverage. Each negative-sector failure target had at least one analytically feasible IK branch under the +/-170 degree limits, with finite and non-uniquely pathological conditioning, so branch infeasibility and purely geometric exclusion do not explain the cluster. Seven failures never entered tolerance, supporting a target-angle-dependent reach or branch-selection failure. Two brief entries had high end-effector speeds of about 0.825 m/s and 0.830 m/s with entry-time saturation, showing a secondary braking risk; another brief entry had about 0.091 m/s without entry-time saturation, so braking is not the primary explanation for the full cluster. Saturation during long no-entry trajectories is consistent with unsuccessful reaching. These deterministic targeted cases do not estimate official-distribution success, and the analytic branch test does not prove which branch the policy intended to select.",
-    "decision_frontier": "The primary frontier is resolved: feasible branches exist, matched mirrored angles succeed, and most failures occur before tolerance entry. The remaining consequential secondary question is whether braking can improve without sacrificing newly covered negative-angle reach, especially for the two high-velocity brief entries. A bounded training change increasing exposure to the negative-angle failure sector and its feasible alternative branch is therefore preferred to isolated hold optimization; the same development panel must measure its effect.",
+    "completed_operations": [
+      "E6"
+    ],
+    "cumulative_resource_use": "Startup used one fresh PPO run with 120000 requested steps and 120832 rollout-aligned completed steps. M1 used two 160-episode evaluations, 320 episode executions total, with shared seeds. M3 used 28 deterministic diagnostic episodes and no training allocation. E6 closed I1 and used no training allocation. No official assessment or additional training allocation was used in this inquiry session.",
+    "current_goal_gap": "The strongest measured candidate remains T1:checkpoint-100352 at 151 of 160 development successes (94.375%), below the corresponding 98% development target and not evidence for official assessment. Its nine failures occupy approximately -119 to -151 degrees and radii 7.7 to 18.8 cm; M3 reproduced those geometries as failures while all nine same-radius mirrored-angle controls succeeded.",
+    "current_synthesis": "M3 resolves I1's primary distinction in favor of a primarily pre-entry, target-angle-dependent directional reach and learned branch-coverage failure. Each negative-sector failure target had at least one analytically feasible IK branch under the +/-170 degree limits, with finite and non-uniquely pathological conditioning, so branch infeasibility and purely geometric exclusion do not explain the cluster. Seven failures never entered tolerance. Two brief entries had high end-effector speeds of approximately 0.825 m/s and 0.830 m/s with entry-time saturation, establishing a secondary braking risk; another brief entry was low-speed at approximately 0.091 m/s without entry-time saturation, so braking is not the primary explanation for the full cluster. The diagnostic is deterministic and targeted rather than an official-distribution estimate, and its analytic branch test does not prove which branch the policy intended to select.",
+    "decision_frontier": "The primary I1 frontier is resolved: feasible branches exist, matched mirrored angles succeed, and most failures occur before tolerance entry. The remaining consequential frontier is whether braking can improve without sacrificing newly covered negative-angle reach, especially for the two high-velocity brief entries. That question is deferred until a reach-focused intervention is tested on the same development panel; the intervention result will determine whether braking warrants a separate change.",
     "evidence_references": [
       "T1",
       "M1",
       "E2",
-      "M3"
+      "M3",
+      "E6"
     ],
-    "human_goal_connection": "The human goal requires at least 196 successes out of 200 under the official distribution. T1:checkpoint-100352 achieved 151 of 160 development successes (94.375%), so it remains below the required standard and no official assessment is justified. M3 identifies a directional reach and learned branch-coverage deficit as the most actionable cause of the gap, which determines the next training intervention.",
+    "human_goal_connection": "The human goal requires at least 196 successes out of 200 under the official distribution. T1:checkpoint-100352 achieved 151 of 160 development successes (94.375%), leaving a 3.625 percentage-point development gap. I1 is now closed because its result selects the next goal-directed intervention: improve negative-angle reach and feasible IK branch coverage before separately optimizing braking.",
     "inquiry_id": "I1",
-    "next_direction_or_closure": "This checkpoint preserves the resolved I1 decision. The next inquiry action should close I1, after which one bounded 120000-step training intervention should increase negative-angle reach and feasible-branch coverage while preserving the official mechanics and uninterrupted hold criterion. Its candidate must be evaluated on the same development panel before any official-assessment request; the result will determine whether the secondary braking hypothesis warrants a separate intervention.",
-    "scientific_commit": "008c9417e117682f07c0d853a01f605b8e23fdbc",
-    "session_id": "S4"
+    "next_direction_or_closure": "I1 is closed. In the fresh session, submit one bounded 120000-step training intervention that increases exposure to the negative-angle failure sector and its feasible alternative branch while preserving the official mechanics and uninterrupted hold criterion. Evaluate the resulting candidate on the same development panel before any official-assessment request; compare its negative-sector reach and hold behavior with M3, then decide whether the secondary braking hypothesis requires a separate intervention.",
+    "scientific_commit": "47d8b496618f12517f3ff67a760d4f65304bf13e",
+    "session_id": "S5"
   },
   "schema_version": 6,
   "scientific_model": {
@@ -1903,21 +2033,6 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "318b8f93-1543-4d64-b51d-b331b14a3f94",
-    "id": "S5",
-    "inquiry_id": "I1",
-    "kind": "inquiry",
-    "objective": "Advance I1 toward an evidence-supported answer to its scientific question: Does the peak candidate's negative-angle failure cluster arise primarily before tolerance entry from infeasible or poorly selected IK branches and directional reach, or after entry from residual velocity, actuator saturation, and hold stabilization?",
-    "operation_ids": [
-      "E6"
-    ],
-    "scientific_parent_commit": "d1cc821d1eb305395824d43947fa58e74c0b430a"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
