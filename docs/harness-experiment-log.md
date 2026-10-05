@@ -1937,3 +1937,40 @@ separate from harness changes so their outcomes are not conflated.
   measurement or evaluation is executed.
 - **Disposition:** implemented for observation; scientific effectiveness is
   unassessed.
+
+## 2026-10-05: retain goal-first model prompt after inquiry rush
+
+- **Campaign observation:** campaign
+  `edc16754-3f16-45b9-bd0b-faea041c3db5` used the restored goal-first
+  scientific-model ordering. Its preliminary model returned to a plant-first
+  account of coupled dynamics, braking and hold stability. Startup then built
+  and ran candidate-free measurement `M2` before training.
+- **Useful startup evidence:** `M2` found that all 40 tested valid IK
+  configurations completed the static hold and all 160 tested initial-velocity
+  perturbations through 0.5 rad/s remained within tolerance. All 160
+  one-control-interval full motor impulses exited tolerance, with larger
+  excursions at larger radii. This was useful physical evidence, not proof
+  that the ordering change caused the behavior.
+- **Transition failure:** startup checkpoint `E1` immediately selected a fresh
+  baseline as the next action. Goal review opened `I1` with a closure condition
+  that required one 120000-step training run and development evaluation.
+  Checkpoint `E3` preserved that commitment, so the inquiry session inherited
+  a preselected operation rather than reconsidering the scientific direction.
+- **Contract-to-implementation mismatch:** `I1` and training request `T1`
+  described the run as using the full official target distribution, while
+  `robot_learning/training/environment.py` still samples radii
+  0.14--0.20 m rather than the official 0.06--0.20 m range. The unchanged run
+  therefore could not literally test the training-distribution claim in its
+  request.
+- **Subsequent operations:** `T1` completed 120832 steps. Development
+  measurement `M3` scored both the peak-training and final checkpoints at
+  151/160 successes (94.375%) on the shared 160-episode panel. These are
+  development results, not official assessment or evidence that the inquiry
+  framing was adequate.
+- **Maintainer action:** the maintainer stopped the campaign after `M3`, before
+  a new inquiry synthesis, closure decision or official assessment. The stop is
+  an execution decision, not a scientific campaign conclusion.
+- **Disposition:** retain the scoped `756ae4b` prompt-order change. One
+  campaign supports its intended direction but does not establish causality.
+  The startup-to-inquiry rush and the inaccurate distribution claim remain
+  unresolved; this entry approves no further harness change.

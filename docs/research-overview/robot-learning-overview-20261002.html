@@ -208,11 +208,11 @@
       <p class="intro">The human owns the goal. The PI owns the science and training. The Runner gates and executes operations.</p>
       <p class="intro">The two-joint arm is the current reference scenario. This page presents current status, the scenario, the process, its boundaries, and its history.</p>
       <p class="snapshot">
-        Documentation reviewed: <time datetime="2026-10-04T10:38:00+02:00">4 October 2026, 10:38 CEST</time>, before the maintainer's later campaign launch.
+        Documentation reviewed: <time datetime="2026-10-05T15:14:00+02:00">5 October 2026, 15:14 CEST</time>, after the maintainer stopped the latest campaign.
         This page does not update itself.
       </p>
-      <p class="snapshot">Current behavior means the inspected source, including startup implementation <code>7f86168</code>, committed and pushed on 4 October. Implementation is not evidence of scientific effectiveness.</p>
-      <p class="snapshot">The report index covers earlier campaigns through <code>3ac5a413</code>. At the pre-launch review, the working records belonged to <code>c7040992</code>, with no terminal state. They were not the archived state of <code>3ac5a413</code>. This page does not report live campaign findings.</p>
+      <p class="snapshot">Current behavior includes the startup semantics restored in <code>efc3be7</code> and the scientific-model goal-first ordering in <code>756ae4b</code>. Implementation is not evidence of scientific effectiveness.</p>
+      <p class="snapshot">The latest recorded observation is campaign <code>edc16754</code>: useful candidate-free startup measurement <code>M2</code>, followed by a rushed inquiry, baseline training <code>T1</code>, development measurement <code>M3</code>, and a maintainer stop. No official assessment or terminal scientific conclusion occurred.</p>
       <nav class="page-nav" aria-label="Page navigation">
         <a href="#status-heading">Reading guide</a>
         <a href="#task-heading">Current scenario</a>
@@ -254,8 +254,8 @@
         <h3 style="margin-top: 12px">Startup direction and instruction delivery</h3>
         <p>Startup establishes or refines the initial scientific direction through scientific work. It can build or adapt reusable tools and PI-owned methods.</p>
         <p>The PI chooses the first useful scientific action, explains how it advances that direction, and records the resulting work and uncertainty.</p>
-        <p>The full unchanged PI persona leads every phase prompt, including continuation, retry, and repair.</p>
-        <p class="small muted">The core <code>7f86168</code> instruction-delivery changes remain. The later cue-removal experiment <code>371bae1</code> produced no observed improvement and was withdrawn.</p>
+        <p>The preliminary scientific-model prompt places the human goal before the unchanged PI persona. Other phase prompts remain persona-first.</p>
+        <p class="small muted">The cue-removal experiment <code>371bae1</code> produced no observed improvement and was withdrawn in <code>efc3be7</code>. The scoped goal-first model ordering in <code>756ae4b</code> is retained after one useful startup, without a causal claim.</p>
         <p class="small"><a href="#startup-current">Read the current startup behavior</a></p>
       </article>
       <article class="card">
@@ -606,15 +606,15 @@
       <p class="section-label">06 / IMPLEMENTED BEHAVIOR / WORKING-TREE INVENTORY</p>
       <h2 id="changes-heading">Implemented harness behavior</h2>
       <p>Every row describes behavior present in the inspected working tree. Commit IDs identify earlier changes, not the scientific cause of a campaign result.</p>
-      <p>The 4 October startup batch is published as <code>7f86168</code>. The maintainer verified that <code>origin/inquiry-centered-lifecycle</code> matches this commit. Withdrawn revisions are in the history. Unimplemented work is in the backlog.</p>
+      <p>The 4 October startup batch is published as <code>7f86168</code>. The first-action semantics were restored in <code>efc3be7</code>, and the scientific-model prompt ordering changed in <code>756ae4b</code>. Withdrawn revisions are in the history. Unimplemented work is in the backlog.</p>
       <div class="card changes">
         <div class="table-wrap" tabindex="0" aria-label="Scrollable implementation inventory">
           <table>
             <thead><tr><th scope="col" style="width: 27%">Implemented item / source</th><th scope="col" style="width: 43%">Current function</th><th scope="col">Evidence or limit</th></tr></thead>
             <tbody>
               <tr><td>Preliminary scientific model</td><td>The PI writes a physical reference before campaign evidence. The document then stays fixed.</td><td>The reference does not guarantee correct later interpretation or good decisions.</td></tr>
-              <tr><td>Question-based inquiry objective<span class="commit"><code>6d60f1f</code></span></td><td>A fresh inquiry session uses the scientific question as its objective. The closure condition remains separate and unchanged.</td><td>Campaign observations do not isolate this wording as a cause of scientific continuity.</td></tr>
-              <tr><td>Startup purpose and persona<span class="commit">4 October: <code>7f86168</code> plus approved follow-up</span></td><td>Startup establishes or refines the initial direction through scientific work. It can build reusable tools. The full persona starts initial, continuation, retry, and repair prompts.</td><td>The follow-up removes the undefined "first useful action" instruction and the startup prompt's training-specific allocation cue. Scientific effectiveness remains unassessed.</td></tr>
+              <tr><td>Question-based inquiry objective<span class="commit"><code>6d60f1f</code></span></td><td>A fresh inquiry session uses the scientific question as its objective. The closure condition remains separate.</td><td>In <code>edc16754</code>, the closure condition itself precommitted a full training run. A question-based objective alone did not prevent inquiry rushing.</td></tr>
+              <tr><td>Startup purpose and prompt ordering<span class="commit"><code>7f86168</code>, <code>efc3be7</code>, <code>756ae4b</code></span></td><td>Startup chooses and records a first useful scientific action. The preliminary scientific-model prompt is goal-first, then persona; other phase prompts remain persona-first.</td><td>Campaign <code>edc16754</code> produced a plant-first model and candidate-free measurement before training. The later inquiry still rushed to a precommitted baseline, so causal effectiveness is not established.</td></tr>
               <tr><td>Copilot adapter instructions<span class="commit">4 October: <code>7f86168</code></span></td><td>The redundant scientific instruction block is removed. The adapter handles runtime and permissions. Phase prompts and the program supply scientific instructions.</td><td>This removal is implemented, not a scientific result.</td></tr>
               <tr><td>Two restored scientific passages<span class="commit">4 October restoration</span></td><td>The original operation-selection and measurement-purpose paragraphs are present verbatim under Inquiry work.</td><td>The restoration itself added no startup rule or launcher change. The later startup batch is separate. Behavioral effect remains unassessed.</td></tr>
               <tr><td>Goal-review measurements<span class="commit"><code>c68627d</code>, later cap repair</span></td><td>Measurements return to the same session. The inquiry count no longer changes their permission.</td><td>Permission is not a prescribed measurement or an assessment-readiness gate.</td></tr>
@@ -636,12 +636,12 @@
         <p><strong>Startup establishes or refines a credible initial scientific direction through scientific work.</strong> The direction comes from the human goal, physical model, and available evidence.</p>
         <p>Startup can build or adapt reusable scientific tools and PI-owned methods. Subsequent inquiries can use these tools and methods. The PI can also use current tools that fit the chosen direction.</p>
         <p>The PI chooses the first useful scientific action, explains why it advances the direction, and preserves the work performed, resulting understanding, remaining uncertainty, and chosen next action in the scientific session record.</p>
-        <p><strong>The complete unchanged persona starts every phase prompt.</strong> Continuation, retry, and repair keep that persona. Startup does not display Active inquiry or the old inquiry-handoff instruction. The adapter supplies no scientific instruction block.</p>
+        <p><strong>The preliminary scientific-model prompt starts with the human goal, followed by the complete unchanged persona.</strong> Its validation retry uses the same order. Other phase prompts remain persona-first. Startup does not display Active inquiry or the old inquiry-handoff instruction. The adapter supplies no scientific instruction block.</p>
         <p><strong>A scientific session record is not a policy checkpoint.</strong> The record preserves actual work, results, remaining uncertainties, and the next action. A policy checkpoint contains saved model weights. The current <code>checkpoint</code> operation and fields remain unchanged.</p>
         <p>The preliminary phase can read all scientific sources under <code>robot_learning\</code>, including protected benchmark implementation. SDK reads and explicit shell reads use this phase distinction. Later phases retain reserved-read restrictions.</p>
         <p>Maintainer documents and harness scripts stay reserved in every phase. Read access does not change write authority or direct-execution restrictions. These are tool controls, not OS isolation.</p>
         <p>The startup prompt displays the maintainer's requested-step training allocation as a ceiling. It does not require training, measurement, or any other operation, and it adds no scientific-adequacy gate.</p>
-        <p class="small muted">The cue-removal experiment in <code>371bae1</code> produced no observed improvement in training-first startup behavior and was withdrawn. This restoration is not claimed to solve that behavior.</p>
+        <p class="small muted">The cue-removal experiment in <code>371bae1</code> produced no observed improvement and was withdrawn. Campaign <code>edc16754</code> then produced useful startup measurement <code>M2</code> under the retained goal-first model ordering, but its checkpoint and goal review rushed into a precommitted baseline inquiry. Neither observation establishes a single prompt cause.</p>
         <p class="small"><a href="../../contracts/program.md">Program</a> &middot; <a href="../../contracts/instruments.md">Instruments</a> &middot; <a href="../../AGENTS.md">Ownership and commands</a> &middot; <a href="../harness-experiment-log.md">Tracking entries</a></p>
       </div>
     </section>
@@ -678,6 +678,16 @@
             <tr><td>Broader closure and handoff prompts<br><code>b4f1cdf</code>, <code>c0cfcb6</code></td><td><span class="tag">Withdrawn</span></td><td>These experiments were reverted and are not part of the active harness. The startup correction does not silently restore them.</td></tr>
           </tbody>
         </table>
+      </div>
+      <div class="card" style="margin-top: 16px">
+        <span class="tag">Observation</span>
+        <h3 style="margin-top: 12px">5 October: useful startup, then inquiry rush</h3>
+        <p>Campaign <code>edc16754-3f16-45b9-bd0b-faea041c3db5</code> used the restored goal-first scientific-model ordering. Startup built and completed candidate-free dynamics and hold measurement <code>M2</code> before any training.</p>
+        <p><code>M2</code> established stable static holds and tolerance to the tested initial velocities, while full one-interval motor impulses caused rapid exits with larger excursions at larger radii.</p>
+        <p>The startup checkpoint then selected a baseline as the next action. Goal review opened <code>I1</code> with one 120,000-step run embedded in its closure condition, and the fresh inquiry executed that preselected run as <code>T1</code>.</p>
+        <p><code>I1</code> and <code>T1</code> described training on the full official target distribution, but the unchanged training environment sampled radii from 0.14 to 0.20 m rather than the official 0.06 to 0.20 m range. The operation therefore did not literally match that claim.</p>
+        <p><code>T1</code> completed 120,832 steps. Development measurement <code>M3</code> scored both evaluated checkpoints at 151 / 160 successes (94.375%). The maintainer then stopped the campaign before inquiry synthesis or official assessment.</p>
+        <p><strong>Disposition:</strong> retain <code>756ae4b</code> provisionally. The useful startup is one positive observation, not causal proof. Inquiry continuity and request-to-recipe consistency remain open.</p>
       </div>
       <details style="margin-top: 16px">
         <summary>Historical readiness guidance: purpose, withdrawal, and causal uncertainty</summary>
@@ -740,7 +750,7 @@
         <table>
           <thead><tr><th scope="col">Topic</th><th scope="col">Status</th><th scope="col">Remaining question or scope</th></tr></thead>
           <tbody>
-            <tr><td>Startup behavior and full 120,000-step baseline</td><td><span class="tag">Open</span></td><td>The startup prompt no longer selects a "first useful action" or displays a training allocation. Its effect remains unassessed. The mechanical allocation contract is unchanged.</td></tr>
+            <tr><td>Startup-to-inquiry continuity and recipe consistency</td><td><span class="tag">Open</span></td><td>Campaign <code>edc16754</code> performed useful startup measurement, then encoded a full baseline run in the inquiry closure. Its request also claimed full-distribution training while the recipe used 0.14&ndash;0.20 m. No corrective harness change is approved.</td></tr>
             <tr><td>Assessment calibration and counterevidence</td><td><span class="tag">Open</span></td><td>The readiness approach is withdrawn. Residual-failure concerns remain. Replacement guidance is unresolved and not approved.</td></tr>
             <tr><td>Publication independent of training</td><td><span class="tag">Proposal</span></td><td>Suggested independent candidate publication is not approved or implemented. M7 was unregistered. M8 did not exclude every producer route. Zero-completed-step schemas expose an undocumented, untested possibility, not a validated export-only solution.</td></tr>
             <tr><td>Reliable evidence inspection and interpretation</td><td><span class="tag">Open</span></td><td>Inventories are implemented, not a complete remedy. In <code>d7080d95</code>, S8 read its detailed diagnostic correctly but still treated a favorable panel as sufficient assessment readiness.</td></tr>
@@ -828,7 +838,7 @@
             <li><a href="../../research/instruments.md"><code>research\instruments.md</code></a>: current operation shapes, acceptance conditions, and phase permissions.</li>
             <li><a href="../../AGENTS.md"><code>AGENTS.md</code></a>: ownership, commands, and operational boundaries.</li>
             <li><a href="../../run_research.ps1"><code>run_research.ps1</code></a> and <a href="../../researcher_copilot.py"><code>researcher_copilot.py</code></a>: current prompt delivery, launcher flow, and Copilot permission controls. <code>research\run_experiment.py</code> handles Runner requests and recovery.</li>
-            <li><code>research\research_state.json</code> and <code>research\brief.md</code>: mutable working-campaign context. At the pre-launch review they referred to <code>c7040992</code>, not historical E19 or M7 in <code>3ac5a413</code>. Later maintainer or Runner activity can replace these contents.</li>
+            <li><code>runner\state\research_state.json</code> and <code>campaigns\brief.md</code>: mutable working-campaign context. At this review they record campaign <code>edc16754</code>, completed operations through <code>M3</code>, and no official assessment or terminal scientific conclusion. Later maintainer or Runner activity can replace these contents.</li>
           </ul>
           <h3 style="margin-top: 20px">Historical evidence, decisions, and design context</h3>
           <ul class="sources">
@@ -842,7 +852,7 @@
           <h3 style="margin-top: 20px">Applicability and review boundaries</h3>
           <ul class="sources">
             <li>Independent frozen-policy publication is a proposal. Replacement readiness design and startup-budget review remain unresolved. Later cap removal is not implemented.</li>
-            <li>No campaign recovery or execution is authorized by this documentation review. No scientific effectiveness claim follows from implementation checks.</li>
+            <li>No campaign recovery, restart, reset or execution is authorized by this documentation update. The maintainer-reported stop is recorded without turning it into a scientific conclusion.</li>
             <li>The campaign reports are separate sibling HTML files. Their recorded cost totals are accounting evidence, not necessarily complete billing or verified elapsed duration.</li>
           </ul>
           <p class="small muted" style="margin-top: 16px">The overview and linked HTML reports belong under <code>docs\research-overview</code>, outside the PI-owned write surface. Direct read/view requests and explicit shell-reader targets are also restricted. No OS sandbox is claimed.</p>
