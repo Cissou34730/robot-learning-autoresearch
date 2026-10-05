@@ -1994,3 +1994,26 @@ separate from harness changes so their outcomes are not conflated.
   measurement or evaluation is executed.
 - **Disposition:** implemented for observation. Its effect on startup and
   inquiry behavior is unassessed.
+
+## 2026-10-05: measure previous-persona startup stochasticity
+
+- **Reference:** the previous PI persona was restored in `ea35499`, then
+  three fresh campaigns were reset and run sequentially with no harness
+  change between trials. The detailed report is
+  `docs/persona-stochasticity-report-20261005.md`.
+- **Observed variation:** Trial 1 selected training first, Trial 2 changed
+  PI-owned training code before training and measurement, and Trial 3
+  selected an official-annulus physical characterization measurement before
+  any training. Their first inquiry behavior also differed.
+- **Boundary failures:** Trial 1 crossed the requested stop boundary and
+  dispatched inquiry training before the stop was observed. Trial 2
+  modified PI-owned scientific code during startup, so it is not a clean
+  repetition. Trial 3 stopped correctly with the first inquiry training
+  request pending before Runner acceptance.
+- **Interpretation:** the previous persona permits materially variable
+  startup method selection, including useful physical investigation, but
+  does not reproduce it reliably. The result demonstrates qualitative
+  stochasticity, not a clean quantitative causal estimate of persona
+  influence.
+- **Disposition:** retain the restored previous persona for the requested
+  comparison. No additional harness change is made from this experiment.
