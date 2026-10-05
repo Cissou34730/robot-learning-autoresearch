@@ -830,7 +830,7 @@
     }
   },
   "counters": {
-    "event": 0,
+    "event": 1,
     "inquiry": 0,
     "measurement": 1,
     "session": 1,
@@ -839,7 +839,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -1476,32 +1476,156 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-05T15:08:17Z",
+      "error": null,
+      "id": "E1",
+      "inquiry_id": null,
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "No working, best-known, or retained role is assigned. T1:checkpoint-100352 is the strongest measured candidate so far (94.375% on M1), but its evidence is insufficient for the human goal and the startup session does not assign a policy role.",
+        "completed_operations": [
+          "T1",
+          "M1"
+        ],
+        "cumulative_resource_use": "One fresh PPO run used the full 120000 requested-step startup allocation and completed 120832 rollout-aligned steps. M1 used two 160-episode evaluations, 320 episode executions total, with shared seeds for the paired comparison. No PI-owned source files were changed.",
+        "current_goal_gap": "The current learned policy is below the required success level. Its nine development failures are concentrated in a narrow target-angle sector from approximately -119 to -151 degrees across radii 7.7 to 18.8 cm: seven failures never entered the tolerance and two entered for only one or two control samples before interruption. The remaining gap is therefore currently interpreted as a directional reach or branch-coverage problem, with a secondary possible braking/hold problem, rather than as uniform hold instability. This interpretation is not yet causal because joint trajectories, IK branch feasibility, and entry velocity were not recorded.",
+        "current_synthesis": "Observed facts: fresh PPO learned the task progressively, with training success rising from zero to 0.97 by 100352 steps and then fluctuating between 0.93 and 0.95. On a shared 160-episode development panel, T1:checkpoint-100352 scored 94.375% and beat T1:checkpoint-115712 by 1.25 percentage points, but only two paired episodes were discordant, so the late-training difference is weak evidence of a real stability trend. In the peak candidate's nine failures, seven had no in-tolerance sample and two had only one or two consecutive in-tolerance samples; all nine targets were in the same negative-angle sector. Interpretation: the physical model's prediction that the reset singularity and alternative IK branches matter is supported by a reproducible angular blind spot, and the dominant immediate failure mode is likely failure to reach a usable posture for that sector. Competing explanations remain: (1) a target-angle-dependent policy/IK branch-selection failure, (2) a joint-limit or conditioning bottleneck that makes that sector dynamically difficult, or (3) successful arrival followed by insufficient braking and hold stabilization in the two brief-entry cases. The evidence does not distinguish these explanations or establish official-distribution performance; the development panel is not the protected assessment.",
+        "decision_frontier": "Does the negative-angle failure cluster arise primarily before tolerance entry from branch feasibility/selection and directional reach, or after entry from residual velocity and stabilization? A targeted angle-by-radius measurement with joint/IK branch feasibility and first-entry, hold-interruption, velocity, and actuator diagnostics will discriminate these mechanisms: failures with no entry across feasible branches support reach/branch coverage; brief entries with high entry velocity and interruptions support braking/stabilization; a branch-specific geometric exclusion supports joint limits or conditioning.",
+        "evidence_references": [
+          "T1",
+          "M1"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 successful episodes out of 200 under the official distribution. The strongest measured candidate, T1:checkpoint-100352, achieved 151 of 160 development episodes (94.375%), so it is not yet adequate evidence for the goal and remains 3.625 percentage points below the development target.",
+        "next_direction_or_closure": "Enter goal review and open a bounded inquiry on the angular blind spot. The first inquiry action should be a targeted geometry-and-trajectory measurement of T1:checkpoint-100352, not another undirected training run: resolve branch feasibility and distinguish no-reach failures from braking/hold failures before selecting a policy, reward, observation, or training intervention."
+      },
+      "result": {
+        "session_id": "S1",
+        "status": "checkpointed"
+      },
+      "session_id": "S1",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
-  "pi_checkpoint": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "ad4200813c58cef83b470b34bf6f6a716b6bdbfd",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "No working, best-known, or retained role is assigned. T1:checkpoint-100352 is the strongest measured candidate so far (94.375% on M1), but its evidence is insufficient for the human goal and the startup session does not assign a policy role.",
+        "completed_operations": [
+          "T1",
+          "M1"
+        ],
+        "cumulative_resource_use": "One fresh PPO run used the full 120000 requested-step startup allocation and completed 120832 rollout-aligned steps. M1 used two 160-episode evaluations, 320 episode executions total, with shared seeds for the paired comparison. No PI-owned source files were changed.",
+        "current_goal_gap": "The current learned policy is below the required success level. Its nine development failures are concentrated in a narrow target-angle sector from approximately -119 to -151 degrees across radii 7.7 to 18.8 cm: seven failures never entered the tolerance and two entered for only one or two control samples before interruption. The remaining gap is therefore currently interpreted as a directional reach or branch-coverage problem, with a secondary possible braking/hold problem, rather than as uniform hold instability. This interpretation is not yet causal because joint trajectories, IK branch feasibility, and entry velocity were not recorded.",
+        "current_synthesis": "Observed facts: fresh PPO learned the task progressively, with training success rising from zero to 0.97 by 100352 steps and then fluctuating between 0.93 and 0.95. On a shared 160-episode development panel, T1:checkpoint-100352 scored 94.375% and beat T1:checkpoint-115712 by 1.25 percentage points, but only two paired episodes were discordant, so the late-training difference is weak evidence of a real stability trend. In the peak candidate's nine failures, seven had no in-tolerance sample and two had only one or two consecutive in-tolerance samples; all nine targets were in the same negative-angle sector. Interpretation: the physical model's prediction that the reset singularity and alternative IK branches matter is supported by a reproducible angular blind spot, and the dominant immediate failure mode is likely failure to reach a usable posture for that sector. Competing explanations remain: (1) a target-angle-dependent policy/IK branch-selection failure, (2) a joint-limit or conditioning bottleneck that makes that sector dynamically difficult, or (3) successful arrival followed by insufficient braking and hold stabilization in the two brief-entry cases. The evidence does not distinguish these explanations or establish official-distribution performance; the development panel is not the protected assessment.",
+        "decision_frontier": "Does the negative-angle failure cluster arise primarily before tolerance entry from branch feasibility/selection and directional reach, or after entry from residual velocity and stabilization? A targeted angle-by-radius measurement with joint/IK branch feasibility and first-entry, hold-interruption, velocity, and actuator diagnostics will discriminate these mechanisms: failures with no entry across feasible branches support reach/branch coverage; brief entries with high entry velocity and interruptions support braking/stabilization; a branch-specific geometric exclusion supports joint limits or conditioning.",
+        "evidence_references": [
+          "T1",
+          "M1"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 successful episodes out of 200 under the official distribution. The strongest measured candidate, T1:checkpoint-100352, achieved 151 of 160 development episodes (94.375%), so it is not yet adequate evidence for the goal and remains 3.625 percentage points below the development target.",
+        "inquiry_id": null,
+        "next_direction_or_closure": "Enter goal review and open a bounded inquiry on the angular blind spot. The first inquiry action should be a targeted geometry-and-trajectory measurement of T1:checkpoint-100352, not another undirected training run: resolve branch feasibility and distinguish no-reach failures from braking/hold failures before selecting a policy, reward, observation, or training intervention.",
+        "session_id": "S1"
+      },
+      "presentation": {
+        "backend_session_id": "9eefdf13-cb8f-498f-801c-1f82b8e4af08",
+        "campaign_id": "4a73a283-c537-41d8-a4d8-ea23e48c1aaa",
+        "campaign_usage": "5m05s | 8.21 AIU | prompt 951.8k (81% cached) | output 17.3k",
+        "session_id": "S1",
+        "session_kind": "startup",
+        "session_usage": "3m11s | 5.71 AIU | prompt 700.2k (79% cached) | output 8.3k"
+      },
+      "result": {
+        "session_id": "S1",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "aa935f781553d383271cd4d42420337f4d5e9515",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E1",
+    "inquiry_id": null,
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "No working, best-known, or retained role is assigned. T1:checkpoint-100352 is the strongest measured candidate so far (94.375% on M1), but its evidence is insufficient for the human goal and the startup session does not assign a policy role.",
+        "completed_operations": [
+          "T1",
+          "M1"
+        ],
+        "cumulative_resource_use": "One fresh PPO run used the full 120000 requested-step startup allocation and completed 120832 rollout-aligned steps. M1 used two 160-episode evaluations, 320 episode executions total, with shared seeds for the paired comparison. No PI-owned source files were changed.",
+        "current_goal_gap": "The current learned policy is below the required success level. Its nine development failures are concentrated in a narrow target-angle sector from approximately -119 to -151 degrees across radii 7.7 to 18.8 cm: seven failures never entered the tolerance and two entered for only one or two control samples before interruption. The remaining gap is therefore currently interpreted as a directional reach or branch-coverage problem, with a secondary possible braking/hold problem, rather than as uniform hold instability. This interpretation is not yet causal because joint trajectories, IK branch feasibility, and entry velocity were not recorded.",
+        "current_synthesis": "Observed facts: fresh PPO learned the task progressively, with training success rising from zero to 0.97 by 100352 steps and then fluctuating between 0.93 and 0.95. On a shared 160-episode development panel, T1:checkpoint-100352 scored 94.375% and beat T1:checkpoint-115712 by 1.25 percentage points, but only two paired episodes were discordant, so the late-training difference is weak evidence of a real stability trend. In the peak candidate's nine failures, seven had no in-tolerance sample and two had only one or two consecutive in-tolerance samples; all nine targets were in the same negative-angle sector. Interpretation: the physical model's prediction that the reset singularity and alternative IK branches matter is supported by a reproducible angular blind spot, and the dominant immediate failure mode is likely failure to reach a usable posture for that sector. Competing explanations remain: (1) a target-angle-dependent policy/IK branch-selection failure, (2) a joint-limit or conditioning bottleneck that makes that sector dynamically difficult, or (3) successful arrival followed by insufficient braking and hold stabilization in the two brief-entry cases. The evidence does not distinguish these explanations or establish official-distribution performance; the development panel is not the protected assessment.",
+        "decision_frontier": "Does the negative-angle failure cluster arise primarily before tolerance entry from branch feasibility/selection and directional reach, or after entry from residual velocity and stabilization? A targeted angle-by-radius measurement with joint/IK branch feasibility and first-entry, hold-interruption, velocity, and actuator diagnostics will discriminate these mechanisms: failures with no entry across feasible branches support reach/branch coverage; brief entries with high entry velocity and interruptions support braking/stabilization; a branch-specific geometric exclusion supports joint limits or conditioning.",
+        "evidence_references": [
+          "T1",
+          "M1"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 successful episodes out of 200 under the official distribution. The strongest measured candidate, T1:checkpoint-100352, achieved 151 of 160 development episodes (94.375%), so it is not yet adequate evidence for the goal and remains 3.625 percentage points below the development target.",
+        "next_direction_or_closure": "Enter goal review and open a bounded inquiry on the angular blind spot. The first inquiry action should be a targeted geometry-and-trajectory measurement of T1:checkpoint-100352, not another undirected training run: resolve branch feasibility and distinguish no-reach failures from braking/hold failures before selecting a policy, reward, observation, or training intervention."
+      }
+    },
+    "request_fingerprint": "290b0ebe384b135e4a7551daf5ad20c4339ccfd0ba617a5ae4eda0309e2364ca",
+    "session_id": "S1",
+    "supersedes": null
+  },
+  "pi_checkpoint": {
+    "candidates_and_roles": "No working, best-known, or retained role is assigned. T1:checkpoint-100352 is the strongest measured candidate so far (94.375% on M1), but its evidence is insufficient for the human goal and the startup session does not assign a policy role.",
+    "completed_operations": [
+      "T1",
+      "M1"
+    ],
+    "cumulative_resource_use": "One fresh PPO run used the full 120000 requested-step startup allocation and completed 120832 rollout-aligned steps. M1 used two 160-episode evaluations, 320 episode executions total, with shared seeds for the paired comparison. No PI-owned source files were changed.",
+    "current_goal_gap": "The current learned policy is below the required success level. Its nine development failures are concentrated in a narrow target-angle sector from approximately -119 to -151 degrees across radii 7.7 to 18.8 cm: seven failures never entered the tolerance and two entered for only one or two control samples before interruption. The remaining gap is therefore currently interpreted as a directional reach or branch-coverage problem, with a secondary possible braking/hold problem, rather than as uniform hold instability. This interpretation is not yet causal because joint trajectories, IK branch feasibility, and entry velocity were not recorded.",
+    "current_synthesis": "Observed facts: fresh PPO learned the task progressively, with training success rising from zero to 0.97 by 100352 steps and then fluctuating between 0.93 and 0.95. On a shared 160-episode development panel, T1:checkpoint-100352 scored 94.375% and beat T1:checkpoint-115712 by 1.25 percentage points, but only two paired episodes were discordant, so the late-training difference is weak evidence of a real stability trend. In the peak candidate's nine failures, seven had no in-tolerance sample and two had only one or two consecutive in-tolerance samples; all nine targets were in the same negative-angle sector. Interpretation: the physical model's prediction that the reset singularity and alternative IK branches matter is supported by a reproducible angular blind spot, and the dominant immediate failure mode is likely failure to reach a usable posture for that sector. Competing explanations remain: (1) a target-angle-dependent policy/IK branch-selection failure, (2) a joint-limit or conditioning bottleneck that makes that sector dynamically difficult, or (3) successful arrival followed by insufficient braking and hold stabilization in the two brief-entry cases. The evidence does not distinguish these explanations or establish official-distribution performance; the development panel is not the protected assessment.",
+    "decision_frontier": "Does the negative-angle failure cluster arise primarily before tolerance entry from branch feasibility/selection and directional reach, or after entry from residual velocity and stabilization? A targeted angle-by-radius measurement with joint/IK branch feasibility and first-entry, hold-interruption, velocity, and actuator diagnostics will discriminate these mechanisms: failures with no entry across feasible branches support reach/branch coverage; brief entries with high entry velocity and interruptions support braking/stabilization; a branch-specific geometric exclusion supports joint limits or conditioning.",
+    "evidence_references": [
+      "T1",
+      "M1"
+    ],
+    "human_goal_connection": "The human goal requires at least 196 successful episodes out of 200 under the official distribution. The strongest measured candidate, T1:checkpoint-100352, achieved 151 of 160 development episodes (94.375%), so it is not yet adequate evidence for the goal and remains 3.625 percentage points below the development target.",
+    "inquiry_id": null,
+    "next_direction_or_closure": "Enter goal review and open a bounded inquiry on the angular blind spot. The first inquiry action should be a targeted geometry-and-trajectory measurement of T1:checkpoint-100352, not another undirected training run: resolve branch feasibility and distinguish no-reach failures from braking/hold failures before selecting a policy, reward, observation, or training intervention.",
+    "scientific_commit": "aa935f781553d383271cd4d42420337f4d5e9515",
+    "session_id": "S1"
+  },
   "schema_version": 6,
   "scientific_model": {
     "commit": "f7e873136e4893be5635d7808c5fa11a1d77d1be",
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "9eefdf13-cb8f-498f-801c-1f82b8e4af08",
-    "id": "S1",
-    "inquiry_id": null,
-    "kind": "startup",
-    "objective": "Establish the most credible initial scientific direction toward the human goal from the scientific model and available evidence. Use scientific work in this session to establish or refine that direction, including building or adapting reusable scientific tools and PI-owned methods where needed. These capabilities can support subsequent inquiries. Choose the first useful scientific action and explain why it advances the direction. Preserve the work actually performed, resulting understanding, remaining uncertainties and chosen next action in the scientific session record.",
-    "operation_ids": [
-      "T1",
-      "M1"
-    ],
-    "scientific_parent_commit": "ad4200813c58cef83b470b34bf6f6a716b6bdbfd"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
