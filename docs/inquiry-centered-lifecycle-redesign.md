@@ -85,11 +85,16 @@ documentation.
 3. Let the PI establish the most credible initial direction from the human
    goal, the scientific model, and available evidence.
 4. Let that session use scientific work to establish or refine that direction.
+5. Let the PI choose the first useful scientific action, explain how it
+   advances the direction, and preserve the resulting work, understanding,
+   uncertainty, and next action in the scientific session record.
 
 A baseline is not an architectural phase. A campaign may choose to train and
 measure an initial reference policy, but `working` and `best_known` remain empty
 until evidence supports assigning those roles. Future scenarios may begin with
 tool, reward, representation, or method design before any training exists.
+The startup prompt shows the maintainer's requested-step allocation as a
+ceiling, not as a required training operation.
 
 ### Campaign-level goal review
 

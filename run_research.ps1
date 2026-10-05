@@ -73,7 +73,7 @@ $scientificModelUseGuidance = @(
     "Use its physical consequences and unknowns to form competing mechanistic explanations. When an unresolved mechanism could change the scientific direction, seek evidence that discriminates between those explanations; when it cannot, state why it is not consequential."
 ) -join " "
 $startupPhaseObjective = @'
-Establish the most credible initial scientific direction toward the human goal from the scientific model and available evidence. Use scientific work in this session to establish or refine that direction, including building or adapting reusable scientific tools and PI-owned methods where needed. These capabilities can support subsequent inquiries.
+Establish the most credible initial scientific direction toward the human goal from the scientific model and available evidence. Use scientific work in this session to establish or refine that direction, including building or adapting reusable scientific tools and PI-owned methods where needed. These capabilities can support subsequent inquiries. Choose the first useful scientific action and explain why it advances the direction. Preserve the work actually performed, resulting understanding, remaining uncertainties and chosen next action in the scientific session record.
 '@
 $scientificModelPhaseObjective = @'
 Construct the campaign's physical and scientific model before any training or campaign evidence exists. Work from first principles and the human-authored implementation to explain the robot as an embodied dynamical system: how its morphology, actuation, sensing, control loop, simulator, and task geometry jointly determine the behaviors that are possible, constrained, or scientifically uncertain.
@@ -773,7 +773,10 @@ function New-ScientificSessionPrompt {
         )
     }
 
-    $trainingAllocation = if ($session.kind -ne "startup") {
+    $trainingAllocation = if ($session.kind -eq "startup") {
+        "Training ceiling: $Timesteps requested steps per run."
+    }
+    else {
         "Maintainer training allocation: $Timesteps steps per run. Training requests must match this allocation; neither the PI nor the Runner may independently change it."
     }
 

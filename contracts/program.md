@@ -47,7 +47,10 @@ direction toward the human goal from the scientific model and available
 evidence. The PI uses scientific work in this session to establish or refine
 that direction, including building or adapting reusable scientific tools and
 PI-owned methods where needed. These capabilities can support subsequent
-inquiries. The campaign then enters goal review.
+inquiries. The PI chooses the first useful scientific action and explains why
+it advances the direction. The scientific session record preserves the work
+actually performed, resulting understanding, remaining uncertainties and
+chosen next action. The campaign then enters goal review.
 
 Working and best-known roles remain empty until the PI explicitly assigns
 candidates using completed evidence.

@@ -1887,3 +1887,33 @@ separate from harness changes so their outcomes are not conflated.
   implementation, campaign state, training, evaluation or Runner judgment
   changed.
 - **Disposition:** retained as an ownership-refactor regression correction.
+
+## 2026-10-05: withdraw startup action and training-cue removal
+
+- **Decision:** the maintainer reviewed the five harness changes immediately
+  preceding the ownership restructure. The latest behavioral experiment,
+  `371bae1`, had removed the startup instruction to choose and explain the
+  first useful scientific action, removed the corresponding session-record
+  requirement, and hid the maintainer's startup training ceiling.
+- **Observation:** a later fresh startup still moved directly to an
+  unchanged-recipe full-ceiling training request. The intended improvement in
+  training-first startup behavior was not observed. This is not a controlled
+  causal comparison and does not establish that the removed wording is
+  scientifically effective.
+- **Correction:** withdraw only the behavioral experiment introduced by
+  `371bae1` in the current repository layout. Restore the first-action
+  responsibility, its explanation and scientific-session record, and display
+  the maintainer's requested-step startup allocation as a ceiling rather than
+  a required operation.
+- **Preserved:** keep the ownership restructure, the remaining `7f86168`
+  persona and instruction-delivery corrections, operational fixes, current
+  paths, mechanical allocation validation and the original historical
+  `371bae1` entry. Do not restore its unrelated README changes.
+- **Boundary:** this is a forward semantic withdrawal, not `git revert` or
+  history rewriting. It changes no operation permission, allocation value,
+  Runner judgment, scientific implementation, campaign state or accepted
+  operation. No campaign, training, reset, measurement or evaluation is
+  executed.
+- **Disposition:** `371bae1` is withdrawn after no observed improvement. The
+  restored startup semantics are the behavioral baseline, not a demonstrated
+  solution to training-first action selection.
