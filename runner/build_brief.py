@@ -341,6 +341,7 @@ def _checkpoint_lines(state: dict) -> list[str]:
         f"- Human-goal connection: {checkpoint['human_goal_connection']}",
         f"- Current synthesis: {checkpoint['current_synthesis']}",
         f"- Decision frontier: {checkpoint['decision_frontier']}",
+        f"- Next inquiry question: {checkpoint['next_question']}",
         "- Completed operations: "
         + (
             ", ".join(f"`{item}`" for item in checkpoint["completed_operations"])

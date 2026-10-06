@@ -605,6 +605,11 @@ def plan_inquiry_operation(request: dict, state: dict) -> dict:
             raise ValueError("the unattended MaxInquiries creation cap is reached")
         for field in expected - {"action"}:
             _nonempty(request, field, f"inquiry {field}")
+        checkpoint = state.get("pi_checkpoint")
+        if not isinstance(checkpoint, dict):
+            raise ValueError(
+                "inquiry open requires the previous scientific session record"
+            )
         next_index = int(state["counters"]["inquiry"]) + 1
         return {
             "action": "open",
@@ -615,6 +620,9 @@ def plan_inquiry_operation(request: dict, state: dict) -> dict:
                 "closure_condition": request["closure_condition"].strip(),
                 "rationale": request["rationale"].strip(),
                 "opened_in_session": session["id"],
+                "handoff_conclusion": checkpoint["current_synthesis"],
+                "handoff_question": checkpoint["next_question"],
+                "handoff_source_session_id": checkpoint["session_id"],
                 "reframes": [],
             },
         }
@@ -679,6 +687,21 @@ def plan_checkpoint(request: dict, state: dict) -> dict:
         raise ValueError(f"checkpoint requires exactly {sorted(expected)}")
     for field in expected - {"evidence_references", "completed_operations"}:
         _nonempty(request, field, f"checkpoint {field}")
+    if (
+        session["kind"] == "goal_review"
+        and request["next_question"].strip() != state["active_inquiry"]["question"]
+    ):
+        raise ValueError(
+            "goal-review checkpoint next_question must match the opened inquiry"
+        )
+    if (
+        session["kind"] == "inquiry"
+        and isinstance(state["active_inquiry"], dict)
+        and request["next_question"].strip() != state["active_inquiry"]["question"]
+    ):
+        raise ValueError(
+            "active-inquiry checkpoint next_question must match the current inquiry"
+        )
     evidence = request["evidence_references"]
     if not isinstance(evidence, list) or not all(
         isinstance(item, str) and item.strip() for item in evidence

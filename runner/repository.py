@@ -76,6 +76,7 @@ CHECKPOINT_FIELDS = {
     "current_synthesis",
     "evidence_references",
     "decision_frontier",
+    "next_question",
     "completed_operations",
     "candidates_and_roles",
     "next_direction_or_closure",
@@ -675,6 +676,7 @@ def _validate_checkpoint(checkpoint: object, completed_event_ids: set[str]) -> N
         "current_goal_gap",
         "current_synthesis",
         "decision_frontier",
+        "next_question",
         "candidates_and_roles",
         "next_direction_or_closure",
         "cumulative_resource_use",
@@ -705,6 +707,9 @@ def _validate_active_inquiry(active: object) -> None:
         "closure_condition",
         "rationale",
         "opened_in_session",
+        "handoff_conclusion",
+        "handoff_question",
+        "handoff_source_session_id",
         "reframes",
     }
     if not isinstance(active, dict) or set(active) != required:
@@ -717,6 +722,9 @@ def _validate_active_inquiry(active: object) -> None:
         "closure_condition",
         "rationale",
         "opened_in_session",
+        "handoff_conclusion",
+        "handoff_question",
+        "handoff_source_session_id",
     ):
         _nonempty(active, field, f"active_inquiry {field}")
     if not isinstance(active["reframes"], list):
@@ -946,6 +954,9 @@ def _validate_pending_plan(kind: str, plan: object) -> None:
                     "closure_condition",
                     "rationale",
                     "opened_in_session",
+                    "handoff_conclusion",
+                    "handoff_question",
+                    "handoff_source_session_id",
                     "reframes",
                 },
                 "pending inquiry",

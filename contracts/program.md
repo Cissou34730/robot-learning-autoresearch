@@ -136,8 +136,8 @@ makes a terminal goal-level decision.
 
 The scientific session record preserves the human-goal connection, current
 synthesis, supporting evidence, remaining gap, decision frontier, and next
-direction or closure assessment. A later fresh session continues from that
-durable state.
+question, direction or closure assessment. A later fresh session continues
+from that durable state.
 The record is not a policy checkpoint containing saved model weights.
 It preserves scientific work; submitting the record does not itself establish
 scientific progress.
@@ -149,6 +149,20 @@ evidence, and the limits of current claims.
 `decision_frontier` records the unresolved scientific distinction or
 method-development question and the evidence that would discriminate or
 redirect it. It is not merely a candidate implementation or a list of changes.
+
+`next_question` records the exact question that the same PI selects for the
+next fresh context. Startup selects the first inquiry question. An inquiry
+closure selects the question for the next inquiry. If the same inquiry
+continues after a checkpoint or reframe, the record repeats its current
+question. Goal review opens the selected question and preserves it in its
+checkpoint.
+
+The Runner passes the source session's `current_synthesis` and `next_question`
+verbatim into goal review and the opened inquiry. A fresh model context is a
+continuation of the same PI, not a new scientific review. The PI continues from
+that state. It changes the conclusion or question only when new evidence, an
+implementation finding, or a concrete dead end changes the scientific
+situation. The later record states what changed and why.
 
 `next_direction_or_closure` records the chosen action or closure decision and
 its connection to that frontier. The PI chooses the instrument; these meanings

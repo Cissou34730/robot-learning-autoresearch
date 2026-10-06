@@ -447,7 +447,7 @@ its scientific breadth or achieve its result.
 | Reliable measurement-evidence inspection | Discoverability provisionally retained. In `48993cfd`, M5 feedback advertised diagnostics, but the PI closed without inspecting the strata and incorrectly claimed no outer-reaching gain. In `2381bcbf`, M3/M4 diagnostic reads stopped at lines 1-310, were described as full inspection, and remaining non-entry cases were lost in the synthesis. Decision-linked inspection and interpretation remain unresolved. |
 | Context flooding | Brief-only compaction implemented below: 57.39% smaller on the completed campaign, with all candidates and inventory references preserved. Campaign benefit remains unassessed; prompt replay and SDK output handling are unchanged and remain separate possible work. |
 | Training-shaped inquiry commitments and scientific continuity | Open, with a positive local observation in `2381bcbf`: one inquiry sustained diagnostics and two successive method interventions. The question-based objective was active, but causation is unproved. Both aggregate losses and aggregate gains have obscured consequential subgroup evidence in handoffs. Startup `2573991c` still chose baseline training after the exact two-string restoration. The two requested model reviews identified missing operation-selection and measurement-purpose guidance, but not a single proven cause of the startup drift. Only those two historical passages are restored; no replacement readiness guidance is added. |
-| Fresh-session scientific handoff fidelity | **Open.** There is no separate free-form message from an outgoing PI session to the next fresh PI session. Same-session invocations resume the backend conversation. Fresh sessions instead receive the durable scientific session record, generated brief, completed-operation history, referenced artifacts and initial scientific model. The current concern is not the absence of a private message channel. It is whether the structured handoff preserves evidence references, competing explanations, contradictory evidence and claim limits without distortion or operation-shaped commitment. R1, the measurement-evidence handoff, later recovery work and the broader scientific-continuity item address parts of this concern, but the adequacy of the fresh-session handoff remains unassessed. |
+| Fresh-session scientific handoff fidelity | **Exact conclusion and next-question handoff implemented below; campaign effect remains unassessed.** Startup and inquiry checkpoints now state the next inquiry question. The Runner preserves the source conclusion and question in inquiry state and injects them verbatim into goal-review and inquiry prompts as the same PI's restored scientific state. This removes dependence on the generated brief as the sole compact carrier. It does not prove that the PI will preserve all consequential evidence or select the correct question. |
 | Checkpoint nomination and evidence selection | Deferred behind progression; available training facts are not proof of development performance. |
 | Operation-submission handoff clarification | Still unimplemented. |
 | Explicit protection of the old protocol log | Still unimplemented; read-access policy is a separate decision. |
@@ -2339,3 +2339,36 @@ separate from harness changes so their outcomes are not conflated.
   operation. The Runner keeps the authoritative acceptance check.
 - **Status:** proposal only. No SDK tool, phase-specific toolset or runtime
   behavior changed.
+
+## 2026-10-07: preserve exact PI conclusions and next questions across inquiries
+
+- **RCA:** fresh scientific sessions represent the same PI with refreshed model
+  context. The generated brief carried a reduced summary, but it did not
+  restore the prior conclusion and selected question as explicit PI state.
+  This allowed a mechanism-specific conclusion about braking, residual velocity
+  and state-dependent regulation to become a generic reach-versus-hold inquiry.
+- **Change:** add `next_question` to every scientific session record. Startup
+  selects the first inquiry question. Inquiry closure selects the question for
+  the next inquiry. A checkpoint that continues an active inquiry repeats its
+  current question. Goal review preserves the question of the inquiry that it
+  opened.
+- **Exact handoff:** when goal review opens an inquiry, the Runner copies the
+  source checkpoint's `current_synthesis`, `next_question` and session identity
+  into the inquiry state. Goal-review and inquiry prompts receive the source
+  conclusion and question verbatim, in addition to the existing documents and
+  generated campaign context.
+- **Continuity rule:** the fresh context continues the same PI. It does not
+  invite a new scientific opinion. The PI changes the restored conclusion or
+  question only when new evidence, an implementation finding or a concrete dead
+  end changes the scientific situation. The later record states what changed
+  and why.
+- **Boundary:** the Runner preserves and presents PI-authored scientific state.
+  It does not interpret the conclusion, select the question or prescribe an
+  instrument. Inquiry remains a bounded context for the PI, not an independent
+  success criterion.
+- **Implementation checks:** Python compilation and Ruff passed for the changed
+  Runner modules. PowerShell parsing passed. A minimal state reproduction
+  confirmed exact conclusion and question transfer and rejection of a
+  goal-review checkpoint that changes the opened inquiry question.
+- **Status:** implemented for the next fresh campaign. No campaign operation
+  was started, resumed or reset during implementation.

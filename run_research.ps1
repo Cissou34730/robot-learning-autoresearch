@@ -746,6 +746,25 @@ function New-ScientificSessionPrompt {
         "None. Measurements and evidence-backed model-role assignments are available before choosing official assessment or one bounded goal-linked inquiry."
     }
     $session = $State.scientific_session
+    $handoffContext = if ($session.kind -eq "goal_review" -and $checkpoint) {
+        @(
+            "Restored scientific handoff from the same PI's previous session. This is current scientific state, not another PI's opinion."
+            "Previous session conclusion, verbatim:`n$([string]$checkpoint.current_synthesis)"
+            "Question selected for the next inquiry, verbatim:`n$([string]$checkpoint.next_question)"
+            "Continue from this restored state. Do not replace or reinterpret it because the model context is fresh. Change it only when new evidence, an implementation finding, or a concrete dead end changes the scientific situation. Record what changed and why."
+        )
+    }
+    elseif ($session.kind -eq "inquiry" -and $State.active_inquiry) {
+        @(
+            "Restored scientific handoff from the same PI's source session. This is current scientific state, not another PI's opinion."
+            "Source session conclusion, verbatim:`n$([string]$State.active_inquiry.handoff_conclusion)"
+            "Question selected by that session, verbatim:`n$([string]$State.active_inquiry.handoff_question)"
+            "Continue from this restored state while solving the active inquiry. Do not replace or reinterpret it because the model context is fresh. Change it only when new evidence, an implementation finding, or a concrete dead end changes the scientific situation. Record what changed and why."
+        )
+    }
+    else {
+        @()
+    }
     $correction = if ($ValidationError) {
         "The proposed action could not be accepted: $ValidationError Correct it without discarding valid scientific work."
     }
@@ -766,6 +785,13 @@ function New-ScientificSessionPrompt {
             "Choose the operation whose result would most improve the next decision toward the human goal."
             "Relate the selected operation to the unresolved scientific distinction or method-development need. The decision frontier records the question and discriminating evidence, not merely a candidate implementation."
             "At checkpoint, preserve or revise the decision-relevant physical consequences from the initial scientific model in the current synthesis and decision frontier. State what evidence changed, did not change, or remains insufficient, and how that affects the next direction."
+            "At checkpoint, set next_question to the exact scientific question that the same PI must carry into the next fresh context. Preserve the leading mechanism, its priority, and the evidence that can discriminate it."
+            if ($session.kind -eq "goal_review") {
+                "In goal review, next_question must exactly match the question of the inquiry opened in this session."
+            }
+            elseif ($session.kind -eq "inquiry" -and $State.active_inquiry) {
+                "While the inquiry remains active, next_question must exactly match its current question."
+            }
             "Existing PI-owned implementations have no privileged status; inspect, modify, or replace them when that is the most credible scientific action before submitting an operation."
             if ($session.kind -ne "startup") {
                 "When evidence resolves or redirects the active inquiry, record that decision explicitly rather than drifting to another question."
@@ -777,6 +803,15 @@ function New-ScientificSessionPrompt {
         @(
             "The sole legal next action is the checkpoint operation that saves the scientific session record."
             "Do not request training, measurement, model-role changes, restoration, another inquiry change, or a campaign conclusion in this session."
+            if ($session.kind -eq "goal_review") {
+                "Set next_question exactly to the question of the inquiry opened in this session."
+            }
+            elseif ($session.kind -eq "inquiry" -and $State.active_inquiry) {
+                "Set next_question exactly to the current active inquiry question."
+            }
+            elseif ($session.kind -eq "inquiry") {
+                "Set next_question to the exact scientific question that the same PI must carry into the next inquiry. Preserve the leading mechanism, its priority, and the evidence that can discriminate it."
+            }
         )
     }
     else {
@@ -831,6 +866,7 @@ function New-ScientificSessionPrompt {
         $piPersona
         "Human goal: $goal"
         "The essential task conditions and protected boundaries are defined in contracts/scenario.md."
+        $handoffContext
         $startupHandoffGuidance
         $scientificModelUseGuidance
         "Current scientific understanding: $synthesis"

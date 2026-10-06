@@ -1613,6 +1613,13 @@ def _announce_consequential_completion(presentation: dict) -> None:
             "\n".join(
                 (
                     f"Outcome: {plan.get('current_synthesis', 'Session summary saved.')}",
+                    "Next question: "
+                    + str(
+                        plan.get(
+                            "next_question",
+                            "No next inquiry question was recorded.",
+                        )
+                    ),
                     "Next: "
                     + str(
                         plan.get(

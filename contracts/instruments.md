@@ -293,6 +293,7 @@ A policy checkpoint is a separate training artifact.
       "items": {"type": "string"}
     },
     "decision_frontier": {"type": "string"},
+    "next_question": {"type": "string"},
     "completed_operations": {
       "type": "array",
       "items": {"type": "string"}
@@ -306,6 +307,12 @@ A policy checkpoint is a separate training artifact.
 
 Every field is required.
 All string fields must be non-empty.
+`next_question` states the exact scientific question that the same PI carries
+into the next fresh context.
+Startup selects the first inquiry question.
+An inquiry closure selects the question for the next inquiry.
+If the same inquiry continues, the checkpoint repeats its current question.
+The goal-review checkpoint repeats the question of the inquiry that it opened.
 `completed_operations` must exactly match the active session's completed
 operation identities.
 Every evidence reference must identify a completed operation.
