@@ -71,6 +71,7 @@ $piPersona = @(
 $scientificModelUseGuidance = @(
     "Use pi_workspace/scientific_model.md as the campaign's initial physical model. Test its interpretation against observed behavior and carry forward what the campaign learns; do not treat it as an intervention menu or a passive reference."
     "Use its physical consequences and unknowns to form competing mechanistic explanations. When an unresolved mechanism could change the scientific direction, seek evidence that discriminates between those explanations; when it cannot, state why it is not consequential."
+    "For every physical consequence that could matter to the campaign, state which scientific decision it could change and what observation or evidence would revise it. Do not preserve a consequence as background description without connecting it to a decision."
 ) -join " "
 $startupPhaseObjective = @'
 Establish the most credible initial scientific direction toward the human goal from the scientific model and available evidence. Use scientific work in this session to establish or refine that direction, including building or adapting reusable scientific tools and PI-owned methods where needed. These capabilities can support subsequent inquiries. Choose the first useful scientific action and explain why it advances the direction. Preserve the work actually performed, resulting understanding, remaining uncertainties and chosen next action in the scientific session record.
@@ -93,6 +94,8 @@ Analyze, from first principles and from the human-authored implementation:
 * alternative physical configurations or solutions available to the robot, such as multiple kinematic solutions where relevant;
 * physical, kinematic, dynamic, control, or observability constraints that may create qualitatively different classes of behavior or failure;
 * which physical quantities across the complete behavior would be scientifically meaningful for understanding the robot.
+
+For each consequential physical implication, state which scientific decision it could change and what observation or evidence would support, weaken, or revise it. Keep this decision relevance distinct from a proposed intervention: the model should identify consequences and discriminating needs, not prescribe a recipe.
 
 The final output should be a compact but substantive Scientific model of the robot and task. It should explain how the complete coupled system works physically and scientifically, not merely list what files contain or imply a future intervention agenda.
 '@
@@ -764,6 +767,7 @@ function New-ScientificSessionPrompt {
         @(
             "Choose the operation whose result would most improve the next decision toward the human goal."
             "Relate the selected operation to the unresolved scientific distinction or method-development need. The decision frontier records the question and discriminating evidence, not merely a candidate implementation."
+            "At checkpoint, preserve or revise the decision-relevant physical consequences from the initial scientific model in the current synthesis and decision frontier. State what evidence changed, did not change, or remains insufficient, and how that affects the next direction."
             "Existing PI-owned implementations have no privileged status; inspect, modify, or replace them when that is the most credible scientific action before submitting an operation."
             if ($session.kind -ne "startup") {
                 "When evidence resolves or redirects the active inquiry, record that decision explicitly rather than drifting to another question."
@@ -773,9 +777,30 @@ function New-ScientificSessionPrompt {
         )
     }
     $startupHandoffGuidance = if ($session.kind -eq "startup") {
+        $modelHandoff = "The model content is available in campaigns/brief.md under 'Initial scientific model'."
+        $modelPath = Join-Path (Get-Location) "pi_workspace\scientific_model.md"
+        if (Test-Path -LiteralPath $modelPath -PathType Leaf) {
+            $modelText = Get-Content -LiteralPath $modelPath -Raw
+            $consequences = [regex]::Match(
+                $modelText,
+                "(?ms)^## Physical consequences\s+(.*?)(?=^## |\z)"
+            ).Groups[1].Value.Trim()
+            $unknowns = [regex]::Match(
+                $modelText,
+                "(?ms)^## Unknowns\s+(.*?)(?=^## |\z)"
+            ).Groups[1].Value.Trim()
+            if ($consequences -or $unknowns) {
+                $modelHandoff = @(
+                    "Decision-relevant content from the initial scientific model:"
+                    if ($consequences) { "Physical consequences:`n$consequences" }
+                    if ($unknowns) { "Unknowns and revision needs:`n$unknowns" }
+                ) -join "`n`n"
+            }
+        }
         @(
             "Before selecting the first action, read pi_workspace/scientific_model.md as the initial physical model."
-            "Carry its consequential physical implications and unknowns into the startup scientific synthesis, including which decisions they may affect. Treat that model as revisable in light of evidence; do not treat it as an intervention menu or require a measurement merely to restate it."
+            $modelHandoff
+            "Convert the handoff into a concise startup synthesis: identify which consequences are decision-relevant now, which competing explanations they support, what evidence would discriminate them, and how the first action follows. Treat the model as revisable in light of evidence; do not treat it as an intervention menu or require a measurement merely to restate it."
         )
     }
     else {

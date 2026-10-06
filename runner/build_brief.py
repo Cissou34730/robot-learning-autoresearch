@@ -42,6 +42,32 @@ def _human_goal(state: dict) -> str:
     return f"Defined by `{state['human_goal']['source']}`."
 
 
+def _scientific_model_lines(state: dict) -> list[str]:
+    model_path = state["scientific_model"]["path"]
+    model_file = ROOT / model_path
+    lines = [
+        f"- Source: `{model_path}`.",
+        f"- Publication status: `{state['scientific_model']['status']}`.",
+    ]
+    commit = state["scientific_model"].get("commit")
+    if commit:
+        lines.append(f"- Published commit: `{commit}`.")
+    if not model_file.is_file():
+        lines.append("- Model content is not available in the current worktree.")
+        return lines
+    text = model_file.read_text(encoding="utf-8")
+    for heading, label in (
+        ("Physical consequences", "Decision-relevant physical consequences"),
+        ("Unknowns", "Unknowns and revision needs"),
+    ):
+        section = _markdown_section(text, heading)
+        if section:
+            lines.extend([f"- **{label}:** {section}"])
+    if len(lines) == 3 and not commit:
+        lines.append("- Model content has no recognized consequence or unknowns sections.")
+    return lines
+
+
 def _artifact(value: object) -> str:
     if not isinstance(value, str) or not value.strip():
         return "none"
@@ -495,6 +521,10 @@ def render_research_brief() -> str:
         "## Current goal gap",
         "",
         _goal_gap(state),
+        "",
+        "## Initial scientific model",
+        "",
+        *_scientific_model_lines(state),
         "",
         "## Active inquiry and goal relevance",
         "",

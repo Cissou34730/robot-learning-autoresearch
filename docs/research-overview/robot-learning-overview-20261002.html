@@ -255,7 +255,7 @@
         <p>Startup establishes or refines the initial scientific direction through scientific work. It can build or adapt reusable tools and PI-owned methods.</p>
         <p>The PI chooses the first useful scientific action, explains how it advances that direction, and records the resulting work and uncertainty.</p>
         <p>The preliminary scientific-model prompt places the human goal before the robotics-first PI persona. Startup now explicitly reads the scientific model and carries consequential physical implications and unknowns into its synthesis. Other phase prompts remain persona-first.</p>
-        <p class="small muted">The cue-removal experiment <code>371bae1</code> produced no observed improvement and was withdrawn in <code>efc3be7</code>. The scoped goal-first model ordering in <code>756ae4b</code> is retained after one useful startup, without a causal claim. R1 is now implemented for observation; R2-R8 remain backlog items.</p>
+        <p class="small muted">The cue-removal experiment <code>371bae1</code> produced no observed improvement and was withdrawn in <code>efc3be7</code>. The scoped goal-first model ordering in <code>756ae4b</code> is retained after one useful startup, without a causal claim. Full R1 is now implemented as a model-to-startup continuity mechanism; R2-R8 remain backlog items.</p>
         <p class="small"><a href="#startup-current">Read the current startup behavior</a></p>
       </article>
       <article class="card">
@@ -765,7 +765,7 @@
             <tr><td>Explicit protection of the old protocol log</td><td><span class="tag">Open</span></td><td>Not implemented. This is separate from the implemented read-access policy. No next step is selected here.</td></tr>
             <tr><td>Console clarity</td><td><span class="tag">Deferred</span></td><td>Separate deferred work, not a startup or scientific-method correction.</td></tr>
             <tr><td>Later removal of the 15-inquiry cap</td><td><span class="tag">Deferred</span></td><td>The maintainer intends removal when the scientist is ready. The current cap remains an operational pause. No removal or new readiness gate is implemented.</td></tr>
-            <tr><td>Independent prompt-stack review R1: startup handoff</td><td><span class="tag">Implemented</span></td><td>Startup explicitly reads <code>pi_workspace\scientific_model.md</code> before selecting an action and carries consequential physical implications and unknowns into its synthesis. The model remains revisable; no first-measurement or question-first rule is added.</td></tr>
+            <tr><td>Independent prompt-stack review R1: scientific-model handoff</td><td><span class="tag">Implemented</span></td><td>The preliminary model ties consequential implications to decisions and revision evidence; startup receives its physical consequences and unknowns in the prompt and brief before choosing an action; later checkpoints are instructed to preserve or revise those conclusions through synthesis and the decision frontier. No first-measurement or question-first rule is added.</td></tr>
             <tr><td>Independent prompt-stack review R2-R8</td><td><span class="tag">Open</span></td><td>R2 scientific-context ordering, R3 inquiry meaning, R4 recovery classification, R5 instrument discoverability, R6 authority wording, R7 routing/backend alignment, and R8 instruction ownership remain unimplemented and separately scoped.</td></tr>
           </tbody>
         </table>

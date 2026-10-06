@@ -2053,14 +2053,18 @@ separate from harness changes so their outcomes are not conflated.
   exercised together or one at a time. Campaign state and pending operation
   state remain untouched.
 
-## 2026-10-05: implement R1 startup scientific-model handoff
+## 2026-10-05 to 2026-10-06: implement full R1 scientific-model handoff
 
 - **Source:** independent prompt-stack review preserved in
   `docs/prompt-instruction-stack-review-20261005.md`, recommendations R1-R8.
-- **Approved scope:** implement R1 only. Before startup action selection, the
-  PI is explicitly told to read `pi_workspace/scientific_model.md` and carry
-  consequential physical implications and unknowns into its startup synthesis.
-  The model remains revisable and is not presented as an intervention menu.
+- **Approved scope:** implement R1 only. The preliminary model now requires
+  each consequential implication to identify the decision it could change and
+  the evidence that would revise it. Startup receives the physical-consequence
+  and unknowns sections directly, must synthesize their decision relevance
+  before choosing an action, and later checkpoints are instructed to preserve
+  or revise those conclusions through the existing synthesis and decision
+  frontier fields. The generated brief now exposes the model content and its
+  publication route.
 - **Unchanged:** persona wording, prompt ordering outside this startup-specific
   guidance, inquiry semantics, instrument contracts, operation permissions,
   training allocation, Runner validation, campaign state, and pending requests.
@@ -2070,13 +2074,13 @@ separate from harness changes so their outcomes are not conflated.
   discoverability, R6 replacement-authority wording, R7 routing/backend
   alignment, and R8 instruction ownership/repetition remain unimplemented.
   Their proposed wording is not silently included in R1.
-- **Implementation checks:** PowerShell parsing passed. Static inspection
-  confirmed that the startup-only handoff and startup source-routing strings
-  are present while the non-startup source-routing branch remains unchanged.
-  Scientific effectiveness is unassessed.
-- **Disposition:** R1 implemented for observation. It is a bounded handoff
-  correction, not a requirement to measure first or formulate a procedural
-  question before acting.
+- **Implementation checks:** PowerShell parsing, targeted Python compilation,
+  brief rendering, and whitespace checks passed. The live campaign state and
+  pending operation request were not modified. Scientific effectiveness remains
+  unassessed.
+- **Disposition:** R1 is implemented as a bounded continuity mechanism. It
+  does not require measurement first, formulate a procedural question before
+  acting, or treat the preliminary model as an authority or intervention menu.
 
 ## 2026-10-06: allow Runner transactions during protected-runtime checks
 
