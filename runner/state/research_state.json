@@ -830,7 +830,7 @@
     }
   },
   "counters": {
-    "event": 0,
+    "event": 1,
     "inquiry": 0,
     "measurement": 1,
     "session": 1,
@@ -839,7 +839,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -1476,32 +1476,156 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-06T05:15:46Z",
+      "error": null,
+      "id": "E1",
+      "inquiry_id": null,
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "T1 produced archived candidates but no working, best-known, or retained role has been assigned. M1 found identical 94.375% development success for the two compared late checkpoints; role assignment should wait for the next goal-review decision unless needed to identify a measurement subject.",
+        "completed_operations": [
+          "T1",
+          "M1"
+        ],
+        "cumulative_resource_use": "One 120,000-requested-step fresh baseline training operation and one paired 160-episode development evaluation; no policy role assignment and no official assessment.",
+        "current_goal_gap": "The baseline falls 3.625 percentage points below the development-panel target proxy, and the corresponding official 98% objective remains untested. The cause of the nine development failures is unresolved because the recorded evidence contains trajectory diagnostics but the current result summary exposes only aggregate success.",
+        "current_synthesis": "The physical model still supports four consequential explanations: inner-radius distribution shift, branch or joint-limit/sector difficulty, transient approach from the straight singular reset, and post-entry hold stabilization or sampling-boundary failure. M1 establishes that both T1:checkpoint-100352 and T1:checkpoint-120832 achieved 151/160 on the same official-distribution development seeds, with zero discordant episode outcomes and no improvement from the later checkpoint. This contradicts any claim that additional late baseline training alone solved the goal gap, but it does not identify the mechanism: identical binary outcomes are compatible with shared reach failures, shared hold failures, or a stable policy limitation. The artifact schema confirms per-episode target radius, angle, first reach, longest hold, interruptions, and distance diagnostics are retained, yet their values are not present in the compact evidence summary. Claims about branch feasibility, singular-transient behavior, velocity regulation, timing sensitivity, and inner-radius transfer therefore remain conjectural. The model's kinematic conclusion that the official annulus is generally reachable remains a prior, not behavioral evidence; it would be revised by failures concentrated in infeasible or limit-margin sectors, while persistent failures after conditioning on feasible branches would support a control or learning limitation.",
+        "decision_frontier": "Which mechanism accounts for the nine shared development failures: (a) target-radius or angular/IK branch coverage, including the straight-reset transient, or (b) entry followed by unstable or sampling-sensitive hold? Discriminating evidence is the retained per-episode diagnostic distribution stratified by radius and angle: first-reach presence and time, maximum uninterrupted hold, interruption count, minimum/final distance, and their relation to feasible IK-limit margins. A sharp inner-radius or sector effect supports coverage/branch explanations; frequent first reach with short holds supports stabilization; failures without first reach support approach/branch selection. Until this split is resolved, changing reward, recurrence, or training distribution would be underdetermined.",
+        "evidence_references": [
+          "T1",
+          "M1"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 successes in the protected 200-episode official panel. The baseline is not yet eligible for that claim: its development-panel result is 151/160 (94.375%), leaving a substantial measured gap and no best-known role assigned.",
+        "next_direction_or_closure": "Enter goal review and open one bounded inquiry on failure-mechanism attribution. The first inquiry action should extract and analyze the existing M1 trajectory diagnostics, or create the smallest PI-owned diagnostic tool needed to report radius/angle-conditioned first reach, hold streak, and interruption classes. This directly resolves the decision frontier before selecting a coverage, stabilization, observation, reward, or learning-method intervention."
+      },
+      "result": {
+        "session_id": "S1",
+        "status": "checkpointed"
+      },
+      "session_id": "S1",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
-  "pi_checkpoint": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "603bca3a1984424728fbb397965d7f235de6cd87",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "T1 produced archived candidates but no working, best-known, or retained role has been assigned. M1 found identical 94.375% development success for the two compared late checkpoints; role assignment should wait for the next goal-review decision unless needed to identify a measurement subject.",
+        "completed_operations": [
+          "T1",
+          "M1"
+        ],
+        "cumulative_resource_use": "One 120,000-requested-step fresh baseline training operation and one paired 160-episode development evaluation; no policy role assignment and no official assessment.",
+        "current_goal_gap": "The baseline falls 3.625 percentage points below the development-panel target proxy, and the corresponding official 98% objective remains untested. The cause of the nine development failures is unresolved because the recorded evidence contains trajectory diagnostics but the current result summary exposes only aggregate success.",
+        "current_synthesis": "The physical model still supports four consequential explanations: inner-radius distribution shift, branch or joint-limit/sector difficulty, transient approach from the straight singular reset, and post-entry hold stabilization or sampling-boundary failure. M1 establishes that both T1:checkpoint-100352 and T1:checkpoint-120832 achieved 151/160 on the same official-distribution development seeds, with zero discordant episode outcomes and no improvement from the later checkpoint. This contradicts any claim that additional late baseline training alone solved the goal gap, but it does not identify the mechanism: identical binary outcomes are compatible with shared reach failures, shared hold failures, or a stable policy limitation. The artifact schema confirms per-episode target radius, angle, first reach, longest hold, interruptions, and distance diagnostics are retained, yet their values are not present in the compact evidence summary. Claims about branch feasibility, singular-transient behavior, velocity regulation, timing sensitivity, and inner-radius transfer therefore remain conjectural. The model's kinematic conclusion that the official annulus is generally reachable remains a prior, not behavioral evidence; it would be revised by failures concentrated in infeasible or limit-margin sectors, while persistent failures after conditioning on feasible branches would support a control or learning limitation.",
+        "decision_frontier": "Which mechanism accounts for the nine shared development failures: (a) target-radius or angular/IK branch coverage, including the straight-reset transient, or (b) entry followed by unstable or sampling-sensitive hold? Discriminating evidence is the retained per-episode diagnostic distribution stratified by radius and angle: first-reach presence and time, maximum uninterrupted hold, interruption count, minimum/final distance, and their relation to feasible IK-limit margins. A sharp inner-radius or sector effect supports coverage/branch explanations; frequent first reach with short holds supports stabilization; failures without first reach support approach/branch selection. Until this split is resolved, changing reward, recurrence, or training distribution would be underdetermined.",
+        "evidence_references": [
+          "T1",
+          "M1"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 successes in the protected 200-episode official panel. The baseline is not yet eligible for that claim: its development-panel result is 151/160 (94.375%), leaving a substantial measured gap and no best-known role assigned.",
+        "inquiry_id": null,
+        "next_direction_or_closure": "Enter goal review and open one bounded inquiry on failure-mechanism attribution. The first inquiry action should extract and analyze the existing M1 trajectory diagnostics, or create the smallest PI-owned diagnostic tool needed to report radius/angle-conditioned first reach, hold streak, and interruption classes. This directly resolves the decision frontier before selecting a coverage, stabilization, observation, reward, or learning-method intervention.",
+        "session_id": "S1"
+      },
+      "presentation": {
+        "backend_session_id": "83a7078c-8a24-44ff-b9fd-10fdb5f08fe4",
+        "campaign_id": "9fa1f256-b083-45b2-8127-d7e4e00728b8",
+        "campaign_usage": "5m40s | 8.29 AIU | prompt 1.1m (85% cached) | output 18.7k",
+        "session_id": "S1",
+        "session_kind": "startup",
+        "session_usage": "2m08s | 4.46 AIU | prompt 563.6k (79% cached) | output 5.8k"
+      },
+      "result": {
+        "session_id": "S1",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "3b25f184422cbdba68a9131e9d09ed12468b310b",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E1",
+    "inquiry_id": null,
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "T1 produced archived candidates but no working, best-known, or retained role has been assigned. M1 found identical 94.375% development success for the two compared late checkpoints; role assignment should wait for the next goal-review decision unless needed to identify a measurement subject.",
+        "completed_operations": [
+          "T1",
+          "M1"
+        ],
+        "cumulative_resource_use": "One 120,000-requested-step fresh baseline training operation and one paired 160-episode development evaluation; no policy role assignment and no official assessment.",
+        "current_goal_gap": "The baseline falls 3.625 percentage points below the development-panel target proxy, and the corresponding official 98% objective remains untested. The cause of the nine development failures is unresolved because the recorded evidence contains trajectory diagnostics but the current result summary exposes only aggregate success.",
+        "current_synthesis": "The physical model still supports four consequential explanations: inner-radius distribution shift, branch or joint-limit/sector difficulty, transient approach from the straight singular reset, and post-entry hold stabilization or sampling-boundary failure. M1 establishes that both T1:checkpoint-100352 and T1:checkpoint-120832 achieved 151/160 on the same official-distribution development seeds, with zero discordant episode outcomes and no improvement from the later checkpoint. This contradicts any claim that additional late baseline training alone solved the goal gap, but it does not identify the mechanism: identical binary outcomes are compatible with shared reach failures, shared hold failures, or a stable policy limitation. The artifact schema confirms per-episode target radius, angle, first reach, longest hold, interruptions, and distance diagnostics are retained, yet their values are not present in the compact evidence summary. Claims about branch feasibility, singular-transient behavior, velocity regulation, timing sensitivity, and inner-radius transfer therefore remain conjectural. The model's kinematic conclusion that the official annulus is generally reachable remains a prior, not behavioral evidence; it would be revised by failures concentrated in infeasible or limit-margin sectors, while persistent failures after conditioning on feasible branches would support a control or learning limitation.",
+        "decision_frontier": "Which mechanism accounts for the nine shared development failures: (a) target-radius or angular/IK branch coverage, including the straight-reset transient, or (b) entry followed by unstable or sampling-sensitive hold? Discriminating evidence is the retained per-episode diagnostic distribution stratified by radius and angle: first-reach presence and time, maximum uninterrupted hold, interruption count, minimum/final distance, and their relation to feasible IK-limit margins. A sharp inner-radius or sector effect supports coverage/branch explanations; frequent first reach with short holds supports stabilization; failures without first reach support approach/branch selection. Until this split is resolved, changing reward, recurrence, or training distribution would be underdetermined.",
+        "evidence_references": [
+          "T1",
+          "M1"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 successes in the protected 200-episode official panel. The baseline is not yet eligible for that claim: its development-panel result is 151/160 (94.375%), leaving a substantial measured gap and no best-known role assigned.",
+        "next_direction_or_closure": "Enter goal review and open one bounded inquiry on failure-mechanism attribution. The first inquiry action should extract and analyze the existing M1 trajectory diagnostics, or create the smallest PI-owned diagnostic tool needed to report radius/angle-conditioned first reach, hold streak, and interruption classes. This directly resolves the decision frontier before selecting a coverage, stabilization, observation, reward, or learning-method intervention."
+      }
+    },
+    "request_fingerprint": "b31d0fa58acf41c318d81e7bc75baf225681329e5d88eb85d653fbd9aefd55d0",
+    "session_id": "S1",
+    "supersedes": null
+  },
+  "pi_checkpoint": {
+    "candidates_and_roles": "T1 produced archived candidates but no working, best-known, or retained role has been assigned. M1 found identical 94.375% development success for the two compared late checkpoints; role assignment should wait for the next goal-review decision unless needed to identify a measurement subject.",
+    "completed_operations": [
+      "T1",
+      "M1"
+    ],
+    "cumulative_resource_use": "One 120,000-requested-step fresh baseline training operation and one paired 160-episode development evaluation; no policy role assignment and no official assessment.",
+    "current_goal_gap": "The baseline falls 3.625 percentage points below the development-panel target proxy, and the corresponding official 98% objective remains untested. The cause of the nine development failures is unresolved because the recorded evidence contains trajectory diagnostics but the current result summary exposes only aggregate success.",
+    "current_synthesis": "The physical model still supports four consequential explanations: inner-radius distribution shift, branch or joint-limit/sector difficulty, transient approach from the straight singular reset, and post-entry hold stabilization or sampling-boundary failure. M1 establishes that both T1:checkpoint-100352 and T1:checkpoint-120832 achieved 151/160 on the same official-distribution development seeds, with zero discordant episode outcomes and no improvement from the later checkpoint. This contradicts any claim that additional late baseline training alone solved the goal gap, but it does not identify the mechanism: identical binary outcomes are compatible with shared reach failures, shared hold failures, or a stable policy limitation. The artifact schema confirms per-episode target radius, angle, first reach, longest hold, interruptions, and distance diagnostics are retained, yet their values are not present in the compact evidence summary. Claims about branch feasibility, singular-transient behavior, velocity regulation, timing sensitivity, and inner-radius transfer therefore remain conjectural. The model's kinematic conclusion that the official annulus is generally reachable remains a prior, not behavioral evidence; it would be revised by failures concentrated in infeasible or limit-margin sectors, while persistent failures after conditioning on feasible branches would support a control or learning limitation.",
+    "decision_frontier": "Which mechanism accounts for the nine shared development failures: (a) target-radius or angular/IK branch coverage, including the straight-reset transient, or (b) entry followed by unstable or sampling-sensitive hold? Discriminating evidence is the retained per-episode diagnostic distribution stratified by radius and angle: first-reach presence and time, maximum uninterrupted hold, interruption count, minimum/final distance, and their relation to feasible IK-limit margins. A sharp inner-radius or sector effect supports coverage/branch explanations; frequent first reach with short holds supports stabilization; failures without first reach support approach/branch selection. Until this split is resolved, changing reward, recurrence, or training distribution would be underdetermined.",
+    "evidence_references": [
+      "T1",
+      "M1"
+    ],
+    "human_goal_connection": "The human goal requires at least 196 successes in the protected 200-episode official panel. The baseline is not yet eligible for that claim: its development-panel result is 151/160 (94.375%), leaving a substantial measured gap and no best-known role assigned.",
+    "inquiry_id": null,
+    "next_direction_or_closure": "Enter goal review and open one bounded inquiry on failure-mechanism attribution. The first inquiry action should extract and analyze the existing M1 trajectory diagnostics, or create the smallest PI-owned diagnostic tool needed to report radius/angle-conditioned first reach, hold streak, and interruption classes. This directly resolves the decision frontier before selecting a coverage, stabilization, observation, reward, or learning-method intervention.",
+    "scientific_commit": "3b25f184422cbdba68a9131e9d09ed12468b310b",
+    "session_id": "S1"
+  },
   "schema_version": 6,
   "scientific_model": {
     "commit": "99882e38c4cb68015fdc1f9cb2f36c6c55d52ad5",
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "83a7078c-8a24-44ff-b9fd-10fdb5f08fe4",
-    "id": "S1",
-    "inquiry_id": null,
-    "kind": "startup",
-    "objective": "Establish the most credible initial scientific direction toward the human goal from the scientific model and available evidence. Use scientific work in this session to establish or refine that direction, including building or adapting reusable scientific tools and PI-owned methods where needed. These capabilities can support subsequent inquiries. Choose the first useful scientific action and explain why it advances the direction. Preserve the work actually performed, resulting understanding, remaining uncertainties and chosen next action in the scientific session record.",
-    "operation_ids": [
-      "T1",
-      "M1"
-    ],
-    "scientific_parent_commit": "603bca3a1984424728fbb397965d7f235de6cd87"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
