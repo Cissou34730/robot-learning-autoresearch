@@ -1883,44 +1883,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "open",
-        "inquiry": {
-          "closure_condition": "Close the inquiry only after one fresh 120000-step candidate trained with the bounded observation intervention is evaluated on the shared 160-episode development panel against a baseline reference, with radius- and angle-conditioned success, analytic branch feasibility, first-reach presence and timing, maximum uninterrupted hold, and interruption class retained. The intervention is supported if the -150 to -120 degree sector and no-first-reach failures decrease materially relative to the reference; if sector failures persist after feasible-branch conditioning, or failures shift predominantly to post-entry short holds, redirect the next inquiry toward transient, velocity, or sampled-boundary stabilization. Do not claim the official goal from this development panel.",
-          "goal_connection": "The current candidates achieve 151/160 on the official-distribution development panel, below the 98% objective of at least 196/200. M2 and E5 identify branch selection and shoulder-limit handling as the dominant shared failure mechanism; testing explicit feasibility conditioning is the shortest goal-linked intervention before considering transient or hold-stabilization changes.",
-          "id": "I2",
-          "opened_in_session": "S5",
-          "question": "Does explicit analytic IK branch feasibility and joint-limit-margin conditioning enable a learned policy to select the folded feasible branch in the failure sector, reducing the -150 to -120 degree failures and the six no-first-reach cases without changing the official task?",
-          "rationale": "The physical model predicts that the official annulus is reachable through at least one branch, but valid branch choice is configuration-dependent near the shoulder limits. M2 found all nine shared baseline failures had an infeasible positive-elbow branch while the folded branch remained feasible, with six failures concentrated in the -150 to -120 degree sector and six failures lacking first reach. The current 11-value observation includes errors to both branches but no explicit limit margin or feasibility signal. Add only branch-specific analytic limit information to the policy observation; preserve task mechanics, official evaluation semantics, reward, and the 120000-step allocation. This discriminates whether the attributed branch mechanism is causally sufficient from unresolved straight-reset and hold mechanisms.",
-          "reframes": []
-        }
-      },
-      "result": {
-        "action": "open",
-        "inquiry_id": "I2",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E7",
-    "inquiry_id": null,
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "open",
-        "closure_condition": "Close the inquiry only after one fresh 120000-step candidate trained with the bounded observation intervention is evaluated on the shared 160-episode development panel against a baseline reference, with radius- and angle-conditioned success, analytic branch feasibility, first-reach presence and timing, maximum uninterrupted hold, and interruption class retained. The intervention is supported if the -150 to -120 degree sector and no-first-reach failures decrease materially relative to the reference; if sector failures persist after feasible-branch conditioning, or failures shift predominantly to post-entry short holds, redirect the next inquiry toward transient, velocity, or sampled-boundary stabilization. Do not claim the official goal from this development panel.",
-        "goal_connection": "The current candidates achieve 151/160 on the official-distribution development panel, below the 98% objective of at least 196/200. M2 and E5 identify branch selection and shoulder-limit handling as the dominant shared failure mechanism; testing explicit feasibility conditioning is the shortest goal-linked intervention before considering transient or hold-stabilization changes.",
-        "question": "Does explicit analytic IK branch feasibility and joint-limit-margin conditioning enable a learned policy to select the folded feasible branch in the failure sector, reducing the -150 to -120 degree failures and the six no-first-reach cases without changing the official task?",
-        "rationale": "The physical model predicts that the official annulus is reachable through at least one branch, but valid branch choice is configuration-dependent near the shoulder limits. M2 found all nine shared baseline failures had an infeasible positive-elbow branch while the folded branch remained feasible, with six failures concentrated in the -150 to -120 degree sector and six failures lacking first reach. The current 11-value observation includes errors to both branches but no explicit limit margin or feasibility signal. Add only branch-specific analytic limit information to the policy observation; preserve task mechanics, official evaluation semantics, reward, and the 120000-step allocation. This discriminates whether the attributed branch mechanism is causally sufficient from unresolved straight-reset and hold mechanisms."
-      }
-    },
-    "request_fingerprint": "f6dca3764801a8c3d986cd2aaa776ca6d1c4bd6e48237ad4a6e7b57033f64294",
-    "session_id": "S5",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T1 produced archived candidates, and M1/M2 show identical development outcomes and mechanism for T1:checkpoint-100352 and T1:checkpoint-120832. Neither candidate has a working, best-known, or retained role because neither has been tested after the scientifically justified intervention.",
     "completed_operations": [
