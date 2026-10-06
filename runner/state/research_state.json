@@ -1,5 +1,13 @@
 {
-  "active_inquiry": null,
+  "active_inquiry": {
+    "closure_condition": "Close when shared-seed learned-policy evidence records official-geometry success and distinguishes the dominant failure mechanism using first-entry behavior, velocity and substep excursions, hold interruptions, and performance by radius, angle, and branch-conditioned geometry; redirect the campaign if the evidence instead shows uniform slow non-entry or another capability need.",
+    "goal_connection": "The human goal requires at least 196 successes out of 200 official episodes. No policy-level success evidence or candidate exists, so identifying whether failure is caused by fast entry and residual velocity, the current 6-14 cm training omission, or localized branch and conditioning effects is necessary before choosing a control, reward, observation, or training-distribution intervention.",
+    "id": "I1",
+    "opened_in_session": "S2",
+    "question": "Can a learned policy using the available bounded direct-motor interface reliably enter and maintain the complete uninterrupted 2-second hold across the official 6-20 cm, full-angle distribution, and if not, is the limiting capability primarily braking and stabilization, omitted radial coverage, or branch-conditioned geometric difficulty?",
+    "rationale": "M1 confirms substantial actuation authority and makes residual velocity and braking a credible hold-failure mechanism, while preserving consequential risks from the 6-14 cm coverage gap and radius or branch conditioning. M1 used prescribed commands and did not measure closed-loop policy entry velocity, uninterrupted holding, or policy success, so it cannot justify an official assessment or select an intervention.",
+    "reframes": []
+  },
   "campaign": {
     "base_commit": "e109796a2f9ad792eeb3fedbf4dc78d361d8b91e",
     "id": "1d55787c-9b86-48a5-ab74-3853d0375648",
@@ -9,16 +17,16 @@
   },
   "candidates": {},
   "counters": {
-    "event": 1,
-    "inquiry": 0,
+    "event": 2,
+    "inquiry": 1,
     "measurement": 1,
-    "session": 1,
+    "session": 2,
     "training": 0
   },
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -239,9 +247,69 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-06T19:48:29Z",
+      "error": null,
+      "id": "E2",
+      "inquiry_id": "I1",
+      "kind": "inquiry",
+      "request": {
+        "action": "open",
+        "closure_condition": "Close when shared-seed learned-policy evidence records official-geometry success and distinguishes the dominant failure mechanism using first-entry behavior, velocity and substep excursions, hold interruptions, and performance by radius, angle, and branch-conditioned geometry; redirect the campaign if the evidence instead shows uniform slow non-entry or another capability need.",
+        "goal_connection": "The human goal requires at least 196 successes out of 200 official episodes. No policy-level success evidence or candidate exists, so identifying whether failure is caused by fast entry and residual velocity, the current 6-14 cm training omission, or localized branch and conditioning effects is necessary before choosing a control, reward, observation, or training-distribution intervention.",
+        "question": "Can a learned policy using the available bounded direct-motor interface reliably enter and maintain the complete uninterrupted 2-second hold across the official 6-20 cm, full-angle distribution, and if not, is the limiting capability primarily braking and stabilization, omitted radial coverage, or branch-conditioned geometric difficulty?",
+        "rationale": "M1 confirms substantial actuation authority and makes residual velocity and braking a credible hold-failure mechanism, while preserving consequential risks from the 6-14 cm coverage gap and radius or branch conditioning. M1 used prescribed commands and did not measure closed-loop policy entry velocity, uninterrupted holding, or policy success, so it cannot justify an official assessment or select an intervention."
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I1",
+        "status": "completed"
+      },
+      "session_id": "S2",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "open",
+        "inquiry": {
+          "closure_condition": "Close when shared-seed learned-policy evidence records official-geometry success and distinguishes the dominant failure mechanism using first-entry behavior, velocity and substep excursions, hold interruptions, and performance by radius, angle, and branch-conditioned geometry; redirect the campaign if the evidence instead shows uniform slow non-entry or another capability need.",
+          "goal_connection": "The human goal requires at least 196 successes out of 200 official episodes. No policy-level success evidence or candidate exists, so identifying whether failure is caused by fast entry and residual velocity, the current 6-14 cm training omission, or localized branch and conditioning effects is necessary before choosing a control, reward, observation, or training-distribution intervention.",
+          "id": "I1",
+          "opened_in_session": "S2",
+          "question": "Can a learned policy using the available bounded direct-motor interface reliably enter and maintain the complete uninterrupted 2-second hold across the official 6-20 cm, full-angle distribution, and if not, is the limiting capability primarily braking and stabilization, omitted radial coverage, or branch-conditioned geometric difficulty?",
+          "rationale": "M1 confirms substantial actuation authority and makes residual velocity and braking a credible hold-failure mechanism, while preserving consequential risks from the 6-14 cm coverage gap and radius or branch conditioning. M1 used prescribed commands and did not measure closed-loop policy entry velocity, uninterrupted holding, or policy success, so it cannot justify an official assessment or select an intervention.",
+          "reframes": []
+        }
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I1",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E2",
+    "inquiry_id": null,
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "open",
+        "closure_condition": "Close when shared-seed learned-policy evidence records official-geometry success and distinguishes the dominant failure mechanism using first-entry behavior, velocity and substep excursions, hold interruptions, and performance by radius, angle, and branch-conditioned geometry; redirect the campaign if the evidence instead shows uniform slow non-entry or another capability need.",
+        "goal_connection": "The human goal requires at least 196 successes out of 200 official episodes. No policy-level success evidence or candidate exists, so identifying whether failure is caused by fast entry and residual velocity, the current 6-14 cm training omission, or localized branch and conditioning effects is necessary before choosing a control, reward, observation, or training-distribution intervention.",
+        "question": "Can a learned policy using the available bounded direct-motor interface reliably enter and maintain the complete uninterrupted 2-second hold across the official 6-20 cm, full-angle distribution, and if not, is the limiting capability primarily braking and stabilization, omitted radial coverage, or branch-conditioned geometric difficulty?",
+        "rationale": "M1 confirms substantial actuation authority and makes residual velocity and braking a credible hold-failure mechanism, while preserving consequential risks from the 6-14 cm coverage gap and radius or branch conditioning. M1 used prescribed commands and did not measure closed-loop policy entry velocity, uninterrupted holding, or policy success, so it cannot justify an official assessment or select an intervention."
+      }
+    },
+    "request_fingerprint": "051ab4be13c5301f4bc57ab789a32119c74f3135aedc012b837a20151c6d40c2",
+    "session_id": "S2",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No training candidate exists. Working, best-known, and retained roles are unassigned; M1 is measurement evidence only.",
     "completed_operations": [
@@ -266,6 +334,21 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "b112b639-1ebb-41b0-ade9-d41ed0470d54",
+    "id": "S2",
+    "inquiry_id": null,
+    "kind": "goal_review",
+    "objective": "Reassess the scientific direction toward the human goal using completed evidence. You may request measurements to resolve an uncertainty or develop the method before committing to an inquiry. Decide whether to request official assessment or open one bounded goal-linked inquiry. If you open an inquiry, record the unresolved matter or capability need; do not use an operation name as the question.",
+    "operation_ids": [
+      "E2"
+    ],
+    "scientific_parent_commit": "1bc7c4aee446c9859f31046f333ffd6071dcef0d"
+  },
   "terminal_state": null
 }
