@@ -447,6 +447,7 @@ its scientific breadth or achieve its result.
 | Reliable measurement-evidence inspection | Discoverability provisionally retained. In `48993cfd`, M5 feedback advertised diagnostics, but the PI closed without inspecting the strata and incorrectly claimed no outer-reaching gain. In `2381bcbf`, M3/M4 diagnostic reads stopped at lines 1-310, were described as full inspection, and remaining non-entry cases were lost in the synthesis. Decision-linked inspection and interpretation remain unresolved. |
 | Context flooding | Brief-only compaction implemented below: 57.39% smaller on the completed campaign, with all candidates and inventory references preserved. Campaign benefit remains unassessed; prompt replay and SDK output handling are unchanged and remain separate possible work. |
 | Training-shaped inquiry commitments and scientific continuity | Open, with a positive local observation in `2381bcbf`: one inquiry sustained diagnostics and two successive method interventions. The question-based objective was active, but causation is unproved. Both aggregate losses and aggregate gains have obscured consequential subgroup evidence in handoffs. Startup `2573991c` still chose baseline training after the exact two-string restoration. The two requested model reviews identified missing operation-selection and measurement-purpose guidance, but not a single proven cause of the startup drift. Only those two historical passages are restored; no replacement readiness guidance is added. |
+| Fresh-session scientific handoff fidelity | **Open.** There is no separate free-form message from an outgoing PI session to the next fresh PI session. Same-session invocations resume the backend conversation. Fresh sessions instead receive the durable scientific session record, generated brief, completed-operation history, referenced artifacts and initial scientific model. The current concern is not the absence of a private message channel. It is whether the structured handoff preserves evidence references, competing explanations, contradictory evidence and claim limits without distortion or operation-shaped commitment. R1, the measurement-evidence handoff, R4 and the broader scientific-continuity item address parts of this concern, but the adequacy of the fresh-session handoff remains unassessed. |
 | Checkpoint nomination and evidence selection | Deferred behind progression; available training facts are not proof of development performance. |
 | Operation-submission handoff clarification | Still unimplemented. |
 | Explicit protection of the old protocol log | Still unimplemented; read-access policy is a separate decision. |
@@ -455,7 +456,7 @@ its scientific breadth or achieve its result.
 | Scientific-exhaustion / no-credible-route outcome | **Removed from future requests and instructions.** Obsolete pending execution is rejected. Historical E19 remains readable and unchanged. Directly affected checks pass; scientific effect remains unassessed. |
 | Fifteen-inquiry cap | **Decoupled; value unchanged.** The launcher pauses after active work is checkpointed, without a terminal state. Measurements keep their permission. Only an explicit maintainer increase at that paused boundary resumes execution. Later cap removal remains pending. E19 at four of fifteen inquiries was not cap-triggered. |
 | Publication/recovery, maintainer training allocation, and goal-review role availability | Implemented; not active repair items. |
-| Independent prompt-stack review R1-R8 | **R1 is implemented. R2 is partially implemented.** R2 removes the generic policy destination and puts scientific context before operational options. It does not put the human goal before the PI role in ordinary sessions, as the independent review recommended. Goal-first ordinary sessions remain R2 work, not a separate completed item. R3-R8 remain unimplemented and separately scoped. None is a campaign operation or Runner scientific gate. |
+| Independent prompt-stack review R1-R8 | **R1 is implemented. R2 is partially implemented and paused. R3 is implemented with a narrower scope.** R2 removes the generic policy destination and puts scientific context before operational options. It does not put the human goal before the PI role in ordinary sessions. R3 clarifies inquiry opening and closure records without adding a repeated question-first procedure. R4-R8 remain unimplemented and separately scoped. None is a campaign operation or Runner scientific gate. |
 
 The startup allocation change is tactical, not a solution to scientific
 continuity. Counterevidence preservation and official-assessment readiness
@@ -2152,6 +2153,30 @@ separate from harness changes so their outcomes are not conflated.
   implemented because its ordinary-session goal-first order is missing. R3-R8
   remain separate backlog items. No campaign operation or runtime change is
   performed.
+
+## 2026-10-06: implement bounded R3 inquiry semantics
+
+- **RCA:** the original R3 proposal could make formal question construction
+  the center of the campaign. Repeating a question-first procedure before each
+  action could reproduce the earlier question-centered behavior. The human
+  goal, evidence and evolving scientific understanding must remain central.
+- **Approved scope:** inquiry opening now records a temporary unresolved matter
+  or capability need rather than an operation name. The question can support
+  descriptive investigation or method development. It does not require
+  artificial competing hypotheses. The closure condition records an answer,
+  bounded conclusion or redirection rather than operation completion alone.
+- **Closure meaning:** closure distinguishes completed operation outcomes, the
+  supported inquiry answer, remaining uncertainty and the campaign
+  implication. New evidence can close or reframe an inquiry without requiring
+  the PI to defend its previous formulation.
+- **Placement boundary:** the clarification appears in the program contract,
+  inquiry field meanings and the goal-review opening objective. It is not added
+  to common action guidance or repeated before every operation. No question
+  hierarchy, hypothesis backlog, schema field, operation sequence or Runner
+  scientific gate is added.
+- **Status:** R3 is implemented with this narrower scope. R2 remains partial
+  and paused. R4-R8 remain separate backlog items. No campaign operation was
+  started, resumed or reset.
 
 ## 2026-10-06: allow Runner transactions during protected-runtime checks
 

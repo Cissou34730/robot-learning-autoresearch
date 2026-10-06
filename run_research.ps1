@@ -1147,7 +1147,7 @@ try {
                 $startupPhaseObjective
             }
             elseif ($kind -eq "goal_review") {
-                "Reassess the scientific direction toward the human goal using completed evidence. You may request measurements to resolve an uncertainty or develop the method before committing to an inquiry. Decide whether to request official assessment or open one bounded goal-linked inquiry."
+                "Reassess the scientific direction toward the human goal using completed evidence. You may request measurements to resolve an uncertainty or develop the method before committing to an inquiry. Decide whether to request official assessment or open one bounded goal-linked inquiry. If you open an inquiry, record the unresolved matter or capability need; do not use an operation name as the question."
             }
             else {
                 (

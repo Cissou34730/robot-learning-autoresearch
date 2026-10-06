@@ -66,10 +66,16 @@ campaign-level decisions:
 - request the official assessment for the explicit best-known model; or
 - open one bounded inquiry connected directly to the current goal gap.
 
-Opening an inquiry records its question, connection to the human goal, closure
-condition, and rationale. The opening goal-review session then ends at a
-durable scientific session record, and a fresh inquiry session continues from
-that state.
+Opening an inquiry records a temporary scope for coherent work. Its question
+states an unresolved scientific matter or capability need that can change the
+route toward the human goal; it does not merely name an operation. The question
+may support descriptive investigation or method development and does not
+require artificial competing hypotheses. The rationale connects the question
+to current evidence and the human goal. The closure condition states what
+answer, bounded conclusion, or redirection will complete the inquiry. Completing
+an operation is sufficient only when its result supplies that outcome. The
+opening goal-review session then ends at a durable scientific session record,
+and a fresh inquiry session continues from that state.
 Goal review permits measurement,
 model-role assignment, inquiry opening, campaign conclusion, and the checkpoint
 required after opening an inquiry. Measurements return to the same session.
@@ -86,15 +92,16 @@ campaign. The cap does not change scientific instrument permissions.
 
 ## Inquiry work
 
-An inquiry is a temporary question or obstacle whose resolution can change the
-route toward the human goal. Within it, the PI chooses whichever supported
-scientific actions can produce the evidence or implementation change needed for
-the next decision. The inquiry connects observed outcomes to the scientific
-model: it challenges consequential physical explanations, resolves or narrows
-their unknowns with discriminating evidence, and revises the campaign's
-understanding before choosing an intervention. An unknown that cannot affect
-the direction may be set aside explicitly. No intervention category is
-privileged in advance.
+An inquiry is a temporary scope, not the campaign objective or a permanent
+research map. The human goal, observed evidence, and evolving scientific
+understanding remain central. Within the inquiry, the PI chooses whichever
+supported scientific actions can produce the evidence or implementation change
+needed for the next decision. The inquiry connects observed outcomes to the
+scientific model: it challenges consequential physical explanations, resolves
+or narrows their unknowns with discriminating evidence, and revises the
+campaign's understanding before choosing an intervention. An unknown that
+cannot affect the direction may be set aside explicitly. No intervention
+category is privileged in advance.
 
 Begin from the human objective, current evidence and causal research map. Choose
 the operation that best advances the active inquiry; no operation is the
@@ -121,9 +128,12 @@ reframe, the PI checkpoints before any further operation and resumes the
 reframed inquiry in a fresh bounded session.
 
 An inquiry closes when its closure condition is met, evidence redirects the
-campaign, the question is no longer a credible route, or it has produced the
-actionable result for which it was opened. After the closing session
-checkpoints its decision, the campaign returns to goal review.
+campaign, or the question is no longer a credible route. Closure distinguishes
+the completed operation outcomes, the answer supported for the inquiry,
+remaining uncertainty, and the implication for the campaign. New evidence can
+close or reframe the inquiry without requiring the PI to defend its previous
+formulation. After the closing session checkpoints its decision, the campaign
+returns to goal review.
 
 ## Bounded scientific sessions
 

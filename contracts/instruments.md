@@ -48,7 +48,13 @@ Open and reframe use this interface:
 
 `action` is `open` or `reframe`. All other fields are required and non-empty.
 Opening is accepted only in a goal-review session with no active inquiry.
-Reframing requires the active inquiry's session.
+Reframing requires the active inquiry's session. `question` records the
+unresolved matter, not an operation name. `goal_connection` records why it
+matters to the human goal. `closure_condition` records the answer, bounded
+conclusion, or redirection that completes the inquiry. `rationale` connects the
+question to current evidence. These meanings do not add a required hypothesis
+form or operation sequence. The Runner validates the interface and does not
+judge scientific adequacy.
 
 Close uses this interface:
 
@@ -63,8 +69,11 @@ Close uses this interface:
 ```
 
 `action` is `close`. `outcome` and `reason` are required and non-empty. Closing
-requires the active inquiry's session. Inquiry operations allocate no training
-identity.
+requires the active inquiry's session. `outcome` records the answer supported
+for the inquiry and its remaining uncertainty. `reason` records why the
+inquiry closes and what the result implies for the campaign. Completed
+operation results remain separate evidence. Inquiry operations allocate no
+training identity.
 
 ## Measurement operation
 
