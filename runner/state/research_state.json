@@ -5785,44 +5785,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "open",
-        "inquiry": {
-          "closure_condition": "Use one controlled, goal-linked intervention and paired trajectory-preserving development evidence against T1:checkpoint-120832. Support a capacity explanation only if the intervention improves paired success without broad regression and changes early q2 escape, radial or tangential error, action saturation, elbow overshoot, first-reach timing, or branch-conditioned outcomes in the failing sectors. If early transients remain comparable while failures persist, favor reset-transient handling; if approach improves but failures shift to post-entry interrupted holds or sampled-boundary exits, redirect to stabilization and hold semantics. Close the inquiry unsupported if the intervention has no broad-regression-safe improvement or cannot discriminate these mechanisms.",
-          "goal_connection": "The unchanged T1 reference achieves 151/160 on the development panel, leaving a nine-episode gap to the 196/200 official objective analogue. M6 shows seven no-first-reach failures with saturated, overshooting approach trajectories and two immediate post-entry interruptions; M7 shows that targeted exposure alone regressed to 122/160. Resolving whether capacity or reset-transient handling is limiting approach is necessary before selecting the next intervention toward uninterrupted episode success.",
-          "id": "I4",
-          "opened_in_session": "S11",
-          "question": "Are the remaining baseline failures primarily caused by insufficient policy or control capacity, or by failure to handle the straight-reset singular transient?",
-          "rationale": "I3 resolved negatively that exposure reweighting alone supplies the missing branch-dependent approach capability, while M6 established trajectory-level failure signatures but did not distinguish policy/control capacity from the singular reset transient. The next scientifically useful operation must therefore preserve the official task, evaluation semantics, and baseline observation, and compare the early joint and endpoint trajectories, commands, first reach, branch feasibility, and hold outcomes under a controlled capacity or reset-transient intervention rather than infer a cause from success or training return.",
-          "reframes": []
-        }
-      },
-      "result": {
-        "action": "open",
-        "inquiry_id": "I4",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E17",
-    "inquiry_id": null,
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "open",
-        "closure_condition": "Use one controlled, goal-linked intervention and paired trajectory-preserving development evidence against T1:checkpoint-120832. Support a capacity explanation only if the intervention improves paired success without broad regression and changes early q2 escape, radial or tangential error, action saturation, elbow overshoot, first-reach timing, or branch-conditioned outcomes in the failing sectors. If early transients remain comparable while failures persist, favor reset-transient handling; if approach improves but failures shift to post-entry interrupted holds or sampled-boundary exits, redirect to stabilization and hold semantics. Close the inquiry unsupported if the intervention has no broad-regression-safe improvement or cannot discriminate these mechanisms.",
-        "goal_connection": "The unchanged T1 reference achieves 151/160 on the development panel, leaving a nine-episode gap to the 196/200 official objective analogue. M6 shows seven no-first-reach failures with saturated, overshooting approach trajectories and two immediate post-entry interruptions; M7 shows that targeted exposure alone regressed to 122/160. Resolving whether capacity or reset-transient handling is limiting approach is necessary before selecting the next intervention toward uninterrupted episode success.",
-        "question": "Are the remaining baseline failures primarily caused by insufficient policy or control capacity, or by failure to handle the straight-reset singular transient?",
-        "rationale": "I3 resolved negatively that exposure reweighting alone supplies the missing branch-dependent approach capability, while M6 established trajectory-level failure signatures but did not distinguish policy/control capacity from the singular reset transient. The next scientifically useful operation must therefore preserve the official task, evaluation semantics, and baseline observation, and compare the early joint and endpoint trajectories, commands, first reach, branch feasibility, and hold outcomes under a controlled capacity or reset-transient intervention rather than infer a cause from success or training return."
-      }
-    },
-    "request_fingerprint": "4a27766be9c02bee59187642b7b17266801729cd87e6e0953a8bd3f890e2782f",
-    "session_id": "S11",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T1:checkpoint-120832 remains the strongest measured development reference at 151/160 but has no assigned role. T3:checkpoint-120832 is rejected as the I3 intervention candidate at 122/160. T2:checkpoint-120832 remains rejected at 39/160. No candidate is assigned a working, best-known, or retained role.",
     "completed_operations": [
