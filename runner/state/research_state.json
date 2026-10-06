@@ -272,44 +272,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "open",
-        "inquiry": {
-          "closure_condition": "Close when shared-seed learned-policy evidence records official-geometry success and distinguishes the dominant failure mechanism using first-entry behavior, velocity and substep excursions, hold interruptions, and performance by radius, angle, and branch-conditioned geometry; redirect the campaign if the evidence instead shows uniform slow non-entry or another capability need.",
-          "goal_connection": "The human goal requires at least 196 successes out of 200 official episodes. No policy-level success evidence or candidate exists, so identifying whether failure is caused by fast entry and residual velocity, the current 6-14 cm training omission, or localized branch and conditioning effects is necessary before choosing a control, reward, observation, or training-distribution intervention.",
-          "id": "I1",
-          "opened_in_session": "S2",
-          "question": "Can a learned policy using the available bounded direct-motor interface reliably enter and maintain the complete uninterrupted 2-second hold across the official 6-20 cm, full-angle distribution, and if not, is the limiting capability primarily braking and stabilization, omitted radial coverage, or branch-conditioned geometric difficulty?",
-          "rationale": "M1 confirms substantial actuation authority and makes residual velocity and braking a credible hold-failure mechanism, while preserving consequential risks from the 6-14 cm coverage gap and radius or branch conditioning. M1 used prescribed commands and did not measure closed-loop policy entry velocity, uninterrupted holding, or policy success, so it cannot justify an official assessment or select an intervention.",
-          "reframes": []
-        }
-      },
-      "result": {
-        "action": "open",
-        "inquiry_id": "I1",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E2",
-    "inquiry_id": null,
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "open",
-        "closure_condition": "Close when shared-seed learned-policy evidence records official-geometry success and distinguishes the dominant failure mechanism using first-entry behavior, velocity and substep excursions, hold interruptions, and performance by radius, angle, and branch-conditioned geometry; redirect the campaign if the evidence instead shows uniform slow non-entry or another capability need.",
-        "goal_connection": "The human goal requires at least 196 successes out of 200 official episodes. No policy-level success evidence or candidate exists, so identifying whether failure is caused by fast entry and residual velocity, the current 6-14 cm training omission, or localized branch and conditioning effects is necessary before choosing a control, reward, observation, or training-distribution intervention.",
-        "question": "Can a learned policy using the available bounded direct-motor interface reliably enter and maintain the complete uninterrupted 2-second hold across the official 6-20 cm, full-angle distribution, and if not, is the limiting capability primarily braking and stabilization, omitted radial coverage, or branch-conditioned geometric difficulty?",
-        "rationale": "M1 confirms substantial actuation authority and makes residual velocity and braking a credible hold-failure mechanism, while preserving consequential risks from the 6-14 cm coverage gap and radius or branch conditioning. M1 used prescribed commands and did not measure closed-loop policy entry velocity, uninterrupted holding, or policy success, so it cannot justify an official assessment or select an intervention."
-      }
-    },
-    "request_fingerprint": "051ab4be13c5301f4bc57ab789a32119c74f3135aedc012b837a20151c6d40c2",
-    "session_id": "S2",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "No training candidate exists. Working, best-known, and retained roles are unassigned; M1 is measurement evidence only.",
     "completed_operations": [
