@@ -1,5 +1,13 @@
 {
-  "active_inquiry": null,
+  "active_inquiry": {
+    "closure_condition": "Close or redirect the inquiry when a trained candidate has episode-level development evidence stratified by target radius, angle, and reached branch that distinguishes first reach and entry time from hold margin, maximum consecutive hold, interruptions, action, and velocity; use the result to select a coverage/branch intervention, a stabilization or reward-outcome intervention, or justify official assessment if a best-known candidate is evidence-backed.",
+    "goal_connection": "This directly targets the requirement of at least 196 successful episodes out of 200, because success requires both reaching the target and maintaining uninterrupted one-centimeter accuracy for 100 control steps across radii 0.06-0.20 m and all angles.",
+    "id": "I1",
+    "opened_in_session": "S2",
+    "question": "For a learned policy trained and evaluated over the full official target annulus, is the dominant barrier to at least 98% uninterrupted episode success branch- and radius-conditioned acquisition, or preservation of a sufficiently deep margin during the 100-step hold?",
+    "rationale": "M1 supports the compiled geometry and shows local actuator authority is not the leading global explanation, but it did not measure target-wise branch unions or policy behavior and cannot distinguish acquisition from hold failure. No candidate exists for official assessment, while the active training constructor omits official radii 0.06-0.14 m. A bounded baseline inquiry over the full annulus is therefore the most direct next experiment and preserves the decision frontier rather than assuming either branch coverage or stabilization is primary.",
+    "reframes": []
+  },
   "campaign": {
     "base_commit": "9ff3dafe99dae43b3cca3d40a2e2d1e5950a20e8",
     "id": "796c9c1e-8adc-4d24-8983-a45f48051d68",
@@ -9,16 +17,16 @@
   },
   "candidates": {},
   "counters": {
-    "event": 1,
-    "inquiry": 0,
+    "event": 2,
+    "inquiry": 1,
     "measurement": 1,
-    "session": 1,
+    "session": 2,
     "training": 0
   },
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -370,9 +378,69 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-06T08:01:49Z",
+      "error": null,
+      "id": "E2",
+      "inquiry_id": "I1",
+      "kind": "inquiry",
+      "request": {
+        "action": "open",
+        "closure_condition": "Close or redirect the inquiry when a trained candidate has episode-level development evidence stratified by target radius, angle, and reached branch that distinguishes first reach and entry time from hold margin, maximum consecutive hold, interruptions, action, and velocity; use the result to select a coverage/branch intervention, a stabilization or reward-outcome intervention, or justify official assessment if a best-known candidate is evidence-backed.",
+        "goal_connection": "This directly targets the requirement of at least 196 successful episodes out of 200, because success requires both reaching the target and maintaining uninterrupted one-centimeter accuracy for 100 control steps across radii 0.06-0.20 m and all angles.",
+        "question": "For a learned policy trained and evaluated over the full official target annulus, is the dominant barrier to at least 98% uninterrupted episode success branch- and radius-conditioned acquisition, or preservation of a sufficiently deep margin during the 100-step hold?",
+        "rationale": "M1 supports the compiled geometry and shows local actuator authority is not the leading global explanation, but it did not measure target-wise branch unions or policy behavior and cannot distinguish acquisition from hold failure. No candidate exists for official assessment, while the active training constructor omits official radii 0.06-0.14 m. A bounded baseline inquiry over the full annulus is therefore the most direct next experiment and preserves the decision frontier rather than assuming either branch coverage or stabilization is primary."
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I1",
+        "status": "completed"
+      },
+      "session_id": "S2",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "open",
+        "inquiry": {
+          "closure_condition": "Close or redirect the inquiry when a trained candidate has episode-level development evidence stratified by target radius, angle, and reached branch that distinguishes first reach and entry time from hold margin, maximum consecutive hold, interruptions, action, and velocity; use the result to select a coverage/branch intervention, a stabilization or reward-outcome intervention, or justify official assessment if a best-known candidate is evidence-backed.",
+          "goal_connection": "This directly targets the requirement of at least 196 successful episodes out of 200, because success requires both reaching the target and maintaining uninterrupted one-centimeter accuracy for 100 control steps across radii 0.06-0.20 m and all angles.",
+          "id": "I1",
+          "opened_in_session": "S2",
+          "question": "For a learned policy trained and evaluated over the full official target annulus, is the dominant barrier to at least 98% uninterrupted episode success branch- and radius-conditioned acquisition, or preservation of a sufficiently deep margin during the 100-step hold?",
+          "rationale": "M1 supports the compiled geometry and shows local actuator authority is not the leading global explanation, but it did not measure target-wise branch unions or policy behavior and cannot distinguish acquisition from hold failure. No candidate exists for official assessment, while the active training constructor omits official radii 0.06-0.14 m. A bounded baseline inquiry over the full annulus is therefore the most direct next experiment and preserves the decision frontier rather than assuming either branch coverage or stabilization is primary.",
+          "reframes": []
+        }
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I1",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E2",
+    "inquiry_id": null,
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "open",
+        "closure_condition": "Close or redirect the inquiry when a trained candidate has episode-level development evidence stratified by target radius, angle, and reached branch that distinguishes first reach and entry time from hold margin, maximum consecutive hold, interruptions, action, and velocity; use the result to select a coverage/branch intervention, a stabilization or reward-outcome intervention, or justify official assessment if a best-known candidate is evidence-backed.",
+        "goal_connection": "This directly targets the requirement of at least 196 successful episodes out of 200, because success requires both reaching the target and maintaining uninterrupted one-centimeter accuracy for 100 control steps across radii 0.06-0.20 m and all angles.",
+        "question": "For a learned policy trained and evaluated over the full official target annulus, is the dominant barrier to at least 98% uninterrupted episode success branch- and radius-conditioned acquisition, or preservation of a sufficiently deep margin during the 100-step hold?",
+        "rationale": "M1 supports the compiled geometry and shows local actuator authority is not the leading global explanation, but it did not measure target-wise branch unions or policy behavior and cannot distinguish acquisition from hold failure. No candidate exists for official assessment, while the active training constructor omits official radii 0.06-0.14 m. A bounded baseline inquiry over the full annulus is therefore the most direct next experiment and preserves the decision frontier rather than assuming either branch coverage or stabilization is primary."
+      }
+    },
+    "request_fingerprint": "56ab515c1f98ece1643a74506ff5ed8f7f03282c5c0425640518cb2ddff99b0f",
+    "session_id": "S2",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No trained candidates exist. Working, best-known, and retained roles remain unassigned.",
     "completed_operations": [
@@ -397,6 +465,21 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "e0618516-f430-42e2-9444-e79ef574a26a",
+    "id": "S2",
+    "inquiry_id": null,
+    "kind": "goal_review",
+    "objective": "Reassess the scientific direction toward the human goal using completed evidence. You may request measurements to resolve an uncertainty or develop the method before committing to an inquiry. Decide whether to request official assessment or open one bounded goal-linked inquiry.",
+    "operation_ids": [
+      "E2"
+    ],
+    "scientific_parent_commit": "850625a2ee59da64003cf954548d2836e7285e37"
+  },
   "terminal_state": null
 }
