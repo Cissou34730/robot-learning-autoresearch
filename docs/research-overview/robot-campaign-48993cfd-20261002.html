@@ -143,8 +143,8 @@
         <tbody>
           <tr><td>M3</td><td>4200</td><td>None</td><td>T1: 120 / 200</td><td>Single-candidate evaluation</td></tr>
           <tr><td>M4</td><td>5200</td><td>None</td><td>T1: 118 / 200</td><td>Single-candidate evaluation</td></tr>
-          <tr><td>M5</td><td>5400</td><td>T1: 130 / 200</td><td>T2: 116 / 200</td><td>37 gains; 51 losses; net -14</td></tr>
-          <tr><td>M6</td><td>5600</td><td>T1: 130 / 200</td><td>T3: 178 / 200</td><td>64 gains; 16 losses; net +48</td></tr>
+          <tr><td>M5</td><td>5400</td><td>T1: 130 / 200</td><td>T2: 116 / 200</td><td>37 gains. 51 losses. Net: -14.</td></tr>
+          <tr><td>M6</td><td>5600</td><td>T1: 130 / 200</td><td>T3: 178 / 200</td><td>64 gains. 16 losses. Net: +48.</td></tr>
         </tbody>
       </table>
       <p class="muted" style="margin-top: 12px">Each panel contains 200 consecutive episode seeds. Only candidates within the same row form a matched comparison.</p>
@@ -175,13 +175,13 @@
       <table>
         <thead><tr><th scope="col">Radius group</th><th scope="col">T1 complete holds</th><th scope="col">T3 complete holds</th><th scope="col">Difference</th></tr></thead>
         <tbody>
-          <tr><td>6&ndash;14 cm; 115 cases</td><td>115 / 115</td><td>102 / 115</td><td>-13</td></tr>
-          <tr><td>14&ndash;20 cm; 85 cases</td><td>15 / 85</td><td>76 / 85</td><td>+61</td></tr>
+          <tr><td>6&ndash;14 cm<br>115 cases</td><td>115 / 115</td><td>102 / 115</td><td>-13</td></tr>
+          <tr><td>14&ndash;20 cm<br>85 cases</td><td>15 / 85</td><td>76 / 85</td><td>+61</td></tr>
           <tr><td>All 200 cases</td><td>130 / 200</td><td>178 / 200</td><td>+48</td></tr>
         </tbody>
       </table>
     </div>
-    <p style="margin-top: 16px">The last checkpoint recognized this tradeoff. It left the route for combining outer reach with inner reliability unresolved.</p>
+    <p style="margin-top: 16px">The last checkpoint recognized this tradeoff. It left the route for a combination of outer reach and inner reliability unresolved.</p>
   </section>
 
   <section class="section" aria-labelledby="lessons">
@@ -191,7 +191,7 @@
         <thead><tr><th scope="col">Observation</th><th scope="col">Lesson</th><th scope="col">Harness position</th></tr></thead>
         <tbody>
           <tr><td>Startup performed a physical probe before training.</td><td>Startup can produce scientific evidence without a learned policy.</td><td>Keep the startup clarification provisionally. One observation is not causal proof.</td></tr>
-          <tr><td>The failed probe was repaired in the same startup session.</td><td>An execution exception is not evidence against the scientific explanation.</td><td>Retain execution history without treating the failed attempt as a measurement.</td></tr>
+          <tr><td>The failed probe was repaired in the same startup session.</td><td>An execution exception is not evidence against the scientific explanation.</td><td>Retain execution history. Do not treat the failed attempt as a measurement.</td></tr>
           <tr><td>M5's overall loss hid its outer gain in the closure claim.</td><td>State both subgroup gains and regressions before rejecting a method.</td><td>Evidence interpretation and scientific continuity remain unresolved.</td></tr>
           <tr><td>Diagnostic paths and field inventories were present in feedback.</td><td>Available data can still remain unread or misinterpreted.</td><td>Brief compaction did not remove those references. Discovery alone is insufficient.</td></tr>
           <tr><td>M6 improved overall success but lost inner cases.</td><td>A larger aggregate gain does not erase a consequential regression.</td><td>The later readiness proposal must preserve residual evidence. It has not been tested here.</td></tr>

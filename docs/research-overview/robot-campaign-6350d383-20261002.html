@@ -129,7 +129,7 @@
     <ol>
       <li><strong>Campaign initialization.</strong> The recorded start was 21:51:28.614230 CEST on 1 October. The state identifies the restored recipe source as <code>9fbe544002f73f9b50ded6986a6a6b6db90fea40</code>.</li>
       <li><strong>Preliminary model.</strong> One principal investigator (PI) invocation produced the scientific-model deliverable. The state marks it ready at <code>3498bfb74236a9bd1f17f33116a707ca36636a31</code>. The preserved file matches that artifact.</li>
-      <li><strong>Startup.</strong> A second PI invocation selected a baseline before intervention. The harness log says the PI considered a candidate necessary before deciding whether to change training coverage, reward, or control representation.</li>
+      <li><strong>Startup.</strong> A second PI invocation selected a baseline before intervention. The harness log says the PI considered a candidate necessary before the PI decided whether to change training coverage, reward, or control representation.</li>
       <li><strong>End of recorded activity.</strong> The last usage record is 21:59:39.407255 CEST. The completed history is empty. No inquiry, checkpoint, candidate, or model role is recorded in the state.</li>
       <li><strong>Replacement boundary.</strong> Reset <code>1fc0129</code> initialized successor <code>010714c2-5abd-4836-96bd-364caaf82042</code> at 22:29:26.686463 CEST. This is not a recorded end time for 6350d383.</li>
     </ol>
@@ -143,9 +143,9 @@
         <tbody>
           <tr><td>Scientific-model preparation</td><td>Ready state and matching immutable artifact</td><td>A deliverable, not a measurement operation</td></tr>
           <tr><td>Startup training request</td><td>Public harness-log observation</td><td>No request file exists at the source Git ref</td></tr>
-          <tr><td>Completed training</td><td>0 completed runs; 0 recorded steps; 0 archived candidates</td><td>A request does not establish execution or completion</td></tr>
-          <tr><td>Completed measurement</td><td>0 measurement operations; no instrument measurement output</td><td>No development performance evidence</td></tr>
-          <tr><td>Official assessment</td><td>None; <code>official_assessment</code> is null</td><td>No official success or failure</td></tr>
+          <tr><td>Completed training</td><td>0 completed runs<br>0 recorded steps<br>0 archived candidates</td><td>A request does not establish execution or completion</td></tr>
+          <tr><td>Completed measurement</td><td>0 measurement operations<br>No instrument measurement output</td><td>No development performance evidence</td></tr>
+          <tr><td>Official assessment</td><td>None. <code>official_assessment</code> is null.</td><td>No official success or failure</td></tr>
         </tbody>
       </table>
       <p class="muted" style="margin-top: 12px">The empty <code>research/results.jsonl</code> agrees exactly with <code>state.operation_events</code>. The state counters are all zero. Usage records still show two PI invocations.</p>
@@ -166,12 +166,12 @@
   </section>
 
   <section class="section" aria-labelledby="lessons">
-    <h2 id="lessons">Lessons and resulting change</h2>
+    <h2 id="lessons">Lessons and subsequent change</h2>
     <div class="card table-wrap">
       <table>
         <thead><tr><th scope="col">Supported observation</th><th scope="col">Action or boundary</th></tr></thead>
         <tbody>
-          <tr><td>An inquiry handoff was not necessary for this baseline-first request.</td><td>The maintainer tested instrument documentation instead of requiring a particular scientific instrument.</td></tr>
+          <tr><td>An inquiry handoff was not necessary for this baseline-first request.</td><td>The maintainer tested instrument documentation. It did not require a particular scientific instrument.</td></tr>
           <tr><td>Removing the metadata text did not restore investigation before training in the next opening.</td><td>The document section was restored. The log leaves training-first progression unresolved.</td></tr>
           <tr><td>This campaign supplies no measured policy outcome.</td><td>Do not infer policy failure, policy improvement, or improved scientific behavior from the request or documentation change.</td></tr>
         </tbody>

@@ -110,7 +110,7 @@
 
   <section class="section grid" aria-label="Result and evidence">
     <article class="card"><h2>No development or official score</h2><p>One training run completed 120,832 steps.</p><p>No completed development measurement is recorded.</p><p>The campaign was replaced without official assessment.</p></article>
-    <article class="card"><h2>The observed issue was startup interpretation</h2><p>Startup ended at a checkpoint before any training or measurement.</p><p>The first training occurred later, inside I1.</p><p>This is not evidence that the resulting policy failed the task.</p></article>
+    <article class="card"><h2>The observed issue was startup interpretation</h2><p>Startup ended at a checkpoint before any training or measurement.</p><p>The first training occurred later, inside I1.</p><p>This is not evidence that the policy from that training failed the task.</p></article>
   </section>
 
   <section class="section" aria-labelledby="sequence">
@@ -142,7 +142,7 @@
           <tr><td>E1: checkpoint</td><td>S1 startup</td><td>Initial explanations and a planned baseline</td></tr>
           <tr><td>E2: inquiry opening</td><td>S2 goal review</td><td>I1: coverage versus braking/hold limitations</td></tr>
           <tr><td>E3: checkpoint</td><td>S2 goal review</td><td>Saved inquiry opening and next direction</td></tr>
-          <tr><td>T1: training</td><td>S3 inquiry</td><td>120,000 requested steps; 120,832 completed steps</td></tr>
+          <tr><td>T1: training</td><td>S3 inquiry</td><td>120,000 requested steps<br>120,832 completed steps</td></tr>
         </tbody>
       </table>
       <p class="muted" style="margin-top: 12px">Training produced 24 archived candidates. Those archives do not supply a development success rate by themselves.</p>
@@ -157,19 +157,19 @@
       <p>The actual restriction concerned <strong>formal inquiry opening</strong>. Startup already permitted scientific work.</p>
     </div>
     <p style="margin-top: 16px">Selecting a scientific question is not the same operation as formally opening an inquiry.</p>
-    <p>The prompt wording could encourage a planning-only reading. The record does not prove it was the only cause of the PI's choice.</p>
+    <p>The prompt wording can encourage a planning-only reading. The record does not prove it was the only cause of the PI's choice.</p>
     <p>Brief compaction had not introduced that wording. A shorter brief was not established as the cause.</p>
   </section>
 
   <section class="section" aria-labelledby="lessons">
-    <h2 id="lessons">Lessons and resulting change</h2>
+    <h2 id="lessons">Lessons and subsequent change</h2>
     <div class="card table-wrap">
       <table>
         <thead><tr><th scope="col">Lesson</th><th scope="col">Resulting action or boundary</th></tr></thead>
         <tbody>
           <tr><td>Distinguish scientific question selection from administrative inquiry opening.</td><td>Commit <code>c2ec8f7</code> clarified two startup prompt strings.</td></tr>
           <tr><td>Startup can investigate before its checkpoint.</td><td>The clarification permits tools, measurements, or training. It does not prescribe one instrument.</td></tr>
-          <tr><td>Training output is not development performance evidence.</td><td>No policy success or failure can be concluded from this preserved record.</td></tr>
+          <tr><td>Training output is not development performance evidence.</td><td>This preserved record supports no conclusion about policy success or failure.</td></tr>
           <tr><td>A mechanical wording correction is not proof of a better research process.</td><td>Its effect required a later campaign observation.</td></tr>
         </tbody>
       </table>

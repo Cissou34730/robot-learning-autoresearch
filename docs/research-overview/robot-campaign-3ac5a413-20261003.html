@@ -194,24 +194,24 @@ html[data-theme="dark"] {
         <tbody>
           <tr><th scope="row">S1: T1, M1</th><td>Train a fresh PPO baseline. Evaluate T1 checkpoint 100352.</td><td>151 / 160 successes (94.375%). Nine failures were in the negative-angle sector. This was the startup baseline.</td></tr>
           <tr><th scope="row">S2: M2</th><td>Goal review: compare 16 mirrored target pairs.</td><td>Negative targets: 12 / 16. Positive targets: 16 / 16. M2 was outside an inquiry.</td></tr>
-          <tr><th scope="row">S3 / I1: M3</th><td>Apply a reflection intervention to the baseline policy input and action.</td><td>Intervened negative targets: 16 / 16. Baseline negative: 12 / 16. Baseline positive: 16 / 16. The comparison used 48 episodes in total. The PI selected the representation route.</td></tr>
+          <tr><th scope="row">S3 / I1: M3</th><td>Apply a reflection intervention to the baseline policy input and action.</td><td>Intervened negative targets (16 / 16). Baseline negative targets (12 / 16). Baseline positive targets (16 / 16). The comparison used 48 episodes in total. The PI selected the representation route.</td></tr>
           <tr><th scope="row">S5 / I2: T2, M4</th><td>Train a fresh policy through the reflection-equivariant interface.</td><td>T2 checkpoint 120832: 103 / 160 (64.375%). T1: 151 / 160 on matched seeds. T2 had 2 gains and 50 losses. The tested learning recipe was rejected.</td></tr>
           <tr><th scope="row">S6: M5</th><td>After resume, evaluate five ordinary T1 checkpoints.</td><td>Checkpoints 100352, 105472, 110592, 115712, and 120832 scored 151, 150, 151, 149, and 151 / 160. None improved the baseline.</td></tr>
           <tr><th scope="row">S6: M6</th><td>Use the exact M3 wrapper around T1 checkpoint 100352.</td><td>Wrapped: 160 / 160. Ordinary baseline: 151 / 160. The wrapper recovered all nine baseline failures. M5 and M6 were goal-review measurements, outside inquiries.</td></tr>
-          <tr><th scope="row">S7 / I3: M7</th><td>Freeze the wrapper into a separate runtime artifact.</td><td>160 / 160, including all 82 negative-angle cases. T1 model bytes and normalization bytes were unchanged. This checked the frozen method, not new learning.</td></tr>
+          <tr><th scope="row">S7 / I3: M7</th><td>Freeze the wrapper into a separate runtime artifact.</td><td>160 / 160. This included all 82 negative-angle cases. T1 model bytes and normalization bytes were unchanged. This checked the frozen method, not new learning.</td></tr>
           <tr><th scope="row">S9 / I4: M8</th><td>Probe candidate lookup and the model-role API.</td><td>The artifact existed. The proposed M7 candidate ID was absent from the 48-entry registry. Role resolution rejected it. There was no dedicated registration operation.</td></tr>
           <tr><th scope="row">S9&ndash;S10: E17&ndash;E19</th><td>Close I4, checkpoint, then conclude.</td><td>E17: <code>no_contract_compliant_binding</code>. E18 saved the checkpoint. E19 ended the campaign with <code>no_credible_route</code>.</td></tr>
         </tbody>
       </table>
     </div>
-    <p class="note"><strong>Panel limit.</strong> M1, the broad M4 and M5 comparisons, M6, and M7 used the 160-episode development panel starting at seed 4200. Reuse does not give independent confirmation. M7's 100% result does not establish official success. <a href="#source-records">[1]</a> <a href="#source-measurements">[3]</a></p>
+    <p class="note"><strong>Panel limit.</strong> M1, the broad M4 and M5 comparisons, M6, and M7 used the 160-episode development panel with first seed 4200. Reuse does not give independent confirmation. M7's 100% result does not establish official success. <a href="#source-records">[1]</a> <a href="#source-measurements">[3]</a></p>
   </section>
 
   <section class="section" aria-labelledby="inquiries">
     <h2 id="inquiries">Inquiry closures</h2>
     <div class="table-wrap">
       <table>
-        <caption>Four inquiries; each closed after one measurement operation</caption>
+        <caption>Four inquiries. Each closed after one measurement operation.</caption>
         <thead><tr><th scope="col">Inquiry</th><th scope="col">Completed work</th><th scope="col">Recorded closure</th><th scope="col">Limit</th></tr></thead>
         <tbody>
           <tr><th scope="row">I1</th><td>M3</td><td>E4: <code>representation_directed_route_selected</code></td><td>The intervention supports a representation/control route on matched targets. It does not isolate one encoding feature as the sole cause.</td></tr>
@@ -240,15 +240,15 @@ html[data-theme="dark"] {
       <p>Folder: <code>models\candidates\i3-reflection-wrapped-t1</code>.</p>
       <p>It contains <code>model.zip</code>, <code>artifact.json</code>, <code>vecnormalize.pkl</code>, and <code>policy_runtime.pkl</code>. The metadata names wrapper <code>m3_reflection</code>.</p>
       <p>Current model and runtime SHA-256 values match M7 and M8. The current normalization file also matches the T1 source file byte for byte.</p>
-      <p><strong>Identity limit.</strong> The frozen runtime is not the ordinary registered T1 runtime. Assigning the T1 candidate would not select the exact M7 method. File survival is not registration or assessment.</p>
+      <p><strong>Identity limit.</strong> The frozen runtime is not the ordinary registered T1 runtime. Assignment of the T1 candidate does not select the exact M7 method. File survival is not registration or assessment.</p>
       <details>
         <summary>Verified model, runtime, and artifact identities</summary>
         <dl class="hashes">
-          <div><dt>Current model.zip SHA-256; matches M7 and M8</dt><dd><code>9eca03f678652077a9342d36728ec2b7b6d7740585d2fa30b2b3b3133f6a3502</code></dd></div>
-          <div><dt>Current policy_runtime.pkl SHA-256; matches M7 and M8</dt><dd><code>7b6290a3a07726e92e757026701631101d330a71e59e8e88f86053bbca0632cc</code></dd></div>
-          <div><dt>Current repository-defined artifact fingerprint; matches M8</dt><dd><code>5b6ffd8eb1be9dd93513c8a385a27555527ed9c2438808c8114b01af5bfd83da</code></dd></div>
+          <div><dt>Current model.zip SHA-256. Matches M7 and M8.</dt><dd><code>9eca03f678652077a9342d36728ec2b7b6d7740585d2fa30b2b3b3133f6a3502</code></dd></div>
+          <div><dt>Current policy_runtime.pkl SHA-256. Matches M7 and M8.</dt><dd><code>7b6290a3a07726e92e757026701631101d330a71e59e8e88f86053bbca0632cc</code></dd></div>
+          <div><dt>Current repository-defined artifact fingerprint. Matches M8.</dt><dd><code>5b6ffd8eb1be9dd93513c8a385a27555527ed9c2438808c8114b01af5bfd83da</code></dd></div>
         </dl>
-        <p class="muted">The artifact fingerprint uses the definition in <code>runner_repository.artifact_fingerprint</code>. It is not a hash of the evaluation JSON. The report check followed that definition; it did not invent an algorithm. <a href="#source-artifact">[4]</a> <a href="#source-code">[5]</a></p>
+        <p class="muted">The artifact fingerprint uses the definition in <code>runner_repository.artifact_fingerprint</code>. It is not a hash of the evaluation JSON. The report check used that definition. It did not invent an algorithm. <a href="#source-artifact">[4]</a> <a href="#source-code">[5]</a></p>
       </details>
     </div>
   </section>
@@ -260,19 +260,24 @@ html[data-theme="dark"] {
         <caption>Keep observation, interpretation, and unresolved scope separate</caption>
         <thead><tr><th scope="col">Evidence</th><th scope="col">Supported interpretation</th><th scope="col">Not established</th></tr></thead>
         <tbody>
-          <tr><th scope="row">M3 recovered matched negative targets under unchanged physical dynamics.</th><td>The learned response and its input/action representation contributed to the observed asymmetry.</td><td>One feature alone caused the gap. The M3 aggregate trajectory-action error field had a sign error; E4 excluded it from interpretation.</td></tr>
-          <tr><th scope="row">M4 regressed; M6 and M7 recovered the development failures without new model weights.</th><td>The tested T2 learning recipe and the T1 wrapper are different methods. T2's failure did not invalidate the wrapper.</td><td>Every learning alternative was exhausted. The wrapper will meet the official goal.</td></tr>
+          <tr><th scope="row">M3 recovered matched negative targets under unchanged physical dynamics.</th><td>The learned response and its input/action representation contributed to the observed asymmetry.</td><td>One feature alone caused the gap. The M3 aggregate trajectory-action error field had a sign error. E4 excluded it from interpretation.</td></tr>
+          <tr><th scope="row">M4 regressed. M6 and M7 recovered the development failures without new model weights.</th><td>The tested T2 learning recipe and the T1 wrapper are different methods. T2's failure did not invalidate the wrapper.</td><td>Every learning alternative was exhausted. The wrapper will meet the official goal.</td></tr>
           <tr><th scope="row">M8 rejected the proposed ID and found no dedicated registration operation.</th><td>The current artifact had a real registry and direct-API barrier. Standard registration is tied to completed training publication.</td><td>Every authorized producer alternative was impossible. M8 did not test that broader claim.</td></tr>
-          <tr><th scope="row">E19 repeated the PI's claim that no credible route remained.</th><td>The PI generalized an unregistered artifact and one rejected recipe into route exhaustion. The evidence supports a narrower conclusion.</td><td>Runner judged the science or proved route exhaustion. Runner correctly records the PI decision; its contract does not verify that scientific claim.</td></tr>
+          <tr><th scope="row">E19 repeated the PI's claim that no credible route remained.</th><td>The PI generalized an unregistered artifact and one rejected recipe into route exhaustion. The evidence supports a narrower conclusion.</td><td>Runner judged the science or proved route exhaustion. Runner correctly records the PI decision. Its contract does not verify that scientific claim.</td></tr>
         </tbody>
       </table>
     </div>
     <div class="note">
-      <p><strong>Failed contract at E19.</strong> The conclusion contract offered official assessment and <code>no_credible_route</code>. The PI treated a publication barrier as a reason to end the campaign. The Runner recorded the supplied decision; it did not judge scientific adequacy. Future requests for that invented ending are now rejected. E19 remains unchanged as historical evidence. <a href="#source-code">[5]</a> <a href="#source-maintainer">[6]</a></p>
-      <p><strong>Code and instruction RCA: complete.</strong> The coordinator's bounded review traced the unrequested alternative objective to local conversation turn 264. The user said fifteen was only a test-safety limit. The assistant introduced stopping when no credible route remained to avoid endless inquiry. Core commit <code>034daed</code> and lifecycle commit <code>6d6d41e</code> implemented that alternative. <a href="#source-rca">[9]</a></p>
-      <p><strong>Instruction and execution chain.</strong> <code>research\program.md:19-21,63</code>, <code>research\instruments.md:313-318</code>, and <code>run_research.ps1:1099</code> explicitly instruct this outcome. <code>research\runner_protocol.py:779-805</code> accepts the action with a nonempty reason. <code>research\run_experiment.py:774-788</code> writes the terminal state. <code>run_research.ps1:1058-1073</code> then stops the loop. This implements the supplied decision; it does not establish scientific exhaustion. <a href="#source-rca">[9]</a></p>
-      <p><strong>Separate cap violation.</strong> <code>research\runner_protocol.py:837-844</code> blocks goal-review measurements at the cap. <code>run_research.ps1:759-769</code> forces a terminal decision there. This uses an execution limit as a decision signal. E19 occurred at 4 / 15 inquiries. It was not cap-triggered. <a href="#source-rca">[9]</a></p>
-      <p><strong>Untested possibility, not a workaround.</strong> The PI owns producer code. Completed-result validators permit zero completed steps. But requested training steps must be positive and meet the session allocation contract. These facts suggest an untested producer alternative. They do not validate or authorize zero-step export-only publication. That route is not clearly documented or tested end to end. <a href="#source-contracts">[2]</a> <a href="#source-code">[5]</a></p>
+      <p><strong>Failed contract at E19.</strong> The conclusion contract offered official assessment and <code>no_credible_route</code>. The PI treated a publication barrier as a reason to end the campaign. The Runner recorded the supplied decision. It did not judge scientific adequacy.</p>
+      <p>Future requests for that invented ending are now rejected. E19 remains unchanged as historical evidence. <a href="#source-code">[5]</a> <a href="#source-maintainer">[6]</a></p>
+      <p><strong>Code and instruction RCA: complete.</strong> The coordinator's bounded review traced the unrequested alternative objective to local conversation turn 264. The user said fifteen was only a test-safety limit.</p>
+      <p>The assistant introduced stopping when no credible route remained to avoid endless inquiry. Core commit <code>034daed</code> and lifecycle commit <code>6d6d41e</code> implemented that alternative. <a href="#source-rca">[9]</a></p>
+      <p><strong>Instruction and execution chain.</strong> <code>research\program.md:19-21,63</code>, <code>research\instruments.md:313-318</code>, and <code>run_research.ps1:1099</code> explicitly instruct this outcome. <code>research\runner_protocol.py:779-805</code> accepts the action with a nonempty reason.</p>
+      <p><code>research\run_experiment.py:774-788</code> writes the terminal state. <code>run_research.ps1:1058-1073</code> then stops the loop. This implements the supplied decision. It does not establish scientific exhaustion. <a href="#source-rca">[9]</a></p>
+      <p><strong>Separate cap violation.</strong> <code>research\runner_protocol.py:837-844</code> blocks goal-review measurements at the cap. <code>run_research.ps1:759-769</code> forces a terminal decision there.</p>
+      <p>This uses an execution limit as a decision signal. E19 occurred at 4 / 15 inquiries. It was not cap-triggered. <a href="#source-rca">[9]</a></p>
+      <p><strong>Untested possibility, not a workaround.</strong> The PI owns producer code. Completed-result validators permit zero completed steps. But requested training steps must be positive and meet the session allocation contract.</p>
+      <p>These facts suggest an untested producer alternative. They do not validate or authorize zero-step export-only publication. That route is not clearly documented or tested end to end. <a href="#source-contracts">[2]</a> <a href="#source-code">[5]</a></p>
     </div>
   </section>
 
@@ -282,7 +287,7 @@ html[data-theme="dark"] {
       <article class="card">
         <h3>Guidance withdrawn in the working tree</h3>
         <p>The readiness-guidance approach in <code>e4736da</code> is withdrawn. The coordinator confirms removal of its nine-line readiness block and its prompt inclusion in <code>run_research.ps1</code>.</p>
-        <p>PowerShell parse and whitespace checks passed. The launcher was not run. Shutdown repair <code>2e897c7</code> and campaign artifacts are unchanged. No rollback commit has been made.</p>
+        <p>PowerShell parse and whitespace checks passed. The launcher was not run. Shutdown repair <code>2e897c7</code> and campaign artifacts are unchanged. No rollback commit exists.</p>
         <p>The withdrawal does not erase backlog findings or historical entries.</p>
       </article>
       <article class="card">
@@ -299,14 +304,18 @@ html[data-theme="dark"] {
         <p>The focused check passed 209 tests. Thirteen unrelated cases were excluded after temporary Git permission failures and one malformed existing fixture. Campaign state and results hashes are unchanged. These checks do not establish scientific effectiveness.</p>
       </article>
     </div>
-    <p class="note"><strong>Causal limit.</strong> The three-sentence readiness guidance in <code>e4736da</code> aimed to prevent premature official assessment after narrow, above-target development results. It did not introduce or remove <code>no_credible_route</code>. Its effect on E19 is unproven. The invented ending is now removed from future requests. Training-centered publication remains unresolved. Operational repair checks are not scientific validation. <a href="#source-maintainer">[6]</a> <a href="#source-provenance">[7]</a> <a href="#source-rca">[9]</a></p>
+    <div class="note">
+      <p><strong>Causal limit.</strong> The three-sentence readiness guidance in <code>e4736da</code> aimed to prevent premature official assessment after narrow, above-target development results.</p>
+      <p>It did not introduce or remove <code>no_credible_route</code>. Its effect on E19 is unproven. The invented ending is now removed from future requests.</p>
+      <p>Training-centered publication remains unresolved. Operational repair checks are not scientific validation. <a href="#source-maintainer">[6]</a> <a href="#source-provenance">[7]</a> <a href="#source-rca">[9]</a></p>
+    </div>
   </section>
 
   <section class="section" aria-labelledby="accounting">
     <h2 id="accounting">Recorded usage and evidence limits</h2>
     <div class="card">
-      <p><strong>34 recorded invocations; 94.397128 AIU (about 94.40).</strong></p>
-      <p>The total is the sum of the campaign usage rows, including the scientific-model phase. The stranded S6 invocation has no accounting row. This is not guaranteed complete billing. <a href="#source-usage">[8]</a></p>
+      <p><strong>34 recorded invocations. 94.397128 AIU (approximately 94.40).</strong></p>
+      <p>The total is the sum of the campaign usage rows and includes the scientific-model phase. The stranded S6 invocation has no accounting row. This is not guaranteed complete billing. <a href="#source-usage">[8]</a></p>
       <p>Elapsed duration is omitted because console elapsed time and stored timestamps disagree.</p>
       <p>The state and completed-operation history are authoritative for campaign status. Detailed measurement files support numerical claims. Failed operations and shutdown events are execution history, not scientific evidence.</p>
       <p>No official assessment was run. Repeated development results do not establish final scientific success. The report uses public records and source code, not hidden reasoning.</p>
@@ -321,16 +330,17 @@ html[data-theme="dark"] {
         <a href="../../research/evaluations/3ac5a413-ac79-4850-9c3a-83a3f0b41457/python-module-M6-1-reflection-wrapped-heldout-t1-checkpoint-100352.json">M6 wrapper</a>,
         <a href="../../research/evaluations/3ac5a413-ac79-4850-9c3a-83a3f0b41457/python-module-M7-1-frozen-reflection-runtime.json">M7 frozen runtime</a>, and
         <a href="../../research/evaluations/3ac5a413-ac79-4850-9c3a-83a3f0b41457/python-module-M8-1-candidate-binding-probe.json">M8 binding probe</a>. M4 and M5 counts come from their completed result records.</li>
-      <li id="source-artifact"><strong>Surviving artifact:</strong> <a href="../../models/candidates/i3-reflection-wrapped-t1/artifact.json">M7 metadata</a>; current <code>model.zip</code>, <code>policy_runtime.pkl</code>, and <code>vecnormalize.pkl</code> bytes. Model and normalization were compared with <code>research\checkpoints\candidates\3ac5a413-ac79-4850-9c3a-83a3f0b41457\t1\checkpoint-100352</code>.</li>
-      <li id="source-code"><strong>Implementation scope:</strong> <a href="../../research/lab/candidate_binding_probe.py">candidate_binding_probe.py</a>, <a href="../../research/runner_protocol.py">runner_protocol.py</a>, <a href="../../research/runner_repository.py">runner_repository.py</a>, <a href="../../research/runner_execution.py">runner_execution.py</a>, <a href="../../research/run_experiment.py">run_experiment.py</a>, and <a href="../../robot_learning/train.py">train.py</a>. Read only; no producer alternative was executed.</li>
-      <li id="source-maintainer"><strong>Maintainer record:</strong> <a href="../harness-experiment-log.md">harness-experiment-log.md</a>, 3 October shutdown, withdrawal, and terminal-outcome entries. The report request supplies the later maintainer resume. The coordinator's 3 October confirmation supplies working-tree rollback completion and operational check results. The maintainer's later clarification rejects scientific exhaustion as a valid outcome, defines the cap as a temporary execution limit, and supplies the current proposal and implementation boundary. These are execution and decision records, not scientific evidence.</li>
+      <li id="source-artifact"><strong>Surviving artifact:</strong> <a href="../../models/candidates/i3-reflection-wrapped-t1/artifact.json">M7 metadata</a> and the current <code>model.zip</code>, <code>policy_runtime.pkl</code>, and <code>vecnormalize.pkl</code> bytes. Model and normalization were compared with <code>research\checkpoints\candidates\3ac5a413-ac79-4850-9c3a-83a3f0b41457\t1\checkpoint-100352</code>.</li>
+      <li id="source-code"><strong>Implementation scope:</strong> <a href="../../research/lab/candidate_binding_probe.py">candidate_binding_probe.py</a>, <a href="../../research/runner_protocol.py">runner_protocol.py</a>, <a href="../../research/runner_repository.py">runner_repository.py</a>, <a href="../../research/runner_execution.py">runner_execution.py</a>, <a href="../../research/run_experiment.py">run_experiment.py</a>, and <a href="../../robot_learning/train.py">train.py</a>. These files were read only. No producer alternative was executed.</li>
+      <li id="source-maintainer"><strong>Maintainer record:</strong> <a href="../harness-experiment-log.md">harness-experiment-log.md</a>, 3 October shutdown, withdrawal, and terminal-outcome entries. The report request supplies the later maintainer resume. The coordinator's 3 October confirmation supplies working-tree rollback completion and operational check results. The maintainer's later clarification rejects scientific exhaustion as a valid outcome. It defines the cap as a temporary execution limit.</li>
+      <li>The clarification also supplies the current proposal and implementation boundary. These are execution and decision records, not scientific evidence.</li>
       <li id="source-provenance"><strong>Narrow code provenance:</strong> read-only Git inspection of <code>e4736da</code>, its parent protocol/publication code, and <code>2e897c7</code>. Used only to check change scope and chronology, not as scientific evidence.</li>
-      <li id="source-usage"><strong>Recorded accounting:</strong> <a href="../../reports/session_usage/3ac5a413-ac79-4850-9c3a-83a3f0b41457.jsonl">campaign session_usage JSONL</a>. Exact row count and decimal AIU sum; absent rows cannot be reconstructed from this source.</li>
+      <li id="source-usage"><strong>Recorded accounting:</strong> <a href="../../reports/session_usage/3ac5a413-ac79-4850-9c3a-83a3f0b41457.jsonl">campaign session_usage JSONL</a>. The source gives the exact row count and decimal AIU sum. Absent rows cannot be reconstructed.</li>
       <li id="source-rca"><strong>Completed bounded RCA:</strong> the coordinator's 3 October findings supply the public conversation origin, commits, and exact instruction and execution references above. This final document update records that completed review. It does not repeat the investigation or implement changes. These are code and instruction findings, not scientific evidence.</li>
     </ol>
   </section>
   <footer>
-    <p>Standalone report. No external assets. Layout and navigation follow the <a href="robot-campaign-48993cfd-20261002.html">48993cfd sibling report</a>; that report is not evidence for this campaign.</p>
+    <p>Standalone report. No external assets. Layout and navigation use the <a href="robot-campaign-48993cfd-20261002.html">48993cfd sibling report</a> as a pattern. That report is not evidence for this campaign.</p>
     <p>The text uses short technical English. It makes no formal ASD-STE100 compliance claim.</p>
   </footer>
 </main>

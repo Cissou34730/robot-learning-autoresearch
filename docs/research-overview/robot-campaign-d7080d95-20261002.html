@@ -130,12 +130,12 @@
     </figure>
     <ol>
       <li><strong>Preliminary work.</strong> The PI wrote the scientific model before training evidence existed. The Runner published the document.</li>
-      <li><strong>Startup training.</strong> T1 trained a fresh PPO policy. Targets were sampled at 14&ndash;20 cm. The request was 120,000 steps; training completed 120,832.</li>
+      <li><strong>Startup training.</strong> T1 trained a fresh PPO policy. Targets were sampled at 14&ndash;20 cm. The request was 120,000 steps. Training completed 120,832 steps.</li>
       <li><strong>Checkpoint comparison.</strong> M1 tested the 100,352-step checkpoint and the 120,832-step checkpoint. Both used the same 160 episode seeds.</li>
       <li><strong>I1: conditioned diagnostic.</strong> M2 examined failed trajectories and matched successful cases. The PI selected branch feasibility and shoulder limits as the working explanation.</li>
       <li><strong>I2: observation change.</strong> T2 added feasibility flags and signed joint-limit margins. M3 measured 80 / 160 successes, compared with T1's 151 / 160.</li>
       <li><strong>I3: reward change.</strong> T3 kept T1's compact observation and PPO recipe, with a branch-feasibility reward potential. M4 measured 28 / 160 successes.</li>
-      <li><strong>Checkpoint E13.</strong> The PI retained both negative results. It proposed investigating dynamics and the untrained inner-radius range, rather than requesting assessment.</li>
+      <li><strong>Checkpoint E13.</strong> The PI retained both negative results. It proposed an investigation of dynamics and the untrained inner-radius range, not an assessment request.</li>
       <li><strong>Goal review S8.</strong> M5 measured unchanged T1 on 400 fresh development episodes. The result was 393 / 400, with seven failures in the known shoulder-limit sector.</li>
       <li><strong>Role and terminal decision.</strong> E14 assigned T1 as best-known. E15 requested official assessment. The protected result was 194 / 200.</li>
     </ol>
@@ -147,11 +147,11 @@
       <table>
         <thead><tr><th scope="col">Candidate</th><th scope="col">Measurement and panel</th><th scope="col">Successes</th><th scope="col">Rate</th><th scope="col">Comparison with T1</th></tr></thead>
         <tbody>
-          <tr><td>T1:checkpoint-100352</td><td>M1; seeds 4200&ndash;4359</td><td>151 / 160</td><td>94.375%</td><td>Reference</td></tr>
+          <tr><td>T1:checkpoint-100352</td><td>M1<br>Seeds 4200&ndash;4359</td><td>151 / 160</td><td>94.375%</td><td>Reference</td></tr>
           <tr><td>T1:checkpoint-120832</td><td>The same M1 seeds</td><td>151 / 160</td><td>94.375%</td><td>Identical success/failure outcomes</td></tr>
-          <tr><td>T2:checkpoint-120832</td><td>M3; seeds 4200&ndash;4359</td><td>80 / 160</td><td>50.0%</td><td>No gains; 71 losses</td></tr>
-          <tr><td>T3:checkpoint-120832</td><td>M4; seeds 4200&ndash;4359</td><td>28 / 160</td><td>17.5%</td><td>No gains; 123 losses</td></tr>
-          <tr><td>Unchanged T1:checkpoint-100352</td><td>M5 diagnostic; seeds 6000&ndash;6399</td><td>393 / 400</td><td>98.25%</td><td>A new panel, not a new policy</td></tr>
+          <tr><td>T2:checkpoint-120832</td><td>M3<br>Seeds 4200&ndash;4359</td><td>80 / 160</td><td>50.0%</td><td>No gains. 71 losses.</td></tr>
+          <tr><td>T3:checkpoint-120832</td><td>M4<br>Seeds 4200&ndash;4359</td><td>28 / 160</td><td>17.5%</td><td>No gains. 123 losses.</td></tr>
+          <tr><td>Unchanged T1:checkpoint-100352</td><td>M5 diagnostic<br>Seeds 6000&ndash;6399</td><td>393 / 400</td><td>98.25%</td><td>A new panel, not a new policy</td></tr>
           <tr><td>Unchanged T1:checkpoint-100352</td><td>Protected official assessment</td><td>194 / 200</td><td>97.0%</td><td>Goal not reached</td></tr>
         </tbody>
       </table>
@@ -196,7 +196,7 @@
     <h2 id="decision">Why the PI requested assessment</h2>
     <div class="grid">
       <article class="card"><h3>Recorded decision</h3><p>S8 read the M5 artifact and computed radius-bin counts and failure-state summaries.</p><p>This was not the earlier partial-file inspection failure.</p><p>The PI treated 393 / 400 as sufficient evidence to stop exploration and assess unchanged T1.</p><p>The public message said the fresh diagnostic &ldquo;clears the threshold needed to test the human goal&rdquo;.</p></article>
-      <article class="card"><h3>Analysis</h3><p>The new score came from changing the episode panel, not improving the controller.</p><p>The decision did not reconcile 98.25% with the earlier 94.375% or their combined development count.</p><p>The same failure sector remained. The two attempted repairs had regressed.</p><p>Best-known status was supported. Assessment readiness remained uncertain.</p></article>
+      <article class="card"><h3>Analysis</h3><p>The new score came from a different episode panel. The controller did not improve.</p><p>The decision did not reconcile 98.25% with the earlier 94.375% or their combined development count.</p><p>The same failure sector remained. The two attempted repairs regressed.</p><p>Best-known status was supported. Assessment readiness remained uncertain.</p></article>
     </div>
     <p style="margin-top: 16px">A 98.25% sample score does not guarantee 196 successes on another 200-episode panel.</p>
     <p>For illustration, its approximate 95% Wilson interval is 96.43&ndash;99.15%. This calculation assumes independent episodes and is not a harness gate.</p>
@@ -214,9 +214,9 @@
           <tr><td>T2 and T3 regressed broadly.</td><td>The two tested recipes did not repair T1. Their learning failures are scientific information.</td><td>One poor recipe does not invalidate every feasibility representation or branch-aware reward.</td></tr>
           <tr><td>S8 inspected the detailed artifact.</td><td>The PI preserved the reach/hold distinction and the remaining angle sector.</td><td>Correct inspection did not produce a sufficiently cautious readiness decision.</td></tr>
           <tr><td>A new panel scored above the goal.</td><td>Unchanged T1 can achieve 393 / 400 on those seeds.</td><td>The score does not establish reliable transfer to the protected panel.</td></tr>
-          <tr><td>Both campaigns ended just below the official target.</td><td>This campaign scored 194 / 200; the previous campaign scored 195 / 200.</td><td>The shared outcome does not prove identical evidence-handling errors or a common physical cause.</td></tr>
+          <tr><td>Both campaigns ended just below the official target.</td><td>This campaign scored 194 / 200. The previous campaign scored 195 / 200.</td><td>The shared outcome does not prove identical evidence-handling errors or a common physical cause.</td></tr>
           <tr><td>T1 requested the full startup allocation.</td><td>The shorter-startup option was available but unused.</td><td>This campaign does not test the benefit of a shorter startup request.</td></tr>
-          <tr><td>Goal-review guidance was approved but absent.</td><td>The narrow change remains relevant to readiness and residual uncertainty.</td><td>This campaign does not test that change or prove that it would prevent the failure.</td></tr>
+          <tr><td>Goal-review guidance was approved but absent.</td><td>The narrow change remains relevant to readiness and residual uncertainty.</td><td>This campaign does not test that change or prove that it can prevent the failure.</td></tr>
         </tbody>
       </table>
     </div>
@@ -232,10 +232,10 @@
   <section class="section" aria-labelledby="resources">
     <h2 id="resources">Recorded resource use</h2>
     <div class="card table-wrap">
-      <table><thead><tr><th scope="col">Completed training</th><th scope="col">Completed steps</th><th scope="col">Measurement operations</th><th scope="col">PI invocations</th><th scope="col">Reported AIU</th></tr></thead><tbody><tr><td>3 runs</td><td>362,496</td><td>5 operations; 8 instrument entries</td><td>26</td><td>63.15</td></tr></tbody></table>
+      <table><thead><tr><th scope="col">Completed training</th><th scope="col">Completed steps</th><th scope="col">Measurement operations</th><th scope="col">PI invocations</th><th scope="col">Reported AIU</th></tr></thead><tbody><tr><td>3 runs</td><td>362,496</td><td>5 operations<br>8 instrument entries</td><td>26</td><td>63.15</td></tr></tbody></table>
       <p class="muted" style="margin-top: 12px">Each training request was 120,000 steps. Each run completed 120,832 because of PPO rollout rounding.</p>
       <p class="muted">The PI invocation durations totaled 29 minutes, 5.52 seconds. Campaign elapsed time was approximately 1 hour, 57 minutes, 20 seconds.</p>
-      <p class="muted">No failed execution attempt was recorded. M5 had one pre-dispatch artifact-path rejection, corrected without changing the measurement intent.</p>
+      <p class="muted">No failed execution attempt was recorded. M5 had one pre-dispatch artifact-path rejection. The correction kept the measurement intent unchanged.</p>
       <p class="muted">Usage includes the preliminary model session. AIU is the recorded usage unit, not a currency amount.</p>
     </div>
   </section>
