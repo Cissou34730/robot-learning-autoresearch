@@ -8,8 +8,7 @@ import numpy as np
 
 from contracts.robots.two_joint_arm import FOREARM_LENGTH, UPPER_ARM_LENGTH
 
-JOINT_LIMIT_RADIANS = float(np.deg2rad(170.0))
-OBSERVATION_SIZE = 17
+OBSERVATION_SIZE = 11
 
 
 def reach_observation(data) -> np.ndarray:
@@ -25,17 +24,6 @@ def reach_observation(data) -> np.ndarray:
             )
         )
 
-    def branch_features(shoulder: float, elbow: float) -> tuple[float, ...]:
-        wrapped_shoulder = wrap_to_pi(shoulder)
-        shoulder_margin = JOINT_LIMIT_RADIANS - abs(wrapped_shoulder)
-        elbow_margin = JOINT_LIMIT_RADIANS - abs(elbow)
-        feasible = float(shoulder_margin >= 0.0 and elbow_margin >= 0.0)
-        return (
-            shoulder_margin,
-            elbow_margin,
-            feasible,
-        )
-
     target_x = float(data.mocap_pos[0][0])
     target_y = float(data.mocap_pos[0][1])
     cos_elbow = (
@@ -46,8 +34,6 @@ def reach_observation(data) -> np.ndarray:
     elbow_folded = -elbow_open
     shoulder_folded = shoulder_for_elbow(elbow_folded)
     end_effector = data.site("end_effector").xpos.copy()
-    open_features = branch_features(shoulder_open, elbow_open)
-    folded_features = branch_features(shoulder_folded, elbow_folded)
     return np.concatenate(
         [
             data.qpos,
@@ -59,7 +45,5 @@ def reach_observation(data) -> np.ndarray:
                 wrap_to_pi(shoulder_folded - float(data.qpos[0])),
                 wrap_to_pi(elbow_folded - float(data.qpos[1])),
             ],
-            open_features,
-            folded_features,
         ]
     ).astype(np.float32)
