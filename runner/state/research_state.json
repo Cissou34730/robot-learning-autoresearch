@@ -838,7 +838,7 @@
     }
   },
   "counters": {
-    "event": 3,
+    "event": 4,
     "inquiry": 1,
     "measurement": 2,
     "session": 3,
@@ -847,7 +847,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -1768,28 +1768,153 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-06T05:24:46Z",
+      "error": null,
+      "id": "E4",
+      "inquiry_id": "I1",
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "T1 produced archived candidates. M1 and M2 show identical development outcomes and mechanism for T1:checkpoint-100352 and T1:checkpoint-120832; neither is assigned a best-known role because no candidate has yet been tested after the scientifically justified intervention.",
+        "completed_operations": [
+          "M2"
+        ],
+        "cumulative_resource_use": "One 120,000-requested-step fresh baseline training operation, one paired 160-episode development evaluation, one inquiry-opening operation, and one bounded diagnostic analysis; no additional training, no official assessment, and no candidate role assignment.",
+        "current_goal_gap": "The measured development gap is nine shared failures relative to the 160-episode proxy, and no candidate has a best-known role. M2 identifies the dominant mechanism but does not demonstrate that an intervention reaches 98% official success.",
+        "current_synthesis": "T1 established the baseline candidates and M1 showed identical 151/160 outcomes for T1:checkpoint-100352 and T1:checkpoint-120832 on identical seeds, so additional late baseline training alone did not close the gap. M2 completed the I1 diagnostic on both candidates: all nine shared failures have an analytically infeasible positive-elbow branch and a feasible folded branch; the failures are concentrated in the -150 to -120 degree sector (6 of 20 episodes fail there, versus at most 3 failures in any radius bin), while radius alone does not isolate the failures. Six failures have no first reach and three have post-entry interruption, and the two candidates reproduce the same failure seeds and branch pattern. This supports a dominant angular-sector branch-selection or shoulder-limit handling mechanism rather than broadly distributed post-entry stabilization. The model consequence that valid branch choice is configuration-dependent is therefore behaviorally supported. The straight-reset transient, velocity regulation, sampled-boundary semantics, hold-counter observability, and inner-radius transfer remain unresolved secondary mechanisms because M2 did not record substep trajectories, velocities, or actions; they should not be claimed as solved or treated as the next primary intervention without new evidence.",
+        "decision_frontier": "I1's branch/limit versus general post-entry stabilization distinction is resolved for the shared failures: the explicit sector concentration and the 9/9 folded-only-feasible branch pattern direct the next intervention toward limit-aware feasible-branch coverage and approach behavior. The remaining decision is how to implement that intervention without changing the official task: determine whether improving branch selection/feasible-branch conditioning is sufficient, or whether it must also address the six no-first-reach transient failures. Evidence that would revise this direction is a controlled candidate whose branch-conditioned sector failures persist despite explicit folded-branch handling, or whose failures shift predominantly to post-entry short holds.",
+        "evidence_references": [
+          "T1",
+          "M1",
+          "E2",
+          "M2"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 successes in the protected 200-episode official panel. Both late baseline candidates remain below that standard at 151/160 (94.375%) on the development panel, so the goal is untested and unmet.",
+        "next_direction_or_closure": "Checkpoint the completed M2 evidence, then close I1 explicitly. In the next work, implement and evaluate one bounded limit-aware feasible-branch intervention on a fresh 120,000-step run, retaining the same paired sector and branch diagnostics. Do not request official assessment until an explicitly assigned best-known candidate reaches the required standard on protected assessment."
+      },
+      "result": {
+        "session_id": "S3",
+        "status": "checkpointed"
+      },
+      "session_id": "S3",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "e8e25413411fe3fadf8555f92abb4cc17577f21f",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "T1 produced archived candidates. M1 and M2 show identical development outcomes and mechanism for T1:checkpoint-100352 and T1:checkpoint-120832; neither is assigned a best-known role because no candidate has yet been tested after the scientifically justified intervention.",
+        "completed_operations": [
+          "M2"
+        ],
+        "cumulative_resource_use": "One 120,000-requested-step fresh baseline training operation, one paired 160-episode development evaluation, one inquiry-opening operation, and one bounded diagnostic analysis; no additional training, no official assessment, and no candidate role assignment.",
+        "current_goal_gap": "The measured development gap is nine shared failures relative to the 160-episode proxy, and no candidate has a best-known role. M2 identifies the dominant mechanism but does not demonstrate that an intervention reaches 98% official success.",
+        "current_synthesis": "T1 established the baseline candidates and M1 showed identical 151/160 outcomes for T1:checkpoint-100352 and T1:checkpoint-120832 on identical seeds, so additional late baseline training alone did not close the gap. M2 completed the I1 diagnostic on both candidates: all nine shared failures have an analytically infeasible positive-elbow branch and a feasible folded branch; the failures are concentrated in the -150 to -120 degree sector (6 of 20 episodes fail there, versus at most 3 failures in any radius bin), while radius alone does not isolate the failures. Six failures have no first reach and three have post-entry interruption, and the two candidates reproduce the same failure seeds and branch pattern. This supports a dominant angular-sector branch-selection or shoulder-limit handling mechanism rather than broadly distributed post-entry stabilization. The model consequence that valid branch choice is configuration-dependent is therefore behaviorally supported. The straight-reset transient, velocity regulation, sampled-boundary semantics, hold-counter observability, and inner-radius transfer remain unresolved secondary mechanisms because M2 did not record substep trajectories, velocities, or actions; they should not be claimed as solved or treated as the next primary intervention without new evidence.",
+        "decision_frontier": "I1's branch/limit versus general post-entry stabilization distinction is resolved for the shared failures: the explicit sector concentration and the 9/9 folded-only-feasible branch pattern direct the next intervention toward limit-aware feasible-branch coverage and approach behavior. The remaining decision is how to implement that intervention without changing the official task: determine whether improving branch selection/feasible-branch conditioning is sufficient, or whether it must also address the six no-first-reach transient failures. Evidence that would revise this direction is a controlled candidate whose branch-conditioned sector failures persist despite explicit folded-branch handling, or whose failures shift predominantly to post-entry short holds.",
+        "evidence_references": [
+          "T1",
+          "M1",
+          "E2",
+          "M2"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 successes in the protected 200-episode official panel. Both late baseline candidates remain below that standard at 151/160 (94.375%) on the development panel, so the goal is untested and unmet.",
+        "inquiry_id": "I1",
+        "next_direction_or_closure": "Checkpoint the completed M2 evidence, then close I1 explicitly. In the next work, implement and evaluate one bounded limit-aware feasible-branch intervention on a fresh 120,000-step run, retaining the same paired sector and branch diagnostics. Do not request official assessment until an explicitly assigned best-known candidate reaches the required standard on protected assessment.",
+        "session_id": "S3"
+      },
+      "presentation": {
+        "backend_session_id": "5963f317-4c5b-46f5-9a61-8c876a2096f9",
+        "campaign_id": "9fa1f256-b083-45b2-8127-d7e4e00728b8",
+        "campaign_usage": "11m00s | 23.09 AIU | prompt 3.2m (84% cached) | output 38.9k",
+        "session_id": "S3",
+        "session_kind": "inquiry",
+        "session_usage": "3m26s | 6.58 AIU | prompt 981.6k (87% cached) | output 13.7k"
+      },
+      "result": {
+        "session_id": "S3",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "ba84fe650ae6b4a792e5cf4f56acbbe038335c03",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E4",
+    "inquiry_id": "I1",
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "T1 produced archived candidates. M1 and M2 show identical development outcomes and mechanism for T1:checkpoint-100352 and T1:checkpoint-120832; neither is assigned a best-known role because no candidate has yet been tested after the scientifically justified intervention.",
+        "completed_operations": [
+          "M2"
+        ],
+        "cumulative_resource_use": "One 120,000-requested-step fresh baseline training operation, one paired 160-episode development evaluation, one inquiry-opening operation, and one bounded diagnostic analysis; no additional training, no official assessment, and no candidate role assignment.",
+        "current_goal_gap": "The measured development gap is nine shared failures relative to the 160-episode proxy, and no candidate has a best-known role. M2 identifies the dominant mechanism but does not demonstrate that an intervention reaches 98% official success.",
+        "current_synthesis": "T1 established the baseline candidates and M1 showed identical 151/160 outcomes for T1:checkpoint-100352 and T1:checkpoint-120832 on identical seeds, so additional late baseline training alone did not close the gap. M2 completed the I1 diagnostic on both candidates: all nine shared failures have an analytically infeasible positive-elbow branch and a feasible folded branch; the failures are concentrated in the -150 to -120 degree sector (6 of 20 episodes fail there, versus at most 3 failures in any radius bin), while radius alone does not isolate the failures. Six failures have no first reach and three have post-entry interruption, and the two candidates reproduce the same failure seeds and branch pattern. This supports a dominant angular-sector branch-selection or shoulder-limit handling mechanism rather than broadly distributed post-entry stabilization. The model consequence that valid branch choice is configuration-dependent is therefore behaviorally supported. The straight-reset transient, velocity regulation, sampled-boundary semantics, hold-counter observability, and inner-radius transfer remain unresolved secondary mechanisms because M2 did not record substep trajectories, velocities, or actions; they should not be claimed as solved or treated as the next primary intervention without new evidence.",
+        "decision_frontier": "I1's branch/limit versus general post-entry stabilization distinction is resolved for the shared failures: the explicit sector concentration and the 9/9 folded-only-feasible branch pattern direct the next intervention toward limit-aware feasible-branch coverage and approach behavior. The remaining decision is how to implement that intervention without changing the official task: determine whether improving branch selection/feasible-branch conditioning is sufficient, or whether it must also address the six no-first-reach transient failures. Evidence that would revise this direction is a controlled candidate whose branch-conditioned sector failures persist despite explicit folded-branch handling, or whose failures shift predominantly to post-entry short holds.",
+        "evidence_references": [
+          "T1",
+          "M1",
+          "E2",
+          "M2"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 successes in the protected 200-episode official panel. Both late baseline candidates remain below that standard at 151/160 (94.375%) on the development panel, so the goal is untested and unmet.",
+        "next_direction_or_closure": "Checkpoint the completed M2 evidence, then close I1 explicitly. In the next work, implement and evaluate one bounded limit-aware feasible-branch intervention on a fresh 120,000-step run, retaining the same paired sector and branch diagnostics. Do not request official assessment until an explicitly assigned best-known candidate reaches the required standard on protected assessment."
+      }
+    },
+    "request_fingerprint": "f3fc4948c30650ef087d16147394deba8be59a11c3259b727cd9daa4c1855988",
+    "session_id": "S3",
+    "supersedes": null
+  },
   "pi_checkpoint": {
-    "candidates_and_roles": "T1 produced archived candidates, but no working, best-known, or retained role is assigned. M1 found no outcome difference between the two late checkpoints; role assignment remains deferred until inquiry evidence identifies a scientifically justified measurement subject or candidate.",
+    "candidates_and_roles": "T1 produced archived candidates. M1 and M2 show identical development outcomes and mechanism for T1:checkpoint-100352 and T1:checkpoint-120832; neither is assigned a best-known role because no candidate has yet been tested after the scientifically justified intervention.",
     "completed_operations": [
-      "E2"
+      "M2"
     ],
-    "cumulative_resource_use": "One 120,000-requested-step fresh baseline training operation, one paired 160-episode development evaluation, and one inquiry-opening operation; no additional training, no official assessment, and no candidate role assignment.",
-    "current_goal_gap": "The official 98% objective remains untested, and no candidate has a best-known role. The nine shared development failures remain mechanistically unresolved because M1's compact result exposed only aggregate success while the retained diagnostics have not yet been converted into a completed inquiry measurement.",
-    "current_synthesis": "T1 established the baseline candidates; M1 showed identical 151/160 outcomes for T1:checkpoint-100352 and T1:checkpoint-120832 on identical seeds, so additional late baseline training alone did not close the gap. The initial physical model still supports inner-radius transfer, angular-sector or IK-branch/limit difficulty, straight-reset transient, and post-entry hold or sampling-boundary failure. E2 added no behavioral measurement: it opened I1 because the branch/limit versus stabilization distinction is consequential, not because it resolved it. The reachability, singular-transient, hold-tolerance, sampled-semantics, observation, and training-distribution consequences therefore remain model-based claims pending the bounded diagnostic analysis; no intervention is justified yet.",
-    "decision_frontier": "In the fresh I1 inquiry session, determine whether the nine shared failures are concentrated in an angular sector and associated with an infeasible nominal IK branch despite a feasible alternative, or instead represent broadly distributed post-entry hold instability. The discriminating evidence is a bounded analysis of both M1 candidates reporting radius- and angle-conditioned success, first-reach presence and timing, maximum uninterrupted hold, interruption class, and analytic joint-limit margins. A sector/branch pattern would direct the next intervention toward limit-aware feasible-branch coverage; frequent first reach with short holds or failures after feasible-branch conditioning would direct it toward stabilization or sampling. If neither pattern is explicit, preserve the distinction as unresolved.",
+    "cumulative_resource_use": "One 120,000-requested-step fresh baseline training operation, one paired 160-episode development evaluation, one inquiry-opening operation, and one bounded diagnostic analysis; no additional training, no official assessment, and no candidate role assignment.",
+    "current_goal_gap": "The measured development gap is nine shared failures relative to the 160-episode proxy, and no candidate has a best-known role. M2 identifies the dominant mechanism but does not demonstrate that an intervention reaches 98% official success.",
+    "current_synthesis": "T1 established the baseline candidates and M1 showed identical 151/160 outcomes for T1:checkpoint-100352 and T1:checkpoint-120832 on identical seeds, so additional late baseline training alone did not close the gap. M2 completed the I1 diagnostic on both candidates: all nine shared failures have an analytically infeasible positive-elbow branch and a feasible folded branch; the failures are concentrated in the -150 to -120 degree sector (6 of 20 episodes fail there, versus at most 3 failures in any radius bin), while radius alone does not isolate the failures. Six failures have no first reach and three have post-entry interruption, and the two candidates reproduce the same failure seeds and branch pattern. This supports a dominant angular-sector branch-selection or shoulder-limit handling mechanism rather than broadly distributed post-entry stabilization. The model consequence that valid branch choice is configuration-dependent is therefore behaviorally supported. The straight-reset transient, velocity regulation, sampled-boundary semantics, hold-counter observability, and inner-radius transfer remain unresolved secondary mechanisms because M2 did not record substep trajectories, velocities, or actions; they should not be claimed as solved or treated as the next primary intervention without new evidence.",
+    "decision_frontier": "I1's branch/limit versus general post-entry stabilization distinction is resolved for the shared failures: the explicit sector concentration and the 9/9 folded-only-feasible branch pattern direct the next intervention toward limit-aware feasible-branch coverage and approach behavior. The remaining decision is how to implement that intervention without changing the official task: determine whether improving branch selection/feasible-branch conditioning is sufficient, or whether it must also address the six no-first-reach transient failures. Evidence that would revise this direction is a controlled candidate whose branch-conditioned sector failures persist despite explicit folded-branch handling, or whose failures shift predominantly to post-entry short holds.",
     "evidence_references": [
       "T1",
       "M1",
-      "E2"
+      "E2",
+      "M2"
     ],
-    "human_goal_connection": "The human goal requires at least 196 successes in the protected 200-episode official panel. The current baseline is not eligible for that claim: both evaluated late checkpoints achieved 151/160 (94.375%) on the development panel, leaving a measured gap of 3.625 percentage points relative to the target proxy.",
-    "inquiry_id": null,
-    "next_direction_or_closure": "The goal-review session is complete. Continue in the fresh I1 inquiry session with exactly one bounded diagnostic analysis of the existing M1 artifacts, then close or reframe I1 based on that result before selecting a coverage, stabilization, observation, reward, or learning-method intervention. Do not request official assessment while the baseline mechanism and best-known role remain unresolved.",
-    "scientific_commit": "c87f0abcbf43f15f19d87b388900f8a79f4b52c1",
-    "session_id": "S2"
+    "human_goal_connection": "The human goal requires at least 196 successes in the protected 200-episode official panel. Both late baseline candidates remain below that standard at 151/160 (94.375%) on the development panel, so the goal is untested and unmet.",
+    "inquiry_id": "I1",
+    "next_direction_or_closure": "Checkpoint the completed M2 evidence, then close I1 explicitly. In the next work, implement and evaluate one bounded limit-aware feasible-branch intervention on a fresh 120,000-step run, retaining the same paired sector and branch diagnostics. Do not request official assessment until an explicitly assigned best-known candidate reaches the required standard on protected assessment.",
+    "scientific_commit": "ba84fe650ae6b4a792e5cf4f56acbbe038335c03",
+    "session_id": "S3"
   },
   "schema_version": 6,
   "scientific_model": {
@@ -1797,21 +1922,6 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "5963f317-4c5b-46f5-9a61-8c876a2096f9",
-    "id": "S3",
-    "inquiry_id": "I1",
-    "kind": "inquiry",
-    "objective": "Advance I1 toward an evidence-supported answer to its scientific question: Do the nine shared M1 development failures arise primarily from angular-sector branch selection and shoulder-limit handling, where the nominal positive-elbow IK branch is infeasible but the folded branch remains feasible, rather than from a general post-entry hold-stabilization limitation?",
-    "operation_ids": [
-      "M2"
-    ],
-    "scientific_parent_commit": "e8e25413411fe3fadf8555f92abb4cc17577f21f"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
