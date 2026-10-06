@@ -9,7 +9,7 @@
   },
   "candidates": {},
   "counters": {
-    "event": 0,
+    "event": 1,
     "inquiry": 0,
     "measurement": 1,
     "session": 1,
@@ -18,7 +18,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -209,31 +209,148 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-06T19:47:13Z",
+      "error": null,
+      "id": "E1",
+      "inquiry_id": null,
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "No training candidate exists. Working, best-known, and retained roles are unassigned; M1 is measurement evidence only.",
+        "completed_operations": [
+          "M1"
+        ],
+        "cumulative_resource_use": "One startup measurement operation completed (M1); no training steps or model-role assignments.",
+        "current_goal_gap": "No learned policy or official assessment exists, so the gap to 98% success is unmeasured. The immediate capability gap is evidence about whether bounded direct motor control can reliably brake and stabilize across the official geometry without sacrificing reach.",
+        "current_synthesis": "M1 confirms the model's timing and compiled actuation facts: timestep 0.002 s, 20 ms control interval, gear 5, nonzero masses/inertias, damping 0.5, and armature 0.01. It supports dynamic authority and stabilization as the first decision-relevant distinction: a one-interval unit command at representative IK configurations produced about 5.5-6.1 rad/s joint-speed norm after the pulse and peak end-effector excursions of about 7.6-24.9 cm during the following short reversal sequence. This makes residual velocity and braking a credible mechanism for hold failure, not a low-authority explanation. M1 also preserves the geometry consequence: both analytic branches are statically feasible with large shoulder margins, but the 6 cm configurations have only about 19.9 degrees of elbow-limit margin and the 20 cm configurations have the weakest measured Jacobian singular value (about 0.0415 m), so branch/radius conditioning may shape the stabilization problem. Competing explanations remain: (a) learned policies may fail mainly through fast entry and insufficient braking, (b) the omitted 6-14 cm training distribution may cause a generalization deficit, or (c) branch and radial conditioning may create localized reach/hold failures. M1 supports (a) as the leading physical mechanism and makes (b)/(c) consequential, but it is not closed-loop policy evidence: the probe uses prescribed commands, does not measure target-entry velocity or uninterrupted hold, and its reversal sequence is too short to identify a controller's safe approach envelope.",
+        "decision_frontier": "After M1, the decisive question is whether a policy trained on the official geometry can convert the available motor authority into low-velocity, uninterrupted holding across radius and branch-conditioned geometry. A learned baseline evaluated with shared seeds and diagnostics for first entry, velocity, hold interruptions, success by radius/angle, and substep excursions would discriminate stabilization failure from coverage/generalization and static-conditioning failure. Evidence of rapid entry followed by interruptions with nonzero velocity would prioritize braking/hold-aware control or reward design; a sharp 6-14 cm deficit with otherwise stable holds would prioritize training coverage; failures concentrated near 6 cm elbow margins or 20 cm Jacobian conditioning would prioritize branch-aware geometry handling. Uniform slow non-entry would instead revise the current direction toward authority or reach.",
+        "evidence_references": [
+          "M1"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 successful uninterrupted 2-second holds over the official 6-20 cm target distribution. M1 informs how a learned policy must enter and stabilize the 1 cm region, but it does not measure policy success or establish a best-known candidate.",
+        "next_direction_or_closure": "End startup and enter goal review. Open one bounded inquiry on the learned policy's reach-versus-stabilization capability under the official distribution, beginning with a baseline training/evaluation or equivalent permitted diagnostic that records the discriminating trajectory and radial evidence. Preserve M1's dynamic interpretation as the leading hypothesis, but require policy-level hold and coverage evidence before changing reward, observations, or training geometry."
+      },
+      "result": {
+        "session_id": "S1",
+        "status": "checkpointed"
+      },
+      "session_id": "S1",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
-  "pi_checkpoint": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "becb96b8d0e09a87aac2a6b0256c34226dbb6c9a",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "No training candidate exists. Working, best-known, and retained roles are unassigned; M1 is measurement evidence only.",
+        "completed_operations": [
+          "M1"
+        ],
+        "cumulative_resource_use": "One startup measurement operation completed (M1); no training steps or model-role assignments.",
+        "current_goal_gap": "No learned policy or official assessment exists, so the gap to 98% success is unmeasured. The immediate capability gap is evidence about whether bounded direct motor control can reliably brake and stabilize across the official geometry without sacrificing reach.",
+        "current_synthesis": "M1 confirms the model's timing and compiled actuation facts: timestep 0.002 s, 20 ms control interval, gear 5, nonzero masses/inertias, damping 0.5, and armature 0.01. It supports dynamic authority and stabilization as the first decision-relevant distinction: a one-interval unit command at representative IK configurations produced about 5.5-6.1 rad/s joint-speed norm after the pulse and peak end-effector excursions of about 7.6-24.9 cm during the following short reversal sequence. This makes residual velocity and braking a credible mechanism for hold failure, not a low-authority explanation. M1 also preserves the geometry consequence: both analytic branches are statically feasible with large shoulder margins, but the 6 cm configurations have only about 19.9 degrees of elbow-limit margin and the 20 cm configurations have the weakest measured Jacobian singular value (about 0.0415 m), so branch/radius conditioning may shape the stabilization problem. Competing explanations remain: (a) learned policies may fail mainly through fast entry and insufficient braking, (b) the omitted 6-14 cm training distribution may cause a generalization deficit, or (c) branch and radial conditioning may create localized reach/hold failures. M1 supports (a) as the leading physical mechanism and makes (b)/(c) consequential, but it is not closed-loop policy evidence: the probe uses prescribed commands, does not measure target-entry velocity or uninterrupted hold, and its reversal sequence is too short to identify a controller's safe approach envelope.",
+        "decision_frontier": "After M1, the decisive question is whether a policy trained on the official geometry can convert the available motor authority into low-velocity, uninterrupted holding across radius and branch-conditioned geometry. A learned baseline evaluated with shared seeds and diagnostics for first entry, velocity, hold interruptions, success by radius/angle, and substep excursions would discriminate stabilization failure from coverage/generalization and static-conditioning failure. Evidence of rapid entry followed by interruptions with nonzero velocity would prioritize braking/hold-aware control or reward design; a sharp 6-14 cm deficit with otherwise stable holds would prioritize training coverage; failures concentrated near 6 cm elbow margins or 20 cm Jacobian conditioning would prioritize branch-aware geometry handling. Uniform slow non-entry would instead revise the current direction toward authority or reach.",
+        "evidence_references": [
+          "M1"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 successful uninterrupted 2-second holds over the official 6-20 cm target distribution. M1 informs how a learned policy must enter and stabilize the 1 cm region, but it does not measure policy success or establish a best-known candidate.",
+        "inquiry_id": null,
+        "next_direction_or_closure": "End startup and enter goal review. Open one bounded inquiry on the learned policy's reach-versus-stabilization capability under the official distribution, beginning with a baseline training/evaluation or equivalent permitted diagnostic that records the discriminating trajectory and radial evidence. Preserve M1's dynamic interpretation as the leading hypothesis, but require policy-level hold and coverage evidence before changing reward, observations, or training geometry.",
+        "session_id": "S1"
+      },
+      "presentation": {
+        "backend_session_id": "c8096558-2317-4394-a1c2-5ffe63d8520a",
+        "campaign_id": "1d55787c-9b86-48a5-ab74-3853d0375648",
+        "campaign_usage": "5m53s | 7.24 AIU | prompt 805.1k (84% cached) | output 21.9k",
+        "session_id": "S1",
+        "session_kind": "startup",
+        "session_usage": "2m17s | 3.77 AIU | prompt 442.9k (82% cached) | output 8.6k"
+      },
+      "result": {
+        "session_id": "S1",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "4856d3b5d82d2c4d5e17b60cfa96e8000e2ebfdc",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E1",
+    "inquiry_id": null,
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "No training candidate exists. Working, best-known, and retained roles are unassigned; M1 is measurement evidence only.",
+        "completed_operations": [
+          "M1"
+        ],
+        "cumulative_resource_use": "One startup measurement operation completed (M1); no training steps or model-role assignments.",
+        "current_goal_gap": "No learned policy or official assessment exists, so the gap to 98% success is unmeasured. The immediate capability gap is evidence about whether bounded direct motor control can reliably brake and stabilize across the official geometry without sacrificing reach.",
+        "current_synthesis": "M1 confirms the model's timing and compiled actuation facts: timestep 0.002 s, 20 ms control interval, gear 5, nonzero masses/inertias, damping 0.5, and armature 0.01. It supports dynamic authority and stabilization as the first decision-relevant distinction: a one-interval unit command at representative IK configurations produced about 5.5-6.1 rad/s joint-speed norm after the pulse and peak end-effector excursions of about 7.6-24.9 cm during the following short reversal sequence. This makes residual velocity and braking a credible mechanism for hold failure, not a low-authority explanation. M1 also preserves the geometry consequence: both analytic branches are statically feasible with large shoulder margins, but the 6 cm configurations have only about 19.9 degrees of elbow-limit margin and the 20 cm configurations have the weakest measured Jacobian singular value (about 0.0415 m), so branch/radius conditioning may shape the stabilization problem. Competing explanations remain: (a) learned policies may fail mainly through fast entry and insufficient braking, (b) the omitted 6-14 cm training distribution may cause a generalization deficit, or (c) branch and radial conditioning may create localized reach/hold failures. M1 supports (a) as the leading physical mechanism and makes (b)/(c) consequential, but it is not closed-loop policy evidence: the probe uses prescribed commands, does not measure target-entry velocity or uninterrupted hold, and its reversal sequence is too short to identify a controller's safe approach envelope.",
+        "decision_frontier": "After M1, the decisive question is whether a policy trained on the official geometry can convert the available motor authority into low-velocity, uninterrupted holding across radius and branch-conditioned geometry. A learned baseline evaluated with shared seeds and diagnostics for first entry, velocity, hold interruptions, success by radius/angle, and substep excursions would discriminate stabilization failure from coverage/generalization and static-conditioning failure. Evidence of rapid entry followed by interruptions with nonzero velocity would prioritize braking/hold-aware control or reward design; a sharp 6-14 cm deficit with otherwise stable holds would prioritize training coverage; failures concentrated near 6 cm elbow margins or 20 cm Jacobian conditioning would prioritize branch-aware geometry handling. Uniform slow non-entry would instead revise the current direction toward authority or reach.",
+        "evidence_references": [
+          "M1"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 successful uninterrupted 2-second holds over the official 6-20 cm target distribution. M1 informs how a learned policy must enter and stabilize the 1 cm region, but it does not measure policy success or establish a best-known candidate.",
+        "next_direction_or_closure": "End startup and enter goal review. Open one bounded inquiry on the learned policy's reach-versus-stabilization capability under the official distribution, beginning with a baseline training/evaluation or equivalent permitted diagnostic that records the discriminating trajectory and radial evidence. Preserve M1's dynamic interpretation as the leading hypothesis, but require policy-level hold and coverage evidence before changing reward, observations, or training geometry."
+      }
+    },
+    "request_fingerprint": "9b6ef65e9b239dfbe938934f636f70ccbe4b237862322eed9994a4fa9aeb65f7",
+    "session_id": "S1",
+    "supersedes": null
+  },
+  "pi_checkpoint": {
+    "candidates_and_roles": "No training candidate exists. Working, best-known, and retained roles are unassigned; M1 is measurement evidence only.",
+    "completed_operations": [
+      "M1"
+    ],
+    "cumulative_resource_use": "One startup measurement operation completed (M1); no training steps or model-role assignments.",
+    "current_goal_gap": "No learned policy or official assessment exists, so the gap to 98% success is unmeasured. The immediate capability gap is evidence about whether bounded direct motor control can reliably brake and stabilize across the official geometry without sacrificing reach.",
+    "current_synthesis": "M1 confirms the model's timing and compiled actuation facts: timestep 0.002 s, 20 ms control interval, gear 5, nonzero masses/inertias, damping 0.5, and armature 0.01. It supports dynamic authority and stabilization as the first decision-relevant distinction: a one-interval unit command at representative IK configurations produced about 5.5-6.1 rad/s joint-speed norm after the pulse and peak end-effector excursions of about 7.6-24.9 cm during the following short reversal sequence. This makes residual velocity and braking a credible mechanism for hold failure, not a low-authority explanation. M1 also preserves the geometry consequence: both analytic branches are statically feasible with large shoulder margins, but the 6 cm configurations have only about 19.9 degrees of elbow-limit margin and the 20 cm configurations have the weakest measured Jacobian singular value (about 0.0415 m), so branch/radius conditioning may shape the stabilization problem. Competing explanations remain: (a) learned policies may fail mainly through fast entry and insufficient braking, (b) the omitted 6-14 cm training distribution may cause a generalization deficit, or (c) branch and radial conditioning may create localized reach/hold failures. M1 supports (a) as the leading physical mechanism and makes (b)/(c) consequential, but it is not closed-loop policy evidence: the probe uses prescribed commands, does not measure target-entry velocity or uninterrupted hold, and its reversal sequence is too short to identify a controller's safe approach envelope.",
+    "decision_frontier": "After M1, the decisive question is whether a policy trained on the official geometry can convert the available motor authority into low-velocity, uninterrupted holding across radius and branch-conditioned geometry. A learned baseline evaluated with shared seeds and diagnostics for first entry, velocity, hold interruptions, success by radius/angle, and substep excursions would discriminate stabilization failure from coverage/generalization and static-conditioning failure. Evidence of rapid entry followed by interruptions with nonzero velocity would prioritize braking/hold-aware control or reward design; a sharp 6-14 cm deficit with otherwise stable holds would prioritize training coverage; failures concentrated near 6 cm elbow margins or 20 cm Jacobian conditioning would prioritize branch-aware geometry handling. Uniform slow non-entry would instead revise the current direction toward authority or reach.",
+    "evidence_references": [
+      "M1"
+    ],
+    "human_goal_connection": "The human goal requires at least 196 successful uninterrupted 2-second holds over the official 6-20 cm target distribution. M1 informs how a learned policy must enter and stabilize the 1 cm region, but it does not measure policy success or establish a best-known candidate.",
+    "inquiry_id": null,
+    "next_direction_or_closure": "End startup and enter goal review. Open one bounded inquiry on the learned policy's reach-versus-stabilization capability under the official distribution, beginning with a baseline training/evaluation or equivalent permitted diagnostic that records the discriminating trajectory and radial evidence. Preserve M1's dynamic interpretation as the leading hypothesis, but require policy-level hold and coverage evidence before changing reward, observations, or training geometry.",
+    "scientific_commit": "4856d3b5d82d2c4d5e17b60cfa96e8000e2ebfdc",
+    "session_id": "S1"
+  },
   "schema_version": 6,
   "scientific_model": {
     "commit": "ae6a37e884b25a18b405a8cb7d7c769a318be025",
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "c8096558-2317-4394-a1c2-5ffe63d8520a",
-    "id": "S1",
-    "inquiry_id": null,
-    "kind": "startup",
-    "objective": "Establish the most credible initial scientific direction toward the human goal from the scientific model and available evidence. Use scientific work in this session to establish or refine that direction, including building or adapting reusable scientific tools and PI-owned methods where needed. These capabilities can support subsequent inquiries. Choose the first useful scientific action and explain why it advances the direction. Preserve the work actually performed, resulting understanding, remaining uncertainties and chosen next action in the scientific session record.",
-    "operation_ids": [
-      "M1"
-    ],
-    "scientific_parent_commit": "becb96b8d0e09a87aac2a6b0256c34226dbb6c9a"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
