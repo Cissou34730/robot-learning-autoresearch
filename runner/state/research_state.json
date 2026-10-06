@@ -840,14 +840,14 @@
   "counters": {
     "event": 3,
     "inquiry": 1,
-    "measurement": 1,
-    "session": 2,
+    "measurement": 2,
+    "session": 3,
     "training": 1
   },
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -1571,9 +1571,586 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-06T05:22:54Z",
+      "error": null,
+      "id": "M2",
+      "inquiry_id": "I1",
+      "kind": "measurement",
+      "request": {
+        "description": "Analyze both late M1 candidate artifacts by target radius and 30-degree angle sector, classifying first reach and hold interruption behavior and computing analytic positive-elbow and folded IK joint-limit margins for every target.",
+        "measurements": [
+          {
+            "args": [
+              "--input",
+              "T1:checkpoint-100352=campaigns\\evaluations\\9fa1f256-b083-45b2-8127-d7e4e00728b8\\evaluation-9fa1f256-b083-45b2-8127-d7e4e00728b8-m1-T1-checkpoint-100352-160ep-seed4200-604d52985c97.json",
+              "--input",
+              "T1:checkpoint-120832=campaigns\\evaluations\\9fa1f256-b083-45b2-8127-d7e4e00728b8\\evaluation-9fa1f256-b083-45b2-8127-d7e4e00728b8-m1-T1-checkpoint-120832-160ep-seed4200-604d52985c97.json",
+              "--output",
+              "campaigns\\evaluations\\9fa1f256-b083-45b2-8127-d7e4e00728b8\\i1-diagnostic.json"
+            ],
+            "artifact": "campaigns/evaluations/9fa1f256-b083-45b2-8127-d7e4e00728b8/i1-diagnostic.json",
+            "instrument": "python_module",
+            "label": "I1 bounded branch-limit and hold diagnostic",
+            "module": "robot_learning.lab.i1_diagnostic"
+          }
+        ],
+        "rationale": "I1 requires durable evidence that distinguishes angular branch/limit failures from broadly distributed post-entry hold instability. The existing M1 artifacts contain the identical 160-episode panels and per-episode radius, angle, success, first reach, maximum hold, and interruption measurements, but the compact operation summary does not expose their values or analytic branch feasibility. This bounded python-module analysis consumes only those retained artifacts, verifies the shared outcomes, and reports the required radius- and angle-conditioned success, first-reach presence and timing, maximum hold, interruption classes, and branch margins for both candidates. No policy, task semantics, or training allocation changes are involved."
+      },
+      "result": {
+        "measurements": [
+          {
+            "args": [
+              "--input",
+              "T1:checkpoint-100352=campaigns\\evaluations\\9fa1f256-b083-45b2-8127-d7e4e00728b8\\evaluation-9fa1f256-b083-45b2-8127-d7e4e00728b8-m1-T1-checkpoint-100352-160ep-seed4200-604d52985c97.json",
+              "--input",
+              "T1:checkpoint-120832=campaigns\\evaluations\\9fa1f256-b083-45b2-8127-d7e4e00728b8\\evaluation-9fa1f256-b083-45b2-8127-d7e4e00728b8-m1-T1-checkpoint-120832-160ep-seed4200-604d52985c97.json",
+              "--output",
+              "campaigns\\evaluations\\9fa1f256-b083-45b2-8127-d7e4e00728b8\\i1-diagnostic.json"
+            ],
+            "instrument": "python_module",
+            "label": "I1 bounded branch-limit and hold diagnostic",
+            "metrics": {
+              "evaluation_artifact": "campaigns/evaluations/9fa1f256-b083-45b2-8127-d7e4e00728b8/python-module-M2-1-i1-diagnostic.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 7,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/inquiry",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/episodes_per_candidate",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/shared_failure_count",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/shared_failure_episode_seeds",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "field_names": [
+                      "analytic_branch_margins",
+                      "angle_conditioned",
+                      "candidate",
+                      "episodes",
+                      "interruption_classes",
+                      "radius_conditioned",
+                      "success_percent"
+                    ],
+                    "path": "/candidates",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 6,
+                    "path": "/method",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/method/radius_bins_cm",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/method/angle_bin_width_degrees",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/method/hold_steps_required",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/method/joint_limits_degrees",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/method/branch_names",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/method/interruption_classes",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/method/branch_names/open",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/method/branch_names/folded",
+                    "type": "string"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "3a901d2617141a97888a5eb0b07dbe8f3df58deca3d1c5d45e7ab04b358fcc5a"
+            },
+            "module": "robot_learning.lab.i1_diagnostic"
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": {
+          "campaign_lab_manifest": [
+            {
+              "fingerprint": "dd03a87fda7b2696ce84aa6949e775b7067913c2865b6bae36bc3e4f3d07a348",
+              "path": "robot_learning/lab/i1_diagnostic.py"
+            }
+          ],
+          "campaign_lab_publication": {
+            "commit": "196bee6688de188bba5a8e52e3e2ae5aa029485b",
+            "fingerprint": "180fcdaeecd72a45897cc904410d35963453d4ec4ac7583547021a3e652122cc",
+            "manifest": [
+              {
+                "fingerprint": "dd03a87fda7b2696ce84aa6949e775b7067913c2865b6bae36bc3e4f3d07a348",
+                "path": "robot_learning/lab/i1_diagnostic.py"
+              }
+            ]
+          },
+          "code_parent_commit": "e8e25413411fe3fadf8555f92abb4cc17577f21f",
+          "effective_parameters": {
+            "algorithm": {
+              "name": "ppo"
+            },
+            "policy": {
+              "activation": "tanh",
+              "net_arch": [
+                64,
+                64
+              ]
+            },
+            "ppo": {
+              "batch_size": 64,
+              "ent_coef": 0.01,
+              "gae_lambda": 0.95,
+              "gamma": 0.99,
+              "learning_rate": 0.0003,
+              "n_steps": 1024
+            },
+            "training": {
+              "checkpoint_every_steps": 5000,
+              "n_envs": 1
+            }
+          },
+          "module_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "dd03a87fda7b2696ce84aa6949e775b7067913c2865b6bae36bc3e4f3d07a348",
+              "path": "robot_learning/lab/i1_diagnostic.py"
+            }
+          ],
+          "module_paths": [
+            "robot_learning/lab/i1_diagnostic.py"
+          ],
+          "scientific_commit": null,
+          "scientific_manifest": [],
+          "scientific_paths": []
+        }
+      },
+      "session_id": "S3",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "evaluation_semantics": null,
+      "measurements": [
+        {
+          "args": [
+            "--input",
+            "T1:checkpoint-100352=campaigns\\evaluations\\9fa1f256-b083-45b2-8127-d7e4e00728b8\\evaluation-9fa1f256-b083-45b2-8127-d7e4e00728b8-m1-T1-checkpoint-100352-160ep-seed4200-604d52985c97.json",
+            "--input",
+            "T1:checkpoint-120832=campaigns\\evaluations\\9fa1f256-b083-45b2-8127-d7e4e00728b8\\evaluation-9fa1f256-b083-45b2-8127-d7e4e00728b8-m1-T1-checkpoint-120832-160ep-seed4200-604d52985c97.json",
+            "--output",
+            "campaigns\\evaluations\\9fa1f256-b083-45b2-8127-d7e4e00728b8\\i1-diagnostic.json"
+          ],
+          "artifact": "campaigns/evaluations/9fa1f256-b083-45b2-8127-d7e4e00728b8/i1-diagnostic.json",
+          "instrument": "python_module",
+          "label": "I1 bounded branch-limit and hold diagnostic",
+          "module": "robot_learning.lab.i1_diagnostic"
+        }
+      ],
+      "module_provenance": {
+        "campaign_lab_manifest": [
+          {
+            "fingerprint": "dd03a87fda7b2696ce84aa6949e775b7067913c2865b6bae36bc3e4f3d07a348",
+            "path": "robot_learning/lab/i1_diagnostic.py"
+          }
+        ],
+        "campaign_lab_publication": {
+          "commit": "196bee6688de188bba5a8e52e3e2ae5aa029485b",
+          "fingerprint": "180fcdaeecd72a45897cc904410d35963453d4ec4ac7583547021a3e652122cc",
+          "manifest": [
+            {
+              "fingerprint": "dd03a87fda7b2696ce84aa6949e775b7067913c2865b6bae36bc3e4f3d07a348",
+              "path": "robot_learning/lab/i1_diagnostic.py"
+            }
+          ]
+        },
+        "code_parent_commit": "e8e25413411fe3fadf8555f92abb4cc17577f21f",
+        "effective_parameters": {
+          "algorithm": {
+            "name": "ppo"
+          },
+          "policy": {
+            "activation": "tanh",
+            "net_arch": [
+              64,
+              64
+            ]
+          },
+          "ppo": {
+            "batch_size": 64,
+            "ent_coef": 0.01,
+            "gae_lambda": 0.95,
+            "gamma": 0.99,
+            "learning_rate": 0.0003,
+            "n_steps": 1024
+          },
+          "training": {
+            "checkpoint_every_steps": 5000,
+            "n_envs": 1
+          }
+        },
+        "module_manifest": [
+          {
+            "exists": true,
+            "fingerprint": "dd03a87fda7b2696ce84aa6949e775b7067913c2865b6bae36bc3e4f3d07a348",
+            "path": "robot_learning/lab/i1_diagnostic.py"
+          }
+        ],
+        "module_paths": [
+          "robot_learning/lab/i1_diagnostic.py"
+        ],
+        "scientific_commit": null,
+        "scientific_manifest": [],
+        "scientific_paths": []
+      },
+      "paired_comparisons": [],
+      "partial_results": [
+        {
+          "args": [
+            "--input",
+            "T1:checkpoint-100352=campaigns\\evaluations\\9fa1f256-b083-45b2-8127-d7e4e00728b8\\evaluation-9fa1f256-b083-45b2-8127-d7e4e00728b8-m1-T1-checkpoint-100352-160ep-seed4200-604d52985c97.json",
+            "--input",
+            "T1:checkpoint-120832=campaigns\\evaluations\\9fa1f256-b083-45b2-8127-d7e4e00728b8\\evaluation-9fa1f256-b083-45b2-8127-d7e4e00728b8-m1-T1-checkpoint-120832-160ep-seed4200-604d52985c97.json",
+            "--output",
+            "campaigns\\evaluations\\9fa1f256-b083-45b2-8127-d7e4e00728b8\\i1-diagnostic.json"
+          ],
+          "instrument": "python_module",
+          "label": "I1 bounded branch-limit and hold diagnostic",
+          "metrics": {
+            "evaluation_artifact": "campaigns/evaluations/9fa1f256-b083-45b2-8127-d7e4e00728b8/python-module-M2-1-i1-diagnostic.json",
+            "evaluation_artifact_contents": {
+              "scope": "structure_only",
+              "sections": [
+                {
+                  "entries": 7,
+                  "path": "",
+                  "type": "object"
+                },
+                {
+                  "path": "/schema_version",
+                  "type": "number"
+                },
+                {
+                  "path": "/inquiry",
+                  "type": "string"
+                },
+                {
+                  "path": "/episodes_per_candidate",
+                  "type": "number"
+                },
+                {
+                  "path": "/shared_failure_count",
+                  "type": "number"
+                },
+                {
+                  "entries": 9,
+                  "path": "/shared_failure_episode_seeds",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "field_names": [
+                    "analytic_branch_margins",
+                    "angle_conditioned",
+                    "candidate",
+                    "episodes",
+                    "interruption_classes",
+                    "radius_conditioned",
+                    "success_percent"
+                  ],
+                  "path": "/candidates",
+                  "type": "array"
+                },
+                {
+                  "entries": 6,
+                  "path": "/method",
+                  "type": "object"
+                },
+                {
+                  "entries": 4,
+                  "path": "/method/radius_bins_cm",
+                  "type": "array"
+                },
+                {
+                  "path": "/method/angle_bin_width_degrees",
+                  "type": "number"
+                },
+                {
+                  "path": "/method/hold_steps_required",
+                  "type": "number"
+                },
+                {
+                  "entries": 2,
+                  "path": "/method/joint_limits_degrees",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/method/branch_names",
+                  "type": "object"
+                },
+                {
+                  "entries": 4,
+                  "path": "/method/interruption_classes",
+                  "type": "array"
+                },
+                {
+                  "path": "/method/branch_names/open",
+                  "type": "string"
+                },
+                {
+                  "path": "/method/branch_names/folded",
+                  "type": "string"
+                }
+              ],
+              "truncated": false
+            },
+            "evaluation_artifact_fingerprint": "3a901d2617141a97888a5eb0b07dbe8f3df58deca3d1c5d45e7ab04b358fcc5a"
+          },
+          "module": "robot_learning.lab.i1_diagnostic"
+        }
+      ],
+      "result": {
+        "measurements": [
+          {
+            "args": [
+              "--input",
+              "T1:checkpoint-100352=campaigns\\evaluations\\9fa1f256-b083-45b2-8127-d7e4e00728b8\\evaluation-9fa1f256-b083-45b2-8127-d7e4e00728b8-m1-T1-checkpoint-100352-160ep-seed4200-604d52985c97.json",
+              "--input",
+              "T1:checkpoint-120832=campaigns\\evaluations\\9fa1f256-b083-45b2-8127-d7e4e00728b8\\evaluation-9fa1f256-b083-45b2-8127-d7e4e00728b8-m1-T1-checkpoint-120832-160ep-seed4200-604d52985c97.json",
+              "--output",
+              "campaigns\\evaluations\\9fa1f256-b083-45b2-8127-d7e4e00728b8\\i1-diagnostic.json"
+            ],
+            "instrument": "python_module",
+            "label": "I1 bounded branch-limit and hold diagnostic",
+            "metrics": {
+              "evaluation_artifact": "campaigns/evaluations/9fa1f256-b083-45b2-8127-d7e4e00728b8/python-module-M2-1-i1-diagnostic.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 7,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/inquiry",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/episodes_per_candidate",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/shared_failure_count",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/shared_failure_episode_seeds",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "field_names": [
+                      "analytic_branch_margins",
+                      "angle_conditioned",
+                      "candidate",
+                      "episodes",
+                      "interruption_classes",
+                      "radius_conditioned",
+                      "success_percent"
+                    ],
+                    "path": "/candidates",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 6,
+                    "path": "/method",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/method/radius_bins_cm",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/method/angle_bin_width_degrees",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/method/hold_steps_required",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/method/joint_limits_degrees",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/method/branch_names",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/method/interruption_classes",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/method/branch_names/open",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/method/branch_names/folded",
+                    "type": "string"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "3a901d2617141a97888a5eb0b07dbe8f3df58deca3d1c5d45e7ab04b358fcc5a"
+            },
+            "module": "robot_learning.lab.i1_diagnostic"
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": {
+          "campaign_lab_manifest": [
+            {
+              "fingerprint": "dd03a87fda7b2696ce84aa6949e775b7067913c2865b6bae36bc3e4f3d07a348",
+              "path": "robot_learning/lab/i1_diagnostic.py"
+            }
+          ],
+          "campaign_lab_publication": {
+            "commit": "196bee6688de188bba5a8e52e3e2ae5aa029485b",
+            "fingerprint": "180fcdaeecd72a45897cc904410d35963453d4ec4ac7583547021a3e652122cc",
+            "manifest": [
+              {
+                "fingerprint": "dd03a87fda7b2696ce84aa6949e775b7067913c2865b6bae36bc3e4f3d07a348",
+                "path": "robot_learning/lab/i1_diagnostic.py"
+              }
+            ]
+          },
+          "code_parent_commit": "e8e25413411fe3fadf8555f92abb4cc17577f21f",
+          "effective_parameters": {
+            "algorithm": {
+              "name": "ppo"
+            },
+            "policy": {
+              "activation": "tanh",
+              "net_arch": [
+                64,
+                64
+              ]
+            },
+            "ppo": {
+              "batch_size": 64,
+              "ent_coef": 0.01,
+              "gae_lambda": 0.95,
+              "gamma": 0.99,
+              "learning_rate": 0.0003,
+              "n_steps": 1024
+            },
+            "training": {
+              "checkpoint_every_steps": 5000,
+              "n_envs": 1
+            }
+          },
+          "module_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "dd03a87fda7b2696ce84aa6949e775b7067913c2865b6bae36bc3e4f3d07a348",
+              "path": "robot_learning/lab/i1_diagnostic.py"
+            }
+          ],
+          "module_paths": [
+            "robot_learning/lab/i1_diagnostic.py"
+          ],
+          "scientific_commit": null,
+          "scientific_manifest": [],
+          "scientific_paths": []
+        }
+      },
+      "task_reference_contract": null
+    },
+    "failure": null,
+    "id": "M2",
+    "inquiry_id": "I1",
+    "kind": "measurement",
+    "progress": "completed",
+    "request": {
+      "measurement": {
+        "description": "Analyze both late M1 candidate artifacts by target radius and 30-degree angle sector, classifying first reach and hold interruption behavior and computing analytic positive-elbow and folded IK joint-limit margins for every target.",
+        "measurements": [
+          {
+            "args": [
+              "--input",
+              "T1:checkpoint-100352=campaigns\\evaluations\\9fa1f256-b083-45b2-8127-d7e4e00728b8\\evaluation-9fa1f256-b083-45b2-8127-d7e4e00728b8-m1-T1-checkpoint-100352-160ep-seed4200-604d52985c97.json",
+              "--input",
+              "T1:checkpoint-120832=campaigns\\evaluations\\9fa1f256-b083-45b2-8127-d7e4e00728b8\\evaluation-9fa1f256-b083-45b2-8127-d7e4e00728b8-m1-T1-checkpoint-120832-160ep-seed4200-604d52985c97.json",
+              "--output",
+              "campaigns\\evaluations\\9fa1f256-b083-45b2-8127-d7e4e00728b8\\i1-diagnostic.json"
+            ],
+            "artifact": "campaigns/evaluations/9fa1f256-b083-45b2-8127-d7e4e00728b8/i1-diagnostic.json",
+            "instrument": "python_module",
+            "label": "I1 bounded branch-limit and hold diagnostic",
+            "module": "robot_learning.lab.i1_diagnostic"
+          }
+        ],
+        "rationale": "I1 requires durable evidence that distinguishes angular branch/limit failures from broadly distributed post-entry hold instability. The existing M1 artifacts contain the identical 160-episode panels and per-episode radius, angle, success, first reach, maximum hold, and interruption measurements, but the compact operation summary does not expose their values or analytic branch feasibility. This bounded python-module analysis consumes only those retained artifacts, verifies the shared outcomes, and reports the required radius- and angle-conditioned success, first-reach presence and timing, maximum hold, interruption classes, and branch margins for both candidates. No policy, task semantics, or training allocation changes are involved."
+      }
+    },
+    "request_fingerprint": "90bdc7020d70ec2a2493e88a8b93ef5395857177010d8e4b179c427088b20db7",
+    "session_id": "S3",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T1 produced archived candidates, but no working, best-known, or retained role is assigned. M1 found no outcome difference between the two late checkpoints; role assignment remains deferred until inquiry evidence identifies a scientifically justified measurement subject or candidate.",
     "completed_operations": [
@@ -1600,6 +2177,21 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "5963f317-4c5b-46f5-9a61-8c876a2096f9",
+    "id": "S3",
+    "inquiry_id": "I1",
+    "kind": "inquiry",
+    "objective": "Advance I1 toward an evidence-supported answer to its scientific question: Do the nine shared M1 development failures arise primarily from angular-sector branch selection and shoulder-limit handling, where the nominal positive-elbow IK branch is infeasible but the folded branch remains feasible, rather than from a general post-entry hold-stabilization limitation?",
+    "operation_ids": [
+      "M2"
+    ],
+    "scientific_parent_commit": "e8e25413411fe3fadf8555f92abb4cc17577f21f"
+  },
   "terminal_state": null
 }
