@@ -1651,8 +1651,8 @@
   "counters": {
     "event": 10,
     "inquiry": 2,
-    "measurement": 4,
-    "session": 6,
+    "measurement": 6,
+    "session": 7,
     "training": 2
   },
   "human_goal": {
@@ -3825,9 +3825,81 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-06T05:51:23Z",
+      "error": "T1 baseline transient and hold trajectory diagnostics failed:\n\nTraceback (most recent call last):\n  File \"<frozen runpy>\", line 198, in _run_module_as_main\n  File \"<frozen runpy>\", line 88, in _run_code\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\evaluate.py\", line 81, in <module>\n    main()\n    ~~~~^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\evaluate.py\", line 66, in main\n    result = evaluate_research_model(\n        args.model,\n    ...<3 lines>...\n        progress_callback=report_progress,\n    )\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\scenario\\evaluation.py\", line 117, in evaluate_research_model\n    obs, reward, terminated, truncated, info = env.step(action)\n                                               ~~~~~~~~^^^^^^^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\scenario\\environment.py\", line 143, in step\n    self.data.site_xvelp[self._end_effector_site_id]\n    ^^^^^^^^^^^^^^^^^^^^\nAttributeError: 'mujoco._structs.MjData' object has no attribute 'site_xvelp'\n",
+      "id": "M5",
+      "inquiry_id": null,
+      "kind": "measurement",
+      "request": {
+        "description": "Remeasure the unchanged T1 terminal checkpoint on the shared 160-episode development panel with trajectory-level diagnostics for the reset transient, approach geometry, and hold behavior.",
+        "measurements": [
+          {
+            "candidate": "T1:checkpoint-120832",
+            "episodes": 160,
+            "instrument": "research_evaluation",
+            "label": "T1 baseline transient and hold trajectory diagnostics",
+            "seed": 4200
+          }
+        ],
+        "rationale": "The nine baseline failures remain compatible with singular-start approach difficulty, branch-dependent dynamics, or residual stabilization, while the T2 observation intervention caused a broad no-first-reach regression and cannot discriminate those mechanisms. The unchanged T1 policy must therefore be measured with early elbow motion, radial and tangential endpoint errors, clipped action saturation, first-reach timing, analytic branch pattern, uninterrupted hold, and within-control-interval excursions. Comparing these quantities with the existing T1 outcome panel will determine whether the failing -150 to -120 degree sector is preceded by a transient/approach signature or by post-entry instability, and will set the next bounded goal-linked inquiry."
+      },
+      "result": {
+        "error": "T1 baseline transient and hold trajectory diagnostics failed:\n\nTraceback (most recent call last):\n  File \"<frozen runpy>\", line 198, in _run_module_as_main\n  File \"<frozen runpy>\", line 88, in _run_code\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\evaluate.py\", line 81, in <module>\n    main()\n    ~~~~^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\evaluate.py\", line 66, in main\n    result = evaluate_research_model(\n        args.model,\n    ...<3 lines>...\n        progress_callback=report_progress,\n    )\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\scenario\\evaluation.py\", line 117, in evaluate_research_model\n    obs, reward, terminated, truncated, info = env.step(action)\n                                               ~~~~~~~~^^^^^^^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\scenario\\environment.py\", line 143, in step\n    self.data.site_xvelp[self._end_effector_site_id]\n    ^^^^^^^^^^^^^^^^^^^^\nAttributeError: 'mujoco._structs.MjData' object has no attribute 'site_xvelp'\n",
+        "status": "failed"
+      },
+      "session_id": "S7",
+      "status": "failed",
+      "superseded_by": "M6",
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "evaluation_semantics": "764f502c8370",
+      "measurements": [
+        {
+          "artifact": "campaigns/checkpoints/candidates/9fa1f256-b083-45b2-8127-d7e4e00728b8/t1/checkpoint-120832",
+          "candidate": "T1:checkpoint-120832",
+          "candidate_id": "T1:checkpoint-120832",
+          "episodes": 160,
+          "instrument": "research_evaluation",
+          "label": "T1 baseline transient and hold trajectory diagnostics after M5 repair",
+          "model_fingerprint": "e59f4fb52c50c26b24be370eb3981078f6ad5e8ffb5a6c7eac06cad0685a5663",
+          "seed": 4200
+        }
+      ],
+      "module_provenance": null,
+      "paired_comparisons": [],
+      "partial_results": [],
+      "result": null,
+      "task_reference_contract": null
+    },
+    "failure": null,
+    "id": "M6",
+    "inquiry_id": null,
+    "kind": "measurement",
+    "progress": "accepted",
+    "request": {
+      "measurement": {
+        "description": "Remeasure the unchanged T1 terminal checkpoint on the shared 160-episode development panel with trajectory-level diagnostics for the reset transient, approach geometry, and hold behavior.",
+        "measurements": [
+          {
+            "candidate": "T1:checkpoint-120832",
+            "episodes": 160,
+            "instrument": "research_evaluation",
+            "label": "T1 baseline transient and hold trajectory diagnostics after M5 repair",
+            "seed": 4200
+          }
+        ],
+        "rationale": "M5 failed before producing evidence because the diagnostic implementation used a nonexistent MuJoCo site_xvelp field. The implementation now uses the supported mj_objectVelocity API and preserves the requested per-control-step trajectory. The nine baseline failures remain compatible with singular-start approach difficulty, branch-dependent dynamics, or residual stabilization, while the T2 observation intervention caused a broad no-first-reach regression and cannot discriminate those mechanisms. Repeating the unchanged T1 measurement with early elbow motion, radial and tangential endpoint errors, clipped action saturation, first-reach timing, analytic branch pattern, uninterrupted hold, and within-control-interval excursions will determine whether the failing -150 to -120 degree sector is preceded by a transient/approach signature or by post-entry instability, and will set the next bounded goal-linked inquiry."
+      }
+    },
+    "request_fingerprint": "96b42b0e51bb442f191c8c6885401f8f39d541efb5fd5d48380ed4310012330f",
+    "session_id": "S7",
+    "supersedes": "M5"
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T1:checkpoint-120832 remains the strongest measured development reference at 151/160, but no candidate is assigned a working, best-known, or retained role. T2:checkpoint-120832 is rejected as an intervention candidate because it achieved 39/160 and produced a broad no-first-reach regression.",
     "completed_operations": [
@@ -3864,6 +3936,19 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "0ab19a01-5964-495c-98b1-e5dae2498648",
+    "id": "S7",
+    "inquiry_id": null,
+    "kind": "goal_review",
+    "objective": "Reassess the scientific direction toward the human goal using completed evidence. You may request measurements to resolve an uncertainty or develop the method before committing to an inquiry. Decide whether to request official assessment or open one bounded goal-linked inquiry.",
+    "operation_ids": [],
+    "scientific_parent_commit": "35963be1de3c02a0a532ed8ac416d14c2ebeb2f1"
+  },
   "terminal_state": null
 }
