@@ -828,7 +828,7 @@
     }
   },
   "counters": {
-    "event": 0,
+    "event": 1,
     "inquiry": 0,
     "measurement": 1,
     "session": 1,
@@ -837,7 +837,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -1180,32 +1180,160 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-06T23:03:27Z",
+      "error": null,
+      "id": "E1",
+      "inquiry_id": null,
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "No candidate role has been assigned yet. T1:checkpoint-100352 is the evidence-backed candidate proposed for best-known assignment in goal review because it is the strongest late-training checkpoint and achieved 99.5% on M1; this is not an official success claim.",
+        "completed_operations": [
+          "T1",
+          "M1"
+        ],
+        "cumulative_resource_use": "One fresh training run requested for 120000 steps completed at 120832 rollout-rounded steps; one 200-episode development evaluation completed on seed 10000. No further training allocation has been used.",
+        "current_goal_gap": "The protected official result is unknown. Development evidence leaves at most a small residual reliability gap: one of 200 episodes failed despite the candidate succeeding across all 54 sampled targets below 10 cm. The failure occurred at radius 15.91 cm and angle -138.23 degrees: the policy first reached tolerance at step 17, held for one step, then exited, indicating a rare hold-boundary failure rather than an inner-radius coverage deficit. This does not establish protected-goal attainment.",
+        "current_synthesis": "Observed evidence: T1 training produced a late learning plateau with recorded training success between 0.93 and 0.97; M1 evaluated T1:checkpoint-100352 on 200 official-distribution development seeds and recorded 199 successes (99.5%). In M1, all 54 targets at 6-10 cm, all 58 targets at 10-14 cm, and all 31 targets at 18-20 cm succeeded; the only failure was in the 14-18 cm bin. The failure reached tolerance but completed only one held step and ended at 1.50 cm, supporting the initial model's stabilization interpretation. Interpretation: the current candidate has demonstrated broad radial coverage and near-goal hold behavior, while the remaining failure mechanism is not yet shown to be systematic. Competing explanations remain a rare boundary-sensitive dynamic excursion, target-angle/branch conditioning, or finite-panel variation. The result weakens the hypothesis that inner-radius training coverage is the dominant blocker and does not justify changing the reward, observation, or controller before protected assessment. Limits: M1 is development evidence, not the protected benchmark; it lacks action saturation and endpoint-velocity traces, and one failure cannot distinguish deterministic geometry from sampling variation.",
+        "decision_frontier": "Should the campaign request the protected official assessment for T1:checkpoint-100352, or spend another full training allocation addressing a hypothesized rare hold-boundary failure? The discriminating evidence already available is M1's 99.5% official-distribution development result with no failures below 14 cm and one brief hold exit at 15.91 cm. A materially lower protected result would redirect the campaign toward hold diagnostics and targeted stabilization; a protected result of at least 98% would satisfy the human goal.",
+        "evidence_references": [
+          "T1",
+          "M1"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 successes in the protected 200-episode assessment. T1:checkpoint-100352 is the strongest available candidate and achieved 199/200 (99.5%) on a separate 200-episode official-distribution development panel, so the campaign is close enough that protected assessment is now a credible next decision rather than further generic training by default.",
+        "next_direction_or_closure": "Enter goal review. Assign T1:checkpoint-100352 as best-known if the recorded M1 evidence is accepted, then request the protected official assessment rather than spending another allocation on an unconfirmed mechanism. If the protected result fails the threshold, open a hold-stabilization inquiry using the M1 failure state as the starting discriminant.",
+        "next_question": "Does T1:checkpoint-100352 achieve at least 196 successes in the protected 200-episode official assessment?"
+      },
+      "result": {
+        "session_id": "S1",
+        "status": "checkpointed"
+      },
+      "session_id": "S1",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
-  "pi_checkpoint": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "2e0e884021e50e6c85bafb0a7dfa93f10b0542f4",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "No candidate role has been assigned yet. T1:checkpoint-100352 is the evidence-backed candidate proposed for best-known assignment in goal review because it is the strongest late-training checkpoint and achieved 99.5% on M1; this is not an official success claim.",
+        "completed_operations": [
+          "T1",
+          "M1"
+        ],
+        "cumulative_resource_use": "One fresh training run requested for 120000 steps completed at 120832 rollout-rounded steps; one 200-episode development evaluation completed on seed 10000. No further training allocation has been used.",
+        "current_goal_gap": "The protected official result is unknown. Development evidence leaves at most a small residual reliability gap: one of 200 episodes failed despite the candidate succeeding across all 54 sampled targets below 10 cm. The failure occurred at radius 15.91 cm and angle -138.23 degrees: the policy first reached tolerance at step 17, held for one step, then exited, indicating a rare hold-boundary failure rather than an inner-radius coverage deficit. This does not establish protected-goal attainment.",
+        "current_synthesis": "Observed evidence: T1 training produced a late learning plateau with recorded training success between 0.93 and 0.97; M1 evaluated T1:checkpoint-100352 on 200 official-distribution development seeds and recorded 199 successes (99.5%). In M1, all 54 targets at 6-10 cm, all 58 targets at 10-14 cm, and all 31 targets at 18-20 cm succeeded; the only failure was in the 14-18 cm bin. The failure reached tolerance but completed only one held step and ended at 1.50 cm, supporting the initial model's stabilization interpretation. Interpretation: the current candidate has demonstrated broad radial coverage and near-goal hold behavior, while the remaining failure mechanism is not yet shown to be systematic. Competing explanations remain a rare boundary-sensitive dynamic excursion, target-angle/branch conditioning, or finite-panel variation. The result weakens the hypothesis that inner-radius training coverage is the dominant blocker and does not justify changing the reward, observation, or controller before protected assessment. Limits: M1 is development evidence, not the protected benchmark; it lacks action saturation and endpoint-velocity traces, and one failure cannot distinguish deterministic geometry from sampling variation.",
+        "decision_frontier": "Should the campaign request the protected official assessment for T1:checkpoint-100352, or spend another full training allocation addressing a hypothesized rare hold-boundary failure? The discriminating evidence already available is M1's 99.5% official-distribution development result with no failures below 14 cm and one brief hold exit at 15.91 cm. A materially lower protected result would redirect the campaign toward hold diagnostics and targeted stabilization; a protected result of at least 98% would satisfy the human goal.",
+        "evidence_references": [
+          "T1",
+          "M1"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 successes in the protected 200-episode assessment. T1:checkpoint-100352 is the strongest available candidate and achieved 199/200 (99.5%) on a separate 200-episode official-distribution development panel, so the campaign is close enough that protected assessment is now a credible next decision rather than further generic training by default.",
+        "inquiry_id": null,
+        "next_direction_or_closure": "Enter goal review. Assign T1:checkpoint-100352 as best-known if the recorded M1 evidence is accepted, then request the protected official assessment rather than spending another allocation on an unconfirmed mechanism. If the protected result fails the threshold, open a hold-stabilization inquiry using the M1 failure state as the starting discriminant.",
+        "next_question": "Does T1:checkpoint-100352 achieve at least 196 successes in the protected 200-episode official assessment?",
+        "session_id": "S1"
+      },
+      "presentation": {
+        "backend_session_id": "9fa25044-652a-4a88-a8b8-0a787d848a7b",
+        "campaign_id": "ab62348f-7e1f-4d20-8036-6c194621d93c",
+        "campaign_usage": "5m13s | 7.50 AIU | prompt 1m (86% cached) | output 19.4k",
+        "session_id": "S1",
+        "session_kind": "startup",
+        "session_usage": "2m32s | 4.36 AIU | prompt 674.5k (87% cached) | output 7.8k"
+      },
+      "result": {
+        "session_id": "S1",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "5e04de8bc3840ec7ade3b09c8fef33ceb63ff348",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E1",
+    "inquiry_id": null,
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "No candidate role has been assigned yet. T1:checkpoint-100352 is the evidence-backed candidate proposed for best-known assignment in goal review because it is the strongest late-training checkpoint and achieved 99.5% on M1; this is not an official success claim.",
+        "completed_operations": [
+          "T1",
+          "M1"
+        ],
+        "cumulative_resource_use": "One fresh training run requested for 120000 steps completed at 120832 rollout-rounded steps; one 200-episode development evaluation completed on seed 10000. No further training allocation has been used.",
+        "current_goal_gap": "The protected official result is unknown. Development evidence leaves at most a small residual reliability gap: one of 200 episodes failed despite the candidate succeeding across all 54 sampled targets below 10 cm. The failure occurred at radius 15.91 cm and angle -138.23 degrees: the policy first reached tolerance at step 17, held for one step, then exited, indicating a rare hold-boundary failure rather than an inner-radius coverage deficit. This does not establish protected-goal attainment.",
+        "current_synthesis": "Observed evidence: T1 training produced a late learning plateau with recorded training success between 0.93 and 0.97; M1 evaluated T1:checkpoint-100352 on 200 official-distribution development seeds and recorded 199 successes (99.5%). In M1, all 54 targets at 6-10 cm, all 58 targets at 10-14 cm, and all 31 targets at 18-20 cm succeeded; the only failure was in the 14-18 cm bin. The failure reached tolerance but completed only one held step and ended at 1.50 cm, supporting the initial model's stabilization interpretation. Interpretation: the current candidate has demonstrated broad radial coverage and near-goal hold behavior, while the remaining failure mechanism is not yet shown to be systematic. Competing explanations remain a rare boundary-sensitive dynamic excursion, target-angle/branch conditioning, or finite-panel variation. The result weakens the hypothesis that inner-radius training coverage is the dominant blocker and does not justify changing the reward, observation, or controller before protected assessment. Limits: M1 is development evidence, not the protected benchmark; it lacks action saturation and endpoint-velocity traces, and one failure cannot distinguish deterministic geometry from sampling variation.",
+        "decision_frontier": "Should the campaign request the protected official assessment for T1:checkpoint-100352, or spend another full training allocation addressing a hypothesized rare hold-boundary failure? The discriminating evidence already available is M1's 99.5% official-distribution development result with no failures below 14 cm and one brief hold exit at 15.91 cm. A materially lower protected result would redirect the campaign toward hold diagnostics and targeted stabilization; a protected result of at least 98% would satisfy the human goal.",
+        "evidence_references": [
+          "T1",
+          "M1"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 successes in the protected 200-episode assessment. T1:checkpoint-100352 is the strongest available candidate and achieved 199/200 (99.5%) on a separate 200-episode official-distribution development panel, so the campaign is close enough that protected assessment is now a credible next decision rather than further generic training by default.",
+        "next_direction_or_closure": "Enter goal review. Assign T1:checkpoint-100352 as best-known if the recorded M1 evidence is accepted, then request the protected official assessment rather than spending another allocation on an unconfirmed mechanism. If the protected result fails the threshold, open a hold-stabilization inquiry using the M1 failure state as the starting discriminant.",
+        "next_question": "Does T1:checkpoint-100352 achieve at least 196 successes in the protected 200-episode official assessment?"
+      }
+    },
+    "request_fingerprint": "4bb091a981891a8a92195f6d4fad1c85250874414597d2b2844dcab06c342287",
+    "session_id": "S1",
+    "supersedes": null
+  },
+  "pi_checkpoint": {
+    "candidates_and_roles": "No candidate role has been assigned yet. T1:checkpoint-100352 is the evidence-backed candidate proposed for best-known assignment in goal review because it is the strongest late-training checkpoint and achieved 99.5% on M1; this is not an official success claim.",
+    "completed_operations": [
+      "T1",
+      "M1"
+    ],
+    "cumulative_resource_use": "One fresh training run requested for 120000 steps completed at 120832 rollout-rounded steps; one 200-episode development evaluation completed on seed 10000. No further training allocation has been used.",
+    "current_goal_gap": "The protected official result is unknown. Development evidence leaves at most a small residual reliability gap: one of 200 episodes failed despite the candidate succeeding across all 54 sampled targets below 10 cm. The failure occurred at radius 15.91 cm and angle -138.23 degrees: the policy first reached tolerance at step 17, held for one step, then exited, indicating a rare hold-boundary failure rather than an inner-radius coverage deficit. This does not establish protected-goal attainment.",
+    "current_synthesis": "Observed evidence: T1 training produced a late learning plateau with recorded training success between 0.93 and 0.97; M1 evaluated T1:checkpoint-100352 on 200 official-distribution development seeds and recorded 199 successes (99.5%). In M1, all 54 targets at 6-10 cm, all 58 targets at 10-14 cm, and all 31 targets at 18-20 cm succeeded; the only failure was in the 14-18 cm bin. The failure reached tolerance but completed only one held step and ended at 1.50 cm, supporting the initial model's stabilization interpretation. Interpretation: the current candidate has demonstrated broad radial coverage and near-goal hold behavior, while the remaining failure mechanism is not yet shown to be systematic. Competing explanations remain a rare boundary-sensitive dynamic excursion, target-angle/branch conditioning, or finite-panel variation. The result weakens the hypothesis that inner-radius training coverage is the dominant blocker and does not justify changing the reward, observation, or controller before protected assessment. Limits: M1 is development evidence, not the protected benchmark; it lacks action saturation and endpoint-velocity traces, and one failure cannot distinguish deterministic geometry from sampling variation.",
+    "decision_frontier": "Should the campaign request the protected official assessment for T1:checkpoint-100352, or spend another full training allocation addressing a hypothesized rare hold-boundary failure? The discriminating evidence already available is M1's 99.5% official-distribution development result with no failures below 14 cm and one brief hold exit at 15.91 cm. A materially lower protected result would redirect the campaign toward hold diagnostics and targeted stabilization; a protected result of at least 98% would satisfy the human goal.",
+    "evidence_references": [
+      "T1",
+      "M1"
+    ],
+    "human_goal_connection": "The human goal requires at least 196 successes in the protected 200-episode assessment. T1:checkpoint-100352 is the strongest available candidate and achieved 199/200 (99.5%) on a separate 200-episode official-distribution development panel, so the campaign is close enough that protected assessment is now a credible next decision rather than further generic training by default.",
+    "inquiry_id": null,
+    "next_direction_or_closure": "Enter goal review. Assign T1:checkpoint-100352 as best-known if the recorded M1 evidence is accepted, then request the protected official assessment rather than spending another allocation on an unconfirmed mechanism. If the protected result fails the threshold, open a hold-stabilization inquiry using the M1 failure state as the starting discriminant.",
+    "next_question": "Does T1:checkpoint-100352 achieve at least 196 successes in the protected 200-episode official assessment?",
+    "scientific_commit": "5e04de8bc3840ec7ade3b09c8fef33ceb63ff348",
+    "session_id": "S1"
+  },
   "schema_version": 6,
   "scientific_model": {
     "commit": "659d7e9b11afcc6ea48910deab34be85ca342fc1",
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "9fa25044-652a-4a88-a8b8-0a787d848a7b",
-    "id": "S1",
-    "inquiry_id": null,
-    "kind": "startup",
-    "objective": "Establish the most credible initial scientific direction toward the human goal from the scientific model and available evidence. Use scientific work in this session to establish or refine that direction, including building or adapting reusable scientific tools and PI-owned methods where needed. These capabilities can support subsequent inquiries. Choose the first useful scientific action and explain why it advances the direction. Preserve the work actually performed, resulting understanding, remaining uncertainties and chosen next action in the scientific session record.",
-    "operation_ids": [
-      "T1",
-      "M1"
-    ],
-    "scientific_parent_commit": "2e0e884021e50e6c85bafb0a7dfa93f10b0542f4"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
