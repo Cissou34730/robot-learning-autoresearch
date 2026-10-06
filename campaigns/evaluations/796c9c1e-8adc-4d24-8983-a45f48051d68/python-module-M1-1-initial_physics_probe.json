@@ -1,0 +1,6194 @@
+{
+  "schema_version": 1,
+  "measurement": "compiled_kinematics_and_local_dynamics",
+  "model": {
+    "timestep_s": 0.002,
+    "integrator": 0,
+    "joint_ranges_rad": [
+      [
+        -2.9670597283903604,
+        2.9670597283903604
+      ],
+      [
+        -2.9670597283903604,
+        2.9670597283903604
+      ]
+    ],
+    "dof_damping": [
+      0.5,
+      0.5
+    ],
+    "dof_armature": [
+      0.01,
+      0.01
+    ],
+    "actuator_gear": [
+      [
+        5.0,
+        0.0
+      ],
+      [
+        5.0,
+        0.0
+      ]
+    ],
+    "actuator_ctrlrange": [
+      [
+        -1.0,
+        1.0
+      ],
+      [
+        -1.0,
+        1.0
+      ]
+    ],
+    "body_mass": [
+      0.0,
+      0.2010619298297468,
+      0.09896016858807849,
+      0.05247716368556391,
+      0.007238229473870883
+    ],
+    "body_inertia": [
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.00010723302924253161,
+        0.00010723302924253161,
+        0.00016084954386379744
+      ],
+      [
+        0.0001682676295170863,
+        0.0001682676295170863,
+        1.0814932709982864e-05
+      ],
+      [
+        6.109741244031255e-05,
+        6.109741244031255e-05,
+        3.674125280936861e-06
+      ],
+      [
+        4.169220176949629e-07,
+        4.169220176949629e-07,
+        4.169220176949629e-07
+      ]
+    ]
+  },
+  "kinematics": {
+    "grid": {
+      "radius_min_m": 0.06,
+      "radius_max_m": 0.2,
+      "radius_count": 141,
+      "angle_count": 360,
+      "branch_count": 2
+    },
+    "total_branch_targets": 101520,
+    "legal_branch_targets": 95880,
+    "legal_fraction": 0.9444444444444444,
+    "branch_summary": {
+      "open": {
+        "legal_count": 47940,
+        "total_count": 50760,
+        "legal_fraction": 0.9444444444444444,
+        "minimum_joint_margin_rad": 4.0541161215656984e-05
+      },
+      "folded": {
+        "legal_count": 47940,
+        "total_count": 50760,
+        "legal_fraction": 0.9444444444444444,
+        "minimum_joint_margin_rad": 4.0541161215656984e-05
+      }
+    },
+    "maximum_forward_residual_m": 1.8041124150158794e-16,
+    "radius_rows": [
+      {
+        "radius_m": 0.06,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.0043809754617987196
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.0043809754617987196
+          }
+        }
+      },
+      {
+        "radius_m": 0.061,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.005393815910736066
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.005393815910736066
+          }
+        }
+      },
+      {
+        "radius_m": 0.062,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.006211889285118843
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.006211889285118843
+          }
+        }
+      },
+      {
+        "radius_m": 0.063,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.006844753168530282
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.006844753168530282
+          }
+        }
+      },
+      {
+        "radius_m": 0.064,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.007301300343939943
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.007301300343939943
+          }
+        }
+      },
+      {
+        "radius_m": 0.065,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.007589815642578657
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.007589815642578657
+          }
+        }
+      },
+      {
+        "radius_m": 0.066,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.007718026935403799
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.007718026935403799
+          }
+        }
+      },
+      {
+        "radius_m": 0.067,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.007693150970069951
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.007693150970069951
+          }
+        }
+      },
+      {
+        "radius_m": 0.068,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.007521934660063678
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.007521934660063678
+          }
+        }
+      },
+      {
+        "radius_m": 0.069,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.007210692351151238
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.007210692351151238
+          }
+        }
+      },
+      {
+        "radius_m": 0.06999999999999999,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.0067653395211308975
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.0067653395211308975
+          }
+        }
+      },
+      {
+        "radius_m": 0.071,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.006191423309849675
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.006191423309849675
+          }
+        }
+      },
+      {
+        "radius_m": 0.072,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.005494150226058814
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.005494150226058814
+          }
+        }
+      },
+      {
+        "radius_m": 0.073,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.004678411334428922
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.004678411334428922
+          }
+        }
+      },
+      {
+        "radius_m": 0.074,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.0037488051888541207
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.0037488051888541207
+          }
+        }
+      },
+      {
+        "radius_m": 0.075,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.002709658746093524
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.002709658746093524
+          }
+        }
+      },
+      {
+        "radius_m": 0.076,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.0015650464660703634
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.0015650464660703634
+          }
+        }
+      },
+      {
+        "radius_m": 0.077,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.0003188077810545309
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.0003188077810545309
+          }
+        }
+      },
+      {
+        "radius_m": 0.078,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.0010254369049009782
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.0010254369049009782
+          }
+        }
+      },
+      {
+        "radius_m": 0.079,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.0024642715431797413
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.0024642715431806295
+          }
+        }
+      },
+      {
+        "radius_m": 0.08,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.003994470967278119
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.003994470967278119
+          }
+        }
+      },
+      {
+        "radius_m": 0.081,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.005612988505661054
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.00561298850566061
+          }
+        }
+      },
+      {
+        "radius_m": 0.08199999999999999,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.00731694457977472
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.00731694457977472
+          }
+        }
+      },
+      {
+        "radius_m": 0.08299999999999999,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.00834967632302508
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.00834967632302508
+          }
+        }
+      },
+      {
+        "radius_m": 0.08399999999999999,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.006482865262793069
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.006482865262793069
+          }
+        }
+      },
+      {
+        "radius_m": 0.08499999999999999,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.004538352918181943
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.004538352918181943
+          }
+        }
+      },
+      {
+        "radius_m": 0.086,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.002518447781701738
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.002518447781701738
+          }
+        }
+      },
+      {
+        "radius_m": 0.087,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.00042533633673969007
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.00042533633673969007
+          }
+        }
+      },
+      {
+        "radius_m": 0.088,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.0017389098506073175
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.0017389098506068734
+          }
+        }
+      },
+      {
+        "radius_m": 0.089,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.00397232755738175
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.0039723275573813055
+          }
+        }
+      },
+      {
+        "radius_m": 0.09,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.006273055804362659
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.006273055804362215
+          }
+        }
+      },
+      {
+        "radius_m": 0.091,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.008639330192544481
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.008639330192544037
+          }
+        }
+      },
+      {
+        "radius_m": 0.092,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.006383814879615812
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.006383814879615812
+          }
+        }
+      },
+      {
+        "radius_m": 0.093,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.0038913810304093133
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.0038913810304093133
+          }
+        }
+      },
+      {
+        "radius_m": 0.094,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.0013381655686748317
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.0013381655686748317
+          }
+        }
+      },
+      {
+        "radius_m": 0.095,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.001274404345397162
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.001274404345396718
+          }
+        }
+      },
+      {
+        "radius_m": 0.096,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.003944975229339676
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.003944975229339676
+          }
+        }
+      },
+      {
+        "radius_m": 0.097,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.006672263595233652
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.006672263595233652
+          }
+        }
+      },
+      {
+        "radius_m": 0.098,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.007998240005484547
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.007998240005485435
+          }
+        }
+      },
+      {
+        "radius_m": 0.099,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.0051611041077199715
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.0051611041077199715
+          }
+        }
+      },
+      {
+        "radius_m": 0.1,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.002270714444618349
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.002270714444618349
+          }
+        }
+      },
+      {
+        "radius_m": 0.101,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.0006718933380365222
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.0006718933380369663
+          }
+        }
+      },
+      {
+        "radius_m": 0.10200000000000001,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.003665738551932307
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.003665738551932307
+          }
+        }
+      },
+      {
+        "radius_m": 0.10300000000000001,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.006709893027831981
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.006709893027831981
+          }
+        }
+      },
+      {
+        "radius_m": 0.104,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.007649813682851558
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.0076498136828524466
+          }
+        }
+      },
+      {
+        "radius_m": 0.105,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.00450762635748525
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.004507626357486139
+          }
+        }
+      },
+      {
+        "radius_m": 0.106,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.0013176212115686425
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.0013176212115695307
+          }
+        }
+      },
+      {
+        "radius_m": 0.107,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.0019194623218958817
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.0019194623218954376
+          }
+        }
+      },
+      {
+        "radius_m": 0.108,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.005202927335639984
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.005202927335639984
+          }
+        }
+      },
+      {
+        "radius_m": 0.109,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.008532117826092644
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.008532117826092644
+          }
+        }
+      },
+      {
+        "radius_m": 0.11,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.00554687534075704
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.00554687534075704
+          }
+        }
+      },
+      {
+        "radius_m": 0.111,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.002128045762288977
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.002128045762288977
+          }
+        }
+      },
+      {
+        "radius_m": 0.112,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.0013347720640246585
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.0013347720640242144
+          }
+        }
+      },
+      {
+        "radius_m": 0.11299999999999999,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.0048410715936246795
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.0048410715936242354
+          }
+        }
+      },
+      {
+        "radius_m": 0.11399999999999999,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.008390380573523704
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.00839038057352326
+          }
+        }
+      },
+      {
+        "radius_m": 0.11499999999999999,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.00547103253816239
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.00547103253816239
+          }
+        }
+      },
+      {
+        "radius_m": 0.11599999999999999,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.0018369894762138017
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.0018369894762138017
+          }
+        }
+      },
+      {
+        "radius_m": 0.11699999999999999,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.0018388418012431629
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.0018388418012431629
+          }
+        }
+      },
+      {
+        "radius_m": 0.118,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.005556116351266738
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.005556116351266738
+          }
+        }
+      },
+      {
+        "radius_m": 0.119,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.008138773568608038
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.00813877356860715
+          }
+        }
+      },
+      {
+        "radius_m": 0.12,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.004339529131834219
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.004339529131834219
+          }
+        }
+      },
+      {
+        "radius_m": 0.121,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.000499700712745188
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.000499700712745188
+          }
+        }
+      },
+      {
+        "radius_m": 0.122,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.0033804816016971273
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.0033804816016971273
+          }
+        }
+      },
+      {
+        "radius_m": 0.123,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.007300814957068358
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.007300814957067914
+          }
+        }
+      },
+      {
+        "radius_m": 0.124,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.006192169268556924
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.006192169268557812
+          }
+        }
+      },
+      {
+        "radius_m": 0.125,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.002192035811741988
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.002192035811742876
+          }
+        }
+      },
+      {
+        "radius_m": 0.126,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.0018477989815135487
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.0018477989815135487
+          }
+        }
+      },
+      {
+        "radius_m": 0.127,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.005927236910982625
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.005927236910983069
+          }
+        }
+      },
+      {
+        "radius_m": 0.128,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.007407087392666156
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.007407087392666156
+          }
+        }
+      },
+      {
+        "radius_m": 0.129,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.0032486366143222867
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.0032486366143222867
+          }
+        }
+      },
+      {
+        "radius_m": 0.13,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.0009492739478162981
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.0009492739478158541
+          }
+        }
+      },
+      {
+        "radius_m": 0.131,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.005186646331640787
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.005186646331640787
+          }
+        }
+      },
+      {
+        "radius_m": 0.132,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.007989785211659495
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.007989785211659495
+          }
+        }
+      },
+      {
+        "radius_m": 0.133,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.003673384173328742
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.003673384173328742
+          }
+        }
+      },
+      {
+        "radius_m": 0.134,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.0006826331053320089
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.0006826331053311208
+          }
+        }
+      },
+      {
+        "radius_m": 0.135,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.005078367572626696
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.005078367572625808
+          }
+        }
+      },
+      {
+        "radius_m": 0.136,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.007939347465144131
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.007939347465144131
+          }
+        }
+      },
+      {
+        "radius_m": 0.137,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.0034637761065550166
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.0034637761065550166
+          }
+        }
+      },
+      {
+        "radius_m": 0.138,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.0010519652326714812
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.0010519652326710371
+          }
+        }
+      },
+      {
+        "radius_m": 0.139,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.005608078157973928
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.005608078157973928
+          }
+        }
+      },
+      {
+        "radius_m": 0.14,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.007248502432856796
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.007248502432856796
+          }
+        }
+      },
+      {
+        "radius_m": 0.14100000000000001,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.0026109379046914682
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.0026109379046923564
+          }
+        }
+      },
+      {
+        "radius_m": 0.14200000000000002,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.0020677594164864033
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.0020677594164864033
+          }
+        }
+      },
+      {
+        "radius_m": 0.14300000000000002,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.006787896802711302
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.006787896802711302
+          }
+        }
+      },
+      {
+        "radius_m": 0.14400000000000002,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.005903483375951701
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.0059034833759525895
+          }
+        }
+      },
+      {
+        "radius_m": 0.14500000000000002,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.001099432968437064
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.0010994329684379522
+          }
+        }
+      },
+      {
+        "radius_m": 0.14600000000000002,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.0037471475072070604
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.0037471475072070604
+          }
+        }
+      },
+      {
+        "radius_m": 0.14700000000000002,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.008636679682921145
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.0086366796829207
+          }
+        }
+      },
+      {
+        "radius_m": 0.148,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.0038836768863141913
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.0038836768863141913
+          }
+        }
+      },
+      {
+        "radius_m": 0.149,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.0010931462480918697
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.0010931462480918697
+          }
+        }
+      },
+      {
+        "radius_m": 0.15,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.006114372282048919
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.006114372282048919
+          }
+        }
+      },
+      {
+        "radius_m": 0.151,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.006272742220181371
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.006272742220181371
+          }
+        }
+      },
+      {
+        "radius_m": 0.152,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.0011610286113432622
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.0011610286113432622
+          }
+        }
+      },
+      {
+        "radius_m": 0.153,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.003996839974030664
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.003996839974030664
+          }
+        }
+      },
+      {
+        "radius_m": 0.154,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.008251772458503837
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.008251772458503837
+          }
+        }
+      },
+      {
+        "radius_m": 0.155,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.0029995857263607206
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.0029995857263598324
+          }
+        }
+      },
+      {
+        "radius_m": 0.156,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.0023008430113389267
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.0023008430113389267
+          }
+        }
+      },
+      {
+        "radius_m": 0.157,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.0076502910679363545
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.00765029106793591
+          }
+        }
+      },
+      {
+        "radius_m": 0.158,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.004403712931994264
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.004403712931994264
+          }
+        }
+      },
+      {
+        "radius_m": 0.159,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.0010462830619299979
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.0010462830619299979
+          }
+        }
+      },
+      {
+        "radius_m": 0.16,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.006547901610473694
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.006547901610473694
+          }
+        }
+      },
+      {
+        "radius_m": 0.161,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.0053511842669902165
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.0053511842669902165
+          }
+        }
+      },
+      {
+        "radius_m": 0.162,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.0002566290563437157
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.0002566290563432716
+          }
+        }
+      },
+      {
+        "radius_m": 0.163,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.005919123502932777
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.005919123502932777
+          }
+        }
+      },
+      {
+        "radius_m": 0.164,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.005815860102016401
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.005815860102016401
+          }
+        }
+      },
+      {
+        "radius_m": 0.16499999999999998,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 4.0541161215656984e-05
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 4.0541161215656984e-05
+          }
+        }
+      },
+      {
+        "radius_m": 0.16599999999999998,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.005793049172425846
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.005793049172424958
+          }
+        }
+      },
+      {
+        "radius_m": 0.16699999999999998,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.005767050530305795
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.005767050530305795
+          }
+        }
+      },
+      {
+        "radius_m": 0.16799999999999998,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.00018714984798684497
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.00018714984798684497
+          }
+        }
+      },
+      {
+        "radius_m": 0.16899999999999998,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.006203841500236784
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.006203841500236784
+          }
+        }
+      },
+      {
+        "radius_m": 0.16999999999999998,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.005168700670001414
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.005168700670002302
+          }
+        }
+      },
+      {
+        "radius_m": 0.17099999999999999,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.0009777650597886378
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.0009777650597886378
+          }
+        }
+      },
+      {
+        "radius_m": 0.172,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.007191698186030493
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.007191698186030493
+          }
+        }
+      },
+      {
+        "radius_m": 0.173,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.003978339800360331
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.003978339800361219
+          }
+        }
+      },
+      {
+        "radius_m": 0.174,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.002376199461205264
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.00237619946120482
+          }
+        }
+      },
+      {
+        "radius_m": 0.175,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.008649188390459805
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.008649188390459805
+          }
+        }
+      },
+      {
+        "radius_m": 0.176,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.0021457114082155115
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.0021457114082155115
+          }
+        }
+      },
+      {
+        "radius_m": 0.177,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.004435680819696142
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.004435680819695698
+          }
+        }
+      },
+      {
+        "radius_m": 0.178,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.0063558144306385955
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.0063558144306385955
+          }
+        }
+      },
+      {
+        "radius_m": 0.179,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.0003890365620335956
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.0003890365620335956
+          }
+        }
+      },
+      {
+        "radius_m": 0.18,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.0072197622056551225
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.007219762205654234
+          }
+        }
+      },
+      {
+        "radius_m": 0.181,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.003313921958824295
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.003313921958824295
+          }
+        }
+      },
+      {
+        "radius_m": 0.182,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.0036977809303806453
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.0036977809303806453
+          }
+        }
+      },
+      {
+        "radius_m": 0.183,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.0066482799607214815
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.0066482799607214815
+          }
+        }
+      },
+      {
+        "radius_m": 0.184,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.0005581579140478965
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.0005581579140478965
+          }
+        }
+      },
+      {
+        "radius_m": 0.185,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.007867746403919629
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.007867746403919185
+          }
+        }
+      },
+      {
+        "radius_m": 0.186,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.002168569151622002
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.002168569151622002
+          }
+        }
+      },
+      {
+        "radius_m": 0.187,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.00536035782874178
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.005360357828742224
+          }
+        }
+      },
+      {
+        "radius_m": 0.188,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.004447138116532301
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.004447138116532301
+          }
+        }
+      },
+      {
+        "radius_m": 0.189,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.0033208449072761326
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.0033208449072752444
+          }
+        }
+      },
+      {
+        "radius_m": 0.19,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.006236519009959807
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.006236519009959807
+          }
+        }
+      },
+      {
+        "radius_m": 0.191,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.001793608399080604
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.001793608399080604
+          }
+        }
+      },
+      {
+        "radius_m": 0.192,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.00748855062670728
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.00748855062670728
+          }
+        }
+      },
+      {
+        "radius_m": 0.193,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.0008310199803926999
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.0008310199803922558
+          }
+        }
+      },
+      {
+        "radius_m": 0.194,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.008146128595317492
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.008146128595317492
+          }
+        }
+      },
+      {
+        "radius_m": 0.195,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.0004955258161363219
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.0004955258161363219
+          }
+        }
+      },
+      {
+        "radius_m": 0.196,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.008140750643916839
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.008140750643916839
+          }
+        }
+      },
+      {
+        "radius_m": 0.197,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.0008625269211517406
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.0008625269211517406
+          }
+        }
+      },
+      {
+        "radius_m": 0.198,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.007389116692007924
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.007389116692007924
+          }
+        }
+      },
+      {
+        "radius_m": 0.199,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.0020244181148991736
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.0020244181148987295
+          }
+        }
+      },
+      {
+        "radius_m": 0.2,
+        "branches": {
+          "open": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.0057882973587224384
+          },
+          "folded": {
+            "legal_count": 340,
+            "total_count": 360,
+            "legal_fraction": 0.9444444444444444,
+            "minimum_joint_margin_rad": 0.00578829735872155
+          }
+        }
+      }
+    ]
+  },
+  "dynamics": {
+    "frame_skip": 10,
+    "control_dt_s": 0.02,
+    "pulse_horizon_control_steps": 120,
+    "velocity_settle_threshold_rad_per_s": 0.01,
+    "responses": [
+      {
+        "radius_m": 0.06,
+        "angle_degrees": -180.0,
+        "branch": "open",
+        "initial_q_rad": [
+          2.1598272970111703,
+          2.619277831783745
+        ],
+        "pulse_joint": 0,
+        "pulse_amplitude": 0.25,
+        "response": {
+          "pulse": [
+            0.25,
+            0.0
+          ],
+          "peak_velocity_rad_per_s": 1.4586174568736063,
+          "peak_joint_displacement_rad": 0.05000000173387551,
+          "peak_cross_joint_displacement_rad": 0.0001174322450081533,
+          "peak_end_effector_displacement_m": 0.002999808416606183,
+          "settle_control_step_at_velocity_threshold": 7,
+          "final_velocity_norm_rad_per_s": 8.684137021903475e-46
+        }
+      },
+      {
+        "radius_m": 0.06,
+        "angle_degrees": -180.0,
+        "branch": "open",
+        "initial_q_rad": [
+          2.1598272970111703,
+          2.619277831783745
+        ],
+        "pulse_joint": 0,
+        "pulse_amplitude": 1.0,
+        "response": {
+          "pulse": [
+            1.0,
+            0.0
+          ],
+          "peak_velocity_rad_per_s": 5.834479433253816,
+          "peak_joint_displacement_rad": 0.20000011074640917,
+          "peak_cross_joint_displacement_rad": 0.0003913067676051263,
+          "peak_end_effector_displacement_m": 0.011983519256469632,
+          "settle_control_step_at_velocity_threshold": 9,
+          "final_velocity_norm_rad_per_s": 3.475966390820906e-45
+        }
+      },
+      {
+        "radius_m": 0.06,
+        "angle_degrees": -180.0,
+        "branch": "open",
+        "initial_q_rad": [
+          2.1598272970111703,
+          2.619277831783745
+        ],
+        "pulse_joint": 1,
+        "pulse_amplitude": 0.25,
+        "response": {
+          "pulse": [
+            0.0,
+            0.25
+          ],
+          "peak_velocity_rad_per_s": 1.5194982223420743,
+          "peak_joint_displacement_rad": 0.04999996082244757,
+          "peak_cross_joint_displacement_rad": 0.00012925208848324488,
+          "peak_end_effector_displacement_m": 0.004999475413492379,
+          "settle_control_step_at_velocity_threshold": 7,
+          "final_velocity_norm_rad_per_s": 9.242650811506555e-47
+        }
+      },
+      {
+        "radius_m": 0.06,
+        "angle_degrees": -180.0,
+        "branch": "open",
+        "initial_q_rad": [
+          2.1598272970111703,
+          2.619277831783745
+        ],
+        "pulse_joint": 1,
+        "pulse_amplitude": 1.0,
+        "response": {
+          "pulse": [
+            0.0,
+            1.0
+          ],
+          "peak_velocity_rad_per_s": 6.078028179438769,
+          "peak_joint_displacement_rad": 0.19999933616974994,
+          "peak_cross_joint_displacement_rad": 0.0005733629680175767,
+          "peak_end_effector_displacement_m": 0.01996663484638279,
+          "settle_control_step_at_velocity_threshold": 8,
+          "final_velocity_norm_rad_per_s": 3.4743092914498534e-46
+        }
+      },
+      {
+        "radius_m": 0.06,
+        "angle_degrees": -180.0,
+        "branch": "folded",
+        "initial_q_rad": [
+          -2.1598272970111703,
+          -2.619277831783745
+        ],
+        "pulse_joint": 0,
+        "pulse_amplitude": 0.25,
+        "response": {
+          "pulse": [
+            0.25,
+            0.0
+          ],
+          "peak_velocity_rad_per_s": 1.4586156770338377,
+          "peak_joint_displacement_rad": 0.050000001736317676,
+          "peak_cross_joint_displacement_rad": 0.00013051392215723823,
+          "peak_end_effector_displacement_m": 0.0029996328399485737,
+          "settle_control_step_at_velocity_threshold": 7,
+          "final_velocity_norm_rad_per_s": 8.683133514845749e-46
+        }
+      },
+      {
+        "radius_m": 0.06,
+        "angle_degrees": -180.0,
+        "branch": "folded",
+        "initial_q_rad": [
+          -2.1598272970111703,
+          -2.619277831783745
+        ],
+        "pulse_joint": 0,
+        "pulse_amplitude": 1.0,
+        "response": {
+          "pulse": [
+            1.0,
+            0.0
+          ],
+          "peak_velocity_rad_per_s": 5.834450953502147,
+          "peak_joint_displacement_rad": 0.20000011137217394,
+          "peak_cross_joint_displacement_rad": 0.0006006207359345872,
+          "peak_end_effector_displacement_m": 0.01198073338999356,
+          "settle_control_step_at_velocity_threshold": 9,
+          "final_velocity_norm_rad_per_s": 3.4743655242721673e-45
+        }
+      },
+      {
+        "radius_m": 0.06,
+        "angle_degrees": -180.0,
+        "branch": "folded",
+        "initial_q_rad": [
+          -2.1598272970111703,
+          -2.619277831783745
+        ],
+        "pulse_joint": 1,
+        "pulse_amplitude": 0.25,
+        "response": {
+          "pulse": [
+            0.0,
+            0.25
+          ],
+          "peak_velocity_rad_per_s": 1.519492350416183,
+          "peak_joint_displacement_rad": 0.05000003664154936,
+          "peak_cross_joint_displacement_rad": 0.00011840903487891907,
+          "peak_end_effector_displacement_m": 0.0049994829114277835,
+          "settle_control_step_at_velocity_threshold": 7,
+          "final_velocity_norm_rad_per_s": 9.546748120878693e-47
+        }
+      },
+      {
+        "radius_m": 0.06,
+        "angle_degrees": -180.0,
+        "branch": "folded",
+        "initial_q_rad": [
+          -2.1598272970111703,
+          -2.619277831783745
+        ],
+        "pulse_joint": 1,
+        "pulse_amplitude": 1.0,
+        "response": {
+          "pulse": [
+            0.0,
+            1.0
+          ],
+          "peak_velocity_rad_per_s": 6.077935184730072,
+          "peak_joint_displacement_rad": 0.20000049910956408,
+          "peak_cross_joint_displacement_rad": 0.0004003472568419042,
+          "peak_end_effector_displacement_m": 0.019966729772707203,
+          "settle_control_step_at_velocity_threshold": 8,
+          "final_velocity_norm_rad_per_s": 3.6644137842628214e-46
+        }
+      },
+      {
+        "radius_m": 0.06,
+        "angle_degrees": -90.0,
+        "branch": "open",
+        "initial_q_rad": [
+          -2.5525616833735194,
+          2.619277831783745
+        ],
+        "pulse_joint": 0,
+        "pulse_amplitude": 0.25,
+        "response": {
+          "pulse": [
+            0.25,
+            0.0
+          ],
+          "peak_velocity_rad_per_s": 1.4586174568736063,
+          "peak_joint_displacement_rad": 0.05000000173387551,
+          "peak_cross_joint_displacement_rad": 0.0001174322450081533,
+          "peak_end_effector_displacement_m": 0.0029998084166061832,
+          "settle_control_step_at_velocity_threshold": 7,
+          "final_velocity_norm_rad_per_s": 8.684137021903466e-46
+        }
+      },
+      {
+        "radius_m": 0.06,
+        "angle_degrees": -90.0,
+        "branch": "open",
+        "initial_q_rad": [
+          -2.5525616833735194,
+          2.619277831783745
+        ],
+        "pulse_joint": 0,
+        "pulse_amplitude": 1.0,
+        "response": {
+          "pulse": [
+            1.0,
+            0.0
+          ],
+          "peak_velocity_rad_per_s": 5.834479433253816,
+          "peak_joint_displacement_rad": 0.20000011074640917,
+          "peak_cross_joint_displacement_rad": 0.0003913067676051263,
+          "peak_end_effector_displacement_m": 0.011983519256469616,
+          "settle_control_step_at_velocity_threshold": 9,
+          "final_velocity_norm_rad_per_s": 3.475966390820906e-45
+        }
+      },
+      {
+        "radius_m": 0.06,
+        "angle_degrees": -90.0,
+        "branch": "open",
+        "initial_q_rad": [
+          -2.5525616833735194,
+          2.619277831783745
+        ],
+        "pulse_joint": 1,
+        "pulse_amplitude": 0.25,
+        "response": {
+          "pulse": [
+            0.0,
+            0.25
+          ],
+          "peak_velocity_rad_per_s": 1.5194982223420743,
+          "peak_joint_displacement_rad": 0.04999996082244757,
+          "peak_cross_joint_displacement_rad": 0.00012925208848324488,
+          "peak_end_effector_displacement_m": 0.004999475413492387,
+          "settle_control_step_at_velocity_threshold": 7,
+          "final_velocity_norm_rad_per_s": 9.242650811506555e-47
+        }
+      },
+      {
+        "radius_m": 0.06,
+        "angle_degrees": -90.0,
+        "branch": "open",
+        "initial_q_rad": [
+          -2.5525616833735194,
+          2.619277831783745
+        ],
+        "pulse_joint": 1,
+        "pulse_amplitude": 1.0,
+        "response": {
+          "pulse": [
+            0.0,
+            1.0
+          ],
+          "peak_velocity_rad_per_s": 6.078028179438769,
+          "peak_joint_displacement_rad": 0.19999933616974994,
+          "peak_cross_joint_displacement_rad": 0.0005733629680175767,
+          "peak_end_effector_displacement_m": 0.019966634846382777,
+          "settle_control_step_at_velocity_threshold": 8,
+          "final_velocity_norm_rad_per_s": 3.4743092914498654e-46
+        }
+      },
+      {
+        "radius_m": 0.06,
+        "angle_degrees": -90.0,
+        "branch": "folded",
+        "initial_q_rad": [
+          -0.5890309702162737,
+          -2.619277831783745
+        ],
+        "pulse_joint": 0,
+        "pulse_amplitude": 0.25,
+        "response": {
+          "pulse": [
+            0.25,
+            0.0
+          ],
+          "peak_velocity_rad_per_s": 1.4586156770338377,
+          "peak_joint_displacement_rad": 0.05000000173632001,
+          "peak_cross_joint_displacement_rad": 0.00013051392215723823,
+          "peak_end_effector_displacement_m": 0.002999632839948727,
+          "settle_control_step_at_velocity_threshold": 7,
+          "final_velocity_norm_rad_per_s": 8.683133514845749e-46
+        }
+      },
+      {
+        "radius_m": 0.06,
+        "angle_degrees": -90.0,
+        "branch": "folded",
+        "initial_q_rad": [
+          -0.5890309702162737,
+          -2.619277831783745
+        ],
+        "pulse_joint": 0,
+        "pulse_amplitude": 1.0,
+        "response": {
+          "pulse": [
+            1.0,
+            0.0
+          ],
+          "peak_velocity_rad_per_s": 5.834450953502147,
+          "peak_joint_displacement_rad": 0.20000011137217488,
+          "peak_cross_joint_displacement_rad": 0.0006006207359345872,
+          "peak_end_effector_displacement_m": 0.011980733389993647,
+          "settle_control_step_at_velocity_threshold": 9,
+          "final_velocity_norm_rad_per_s": 3.4743655242721673e-45
+        }
+      },
+      {
+        "radius_m": 0.06,
+        "angle_degrees": -90.0,
+        "branch": "folded",
+        "initial_q_rad": [
+          -0.5890309702162737,
+          -2.619277831783745
+        ],
+        "pulse_joint": 1,
+        "pulse_amplitude": 0.25,
+        "response": {
+          "pulse": [
+            0.0,
+            0.25
+          ],
+          "peak_velocity_rad_per_s": 1.519492350416183,
+          "peak_joint_displacement_rad": 0.05000003664154936,
+          "peak_cross_joint_displacement_rad": 0.00011840903487947418,
+          "peak_end_effector_displacement_m": 0.004999482911427763,
+          "settle_control_step_at_velocity_threshold": 7,
+          "final_velocity_norm_rad_per_s": 9.546748120878681e-47
+        }
+      },
+      {
+        "radius_m": 0.06,
+        "angle_degrees": -90.0,
+        "branch": "folded",
+        "initial_q_rad": [
+          -0.5890309702162737,
+          -2.619277831783745
+        ],
+        "pulse_joint": 1,
+        "pulse_amplitude": 1.0,
+        "response": {
+          "pulse": [
+            0.0,
+            1.0
+          ],
+          "peak_velocity_rad_per_s": 6.077935184730072,
+          "peak_joint_displacement_rad": 0.20000049910956408,
+          "peak_cross_joint_displacement_rad": 0.0004003472568420152,
+          "peak_end_effector_displacement_m": 0.019966729772707182,
+          "settle_control_step_at_velocity_threshold": 8,
+          "final_velocity_norm_rad_per_s": 3.6644137842628214e-46
+        }
+      },
+      {
+        "radius_m": 0.06,
+        "angle_degrees": 0.0,
+        "branch": "open",
+        "initial_q_rad": [
+          -0.9817653565786228,
+          2.619277831783745
+        ],
+        "pulse_joint": 0,
+        "pulse_amplitude": 0.25,
+        "response": {
+          "pulse": [
+            0.25,
+            0.0
+          ],
+          "peak_velocity_rad_per_s": 1.458617456873606,
+          "peak_joint_displacement_rad": 0.0500000017338754,
+          "peak_cross_joint_displacement_rad": 0.0001174322450081533,
+          "peak_end_effector_displacement_m": 0.002999808416606156,
+          "settle_control_step_at_velocity_threshold": 7,
+          "final_velocity_norm_rad_per_s": 8.684137021903475e-46
+        }
+      },
+      {
+        "radius_m": 0.06,
+        "angle_degrees": 0.0,
+        "branch": "open",
+        "initial_q_rad": [
+          -0.9817653565786228,
+          2.619277831783745
+        ],
+        "pulse_joint": 0,
+        "pulse_amplitude": 1.0,
+        "response": {
+          "pulse": [
+            1.0,
+            0.0
+          ],
+          "peak_velocity_rad_per_s": 5.834479433253816,
+          "peak_joint_displacement_rad": 0.20000011074641183,
+          "peak_cross_joint_displacement_rad": 0.0003913067676051263,
+          "peak_end_effector_displacement_m": 0.011983519256469755,
+          "settle_control_step_at_velocity_threshold": 9,
+          "final_velocity_norm_rad_per_s": 3.475966390820951e-45
+        }
+      },
+      {
+        "radius_m": 0.06,
+        "angle_degrees": 0.0,
+        "branch": "open",
+        "initial_q_rad": [
+          -0.9817653565786228,
+          2.619277831783745
+        ],
+        "pulse_joint": 1,
+        "pulse_amplitude": 0.25,
+        "response": {
+          "pulse": [
+            0.0,
+            0.25
+          ],
+          "peak_velocity_rad_per_s": 1.5194982223420743,
+          "peak_joint_displacement_rad": 0.04999996082244757,
+          "peak_cross_joint_displacement_rad": 0.00012925208848257874,
+          "peak_end_effector_displacement_m": 0.00499947541349243,
+          "settle_control_step_at_velocity_threshold": 7,
+          "final_velocity_norm_rad_per_s": 9.242650811506555e-47
+        }
+      },
+      {
+        "radius_m": 0.06,
+        "angle_degrees": 0.0,
+        "branch": "open",
+        "initial_q_rad": [
+          -0.9817653565786228,
+          2.619277831783745
+        ],
+        "pulse_joint": 1,
+        "pulse_amplitude": 1.0,
+        "response": {
+          "pulse": [
+            0.0,
+            1.0
+          ],
+          "peak_velocity_rad_per_s": 6.078028179438769,
+          "peak_joint_displacement_rad": 0.19999933616974994,
+          "peak_cross_joint_displacement_rad": 0.0005733629680169106,
+          "peak_end_effector_displacement_m": 0.019966634846382825,
+          "settle_control_step_at_velocity_threshold": 8,
+          "final_velocity_norm_rad_per_s": 3.4743092914498654e-46
+        }
+      },
+      {
+        "radius_m": 0.06,
+        "angle_degrees": 0.0,
+        "branch": "folded",
+        "initial_q_rad": [
+          0.9817653565786228,
+          -2.619277831783745
+        ],
+        "pulse_joint": 0,
+        "pulse_amplitude": 0.25,
+        "response": {
+          "pulse": [
+            0.25,
+            0.0
+          ],
+          "peak_velocity_rad_per_s": 1.4586156770338377,
+          "peak_joint_displacement_rad": 0.05000000173632012,
+          "peak_cross_joint_displacement_rad": 0.00013051392215723823,
+          "peak_end_effector_displacement_m": 0.002999632839948741,
+          "settle_control_step_at_velocity_threshold": 7,
+          "final_velocity_norm_rad_per_s": 8.683133514845749e-46
+        }
+      },
+      {
+        "radius_m": 0.06,
+        "angle_degrees": 0.0,
+        "branch": "folded",
+        "initial_q_rad": [
+          0.9817653565786228,
+          -2.619277831783745
+        ],
+        "pulse_joint": 0,
+        "pulse_amplitude": 1.0,
+        "response": {
+          "pulse": [
+            1.0,
+            0.0
+          ],
+          "peak_velocity_rad_per_s": 5.834450953502147,
+          "peak_joint_displacement_rad": 0.20000011137217416,
+          "peak_cross_joint_displacement_rad": 0.0006006207359345872,
+          "peak_end_effector_displacement_m": 0.011980733389993604,
+          "settle_control_step_at_velocity_threshold": 9,
+          "final_velocity_norm_rad_per_s": 3.4743655242721673e-45
+        }
+      },
+      {
+        "radius_m": 0.06,
+        "angle_degrees": 0.0,
+        "branch": "folded",
+        "initial_q_rad": [
+          0.9817653565786228,
+          -2.619277831783745
+        ],
+        "pulse_joint": 1,
+        "pulse_amplitude": 0.25,
+        "response": {
+          "pulse": [
+            0.0,
+            0.25
+          ],
+          "peak_velocity_rad_per_s": 1.519492350416183,
+          "peak_joint_displacement_rad": 0.05000003664154936,
+          "peak_cross_joint_displacement_rad": 0.00011840903487947418,
+          "peak_end_effector_displacement_m": 0.004999482911427735,
+          "settle_control_step_at_velocity_threshold": 7,
+          "final_velocity_norm_rad_per_s": 9.546748120878681e-47
+        }
+      },
+      {
+        "radius_m": 0.06,
+        "angle_degrees": 0.0,
+        "branch": "folded",
+        "initial_q_rad": [
+          0.9817653565786228,
+          -2.619277831783745
+        ],
+        "pulse_joint": 1,
+        "pulse_amplitude": 1.0,
+        "response": {
+          "pulse": [
+            0.0,
+            1.0
+          ],
+          "peak_velocity_rad_per_s": 6.077935184730072,
+          "peak_joint_displacement_rad": 0.20000049910956408,
+          "peak_cross_joint_displacement_rad": 0.0004003472568420152,
+          "peak_end_effector_displacement_m": 0.019966729772707168,
+          "settle_control_step_at_velocity_threshold": 8,
+          "final_velocity_norm_rad_per_s": 3.6644137842628214e-46
+        }
+      },
+      {
+        "radius_m": 0.06,
+        "angle_degrees": 90.0,
+        "branch": "open",
+        "initial_q_rad": [
+          0.5890309702162737,
+          2.619277831783745
+        ],
+        "pulse_joint": 0,
+        "pulse_amplitude": 0.25,
+        "response": {
+          "pulse": [
+            0.25,
+            0.0
+          ],
+          "peak_velocity_rad_per_s": 1.4586174568736063,
+          "peak_joint_displacement_rad": 0.0500000017338754,
+          "peak_cross_joint_displacement_rad": 0.0001174322450081533,
+          "peak_end_effector_displacement_m": 0.0029998084166061832,
+          "settle_control_step_at_velocity_threshold": 7,
+          "final_velocity_norm_rad_per_s": 8.684137021903466e-46
+        }
+      },
+      {
+        "radius_m": 0.06,
+        "angle_degrees": 90.0,
+        "branch": "open",
+        "initial_q_rad": [
+          0.5890309702162737,
+          2.619277831783745
+        ],
+        "pulse_joint": 0,
+        "pulse_amplitude": 1.0,
+        "response": {
+          "pulse": [
+            1.0,
+            0.0
+          ],
+          "peak_velocity_rad_per_s": 5.834479433253816,
+          "peak_joint_displacement_rad": 0.20000011074641183,
+          "peak_cross_joint_displacement_rad": 0.0003913067676051263,
+          "peak_end_effector_displacement_m": 0.011983519256469784,
+          "settle_control_step_at_velocity_threshold": 9,
+          "final_velocity_norm_rad_per_s": 3.475966390820906e-45
+        }
+      },
+      {
+        "radius_m": 0.06,
+        "angle_degrees": 90.0,
+        "branch": "open",
+        "initial_q_rad": [
+          0.5890309702162737,
+          2.619277831783745
+        ],
+        "pulse_joint": 1,
+        "pulse_amplitude": 0.25,
+        "response": {
+          "pulse": [
+            0.0,
+            0.25
+          ],
+          "peak_velocity_rad_per_s": 1.5194982223420743,
+          "peak_joint_displacement_rad": 0.04999996082244757,
+          "peak_cross_joint_displacement_rad": 0.00012925208848257874,
+          "peak_end_effector_displacement_m": 0.0049994754134924145,
+          "settle_control_step_at_velocity_threshold": 7,
+          "final_velocity_norm_rad_per_s": 9.242650811506555e-47
+        }
+      },
+      {
+        "radius_m": 0.06,
+        "angle_degrees": 90.0,
+        "branch": "open",
+        "initial_q_rad": [
+          0.5890309702162737,
+          2.619277831783745
+        ],
+        "pulse_joint": 1,
+        "pulse_amplitude": 1.0,
+        "response": {
+          "pulse": [
+            0.0,
+            1.0
+          ],
+          "peak_velocity_rad_per_s": 6.078028179438769,
+          "peak_joint_displacement_rad": 0.19999933616974994,
+          "peak_cross_joint_displacement_rad": 0.0005733629680169106,
+          "peak_end_effector_displacement_m": 0.019966634846382805,
+          "settle_control_step_at_velocity_threshold": 8,
+          "final_velocity_norm_rad_per_s": 3.4743092914498654e-46
+        }
+      },
+      {
+        "radius_m": 0.06,
+        "angle_degrees": 90.0,
+        "branch": "folded",
+        "initial_q_rad": [
+          2.5525616833735194,
+          -2.619277831783745
+        ],
+        "pulse_joint": 0,
+        "pulse_amplitude": 0.25,
+        "response": {
+          "pulse": [
+            0.25,
+            0.0
+          ],
+          "peak_velocity_rad_per_s": 1.4586156770338377,
+          "peak_joint_displacement_rad": 0.050000001736317676,
+          "peak_cross_joint_displacement_rad": 0.00013051392215723823,
+          "peak_end_effector_displacement_m": 0.0029996328399485603,
+          "settle_control_step_at_velocity_threshold": 7,
+          "final_velocity_norm_rad_per_s": 8.683133514845749e-46
+        }
+      },
+      {
+        "radius_m": 0.06,
+        "angle_degrees": 90.0,
+        "branch": "folded",
+        "initial_q_rad": [
+          2.5525616833735194,
+          -2.619277831783745
+        ],
+        "pulse_joint": 0,
+        "pulse_amplitude": 1.0,
+        "response": {
+          "pulse": [
+            1.0,
+            0.0
+          ],
+          "peak_velocity_rad_per_s": 5.834450953502147,
+          "peak_joint_displacement_rad": 0.20000011137217438,
+          "peak_cross_joint_displacement_rad": 0.0006006207359345872,
+          "peak_end_effector_displacement_m": 0.011980733389993604,
+          "settle_control_step_at_velocity_threshold": 9,
+          "final_velocity_norm_rad_per_s": 3.4743655242721673e-45
+        }
+      },
+      {
+        "radius_m": 0.06,
+        "angle_degrees": 90.0,
+        "branch": "folded",
+        "initial_q_rad": [
+          2.5525616833735194,
+          -2.619277831783745
+        ],
+        "pulse_joint": 1,
+        "pulse_amplitude": 0.25,
+        "response": {
+          "pulse": [
+            0.0,
+            0.25
+          ],
+          "peak_velocity_rad_per_s": 1.519492350416183,
+          "peak_joint_displacement_rad": 0.05000003664154936,
+          "peak_cross_joint_displacement_rad": 0.00011840903487891907,
+          "peak_end_effector_displacement_m": 0.004999482911427763,
+          "settle_control_step_at_velocity_threshold": 7,
+          "final_velocity_norm_rad_per_s": 9.546748120878681e-47
+        }
+      },
+      {
+        "radius_m": 0.06,
+        "angle_degrees": 90.0,
+        "branch": "folded",
+        "initial_q_rad": [
+          2.5525616833735194,
+          -2.619277831783745
+        ],
+        "pulse_joint": 1,
+        "pulse_amplitude": 1.0,
+        "response": {
+          "pulse": [
+            0.0,
+            1.0
+          ],
+          "peak_velocity_rad_per_s": 6.077935184730072,
+          "peak_joint_displacement_rad": 0.20000049910956408,
+          "peak_cross_joint_displacement_rad": 0.0004003472568419042,
+          "peak_end_effector_displacement_m": 0.019966729772707196,
+          "settle_control_step_at_velocity_threshold": 8,
+          "final_velocity_norm_rad_per_s": 3.664413784262817e-46
+        }
+      },
+      {
+        "radius_m": 0.1,
+        "angle_degrees": -180.0,
+        "branch": "open",
+        "initial_q_rad": [
+          2.214297435588181,
+          2.214297435588181
+        ],
+        "pulse_joint": 0,
+        "pulse_amplitude": 0.25,
+        "response": {
+          "pulse": [
+            0.25,
+            0.0
+          ],
+          "peak_velocity_rad_per_s": 1.445265782130113,
+          "peak_joint_displacement_rad": 0.05000000433976931,
+          "peak_cross_joint_displacement_rad": 2.1115284987160976e-05,
+          "peak_end_effector_displacement_m": 0.00499894644192568,
+          "settle_control_step_at_velocity_threshold": 7,
+          "final_velocity_norm_rad_per_s": 3.6240166488264285e-45
+        }
+      },
+      {
+        "radius_m": 0.1,
+        "angle_degrees": -180.0,
+        "branch": "open",
+        "initial_q_rad": [
+          2.214297435588181,
+          2.214297435588181
+        ],
+        "pulse_joint": 0,
+        "pulse_amplitude": 1.0,
+        "response": {
+          "pulse": [
+            1.0,
+            0.0
+          ],
+          "peak_velocity_rad_per_s": 5.781059867950658,
+          "peak_joint_displacement_rad": 0.2000002772439736,
+          "peak_cross_joint_displacement_rad": 0.0003330183127374653,
+          "peak_end_effector_displacement_m": 0.01996061850197754,
+          "settle_control_step_at_velocity_threshold": 9,
+          "final_velocity_norm_rad_per_s": 1.4515801150008845e-44
+        }
+      },
+      {
+        "radius_m": 0.1,
+        "angle_degrees": -180.0,
+        "branch": "open",
+        "initial_q_rad": [
+          2.214297435588181,
+          2.214297435588181
+        ],
+        "pulse_joint": 1,
+        "pulse_amplitude": 0.25,
+        "response": {
+          "pulse": [
+            0.0,
+            0.25
+          ],
+          "peak_velocity_rad_per_s": 1.5194535131947395,
+          "peak_joint_displacement_rad": 0.04999999808700199,
+          "peak_cross_joint_displacement_rad": 4.185192898464862e-06,
+          "peak_end_effector_displacement_m": 0.00499947851406689,
+          "settle_control_step_at_velocity_threshold": 7,
+          "final_velocity_norm_rad_per_s": 2.693788458192091e-47
+        }
+      },
+      {
+        "radius_m": 0.1,
+        "angle_degrees": -180.0,
+        "branch": "open",
+        "initial_q_rad": [
+          2.214297435588181,
+          2.214297435588181
+        ],
+        "pulse_joint": 1,
+        "pulse_amplitude": 1.0,
+        "response": {
+          "pulse": [
+            0.0,
+            1.0
+          ],
+          "peak_velocity_rad_per_s": 6.077819820989168,
+          "peak_joint_displacement_rad": 0.19999977902529606,
+          "peak_cross_joint_displacement_rad": 0.00011075908221203079,
+          "peak_end_effector_displacement_m": 0.019966637923338325,
+          "settle_control_step_at_velocity_threshold": 8,
+          "final_velocity_norm_rad_per_s": 3.1939766069512485e-46
+        }
+      },
+      {
+        "radius_m": 0.1,
+        "angle_degrees": -180.0,
+        "branch": "folded",
+        "initial_q_rad": [
+          -2.214297435588181,
+          -2.214297435588181
+        ],
+        "pulse_joint": 0,
+        "pulse_amplitude": 0.25,
+        "response": {
+          "pulse": [
+            0.25,
+            0.0
+          ],
+          "peak_velocity_rad_per_s": 1.4452658954798843,
+          "peak_joint_displacement_rad": 0.05000000434522081,
+          "peak_cross_joint_displacement_rad": 2.0845198385632813e-05,
+          "peak_end_effector_displacement_m": 0.005000113104452243,
+          "settle_control_step_at_velocity_threshold": 7,
+          "final_velocity_norm_rad_per_s": 3.624038833382005e-45
+        }
+      },
+      {
+        "radius_m": 0.1,
+        "angle_degrees": -180.0,
+        "branch": "folded",
+        "initial_q_rad": [
+          -2.214297435588181,
+          -2.214297435588181
+        ],
+        "pulse_joint": 0,
+        "pulse_amplitude": 1.0,
+        "response": {
+          "pulse": [
+            1.0,
+            0.0
+          ],
+          "peak_velocity_rad_per_s": 5.781061678127598,
+          "peak_joint_displacement_rad": 0.20000027863831854,
+          "peak_cross_joint_displacement_rad": 0.00033385132478169766,
+          "peak_end_effector_displacement_m": 0.019979213245987552,
+          "settle_control_step_at_velocity_threshold": 9,
+          "final_velocity_norm_rad_per_s": 1.451621506637458e-44
+        }
+      },
+      {
+        "radius_m": 0.1,
+        "angle_degrees": -180.0,
+        "branch": "folded",
+        "initial_q_rad": [
+          -2.214297435588181,
+          -2.214297435588181
+        ],
+        "pulse_joint": 1,
+        "pulse_amplitude": 0.25,
+        "response": {
+          "pulse": [
+            0.0,
+            0.25
+          ],
+          "peak_velocity_rad_per_s": 1.5194539033648218,
+          "peak_joint_displacement_rad": 0.04999999281203674,
+          "peak_cross_joint_displacement_rad": 1.3865495615661416e-05,
+          "peak_end_effector_displacement_m": 0.004999477925921569,
+          "settle_control_step_at_velocity_threshold": 7,
+          "final_velocity_norm_rad_per_s": 7.466329071382687e-47
+        }
+      },
+      {
+        "radius_m": 0.1,
+        "angle_degrees": -180.0,
+        "branch": "folded",
+        "initial_q_rad": [
+          -2.214297435588181,
+          -2.214297435588181
+        ],
+        "pulse_joint": 1,
+        "pulse_amplitude": 1.0,
+        "response": {
+          "pulse": [
+            0.0,
+            1.0
+          ],
+          "peak_velocity_rad_per_s": 6.077826942744304,
+          "peak_joint_displacement_rad": 0.19999963998952994,
+          "peak_cross_joint_displacement_rad": 0.00016399756049789715,
+          "peak_end_effector_displacement_m": 0.01996660858449591,
+          "settle_control_step_at_velocity_threshold": 8,
+          "final_velocity_norm_rad_per_s": 1.9813284288349394e-45
+        }
+      },
+      {
+        "radius_m": 0.1,
+        "angle_degrees": -90.0,
+        "branch": "open",
+        "initial_q_rad": [
+          -2.498091544796509,
+          2.214297435588181
+        ],
+        "pulse_joint": 0,
+        "pulse_amplitude": 0.25,
+        "response": {
+          "pulse": [
+            0.25,
+            0.0
+          ],
+          "peak_velocity_rad_per_s": 1.445265782130113,
+          "peak_joint_displacement_rad": 0.05000000433976931,
+          "peak_cross_joint_displacement_rad": 2.1115284987160976e-05,
+          "peak_end_effector_displacement_m": 0.004998946441925666,
+          "settle_control_step_at_velocity_threshold": 7,
+          "final_velocity_norm_rad_per_s": 3.6240166488264285e-45
+        }
+      },
+      {
+        "radius_m": 0.1,
+        "angle_degrees": -90.0,
+        "branch": "open",
+        "initial_q_rad": [
+          -2.498091544796509,
+          2.214297435588181
+        ],
+        "pulse_joint": 0,
+        "pulse_amplitude": 1.0,
+        "response": {
+          "pulse": [
+            1.0,
+            0.0
+          ],
+          "peak_velocity_rad_per_s": 5.781059867950658,
+          "peak_joint_displacement_rad": 0.2000002772439736,
+          "peak_cross_joint_displacement_rad": 0.0003330183127374653,
+          "peak_end_effector_displacement_m": 0.019960618501977525,
+          "settle_control_step_at_velocity_threshold": 9,
+          "final_velocity_norm_rad_per_s": 1.4515801150008845e-44
+        }
+      },
+      {
+        "radius_m": 0.1,
+        "angle_degrees": -90.0,
+        "branch": "open",
+        "initial_q_rad": [
+          -2.498091544796509,
+          2.214297435588181
+        ],
+        "pulse_joint": 1,
+        "pulse_amplitude": 0.25,
+        "response": {
+          "pulse": [
+            0.0,
+            0.25
+          ],
+          "peak_velocity_rad_per_s": 1.5194535131947395,
+          "peak_joint_displacement_rad": 0.04999999808700199,
+          "peak_cross_joint_displacement_rad": 4.185192898464862e-06,
+          "peak_end_effector_displacement_m": 0.004999478514066865,
+          "settle_control_step_at_velocity_threshold": 7,
+          "final_velocity_norm_rad_per_s": 2.693788458192091e-47
+        }
+      },
+      {
+        "radius_m": 0.1,
+        "angle_degrees": -90.0,
+        "branch": "open",
+        "initial_q_rad": [
+          -2.498091544796509,
+          2.214297435588181
+        ],
+        "pulse_joint": 1,
+        "pulse_amplitude": 1.0,
+        "response": {
+          "pulse": [
+            0.0,
+            1.0
+          ],
+          "peak_velocity_rad_per_s": 6.077819820989168,
+          "peak_joint_displacement_rad": 0.19999977902529606,
+          "peak_cross_joint_displacement_rad": 0.00011075908221203079,
+          "peak_end_effector_displacement_m": 0.019966637923338332,
+          "settle_control_step_at_velocity_threshold": 8,
+          "final_velocity_norm_rad_per_s": 3.1939766069512485e-46
+        }
+      },
+      {
+        "radius_m": 0.1,
+        "angle_degrees": -90.0,
+        "branch": "folded",
+        "initial_q_rad": [
+          -0.6435011087932843,
+          -2.214297435588181
+        ],
+        "pulse_joint": 0,
+        "pulse_amplitude": 0.25,
+        "response": {
+          "pulse": [
+            0.25,
+            0.0
+          ],
+          "peak_velocity_rad_per_s": 1.4452658954798843,
+          "peak_joint_displacement_rad": 0.050000004345218486,
+          "peak_cross_joint_displacement_rad": 2.0845198385632813e-05,
+          "peak_end_effector_displacement_m": 0.005000113104452035,
+          "settle_control_step_at_velocity_threshold": 7,
+          "final_velocity_norm_rad_per_s": 3.624038833382005e-45
+        }
+      },
+      {
+        "radius_m": 0.1,
+        "angle_degrees": -90.0,
+        "branch": "folded",
+        "initial_q_rad": [
+          -0.6435011087932843,
+          -2.214297435588181
+        ],
+        "pulse_joint": 0,
+        "pulse_amplitude": 1.0,
+        "response": {
+          "pulse": [
+            1.0,
+            0.0
+          ],
+          "peak_velocity_rad_per_s": 5.781061678127598,
+          "peak_joint_displacement_rad": 0.20000027863831868,
+          "peak_cross_joint_displacement_rad": 0.00033385132478169766,
+          "peak_end_effector_displacement_m": 0.019979213245987608,
+          "settle_control_step_at_velocity_threshold": 9,
+          "final_velocity_norm_rad_per_s": 1.451621506637458e-44
+        }
+      },
+      {
+        "radius_m": 0.1,
+        "angle_degrees": -90.0,
+        "branch": "folded",
+        "initial_q_rad": [
+          -0.6435011087932843,
+          -2.214297435588181
+        ],
+        "pulse_joint": 1,
+        "pulse_amplitude": 0.25,
+        "response": {
+          "pulse": [
+            0.0,
+            0.25
+          ],
+          "peak_velocity_rad_per_s": 1.5194539033648218,
+          "peak_joint_displacement_rad": 0.04999999281203674,
+          "peak_cross_joint_displacement_rad": 1.3865495614440171e-05,
+          "peak_end_effector_displacement_m": 0.0049994779259216445,
+          "settle_control_step_at_velocity_threshold": 7,
+          "final_velocity_norm_rad_per_s": 7.466329071382651e-47
+        }
+      },
+      {
+        "radius_m": 0.1,
+        "angle_degrees": -90.0,
+        "branch": "folded",
+        "initial_q_rad": [
+          -0.6435011087932843,
+          -2.214297435588181
+        ],
+        "pulse_joint": 1,
+        "pulse_amplitude": 1.0,
+        "response": {
+          "pulse": [
+            0.0,
+            1.0
+          ],
+          "peak_velocity_rad_per_s": 6.077826942744304,
+          "peak_joint_displacement_rad": 0.19999963998952994,
+          "peak_cross_joint_displacement_rad": 0.0001639975604981192,
+          "peak_end_effector_displacement_m": 0.01996660858449596,
+          "settle_control_step_at_velocity_threshold": 8,
+          "final_velocity_norm_rad_per_s": 1.981328428834889e-45
+        }
+      },
+      {
+        "radius_m": 0.1,
+        "angle_degrees": 0.0,
+        "branch": "open",
+        "initial_q_rad": [
+          -0.9272952180016123,
+          2.214297435588181
+        ],
+        "pulse_joint": 0,
+        "pulse_amplitude": 0.25,
+        "response": {
+          "pulse": [
+            0.25,
+            0.0
+          ],
+          "peak_velocity_rad_per_s": 1.445265782130113,
+          "peak_joint_displacement_rad": 0.05000000433977253,
+          "peak_cross_joint_displacement_rad": 2.1115284987160976e-05,
+          "peak_end_effector_displacement_m": 0.004998946441925985,
+          "settle_control_step_at_velocity_threshold": 7,
+          "final_velocity_norm_rad_per_s": 3.6240166488265125e-45
+        }
+      },
+      {
+        "radius_m": 0.1,
+        "angle_degrees": 0.0,
+        "branch": "open",
+        "initial_q_rad": [
+          -0.9272952180016123,
+          2.214297435588181
+        ],
+        "pulse_joint": 0,
+        "pulse_amplitude": 1.0,
+        "response": {
+          "pulse": [
+            1.0,
+            0.0
+          ],
+          "peak_velocity_rad_per_s": 5.781059867950658,
+          "peak_joint_displacement_rad": 0.20000027724398073,
+          "peak_cross_joint_displacement_rad": 0.0003330183127374653,
+          "peak_end_effector_displacement_m": 0.019960618501978247,
+          "settle_control_step_at_velocity_threshold": 9,
+          "final_velocity_norm_rad_per_s": 1.4515801150008845e-44
+        }
+      },
+      {
+        "radius_m": 0.1,
+        "angle_degrees": 0.0,
+        "branch": "open",
+        "initial_q_rad": [
+          -0.9272952180016123,
+          2.214297435588181
+        ],
+        "pulse_joint": 1,
+        "pulse_amplitude": 0.25,
+        "response": {
+          "pulse": [
+            0.0,
+            0.25
+          ],
+          "peak_velocity_rad_per_s": 1.5194535131947395,
+          "peak_joint_displacement_rad": 0.04999999808700199,
+          "peak_cross_joint_displacement_rad": 4.1851928977987285e-06,
+          "peak_end_effector_displacement_m": 0.004999478514066802,
+          "settle_control_step_at_velocity_threshold": 7,
+          "final_velocity_norm_rad_per_s": 2.693788458192105e-47
+        }
+      },
+      {
+        "radius_m": 0.1,
+        "angle_degrees": 0.0,
+        "branch": "open",
+        "initial_q_rad": [
+          -0.9272952180016123,
+          2.214297435588181
+        ],
+        "pulse_joint": 1,
+        "pulse_amplitude": 1.0,
+        "response": {
+          "pulse": [
+            0.0,
+            1.0
+          ],
+          "peak_velocity_rad_per_s": 6.077819820989168,
+          "peak_joint_displacement_rad": 0.19999977902529606,
+          "peak_cross_joint_displacement_rad": 0.00011075908221169772,
+          "peak_end_effector_displacement_m": 0.019966637923338356,
+          "settle_control_step_at_velocity_threshold": 8,
+          "final_velocity_norm_rad_per_s": 3.1939766069512485e-46
+        }
+      },
+      {
+        "radius_m": 0.1,
+        "angle_degrees": 0.0,
+        "branch": "folded",
+        "initial_q_rad": [
+          0.9272952180016123,
+          -2.214297435588181
+        ],
+        "pulse_joint": 0,
+        "pulse_amplitude": 0.25,
+        "response": {
+          "pulse": [
+            0.25,
+            0.0
+          ],
+          "peak_velocity_rad_per_s": 1.4452658954798843,
+          "peak_joint_displacement_rad": 0.050000004345218486,
+          "peak_cross_joint_displacement_rad": 2.0845198385632813e-05,
+          "peak_end_effector_displacement_m": 0.0050001131044520065,
+          "settle_control_step_at_velocity_threshold": 7,
+          "final_velocity_norm_rad_per_s": 3.624038833381908e-45
+        }
+      },
+      {
+        "radius_m": 0.1,
+        "angle_degrees": 0.0,
+        "branch": "folded",
+        "initial_q_rad": [
+          0.9272952180016123,
+          -2.214297435588181
+        ],
+        "pulse_joint": 0,
+        "pulse_amplitude": 1.0,
+        "response": {
+          "pulse": [
+            1.0,
+            0.0
+          ],
+          "peak_velocity_rad_per_s": 5.781061678127598,
+          "peak_joint_displacement_rad": 0.200000278638319,
+          "peak_cross_joint_displacement_rad": 0.00033385132478169766,
+          "peak_end_effector_displacement_m": 0.019979213245987566,
+          "settle_control_step_at_velocity_threshold": 9,
+          "final_velocity_norm_rad_per_s": 1.451621506637458e-44
+        }
+      },
+      {
+        "radius_m": 0.1,
+        "angle_degrees": 0.0,
+        "branch": "folded",
+        "initial_q_rad": [
+          0.9272952180016123,
+          -2.214297435588181
+        ],
+        "pulse_joint": 1,
+        "pulse_amplitude": 0.25,
+        "response": {
+          "pulse": [
+            0.0,
+            0.25
+          ],
+          "peak_velocity_rad_per_s": 1.5194539033648218,
+          "peak_joint_displacement_rad": 0.04999999281203674,
+          "peak_cross_joint_displacement_rad": 1.3865495614440171e-05,
+          "peak_end_effector_displacement_m": 0.00499947792592165,
+          "settle_control_step_at_velocity_threshold": 7,
+          "final_velocity_norm_rad_per_s": 7.466329071382783e-47
+        }
+      },
+      {
+        "radius_m": 0.1,
+        "angle_degrees": 0.0,
+        "branch": "folded",
+        "initial_q_rad": [
+          0.9272952180016123,
+          -2.214297435588181
+        ],
+        "pulse_joint": 1,
+        "pulse_amplitude": 1.0,
+        "response": {
+          "pulse": [
+            0.0,
+            1.0
+          ],
+          "peak_velocity_rad_per_s": 6.077826942744304,
+          "peak_joint_displacement_rad": 0.19999963998952994,
+          "peak_cross_joint_displacement_rad": 0.0001639975604981192,
+          "peak_end_effector_displacement_m": 0.019966608584495962,
+          "settle_control_step_at_velocity_threshold": 8,
+          "final_velocity_norm_rad_per_s": 1.981328428834889e-45
+        }
+      },
+      {
+        "radius_m": 0.1,
+        "angle_degrees": 90.0,
+        "branch": "open",
+        "initial_q_rad": [
+          0.6435011087932843,
+          2.214297435588181
+        ],
+        "pulse_joint": 0,
+        "pulse_amplitude": 0.25,
+        "response": {
+          "pulse": [
+            0.25,
+            0.0
+          ],
+          "peak_velocity_rad_per_s": 1.445265782130113,
+          "peak_joint_displacement_rad": 0.05000000433977253,
+          "peak_cross_joint_displacement_rad": 2.1115284987160976e-05,
+          "peak_end_effector_displacement_m": 0.004998946441925958,
+          "settle_control_step_at_velocity_threshold": 7,
+          "final_velocity_norm_rad_per_s": 3.6240166488264154e-45
+        }
+      },
+      {
+        "radius_m": 0.1,
+        "angle_degrees": 90.0,
+        "branch": "open",
+        "initial_q_rad": [
+          0.6435011087932843,
+          2.214297435588181
+        ],
+        "pulse_joint": 0,
+        "pulse_amplitude": 1.0,
+        "response": {
+          "pulse": [
+            1.0,
+            0.0
+          ],
+          "peak_velocity_rad_per_s": 5.781059867950658,
+          "peak_joint_displacement_rad": 0.20000027724398073,
+          "peak_cross_joint_displacement_rad": 0.0003330183127374653,
+          "peak_end_effector_displacement_m": 0.019960618501978188,
+          "settle_control_step_at_velocity_threshold": 9,
+          "final_velocity_norm_rad_per_s": 1.4515801150008845e-44
+        }
+      },
+      {
+        "radius_m": 0.1,
+        "angle_degrees": 90.0,
+        "branch": "open",
+        "initial_q_rad": [
+          0.6435011087932843,
+          2.214297435588181
+        ],
+        "pulse_joint": 1,
+        "pulse_amplitude": 0.25,
+        "response": {
+          "pulse": [
+            0.0,
+            0.25
+          ],
+          "peak_velocity_rad_per_s": 1.5194535131947395,
+          "peak_joint_displacement_rad": 0.04999999808700199,
+          "peak_cross_joint_displacement_rad": 4.1851928977987285e-06,
+          "peak_end_effector_displacement_m": 0.0049994785140668125,
+          "settle_control_step_at_velocity_threshold": 7,
+          "final_velocity_norm_rad_per_s": 2.693788458192105e-47
+        }
+      },
+      {
+        "radius_m": 0.1,
+        "angle_degrees": 90.0,
+        "branch": "open",
+        "initial_q_rad": [
+          0.6435011087932843,
+          2.214297435588181
+        ],
+        "pulse_joint": 1,
+        "pulse_amplitude": 1.0,
+        "response": {
+          "pulse": [
+            0.0,
+            1.0
+          ],
+          "peak_velocity_rad_per_s": 6.077819820989168,
+          "peak_joint_displacement_rad": 0.19999977902529606,
+          "peak_cross_joint_displacement_rad": 0.00011075908221169772,
+          "peak_end_effector_displacement_m": 0.01996663792333834,
+          "settle_control_step_at_velocity_threshold": 8,
+          "final_velocity_norm_rad_per_s": 3.1939766069512485e-46
+        }
+      },
+      {
+        "radius_m": 0.1,
+        "angle_degrees": 90.0,
+        "branch": "folded",
+        "initial_q_rad": [
+          2.498091544796509,
+          -2.214297435588181
+        ],
+        "pulse_joint": 0,
+        "pulse_amplitude": 0.25,
+        "response": {
+          "pulse": [
+            0.25,
+            0.0
+          ],
+          "peak_velocity_rad_per_s": 1.4452658954798843,
+          "peak_joint_displacement_rad": 0.05000000434522081,
+          "peak_cross_joint_displacement_rad": 2.0845198385632813e-05,
+          "peak_end_effector_displacement_m": 0.005000113104452256,
+          "settle_control_step_at_velocity_threshold": 7,
+          "final_velocity_norm_rad_per_s": 3.624038833381999e-45
+        }
+      },
+      {
+        "radius_m": 0.1,
+        "angle_degrees": 90.0,
+        "branch": "folded",
+        "initial_q_rad": [
+          2.498091544796509,
+          -2.214297435588181
+        ],
+        "pulse_joint": 0,
+        "pulse_amplitude": 1.0,
+        "response": {
+          "pulse": [
+            1.0,
+            0.0
+          ],
+          "peak_velocity_rad_per_s": 5.781061678127598,
+          "peak_joint_displacement_rad": 0.20000027863831854,
+          "peak_cross_joint_displacement_rad": 0.00033385132478169766,
+          "peak_end_effector_displacement_m": 0.01997921324598759,
+          "settle_control_step_at_velocity_threshold": 9,
+          "final_velocity_norm_rad_per_s": 1.451621506637458e-44
+        }
+      },
+      {
+        "radius_m": 0.1,
+        "angle_degrees": 90.0,
+        "branch": "folded",
+        "initial_q_rad": [
+          2.498091544796509,
+          -2.214297435588181
+        ],
+        "pulse_joint": 1,
+        "pulse_amplitude": 0.25,
+        "response": {
+          "pulse": [
+            0.0,
+            0.25
+          ],
+          "peak_velocity_rad_per_s": 1.5194539033648218,
+          "peak_joint_displacement_rad": 0.04999999281203674,
+          "peak_cross_joint_displacement_rad": 1.3865495615661416e-05,
+          "peak_end_effector_displacement_m": 0.004999477925921583,
+          "settle_control_step_at_velocity_threshold": 7,
+          "final_velocity_norm_rad_per_s": 7.466329071382687e-47
+        }
+      },
+      {
+        "radius_m": 0.1,
+        "angle_degrees": 90.0,
+        "branch": "folded",
+        "initial_q_rad": [
+          2.498091544796509,
+          -2.214297435588181
+        ],
+        "pulse_joint": 1,
+        "pulse_amplitude": 1.0,
+        "response": {
+          "pulse": [
+            0.0,
+            1.0
+          ],
+          "peak_velocity_rad_per_s": 6.077826942744304,
+          "peak_joint_displacement_rad": 0.19999963998952994,
+          "peak_cross_joint_displacement_rad": 0.00016399756049789715,
+          "peak_end_effector_displacement_m": 0.01996660858449591,
+          "settle_control_step_at_velocity_threshold": 8,
+          "final_velocity_norm_rad_per_s": 1.981328428834889e-45
+        }
+      },
+      {
+        "radius_m": 0.14,
+        "angle_degrees": -180.0,
+        "branch": "open",
+        "initial_q_rad": [
+          2.366399280279431,
+          1.7721542475852274
+        ],
+        "pulse_joint": 0,
+        "pulse_amplitude": 0.25,
+        "response": {
+          "pulse": [
+            0.25,
+            0.0
+          ],
+          "peak_velocity_rad_per_s": 1.4258110743611014,
+          "peak_joint_displacement_rad": 0.05000000624868217,
+          "peak_cross_joint_displacement_rad": 0.0002088644742688217,
+          "peak_end_effector_displacement_m": 0.0069979670035816306,
+          "settle_control_step_at_velocity_threshold": 7,
+          "final_velocity_norm_rad_per_s": 3.568110500020084e-44
+        }
+      },
+      {
+        "radius_m": 0.14,
+        "angle_degrees": -180.0,
+        "branch": "open",
+        "initial_q_rad": [
+          2.366399280279431,
+          1.7721542475852274
+        ],
+        "pulse_joint": 0,
+        "pulse_amplitude": 1.0,
+        "response": {
+          "pulse": [
+            1.0,
+            0.0
+          ],
+          "peak_velocity_rad_per_s": 5.703211258086517,
+          "peak_joint_displacement_rad": 0.20000039906262643,
+          "peak_cross_joint_displacement_rad": 0.0009829067152713478,
+          "peak_end_effector_displacement_m": 0.027935140600085007,
+          "settle_control_step_at_velocity_threshold": 9,
+          "final_velocity_norm_rad_per_s": 1.42980779600424e-43
+        }
+      },
+      {
+        "radius_m": 0.14,
+        "angle_degrees": -180.0,
+        "branch": "open",
+        "initial_q_rad": [
+          2.366399280279431,
+          1.7721542475852274
+        ],
+        "pulse_joint": 1,
+        "pulse_amplitude": 0.25,
+        "response": {
+          "pulse": [
+            0.0,
+            0.25
+          ],
+          "peak_velocity_rad_per_s": 1.5195498646820815,
+          "peak_joint_displacement_rad": 0.05000010979601431,
+          "peak_cross_joint_displacement_rad": 0.00018621337227342494,
+          "peak_end_effector_displacement_m": 0.004999489679456432,
+          "settle_control_step_at_velocity_threshold": 7,
+          "final_velocity_norm_rad_per_s": 2.7340667701766368e-45
+        }
+      },
+      {
+        "radius_m": 0.14,
+        "angle_degrees": -180.0,
+        "branch": "open",
+        "initial_q_rad": [
+          2.366399280279431,
+          1.7721542475852274
+        ],
+        "pulse_joint": 1,
+        "pulse_amplitude": 1.0,
+        "response": {
+          "pulse": [
+            0.0,
+            1.0
+          ],
+          "peak_velocity_rad_per_s": 6.078106611052314,
+          "peak_joint_displacement_rad": 0.20000144231734057,
+          "peak_cross_joint_displacement_rad": 0.0006221317664341086,
+          "peak_end_effector_displacement_m": 0.019966793100311308,
+          "settle_control_step_at_velocity_threshold": 8,
+          "final_velocity_norm_rad_per_s": 3.3874342964314544e-45
+        }
+      },
+      {
+        "radius_m": 0.14,
+        "angle_degrees": -180.0,
+        "branch": "folded",
+        "initial_q_rad": [
+          -2.3663992802794316,
+          -1.7721542475852274
+        ],
+        "pulse_joint": 0,
+        "pulse_amplitude": 0.25,
+        "response": {
+          "pulse": [
+            0.25,
+            0.0
+          ],
+          "peak_velocity_rad_per_s": 1.4258159966011659,
+          "peak_joint_displacement_rad": 0.05000000625766557,
+          "peak_cross_joint_displacement_rad": 0.00018428378625601205,
+          "peak_end_effector_displacement_m": 0.007000681305235217,
+          "settle_control_step_at_velocity_threshold": 7,
+          "final_velocity_norm_rad_per_s": 3.5688271568045054e-44
+        }
+      },
+      {
+        "radius_m": 0.14,
+        "angle_degrees": -180.0,
+        "branch": "folded",
+        "initial_q_rad": [
+          -2.3663992802794316,
+          -1.7721542475852274
+        ],
+        "pulse_joint": 0,
+        "pulse_amplitude": 1.0,
+        "response": {
+          "pulse": [
+            1.0,
+            0.0
+          ],
+          "peak_velocity_rad_per_s": 5.703290008447874,
+          "peak_joint_displacement_rad": 0.2000004013611386,
+          "peak_cross_joint_displacement_rad": 0.0005896136557677067,
+          "peak_end_effector_displacement_m": 0.027978383245296074,
+          "settle_control_step_at_velocity_threshold": 9,
+          "final_velocity_norm_rad_per_s": 1.4309662555369816e-43
+        }
+      },
+      {
+        "radius_m": 0.14,
+        "angle_degrees": -180.0,
+        "branch": "folded",
+        "initial_q_rad": [
+          -2.3663992802794316,
+          -1.7721542475852274
+        ],
+        "pulse_joint": 1,
+        "pulse_amplitude": 0.25,
+        "response": {
+          "pulse": [
+            0.0,
+            0.25
+          ],
+          "peak_velocity_rad_per_s": 1.5195674908510237,
+          "peak_joint_displacement_rad": 0.049999876559012016,
+          "peak_cross_joint_displacement_rad": 0.00020698627414894588,
+          "peak_end_effector_displacement_m": 0.0049994664140841525,
+          "settle_control_step_at_velocity_threshold": 7,
+          "final_velocity_norm_rad_per_s": 5.658147650709857e-45
+        }
+      },
+      {
+        "radius_m": 0.14,
+        "angle_degrees": -180.0,
+        "branch": "folded",
+        "initial_q_rad": [
+          -2.3663992802794316,
+          -1.7721542475852274
+        ],
+        "pulse_joint": 1,
+        "pulse_amplitude": 1.0,
+        "response": {
+          "pulse": [
+            0.0,
+            1.0
+          ],
+          "peak_velocity_rad_per_s": 6.0783886479094065,
+          "peak_joint_displacement_rad": 0.19999768890163436,
+          "peak_cross_joint_displacement_rad": 0.0009536775068457182,
+          "peak_end_effector_displacement_m": 0.019966432597820244,
+          "settle_control_step_at_velocity_threshold": 8,
+          "final_velocity_norm_rad_per_s": 6.409639625152288e-44
+        }
+      },
+      {
+        "radius_m": 0.14,
+        "angle_degrees": -90.0,
+        "branch": "open",
+        "initial_q_rad": [
+          -2.345989700105258,
+          1.7721542475852274
+        ],
+        "pulse_joint": 0,
+        "pulse_amplitude": 0.25,
+        "response": {
+          "pulse": [
+            0.25,
+            0.0
+          ],
+          "peak_velocity_rad_per_s": 1.4258110743611014,
+          "peak_joint_displacement_rad": 0.05000000624868217,
+          "peak_cross_joint_displacement_rad": 0.0002088644742688217,
+          "peak_end_effector_displacement_m": 0.006997967003581631,
+          "settle_control_step_at_velocity_threshold": 7,
+          "final_velocity_norm_rad_per_s": 3.568110500020084e-44
+        }
+      },
+      {
+        "radius_m": 0.14,
+        "angle_degrees": -90.0,
+        "branch": "open",
+        "initial_q_rad": [
+          -2.345989700105258,
+          1.7721542475852274
+        ],
+        "pulse_joint": 0,
+        "pulse_amplitude": 1.0,
+        "response": {
+          "pulse": [
+            1.0,
+            0.0
+          ],
+          "peak_velocity_rad_per_s": 5.703211258086517,
+          "peak_joint_displacement_rad": 0.20000039906262643,
+          "peak_cross_joint_displacement_rad": 0.0009829067152713478,
+          "peak_end_effector_displacement_m": 0.027935140600085034,
+          "settle_control_step_at_velocity_threshold": 9,
+          "final_velocity_norm_rad_per_s": 1.42980779600424e-43
+        }
+      },
+      {
+        "radius_m": 0.14,
+        "angle_degrees": -90.0,
+        "branch": "open",
+        "initial_q_rad": [
+          -2.345989700105258,
+          1.7721542475852274
+        ],
+        "pulse_joint": 1,
+        "pulse_amplitude": 0.25,
+        "response": {
+          "pulse": [
+            0.0,
+            0.25
+          ],
+          "peak_velocity_rad_per_s": 1.5195498646820815,
+          "peak_joint_displacement_rad": 0.05000010979601431,
+          "peak_cross_joint_displacement_rad": 0.00018621337227342494,
+          "peak_end_effector_displacement_m": 0.00499948967945644,
+          "settle_control_step_at_velocity_threshold": 7,
+          "final_velocity_norm_rad_per_s": 2.7340667701766368e-45
+        }
+      },
+      {
+        "radius_m": 0.14,
+        "angle_degrees": -90.0,
+        "branch": "open",
+        "initial_q_rad": [
+          -2.345989700105258,
+          1.7721542475852274
+        ],
+        "pulse_joint": 1,
+        "pulse_amplitude": 1.0,
+        "response": {
+          "pulse": [
+            0.0,
+            1.0
+          ],
+          "peak_velocity_rad_per_s": 6.078106611052314,
+          "peak_joint_displacement_rad": 0.20000144231734057,
+          "peak_cross_joint_displacement_rad": 0.0006221317664341086,
+          "peak_end_effector_displacement_m": 0.019966793100311325,
+          "settle_control_step_at_velocity_threshold": 8,
+          "final_velocity_norm_rad_per_s": 3.3874342964314544e-45
+        }
+      },
+      {
+        "radius_m": 0.14,
+        "angle_degrees": -90.0,
+        "branch": "folded",
+        "initial_q_rad": [
+          -0.795602953484535,
+          -1.7721542475852274
+        ],
+        "pulse_joint": 0,
+        "pulse_amplitude": 0.25,
+        "response": {
+          "pulse": [
+            0.25,
+            0.0
+          ],
+          "peak_velocity_rad_per_s": 1.4258159966011659,
+          "peak_joint_displacement_rad": 0.05000000625766557,
+          "peak_cross_joint_displacement_rad": 0.00018428378625601205,
+          "peak_end_effector_displacement_m": 0.007000681305235231,
+          "settle_control_step_at_velocity_threshold": 7,
+          "final_velocity_norm_rad_per_s": 3.5688271568045054e-44
+        }
+      },
+      {
+        "radius_m": 0.14,
+        "angle_degrees": -90.0,
+        "branch": "folded",
+        "initial_q_rad": [
+          -0.795602953484535,
+          -1.7721542475852274
+        ],
+        "pulse_joint": 0,
+        "pulse_amplitude": 1.0,
+        "response": {
+          "pulse": [
+            1.0,
+            0.0
+          ],
+          "peak_velocity_rad_per_s": 5.703290008447874,
+          "peak_joint_displacement_rad": 0.2000004013611416,
+          "peak_cross_joint_displacement_rad": 0.0005896136557677067,
+          "peak_end_effector_displacement_m": 0.027978383245296504,
+          "settle_control_step_at_velocity_threshold": 9,
+          "final_velocity_norm_rad_per_s": 1.4309662555369816e-43
+        }
+      },
+      {
+        "radius_m": 0.14,
+        "angle_degrees": -90.0,
+        "branch": "folded",
+        "initial_q_rad": [
+          -0.795602953484535,
+          -1.7721542475852274
+        ],
+        "pulse_joint": 1,
+        "pulse_amplitude": 0.25,
+        "response": {
+          "pulse": [
+            0.0,
+            0.25
+          ],
+          "peak_velocity_rad_per_s": 1.5195674908510237,
+          "peak_joint_displacement_rad": 0.049999876559012016,
+          "peak_cross_joint_displacement_rad": 0.00020698627414938997,
+          "peak_end_effector_displacement_m": 0.00499946641408441,
+          "settle_control_step_at_velocity_threshold": 7,
+          "final_velocity_norm_rad_per_s": 5.658147650709857e-45
+        }
+      },
+      {
+        "radius_m": 0.14,
+        "angle_degrees": -90.0,
+        "branch": "folded",
+        "initial_q_rad": [
+          -0.795602953484535,
+          -1.7721542475852274
+        ],
+        "pulse_joint": 1,
+        "pulse_amplitude": 1.0,
+        "response": {
+          "pulse": [
+            0.0,
+            1.0
+          ],
+          "peak_velocity_rad_per_s": 6.0783886479094065,
+          "peak_joint_displacement_rad": 0.19999768890163436,
+          "peak_cross_joint_displacement_rad": 0.000953677506845052,
+          "peak_end_effector_displacement_m": 0.019966432597820327,
+          "settle_control_step_at_velocity_threshold": 8,
+          "final_velocity_norm_rad_per_s": 6.409639625152288e-44
+        }
+      },
+      {
+        "radius_m": 0.14,
+        "angle_degrees": 0.0,
+        "branch": "open",
+        "initial_q_rad": [
+          -0.7751933733103615,
+          1.7721542475852274
+        ],
+        "pulse_joint": 0,
+        "pulse_amplitude": 0.25,
+        "response": {
+          "pulse": [
+            0.25,
+            0.0
+          ],
+          "peak_velocity_rad_per_s": 1.4258110743611014,
+          "peak_joint_displacement_rad": 0.05000000624868617,
+          "peak_cross_joint_displacement_rad": 0.0002088644742688217,
+          "peak_end_effector_displacement_m": 0.0069979670035821865,
+          "settle_control_step_at_velocity_threshold": 7,
+          "final_velocity_norm_rad_per_s": 3.568110500020084e-44
+        }
+      },
+      {
+        "radius_m": 0.14,
+        "angle_degrees": 0.0,
+        "branch": "open",
+        "initial_q_rad": [
+          -0.7751933733103615,
+          1.7721542475852274
+        ],
+        "pulse_joint": 0,
+        "pulse_amplitude": 1.0,
+        "response": {
+          "pulse": [
+            1.0,
+            0.0
+          ],
+          "peak_velocity_rad_per_s": 5.703211258086517,
+          "peak_joint_displacement_rad": 0.20000039906263042,
+          "peak_cross_joint_displacement_rad": 0.0009829067152713478,
+          "peak_end_effector_displacement_m": 0.02793514060008557,
+          "settle_control_step_at_velocity_threshold": 9,
+          "final_velocity_norm_rad_per_s": 1.42980779600424e-43
+        }
+      },
+      {
+        "radius_m": 0.14,
+        "angle_degrees": 0.0,
+        "branch": "open",
+        "initial_q_rad": [
+          -0.7751933733103615,
+          1.7721542475852274
+        ],
+        "pulse_joint": 1,
+        "pulse_amplitude": 0.25,
+        "response": {
+          "pulse": [
+            0.0,
+            0.25
+          ],
+          "peak_velocity_rad_per_s": 1.5195498646820815,
+          "peak_joint_displacement_rad": 0.05000010979601431,
+          "peak_cross_joint_displacement_rad": 0.00018621337227342494,
+          "peak_end_effector_displacement_m": 0.004999489679456424,
+          "settle_control_step_at_velocity_threshold": 7,
+          "final_velocity_norm_rad_per_s": 2.7340667701766287e-45
+        }
+      },
+      {
+        "radius_m": 0.14,
+        "angle_degrees": 0.0,
+        "branch": "open",
+        "initial_q_rad": [
+          -0.7751933733103615,
+          1.7721542475852274
+        ],
+        "pulse_joint": 1,
+        "pulse_amplitude": 1.0,
+        "response": {
+          "pulse": [
+            0.0,
+            1.0
+          ],
+          "peak_velocity_rad_per_s": 6.078106611052314,
+          "peak_joint_displacement_rad": 0.20000144231734057,
+          "peak_cross_joint_displacement_rad": 0.0006221317664346637,
+          "peak_end_effector_displacement_m": 0.01996679310031129,
+          "settle_control_step_at_velocity_threshold": 8,
+          "final_velocity_norm_rad_per_s": 3.3874342964314544e-45
+        }
+      },
+      {
+        "radius_m": 0.14,
+        "angle_degrees": 0.0,
+        "branch": "folded",
+        "initial_q_rad": [
+          0.7751933733103615,
+          -1.7721542475852274
+        ],
+        "pulse_joint": 0,
+        "pulse_amplitude": 0.25,
+        "response": {
+          "pulse": [
+            0.25,
+            0.0
+          ],
+          "peak_velocity_rad_per_s": 1.4258159966011659,
+          "peak_joint_displacement_rad": 0.05000000625766557,
+          "peak_cross_joint_displacement_rad": 0.00018428378625601205,
+          "peak_end_effector_displacement_m": 0.007000681305235245,
+          "settle_control_step_at_velocity_threshold": 7,
+          "final_velocity_norm_rad_per_s": 3.5688271568045054e-44
+        }
+      },
+      {
+        "radius_m": 0.14,
+        "angle_degrees": 0.0,
+        "branch": "folded",
+        "initial_q_rad": [
+          0.7751933733103615,
+          -1.7721542475852274
+        ],
+        "pulse_joint": 0,
+        "pulse_amplitude": 1.0,
+        "response": {
+          "pulse": [
+            1.0,
+            0.0
+          ],
+          "peak_velocity_rad_per_s": 5.703290008447874,
+          "peak_joint_displacement_rad": 0.2000004013611416,
+          "peak_cross_joint_displacement_rad": 0.0005896136557677067,
+          "peak_end_effector_displacement_m": 0.02797838324529649,
+          "settle_control_step_at_velocity_threshold": 9,
+          "final_velocity_norm_rad_per_s": 1.4309662555369816e-43
+        }
+      },
+      {
+        "radius_m": 0.14,
+        "angle_degrees": 0.0,
+        "branch": "folded",
+        "initial_q_rad": [
+          0.7751933733103615,
+          -1.7721542475852274
+        ],
+        "pulse_joint": 1,
+        "pulse_amplitude": 0.25,
+        "response": {
+          "pulse": [
+            0.0,
+            0.25
+          ],
+          "peak_velocity_rad_per_s": 1.5195674908510237,
+          "peak_joint_displacement_rad": 0.049999876559012016,
+          "peak_cross_joint_displacement_rad": 0.00020698627414938997,
+          "peak_end_effector_displacement_m": 0.004999466414084419,
+          "settle_control_step_at_velocity_threshold": 7,
+          "final_velocity_norm_rad_per_s": 5.658147650709857e-45
+        }
+      },
+      {
+        "radius_m": 0.14,
+        "angle_degrees": 0.0,
+        "branch": "folded",
+        "initial_q_rad": [
+          0.7751933733103615,
+          -1.7721542475852274
+        ],
+        "pulse_joint": 1,
+        "pulse_amplitude": 1.0,
+        "response": {
+          "pulse": [
+            0.0,
+            1.0
+          ],
+          "peak_velocity_rad_per_s": 6.0783886479094065,
+          "peak_joint_displacement_rad": 0.19999768890163436,
+          "peak_cross_joint_displacement_rad": 0.000953677506845052,
+          "peak_end_effector_displacement_m": 0.019966432597820324,
+          "settle_control_step_at_velocity_threshold": 8,
+          "final_velocity_norm_rad_per_s": 6.409639625152288e-44
+        }
+      },
+      {
+        "radius_m": 0.14,
+        "angle_degrees": 90.0,
+        "branch": "open",
+        "initial_q_rad": [
+          0.795602953484535,
+          1.7721542475852274
+        ],
+        "pulse_joint": 0,
+        "pulse_amplitude": 0.25,
+        "response": {
+          "pulse": [
+            0.25,
+            0.0
+          ],
+          "peak_velocity_rad_per_s": 1.4258110743611014,
+          "peak_joint_displacement_rad": 0.05000000624868617,
+          "peak_cross_joint_displacement_rad": 0.0002088644742688217,
+          "peak_end_effector_displacement_m": 0.0069979670035821865,
+          "settle_control_step_at_velocity_threshold": 7,
+          "final_velocity_norm_rad_per_s": 3.568110500020084e-44
+        }
+      },
+      {
+        "radius_m": 0.14,
+        "angle_degrees": 90.0,
+        "branch": "open",
+        "initial_q_rad": [
+          0.795602953484535,
+          1.7721542475852274
+        ],
+        "pulse_joint": 0,
+        "pulse_amplitude": 1.0,
+        "response": {
+          "pulse": [
+            1.0,
+            0.0
+          ],
+          "peak_velocity_rad_per_s": 5.703211258086517,
+          "peak_joint_displacement_rad": 0.20000039906263042,
+          "peak_cross_joint_displacement_rad": 0.0009829067152713478,
+          "peak_end_effector_displacement_m": 0.027935140600085583,
+          "settle_control_step_at_velocity_threshold": 9,
+          "final_velocity_norm_rad_per_s": 1.42980779600424e-43
+        }
+      },
+      {
+        "radius_m": 0.14,
+        "angle_degrees": 90.0,
+        "branch": "open",
+        "initial_q_rad": [
+          0.795602953484535,
+          1.7721542475852274
+        ],
+        "pulse_joint": 1,
+        "pulse_amplitude": 0.25,
+        "response": {
+          "pulse": [
+            0.0,
+            0.25
+          ],
+          "peak_velocity_rad_per_s": 1.5195498646820815,
+          "peak_joint_displacement_rad": 0.05000010979601431,
+          "peak_cross_joint_displacement_rad": 0.00018621337227342494,
+          "peak_end_effector_displacement_m": 0.004999489679456424,
+          "settle_control_step_at_velocity_threshold": 7,
+          "final_velocity_norm_rad_per_s": 2.7340667701766287e-45
+        }
+      },
+      {
+        "radius_m": 0.14,
+        "angle_degrees": 90.0,
+        "branch": "open",
+        "initial_q_rad": [
+          0.795602953484535,
+          1.7721542475852274
+        ],
+        "pulse_joint": 1,
+        "pulse_amplitude": 1.0,
+        "response": {
+          "pulse": [
+            0.0,
+            1.0
+          ],
+          "peak_velocity_rad_per_s": 6.078106611052314,
+          "peak_joint_displacement_rad": 0.20000144231734057,
+          "peak_cross_joint_displacement_rad": 0.0006221317664346637,
+          "peak_end_effector_displacement_m": 0.019966793100311294,
+          "settle_control_step_at_velocity_threshold": 8,
+          "final_velocity_norm_rad_per_s": 3.387434296431397e-45
+        }
+      },
+      {
+        "radius_m": 0.14,
+        "angle_degrees": 90.0,
+        "branch": "folded",
+        "initial_q_rad": [
+          2.3459897001052585,
+          -1.7721542475852274
+        ],
+        "pulse_joint": 0,
+        "pulse_amplitude": 0.25,
+        "response": {
+          "pulse": [
+            0.25,
+            0.0
+          ],
+          "peak_velocity_rad_per_s": 1.4258159966011659,
+          "peak_joint_displacement_rad": 0.05000000625766557,
+          "peak_cross_joint_displacement_rad": 0.00018428378625601205,
+          "peak_end_effector_displacement_m": 0.0070006813052352025,
+          "settle_control_step_at_velocity_threshold": 7,
+          "final_velocity_norm_rad_per_s": 3.5688271568045054e-44
+        }
+      },
+      {
+        "radius_m": 0.14,
+        "angle_degrees": 90.0,
+        "branch": "folded",
+        "initial_q_rad": [
+          2.3459897001052585,
+          -1.7721542475852274
+        ],
+        "pulse_joint": 0,
+        "pulse_amplitude": 1.0,
+        "response": {
+          "pulse": [
+            1.0,
+            0.0
+          ],
+          "peak_velocity_rad_per_s": 5.703290008447874,
+          "peak_joint_displacement_rad": 0.2000004013611386,
+          "peak_cross_joint_displacement_rad": 0.0005896136557677067,
+          "peak_end_effector_displacement_m": 0.027978383245296053,
+          "settle_control_step_at_velocity_threshold": 9,
+          "final_velocity_norm_rad_per_s": 1.430966255536945e-43
+        }
+      },
+      {
+        "radius_m": 0.14,
+        "angle_degrees": 90.0,
+        "branch": "folded",
+        "initial_q_rad": [
+          2.3459897001052585,
+          -1.7721542475852274
+        ],
+        "pulse_joint": 1,
+        "pulse_amplitude": 0.25,
+        "response": {
+          "pulse": [
+            0.0,
+            0.25
+          ],
+          "peak_velocity_rad_per_s": 1.5195674908510237,
+          "peak_joint_displacement_rad": 0.049999876559012016,
+          "peak_cross_joint_displacement_rad": 0.00020698627414894588,
+          "peak_end_effector_displacement_m": 0.004999466414084168,
+          "settle_control_step_at_velocity_threshold": 7,
+          "final_velocity_norm_rad_per_s": 5.658147650709868e-45
+        }
+      },
+      {
+        "radius_m": 0.14,
+        "angle_degrees": 90.0,
+        "branch": "folded",
+        "initial_q_rad": [
+          2.3459897001052585,
+          -1.7721542475852274
+        ],
+        "pulse_joint": 1,
+        "pulse_amplitude": 1.0,
+        "response": {
+          "pulse": [
+            0.0,
+            1.0
+          ],
+          "peak_velocity_rad_per_s": 6.0783886479094065,
+          "peak_joint_displacement_rad": 0.19999768890163436,
+          "peak_cross_joint_displacement_rad": 0.0009536775068457182,
+          "peak_end_effector_displacement_m": 0.019966432597820293,
+          "settle_control_step_at_velocity_threshold": 8,
+          "final_velocity_norm_rad_per_s": 6.409639625152288e-44
+        }
+      },
+      {
+        "radius_m": 0.18,
+        "angle_degrees": -180.0,
+        "branch": "open",
+        "initial_q_rad": [
+          2.590307055157262,
+          1.2309594173407747
+        ],
+        "pulse_joint": 0,
+        "pulse_amplitude": 0.25,
+        "response": {
+          "pulse": [
+            0.25,
+            0.0
+          ],
+          "peak_velocity_rad_per_s": 1.40090555116985,
+          "peak_joint_displacement_rad": 0.05000000548898761,
+          "peak_cross_joint_displacement_rad": 0.00045890948472426807,
+          "peak_end_effector_displacement_m": 0.008997278461769601,
+          "settle_control_step_at_velocity_threshold": 8,
+          "final_velocity_norm_rad_per_s": 7.739952084376939e-43
+        }
+      },
+      {
+        "radius_m": 0.18,
+        "angle_degrees": -180.0,
+        "branch": "open",
+        "initial_q_rad": [
+          2.590307055157262,
+          1.2309594173407747
+        ],
+        "pulse_joint": 0,
+        "pulse_amplitude": 1.0,
+        "response": {
+          "pulse": [
+            1.0,
+            0.0
+          ],
+          "peak_velocity_rad_per_s": 5.603560557500533,
+          "peak_joint_displacement_rad": 0.2000003502540189,
+          "peak_cross_joint_displacement_rad": 0.001972627976104979,
+          "peak_end_effector_displacement_m": 0.03591342714697534,
+          "settle_control_step_at_velocity_threshold": 9,
+          "final_velocity_norm_rad_per_s": 3.100368612265522e-42
+        }
+      },
+      {
+        "radius_m": 0.18,
+        "angle_degrees": -180.0,
+        "branch": "open",
+        "initial_q_rad": [
+          2.590307055157262,
+          1.2309594173407747
+        ],
+        "pulse_joint": 1,
+        "pulse_amplitude": 0.25,
+        "response": {
+          "pulse": [
+            0.0,
+            0.25
+          ],
+          "peak_velocity_rad_per_s": 1.5199787276053793,
+          "peak_joint_displacement_rad": 0.050000247181997345,
+          "peak_cross_joint_displacement_rad": 0.00043763348353653697,
+          "peak_end_effector_displacement_m": 0.004999505172443538,
+          "settle_control_step_at_velocity_threshold": 7,
+          "final_velocity_norm_rad_per_s": 1.107412522152053e-43
+        }
+      },
+      {
+        "radius_m": 0.18,
+        "angle_degrees": -180.0,
+        "branch": "open",
+        "initial_q_rad": [
+          2.590307055157262,
+          1.2309594173407747
+        ],
+        "pulse_joint": 1,
+        "pulse_amplitude": 1.0,
+        "response": {
+          "pulse": [
+            0.0,
+            1.0
+          ],
+          "peak_velocity_rad_per_s": 6.079696670390888,
+          "peak_joint_displacement_rad": 0.2000036903253622,
+          "peak_cross_joint_displacement_rad": 0.0016298498303375375,
+          "peak_end_effector_displacement_m": 0.01996711356491518,
+          "settle_control_step_at_velocity_threshold": 8,
+          "final_velocity_norm_rad_per_s": 1.7553287482288302e-43
+        }
+      },
+      {
+        "radius_m": 0.18,
+        "angle_degrees": -180.0,
+        "branch": "folded",
+        "initial_q_rad": [
+          -2.590307055157262,
+          -1.2309594173407747
+        ],
+        "pulse_joint": 0,
+        "pulse_amplitude": 0.25,
+        "response": {
+          "pulse": [
+            0.25,
+            0.0
+          ],
+          "peak_velocity_rad_per_s": 1.4009153532698428,
+          "peak_joint_displacement_rad": 0.05000000549967209,
+          "peak_cross_joint_displacement_rad": 0.00043605612913188985,
+          "peak_end_effector_displacement_m": 0.00900092226598713,
+          "settle_control_step_at_velocity_threshold": 8,
+          "final_velocity_norm_rad_per_s": 7.742234755912139e-43
+        }
+      },
+      {
+        "radius_m": 0.18,
+        "angle_degrees": -180.0,
+        "branch": "folded",
+        "initial_q_rad": [
+          -2.590307055157262,
+          -1.2309594173407747
+        ],
+        "pulse_joint": 0,
+        "pulse_amplitude": 1.0,
+        "response": {
+          "pulse": [
+            1.0,
+            0.0
+          ],
+          "peak_velocity_rad_per_s": 5.603717382924579,
+          "peak_joint_displacement_rad": 0.20000035298907007,
+          "peak_cross_joint_displacement_rad": 0.0016069797888873527,
+          "peak_end_effector_displacement_m": 0.035971466729700724,
+          "settle_control_step_at_velocity_threshold": 9,
+          "final_velocity_norm_rad_per_s": 3.1040510101176576e-42
+        }
+      },
+      {
+        "radius_m": 0.18,
+        "angle_degrees": -180.0,
+        "branch": "folded",
+        "initial_q_rad": [
+          -2.590307055157262,
+          -1.2309594173407747
+        ],
+        "pulse_joint": 1,
+        "pulse_amplitude": 0.25,
+        "response": {
+          "pulse": [
+            0.0,
+            0.25
+          ],
+          "peak_velocity_rad_per_s": 1.520016256176056,
+          "peak_joint_displacement_rad": 0.04999974241818081,
+          "peak_cross_joint_displacement_rad": 0.0004572185112641236,
+          "peak_end_effector_displacement_m": 0.004999454916585456,
+          "settle_control_step_at_velocity_threshold": 7,
+          "final_velocity_norm_rad_per_s": 1.9815329110911302e-43
+        }
+      },
+      {
+        "radius_m": 0.18,
+        "angle_degrees": -180.0,
+        "branch": "folded",
+        "initial_q_rad": [
+          -2.590307055157262,
+          -1.2309594173407747
+        ],
+        "pulse_joint": 1,
+        "pulse_amplitude": 1.0,
+        "response": {
+          "pulse": [
+            0.0,
+            1.0
+          ],
+          "peak_velocity_rad_per_s": 6.080296003759101,
+          "peak_joint_displacement_rad": 0.19999564788746071,
+          "peak_cross_joint_displacement_rad": 0.0019424992753358516,
+          "peak_end_effector_displacement_m": 0.019966365443374292,
+          "settle_control_step_at_velocity_threshold": 8,
+          "final_velocity_norm_rad_per_s": 1.7836540435291886e-42
+        }
+      },
+      {
+        "radius_m": 0.18,
+        "angle_degrees": -90.0,
+        "branch": "open",
+        "initial_q_rad": [
+          -2.1220819252274277,
+          1.2309594173407747
+        ],
+        "pulse_joint": 0,
+        "pulse_amplitude": 0.25,
+        "response": {
+          "pulse": [
+            0.25,
+            0.0
+          ],
+          "peak_velocity_rad_per_s": 1.40090555116985,
+          "peak_joint_displacement_rad": 0.05000000548898761,
+          "peak_cross_joint_displacement_rad": 0.00045890948472426807,
+          "peak_end_effector_displacement_m": 0.008997278461769613,
+          "settle_control_step_at_velocity_threshold": 8,
+          "final_velocity_norm_rad_per_s": 7.739952084376937e-43
+        }
+      },
+      {
+        "radius_m": 0.18,
+        "angle_degrees": -90.0,
+        "branch": "open",
+        "initial_q_rad": [
+          -2.1220819252274277,
+          1.2309594173407747
+        ],
+        "pulse_joint": 0,
+        "pulse_amplitude": 1.0,
+        "response": {
+          "pulse": [
+            1.0,
+            0.0
+          ],
+          "peak_velocity_rad_per_s": 5.603560557500533,
+          "peak_joint_displacement_rad": 0.20000035025401336,
+          "peak_cross_joint_displacement_rad": 0.001972627976104979,
+          "peak_end_effector_displacement_m": 0.035913427146974354,
+          "settle_control_step_at_velocity_threshold": 9,
+          "final_velocity_norm_rad_per_s": 3.1003686122655145e-42
+        }
+      },
+      {
+        "radius_m": 0.18,
+        "angle_degrees": -90.0,
+        "branch": "open",
+        "initial_q_rad": [
+          -2.1220819252274277,
+          1.2309594173407747
+        ],
+        "pulse_joint": 1,
+        "pulse_amplitude": 0.25,
+        "response": {
+          "pulse": [
+            0.0,
+            0.25
+          ],
+          "peak_velocity_rad_per_s": 1.5199787276053793,
+          "peak_joint_displacement_rad": 0.050000247181997345,
+          "peak_cross_joint_displacement_rad": 0.00043763348353653697,
+          "peak_end_effector_displacement_m": 0.004999505172443513,
+          "settle_control_step_at_velocity_threshold": 7,
+          "final_velocity_norm_rad_per_s": 1.1074125221520527e-43
+        }
+      },
+      {
+        "radius_m": 0.18,
+        "angle_degrees": -90.0,
+        "branch": "open",
+        "initial_q_rad": [
+          -2.1220819252274277,
+          1.2309594173407747
+        ],
+        "pulse_joint": 1,
+        "pulse_amplitude": 1.0,
+        "response": {
+          "pulse": [
+            0.0,
+            1.0
+          ],
+          "peak_velocity_rad_per_s": 6.079696670390888,
+          "peak_joint_displacement_rad": 0.2000036903253622,
+          "peak_cross_joint_displacement_rad": 0.0016298498303375375,
+          "peak_end_effector_displacement_m": 0.01996711356491518,
+          "settle_control_step_at_velocity_threshold": 8,
+          "final_velocity_norm_rad_per_s": 1.7553287482288302e-43
+        }
+      },
+      {
+        "radius_m": 0.18,
+        "angle_degrees": -90.0,
+        "branch": "folded",
+        "initial_q_rad": [
+          -1.0195107283623654,
+          -1.2309594173407747
+        ],
+        "pulse_joint": 0,
+        "pulse_amplitude": 0.25,
+        "response": {
+          "pulse": [
+            0.25,
+            0.0
+          ],
+          "peak_velocity_rad_per_s": 1.4009153532698428,
+          "peak_joint_displacement_rad": 0.050000005499675086,
+          "peak_cross_joint_displacement_rad": 0.00043605612913188985,
+          "peak_end_effector_displacement_m": 0.00900092226598763,
+          "settle_control_step_at_velocity_threshold": 8,
+          "final_velocity_norm_rad_per_s": 7.742234755912137e-43
+        }
+      },
+      {
+        "radius_m": 0.18,
+        "angle_degrees": -90.0,
+        "branch": "folded",
+        "initial_q_rad": [
+          -1.0195107283623654,
+          -1.2309594173407747
+        ],
+        "pulse_joint": 0,
+        "pulse_amplitude": 1.0,
+        "response": {
+          "pulse": [
+            1.0,
+            0.0
+          ],
+          "peak_velocity_rad_per_s": 5.603717382924579,
+          "peak_joint_displacement_rad": 0.20000035298906874,
+          "peak_cross_joint_displacement_rad": 0.0016069797888873527,
+          "peak_end_effector_displacement_m": 0.035971466729700474,
+          "settle_control_step_at_velocity_threshold": 9,
+          "final_velocity_norm_rad_per_s": 3.104051010117658e-42
+        }
+      },
+      {
+        "radius_m": 0.18,
+        "angle_degrees": -90.0,
+        "branch": "folded",
+        "initial_q_rad": [
+          -1.0195107283623654,
+          -1.2309594173407747
+        ],
+        "pulse_joint": 1,
+        "pulse_amplitude": 0.25,
+        "response": {
+          "pulse": [
+            0.0,
+            0.25
+          ],
+          "peak_velocity_rad_per_s": 1.520016256176056,
+          "peak_joint_displacement_rad": 0.04999974241818081,
+          "peak_cross_joint_displacement_rad": 0.0004572185112641236,
+          "peak_end_effector_displacement_m": 0.00499945491658577,
+          "settle_control_step_at_velocity_threshold": 7,
+          "final_velocity_norm_rad_per_s": 1.9815329110911302e-43
+        }
+      },
+      {
+        "radius_m": 0.18,
+        "angle_degrees": -90.0,
+        "branch": "folded",
+        "initial_q_rad": [
+          -1.0195107283623654,
+          -1.2309594173407747
+        ],
+        "pulse_joint": 1,
+        "pulse_amplitude": 1.0,
+        "response": {
+          "pulse": [
+            0.0,
+            1.0
+          ],
+          "peak_velocity_rad_per_s": 6.080296003759101,
+          "peak_joint_displacement_rad": 0.19999564788746071,
+          "peak_cross_joint_displacement_rad": 0.001942499275337184,
+          "peak_end_effector_displacement_m": 0.019966365443374184,
+          "settle_control_step_at_velocity_threshold": 8,
+          "final_velocity_norm_rad_per_s": 1.783654043529164e-42
+        }
+      },
+      {
+        "radius_m": 0.18,
+        "angle_degrees": 0.0,
+        "branch": "open",
+        "initial_q_rad": [
+          -0.5512855984325311,
+          1.2309594173407747
+        ],
+        "pulse_joint": 0,
+        "pulse_amplitude": 0.25,
+        "response": {
+          "pulse": [
+            0.25,
+            0.0
+          ],
+          "peak_velocity_rad_per_s": 1.40090555116985,
+          "peak_joint_displacement_rad": 0.05000000548899005,
+          "peak_cross_joint_displacement_rad": 0.00045890948472426807,
+          "peak_end_effector_displacement_m": 0.008997278461770017,
+          "settle_control_step_at_velocity_threshold": 8,
+          "final_velocity_norm_rad_per_s": 7.739952084376939e-43
+        }
+      },
+      {
+        "radius_m": 0.18,
+        "angle_degrees": 0.0,
+        "branch": "open",
+        "initial_q_rad": [
+          -0.5512855984325311,
+          1.2309594173407747
+        ],
+        "pulse_joint": 0,
+        "pulse_amplitude": 1.0,
+        "response": {
+          "pulse": [
+            1.0,
+            0.0
+          ],
+          "peak_velocity_rad_per_s": 5.603560557500533,
+          "peak_joint_displacement_rad": 0.20000035025401813,
+          "peak_cross_joint_displacement_rad": 0.001972627976104979,
+          "peak_end_effector_displacement_m": 0.03591342714697519,
+          "settle_control_step_at_velocity_threshold": 9,
+          "final_velocity_norm_rad_per_s": 3.100368612265522e-42
+        }
+      },
+      {
+        "radius_m": 0.18,
+        "angle_degrees": 0.0,
+        "branch": "open",
+        "initial_q_rad": [
+          -0.5512855984325311,
+          1.2309594173407747
+        ],
+        "pulse_joint": 1,
+        "pulse_amplitude": 0.25,
+        "response": {
+          "pulse": [
+            0.0,
+            0.25
+          ],
+          "peak_velocity_rad_per_s": 1.5199787276053793,
+          "peak_joint_displacement_rad": 0.050000247181997345,
+          "peak_cross_joint_displacement_rad": 0.0004376334835356488,
+          "peak_end_effector_displacement_m": 0.004999505172443929,
+          "settle_control_step_at_velocity_threshold": 7,
+          "final_velocity_norm_rad_per_s": 1.107412522152053e-43
+        }
+      },
+      {
+        "radius_m": 0.18,
+        "angle_degrees": 0.0,
+        "branch": "open",
+        "initial_q_rad": [
+          -0.5512855984325311,
+          1.2309594173407747
+        ],
+        "pulse_joint": 1,
+        "pulse_amplitude": 1.0,
+        "response": {
+          "pulse": [
+            0.0,
+            1.0
+          ],
+          "peak_velocity_rad_per_s": 6.079696670390888,
+          "peak_joint_displacement_rad": 0.2000036903253622,
+          "peak_cross_joint_displacement_rad": 0.0016298498303369824,
+          "peak_end_effector_displacement_m": 0.019967113564914696,
+          "settle_control_step_at_velocity_threshold": 8,
+          "final_velocity_norm_rad_per_s": 1.755328748228853e-43
+        }
+      },
+      {
+        "radius_m": 0.18,
+        "angle_degrees": 0.0,
+        "branch": "folded",
+        "initial_q_rad": [
+          0.5512855984325311,
+          -1.2309594173407747
+        ],
+        "pulse_joint": 0,
+        "pulse_amplitude": 0.25,
+        "response": {
+          "pulse": [
+            0.25,
+            0.0
+          ],
+          "peak_velocity_rad_per_s": 1.4009153532698428,
+          "peak_joint_displacement_rad": 0.050000005499674864,
+          "peak_cross_joint_displacement_rad": 0.00043605612913188985,
+          "peak_end_effector_displacement_m": 0.00900092226598763,
+          "settle_control_step_at_velocity_threshold": 8,
+          "final_velocity_norm_rad_per_s": 7.742234755912137e-43
+        }
+      },
+      {
+        "radius_m": 0.18,
+        "angle_degrees": 0.0,
+        "branch": "folded",
+        "initial_q_rad": [
+          0.5512855984325311,
+          -1.2309594173407747
+        ],
+        "pulse_joint": 0,
+        "pulse_amplitude": 1.0,
+        "response": {
+          "pulse": [
+            1.0,
+            0.0
+          ],
+          "peak_velocity_rad_per_s": 5.603717382924579,
+          "peak_joint_displacement_rad": 0.20000035298906862,
+          "peak_cross_joint_displacement_rad": 0.0016069797888873527,
+          "peak_end_effector_displacement_m": 0.035971466729700474,
+          "settle_control_step_at_velocity_threshold": 9,
+          "final_velocity_norm_rad_per_s": 3.104051010117658e-42
+        }
+      },
+      {
+        "radius_m": 0.18,
+        "angle_degrees": 0.0,
+        "branch": "folded",
+        "initial_q_rad": [
+          0.5512855984325311,
+          -1.2309594173407747
+        ],
+        "pulse_joint": 1,
+        "pulse_amplitude": 0.25,
+        "response": {
+          "pulse": [
+            0.0,
+            0.25
+          ],
+          "peak_velocity_rad_per_s": 1.520016256176056,
+          "peak_joint_displacement_rad": 0.04999974241818081,
+          "peak_cross_joint_displacement_rad": 0.00045721851126434565,
+          "peak_end_effector_displacement_m": 0.00499945491658582,
+          "settle_control_step_at_velocity_threshold": 7,
+          "final_velocity_norm_rad_per_s": 1.9815329110911302e-43
+        }
+      },
+      {
+        "radius_m": 0.18,
+        "angle_degrees": 0.0,
+        "branch": "folded",
+        "initial_q_rad": [
+          0.5512855984325311,
+          -1.2309594173407747
+        ],
+        "pulse_joint": 1,
+        "pulse_amplitude": 1.0,
+        "response": {
+          "pulse": [
+            0.0,
+            1.0
+          ],
+          "peak_velocity_rad_per_s": 6.080296003759101,
+          "peak_joint_displacement_rad": 0.19999564788746071,
+          "peak_cross_joint_displacement_rad": 0.0019424992753369619,
+          "peak_end_effector_displacement_m": 0.01996636544337462,
+          "settle_control_step_at_velocity_threshold": 8,
+          "final_velocity_norm_rad_per_s": 1.7836540435291886e-42
+        }
+      },
+      {
+        "radius_m": 0.18,
+        "angle_degrees": 90.0,
+        "branch": "open",
+        "initial_q_rad": [
+          1.0195107283623654,
+          1.2309594173407747
+        ],
+        "pulse_joint": 0,
+        "pulse_amplitude": 0.25,
+        "response": {
+          "pulse": [
+            0.25,
+            0.0
+          ],
+          "peak_velocity_rad_per_s": 1.40090555116985,
+          "peak_joint_displacement_rad": 0.050000005488989384,
+          "peak_cross_joint_displacement_rad": 0.00045890948472426807,
+          "peak_end_effector_displacement_m": 0.008997278461769884,
+          "settle_control_step_at_velocity_threshold": 8,
+          "final_velocity_norm_rad_per_s": 7.739952084376937e-43
+        }
+      },
+      {
+        "radius_m": 0.18,
+        "angle_degrees": 90.0,
+        "branch": "open",
+        "initial_q_rad": [
+          1.0195107283623654,
+          1.2309594173407747
+        ],
+        "pulse_joint": 0,
+        "pulse_amplitude": 1.0,
+        "response": {
+          "pulse": [
+            1.0,
+            0.0
+          ],
+          "peak_velocity_rad_per_s": 5.603560557500533,
+          "peak_joint_displacement_rad": 0.20000035025401358,
+          "peak_cross_joint_displacement_rad": 0.001972627976104979,
+          "peak_end_effector_displacement_m": 0.0359134271469744,
+          "settle_control_step_at_velocity_threshold": 9,
+          "final_velocity_norm_rad_per_s": 3.100368612265522e-42
+        }
+      },
+      {
+        "radius_m": 0.18,
+        "angle_degrees": 90.0,
+        "branch": "open",
+        "initial_q_rad": [
+          1.0195107283623654,
+          1.2309594173407747
+        ],
+        "pulse_joint": 1,
+        "pulse_amplitude": 0.25,
+        "response": {
+          "pulse": [
+            0.0,
+            0.25
+          ],
+          "peak_velocity_rad_per_s": 1.5199787276053793,
+          "peak_joint_displacement_rad": 0.050000247181997345,
+          "peak_cross_joint_displacement_rad": 0.00043763348353542675,
+          "peak_end_effector_displacement_m": 0.004999505172444031,
+          "settle_control_step_at_velocity_threshold": 7,
+          "final_velocity_norm_rad_per_s": 1.1074125221520535e-43
+        }
+      },
+      {
+        "radius_m": 0.18,
+        "angle_degrees": 90.0,
+        "branch": "open",
+        "initial_q_rad": [
+          1.0195107283623654,
+          1.2309594173407747
+        ],
+        "pulse_joint": 1,
+        "pulse_amplitude": 1.0,
+        "response": {
+          "pulse": [
+            0.0,
+            1.0
+          ],
+          "peak_velocity_rad_per_s": 6.079696670390888,
+          "peak_joint_displacement_rad": 0.2000036903253622,
+          "peak_cross_joint_displacement_rad": 0.0016298498303375375,
+          "peak_end_effector_displacement_m": 0.019967113564914825,
+          "settle_control_step_at_velocity_threshold": 8,
+          "final_velocity_norm_rad_per_s": 1.755328748228853e-43
+        }
+      },
+      {
+        "radius_m": 0.18,
+        "angle_degrees": 90.0,
+        "branch": "folded",
+        "initial_q_rad": [
+          2.1220819252274277,
+          -1.2309594173407747
+        ],
+        "pulse_joint": 0,
+        "pulse_amplitude": 0.25,
+        "response": {
+          "pulse": [
+            0.25,
+            0.0
+          ],
+          "peak_velocity_rad_per_s": 1.4009153532698428,
+          "peak_joint_displacement_rad": 0.05000000549967209,
+          "peak_cross_joint_displacement_rad": 0.00043605612913188985,
+          "peak_end_effector_displacement_m": 0.009000922265987157,
+          "settle_control_step_at_velocity_threshold": 8,
+          "final_velocity_norm_rad_per_s": 7.742234755912139e-43
+        }
+      },
+      {
+        "radius_m": 0.18,
+        "angle_degrees": 90.0,
+        "branch": "folded",
+        "initial_q_rad": [
+          2.1220819252274277,
+          -1.2309594173407747
+        ],
+        "pulse_joint": 0,
+        "pulse_amplitude": 1.0,
+        "response": {
+          "pulse": [
+            1.0,
+            0.0
+          ],
+          "peak_velocity_rad_per_s": 5.603717382924579,
+          "peak_joint_displacement_rad": 0.20000035298907007,
+          "peak_cross_joint_displacement_rad": 0.0016069797888873527,
+          "peak_end_effector_displacement_m": 0.0359714667297007,
+          "settle_control_step_at_velocity_threshold": 9,
+          "final_velocity_norm_rad_per_s": 3.104051010117619e-42
+        }
+      },
+      {
+        "radius_m": 0.18,
+        "angle_degrees": 90.0,
+        "branch": "folded",
+        "initial_q_rad": [
+          2.1220819252274277,
+          -1.2309594173407747
+        ],
+        "pulse_joint": 1,
+        "pulse_amplitude": 0.25,
+        "response": {
+          "pulse": [
+            0.0,
+            0.25
+          ],
+          "peak_velocity_rad_per_s": 1.520016256176056,
+          "peak_joint_displacement_rad": 0.04999974241818081,
+          "peak_cross_joint_displacement_rad": 0.0004572185112641236,
+          "peak_end_effector_displacement_m": 0.004999454916585456,
+          "settle_control_step_at_velocity_threshold": 7,
+          "final_velocity_norm_rad_per_s": 1.9815329110911302e-43
+        }
+      },
+      {
+        "radius_m": 0.18,
+        "angle_degrees": 90.0,
+        "branch": "folded",
+        "initial_q_rad": [
+          2.1220819252274277,
+          -1.2309594173407747
+        ],
+        "pulse_joint": 1,
+        "pulse_amplitude": 1.0,
+        "response": {
+          "pulse": [
+            0.0,
+            1.0
+          ],
+          "peak_velocity_rad_per_s": 6.080296003759101,
+          "peak_joint_displacement_rad": 0.19999564788746071,
+          "peak_cross_joint_displacement_rad": 0.0019424992753358516,
+          "peak_end_effector_displacement_m": 0.019966365443374354,
+          "settle_control_step_at_velocity_threshold": 8,
+          "final_velocity_norm_rad_per_s": 1.7836540435291886e-42
+        }
+      },
+      {
+        "radius_m": 0.2,
+        "angle_degrees": -180.0,
+        "branch": "open",
+        "initial_q_rad": [
+          2.751831920792318,
+          0.8632118900695407
+        ],
+        "pulse_joint": 0,
+        "pulse_amplitude": 0.25,
+        "response": {
+          "pulse": [
+            0.25,
+            0.0
+          ],
+          "peak_velocity_rad_per_s": 1.3866572886554962,
+          "peak_joint_displacement_rad": 0.05000000346697288,
+          "peak_cross_joint_displacement_rad": 0.0006031540491717724,
+          "peak_end_effector_displacement_m": 0.009997326206997283,
+          "settle_control_step_at_velocity_threshold": 8,
+          "final_velocity_norm_rad_per_s": 4.612633823648691e-42
+        }
+      },
+      {
+        "radius_m": 0.2,
+        "angle_degrees": -180.0,
+        "branch": "open",
+        "initial_q_rad": [
+          2.751831920792318,
+          0.8632118900695407
+        ],
+        "pulse_joint": 0,
+        "pulse_amplitude": 1.0,
+        "response": {
+          "pulse": [
+            1.0,
+            0.0
+          ],
+          "peak_velocity_rad_per_s": 5.546568005196688,
+          "peak_joint_displacement_rad": 0.20000022098667095,
+          "peak_cross_joint_displacement_rad": 0.002520724370173144,
+          "peak_end_effector_displacement_m": 0.039908443766287584,
+          "settle_control_step_at_velocity_threshold": 9,
+          "final_velocity_norm_rad_per_s": 1.8464900372005224e-41
+        }
+      },
+      {
+        "radius_m": 0.2,
+        "angle_degrees": -180.0,
+        "branch": "open",
+        "initial_q_rad": [
+          2.751831920792318,
+          0.8632118900695407
+        ],
+        "pulse_joint": 1,
+        "pulse_amplitude": 0.25,
+        "response": {
+          "pulse": [
+            0.0,
+            0.25
+          ],
+          "peak_velocity_rad_per_s": 1.5203925980130912,
+          "peak_joint_displacement_rad": 0.05000026645556003,
+          "peak_cross_joint_displacement_rad": 0.0005862281316497686,
+          "peak_end_effector_displacement_m": 0.0049995090960771515,
+          "settle_control_step_at_velocity_threshold": 7,
+          "final_velocity_norm_rad_per_s": 8.202551727141305e-43
+        }
+      },
+      {
+        "radius_m": 0.2,
+        "angle_degrees": -180.0,
+        "branch": "open",
+        "initial_q_rad": [
+          2.751831920792318,
+          0.8632118900695407
+        ],
+        "pulse_joint": 1,
+        "pulse_amplitude": 1.0,
+        "response": {
+          "pulse": [
+            0.0,
+            1.0
+          ],
+          "peak_velocity_rad_per_s": 6.081330667674862,
+          "peak_joint_displacement_rad": 0.20000414788618767,
+          "peak_cross_joint_displacement_rad": 0.0022453197078160514,
+          "peak_end_effector_displacement_m": 0.0199672822463008,
+          "settle_control_step_at_velocity_threshold": 8,
+          "final_velocity_norm_rad_per_s": 1.5614986288985922e-42
+        }
+      },
+      {
+        "radius_m": 0.2,
+        "angle_degrees": -180.0,
+        "branch": "folded",
+        "initial_q_rad": [
+          -2.7518319207923185,
+          -0.8632118900695407
+        ],
+        "pulse_joint": 0,
+        "pulse_amplitude": 0.25,
+        "response": {
+          "pulse": [
+            0.25,
+            0.0
+          ],
+          "peak_velocity_rad_per_s": 1.3866671992179034,
+          "peak_joint_displacement_rad": 0.05000000347615762,
+          "peak_cross_joint_displacement_rad": 0.0005850986261302094,
+          "peak_end_effector_displacement_m": 0.010000635262208955,
+          "settle_control_step_at_velocity_threshold": 8,
+          "final_velocity_norm_rad_per_s": 4.613810197961034e-42
+        }
+      },
+      {
+        "radius_m": 0.2,
+        "angle_degrees": -180.0,
+        "branch": "folded",
+        "initial_q_rad": [
+          -2.7518319207923185,
+          -0.8632118900695407
+        ],
+        "pulse_joint": 0,
+        "pulse_amplitude": 1.0,
+        "response": {
+          "pulse": [
+            1.0,
+            0.0
+          ],
+          "peak_velocity_rad_per_s": 5.546726566329173,
+          "peak_joint_displacement_rad": 0.2000002233391983,
+          "peak_cross_joint_displacement_rad": 0.0022318451112089965,
+          "peak_end_effector_displacement_m": 0.03996114709142584,
+          "settle_control_step_at_velocity_threshold": 9,
+          "final_velocity_norm_rad_per_s": 1.848386215179202e-41
+        }
+      },
+      {
+        "radius_m": 0.2,
+        "angle_degrees": -180.0,
+        "branch": "folded",
+        "initial_q_rad": [
+          -2.7518319207923185,
+          -0.8632118900695407
+        ],
+        "pulse_joint": 1,
+        "pulse_amplitude": 0.25,
+        "response": {
+          "pulse": [
+            0.0,
+            0.25
+          ],
+          "peak_velocity_rad_per_s": 1.5204321174657436,
+          "peak_joint_displacement_rad": 0.049999729795114044,
+          "peak_cross_joint_displacement_rad": 0.000601821575256789,
+          "peak_end_effector_displacement_m": 0.0049994556840874714,
+          "settle_control_step_at_velocity_threshold": 7,
+          "final_velocity_norm_rad_per_s": 1.279124164422894e-42
+        }
+      },
+      {
+        "radius_m": 0.2,
+        "angle_degrees": -180.0,
+        "branch": "folded",
+        "initial_q_rad": [
+          -2.7518319207923185,
+          -0.8632118900695407
+        ],
+        "pulse_joint": 1,
+        "pulse_amplitude": 1.0,
+        "response": {
+          "pulse": [
+            0.0,
+            1.0
+          ],
+          "peak_velocity_rad_per_s": 6.081961605755569,
+          "peak_joint_displacement_rad": 0.19999561326171086,
+          "peak_cross_joint_displacement_rad": 0.002494277529359934,
+          "peak_end_effector_displacement_m": 0.019966493446229455,
+          "settle_control_step_at_velocity_threshold": 8,
+          "final_velocity_norm_rad_per_s": 9.166963342758351e-42
+        }
+      },
+      {
+        "radius_m": 0.2,
+        "angle_degrees": -90.0,
+        "branch": "open",
+        "initial_q_rad": [
+          -1.9605570595923711,
+          0.8632118900695407
+        ],
+        "pulse_joint": 0,
+        "pulse_amplitude": 0.25,
+        "response": {
+          "pulse": [
+            0.25,
+            0.0
+          ],
+          "peak_velocity_rad_per_s": 1.3866572886554962,
+          "peak_joint_displacement_rad": 0.050000003466971546,
+          "peak_cross_joint_displacement_rad": 0.0006031540491717724,
+          "peak_end_effector_displacement_m": 0.009997326206997047,
+          "settle_control_step_at_velocity_threshold": 8,
+          "final_velocity_norm_rad_per_s": 4.612633823648691e-42
+        }
+      },
+      {
+        "radius_m": 0.2,
+        "angle_degrees": -90.0,
+        "branch": "open",
+        "initial_q_rad": [
+          -1.9605570595923711,
+          0.8632118900695407
+        ],
+        "pulse_joint": 0,
+        "pulse_amplitude": 1.0,
+        "response": {
+          "pulse": [
+            1.0,
+            0.0
+          ],
+          "peak_velocity_rad_per_s": 5.546568005196688,
+          "peak_joint_displacement_rad": 0.20000022098667428,
+          "peak_cross_joint_displacement_rad": 0.002520724370173144,
+          "peak_end_effector_displacement_m": 0.03990844376628824,
+          "settle_control_step_at_velocity_threshold": 9,
+          "final_velocity_norm_rad_per_s": 1.8464900372005224e-41
+        }
+      },
+      {
+        "radius_m": 0.2,
+        "angle_degrees": -90.0,
+        "branch": "open",
+        "initial_q_rad": [
+          -1.9605570595923711,
+          0.8632118900695407
+        ],
+        "pulse_joint": 1,
+        "pulse_amplitude": 0.25,
+        "response": {
+          "pulse": [
+            0.0,
+            0.25
+          ],
+          "peak_velocity_rad_per_s": 1.5203925980130912,
+          "peak_joint_displacement_rad": 0.05000026645556003,
+          "peak_cross_joint_displacement_rad": 0.0005862281316499907,
+          "peak_end_effector_displacement_m": 0.004999509096077018,
+          "settle_control_step_at_velocity_threshold": 7,
+          "final_velocity_norm_rad_per_s": 8.202551727141305e-43
+        }
+      },
+      {
+        "radius_m": 0.2,
+        "angle_degrees": -90.0,
+        "branch": "open",
+        "initial_q_rad": [
+          -1.9605570595923711,
+          0.8632118900695407
+        ],
+        "pulse_joint": 1,
+        "pulse_amplitude": 1.0,
+        "response": {
+          "pulse": [
+            0.0,
+            1.0
+          ],
+          "peak_velocity_rad_per_s": 6.081330667674862,
+          "peak_joint_displacement_rad": 0.20000414788618767,
+          "peak_cross_joint_displacement_rad": 0.0022453197078160514,
+          "peak_end_effector_displacement_m": 0.019967282246301465,
+          "settle_control_step_at_velocity_threshold": 8,
+          "final_velocity_norm_rad_per_s": 1.5614986288985922e-42
+        }
+      },
+      {
+        "radius_m": 0.2,
+        "angle_degrees": -90.0,
+        "branch": "folded",
+        "initial_q_rad": [
+          -1.181035593997422,
+          -0.8632118900695407
+        ],
+        "pulse_joint": 0,
+        "pulse_amplitude": 0.25,
+        "response": {
+          "pulse": [
+            0.25,
+            0.0
+          ],
+          "peak_velocity_rad_per_s": 1.3866671992179034,
+          "peak_joint_displacement_rad": 0.05000000347616272,
+          "peak_cross_joint_displacement_rad": 0.0005850986261302094,
+          "peak_end_effector_displacement_m": 0.01000063526221001,
+          "settle_control_step_at_velocity_threshold": 8,
+          "final_velocity_norm_rad_per_s": 4.613810197961055e-42
+        }
+      },
+      {
+        "radius_m": 0.2,
+        "angle_degrees": -90.0,
+        "branch": "folded",
+        "initial_q_rad": [
+          -1.181035593997422,
+          -0.8632118900695407
+        ],
+        "pulse_joint": 0,
+        "pulse_amplitude": 1.0,
+        "response": {
+          "pulse": [
+            1.0,
+            0.0
+          ],
+          "peak_velocity_rad_per_s": 5.546726566329174,
+          "peak_joint_displacement_rad": 0.2000002233391962,
+          "peak_cross_joint_displacement_rad": 0.0022318451112089965,
+          "peak_end_effector_displacement_m": 0.039961147091425446,
+          "settle_control_step_at_velocity_threshold": 9,
+          "final_velocity_norm_rad_per_s": 1.848386215179202e-41
+        }
+      },
+      {
+        "radius_m": 0.2,
+        "angle_degrees": -90.0,
+        "branch": "folded",
+        "initial_q_rad": [
+          -1.181035593997422,
+          -0.8632118900695407
+        ],
+        "pulse_joint": 1,
+        "pulse_amplitude": 0.25,
+        "response": {
+          "pulse": [
+            0.0,
+            0.25
+          ],
+          "peak_velocity_rad_per_s": 1.5204321174657436,
+          "peak_joint_displacement_rad": 0.049999729795114044,
+          "peak_cross_joint_displacement_rad": 0.000601821575256789,
+          "peak_end_effector_displacement_m": 0.004999455684087145,
+          "settle_control_step_at_velocity_threshold": 7,
+          "final_velocity_norm_rad_per_s": 1.2791241644228905e-42
+        }
+      },
+      {
+        "radius_m": 0.2,
+        "angle_degrees": -90.0,
+        "branch": "folded",
+        "initial_q_rad": [
+          -1.181035593997422,
+          -0.8632118900695407
+        ],
+        "pulse_joint": 1,
+        "pulse_amplitude": 1.0,
+        "response": {
+          "pulse": [
+            0.0,
+            1.0
+          ],
+          "peak_velocity_rad_per_s": 6.081961605755569,
+          "peak_joint_displacement_rad": 0.19999561326171086,
+          "peak_cross_joint_displacement_rad": 0.002494277529361044,
+          "peak_end_effector_displacement_m": 0.019966493446230287,
+          "settle_control_step_at_velocity_threshold": 8,
+          "final_velocity_norm_rad_per_s": 9.166963342758604e-42
+        }
+      },
+      {
+        "radius_m": 0.2,
+        "angle_degrees": 0.0,
+        "branch": "open",
+        "initial_q_rad": [
+          -0.3897607327974746,
+          0.8632118900695407
+        ],
+        "pulse_joint": 0,
+        "pulse_amplitude": 0.25,
+        "response": {
+          "pulse": [
+            0.25,
+            0.0
+          ],
+          "peak_velocity_rad_per_s": 1.3866572886554962,
+          "peak_joint_displacement_rad": 0.050000003466973156,
+          "peak_cross_joint_displacement_rad": 0.0006031540491717724,
+          "peak_end_effector_displacement_m": 0.009997326206997345,
+          "settle_control_step_at_velocity_threshold": 8,
+          "final_velocity_norm_rad_per_s": 4.612633823648688e-42
+        }
+      },
+      {
+        "radius_m": 0.2,
+        "angle_degrees": 0.0,
+        "branch": "open",
+        "initial_q_rad": [
+          -0.3897607327974746,
+          0.8632118900695407
+        ],
+        "pulse_joint": 0,
+        "pulse_amplitude": 1.0,
+        "response": {
+          "pulse": [
+            1.0,
+            0.0
+          ],
+          "peak_velocity_rad_per_s": 5.546568005196688,
+          "peak_joint_displacement_rad": 0.2000002209866749,
+          "peak_cross_joint_displacement_rad": 0.002520724370173144,
+          "peak_end_effector_displacement_m": 0.03990844376628835,
+          "settle_control_step_at_velocity_threshold": 9,
+          "final_velocity_norm_rad_per_s": 1.8464900372005224e-41
+        }
+      },
+      {
+        "radius_m": 0.2,
+        "angle_degrees": 0.0,
+        "branch": "open",
+        "initial_q_rad": [
+          -0.3897607327974746,
+          0.8632118900695407
+        ],
+        "pulse_joint": 1,
+        "pulse_amplitude": 0.25,
+        "response": {
+          "pulse": [
+            0.0,
+            0.25
+          ],
+          "peak_velocity_rad_per_s": 1.5203925980130912,
+          "peak_joint_displacement_rad": 0.05000026645556003,
+          "peak_cross_joint_displacement_rad": 0.0005862281316494911,
+          "peak_end_effector_displacement_m": 0.004999509096077136,
+          "settle_control_step_at_velocity_threshold": 7,
+          "final_velocity_norm_rad_per_s": 8.202551727141281e-43
+        }
+      },
+      {
+        "radius_m": 0.2,
+        "angle_degrees": 0.0,
+        "branch": "open",
+        "initial_q_rad": [
+          -0.3897607327974746,
+          0.8632118900695407
+        ],
+        "pulse_joint": 1,
+        "pulse_amplitude": 1.0,
+        "response": {
+          "pulse": [
+            0.0,
+            1.0
+          ],
+          "peak_velocity_rad_per_s": 6.081330667674862,
+          "peak_joint_displacement_rad": 0.20000414788618767,
+          "peak_cross_joint_displacement_rad": 0.002245319707816107,
+          "peak_end_effector_displacement_m": 0.01996728224630169,
+          "settle_control_step_at_velocity_threshold": 8,
+          "final_velocity_norm_rad_per_s": 1.5614986288985938e-42
+        }
+      },
+      {
+        "radius_m": 0.2,
+        "angle_degrees": 0.0,
+        "branch": "folded",
+        "initial_q_rad": [
+          0.3897607327974746,
+          -0.8632118900695407
+        ],
+        "pulse_joint": 0,
+        "pulse_amplitude": 0.25,
+        "response": {
+          "pulse": [
+            0.25,
+            0.0
+          ],
+          "peak_velocity_rad_per_s": 1.3866671992179034,
+          "peak_joint_displacement_rad": 0.05000000347616311,
+          "peak_cross_joint_displacement_rad": 0.0005850986261302094,
+          "peak_end_effector_displacement_m": 0.010000635262210067,
+          "settle_control_step_at_velocity_threshold": 8,
+          "final_velocity_norm_rad_per_s": 4.613810197961042e-42
+        }
+      },
+      {
+        "radius_m": 0.2,
+        "angle_degrees": 0.0,
+        "branch": "folded",
+        "initial_q_rad": [
+          0.3897607327974746,
+          -0.8632118900695407
+        ],
+        "pulse_joint": 0,
+        "pulse_amplitude": 1.0,
+        "response": {
+          "pulse": [
+            1.0,
+            0.0
+          ],
+          "peak_velocity_rad_per_s": 5.546726566329173,
+          "peak_joint_displacement_rad": 0.2000002233391962,
+          "peak_cross_joint_displacement_rad": 0.0022318451112089965,
+          "peak_end_effector_displacement_m": 0.039961147091425425,
+          "settle_control_step_at_velocity_threshold": 9,
+          "final_velocity_norm_rad_per_s": 1.848386215179202e-41
+        }
+      },
+      {
+        "radius_m": 0.2,
+        "angle_degrees": 0.0,
+        "branch": "folded",
+        "initial_q_rad": [
+          0.3897607327974746,
+          -0.8632118900695407
+        ],
+        "pulse_joint": 1,
+        "pulse_amplitude": 0.25,
+        "response": {
+          "pulse": [
+            0.0,
+            0.25
+          ],
+          "peak_velocity_rad_per_s": 1.5204321174657436,
+          "peak_joint_displacement_rad": 0.049999729795114044,
+          "peak_cross_joint_displacement_rad": 0.000601821575256789,
+          "peak_end_effector_displacement_m": 0.004999455684087364,
+          "settle_control_step_at_velocity_threshold": 7,
+          "final_velocity_norm_rad_per_s": 1.2791241644228905e-42
+        }
+      },
+      {
+        "radius_m": 0.2,
+        "angle_degrees": 0.0,
+        "branch": "folded",
+        "initial_q_rad": [
+          0.3897607327974746,
+          -0.8632118900695407
+        ],
+        "pulse_joint": 1,
+        "pulse_amplitude": 1.0,
+        "response": {
+          "pulse": [
+            0.0,
+            1.0
+          ],
+          "peak_velocity_rad_per_s": 6.081961605755569,
+          "peak_joint_displacement_rad": 0.19999561326171086,
+          "peak_cross_joint_displacement_rad": 0.002494277529360711,
+          "peak_end_effector_displacement_m": 0.019966493446230024,
+          "settle_control_step_at_velocity_threshold": 8,
+          "final_velocity_norm_rad_per_s": 9.166963342758383e-42
+        }
+      },
+      {
+        "radius_m": 0.2,
+        "angle_degrees": 90.0,
+        "branch": "open",
+        "initial_q_rad": [
+          1.1810355939974215,
+          0.8632118900695407
+        ],
+        "pulse_joint": 0,
+        "pulse_amplitude": 0.25,
+        "response": {
+          "pulse": [
+            0.25,
+            0.0
+          ],
+          "peak_velocity_rad_per_s": 1.3866572886554962,
+          "peak_joint_displacement_rad": 0.050000003466971546,
+          "peak_cross_joint_displacement_rad": 0.0006031540491717724,
+          "peak_end_effector_displacement_m": 0.00999732620699702,
+          "settle_control_step_at_velocity_threshold": 8,
+          "final_velocity_norm_rad_per_s": 4.6126338236486873e-42
+        }
+      },
+      {
+        "radius_m": 0.2,
+        "angle_degrees": 90.0,
+        "branch": "open",
+        "initial_q_rad": [
+          1.1810355939974215,
+          0.8632118900695407
+        ],
+        "pulse_joint": 0,
+        "pulse_amplitude": 1.0,
+        "response": {
+          "pulse": [
+            1.0,
+            0.0
+          ],
+          "peak_velocity_rad_per_s": 5.546568005196688,
+          "peak_joint_displacement_rad": 0.20000022098667428,
+          "peak_cross_joint_displacement_rad": 0.002520724370173144,
+          "peak_end_effector_displacement_m": 0.039908443766288236,
+          "settle_control_step_at_velocity_threshold": 9,
+          "final_velocity_norm_rad_per_s": 1.8464900372005224e-41
+        }
+      },
+      {
+        "radius_m": 0.2,
+        "angle_degrees": 90.0,
+        "branch": "open",
+        "initial_q_rad": [
+          1.1810355939974215,
+          0.8632118900695407
+        ],
+        "pulse_joint": 1,
+        "pulse_amplitude": 0.25,
+        "response": {
+          "pulse": [
+            0.0,
+            0.25
+          ],
+          "peak_velocity_rad_per_s": 1.5203925980130912,
+          "peak_joint_displacement_rad": 0.05000026645556003,
+          "peak_cross_joint_displacement_rad": 0.0005862281316499907,
+          "peak_end_effector_displacement_m": 0.004999509096076986,
+          "settle_control_step_at_velocity_threshold": 7,
+          "final_velocity_norm_rad_per_s": 8.202551727141305e-43
+        }
+      },
+      {
+        "radius_m": 0.2,
+        "angle_degrees": 90.0,
+        "branch": "open",
+        "initial_q_rad": [
+          1.1810355939974215,
+          0.8632118900695407
+        ],
+        "pulse_joint": 1,
+        "pulse_amplitude": 1.0,
+        "response": {
+          "pulse": [
+            0.0,
+            1.0
+          ],
+          "peak_velocity_rad_per_s": 6.081330667674862,
+          "peak_joint_displacement_rad": 0.20000414788618767,
+          "peak_cross_joint_displacement_rad": 0.0022453197078160514,
+          "peak_end_effector_displacement_m": 0.019967282246301458,
+          "settle_control_step_at_velocity_threshold": 8,
+          "final_velocity_norm_rad_per_s": 1.5614986288985935e-42
+        }
+      },
+      {
+        "radius_m": 0.2,
+        "angle_degrees": 90.0,
+        "branch": "folded",
+        "initial_q_rad": [
+          1.9605570595923716,
+          -0.8632118900695407
+        ],
+        "pulse_joint": 0,
+        "pulse_amplitude": 0.25,
+        "response": {
+          "pulse": [
+            0.25,
+            0.0
+          ],
+          "peak_velocity_rad_per_s": 1.3866671992179034,
+          "peak_joint_displacement_rad": 0.050000003476156726,
+          "peak_cross_joint_displacement_rad": 0.0005850986261302094,
+          "peak_end_effector_displacement_m": 0.010000635262208754,
+          "settle_control_step_at_velocity_threshold": 8,
+          "final_velocity_norm_rad_per_s": 4.613810197961034e-42
+        }
+      },
+      {
+        "radius_m": 0.2,
+        "angle_degrees": 90.0,
+        "branch": "folded",
+        "initial_q_rad": [
+          1.9605570595923716,
+          -0.8632118900695407
+        ],
+        "pulse_joint": 0,
+        "pulse_amplitude": 1.0,
+        "response": {
+          "pulse": [
+            1.0,
+            0.0
+          ],
+          "peak_velocity_rad_per_s": 5.546726566329173,
+          "peak_joint_displacement_rad": 0.20000022333919787,
+          "peak_cross_joint_displacement_rad": 0.0022318451112089965,
+          "peak_end_effector_displacement_m": 0.039961147091425765,
+          "settle_control_step_at_velocity_threshold": 9,
+          "final_velocity_norm_rad_per_s": 1.848386215179168e-41
+        }
+      },
+      {
+        "radius_m": 0.2,
+        "angle_degrees": 90.0,
+        "branch": "folded",
+        "initial_q_rad": [
+          1.9605570595923716,
+          -0.8632118900695407
+        ],
+        "pulse_joint": 1,
+        "pulse_amplitude": 0.25,
+        "response": {
+          "pulse": [
+            0.0,
+            0.25
+          ],
+          "peak_velocity_rad_per_s": 1.5204321174657436,
+          "peak_joint_displacement_rad": 0.049999729795114044,
+          "peak_cross_joint_displacement_rad": 0.000601821575256789,
+          "peak_end_effector_displacement_m": 0.004999455684087102,
+          "settle_control_step_at_velocity_threshold": 7,
+          "final_velocity_norm_rad_per_s": 1.2791241644228905e-42
+        }
+      },
+      {
+        "radius_m": 0.2,
+        "angle_degrees": 90.0,
+        "branch": "folded",
+        "initial_q_rad": [
+          1.9605570595923716,
+          -0.8632118900695407
+        ],
+        "pulse_joint": 1,
+        "pulse_amplitude": 1.0,
+        "response": {
+          "pulse": [
+            0.0,
+            1.0
+          ],
+          "peak_velocity_rad_per_s": 6.081961605755569,
+          "peak_joint_displacement_rad": 0.19999561326171086,
+          "peak_cross_joint_displacement_rad": 0.002494277529361044,
+          "peak_end_effector_displacement_m": 0.01996649344623028,
+          "settle_control_step_at_velocity_threshold": 8,
+          "final_velocity_norm_rad_per_s": 9.166963342758608e-42
+        }
+      }
+    ]
+  }
+}
