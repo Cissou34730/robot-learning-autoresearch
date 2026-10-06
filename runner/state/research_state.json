@@ -1,5 +1,13 @@
 {
-  "active_inquiry": null,
+  "active_inquiry": {
+    "closure_condition": "After one 120000-step training run and paired 160-episode development measurement against T1:checkpoint-120832, support the inquiry only if success improves without a broad regression, with a specific reduction in no-first-reach failures in the previously failing -150 to -120 degree sector and corresponding improvement in first-reach timing or early approach errors. If no-first-reach failures persist with comparable transient signatures, or if the intervention degrades both-feasible targets, close it unsupported and redirect to a different control or policy-capacity mechanism. If no-first-reach failures fall but post-entry short holds become dominant, redirect to hold stabilization and sampled-boundary behavior.",
+    "goal_connection": "The unchanged T1 baseline reaches 151/160, leaving a nine-episode gap to the human goal. M6 shows seven failures with no first reach and two post-entry interruptions, all in folded-only-feasible negative-angle sectors; failures also show larger early tangential error, persistent command saturation, and positive-elbow overshoot than successful episodes. A training-distribution intervention that preserves the baseline observation tests whether the missing capability is learned branch-dependent approach dynamics rather than an observation representation problem, while directly targeting the episodes that prevent uninterrupted success.",
+    "id": "I3",
+    "opened_in_session": "S7",
+    "question": "Can targeted training exposure to folded-only-feasible approach geometries improve the baseline policy's branch-dependent approach without changing the observation or official task semantics?",
+    "rationale": "M6 resolved the immediate failure-class uncertainty enough to justify an intervention: seven of nine failures lacked first reach and the remaining two failed immediately after entry, so hold stabilization alone is not the dominant development gap. The failures are all folded-only-feasible and exhibit a distinct saturated, overshooting approach trajectory. I2 showed that appending analytic branch margins and feasibility flags caused a broad reach regression, so this inquiry deliberately keeps the baseline observation and changes only training exposure to difficult branch-conditioned geometries. The result will discriminate whether the policy lacks experience with the feasible folded approach or whether the failure persists despite relevant exposure.",
+    "reframes": []
+  },
   "campaign": {
     "base_commit": "e059e62856966cf4051a7e8d127b164be07249ef",
     "id": "9fa1f256-b083-45b2-8127-d7e4e00728b8",
@@ -1650,8 +1658,8 @@
     }
   },
   "counters": {
-    "event": 10,
-    "inquiry": 2,
+    "event": 11,
+    "inquiry": 3,
     "measurement": 6,
     "session": 7,
     "training": 2
@@ -4023,9 +4031,69 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": "M5"
+    },
+    {
+      "completed_at": "2026-10-06T05:53:48Z",
+      "error": null,
+      "id": "E11",
+      "inquiry_id": "I3",
+      "kind": "inquiry",
+      "request": {
+        "action": "open",
+        "closure_condition": "After one 120000-step training run and paired 160-episode development measurement against T1:checkpoint-120832, support the inquiry only if success improves without a broad regression, with a specific reduction in no-first-reach failures in the previously failing -150 to -120 degree sector and corresponding improvement in first-reach timing or early approach errors. If no-first-reach failures persist with comparable transient signatures, or if the intervention degrades both-feasible targets, close it unsupported and redirect to a different control or policy-capacity mechanism. If no-first-reach failures fall but post-entry short holds become dominant, redirect to hold stabilization and sampled-boundary behavior.",
+        "goal_connection": "The unchanged T1 baseline reaches 151/160, leaving a nine-episode gap to the human goal. M6 shows seven failures with no first reach and two post-entry interruptions, all in folded-only-feasible negative-angle sectors; failures also show larger early tangential error, persistent command saturation, and positive-elbow overshoot than successful episodes. A training-distribution intervention that preserves the baseline observation tests whether the missing capability is learned branch-dependent approach dynamics rather than an observation representation problem, while directly targeting the episodes that prevent uninterrupted success.",
+        "question": "Can targeted training exposure to folded-only-feasible approach geometries improve the baseline policy's branch-dependent approach without changing the observation or official task semantics?",
+        "rationale": "M6 resolved the immediate failure-class uncertainty enough to justify an intervention: seven of nine failures lacked first reach and the remaining two failed immediately after entry, so hold stabilization alone is not the dominant development gap. The failures are all folded-only-feasible and exhibit a distinct saturated, overshooting approach trajectory. I2 showed that appending analytic branch margins and feasibility flags caused a broad reach regression, so this inquiry deliberately keeps the baseline observation and changes only training exposure to difficult branch-conditioned geometries. The result will discriminate whether the policy lacks experience with the feasible folded approach or whether the failure persists despite relevant exposure."
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I3",
+        "status": "completed"
+      },
+      "session_id": "S7",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "open",
+        "inquiry": {
+          "closure_condition": "After one 120000-step training run and paired 160-episode development measurement against T1:checkpoint-120832, support the inquiry only if success improves without a broad regression, with a specific reduction in no-first-reach failures in the previously failing -150 to -120 degree sector and corresponding improvement in first-reach timing or early approach errors. If no-first-reach failures persist with comparable transient signatures, or if the intervention degrades both-feasible targets, close it unsupported and redirect to a different control or policy-capacity mechanism. If no-first-reach failures fall but post-entry short holds become dominant, redirect to hold stabilization and sampled-boundary behavior.",
+          "goal_connection": "The unchanged T1 baseline reaches 151/160, leaving a nine-episode gap to the human goal. M6 shows seven failures with no first reach and two post-entry interruptions, all in folded-only-feasible negative-angle sectors; failures also show larger early tangential error, persistent command saturation, and positive-elbow overshoot than successful episodes. A training-distribution intervention that preserves the baseline observation tests whether the missing capability is learned branch-dependent approach dynamics rather than an observation representation problem, while directly targeting the episodes that prevent uninterrupted success.",
+          "id": "I3",
+          "opened_in_session": "S7",
+          "question": "Can targeted training exposure to folded-only-feasible approach geometries improve the baseline policy's branch-dependent approach without changing the observation or official task semantics?",
+          "rationale": "M6 resolved the immediate failure-class uncertainty enough to justify an intervention: seven of nine failures lacked first reach and the remaining two failed immediately after entry, so hold stabilization alone is not the dominant development gap. The failures are all folded-only-feasible and exhibit a distinct saturated, overshooting approach trajectory. I2 showed that appending analytic branch margins and feasibility flags caused a broad reach regression, so this inquiry deliberately keeps the baseline observation and changes only training exposure to difficult branch-conditioned geometries. The result will discriminate whether the policy lacks experience with the feasible folded approach or whether the failure persists despite relevant exposure.",
+          "reframes": []
+        }
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I3",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E11",
+    "inquiry_id": null,
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "open",
+        "closure_condition": "After one 120000-step training run and paired 160-episode development measurement against T1:checkpoint-120832, support the inquiry only if success improves without a broad regression, with a specific reduction in no-first-reach failures in the previously failing -150 to -120 degree sector and corresponding improvement in first-reach timing or early approach errors. If no-first-reach failures persist with comparable transient signatures, or if the intervention degrades both-feasible targets, close it unsupported and redirect to a different control or policy-capacity mechanism. If no-first-reach failures fall but post-entry short holds become dominant, redirect to hold stabilization and sampled-boundary behavior.",
+        "goal_connection": "The unchanged T1 baseline reaches 151/160, leaving a nine-episode gap to the human goal. M6 shows seven failures with no first reach and two post-entry interruptions, all in folded-only-feasible negative-angle sectors; failures also show larger early tangential error, persistent command saturation, and positive-elbow overshoot than successful episodes. A training-distribution intervention that preserves the baseline observation tests whether the missing capability is learned branch-dependent approach dynamics rather than an observation representation problem, while directly targeting the episodes that prevent uninterrupted success.",
+        "question": "Can targeted training exposure to folded-only-feasible approach geometries improve the baseline policy's branch-dependent approach without changing the observation or official task semantics?",
+        "rationale": "M6 resolved the immediate failure-class uncertainty enough to justify an intervention: seven of nine failures lacked first reach and the remaining two failed immediately after entry, so hold stabilization alone is not the dominant development gap. The failures are all folded-only-feasible and exhibit a distinct saturated, overshooting approach trajectory. I2 showed that appending analytic branch margins and feasibility flags caused a broad reach regression, so this inquiry deliberately keeps the baseline observation and changes only training exposure to difficult branch-conditioned geometries. The result will discriminate whether the policy lacks experience with the feasible folded approach or whether the failure persists despite relevant exposure."
+      }
+    },
+    "request_fingerprint": "f478016c66e71103ecca90be8935175e5659a8d074030a322670e1b10d91c13a",
+    "session_id": "S7",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T1:checkpoint-120832 remains the strongest measured development reference at 151/160, but no candidate is assigned a working, best-known, or retained role. T2:checkpoint-120832 is rejected as an intervention candidate because it achieved 39/160 and produced a broad no-first-reach regression.",
     "completed_operations": [
@@ -4074,7 +4142,8 @@
     "kind": "goal_review",
     "objective": "Reassess the scientific direction toward the human goal using completed evidence. You may request measurements to resolve an uncertainty or develop the method before committing to an inquiry. Decide whether to request official assessment or open one bounded goal-linked inquiry.",
     "operation_ids": [
-      "M6"
+      "M6",
+      "E11"
     ],
     "scientific_parent_commit": "35963be1de3c02a0a532ed8ac416d14c2ebeb2f1"
   },
