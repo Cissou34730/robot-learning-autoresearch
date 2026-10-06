@@ -8,7 +8,7 @@ import numpy as np
 
 from contracts.robots.two_joint_arm import FOREARM_LENGTH, UPPER_ARM_LENGTH
 
-OBSERVATION_SIZE = 13
+OBSERVATION_SIZE = 9
 
 
 def reach_observation(data) -> np.ndarray:
@@ -34,10 +34,23 @@ def reach_observation(data) -> np.ndarray:
     elbow_folded = -elbow_open
     shoulder_folded = shoulder_for_elbow(elbow_folded)
     joint_limit = np.pi * 170.0 / 180.0
-    branch_feasibility = [
-        float(np.all(np.abs([shoulder_open, elbow_open]) <= joint_limit)),
-        float(np.all(np.abs([shoulder_folded, elbow_folded]) <= joint_limit)),
+    branch_targets = [
+        np.array([shoulder_open, elbow_open], dtype=np.float64),
+        np.array([shoulder_folded, elbow_folded], dtype=np.float64),
     ]
+    branch_margins = [
+        float(np.min(joint_limit - np.abs(target))) for target in branch_targets
+    ]
+    feasible_branches = [
+        index
+        for index, margin in enumerate(branch_margins)
+        if margin >= 0.0
+    ]
+    selected_branch = max(
+        feasible_branches or range(len(branch_targets)),
+        key=lambda index: branch_margins[index],
+    )
+    selected_target = branch_targets[selected_branch]
     end_effector = data.site("end_effector").xpos.copy()
     return np.concatenate(
         [
@@ -45,11 +58,8 @@ def reach_observation(data) -> np.ndarray:
             data.qvel,
             end_effector - data.mocap_pos[0],
             [
-                wrap_to_pi(shoulder_open - float(data.qpos[0])),
-                wrap_to_pi(elbow_open - float(data.qpos[1])),
-                wrap_to_pi(shoulder_folded - float(data.qpos[0])),
-                wrap_to_pi(elbow_folded - float(data.qpos[1])),
+                wrap_to_pi(float(selected_target[0]) - float(data.qpos[0])),
+                wrap_to_pi(float(selected_target[1]) - float(data.qpos[1])),
             ],
-            branch_feasibility,
         ]
     ).astype(np.float32)
