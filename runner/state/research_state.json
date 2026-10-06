@@ -1818,38 +1818,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I1",
-        "outcome": "I1 is resolved in favor of a dominant angular-sector branch-selection and shoulder-limit mechanism for the shared baseline failures. Both late candidates reproduce the same nine failures; six of the 20 episodes in the -150 to -120 degree sector fail, versus at most three failures in any radius bin, and all nine shared failures have an analytically infeasible positive-elbow branch while the folded branch remains feasible. The evidence does not establish that post-entry stabilization, sampled-boundary behavior, straight-reset transients, or inner-radius transfer are irrelevant.",
-        "reason": "M2 satisfied the closure condition using both late M1 candidates and the shared episode panel: it reported radius- and angle-conditioned success, first-reach presence, maximum hold, interruption classes, and analytic IK joint-limit margins. The 9/9 folded-only-feasible pattern and sector concentration support a limit-aware feasible-branch intervention rather than a general hold-stabilization intervention. The next bounded action should test one such intervention on a fresh 120000-step run without changing the official task, while retaining diagnostics that can show whether the six no-first-reach failures persist or shift to post-entry short holds."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I1",
-        "outcome": "I1 is resolved in favor of a dominant angular-sector branch-selection and shoulder-limit mechanism for the shared baseline failures. Both late candidates reproduce the same nine failures; six of the 20 episodes in the -150 to -120 degree sector fail, versus at most three failures in any radius bin, and all nine shared failures have an analytically infeasible positive-elbow branch while the folded branch remains feasible. The evidence does not establish that post-entry stabilization, sampled-boundary behavior, straight-reset transients, or inner-radius transfer are irrelevant.",
-        "reason": "M2 satisfied the closure condition using both late M1 candidates and the shared episode panel: it reported radius- and angle-conditioned success, first-reach presence, maximum hold, interruption classes, and analytic IK joint-limit margins. The 9/9 folded-only-feasible pattern and sector concentration support a limit-aware feasible-branch intervention rather than a general hold-stabilization intervention. The next bounded action should test one such intervention on a fresh 120000-step run without changing the official task, while retaining diagnostics that can show whether the six no-first-reach failures persist or shift to post-entry short holds.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E5",
-    "inquiry_id": "I1",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "I1 is resolved in favor of a dominant angular-sector branch-selection and shoulder-limit mechanism for the shared baseline failures. Both late candidates reproduce the same nine failures; six of the 20 episodes in the -150 to -120 degree sector fail, versus at most three failures in any radius bin, and all nine shared failures have an analytically infeasible positive-elbow branch while the folded branch remains feasible. The evidence does not establish that post-entry stabilization, sampled-boundary behavior, straight-reset transients, or inner-radius transfer are irrelevant.",
-        "reason": "M2 satisfied the closure condition using both late M1 candidates and the shared episode panel: it reported radius- and angle-conditioned success, first-reach presence, maximum hold, interruption classes, and analytic IK joint-limit margins. The 9/9 folded-only-feasible pattern and sector concentration support a limit-aware feasible-branch intervention rather than a general hold-stabilization intervention. The next bounded action should test one such intervention on a fresh 120000-step run without changing the official task, while retaining diagnostics that can show whether the six no-first-reach failures persist or shift to post-entry short holds."
-      }
-    },
-    "request_fingerprint": "e71be606d0e1387ca6c66339d7d8a71cc0153dac4686884fecb868e2b0b84ad1",
-    "session_id": "S4",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T1 produced archived candidates. M1 and M2 show identical development outcomes and mechanism for T1:checkpoint-100352 and T1:checkpoint-120832; neither is assigned a best-known role because no candidate has yet been tested after the scientifically justified intervention.",
     "completed_operations": [
