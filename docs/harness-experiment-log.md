@@ -455,7 +455,7 @@ its scientific breadth or achieve its result.
 | Scientific-exhaustion / no-credible-route outcome | **Removed from future requests and instructions.** Obsolete pending execution is rejected. Historical E19 remains readable and unchanged. Directly affected checks pass; scientific effect remains unassessed. |
 | Fifteen-inquiry cap | **Decoupled; value unchanged.** The launcher pauses after active work is checkpointed, without a terminal state. Measurements keep their permission. Only an explicit maintainer increase at that paused boundary resumes execution. Later cap removal remains pending. E19 at four of fifteen inquiries was not cap-triggered. |
 | Publication/recovery, maintainer training allocation, and goal-review role availability | Implemented; not active repair items. |
-| Independent prompt-stack review R1-R8 | **R1 and R2 implemented as separate bounded changes.** R1 carries the PI-selected scientific-model synthesis into startup. R2 removes the generic policy destination from the shared persona and places scientific context before operational options in ordinary PI sessions while preserving their persona-first rule. R3-R8 remain unimplemented and separately scoped; none is a campaign operation or Runner scientific gate. |
+| Independent prompt-stack review R1-R8 | **R1 and R2 implemented as separate bounded changes; ordinary-session goal-first ordering is follow-up backlog.** R1 carries the PI-selected scientific-model synthesis into startup. R2 removes the generic policy destination from the shared persona and places scientific context before operational options, but intentionally preserves persona-first ordering for ordinary PI sessions. The independent R2 review literally recommended human-goal-first ordering; revisiting ordinary sessions toward that order is recorded below without changing the runtime. R3-R8 remain unimplemented and separately scoped; none is a campaign operation or Runner scientific gate. |
 
 The startup allocation change is tactical, not a solution to scientific
 continuity. Counterevidence preservation and official-assessment readiness
@@ -2092,6 +2092,8 @@ separate from harness changes so their outcomes are not conflated.
 
 ## 2026-10-06: implement R2 scientific-context ordering
 
+- **Commit / scope:** `fb9b10d`; `run_research.ps1` and synchronized
+  maintainer documentation.
 - **Source:** independent prompt-stack review preserved in
   `docs/prompt-instruction-stack-review-20261005.md`, recommendation R2.
 - **Approved scope:** remove the learned-policy destination from the shared PI
@@ -2126,6 +2128,28 @@ separate from harness changes so their outcomes are not conflated.
 - **Disposition:** R2 is implemented as prompt framing and ordering only. No
   campaign, training, reset, resume, measurement, evaluation or assessment was
   executed.
+
+## 2026-10-06: record ordinary-session goal-first ordering follow-up
+
+- **Correction:** R2's independent-review recommendation literally ordered the
+  human goal, essential task conditions and protected boundaries before the PI
+  role. Implemented commit `fb9b10d` intentionally did not apply that order to
+  ordinary PI sessions: it retained persona-first delivery while moving
+  scientific context and state ahead of operational options.
+- **Backlog:** revisit ordinary PI sessions toward human-goal-first ordering.
+  This is a future prompt-ordering decision only; no `run_research.ps1` change
+  is approved or implemented by this entry.
+- **Evidence boundary:** the preliminary scientific-model prompt's scoped
+  goal-first ordering had one positive local observation in campaign
+  `edc16754`, but no causal proof. Ordinary-session persona-first ordering was
+  an approved structural choice, not a demonstrated quality improvement. The
+  previous-persona trials in
+  `docs/persona-stochasticity-report-20261005.md` showed materially variable
+  openings and support a stochasticity conclusion, not superiority of either
+  order or persona.
+- **Status:** R1 (`8c0a25b`) and bounded R2 (`fb9b10d`) remain implemented.
+  R3-R8 and this ordering follow-up remain separate backlog items. No campaign
+  operation or runtime change is performed.
 
 ## 2026-10-06: allow Runner transactions during protected-runtime checks
 
