@@ -17,10 +17,62 @@ import numpy as np
 
 from benchmark.paired_evidence import episode_outcomes
 from contracts.policy_runtime import load_runtime
+from contracts.robots.two_joint_arm import FOREARM_LENGTH, UPPER_ARM_LENGTH
 from robot_learning.scenario.environment import make_evaluation_env
 
 # Bumped when the meaning of a scenario evaluation summary changes.
-RESEARCH_EVALUATION_SUMMARY_VERSION = 4
+RESEARCH_EVALUATION_SUMMARY_VERSION = 5
+
+JOINT_LIMIT_RADIANS = float(np.deg2rad(170.0))
+
+
+def _wrap_to_pi(angle: float) -> float:
+    return float((angle + np.pi) % (2.0 * np.pi) - np.pi)
+
+
+def _branch_diagnostics(target_position: np.ndarray, elbow_sign: float) -> dict:
+    target_x = float(target_position[0])
+    target_y = float(target_position[1])
+    radius_squared = target_x**2 + target_y**2
+    cosine = (
+        radius_squared - UPPER_ARM_LENGTH**2 - FOREARM_LENGTH**2
+    ) / (2.0 * UPPER_ARM_LENGTH * FOREARM_LENGTH)
+    elbow = float(elbow_sign * np.arccos(np.clip(cosine, -1.0, 1.0)))
+    shoulder = float(
+        np.arctan2(target_y, target_x)
+        - np.arctan2(
+            FOREARM_LENGTH * np.sin(elbow),
+            UPPER_ARM_LENGTH + FOREARM_LENGTH * np.cos(elbow),
+        )
+    )
+    shoulder_margin = JOINT_LIMIT_RADIANS - abs(_wrap_to_pi(shoulder))
+    elbow_margin = JOINT_LIMIT_RADIANS - abs(elbow)
+    return {
+        "shoulder_margin_degrees": float(np.degrees(shoulder_margin)),
+        "elbow_margin_degrees": float(np.degrees(elbow_margin)),
+        "minimum_margin_degrees": float(
+            np.degrees(min(shoulder_margin, elbow_margin))
+        ),
+        "feasible": bool(shoulder_margin >= 0.0 and elbow_margin >= 0.0),
+    }
+
+
+def _target_branch_diagnostics(target_position: np.ndarray) -> dict:
+    open_branch = _branch_diagnostics(target_position, 1.0)
+    folded_branch = _branch_diagnostics(target_position, -1.0)
+    if open_branch["feasible"] and folded_branch["feasible"]:
+        branch_pattern = "both_feasible"
+    elif open_branch["feasible"]:
+        branch_pattern = "open_only_feasible"
+    elif folded_branch["feasible"]:
+        branch_pattern = "folded_only_feasible"
+    else:
+        branch_pattern = "neither_feasible"
+    return {
+        "open": open_branch,
+        "folded": folded_branch,
+        "pattern": branch_pattern,
+    }
 
 
 def evaluate_research_model(
@@ -103,6 +155,20 @@ def evaluate_research_model(
                 "max_held_steps": max_held_steps,
                 "in_tolerance_steps": in_tolerance_steps,
                 "hold_interruptions": hold_interruptions,
+                "interruption_class": (
+                    "completed_hold"
+                    if success
+                    else (
+                        "no_first_reach"
+                        if first_reach_step is None
+                        else (
+                            "post_entry_interrupted_hold"
+                            if hold_interruptions > 0
+                            else "post_entry_incomplete_hold"
+                        )
+                    )
+                ),
+                "analytic_branches": _target_branch_diagnostics(target_position),
             }
         )
         if progress_callback is not None:
@@ -110,7 +176,7 @@ def evaluate_research_model(
 
     successes = sum(episode["success"] for episode in episode_results)
     return {
-        "schema_version": 5,
+        "schema_version": 6,
         "model": str(model_path),
         "episodes": episodes,
         "seed": seed,
