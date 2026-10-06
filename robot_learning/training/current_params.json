@@ -5,8 +5,8 @@
   "policy": {
     "activation": "tanh",
     "net_arch": [
-      128,
-      128
+      64,
+      64
     ]
   },
   "ppo": {

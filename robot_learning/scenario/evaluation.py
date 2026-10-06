@@ -17,62 +17,10 @@ import numpy as np
 
 from benchmark.paired_evidence import episode_outcomes
 from contracts.policy_runtime import load_runtime
-from contracts.robots.two_joint_arm import FOREARM_LENGTH, UPPER_ARM_LENGTH
 from robot_learning.scenario.environment import make_evaluation_env
 
 # Bumped when the meaning of a scenario evaluation summary changes.
-RESEARCH_EVALUATION_SUMMARY_VERSION = 5
-
-JOINT_LIMIT_RADIANS = float(np.deg2rad(170.0))
-
-
-def _wrap_to_pi(angle: float) -> float:
-    return float((angle + np.pi) % (2.0 * np.pi) - np.pi)
-
-
-def _branch_diagnostics(target_position: np.ndarray, elbow_sign: float) -> dict:
-    target_x = float(target_position[0])
-    target_y = float(target_position[1])
-    radius_squared = target_x**2 + target_y**2
-    cosine = (
-        radius_squared - UPPER_ARM_LENGTH**2 - FOREARM_LENGTH**2
-    ) / (2.0 * UPPER_ARM_LENGTH * FOREARM_LENGTH)
-    elbow = float(elbow_sign * np.arccos(np.clip(cosine, -1.0, 1.0)))
-    shoulder = float(
-        np.arctan2(target_y, target_x)
-        - np.arctan2(
-            FOREARM_LENGTH * np.sin(elbow),
-            UPPER_ARM_LENGTH + FOREARM_LENGTH * np.cos(elbow),
-        )
-    )
-    shoulder_margin = JOINT_LIMIT_RADIANS - abs(_wrap_to_pi(shoulder))
-    elbow_margin = JOINT_LIMIT_RADIANS - abs(elbow)
-    return {
-        "shoulder_margin_degrees": float(np.degrees(shoulder_margin)),
-        "elbow_margin_degrees": float(np.degrees(elbow_margin)),
-        "minimum_margin_degrees": float(
-            np.degrees(min(shoulder_margin, elbow_margin))
-        ),
-        "feasible": bool(shoulder_margin >= 0.0 and elbow_margin >= 0.0),
-    }
-
-
-def _target_branch_diagnostics(target_position: np.ndarray) -> dict:
-    open_branch = _branch_diagnostics(target_position, 1.0)
-    folded_branch = _branch_diagnostics(target_position, -1.0)
-    if open_branch["feasible"] and folded_branch["feasible"]:
-        branch_pattern = "both_feasible"
-    elif open_branch["feasible"]:
-        branch_pattern = "open_only_feasible"
-    elif folded_branch["feasible"]:
-        branch_pattern = "folded_only_feasible"
-    else:
-        branch_pattern = "neither_feasible"
-    return {
-        "open": open_branch,
-        "folded": folded_branch,
-        "pattern": branch_pattern,
-    }
+RESEARCH_EVALUATION_SUMMARY_VERSION = 4
 
 
 def evaluate_research_model(
@@ -107,11 +55,6 @@ def evaluate_research_model(
         in_tolerance_steps = 0
         hold_interruptions = 0
         was_in_tolerance = False
-        target_xy = target_position[:2]
-        target_radius = float(np.linalg.norm(target_xy))
-        radial_unit = target_xy / target_radius
-        tangential_unit = np.array([-radial_unit[1], radial_unit[0]])
-        trajectory: list[dict] = []
         while not (terminated or truncated):
             action = runtime.predict(obs)
             obs, reward, terminated, truncated, info = env.step(action)
@@ -131,48 +74,6 @@ def evaluate_research_model(
             was_in_tolerance = held_steps > 0
             if "is_success" in info:
                 success = bool(info["is_success"])
-            endpoint = np.asarray(env.data.site("end_effector").xpos, dtype=np.float64)
-            endpoint_error = target_position - endpoint
-            clipped_action = np.clip(
-                np.asarray(action, dtype=np.float64),
-                env.action_space.low,
-                env.action_space.high,
-            )
-            action_abs = np.abs(clipped_action)
-            substeps = info["research_substeps"]
-            trajectory.append(
-                {
-                    "step": steps,
-                    "qpos_degrees": [
-                        float(np.degrees(value)) for value in env.data.qpos[:2]
-                    ],
-                    "qvel_degrees_per_second": [
-                        float(np.degrees(value)) for value in env.data.qvel[:2]
-                    ],
-                    "radial_error_cm": float(
-                        100.0 * np.dot(endpoint_error[:2], radial_unit)
-                    ),
-                    "tangential_error_cm": float(
-                        100.0 * np.dot(endpoint_error[:2], tangential_unit)
-                    ),
-                    "distance_cm": distance_cm,
-                    "action": [float(value) for value in clipped_action],
-                    "action_saturated": bool(
-                        np.any(action_abs >= 1.0)
-                        or np.any(clipped_action != np.asarray(action))
-                    ),
-                    "held_steps": held_steps,
-                    "substep_min_distance_cm": float(
-                        100.0 * min(substeps["distances"])
-                    ),
-                    "substep_max_distance_cm": float(
-                        100.0 * max(substeps["distances"])
-                    ),
-                    "substep_max_speed_meters_per_second": float(
-                        max(substeps["speeds"])
-                    ),
-                }
-            )
 
         episode_results.append(
             {
@@ -202,21 +103,6 @@ def evaluate_research_model(
                 "max_held_steps": max_held_steps,
                 "in_tolerance_steps": in_tolerance_steps,
                 "hold_interruptions": hold_interruptions,
-                "interruption_class": (
-                    "completed_hold"
-                    if success
-                    else (
-                        "no_first_reach"
-                        if first_reach_step is None
-                        else (
-                            "post_entry_interrupted_hold"
-                            if hold_interruptions > 0
-                            else "post_entry_incomplete_hold"
-                        )
-                    )
-                ),
-                "analytic_branches": _target_branch_diagnostics(target_position),
-                "trajectory": trajectory,
             }
         )
         if progress_callback is not None:
@@ -224,7 +110,7 @@ def evaluate_research_model(
 
     successes = sum(episode["success"] for episode in episode_results)
     return {
-        "schema_version": 7,
+        "schema_version": 5,
         "model": str(model_path),
         "episodes": episodes,
         "seed": seed,
@@ -235,21 +121,7 @@ def evaluate_research_model(
         # failures and checking whether performance varies by target geometry.
         "research_evidence": {
             "episode_diagnostics": episode_diagnostics,
-            "units": {
-                "distance": "cm",
-                "time": "control_steps",
-                "joint_position": "degrees",
-                "joint_velocity": "degrees_per_second",
-                "speed": "meters_per_second",
-            },
-            "trajectory_semantics": {
-                "radial_error": "target_minus_endpoint_projected_on_target_radius",
-                "tangential_error": (
-                    "target_minus_endpoint_projected_on_counterclockwise_tangent"
-                ),
-                "action": "clipped_policy_command",
-                "substep_distances": "all_physics_substeps_in_control_interval",
-            },
+            "units": {"distance": "cm", "time": "control_steps"},
         },
     }
 
