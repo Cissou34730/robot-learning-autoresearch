@@ -11,22 +11,828 @@
   "counters": {
     "event": 0,
     "inquiry": 0,
-    "measurement": 0,
-    "session": 0,
+    "measurement": 1,
+    "session": 1,
     "training": 0
   },
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "fresh campaign initialized; scientific model pending",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": null,
     "retained": {},
     "working": null
   },
   "official_assessment": null,
-  "operation_events": [],
-  "pending_operation": null,
+  "operation_events": [
+    {
+      "completed_at": "2026-10-06T22:11:20Z",
+      "error": null,
+      "id": "M1",
+      "inquiry_id": null,
+      "kind": "measurement",
+      "request": {
+        "description": "Characterize the compiled MuJoCo dynamics and bounded-torque response before selecting a learned-policy intervention. Record compiled masses and inertias, actuator authority, one-control-interval acceleration and velocity response at representative postures, and a saturated pulse followed by braking.",
+        "measurements": [
+          {
+            "args": [
+              "--artifact",
+              "campaigns\\evaluations\\0284114e-1903-4c11-b5f3-820eb4bbacc2\\dynamics_characterization.json"
+            ],
+            "artifact": "campaigns\\evaluations\\0284114e-1903-4c11-b5f3-820eb4bbacc2\\dynamics_characterization.json",
+            "instrument": "python_module",
+            "label": "compiled dynamics and braking characterization",
+            "module": "robot_learning.lab.characterize_dynamics"
+          }
+        ],
+        "rationale": "The decisive initial distinction is whether complete-hold failures are plausibly caused by insufficient physical authority or by the policy's acquisition and stabilization behavior. The model leaves inertia and braking time unresolved. This measurement uses the fixed robot without a learned candidate and will determine whether the next direction should prioritize temporal stabilization and action-scale choices, or proceed to learning and official-distribution coverage when authority is adequate."
+      },
+      "result": {
+        "measurements": [
+          {
+            "args": [
+              "--artifact",
+              "campaigns\\evaluations\\0284114e-1903-4c11-b5f3-820eb4bbacc2\\dynamics_characterization.json"
+            ],
+            "instrument": "python_module",
+            "label": "compiled dynamics and braking characterization",
+            "metrics": {
+              "evaluation_artifact": "campaigns/evaluations/0284114e-1903-4c11-b5f3-820eb4bbacc2/python-module-M1-1-dynamics_characterization.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 6,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/measurement",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 12,
+                    "path": "/model",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/control_interval",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 9,
+                    "field_names": [
+                      "control",
+                      "initial_qacc_rad_s2",
+                      "initial_qpos_rad",
+                      "qvel_after_control_interval_rad_s",
+                      "qvel_after_one_sim_step_rad_s"
+                    ],
+                    "path": "/impulse_probes",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/pulse_response",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/model/timestep_seconds",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/model/nq",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/model/nv",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/model/nu",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/model/body_mass_kg",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/model/body_inertia_kg_m2",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/model/joint_armature",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/model/joint_damping",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/model/actuator_gear",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/model/actuator_ctrlrange",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/model/joint_names",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/model/actuator_names",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/control_interval/simulator_steps",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/control_interval/seconds",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/control_interval/nominal_control_range",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/pulse_response/initial_qpos_rad",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/pulse_response/accelerating_control",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/pulse_response/braking_control",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/pulse_response/pulse_intervals",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/pulse_response/brake_intervals",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/pulse_response/peak_qvel_rad_s",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/pulse_response/brake_crossing_intervals_to_10_percent",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/pulse_response/control_interval_seconds",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 70,
+                    "field_names": [
+                      "interval",
+                      "phase",
+                      "qvel_norm_rad_s",
+                      "qvel_rad_s"
+                    ],
+                    "path": "/pulse_response/trace",
+                    "type": "array"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "b24842272937c31c64dc12a0dfeb15955fb61b767c1152b9f6eff4312bfd2db3"
+            },
+            "module": "robot_learning.lab.characterize_dynamics"
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": {
+          "campaign_lab_manifest": [
+            {
+              "fingerprint": "6fd6be6cec2b9ab4000129bc55647cfce26b073269a4c8b04ef312b23f33c51b",
+              "path": "robot_learning/lab/__init__.py"
+            },
+            {
+              "fingerprint": "5e4e6b900c3ee58f2a6861a984849a1bd2c6570d25fe7d60fd381437580f39db",
+              "path": "robot_learning/lab/characterize_dynamics.py"
+            }
+          ],
+          "campaign_lab_publication": {
+            "commit": "aa5e48ff3f4c5fe0693da660185ef078675b1328",
+            "fingerprint": "4a5aaab2b0b1618dbf55ecd0c922bc2de4e894f7c860fc7920ee1452240ddf31",
+            "manifest": [
+              {
+                "fingerprint": "6fd6be6cec2b9ab4000129bc55647cfce26b073269a4c8b04ef312b23f33c51b",
+                "path": "robot_learning/lab/__init__.py"
+              },
+              {
+                "fingerprint": "5e4e6b900c3ee58f2a6861a984849a1bd2c6570d25fe7d60fd381437580f39db",
+                "path": "robot_learning/lab/characterize_dynamics.py"
+              }
+            ]
+          },
+          "code_parent_commit": "ab8ddc8ec823f17b20cbb5ca41d8ccf27819d4ac",
+          "effective_parameters": {
+            "algorithm": {
+              "name": "ppo"
+            },
+            "policy": {
+              "activation": "tanh",
+              "net_arch": [
+                64,
+                64
+              ]
+            },
+            "ppo": {
+              "batch_size": 64,
+              "ent_coef": 0.01,
+              "gae_lambda": 0.95,
+              "gamma": 0.99,
+              "learning_rate": 0.0003,
+              "n_steps": 1024
+            },
+            "training": {
+              "checkpoint_every_steps": 5000,
+              "n_envs": 1
+            }
+          },
+          "module_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "5e4e6b900c3ee58f2a6861a984849a1bd2c6570d25fe7d60fd381437580f39db",
+              "path": "robot_learning/lab/characterize_dynamics.py"
+            }
+          ],
+          "module_paths": [
+            "robot_learning/lab/characterize_dynamics.py"
+          ],
+          "scientific_commit": null,
+          "scientific_manifest": [],
+          "scientific_paths": []
+        }
+      },
+      "session_id": "S1",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
+    }
+  ],
+  "pending_operation": {
+    "data": {
+      "evaluation_semantics": null,
+      "measurements": [
+        {
+          "args": [
+            "--artifact",
+            "campaigns\\evaluations\\0284114e-1903-4c11-b5f3-820eb4bbacc2\\dynamics_characterization.json"
+          ],
+          "artifact": "campaigns/evaluations/0284114e-1903-4c11-b5f3-820eb4bbacc2/dynamics_characterization.json",
+          "instrument": "python_module",
+          "label": "compiled dynamics and braking characterization",
+          "module": "robot_learning.lab.characterize_dynamics"
+        }
+      ],
+      "module_provenance": {
+        "campaign_lab_manifest": [
+          {
+            "fingerprint": "6fd6be6cec2b9ab4000129bc55647cfce26b073269a4c8b04ef312b23f33c51b",
+            "path": "robot_learning/lab/__init__.py"
+          },
+          {
+            "fingerprint": "5e4e6b900c3ee58f2a6861a984849a1bd2c6570d25fe7d60fd381437580f39db",
+            "path": "robot_learning/lab/characterize_dynamics.py"
+          }
+        ],
+        "campaign_lab_publication": {
+          "commit": "aa5e48ff3f4c5fe0693da660185ef078675b1328",
+          "fingerprint": "4a5aaab2b0b1618dbf55ecd0c922bc2de4e894f7c860fc7920ee1452240ddf31",
+          "manifest": [
+            {
+              "fingerprint": "6fd6be6cec2b9ab4000129bc55647cfce26b073269a4c8b04ef312b23f33c51b",
+              "path": "robot_learning/lab/__init__.py"
+            },
+            {
+              "fingerprint": "5e4e6b900c3ee58f2a6861a984849a1bd2c6570d25fe7d60fd381437580f39db",
+              "path": "robot_learning/lab/characterize_dynamics.py"
+            }
+          ]
+        },
+        "code_parent_commit": "ab8ddc8ec823f17b20cbb5ca41d8ccf27819d4ac",
+        "effective_parameters": {
+          "algorithm": {
+            "name": "ppo"
+          },
+          "policy": {
+            "activation": "tanh",
+            "net_arch": [
+              64,
+              64
+            ]
+          },
+          "ppo": {
+            "batch_size": 64,
+            "ent_coef": 0.01,
+            "gae_lambda": 0.95,
+            "gamma": 0.99,
+            "learning_rate": 0.0003,
+            "n_steps": 1024
+          },
+          "training": {
+            "checkpoint_every_steps": 5000,
+            "n_envs": 1
+          }
+        },
+        "module_manifest": [
+          {
+            "exists": true,
+            "fingerprint": "5e4e6b900c3ee58f2a6861a984849a1bd2c6570d25fe7d60fd381437580f39db",
+            "path": "robot_learning/lab/characterize_dynamics.py"
+          }
+        ],
+        "module_paths": [
+          "robot_learning/lab/characterize_dynamics.py"
+        ],
+        "scientific_commit": null,
+        "scientific_manifest": [],
+        "scientific_paths": []
+      },
+      "paired_comparisons": [],
+      "partial_results": [
+        {
+          "args": [
+            "--artifact",
+            "campaigns\\evaluations\\0284114e-1903-4c11-b5f3-820eb4bbacc2\\dynamics_characterization.json"
+          ],
+          "instrument": "python_module",
+          "label": "compiled dynamics and braking characterization",
+          "metrics": {
+            "evaluation_artifact": "campaigns/evaluations/0284114e-1903-4c11-b5f3-820eb4bbacc2/python-module-M1-1-dynamics_characterization.json",
+            "evaluation_artifact_contents": {
+              "scope": "structure_only",
+              "sections": [
+                {
+                  "entries": 6,
+                  "path": "",
+                  "type": "object"
+                },
+                {
+                  "path": "/schema_version",
+                  "type": "number"
+                },
+                {
+                  "path": "/measurement",
+                  "type": "string"
+                },
+                {
+                  "entries": 12,
+                  "path": "/model",
+                  "type": "object"
+                },
+                {
+                  "entries": 3,
+                  "path": "/control_interval",
+                  "type": "object"
+                },
+                {
+                  "entries": 9,
+                  "field_names": [
+                    "control",
+                    "initial_qacc_rad_s2",
+                    "initial_qpos_rad",
+                    "qvel_after_control_interval_rad_s",
+                    "qvel_after_one_sim_step_rad_s"
+                  ],
+                  "path": "/impulse_probes",
+                  "type": "array"
+                },
+                {
+                  "entries": 9,
+                  "path": "/pulse_response",
+                  "type": "object"
+                },
+                {
+                  "path": "/model/timestep_seconds",
+                  "type": "number"
+                },
+                {
+                  "path": "/model/nq",
+                  "type": "number"
+                },
+                {
+                  "path": "/model/nv",
+                  "type": "number"
+                },
+                {
+                  "path": "/model/nu",
+                  "type": "number"
+                },
+                {
+                  "entries": 5,
+                  "path": "/model/body_mass_kg",
+                  "type": "array"
+                },
+                {
+                  "entries": 5,
+                  "path": "/model/body_inertia_kg_m2",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/model/joint_armature",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/model/joint_damping",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/model/actuator_gear",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/model/actuator_ctrlrange",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/model/joint_names",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/model/actuator_names",
+                  "type": "array"
+                },
+                {
+                  "path": "/control_interval/simulator_steps",
+                  "type": "number"
+                },
+                {
+                  "path": "/control_interval/seconds",
+                  "type": "number"
+                },
+                {
+                  "entries": 2,
+                  "path": "/control_interval/nominal_control_range",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/pulse_response/initial_qpos_rad",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/pulse_response/accelerating_control",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/pulse_response/braking_control",
+                  "type": "array"
+                },
+                {
+                  "path": "/pulse_response/pulse_intervals",
+                  "type": "number"
+                },
+                {
+                  "path": "/pulse_response/brake_intervals",
+                  "type": "number"
+                },
+                {
+                  "entries": 2,
+                  "path": "/pulse_response/peak_qvel_rad_s",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/pulse_response/brake_crossing_intervals_to_10_percent",
+                  "type": "array"
+                },
+                {
+                  "path": "/pulse_response/control_interval_seconds",
+                  "type": "number"
+                },
+                {
+                  "entries": 70,
+                  "field_names": [
+                    "interval",
+                    "phase",
+                    "qvel_norm_rad_s",
+                    "qvel_rad_s"
+                  ],
+                  "path": "/pulse_response/trace",
+                  "type": "array"
+                }
+              ],
+              "truncated": false
+            },
+            "evaluation_artifact_fingerprint": "b24842272937c31c64dc12a0dfeb15955fb61b767c1152b9f6eff4312bfd2db3"
+          },
+          "module": "robot_learning.lab.characterize_dynamics"
+        }
+      ],
+      "result": {
+        "measurements": [
+          {
+            "args": [
+              "--artifact",
+              "campaigns\\evaluations\\0284114e-1903-4c11-b5f3-820eb4bbacc2\\dynamics_characterization.json"
+            ],
+            "instrument": "python_module",
+            "label": "compiled dynamics and braking characterization",
+            "metrics": {
+              "evaluation_artifact": "campaigns/evaluations/0284114e-1903-4c11-b5f3-820eb4bbacc2/python-module-M1-1-dynamics_characterization.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 6,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/measurement",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 12,
+                    "path": "/model",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/control_interval",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 9,
+                    "field_names": [
+                      "control",
+                      "initial_qacc_rad_s2",
+                      "initial_qpos_rad",
+                      "qvel_after_control_interval_rad_s",
+                      "qvel_after_one_sim_step_rad_s"
+                    ],
+                    "path": "/impulse_probes",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/pulse_response",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/model/timestep_seconds",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/model/nq",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/model/nv",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/model/nu",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/model/body_mass_kg",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/model/body_inertia_kg_m2",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/model/joint_armature",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/model/joint_damping",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/model/actuator_gear",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/model/actuator_ctrlrange",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/model/joint_names",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/model/actuator_names",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/control_interval/simulator_steps",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/control_interval/seconds",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/control_interval/nominal_control_range",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/pulse_response/initial_qpos_rad",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/pulse_response/accelerating_control",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/pulse_response/braking_control",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/pulse_response/pulse_intervals",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/pulse_response/brake_intervals",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/pulse_response/peak_qvel_rad_s",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/pulse_response/brake_crossing_intervals_to_10_percent",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/pulse_response/control_interval_seconds",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 70,
+                    "field_names": [
+                      "interval",
+                      "phase",
+                      "qvel_norm_rad_s",
+                      "qvel_rad_s"
+                    ],
+                    "path": "/pulse_response/trace",
+                    "type": "array"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "b24842272937c31c64dc12a0dfeb15955fb61b767c1152b9f6eff4312bfd2db3"
+            },
+            "module": "robot_learning.lab.characterize_dynamics"
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": {
+          "campaign_lab_manifest": [
+            {
+              "fingerprint": "6fd6be6cec2b9ab4000129bc55647cfce26b073269a4c8b04ef312b23f33c51b",
+              "path": "robot_learning/lab/__init__.py"
+            },
+            {
+              "fingerprint": "5e4e6b900c3ee58f2a6861a984849a1bd2c6570d25fe7d60fd381437580f39db",
+              "path": "robot_learning/lab/characterize_dynamics.py"
+            }
+          ],
+          "campaign_lab_publication": {
+            "commit": "aa5e48ff3f4c5fe0693da660185ef078675b1328",
+            "fingerprint": "4a5aaab2b0b1618dbf55ecd0c922bc2de4e894f7c860fc7920ee1452240ddf31",
+            "manifest": [
+              {
+                "fingerprint": "6fd6be6cec2b9ab4000129bc55647cfce26b073269a4c8b04ef312b23f33c51b",
+                "path": "robot_learning/lab/__init__.py"
+              },
+              {
+                "fingerprint": "5e4e6b900c3ee58f2a6861a984849a1bd2c6570d25fe7d60fd381437580f39db",
+                "path": "robot_learning/lab/characterize_dynamics.py"
+              }
+            ]
+          },
+          "code_parent_commit": "ab8ddc8ec823f17b20cbb5ca41d8ccf27819d4ac",
+          "effective_parameters": {
+            "algorithm": {
+              "name": "ppo"
+            },
+            "policy": {
+              "activation": "tanh",
+              "net_arch": [
+                64,
+                64
+              ]
+            },
+            "ppo": {
+              "batch_size": 64,
+              "ent_coef": 0.01,
+              "gae_lambda": 0.95,
+              "gamma": 0.99,
+              "learning_rate": 0.0003,
+              "n_steps": 1024
+            },
+            "training": {
+              "checkpoint_every_steps": 5000,
+              "n_envs": 1
+            }
+          },
+          "module_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "5e4e6b900c3ee58f2a6861a984849a1bd2c6570d25fe7d60fd381437580f39db",
+              "path": "robot_learning/lab/characterize_dynamics.py"
+            }
+          ],
+          "module_paths": [
+            "robot_learning/lab/characterize_dynamics.py"
+          ],
+          "scientific_commit": null,
+          "scientific_manifest": [],
+          "scientific_paths": []
+        }
+      },
+      "task_reference_contract": null
+    },
+    "failure": null,
+    "id": "M1",
+    "inquiry_id": null,
+    "kind": "measurement",
+    "progress": "completed",
+    "request": {
+      "measurement": {
+        "description": "Characterize the compiled MuJoCo dynamics and bounded-torque response before selecting a learned-policy intervention. Record compiled masses and inertias, actuator authority, one-control-interval acceleration and velocity response at representative postures, and a saturated pulse followed by braking.",
+        "measurements": [
+          {
+            "args": [
+              "--artifact",
+              "campaigns\\evaluations\\0284114e-1903-4c11-b5f3-820eb4bbacc2\\dynamics_characterization.json"
+            ],
+            "artifact": "campaigns\\evaluations\\0284114e-1903-4c11-b5f3-820eb4bbacc2\\dynamics_characterization.json",
+            "instrument": "python_module",
+            "label": "compiled dynamics and braking characterization",
+            "module": "robot_learning.lab.characterize_dynamics"
+          }
+        ],
+        "rationale": "The decisive initial distinction is whether complete-hold failures are plausibly caused by insufficient physical authority or by the policy's acquisition and stabilization behavior. The model leaves inertia and braking time unresolved. This measurement uses the fixed robot without a learned candidate and will determine whether the next direction should prioritize temporal stabilization and action-scale choices, or proceed to learning and official-distribution coverage when authority is adequate."
+      }
+    },
+    "request_fingerprint": "bb1ad98081f907575097d1d7b5eca53c94b40250c8dc196edabc62c12096e49e",
+    "session_id": "S1",
+    "supersedes": null
+  },
   "pi_checkpoint": null,
   "schema_version": 6,
   "scientific_model": {
@@ -34,6 +840,21 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "756d3b18-0c75-4e13-ac5c-404e0cfe97ba",
+    "id": "S1",
+    "inquiry_id": null,
+    "kind": "startup",
+    "objective": "Establish the most credible initial scientific direction toward the human goal from the scientific model and available evidence. Use scientific work in this session to establish or refine that direction, including building or adapting reusable scientific tools and PI-owned methods where needed. These capabilities can support subsequent inquiries. Choose the first useful scientific action and explain why it advances the direction. Preserve the work actually performed, resulting understanding, remaining uncertainties and chosen next action in the scientific session record.",
+    "operation_ids": [
+      "M1"
+    ],
+    "scientific_parent_commit": "ab8ddc8ec823f17b20cbb5ca41d8ccf27819d4ac"
+  },
   "terminal_state": null
 }

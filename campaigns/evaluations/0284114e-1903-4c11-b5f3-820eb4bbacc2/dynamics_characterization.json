@@ -1,0 +1,939 @@
+{
+  "schema_version": 1,
+  "measurement": "compiled_dynamics_and_bounded_torque_response",
+  "model": {
+    "timestep_seconds": 0.002,
+    "nq": 2,
+    "nv": 2,
+    "nu": 2,
+    "body_mass_kg": [
+      0.0,
+      0.2010619298297468,
+      0.09896016858807849,
+      0.05247716368556391,
+      0.007238229473870883
+    ],
+    "body_inertia_kg_m2": [
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.00010723302924253161,
+        0.00010723302924253161,
+        0.00016084954386379744
+      ],
+      [
+        0.0001682676295170863,
+        0.0001682676295170863,
+        1.0814932709982864e-05
+      ],
+      [
+        6.109741244031255e-05,
+        6.109741244031255e-05,
+        3.674125280936861e-06
+      ],
+      [
+        4.169220176949629e-07,
+        4.169220176949629e-07,
+        4.169220176949629e-07
+      ]
+    ],
+    "joint_armature": [
+      0.01,
+      0.01
+    ],
+    "joint_damping": [
+      0.5,
+      0.5
+    ],
+    "actuator_gear": [
+      5.0,
+      5.0
+    ],
+    "actuator_ctrlrange": [
+      [
+        -1.0,
+        1.0
+      ],
+      [
+        -1.0,
+        1.0
+      ]
+    ],
+    "joint_names": [
+      "shoulder",
+      "elbow"
+    ],
+    "actuator_names": [
+      "shoulder",
+      "elbow"
+    ]
+  },
+  "control_interval": {
+    "simulator_steps": 10,
+    "seconds": 0.02,
+    "nominal_control_range": [
+      -1.0,
+      1.0
+    ]
+  },
+  "impulse_probes": [
+    {
+      "initial_qpos_rad": [
+        0.0,
+        0.0
+      ],
+      "control": [
+        1.0,
+        0.0
+      ],
+      "initial_qacc_rad_s2": [
+        414.0109081175112,
+        -20.600570943464305
+      ],
+      "qvel_after_one_sim_step_rad_s": [
+        0.7645709343288931,
+        -0.03464480139148795
+      ],
+      "qvel_after_control_interval_rad_s": [
+        5.483150812947004,
+        -0.15898736529760024
+      ]
+    },
+    {
+      "initial_qpos_rad": [
+        0.0,
+        0.0
+      ],
+      "control": [
+        0.0,
+        1.0
+      ],
+      "initial_qacc_rad_s2": [
+        -20.600570943464305,
+        491.5919277699965
+      ],
+      "qvel_after_one_sim_step_rad_s": [
+        -0.03464480139148795,
+        0.8950420278236196
+      ],
+      "qvel_after_control_interval_rad_s": [
+        -0.15871302447444094,
+        6.081906718624169
+      ]
+    },
+    {
+      "initial_qpos_rad": [
+        0.0,
+        0.0
+      ],
+      "control": [
+        1.0,
+        1.0
+      ],
+      "initial_qacc_rad_s2": [
+        393.4103371740469,
+        470.99135682653224
+      ],
+      "qvel_after_one_sim_step_rad_s": [
+        0.7299261329374052,
+        0.8603972264321317
+      ],
+      "qvel_after_control_interval_rad_s": [
+        5.324921500339217,
+        5.9227402966843945
+      ]
+    },
+    {
+      "initial_qpos_rad": [
+        0.6,
+        -1.0
+      ],
+      "control": [
+        1.0,
+        0.0
+      ],
+      "initial_qacc_rad_s2": [
+        423.73449848647533,
+        -15.066904250427369
+      ],
+      "qvel_after_one_sim_step_rad_s": [
+        0.7811893935071864,
+        -0.025295272457062503
+      ],
+      "qvel_after_control_interval_rad_s": [
+        5.56519175469493,
+        -0.11078814682322553
+      ]
+    },
+    {
+      "initial_qpos_rad": [
+        0.6,
+        -1.0
+      ],
+      "control": [
+        0.0,
+        1.0
+      ],
+      "initial_qacc_rad_s2": [
+        -15.066904250427369,
+        491.1026140013182
+      ],
+      "qvel_after_one_sim_step_rad_s": [
+        -0.025295272457062503,
+        0.8942912496378828
+      ],
+      "qvel_after_control_interval_rad_s": [
+        -0.1215033223350146,
+        6.080131852168553
+      ]
+    },
+    {
+      "initial_qpos_rad": [
+        0.6,
+        -1.0
+      ],
+      "control": [
+        1.0,
+        1.0
+      ],
+      "initial_qacc_rad_s2": [
+        408.66759423604793,
+        476.0357097508909
+      ],
+      "qvel_after_one_sim_step_rad_s": [
+        0.7558941210501239,
+        0.8689959771808203
+      ],
+      "qvel_after_control_interval_rad_s": [
+        5.431907247574979,
+        5.967191467756465
+      ]
+    },
+    {
+      "initial_qpos_rad": [
+        -1.0,
+        1.4
+      ],
+      "control": [
+        1.0,
+        0.0
+      ],
+      "initial_qacc_rad_s2": [
+        432.0180561365033,
+        -10.418946289743534
+      ],
+      "qvel_after_one_sim_step_rad_s": [
+        0.7952842825391431,
+        -0.017466147322628335
+      ],
+      "qvel_after_control_interval_rad_s": [
+        5.632961226341917,
+        -0.084214581556323
+      ]
+    },
+    {
+      "initial_qpos_rad": [
+        -1.0,
+        1.4
+      ],
+      "control": [
+        0.0,
+        1.0
+      ],
+      "initial_qacc_rad_s2": [
+        -10.418946289743534,
+        490.81814673203496
+      ],
+      "qvel_after_one_sim_step_rad_s": [
+        -0.017466147322628335,
+        0.8938557710913438
+      ],
+      "qvel_after_control_interval_rad_s": [
+        -0.07106530634493001,
+        6.078643509281738
+      ]
+    },
+    {
+      "initial_qpos_rad": [
+        -1.0,
+        1.4
+      ],
+      "control": [
+        1.0,
+        1.0
+      ],
+      "initial_qacc_rad_s2": [
+        421.59910984675975,
+        480.39920044229143
+      ],
+      "qvel_after_one_sim_step_rad_s": [
+        0.7778181352165148,
+        0.8763896237687155
+      ],
+      "qvel_after_control_interval_rad_s": [
+        5.576684932129034,
+        5.9968374280403145
+      ]
+    }
+  ],
+  "pulse_response": {
+    "initial_qpos_rad": [
+      0.0,
+      0.0
+    ],
+    "accelerating_control": [
+      1.0,
+      1.0
+    ],
+    "braking_control": [
+      -1.0,
+      -1.0
+    ],
+    "pulse_intervals": 20,
+    "brake_intervals": 50,
+    "peak_qvel_rad_s": [
+      10.180272705078819,
+      9.975866480297766
+    ],
+    "brake_crossing_intervals_to_10_percent": [
+      32,
+      32
+    ],
+    "control_interval_seconds": 0.02,
+    "trace": [
+      {
+        "phase": "accelerate",
+        "interval": 1,
+        "qvel_rad_s": [
+          5.324921500339217,
+          5.9227402966843945
+        ],
+        "qvel_norm_rad_s": 7.964523940998859
+      },
+      {
+        "phase": "accelerate",
+        "interval": 2,
+        "qvel_rad_s": [
+          7.833035036835542,
+          8.32553245991774
+        ],
+        "qvel_norm_rad_s": 11.431138553505383
+      },
+      {
+        "phase": "accelerate",
+        "interval": 3,
+        "qvel_rad_s": [
+          9.022140925869333,
+          9.300892446653068
+        ],
+        "qvel_norm_rad_s": 12.957840375249821
+      },
+      {
+        "phase": "accelerate",
+        "interval": 4,
+        "qvel_rad_s": [
+          9.595094027308065,
+          9.694187800015172
+        ],
+        "qvel_norm_rad_s": 13.639761966209157
+      },
+      {
+        "phase": "accelerate",
+        "interval": 5,
+        "qvel_rad_s": [
+          9.878679652630879,
+          9.849592282662922
+        ],
+        "qvel_norm_rad_s": 13.95001002917189
+      },
+      {
+        "phase": "accelerate",
+        "interval": 6,
+        "qvel_rad_s": [
+          10.024584304696779,
+          9.90816696544418
+        ],
+        "qvel_norm_rad_s": 14.094823982479962
+      },
+      {
+        "phase": "accelerate",
+        "interval": 7,
+        "qvel_rad_s": [
+          10.103112728764717,
+          9.928071752759507
+        ],
+        "qvel_norm_rad_s": 14.164727160735179
+      },
+      {
+        "phase": "accelerate",
+        "interval": 8,
+        "qvel_rad_s": [
+          10.146693217243161,
+          9.933424005299116
+        ],
+        "qvel_norm_rad_s": 14.199587871269403
+      },
+      {
+        "phase": "accelerate",
+        "interval": 9,
+        "qvel_rad_s": [
+          10.170162136264459,
+          9.934275598151453
+        ],
+        "qvel_norm_rad_s": 14.216962739556388
+      },
+      {
+        "phase": "accelerate",
+        "interval": 10,
+        "qvel_rad_s": [
+          10.180272705078819,
+          9.934817249328532
+        ],
+        "qvel_norm_rad_s": 14.22457542871943
+      },
+      {
+        "phase": "accelerate",
+        "interval": 11,
+        "qvel_rad_s": [
+          10.18016637449515,
+          9.93675838923881
+        ],
+        "qvel_norm_rad_s": 14.225855148233077
+      },
+      {
+        "phase": "accelerate",
+        "interval": 12,
+        "qvel_rad_s": [
+          10.171472379796123,
+          9.940723075739765
+        ],
+        "qvel_norm_rad_s": 14.222405761385817
+      },
+      {
+        "phase": "accelerate",
+        "interval": 13,
+        "qvel_rad_s": [
+          10.155283242948496,
+          9.946829481275886
+        ],
+        "qvel_norm_rad_s": 14.215104448230045
+      },
+      {
+        "phase": "accelerate",
+        "interval": 14,
+        "qvel_rad_s": [
+          10.132593864141281,
+          9.954934726284753
+        ],
+        "qvel_norm_rad_s": 14.204583197694454
+      },
+      {
+        "phase": "accelerate",
+        "interval": 15,
+        "qvel_rad_s": [
+          10.104482293031628,
+          9.964744093146653
+        ],
+        "qvel_norm_rad_s": 14.191430063671907
+      },
+      {
+        "phase": "accelerate",
+        "interval": 16,
+        "qvel_rad_s": [
+          10.072164551270943,
+          9.975866480297766
+        ],
+        "qvel_norm_rad_s": 14.176262228831954
+      },
+      {
+        "phase": "accelerate",
+        "interval": 17,
+        "qvel_rad_s": [
+          -0.044718052222184945,
+          0.18228920441576835
+        ],
+        "qvel_norm_rad_s": 0.1876940548900786
+      },
+      {
+        "phase": "accelerate",
+        "interval": 18,
+        "qvel_rad_s": [
+          -1.2912432495399284,
+          -1.1325232248788526
+        ],
+        "qvel_norm_rad_s": 1.7175325278935563
+      },
+      {
+        "phase": "accelerate",
+        "interval": 19,
+        "qvel_rad_s": [
+          -0.9356274930404794,
+          -0.853196360598865
+        ],
+        "qvel_norm_rad_s": 1.2662317463530761
+      },
+      {
+        "phase": "accelerate",
+        "interval": 20,
+        "qvel_rad_s": [
+          -0.5206472118794433,
+          -0.48159102122402975
+        ],
+        "qvel_norm_rad_s": 0.709227347866283
+      },
+      {
+        "phase": "brake",
+        "interval": 1,
+        "qvel_rad_s": [
+          -6.107015718920036,
+          -6.305255502505318
+        ],
+        "qvel_norm_rad_s": 8.777920479419372
+      },
+      {
+        "phase": "brake",
+        "interval": 2,
+        "qvel_rad_s": [
+          -8.37851829829867,
+          -8.571531913472436
+        ],
+        "qvel_norm_rad_s": 11.986272490586975
+      },
+      {
+        "phase": "brake",
+        "interval": 3,
+        "qvel_rad_s": [
+          -9.287551311619556,
+          -9.458507947169865
+        ],
+        "qvel_norm_rad_s": 13.256016820773938
+      },
+      {
+        "phase": "brake",
+        "interval": 4,
+        "qvel_rad_s": [
+          -9.640022447317625,
+          -9.810268171936633
+        ],
+        "qvel_norm_rad_s": 13.753959225986552
+      },
+      {
+        "phase": "brake",
+        "interval": 5,
+        "qvel_rad_s": [
+          -9.767992975773126,
+          -9.95325878920552
+        ],
+        "qvel_norm_rad_s": 13.945646177199896
+      },
+      {
+        "phase": "brake",
+        "interval": 6,
+        "qvel_rad_s": [
+          -9.807838519104873,
+          -10.013703905883267
+        ],
+        "qvel_norm_rad_s": 14.016702976504106
+      },
+      {
+        "phase": "brake",
+        "interval": 7,
+        "qvel_rad_s": [
+          -9.815571262430039,
+          -10.040467453048086
+        ],
+        "qvel_norm_rad_s": 14.041240183244511
+      },
+      {
+        "phase": "brake",
+        "interval": 8,
+        "qvel_rad_s": [
+          -9.8143092362388,
+          -10.052508812057694
+        ],
+        "qvel_norm_rad_s": 14.048971464168465
+      },
+      {
+        "phase": "brake",
+        "interval": 9,
+        "qvel_rad_s": [
+          -9.813649459469088,
+          -10.057220555739114
+        ],
+        "qvel_norm_rad_s": 14.051882472470346
+      },
+      {
+        "phase": "brake",
+        "interval": 10,
+        "qvel_rad_s": [
+          -9.81752971290842,
+          -10.057532342291406
+        ],
+        "qvel_norm_rad_s": 14.054815775387357
+      },
+      {
+        "phase": "brake",
+        "interval": 11,
+        "qvel_rad_s": [
+          -9.827415406045239,
+          -10.0546737619188
+        ],
+        "qvel_norm_rad_s": 14.059678446593066
+      },
+      {
+        "phase": "brake",
+        "interval": 12,
+        "qvel_rad_s": [
+          -9.843599240580053,
+          -10.049253133661036
+        ],
+        "qvel_norm_rad_s": 14.06712246884715
+      },
+      {
+        "phase": "brake",
+        "interval": 13,
+        "qvel_rad_s": [
+          -9.865742418004407,
+          -10.041678823742519
+        ],
+        "qvel_norm_rad_s": 14.077222277765255
+      },
+      {
+        "phase": "brake",
+        "interval": 14,
+        "qvel_rad_s": [
+          -9.89311300167582,
+          -10.032321360340926
+        ],
+        "qvel_norm_rad_s": 14.089753608245957
+      },
+      {
+        "phase": "brake",
+        "interval": 15,
+        "qvel_rad_s": [
+          -9.924705340094636,
+          -10.021571746292334
+        ],
+        "qvel_norm_rad_s": 14.10431410433658
+      },
+      {
+        "phase": "brake",
+        "interval": 16,
+        "qvel_rad_s": [
+          -9.959314853363919,
+          -10.009857050380536
+        ],
+        "qvel_norm_rad_s": 14.120382095307763
+      },
+      {
+        "phase": "brake",
+        "interval": 17,
+        "qvel_rad_s": [
+          -9.995598050231044,
+          -9.997637534730107
+        ],
+        "qvel_norm_rad_s": 14.13735253354131
+      },
+      {
+        "phase": "brake",
+        "interval": 18,
+        "qvel_rad_s": [
+          -10.032129379141237,
+          -9.985395148598172
+        ],
+        "qvel_norm_rad_s": 14.154565911870158
+      },
+      {
+        "phase": "brake",
+        "interval": 19,
+        "qvel_rad_s": [
+          -10.067458782024932,
+          -9.973617590795348
+        ],
+        "qvel_norm_rad_s": 14.171336358127745
+      },
+      {
+        "phase": "brake",
+        "interval": 20,
+        "qvel_rad_s": [
+          -10.100170355901131,
+          -9.962780008536399
+        ],
+        "qvel_norm_rad_s": 14.186980888008431
+      },
+      {
+        "phase": "brake",
+        "interval": 21,
+        "qvel_rad_s": [
+          -10.128940847315652,
+          -9.953325663242712
+        ],
+        "qvel_norm_rad_s": 14.200849779044404
+      },
+      {
+        "phase": "brake",
+        "interval": 22,
+        "qvel_rad_s": [
+          -10.152595838523288,
+          -9.945646704107885
+        ],
+        "qvel_norm_rad_s": 14.21235696931837
+      },
+      {
+        "phase": "brake",
+        "interval": 23,
+        "qvel_rad_s": [
+          -10.170161069936139,
+          -9.940066185780047
+        ],
+        "qvel_norm_rad_s": 14.221008823783652
+      },
+      {
+        "phase": "brake",
+        "interval": 24,
+        "qvel_rad_s": [
+          -10.18090625232512,
+          -9.936822479383327
+        ],
+        "qvel_norm_rad_s": 14.226429387074274
+      },
+      {
+        "phase": "brake",
+        "interval": 25,
+        "qvel_rad_s": [
+          -10.184378904410982,
+          -9.93605717242402
+        ],
+        "qvel_norm_rad_s": 14.228380294407733
+      },
+      {
+        "phase": "brake",
+        "interval": 26,
+        "qvel_rad_s": [
+          -10.180426171172382,
+          -9.937807393973614
+        ],
+        "qvel_norm_rad_s": 14.226773802461619
+      },
+      {
+        "phase": "brake",
+        "interval": 27,
+        "qvel_rad_s": [
+          -10.169203191958228,
+          -9.94200323015609
+        ],
+        "qvel_norm_rad_s": 14.221677882295307
+      },
+      {
+        "phase": "brake",
+        "interval": 28,
+        "qvel_rad_s": [
+          -10.15116734056122,
+          -9.94847053165916
+        ],
+        "qvel_norm_rad_s": 14.213312924697304
+      },
+      {
+        "phase": "brake",
+        "interval": 29,
+        "qvel_rad_s": [
+          -10.127058489296319,
+          -9.956939001372819
+        ],
+        "qvel_norm_rad_s": 14.202040273238483
+      },
+      {
+        "phase": "brake",
+        "interval": 30,
+        "qvel_rad_s": [
+          -10.09786628944394,
+          -9.967055040549814
+        ],
+        "qvel_norm_rad_s": 14.188343447380944
+      },
+      {
+        "phase": "brake",
+        "interval": 31,
+        "qvel_rad_s": [
+          -8.115088014232803,
+          -6.5262600409598495
+        ],
+        "qvel_norm_rad_s": 10.413775665001344
+      },
+      {
+        "phase": "brake",
+        "interval": 32,
+        "qvel_rad_s": [
+          0.3971895809932445,
+          0.4501998271564357
+        ],
+        "qvel_norm_rad_s": 0.6003660946633093
+      },
+      {
+        "phase": "brake",
+        "interval": 33,
+        "qvel_rad_s": [
+          1.30342362179892,
+          1.1584294211895438
+        ],
+        "qvel_norm_rad_s": 1.743809582993784
+      },
+      {
+        "phase": "brake",
+        "interval": 34,
+        "qvel_rad_s": [
+          0.9004226357621602,
+          0.7919403174641848
+        ],
+        "qvel_norm_rad_s": 1.1991373521903776
+      },
+      {
+        "phase": "brake",
+        "interval": 35,
+        "qvel_rad_s": [
+          0.4934568794873611,
+          0.43341238186298753
+        ],
+        "qvel_norm_rad_s": 0.6567693542375072
+      },
+      {
+        "phase": "brake",
+        "interval": 36,
+        "qvel_rad_s": [
+          0.24717601317350218,
+          0.2171473630601388
+        ],
+        "qvel_norm_rad_s": 0.32901209517633095
+      },
+      {
+        "phase": "brake",
+        "interval": 37,
+        "qvel_rad_s": [
+          0.11851117091291681,
+          0.10414455987056255
+        ],
+        "qvel_norm_rad_s": 0.157768776954706
+      },
+      {
+        "phase": "brake",
+        "interval": 38,
+        "qvel_rad_s": [
+          0.055499209439730884,
+          0.048770024062404826
+        ],
+        "qvel_norm_rad_s": 0.0738828633411203
+      },
+      {
+        "phase": "brake",
+        "interval": 39,
+        "qvel_rad_s": [
+          0.02564592000622131,
+          0.02252683767197433
+        ],
+        "qvel_norm_rad_s": 0.034134610419118375
+      },
+      {
+        "phase": "brake",
+        "interval": 40,
+        "qvel_rad_s": [
+          0.011758928982434566,
+          0.010320633326561916
+        ],
+        "qvel_norm_rad_s": 0.01564569854865164
+      },
+      {
+        "phase": "brake",
+        "interval": 41,
+        "qvel_rad_s": [
+          0.005366739218706098,
+          0.004705162400321358
+        ],
+        "qvel_norm_rad_s": 0.007137257390272259
+      },
+      {
+        "phase": "brake",
+        "interval": 42,
+        "qvel_rad_s": [
+          0.0024425905694271635,
+          0.0021386442630567126
+        ],
+        "qvel_norm_rad_s": 0.003246544004593177
+      },
+      {
+        "phase": "brake",
+        "interval": 43,
+        "qvel_rad_s": [
+          0.0011098544365030485,
+          0.0009702899358018297
+        ],
+        "qvel_norm_rad_s": 0.0014741911103190856
+      },
+      {
+        "phase": "brake",
+        "interval": 44,
+        "qvel_rad_s": [
+          0.0005037823818435716,
+          0.00043971436949931874
+        ],
+        "qvel_norm_rad_s": 0.0006686893262197068
+      },
+      {
+        "phase": "brake",
+        "interval": 45,
+        "qvel_rad_s": [
+          0.00022853581886435648,
+          0.0001991289914749148
+        ],
+        "qvel_norm_rad_s": 0.0003031187485950327
+      },
+      {
+        "phase": "brake",
+        "interval": 46,
+        "qvel_rad_s": [
+          0.00010363452603610178,
+          9.013827433872419e-05
+        ],
+        "qvel_norm_rad_s": 0.00013735000359479634
+      },
+      {
+        "phase": "brake",
+        "interval": 47,
+        "qvel_rad_s": [
+          4.698475155532378e-05,
+          4.079121889018109e-05
+        ],
+        "qvel_norm_rad_s": 6.222130195730532e-05
+      },
+      {
+        "phase": "brake",
+        "interval": 48,
+        "qvel_rad_s": [
+          2.129855700979996e-05,
+          1.8456580399475524e-05
+        ],
+        "qvel_norm_rad_s": 2.8182865197527435e-05
+      },
+      {
+        "phase": "brake",
+        "interval": 49,
+        "qvel_rad_s": [
+          9.654006757442832e-06,
+          8.350075658597801e-06
+        ],
+        "qvel_norm_rad_s": 1.2764153320023203e-05
+      },
+      {
+        "phase": "brake",
+        "interval": 50,
+        "qvel_rad_s": [
+          4.375658431598732e-06,
+          3.7774718551697055e-06
+        ],
+        "qvel_norm_rad_s": 5.780629751732966e-06
+      }
+    ]
+  }
+}
