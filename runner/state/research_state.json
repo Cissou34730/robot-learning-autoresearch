@@ -17,7 +17,7 @@
   },
   "candidates": {},
   "counters": {
-    "event": 2,
+    "event": 3,
     "inquiry": 1,
     "measurement": 1,
     "session": 2,
@@ -26,7 +26,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -359,26 +359,145 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-06T22:15:42Z",
+      "error": null,
+      "id": "E3",
+      "inquiry_id": null,
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "No learned candidates exist and no working, best-known, or retained role is assigned.",
+        "completed_operations": [
+          "E2"
+        ],
+        "cumulative_resource_use": "One startup dynamics measurement and one goal-review inquiry-opening operation completed; no training steps, candidate artifacts, or model-role assignments used.",
+        "current_goal_gap": "No learned candidate has been trained or evaluated, so progress toward 98% official success remains unmeasured. The immediate gap is a policy that can acquire and regulate targets across the full 0.06-0.20 m distribution.",
+        "current_synthesis": "M1 observed substantial direct torque authority at the 20 ms control interval, so insufficient actuation is not the leading initial explanation. The supported physical decomposition remains acquisition followed by uninterrupted regulation; residual velocity and hold interruption are the primary learned-behavior explanation, with posture-dependent conditioning and joint-limit interaction secondary. M1 did not establish learned success, official-distribution coverage, branch preference, joint-limit involvement, or substep robustness. E2 records the resulting decision to test the first learned policy on the full official geometry before choosing a coverage or stabilization intervention.",
+        "decision_frontier": "Determine whether first-policy complete-hold failures are dominated by inner-radius acquisition and training coverage or by post-entry regulation and hold interruption. Full-distribution evidence containing episode success, first-entry step, maximum held steps, interruption count, and radius-conditioned outcomes will discriminate these mechanisms; strong entry with short interrupted holds favors braking-sensitive stabilization, while disproportionate inner-radius failure with low interruption favors coverage redesign. A branch, posture, or limit-conditioned cluster would redirect the inquiry toward conditioning rather than changing the plant.",
+        "evidence_references": [
+          "M1",
+          "E2"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 of 200 official episodes to complete an uninterrupted 100-step hold. M1 made a first learned-policy route more informative than another plant-authority probe, and E2 opened a bounded inquiry to obtain the missing acquisition-versus-regulation evidence.",
+        "next_direction_or_closure": "End this goal-review session and continue in fresh inquiry I1. The first inquiry action should produce a learned candidate exposed to the full official target geometry and then evaluate it with reach-versus-hold diagnostics; the resulting evidence will determine whether to expand coverage, prioritize stabilization, or investigate branch/posture or limit conditioning."
+      },
+      "result": {
+        "session_id": "S2",
+        "status": "checkpointed"
+      },
+      "session_id": "S2",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
-  "pi_checkpoint": {
-    "candidates_and_roles": "No candidates exist; no model role is assigned.",
-    "completed_operations": [
-      "M1"
-    ],
-    "cumulative_resource_use": "One startup measurement completed; no training steps or candidate artifacts used.",
-    "current_goal_gap": "No learned candidate has been trained or evaluated, so the gap to 98% official success is unmeasured. The immediate gap is a policy that can acquire and regulate targets across the full 0.06-0.20 m distribution, rather than merely reach a target.",
-    "current_synthesis": "Observed in M1: the compiled model has a 20 ms control interval, gear-5 bounded actuators, nonzero damping and armature, and measured one-interval saturated responses of approximately 5.3-5.6 rad/s at the shoulder and 5.9-6.1 rad/s at the elbow from representative postures. A simultaneous saturated pulse reached approximately 10 rad/s joint speed. Interpretation: direct torque authority is substantial relative to the 50 Hz interface, so insufficient actuation is not the leading initial explanation for future policy failure. The primary competing explanation is learned acquisition/regulation failure, especially residual velocity and hold interruption; a secondary explanation is posture-dependent conditioning or active joint-limit interaction. The pulse trace changes velocity non-smoothly during the saturated trajectory, but M1 did not record joint positions or limit events, so it cannot distinguish those mechanisms. The physical model's reach-versus-hold decomposition remains supported; its unresolved dynamic-time-scale concern is narrowed from authority insufficiency to braking and state-dependent regulation. M1 does not establish any learned-policy success, official-distribution coverage, branch preference, or substep robustness.",
-    "decision_frontier": "For the first learned candidate, determine whether complete-hold failures are dominated by acquisition/coverage or by post-entry regulation. Discriminating evidence is a full-distribution research evaluation with first-entry step, maximum held steps, interruption count, and radius-conditioned outcomes. If inner-radius failures dominate while hold interruptions are low, expand or redesign training coverage; if entry is common but maximum holds remain short with repeated interruptions, prioritize stabilization and braking-sensitive policy learning; if both are strong, investigate branch/posture and limit conditioning rather than changing the plant.",
-    "evidence_references": [
-      "M1"
-    ],
-    "human_goal_connection": "The human goal requires at least 196 of 200 official episodes to complete a two-second uninterrupted hold. M1 determines whether the fixed plant's actuator authority is a plausible first-order barrier before allocating learning effort.",
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "68f15d87a57a4ff8fb0f7fc862ea85ca9196a7dc",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "No learned candidates exist and no working, best-known, or retained role is assigned.",
+        "completed_operations": [
+          "E2"
+        ],
+        "cumulative_resource_use": "One startup dynamics measurement and one goal-review inquiry-opening operation completed; no training steps, candidate artifacts, or model-role assignments used.",
+        "current_goal_gap": "No learned candidate has been trained or evaluated, so progress toward 98% official success remains unmeasured. The immediate gap is a policy that can acquire and regulate targets across the full 0.06-0.20 m distribution.",
+        "current_synthesis": "M1 observed substantial direct torque authority at the 20 ms control interval, so insufficient actuation is not the leading initial explanation. The supported physical decomposition remains acquisition followed by uninterrupted regulation; residual velocity and hold interruption are the primary learned-behavior explanation, with posture-dependent conditioning and joint-limit interaction secondary. M1 did not establish learned success, official-distribution coverage, branch preference, joint-limit involvement, or substep robustness. E2 records the resulting decision to test the first learned policy on the full official geometry before choosing a coverage or stabilization intervention.",
+        "decision_frontier": "Determine whether first-policy complete-hold failures are dominated by inner-radius acquisition and training coverage or by post-entry regulation and hold interruption. Full-distribution evidence containing episode success, first-entry step, maximum held steps, interruption count, and radius-conditioned outcomes will discriminate these mechanisms; strong entry with short interrupted holds favors braking-sensitive stabilization, while disproportionate inner-radius failure with low interruption favors coverage redesign. A branch, posture, or limit-conditioned cluster would redirect the inquiry toward conditioning rather than changing the plant.",
+        "evidence_references": [
+          "M1",
+          "E2"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 of 200 official episodes to complete an uninterrupted 100-step hold. M1 made a first learned-policy route more informative than another plant-authority probe, and E2 opened a bounded inquiry to obtain the missing acquisition-versus-regulation evidence.",
+        "inquiry_id": null,
+        "next_direction_or_closure": "End this goal-review session and continue in fresh inquiry I1. The first inquiry action should produce a learned candidate exposed to the full official target geometry and then evaluate it with reach-versus-hold diagnostics; the resulting evidence will determine whether to expand coverage, prioritize stabilization, or investigate branch/posture or limit conditioning.",
+        "session_id": "S2"
+      },
+      "presentation": {
+        "backend_session_id": "fce534b6-e05b-4764-bedb-97fa6176701b",
+        "campaign_id": "0284114e-1903-4c11-b5f3-820eb4bbacc2",
+        "campaign_usage": "5m37s | 10.02 AIU | prompt 1.2m (85% cached) | output 26.1k",
+        "session_id": "S2",
+        "session_kind": "goal_review",
+        "session_usage": "1m15s | 2.45 AIU | prompt 310.4k (81% cached) | output 3.7k"
+      },
+      "result": {
+        "session_id": "S2",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "2fe5de3a09582c942d66246c9465151240e5ebe5",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E3",
     "inquiry_id": null,
-    "next_direction_or_closure": "End startup and enter goal review. The next scientific direction should be a fresh learned-policy training/evaluation route using the official target geometry or an explicitly justified coverage change, with diagnostics that separate reach from hold. M1's authority result makes a training candidate more informative than another plant-only probe; the missing joint-limit and substep evidence remains non-decisive until policy behavior reveals a related failure cluster.",
-    "scientific_commit": "8b6bb1c77a0e193df09b93520aa36598b8018da8",
-    "session_id": "S1"
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "No learned candidates exist and no working, best-known, or retained role is assigned.",
+        "completed_operations": [
+          "E2"
+        ],
+        "cumulative_resource_use": "One startup dynamics measurement and one goal-review inquiry-opening operation completed; no training steps, candidate artifacts, or model-role assignments used.",
+        "current_goal_gap": "No learned candidate has been trained or evaluated, so progress toward 98% official success remains unmeasured. The immediate gap is a policy that can acquire and regulate targets across the full 0.06-0.20 m distribution.",
+        "current_synthesis": "M1 observed substantial direct torque authority at the 20 ms control interval, so insufficient actuation is not the leading initial explanation. The supported physical decomposition remains acquisition followed by uninterrupted regulation; residual velocity and hold interruption are the primary learned-behavior explanation, with posture-dependent conditioning and joint-limit interaction secondary. M1 did not establish learned success, official-distribution coverage, branch preference, joint-limit involvement, or substep robustness. E2 records the resulting decision to test the first learned policy on the full official geometry before choosing a coverage or stabilization intervention.",
+        "decision_frontier": "Determine whether first-policy complete-hold failures are dominated by inner-radius acquisition and training coverage or by post-entry regulation and hold interruption. Full-distribution evidence containing episode success, first-entry step, maximum held steps, interruption count, and radius-conditioned outcomes will discriminate these mechanisms; strong entry with short interrupted holds favors braking-sensitive stabilization, while disproportionate inner-radius failure with low interruption favors coverage redesign. A branch, posture, or limit-conditioned cluster would redirect the inquiry toward conditioning rather than changing the plant.",
+        "evidence_references": [
+          "M1",
+          "E2"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 of 200 official episodes to complete an uninterrupted 100-step hold. M1 made a first learned-policy route more informative than another plant-authority probe, and E2 opened a bounded inquiry to obtain the missing acquisition-versus-regulation evidence.",
+        "next_direction_or_closure": "End this goal-review session and continue in fresh inquiry I1. The first inquiry action should produce a learned candidate exposed to the full official target geometry and then evaluate it with reach-versus-hold diagnostics; the resulting evidence will determine whether to expand coverage, prioritize stabilization, or investigate branch/posture or limit conditioning."
+      }
+    },
+    "request_fingerprint": "3115e991c311d064b67f623dcae2874e4d50f79a05b6176a8a439cd32c38db51",
+    "session_id": "S2",
+    "supersedes": null
+  },
+  "pi_checkpoint": {
+    "candidates_and_roles": "No learned candidates exist and no working, best-known, or retained role is assigned.",
+    "completed_operations": [
+      "E2"
+    ],
+    "cumulative_resource_use": "One startup dynamics measurement and one goal-review inquiry-opening operation completed; no training steps, candidate artifacts, or model-role assignments used.",
+    "current_goal_gap": "No learned candidate has been trained or evaluated, so progress toward 98% official success remains unmeasured. The immediate gap is a policy that can acquire and regulate targets across the full 0.06-0.20 m distribution.",
+    "current_synthesis": "M1 observed substantial direct torque authority at the 20 ms control interval, so insufficient actuation is not the leading initial explanation. The supported physical decomposition remains acquisition followed by uninterrupted regulation; residual velocity and hold interruption are the primary learned-behavior explanation, with posture-dependent conditioning and joint-limit interaction secondary. M1 did not establish learned success, official-distribution coverage, branch preference, joint-limit involvement, or substep robustness. E2 records the resulting decision to test the first learned policy on the full official geometry before choosing a coverage or stabilization intervention.",
+    "decision_frontier": "Determine whether first-policy complete-hold failures are dominated by inner-radius acquisition and training coverage or by post-entry regulation and hold interruption. Full-distribution evidence containing episode success, first-entry step, maximum held steps, interruption count, and radius-conditioned outcomes will discriminate these mechanisms; strong entry with short interrupted holds favors braking-sensitive stabilization, while disproportionate inner-radius failure with low interruption favors coverage redesign. A branch, posture, or limit-conditioned cluster would redirect the inquiry toward conditioning rather than changing the plant.",
+    "evidence_references": [
+      "M1",
+      "E2"
+    ],
+    "human_goal_connection": "The human goal requires at least 196 of 200 official episodes to complete an uninterrupted 100-step hold. M1 made a first learned-policy route more informative than another plant-authority probe, and E2 opened a bounded inquiry to obtain the missing acquisition-versus-regulation evidence.",
+    "inquiry_id": null,
+    "next_direction_or_closure": "End this goal-review session and continue in fresh inquiry I1. The first inquiry action should produce a learned candidate exposed to the full official target geometry and then evaluate it with reach-versus-hold diagnostics; the resulting evidence will determine whether to expand coverage, prioritize stabilization, or investigate branch/posture or limit conditioning.",
+    "scientific_commit": "2fe5de3a09582c942d66246c9465151240e5ebe5",
+    "session_id": "S2"
   },
   "schema_version": 6,
   "scientific_model": {
@@ -386,21 +505,6 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "fce534b6-e05b-4764-bedb-97fa6176701b",
-    "id": "S2",
-    "inquiry_id": null,
-    "kind": "goal_review",
-    "objective": "Reassess the scientific direction toward the human goal using completed evidence. You may request measurements to resolve an uncertainty or develop the method before committing to an inquiry. Decide whether to request official assessment or open one bounded goal-linked inquiry.",
-    "operation_ids": [
-      "E2"
-    ],
-    "scientific_parent_commit": "68f15d87a57a4ff8fb0f7fc862ea85ca9196a7dc"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
