@@ -1541,44 +1541,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "open",
-        "inquiry": {
-          "closure_condition": "Close the inquiry only after one bounded diagnostic analysis of both late M1 candidates reports radius- and angle-conditioned success, first-reach presence, maximum hold, interruption class, and analytic IK joint-limit margins. Attribute the dominant failure mechanism only if the shared failure concentration and the feasible/infeasible branch pattern are explicit; otherwise preserve the distinction as unresolved and do not commit to an intervention.",
-          "goal_connection": "Resolving this distinction determines whether the next bounded intervention should improve feasible-branch coverage and limit-aware approach behavior toward the 98% uninterrupted-success objective, or instead target hold stabilization and sampling sensitivity. The current baseline is 151/160 and is not eligible for the official 196/200 claim.",
-          "id": "I1",
-          "opened_in_session": "S2",
-          "question": "Do the nine shared M1 development failures arise primarily from angular-sector branch selection and shoulder-limit handling, where the nominal positive-elbow IK branch is infeasible but the folded branch remains feasible, rather than from a general post-entry hold-stabilization limitation?",
-          "rationale": "The retained M1 artifacts show that all nine shared failures cluster in the -151 to -119 degree target sector, with six failures having no first reach and three entering the band for only 1-2 control steps. The target radii have nearly the same mean as successes, so radius alone does not explain the gap. Analytic IK inspection indicates that the positive-elbow solution exceeds the shoulder limit throughout the failed cases while the folded solution remains within limits. This is strong directional evidence for a branch/limit mechanism, but the result should be made durable with a reproducible stratified diagnostic before changing training distribution, reward, recurrence, or control method.",
-          "reframes": []
-        }
-      },
-      "result": {
-        "action": "open",
-        "inquiry_id": "I1",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E2",
-    "inquiry_id": null,
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "open",
-        "closure_condition": "Close the inquiry only after one bounded diagnostic analysis of both late M1 candidates reports radius- and angle-conditioned success, first-reach presence, maximum hold, interruption class, and analytic IK joint-limit margins. Attribute the dominant failure mechanism only if the shared failure concentration and the feasible/infeasible branch pattern are explicit; otherwise preserve the distinction as unresolved and do not commit to an intervention.",
-        "goal_connection": "Resolving this distinction determines whether the next bounded intervention should improve feasible-branch coverage and limit-aware approach behavior toward the 98% uninterrupted-success objective, or instead target hold stabilization and sampling sensitivity. The current baseline is 151/160 and is not eligible for the official 196/200 claim.",
-        "question": "Do the nine shared M1 development failures arise primarily from angular-sector branch selection and shoulder-limit handling, where the nominal positive-elbow IK branch is infeasible but the folded branch remains feasible, rather than from a general post-entry hold-stabilization limitation?",
-        "rationale": "The retained M1 artifacts show that all nine shared failures cluster in the -151 to -119 degree target sector, with six failures having no first reach and three entering the band for only 1-2 control steps. The target radii have nearly the same mean as successes, so radius alone does not explain the gap. Analytic IK inspection indicates that the positive-elbow solution exceeds the shoulder limit throughout the failed cases while the folded solution remains within limits. This is strong directional evidence for a branch/limit mechanism, but the result should be made durable with a reproducible stratified diagnostic before changing training distribution, reward, recurrence, or control method."
-      }
-    },
-    "request_fingerprint": "4c067d213f73a7e1d30ab070523938172a85c31f645d0f81075e2c7cecd2860e",
-    "session_id": "S2",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T1 produced archived candidates but no working, best-known, or retained role has been assigned. M1 found identical 94.375% development success for the two compared late checkpoints; role assignment should wait for the next goal-review decision unless needed to identify a measurement subject.",
     "completed_operations": [
