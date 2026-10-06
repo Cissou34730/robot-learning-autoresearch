@@ -9,7 +9,7 @@
   },
   "candidates": {},
   "counters": {
-    "event": 0,
+    "event": 1,
     "inquiry": 0,
     "measurement": 1,
     "session": 1,
@@ -18,7 +18,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -340,31 +340,148 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-06T07:59:38Z",
+      "error": null,
+      "id": "E1",
+      "inquiry_id": null,
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "No trained candidates exist. Working, best-known, and retained roles remain unassigned.",
+        "completed_operations": [
+          "M1"
+        ],
+        "cumulative_resource_use": "One completed measurement operation (M1); no training steps requested or consumed; no model role assigned.",
+        "current_goal_gap": "There is no trained candidate or episode-level evidence yet, so the gap to 98% official success is unmeasured. M1 shows that compiled geometry is internally consistent, but each individual IK branch is legal on only 94.44% of the sampled radius-angle grid and the minimum joint-limit margin is approximately 4.05e-05 rad. Local dynamics appear controllable rather than intrinsically slow: representative one-control-interval pulses settle below 0.01 rad/s in 7-9 control steps, with maximum cross-joint displacement 0.00252 rad. These facts do not establish policy reach, hold robustness, or reward alignment.",
+        "current_synthesis": "Observed evidence: M1 exhaustively sampled radii 0.06-0.20 m and 360 angles for both analytic branches. The compiled model reproduced target positions with maximum forward residual 1.80e-16 m. The open and folded branches had identical measured legality: 47,940 of 50,760 samples each, or 94.44%, with minimum joint-limit margin 4.05e-05 rad. Across 160 representative local-response trials spanning radii 0.06, 0.10, 0.14, 0.18, and 0.20 m, four angles, both branches, both joints, and pulse amplitudes 0.25 and 1.0, velocity settled below 0.01 rad/s in 7-9 control steps; peak cross-joint displacement was at most 0.00252 rad and peak end-effector displacement was at most 0.03996 m. Interpretation: the XML geometry and compiled forward model support the physical model, and the measured local response does not support a primary explanation of globally weak actuator authority or severe inertial coupling. The remaining competing explanations are that learning fails through branch/limit-conditioned acquisition, or that it reaches but cannot preserve a sufficiently deep margin during the 100-step hold. The legality result is per branch, not a proof that every target lacks a legal alternative branch; the probe did not record target-wise branch unions or policy behavior. The pulse test is local and disturbance-free, so it cannot establish nonlinear settling near limits, closed-loop hold quality, or the relationship between shaped reward and complete success. The initial model's consequences therefore stand but are refined: branch legality and inner-radius coverage remain decision-relevant, while dynamic authority is currently a secondary hypothesis to test through policy diagnostics rather than a reason to postpone training.",
+        "decision_frontier": "After compiled feasibility and local authority are characterized, the next decision is whether the first learning inquiry should primarily solve full-annulus branch/coverage acquisition or uninterrupted stabilization. Discriminating evidence must come from a trained candidate evaluated with target-radius/angle and branch-conditioned first reach, time-to-entry, distance margin, maximum consecutive hold, interruptions, and action/velocity diagnostics. A high first-reach rate with short holds and exits would support stabilization as the bottleneck; large minimum distances concentrated at 0.06-0.14 m or near joint limits would support coverage/branch acquisition. Evidence that reward rises without complete success would additionally redirect the method toward correcting reward-outcome mismatch. M1 alone cannot choose between these policy-level explanations.",
+        "evidence_references": [
+          "M1"
+        ],
+        "human_goal_connection": "The campaign must produce a learned policy with at least 196 successes out of 200 official episodes, where every success requires reaching the target and maintaining uninterrupted one-centimeter accuracy for 100 control steps. M1 informs which physical and learning mechanisms must be addressed before that standard can be assessed.",
+        "next_direction_or_closure": "End startup with this checkpoint and enter goal review. Open one bounded inquiry focused on learning a policy over the full official annulus while localizing whether its limiting failure is branch-conditioned acquisition or uninterrupted hold stability. The first inquiry action should be a baseline training/evaluation comparison whose development evidence preserves the M1 geometry constraints and separates reach from hold rather than optimizing return alone. M1's measured authority makes this more credible than a dynamics-identification-first route, but the inquiry must remain open to a stability-focused redesign if the baseline reaches reliably and exits during the hold."
+      },
+      "result": {
+        "session_id": "S1",
+        "status": "checkpointed"
+      },
+      "session_id": "S1",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
-  "pi_checkpoint": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "57e9650044d1a0fa7a754d53182f5237e826d5ab",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "No trained candidates exist. Working, best-known, and retained roles remain unassigned.",
+        "completed_operations": [
+          "M1"
+        ],
+        "cumulative_resource_use": "One completed measurement operation (M1); no training steps requested or consumed; no model role assigned.",
+        "current_goal_gap": "There is no trained candidate or episode-level evidence yet, so the gap to 98% official success is unmeasured. M1 shows that compiled geometry is internally consistent, but each individual IK branch is legal on only 94.44% of the sampled radius-angle grid and the minimum joint-limit margin is approximately 4.05e-05 rad. Local dynamics appear controllable rather than intrinsically slow: representative one-control-interval pulses settle below 0.01 rad/s in 7-9 control steps, with maximum cross-joint displacement 0.00252 rad. These facts do not establish policy reach, hold robustness, or reward alignment.",
+        "current_synthesis": "Observed evidence: M1 exhaustively sampled radii 0.06-0.20 m and 360 angles for both analytic branches. The compiled model reproduced target positions with maximum forward residual 1.80e-16 m. The open and folded branches had identical measured legality: 47,940 of 50,760 samples each, or 94.44%, with minimum joint-limit margin 4.05e-05 rad. Across 160 representative local-response trials spanning radii 0.06, 0.10, 0.14, 0.18, and 0.20 m, four angles, both branches, both joints, and pulse amplitudes 0.25 and 1.0, velocity settled below 0.01 rad/s in 7-9 control steps; peak cross-joint displacement was at most 0.00252 rad and peak end-effector displacement was at most 0.03996 m. Interpretation: the XML geometry and compiled forward model support the physical model, and the measured local response does not support a primary explanation of globally weak actuator authority or severe inertial coupling. The remaining competing explanations are that learning fails through branch/limit-conditioned acquisition, or that it reaches but cannot preserve a sufficiently deep margin during the 100-step hold. The legality result is per branch, not a proof that every target lacks a legal alternative branch; the probe did not record target-wise branch unions or policy behavior. The pulse test is local and disturbance-free, so it cannot establish nonlinear settling near limits, closed-loop hold quality, or the relationship between shaped reward and complete success. The initial model's consequences therefore stand but are refined: branch legality and inner-radius coverage remain decision-relevant, while dynamic authority is currently a secondary hypothesis to test through policy diagnostics rather than a reason to postpone training.",
+        "decision_frontier": "After compiled feasibility and local authority are characterized, the next decision is whether the first learning inquiry should primarily solve full-annulus branch/coverage acquisition or uninterrupted stabilization. Discriminating evidence must come from a trained candidate evaluated with target-radius/angle and branch-conditioned first reach, time-to-entry, distance margin, maximum consecutive hold, interruptions, and action/velocity diagnostics. A high first-reach rate with short holds and exits would support stabilization as the bottleneck; large minimum distances concentrated at 0.06-0.14 m or near joint limits would support coverage/branch acquisition. Evidence that reward rises without complete success would additionally redirect the method toward correcting reward-outcome mismatch. M1 alone cannot choose between these policy-level explanations.",
+        "evidence_references": [
+          "M1"
+        ],
+        "human_goal_connection": "The campaign must produce a learned policy with at least 196 successes out of 200 official episodes, where every success requires reaching the target and maintaining uninterrupted one-centimeter accuracy for 100 control steps. M1 informs which physical and learning mechanisms must be addressed before that standard can be assessed.",
+        "inquiry_id": null,
+        "next_direction_or_closure": "End startup with this checkpoint and enter goal review. Open one bounded inquiry focused on learning a policy over the full official annulus while localizing whether its limiting failure is branch-conditioned acquisition or uninterrupted hold stability. The first inquiry action should be a baseline training/evaluation comparison whose development evidence preserves the M1 geometry constraints and separates reach from hold rather than optimizing return alone. M1's measured authority makes this more credible than a dynamics-identification-first route, but the inquiry must remain open to a stability-focused redesign if the baseline reaches reliably and exits during the hold.",
+        "session_id": "S1"
+      },
+      "presentation": {
+        "backend_session_id": "e2a8a7e3-6bb8-47df-ac4e-c9c80993e356",
+        "campaign_id": "796c9c1e-8adc-4d24-8983-a45f48051d68",
+        "campaign_usage": "7m17s | 7.30 AIU | prompt 809.6k (85% cached) | output 24.6k",
+        "session_id": "S1",
+        "session_kind": "startup",
+        "session_usage": "4m05s | 4.59 AIU | prompt 609.4k (87% cached) | output 13k"
+      },
+      "result": {
+        "session_id": "S1",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "40b172fe5ec43060b9f02d283715398778dff90c",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E1",
+    "inquiry_id": null,
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "No trained candidates exist. Working, best-known, and retained roles remain unassigned.",
+        "completed_operations": [
+          "M1"
+        ],
+        "cumulative_resource_use": "One completed measurement operation (M1); no training steps requested or consumed; no model role assigned.",
+        "current_goal_gap": "There is no trained candidate or episode-level evidence yet, so the gap to 98% official success is unmeasured. M1 shows that compiled geometry is internally consistent, but each individual IK branch is legal on only 94.44% of the sampled radius-angle grid and the minimum joint-limit margin is approximately 4.05e-05 rad. Local dynamics appear controllable rather than intrinsically slow: representative one-control-interval pulses settle below 0.01 rad/s in 7-9 control steps, with maximum cross-joint displacement 0.00252 rad. These facts do not establish policy reach, hold robustness, or reward alignment.",
+        "current_synthesis": "Observed evidence: M1 exhaustively sampled radii 0.06-0.20 m and 360 angles for both analytic branches. The compiled model reproduced target positions with maximum forward residual 1.80e-16 m. The open and folded branches had identical measured legality: 47,940 of 50,760 samples each, or 94.44%, with minimum joint-limit margin 4.05e-05 rad. Across 160 representative local-response trials spanning radii 0.06, 0.10, 0.14, 0.18, and 0.20 m, four angles, both branches, both joints, and pulse amplitudes 0.25 and 1.0, velocity settled below 0.01 rad/s in 7-9 control steps; peak cross-joint displacement was at most 0.00252 rad and peak end-effector displacement was at most 0.03996 m. Interpretation: the XML geometry and compiled forward model support the physical model, and the measured local response does not support a primary explanation of globally weak actuator authority or severe inertial coupling. The remaining competing explanations are that learning fails through branch/limit-conditioned acquisition, or that it reaches but cannot preserve a sufficiently deep margin during the 100-step hold. The legality result is per branch, not a proof that every target lacks a legal alternative branch; the probe did not record target-wise branch unions or policy behavior. The pulse test is local and disturbance-free, so it cannot establish nonlinear settling near limits, closed-loop hold quality, or the relationship between shaped reward and complete success. The initial model's consequences therefore stand but are refined: branch legality and inner-radius coverage remain decision-relevant, while dynamic authority is currently a secondary hypothesis to test through policy diagnostics rather than a reason to postpone training.",
+        "decision_frontier": "After compiled feasibility and local authority are characterized, the next decision is whether the first learning inquiry should primarily solve full-annulus branch/coverage acquisition or uninterrupted stabilization. Discriminating evidence must come from a trained candidate evaluated with target-radius/angle and branch-conditioned first reach, time-to-entry, distance margin, maximum consecutive hold, interruptions, and action/velocity diagnostics. A high first-reach rate with short holds and exits would support stabilization as the bottleneck; large minimum distances concentrated at 0.06-0.14 m or near joint limits would support coverage/branch acquisition. Evidence that reward rises without complete success would additionally redirect the method toward correcting reward-outcome mismatch. M1 alone cannot choose between these policy-level explanations.",
+        "evidence_references": [
+          "M1"
+        ],
+        "human_goal_connection": "The campaign must produce a learned policy with at least 196 successes out of 200 official episodes, where every success requires reaching the target and maintaining uninterrupted one-centimeter accuracy for 100 control steps. M1 informs which physical and learning mechanisms must be addressed before that standard can be assessed.",
+        "next_direction_or_closure": "End startup with this checkpoint and enter goal review. Open one bounded inquiry focused on learning a policy over the full official annulus while localizing whether its limiting failure is branch-conditioned acquisition or uninterrupted hold stability. The first inquiry action should be a baseline training/evaluation comparison whose development evidence preserves the M1 geometry constraints and separates reach from hold rather than optimizing return alone. M1's measured authority makes this more credible than a dynamics-identification-first route, but the inquiry must remain open to a stability-focused redesign if the baseline reaches reliably and exits during the hold."
+      }
+    },
+    "request_fingerprint": "76edf120f6956c9cec2ea374f26aa9e6da3ba1dc8dc0cefdca7288ece0b361d9",
+    "session_id": "S1",
+    "supersedes": null
+  },
+  "pi_checkpoint": {
+    "candidates_and_roles": "No trained candidates exist. Working, best-known, and retained roles remain unassigned.",
+    "completed_operations": [
+      "M1"
+    ],
+    "cumulative_resource_use": "One completed measurement operation (M1); no training steps requested or consumed; no model role assigned.",
+    "current_goal_gap": "There is no trained candidate or episode-level evidence yet, so the gap to 98% official success is unmeasured. M1 shows that compiled geometry is internally consistent, but each individual IK branch is legal on only 94.44% of the sampled radius-angle grid and the minimum joint-limit margin is approximately 4.05e-05 rad. Local dynamics appear controllable rather than intrinsically slow: representative one-control-interval pulses settle below 0.01 rad/s in 7-9 control steps, with maximum cross-joint displacement 0.00252 rad. These facts do not establish policy reach, hold robustness, or reward alignment.",
+    "current_synthesis": "Observed evidence: M1 exhaustively sampled radii 0.06-0.20 m and 360 angles for both analytic branches. The compiled model reproduced target positions with maximum forward residual 1.80e-16 m. The open and folded branches had identical measured legality: 47,940 of 50,760 samples each, or 94.44%, with minimum joint-limit margin 4.05e-05 rad. Across 160 representative local-response trials spanning radii 0.06, 0.10, 0.14, 0.18, and 0.20 m, four angles, both branches, both joints, and pulse amplitudes 0.25 and 1.0, velocity settled below 0.01 rad/s in 7-9 control steps; peak cross-joint displacement was at most 0.00252 rad and peak end-effector displacement was at most 0.03996 m. Interpretation: the XML geometry and compiled forward model support the physical model, and the measured local response does not support a primary explanation of globally weak actuator authority or severe inertial coupling. The remaining competing explanations are that learning fails through branch/limit-conditioned acquisition, or that it reaches but cannot preserve a sufficiently deep margin during the 100-step hold. The legality result is per branch, not a proof that every target lacks a legal alternative branch; the probe did not record target-wise branch unions or policy behavior. The pulse test is local and disturbance-free, so it cannot establish nonlinear settling near limits, closed-loop hold quality, or the relationship between shaped reward and complete success. The initial model's consequences therefore stand but are refined: branch legality and inner-radius coverage remain decision-relevant, while dynamic authority is currently a secondary hypothesis to test through policy diagnostics rather than a reason to postpone training.",
+    "decision_frontier": "After compiled feasibility and local authority are characterized, the next decision is whether the first learning inquiry should primarily solve full-annulus branch/coverage acquisition or uninterrupted stabilization. Discriminating evidence must come from a trained candidate evaluated with target-radius/angle and branch-conditioned first reach, time-to-entry, distance margin, maximum consecutive hold, interruptions, and action/velocity diagnostics. A high first-reach rate with short holds and exits would support stabilization as the bottleneck; large minimum distances concentrated at 0.06-0.14 m or near joint limits would support coverage/branch acquisition. Evidence that reward rises without complete success would additionally redirect the method toward correcting reward-outcome mismatch. M1 alone cannot choose between these policy-level explanations.",
+    "evidence_references": [
+      "M1"
+    ],
+    "human_goal_connection": "The campaign must produce a learned policy with at least 196 successes out of 200 official episodes, where every success requires reaching the target and maintaining uninterrupted one-centimeter accuracy for 100 control steps. M1 informs which physical and learning mechanisms must be addressed before that standard can be assessed.",
+    "inquiry_id": null,
+    "next_direction_or_closure": "End startup with this checkpoint and enter goal review. Open one bounded inquiry focused on learning a policy over the full official annulus while localizing whether its limiting failure is branch-conditioned acquisition or uninterrupted hold stability. The first inquiry action should be a baseline training/evaluation comparison whose development evidence preserves the M1 geometry constraints and separates reach from hold rather than optimizing return alone. M1's measured authority makes this more credible than a dynamics-identification-first route, but the inquiry must remain open to a stability-focused redesign if the baseline reaches reliably and exits during the hold.",
+    "scientific_commit": "40b172fe5ec43060b9f02d283715398778dff90c",
+    "session_id": "S1"
+  },
   "schema_version": 6,
   "scientific_model": {
     "commit": "13f58b56113a46600b9851e64b99b256fed8fe2b",
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "e2a8a7e3-6bb8-47df-ac4e-c9c80993e356",
-    "id": "S1",
-    "inquiry_id": null,
-    "kind": "startup",
-    "objective": "Establish the most credible initial scientific direction toward the human goal from the scientific model and available evidence. Use scientific work in this session to establish or refine that direction, including building or adapting reusable scientific tools and PI-owned methods where needed. These capabilities can support subsequent inquiries. Choose the first useful scientific action and explain why it advances the direction. Preserve the work actually performed, resulting understanding, remaining uncertainties and chosen next action in the scientific session record.",
-    "operation_ids": [
-      "M1"
-    ],
-    "scientific_parent_commit": "57e9650044d1a0fa7a754d53182f5237e826d5ab"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
