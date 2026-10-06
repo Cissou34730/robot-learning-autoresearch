@@ -17,7 +17,7 @@
   },
   "candidates": {},
   "counters": {
-    "event": 2,
+    "event": 3,
     "inquiry": 1,
     "measurement": 1,
     "session": 2,
@@ -26,7 +26,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -401,26 +401,145 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-06T08:03:20Z",
+      "error": null,
+      "id": "E3",
+      "inquiry_id": null,
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "No trained candidates exist. Working, best-known, and retained roles remain unassigned.",
+        "completed_operations": [
+          "E2"
+        ],
+        "cumulative_resource_use": "One completed measurement operation (M1); one completed inquiry-opening operation (E2); no training steps requested or consumed; no model role assigned.",
+        "current_goal_gap": "No trained candidate or episode-level evidence exists, so progress toward 98% official success is unmeasured. M1 establishes compiled geometric consistency and local actuator authority but does not establish target-wise branch coverage, policy acquisition, hold robustness, or reward alignment.",
+        "current_synthesis": "M1 exhaustively sampled both IK branches over radii 0.06-0.20 m and 360 angles: compiled forward residual was at most 1.80e-16 m, each branch was legal for 47,940 of 50,760 samples (94.44%), and the minimum joint-limit margin was 4.05e-05 rad. Across 160 representative local pulse trials, velocity settled below 0.01 rad/s in 7-9 control steps, peak cross-joint displacement was at most 0.00252 rad, and peak end-effector displacement was at most 0.03996 m. These observations support the physical model and make globally weak actuator authority or severe inertial coupling a secondary hypothesis, not an established cause. They do not prove that every target has a legal alternative branch: legality was measured per branch, without target-wise branch unions. They also do not establish nonlinear near-limit behavior, closed-loop hold quality, or reward-to-success alignment because the pulse probe was local and disturbance-free. The consequential competing explanations remain branch- and radius-conditioned acquisition failure, especially in the omitted inner training range, versus reaching followed by insufficient hold margin and interruptions. The reward may additionally favor approach and partial holding without guaranteeing complete success.",
+        "decision_frontier": "The unresolved decision is whether the first learning intervention should primarily improve full-annulus branch/coverage acquisition or uninterrupted stabilization. A trained candidate must be evaluated with target-radius/angle and reached-branch stratification, first reach and time-to-entry, minimum distance and hold margin, maximum consecutive hold, interruption timing, action, velocity, and reward-success relation. Large distances concentrated at 0.06-0.14 m or near limits would support acquisition/branch coverage; high first reach with short holds and exits would support stabilization; high reward with low complete success would redirect toward reward-outcome mismatch. M1 cannot discriminate these policy-level explanations.",
+        "evidence_references": [
+          "M1",
+          "E2"
+        ],
+        "human_goal_connection": "The campaign must produce a frozen learned policy with at least 196 successes out of 200 official episodes. Each success requires both reaching a target sampled over the full 0.06-0.20 m annulus and maintaining uninterrupted one-centimeter accuracy for 100 control steps.",
+        "next_direction_or_closure": "The goal-review transition is to continue in the newly opened bounded inquiry I1. The first inquiry action should train a baseline over the full official annulus, then obtain development evidence that separates acquisition from hold failure rather than relying on return alone. The inquiry remains open to a coverage/branch redesign if inner-radius failures dominate, a stabilization or reward-outcome redesign if reaches are reliable but holds fail, or official assessment only after an evidence-backed best-known candidate exists."
+      },
+      "result": {
+        "session_id": "S2",
+        "status": "checkpointed"
+      },
+      "session_id": "S2",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "850625a2ee59da64003cf954548d2836e7285e37",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "No trained candidates exist. Working, best-known, and retained roles remain unassigned.",
+        "completed_operations": [
+          "E2"
+        ],
+        "cumulative_resource_use": "One completed measurement operation (M1); one completed inquiry-opening operation (E2); no training steps requested or consumed; no model role assigned.",
+        "current_goal_gap": "No trained candidate or episode-level evidence exists, so progress toward 98% official success is unmeasured. M1 establishes compiled geometric consistency and local actuator authority but does not establish target-wise branch coverage, policy acquisition, hold robustness, or reward alignment.",
+        "current_synthesis": "M1 exhaustively sampled both IK branches over radii 0.06-0.20 m and 360 angles: compiled forward residual was at most 1.80e-16 m, each branch was legal for 47,940 of 50,760 samples (94.44%), and the minimum joint-limit margin was 4.05e-05 rad. Across 160 representative local pulse trials, velocity settled below 0.01 rad/s in 7-9 control steps, peak cross-joint displacement was at most 0.00252 rad, and peak end-effector displacement was at most 0.03996 m. These observations support the physical model and make globally weak actuator authority or severe inertial coupling a secondary hypothesis, not an established cause. They do not prove that every target has a legal alternative branch: legality was measured per branch, without target-wise branch unions. They also do not establish nonlinear near-limit behavior, closed-loop hold quality, or reward-to-success alignment because the pulse probe was local and disturbance-free. The consequential competing explanations remain branch- and radius-conditioned acquisition failure, especially in the omitted inner training range, versus reaching followed by insufficient hold margin and interruptions. The reward may additionally favor approach and partial holding without guaranteeing complete success.",
+        "decision_frontier": "The unresolved decision is whether the first learning intervention should primarily improve full-annulus branch/coverage acquisition or uninterrupted stabilization. A trained candidate must be evaluated with target-radius/angle and reached-branch stratification, first reach and time-to-entry, minimum distance and hold margin, maximum consecutive hold, interruption timing, action, velocity, and reward-success relation. Large distances concentrated at 0.06-0.14 m or near limits would support acquisition/branch coverage; high first reach with short holds and exits would support stabilization; high reward with low complete success would redirect toward reward-outcome mismatch. M1 cannot discriminate these policy-level explanations.",
+        "evidence_references": [
+          "M1",
+          "E2"
+        ],
+        "human_goal_connection": "The campaign must produce a frozen learned policy with at least 196 successes out of 200 official episodes. Each success requires both reaching a target sampled over the full 0.06-0.20 m annulus and maintaining uninterrupted one-centimeter accuracy for 100 control steps.",
+        "inquiry_id": null,
+        "next_direction_or_closure": "The goal-review transition is to continue in the newly opened bounded inquiry I1. The first inquiry action should train a baseline over the full official annulus, then obtain development evidence that separates acquisition from hold failure rather than relying on return alone. The inquiry remains open to a coverage/branch redesign if inner-radius failures dominate, a stabilization or reward-outcome redesign if reaches are reliable but holds fail, or official assessment only after an evidence-backed best-known candidate exists.",
+        "session_id": "S2"
+      },
+      "presentation": {
+        "backend_session_id": "e0618516-f430-42e2-9444-e79ef574a26a",
+        "campaign_id": "796c9c1e-8adc-4d24-8983-a45f48051d68",
+        "campaign_usage": "9m07s | 9.50 AIU | prompt 1.1m (85% cached) | output 28.5k",
+        "session_id": "S2",
+        "session_kind": "goal_review",
+        "session_usage": "1m50s | 2.20 AIU | prompt 294.9k (83% cached) | output 3.9k"
+      },
+      "result": {
+        "session_id": "S2",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "5529f37791c55e5045eacfe701b16139bf0715a4",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E3",
+    "inquiry_id": null,
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "No trained candidates exist. Working, best-known, and retained roles remain unassigned.",
+        "completed_operations": [
+          "E2"
+        ],
+        "cumulative_resource_use": "One completed measurement operation (M1); one completed inquiry-opening operation (E2); no training steps requested or consumed; no model role assigned.",
+        "current_goal_gap": "No trained candidate or episode-level evidence exists, so progress toward 98% official success is unmeasured. M1 establishes compiled geometric consistency and local actuator authority but does not establish target-wise branch coverage, policy acquisition, hold robustness, or reward alignment.",
+        "current_synthesis": "M1 exhaustively sampled both IK branches over radii 0.06-0.20 m and 360 angles: compiled forward residual was at most 1.80e-16 m, each branch was legal for 47,940 of 50,760 samples (94.44%), and the minimum joint-limit margin was 4.05e-05 rad. Across 160 representative local pulse trials, velocity settled below 0.01 rad/s in 7-9 control steps, peak cross-joint displacement was at most 0.00252 rad, and peak end-effector displacement was at most 0.03996 m. These observations support the physical model and make globally weak actuator authority or severe inertial coupling a secondary hypothesis, not an established cause. They do not prove that every target has a legal alternative branch: legality was measured per branch, without target-wise branch unions. They also do not establish nonlinear near-limit behavior, closed-loop hold quality, or reward-to-success alignment because the pulse probe was local and disturbance-free. The consequential competing explanations remain branch- and radius-conditioned acquisition failure, especially in the omitted inner training range, versus reaching followed by insufficient hold margin and interruptions. The reward may additionally favor approach and partial holding without guaranteeing complete success.",
+        "decision_frontier": "The unresolved decision is whether the first learning intervention should primarily improve full-annulus branch/coverage acquisition or uninterrupted stabilization. A trained candidate must be evaluated with target-radius/angle and reached-branch stratification, first reach and time-to-entry, minimum distance and hold margin, maximum consecutive hold, interruption timing, action, velocity, and reward-success relation. Large distances concentrated at 0.06-0.14 m or near limits would support acquisition/branch coverage; high first reach with short holds and exits would support stabilization; high reward with low complete success would redirect toward reward-outcome mismatch. M1 cannot discriminate these policy-level explanations.",
+        "evidence_references": [
+          "M1",
+          "E2"
+        ],
+        "human_goal_connection": "The campaign must produce a frozen learned policy with at least 196 successes out of 200 official episodes. Each success requires both reaching a target sampled over the full 0.06-0.20 m annulus and maintaining uninterrupted one-centimeter accuracy for 100 control steps.",
+        "next_direction_or_closure": "The goal-review transition is to continue in the newly opened bounded inquiry I1. The first inquiry action should train a baseline over the full official annulus, then obtain development evidence that separates acquisition from hold failure rather than relying on return alone. The inquiry remains open to a coverage/branch redesign if inner-radius failures dominate, a stabilization or reward-outcome redesign if reaches are reliable but holds fail, or official assessment only after an evidence-backed best-known candidate exists."
+      }
+    },
+    "request_fingerprint": "9e6efd61bf9844f4452f50a48f7430a67bd933281310d9d84607c53b6dd26bd1",
+    "session_id": "S2",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No trained candidates exist. Working, best-known, and retained roles remain unassigned.",
     "completed_operations": [
-      "M1"
+      "E2"
     ],
-    "cumulative_resource_use": "One completed measurement operation (M1); no training steps requested or consumed; no model role assigned.",
-    "current_goal_gap": "There is no trained candidate or episode-level evidence yet, so the gap to 98% official success is unmeasured. M1 shows that compiled geometry is internally consistent, but each individual IK branch is legal on only 94.44% of the sampled radius-angle grid and the minimum joint-limit margin is approximately 4.05e-05 rad. Local dynamics appear controllable rather than intrinsically slow: representative one-control-interval pulses settle below 0.01 rad/s in 7-9 control steps, with maximum cross-joint displacement 0.00252 rad. These facts do not establish policy reach, hold robustness, or reward alignment.",
-    "current_synthesis": "Observed evidence: M1 exhaustively sampled radii 0.06-0.20 m and 360 angles for both analytic branches. The compiled model reproduced target positions with maximum forward residual 1.80e-16 m. The open and folded branches had identical measured legality: 47,940 of 50,760 samples each, or 94.44%, with minimum joint-limit margin 4.05e-05 rad. Across 160 representative local-response trials spanning radii 0.06, 0.10, 0.14, 0.18, and 0.20 m, four angles, both branches, both joints, and pulse amplitudes 0.25 and 1.0, velocity settled below 0.01 rad/s in 7-9 control steps; peak cross-joint displacement was at most 0.00252 rad and peak end-effector displacement was at most 0.03996 m. Interpretation: the XML geometry and compiled forward model support the physical model, and the measured local response does not support a primary explanation of globally weak actuator authority or severe inertial coupling. The remaining competing explanations are that learning fails through branch/limit-conditioned acquisition, or that it reaches but cannot preserve a sufficiently deep margin during the 100-step hold. The legality result is per branch, not a proof that every target lacks a legal alternative branch; the probe did not record target-wise branch unions or policy behavior. The pulse test is local and disturbance-free, so it cannot establish nonlinear settling near limits, closed-loop hold quality, or the relationship between shaped reward and complete success. The initial model's consequences therefore stand but are refined: branch legality and inner-radius coverage remain decision-relevant, while dynamic authority is currently a secondary hypothesis to test through policy diagnostics rather than a reason to postpone training.",
-    "decision_frontier": "After compiled feasibility and local authority are characterized, the next decision is whether the first learning inquiry should primarily solve full-annulus branch/coverage acquisition or uninterrupted stabilization. Discriminating evidence must come from a trained candidate evaluated with target-radius/angle and branch-conditioned first reach, time-to-entry, distance margin, maximum consecutive hold, interruptions, and action/velocity diagnostics. A high first-reach rate with short holds and exits would support stabilization as the bottleneck; large minimum distances concentrated at 0.06-0.14 m or near joint limits would support coverage/branch acquisition. Evidence that reward rises without complete success would additionally redirect the method toward correcting reward-outcome mismatch. M1 alone cannot choose between these policy-level explanations.",
+    "cumulative_resource_use": "One completed measurement operation (M1); one completed inquiry-opening operation (E2); no training steps requested or consumed; no model role assigned.",
+    "current_goal_gap": "No trained candidate or episode-level evidence exists, so progress toward 98% official success is unmeasured. M1 establishes compiled geometric consistency and local actuator authority but does not establish target-wise branch coverage, policy acquisition, hold robustness, or reward alignment.",
+    "current_synthesis": "M1 exhaustively sampled both IK branches over radii 0.06-0.20 m and 360 angles: compiled forward residual was at most 1.80e-16 m, each branch was legal for 47,940 of 50,760 samples (94.44%), and the minimum joint-limit margin was 4.05e-05 rad. Across 160 representative local pulse trials, velocity settled below 0.01 rad/s in 7-9 control steps, peak cross-joint displacement was at most 0.00252 rad, and peak end-effector displacement was at most 0.03996 m. These observations support the physical model and make globally weak actuator authority or severe inertial coupling a secondary hypothesis, not an established cause. They do not prove that every target has a legal alternative branch: legality was measured per branch, without target-wise branch unions. They also do not establish nonlinear near-limit behavior, closed-loop hold quality, or reward-to-success alignment because the pulse probe was local and disturbance-free. The consequential competing explanations remain branch- and radius-conditioned acquisition failure, especially in the omitted inner training range, versus reaching followed by insufficient hold margin and interruptions. The reward may additionally favor approach and partial holding without guaranteeing complete success.",
+    "decision_frontier": "The unresolved decision is whether the first learning intervention should primarily improve full-annulus branch/coverage acquisition or uninterrupted stabilization. A trained candidate must be evaluated with target-radius/angle and reached-branch stratification, first reach and time-to-entry, minimum distance and hold margin, maximum consecutive hold, interruption timing, action, velocity, and reward-success relation. Large distances concentrated at 0.06-0.14 m or near limits would support acquisition/branch coverage; high first reach with short holds and exits would support stabilization; high reward with low complete success would redirect toward reward-outcome mismatch. M1 cannot discriminate these policy-level explanations.",
     "evidence_references": [
-      "M1"
+      "M1",
+      "E2"
     ],
-    "human_goal_connection": "The campaign must produce a learned policy with at least 196 successes out of 200 official episodes, where every success requires reaching the target and maintaining uninterrupted one-centimeter accuracy for 100 control steps. M1 informs which physical and learning mechanisms must be addressed before that standard can be assessed.",
+    "human_goal_connection": "The campaign must produce a frozen learned policy with at least 196 successes out of 200 official episodes. Each success requires both reaching a target sampled over the full 0.06-0.20 m annulus and maintaining uninterrupted one-centimeter accuracy for 100 control steps.",
     "inquiry_id": null,
-    "next_direction_or_closure": "End startup with this checkpoint and enter goal review. Open one bounded inquiry focused on learning a policy over the full official annulus while localizing whether its limiting failure is branch-conditioned acquisition or uninterrupted hold stability. The first inquiry action should be a baseline training/evaluation comparison whose development evidence preserves the M1 geometry constraints and separates reach from hold rather than optimizing return alone. M1's measured authority makes this more credible than a dynamics-identification-first route, but the inquiry must remain open to a stability-focused redesign if the baseline reaches reliably and exits during the hold.",
-    "scientific_commit": "40b172fe5ec43060b9f02d283715398778dff90c",
-    "session_id": "S1"
+    "next_direction_or_closure": "The goal-review transition is to continue in the newly opened bounded inquiry I1. The first inquiry action should train a baseline over the full official annulus, then obtain development evidence that separates acquisition from hold failure rather than relying on return alone. The inquiry remains open to a coverage/branch redesign if inner-radius failures dominate, a stabilization or reward-outcome redesign if reaches are reliable but holds fail, or official assessment only after an evidence-backed best-known candidate exists.",
+    "scientific_commit": "5529f37791c55e5045eacfe701b16139bf0715a4",
+    "session_id": "S2"
   },
   "schema_version": 6,
   "scientific_model": {
@@ -428,21 +547,6 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "e0618516-f430-42e2-9444-e79ef574a26a",
-    "id": "S2",
-    "inquiry_id": null,
-    "kind": "goal_review",
-    "objective": "Reassess the scientific direction toward the human goal using completed evidence. You may request measurements to resolve an uncertainty or develop the method before committing to an inquiry. Decide whether to request official assessment or open one bounded goal-linked inquiry.",
-    "operation_ids": [
-      "E2"
-    ],
-    "scientific_parent_commit": "850625a2ee59da64003cf954548d2836e7285e37"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
