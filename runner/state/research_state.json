@@ -1659,7 +1659,7 @@
   "counters": {
     "event": 8,
     "inquiry": 2,
-    "measurement": 3,
+    "measurement": 4,
     "session": 6,
     "training": 2
   },
@@ -3375,9 +3375,1174 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-06T05:43:16Z",
+      "error": null,
+      "id": "M4",
+      "inquiry_id": "I2",
+      "kind": "measurement",
+      "request": {
+        "description": "Analyze the paired I2 intervention and baseline development artifacts by angle sector, analytic branch-feasibility pattern, first-reach timing, maximum hold, interruption class, and discordant shared seeds.",
+        "measurements": [
+          {
+            "args": [
+              "--intervention",
+              "T2:checkpoint-120832=campaigns/evaluations/9fa1f256-b083-45b2-8127-d7e4e00728b8/evaluation-9fa1f256-b083-45b2-8127-d7e4e00728b8-m3-T2-checkpoint-120832-160ep-seed4200-5a94cbf00677.json",
+              "--reference",
+              "T1:checkpoint-120832=campaigns/evaluations/9fa1f256-b083-45b2-8127-d7e4e00728b8/evaluation-9fa1f256-b083-45b2-8127-d7e4e00728b8-m3-T1-checkpoint-120832-160ep-seed4200-5a94cbf00677.json",
+              "--output",
+              "campaigns/evaluations/9fa1f256-b083-45b2-8127-d7e4e00728b8/i2-diagnostic.json"
+            ],
+            "artifact": "campaigns/evaluations/9fa1f256-b083-45b2-8127-d7e4e00728b8/i2-diagnostic.json",
+            "instrument": "python_module",
+            "label": "I2 paired branch and failure-class analysis",
+            "module": "robot_learning.lab.i2_diagnostic"
+          }
+        ],
+        "rationale": "The paired evaluation established a large intervention regression but its compact result does not identify whether the regression is branch-specific or broad. This bounded analysis uses the retained per-episode evidence to close I2 without conflating training return with task behavior. A broad regression across feasible-branch patterns supports abandoning this observation representation; a sector-specific regression would preserve a narrower branch hypothesis. The result cannot establish the official 98% goal."
+      },
+      "result": {
+        "measurements": [
+          {
+            "args": [
+              "--intervention",
+              "T2:checkpoint-120832=campaigns/evaluations/9fa1f256-b083-45b2-8127-d7e4e00728b8/evaluation-9fa1f256-b083-45b2-8127-d7e4e00728b8-m3-T2-checkpoint-120832-160ep-seed4200-5a94cbf00677.json",
+              "--reference",
+              "T1:checkpoint-120832=campaigns/evaluations/9fa1f256-b083-45b2-8127-d7e4e00728b8/evaluation-9fa1f256-b083-45b2-8127-d7e4e00728b8-m3-T1-checkpoint-120832-160ep-seed4200-5a94cbf00677.json",
+              "--output",
+              "campaigns/evaluations/9fa1f256-b083-45b2-8127-d7e4e00728b8/i2-diagnostic.json"
+            ],
+            "instrument": "python_module",
+            "label": "I2 paired branch and failure-class analysis",
+            "metrics": {
+              "evaluation_artifact": "campaigns/evaluations/9fa1f256-b083-45b2-8127-d7e4e00728b8/python-module-M4-1-i2-diagnostic.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 5,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/inquiry",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 7,
+                    "path": "/intervention",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 7,
+                    "path": "/reference",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/paired",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/intervention/candidate",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/intervention/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/intervention/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/intervention/interruption_classes",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/intervention/branch_patterns",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 12,
+                    "path": "/intervention/angle_conditioned",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/intervention/branch_conditioned",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/reference/candidate",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/reference/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/reference/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/reference/interruption_classes",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/reference/branch_patterns",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 12,
+                    "path": "/reference/angle_conditioned",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/reference/branch_conditioned",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/paired/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/paired/discordant_episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/paired/intervention_wins",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/paired/reference_wins",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 112,
+                    "path": "/paired/discordant_episode_seeds",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/intervention/interruption_classes/completed_hold",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/intervention/interruption_classes/no_first_reach",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/intervention/interruption_classes/post_entry_interrupted_hold",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/intervention/branch_patterns/both_feasible",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/intervention/branch_patterns/folded_only_feasible",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/intervention/branch_patterns/open_only_feasible",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 8,
+                    "path": "/intervention/angle_conditioned/-120..-90deg",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 8,
+                    "path": "/intervention/angle_conditioned/-150..-120deg",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 8,
+                    "path": "/intervention/angle_conditioned/-180..-150deg",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 8,
+                    "path": "/intervention/angle_conditioned/-30..0deg",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 8,
+                    "path": "/intervention/angle_conditioned/-60..-30deg",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 8,
+                    "path": "/intervention/angle_conditioned/-90..-60deg",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 8,
+                    "path": "/intervention/angle_conditioned/0..30deg",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 8,
+                    "path": "/intervention/angle_conditioned/120..150deg",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 8,
+                    "path": "/intervention/angle_conditioned/150..180deg",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 8,
+                    "path": "/intervention/angle_conditioned/30..60deg",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 8,
+                    "path": "/intervention/angle_conditioned/60..90deg",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 8,
+                    "path": "/intervention/angle_conditioned/90..120deg",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 8,
+                    "path": "/intervention/branch_conditioned/both_feasible",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 8,
+                    "path": "/intervention/branch_conditioned/folded_only_feasible",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 8,
+                    "path": "/intervention/branch_conditioned/open_only_feasible",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/reference/interruption_classes/completed_hold",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/reference/interruption_classes/no_first_reach",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/reference/interruption_classes/post_entry_interrupted_hold",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/reference/branch_patterns/both_feasible",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/reference/branch_patterns/folded_only_feasible",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/reference/branch_patterns/open_only_feasible",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 8,
+                    "path": "/reference/angle_conditioned/-120..-90deg",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 8,
+                    "path": "/reference/angle_conditioned/-150..-120deg",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 8,
+                    "path": "/reference/angle_conditioned/-180..-150deg",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 8,
+                    "path": "/reference/angle_conditioned/-30..0deg",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 8,
+                    "path": "/reference/angle_conditioned/-60..-30deg",
+                    "type": "object"
+                  }
+                ],
+                "truncated": true
+              },
+              "evaluation_artifact_fingerprint": "afc87c5631abf905209543ee4bfa1ece1f277e0a6254f286cfdea1b85a77b392"
+            },
+            "module": "robot_learning.lab.i2_diagnostic"
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": {
+          "campaign_lab_manifest": [
+            {
+              "fingerprint": "dd03a87fda7b2696ce84aa6949e775b7067913c2865b6bae36bc3e4f3d07a348",
+              "path": "robot_learning/lab/i1_diagnostic.py"
+            },
+            {
+              "fingerprint": "f28ccb109ab9350239605c3e2eebe0ac61baf085fd92a54f429444c17e180fad",
+              "path": "robot_learning/lab/i2_diagnostic.py"
+            }
+          ],
+          "campaign_lab_publication": {
+            "commit": "b78df79d3e9917dd02288ea395777faa91e08e49",
+            "fingerprint": "6f1314cfb6288faddd2d6b2dea29db13b00253b11561d4601613a6d61a6f40c3",
+            "manifest": [
+              {
+                "fingerprint": "dd03a87fda7b2696ce84aa6949e775b7067913c2865b6bae36bc3e4f3d07a348",
+                "path": "robot_learning/lab/i1_diagnostic.py"
+              },
+              {
+                "fingerprint": "f28ccb109ab9350239605c3e2eebe0ac61baf085fd92a54f429444c17e180fad",
+                "path": "robot_learning/lab/i2_diagnostic.py"
+              }
+            ]
+          },
+          "code_parent_commit": "8995132bd91a1d775fb05e27c7f6abdf088c278d",
+          "effective_parameters": {
+            "algorithm": {
+              "name": "ppo"
+            },
+            "policy": {
+              "activation": "tanh",
+              "net_arch": [
+                64,
+                64
+              ]
+            },
+            "ppo": {
+              "batch_size": 64,
+              "ent_coef": 0.01,
+              "gae_lambda": 0.95,
+              "gamma": 0.99,
+              "learning_rate": 0.0003,
+              "n_steps": 1024
+            },
+            "training": {
+              "checkpoint_every_steps": 5000,
+              "n_envs": 1
+            }
+          },
+          "module_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "f28ccb109ab9350239605c3e2eebe0ac61baf085fd92a54f429444c17e180fad",
+              "path": "robot_learning/lab/i2_diagnostic.py"
+            }
+          ],
+          "module_paths": [
+            "robot_learning/lab/i2_diagnostic.py"
+          ],
+          "scientific_commit": "cd7110f9071fefb279cf6fb1003a30b6858998b4",
+          "scientific_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "849f2696d27d11801adbcb02b168d0c2d09153267fcc9bec92650abf2ef60b3b",
+              "path": "robot_learning/scenario/evaluation.py"
+            }
+          ],
+          "scientific_paths": [
+            "robot_learning/scenario/evaluation.py"
+          ]
+        }
+      },
+      "session_id": "S6",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "evaluation_semantics": null,
+      "measurements": [
+        {
+          "args": [
+            "--intervention",
+            "T2:checkpoint-120832=campaigns/evaluations/9fa1f256-b083-45b2-8127-d7e4e00728b8/evaluation-9fa1f256-b083-45b2-8127-d7e4e00728b8-m3-T2-checkpoint-120832-160ep-seed4200-5a94cbf00677.json",
+            "--reference",
+            "T1:checkpoint-120832=campaigns/evaluations/9fa1f256-b083-45b2-8127-d7e4e00728b8/evaluation-9fa1f256-b083-45b2-8127-d7e4e00728b8-m3-T1-checkpoint-120832-160ep-seed4200-5a94cbf00677.json",
+            "--output",
+            "campaigns/evaluations/9fa1f256-b083-45b2-8127-d7e4e00728b8/i2-diagnostic.json"
+          ],
+          "artifact": "campaigns/evaluations/9fa1f256-b083-45b2-8127-d7e4e00728b8/i2-diagnostic.json",
+          "instrument": "python_module",
+          "label": "I2 paired branch and failure-class analysis",
+          "module": "robot_learning.lab.i2_diagnostic"
+        }
+      ],
+      "module_provenance": {
+        "campaign_lab_manifest": [
+          {
+            "fingerprint": "dd03a87fda7b2696ce84aa6949e775b7067913c2865b6bae36bc3e4f3d07a348",
+            "path": "robot_learning/lab/i1_diagnostic.py"
+          },
+          {
+            "fingerprint": "f28ccb109ab9350239605c3e2eebe0ac61baf085fd92a54f429444c17e180fad",
+            "path": "robot_learning/lab/i2_diagnostic.py"
+          }
+        ],
+        "campaign_lab_publication": {
+          "commit": "b78df79d3e9917dd02288ea395777faa91e08e49",
+          "fingerprint": "6f1314cfb6288faddd2d6b2dea29db13b00253b11561d4601613a6d61a6f40c3",
+          "manifest": [
+            {
+              "fingerprint": "dd03a87fda7b2696ce84aa6949e775b7067913c2865b6bae36bc3e4f3d07a348",
+              "path": "robot_learning/lab/i1_diagnostic.py"
+            },
+            {
+              "fingerprint": "f28ccb109ab9350239605c3e2eebe0ac61baf085fd92a54f429444c17e180fad",
+              "path": "robot_learning/lab/i2_diagnostic.py"
+            }
+          ]
+        },
+        "code_parent_commit": "8995132bd91a1d775fb05e27c7f6abdf088c278d",
+        "effective_parameters": {
+          "algorithm": {
+            "name": "ppo"
+          },
+          "policy": {
+            "activation": "tanh",
+            "net_arch": [
+              64,
+              64
+            ]
+          },
+          "ppo": {
+            "batch_size": 64,
+            "ent_coef": 0.01,
+            "gae_lambda": 0.95,
+            "gamma": 0.99,
+            "learning_rate": 0.0003,
+            "n_steps": 1024
+          },
+          "training": {
+            "checkpoint_every_steps": 5000,
+            "n_envs": 1
+          }
+        },
+        "module_manifest": [
+          {
+            "exists": true,
+            "fingerprint": "f28ccb109ab9350239605c3e2eebe0ac61baf085fd92a54f429444c17e180fad",
+            "path": "robot_learning/lab/i2_diagnostic.py"
+          }
+        ],
+        "module_paths": [
+          "robot_learning/lab/i2_diagnostic.py"
+        ],
+        "scientific_commit": "cd7110f9071fefb279cf6fb1003a30b6858998b4",
+        "scientific_manifest": [
+          {
+            "exists": true,
+            "fingerprint": "849f2696d27d11801adbcb02b168d0c2d09153267fcc9bec92650abf2ef60b3b",
+            "path": "robot_learning/scenario/evaluation.py"
+          }
+        ],
+        "scientific_paths": [
+          "robot_learning/scenario/evaluation.py"
+        ]
+      },
+      "paired_comparisons": [],
+      "partial_results": [
+        {
+          "args": [
+            "--intervention",
+            "T2:checkpoint-120832=campaigns/evaluations/9fa1f256-b083-45b2-8127-d7e4e00728b8/evaluation-9fa1f256-b083-45b2-8127-d7e4e00728b8-m3-T2-checkpoint-120832-160ep-seed4200-5a94cbf00677.json",
+            "--reference",
+            "T1:checkpoint-120832=campaigns/evaluations/9fa1f256-b083-45b2-8127-d7e4e00728b8/evaluation-9fa1f256-b083-45b2-8127-d7e4e00728b8-m3-T1-checkpoint-120832-160ep-seed4200-5a94cbf00677.json",
+            "--output",
+            "campaigns/evaluations/9fa1f256-b083-45b2-8127-d7e4e00728b8/i2-diagnostic.json"
+          ],
+          "instrument": "python_module",
+          "label": "I2 paired branch and failure-class analysis",
+          "metrics": {
+            "evaluation_artifact": "campaigns/evaluations/9fa1f256-b083-45b2-8127-d7e4e00728b8/python-module-M4-1-i2-diagnostic.json",
+            "evaluation_artifact_contents": {
+              "scope": "structure_only",
+              "sections": [
+                {
+                  "entries": 5,
+                  "path": "",
+                  "type": "object"
+                },
+                {
+                  "path": "/schema_version",
+                  "type": "number"
+                },
+                {
+                  "path": "/inquiry",
+                  "type": "string"
+                },
+                {
+                  "entries": 7,
+                  "path": "/intervention",
+                  "type": "object"
+                },
+                {
+                  "entries": 7,
+                  "path": "/reference",
+                  "type": "object"
+                },
+                {
+                  "entries": 5,
+                  "path": "/paired",
+                  "type": "object"
+                },
+                {
+                  "path": "/intervention/candidate",
+                  "type": "string"
+                },
+                {
+                  "path": "/intervention/episodes",
+                  "type": "number"
+                },
+                {
+                  "path": "/intervention/success_percent",
+                  "type": "number"
+                },
+                {
+                  "entries": 3,
+                  "path": "/intervention/interruption_classes",
+                  "type": "object"
+                },
+                {
+                  "entries": 3,
+                  "path": "/intervention/branch_patterns",
+                  "type": "object"
+                },
+                {
+                  "entries": 12,
+                  "path": "/intervention/angle_conditioned",
+                  "type": "object"
+                },
+                {
+                  "entries": 3,
+                  "path": "/intervention/branch_conditioned",
+                  "type": "object"
+                },
+                {
+                  "path": "/reference/candidate",
+                  "type": "string"
+                },
+                {
+                  "path": "/reference/episodes",
+                  "type": "number"
+                },
+                {
+                  "path": "/reference/success_percent",
+                  "type": "number"
+                },
+                {
+                  "entries": 3,
+                  "path": "/reference/interruption_classes",
+                  "type": "object"
+                },
+                {
+                  "entries": 3,
+                  "path": "/reference/branch_patterns",
+                  "type": "object"
+                },
+                {
+                  "entries": 12,
+                  "path": "/reference/angle_conditioned",
+                  "type": "object"
+                },
+                {
+                  "entries": 3,
+                  "path": "/reference/branch_conditioned",
+                  "type": "object"
+                },
+                {
+                  "path": "/paired/episodes",
+                  "type": "number"
+                },
+                {
+                  "path": "/paired/discordant_episodes",
+                  "type": "number"
+                },
+                {
+                  "path": "/paired/intervention_wins",
+                  "type": "number"
+                },
+                {
+                  "path": "/paired/reference_wins",
+                  "type": "number"
+                },
+                {
+                  "entries": 112,
+                  "path": "/paired/discordant_episode_seeds",
+                  "type": "array"
+                },
+                {
+                  "path": "/intervention/interruption_classes/completed_hold",
+                  "type": "number"
+                },
+                {
+                  "path": "/intervention/interruption_classes/no_first_reach",
+                  "type": "number"
+                },
+                {
+                  "path": "/intervention/interruption_classes/post_entry_interrupted_hold",
+                  "type": "number"
+                },
+                {
+                  "path": "/intervention/branch_patterns/both_feasible",
+                  "type": "number"
+                },
+                {
+                  "path": "/intervention/branch_patterns/folded_only_feasible",
+                  "type": "number"
+                },
+                {
+                  "path": "/intervention/branch_patterns/open_only_feasible",
+                  "type": "number"
+                },
+                {
+                  "entries": 8,
+                  "path": "/intervention/angle_conditioned/-120..-90deg",
+                  "type": "object"
+                },
+                {
+                  "entries": 8,
+                  "path": "/intervention/angle_conditioned/-150..-120deg",
+                  "type": "object"
+                },
+                {
+                  "entries": 8,
+                  "path": "/intervention/angle_conditioned/-180..-150deg",
+                  "type": "object"
+                },
+                {
+                  "entries": 8,
+                  "path": "/intervention/angle_conditioned/-30..0deg",
+                  "type": "object"
+                },
+                {
+                  "entries": 8,
+                  "path": "/intervention/angle_conditioned/-60..-30deg",
+                  "type": "object"
+                },
+                {
+                  "entries": 8,
+                  "path": "/intervention/angle_conditioned/-90..-60deg",
+                  "type": "object"
+                },
+                {
+                  "entries": 8,
+                  "path": "/intervention/angle_conditioned/0..30deg",
+                  "type": "object"
+                },
+                {
+                  "entries": 8,
+                  "path": "/intervention/angle_conditioned/120..150deg",
+                  "type": "object"
+                },
+                {
+                  "entries": 8,
+                  "path": "/intervention/angle_conditioned/150..180deg",
+                  "type": "object"
+                },
+                {
+                  "entries": 8,
+                  "path": "/intervention/angle_conditioned/30..60deg",
+                  "type": "object"
+                },
+                {
+                  "entries": 8,
+                  "path": "/intervention/angle_conditioned/60..90deg",
+                  "type": "object"
+                },
+                {
+                  "entries": 8,
+                  "path": "/intervention/angle_conditioned/90..120deg",
+                  "type": "object"
+                },
+                {
+                  "entries": 8,
+                  "path": "/intervention/branch_conditioned/both_feasible",
+                  "type": "object"
+                },
+                {
+                  "entries": 8,
+                  "path": "/intervention/branch_conditioned/folded_only_feasible",
+                  "type": "object"
+                },
+                {
+                  "entries": 8,
+                  "path": "/intervention/branch_conditioned/open_only_feasible",
+                  "type": "object"
+                },
+                {
+                  "path": "/reference/interruption_classes/completed_hold",
+                  "type": "number"
+                },
+                {
+                  "path": "/reference/interruption_classes/no_first_reach",
+                  "type": "number"
+                },
+                {
+                  "path": "/reference/interruption_classes/post_entry_interrupted_hold",
+                  "type": "number"
+                },
+                {
+                  "path": "/reference/branch_patterns/both_feasible",
+                  "type": "number"
+                },
+                {
+                  "path": "/reference/branch_patterns/folded_only_feasible",
+                  "type": "number"
+                },
+                {
+                  "path": "/reference/branch_patterns/open_only_feasible",
+                  "type": "number"
+                },
+                {
+                  "entries": 8,
+                  "path": "/reference/angle_conditioned/-120..-90deg",
+                  "type": "object"
+                },
+                {
+                  "entries": 8,
+                  "path": "/reference/angle_conditioned/-150..-120deg",
+                  "type": "object"
+                },
+                {
+                  "entries": 8,
+                  "path": "/reference/angle_conditioned/-180..-150deg",
+                  "type": "object"
+                },
+                {
+                  "entries": 8,
+                  "path": "/reference/angle_conditioned/-30..0deg",
+                  "type": "object"
+                },
+                {
+                  "entries": 8,
+                  "path": "/reference/angle_conditioned/-60..-30deg",
+                  "type": "object"
+                }
+              ],
+              "truncated": true
+            },
+            "evaluation_artifact_fingerprint": "afc87c5631abf905209543ee4bfa1ece1f277e0a6254f286cfdea1b85a77b392"
+          },
+          "module": "robot_learning.lab.i2_diagnostic"
+        }
+      ],
+      "result": {
+        "measurements": [
+          {
+            "args": [
+              "--intervention",
+              "T2:checkpoint-120832=campaigns/evaluations/9fa1f256-b083-45b2-8127-d7e4e00728b8/evaluation-9fa1f256-b083-45b2-8127-d7e4e00728b8-m3-T2-checkpoint-120832-160ep-seed4200-5a94cbf00677.json",
+              "--reference",
+              "T1:checkpoint-120832=campaigns/evaluations/9fa1f256-b083-45b2-8127-d7e4e00728b8/evaluation-9fa1f256-b083-45b2-8127-d7e4e00728b8-m3-T1-checkpoint-120832-160ep-seed4200-5a94cbf00677.json",
+              "--output",
+              "campaigns/evaluations/9fa1f256-b083-45b2-8127-d7e4e00728b8/i2-diagnostic.json"
+            ],
+            "instrument": "python_module",
+            "label": "I2 paired branch and failure-class analysis",
+            "metrics": {
+              "evaluation_artifact": "campaigns/evaluations/9fa1f256-b083-45b2-8127-d7e4e00728b8/python-module-M4-1-i2-diagnostic.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 5,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/inquiry",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 7,
+                    "path": "/intervention",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 7,
+                    "path": "/reference",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/paired",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/intervention/candidate",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/intervention/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/intervention/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/intervention/interruption_classes",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/intervention/branch_patterns",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 12,
+                    "path": "/intervention/angle_conditioned",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/intervention/branch_conditioned",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/reference/candidate",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/reference/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/reference/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/reference/interruption_classes",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/reference/branch_patterns",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 12,
+                    "path": "/reference/angle_conditioned",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/reference/branch_conditioned",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/paired/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/paired/discordant_episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/paired/intervention_wins",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/paired/reference_wins",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 112,
+                    "path": "/paired/discordant_episode_seeds",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/intervention/interruption_classes/completed_hold",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/intervention/interruption_classes/no_first_reach",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/intervention/interruption_classes/post_entry_interrupted_hold",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/intervention/branch_patterns/both_feasible",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/intervention/branch_patterns/folded_only_feasible",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/intervention/branch_patterns/open_only_feasible",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 8,
+                    "path": "/intervention/angle_conditioned/-120..-90deg",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 8,
+                    "path": "/intervention/angle_conditioned/-150..-120deg",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 8,
+                    "path": "/intervention/angle_conditioned/-180..-150deg",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 8,
+                    "path": "/intervention/angle_conditioned/-30..0deg",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 8,
+                    "path": "/intervention/angle_conditioned/-60..-30deg",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 8,
+                    "path": "/intervention/angle_conditioned/-90..-60deg",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 8,
+                    "path": "/intervention/angle_conditioned/0..30deg",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 8,
+                    "path": "/intervention/angle_conditioned/120..150deg",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 8,
+                    "path": "/intervention/angle_conditioned/150..180deg",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 8,
+                    "path": "/intervention/angle_conditioned/30..60deg",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 8,
+                    "path": "/intervention/angle_conditioned/60..90deg",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 8,
+                    "path": "/intervention/angle_conditioned/90..120deg",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 8,
+                    "path": "/intervention/branch_conditioned/both_feasible",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 8,
+                    "path": "/intervention/branch_conditioned/folded_only_feasible",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 8,
+                    "path": "/intervention/branch_conditioned/open_only_feasible",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/reference/interruption_classes/completed_hold",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/reference/interruption_classes/no_first_reach",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/reference/interruption_classes/post_entry_interrupted_hold",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/reference/branch_patterns/both_feasible",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/reference/branch_patterns/folded_only_feasible",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/reference/branch_patterns/open_only_feasible",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 8,
+                    "path": "/reference/angle_conditioned/-120..-90deg",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 8,
+                    "path": "/reference/angle_conditioned/-150..-120deg",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 8,
+                    "path": "/reference/angle_conditioned/-180..-150deg",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 8,
+                    "path": "/reference/angle_conditioned/-30..0deg",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 8,
+                    "path": "/reference/angle_conditioned/-60..-30deg",
+                    "type": "object"
+                  }
+                ],
+                "truncated": true
+              },
+              "evaluation_artifact_fingerprint": "afc87c5631abf905209543ee4bfa1ece1f277e0a6254f286cfdea1b85a77b392"
+            },
+            "module": "robot_learning.lab.i2_diagnostic"
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": {
+          "campaign_lab_manifest": [
+            {
+              "fingerprint": "dd03a87fda7b2696ce84aa6949e775b7067913c2865b6bae36bc3e4f3d07a348",
+              "path": "robot_learning/lab/i1_diagnostic.py"
+            },
+            {
+              "fingerprint": "f28ccb109ab9350239605c3e2eebe0ac61baf085fd92a54f429444c17e180fad",
+              "path": "robot_learning/lab/i2_diagnostic.py"
+            }
+          ],
+          "campaign_lab_publication": {
+            "commit": "b78df79d3e9917dd02288ea395777faa91e08e49",
+            "fingerprint": "6f1314cfb6288faddd2d6b2dea29db13b00253b11561d4601613a6d61a6f40c3",
+            "manifest": [
+              {
+                "fingerprint": "dd03a87fda7b2696ce84aa6949e775b7067913c2865b6bae36bc3e4f3d07a348",
+                "path": "robot_learning/lab/i1_diagnostic.py"
+              },
+              {
+                "fingerprint": "f28ccb109ab9350239605c3e2eebe0ac61baf085fd92a54f429444c17e180fad",
+                "path": "robot_learning/lab/i2_diagnostic.py"
+              }
+            ]
+          },
+          "code_parent_commit": "8995132bd91a1d775fb05e27c7f6abdf088c278d",
+          "effective_parameters": {
+            "algorithm": {
+              "name": "ppo"
+            },
+            "policy": {
+              "activation": "tanh",
+              "net_arch": [
+                64,
+                64
+              ]
+            },
+            "ppo": {
+              "batch_size": 64,
+              "ent_coef": 0.01,
+              "gae_lambda": 0.95,
+              "gamma": 0.99,
+              "learning_rate": 0.0003,
+              "n_steps": 1024
+            },
+            "training": {
+              "checkpoint_every_steps": 5000,
+              "n_envs": 1
+            }
+          },
+          "module_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "f28ccb109ab9350239605c3e2eebe0ac61baf085fd92a54f429444c17e180fad",
+              "path": "robot_learning/lab/i2_diagnostic.py"
+            }
+          ],
+          "module_paths": [
+            "robot_learning/lab/i2_diagnostic.py"
+          ],
+          "scientific_commit": "cd7110f9071fefb279cf6fb1003a30b6858998b4",
+          "scientific_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "849f2696d27d11801adbcb02b168d0c2d09153267fcc9bec92650abf2ef60b3b",
+              "path": "robot_learning/scenario/evaluation.py"
+            }
+          ],
+          "scientific_paths": [
+            "robot_learning/scenario/evaluation.py"
+          ]
+        }
+      },
+      "task_reference_contract": null
+    },
+    "failure": null,
+    "id": "M4",
+    "inquiry_id": "I2",
+    "kind": "measurement",
+    "progress": "completed",
+    "request": {
+      "measurement": {
+        "description": "Analyze the paired I2 intervention and baseline development artifacts by angle sector, analytic branch-feasibility pattern, first-reach timing, maximum hold, interruption class, and discordant shared seeds.",
+        "measurements": [
+          {
+            "args": [
+              "--intervention",
+              "T2:checkpoint-120832=campaigns/evaluations/9fa1f256-b083-45b2-8127-d7e4e00728b8/evaluation-9fa1f256-b083-45b2-8127-d7e4e00728b8-m3-T2-checkpoint-120832-160ep-seed4200-5a94cbf00677.json",
+              "--reference",
+              "T1:checkpoint-120832=campaigns/evaluations/9fa1f256-b083-45b2-8127-d7e4e00728b8/evaluation-9fa1f256-b083-45b2-8127-d7e4e00728b8-m3-T1-checkpoint-120832-160ep-seed4200-5a94cbf00677.json",
+              "--output",
+              "campaigns/evaluations/9fa1f256-b083-45b2-8127-d7e4e00728b8/i2-diagnostic.json"
+            ],
+            "artifact": "campaigns/evaluations/9fa1f256-b083-45b2-8127-d7e4e00728b8/i2-diagnostic.json",
+            "instrument": "python_module",
+            "label": "I2 paired branch and failure-class analysis",
+            "module": "robot_learning.lab.i2_diagnostic"
+          }
+        ],
+        "rationale": "The paired evaluation established a large intervention regression but its compact result does not identify whether the regression is branch-specific or broad. This bounded analysis uses the retained per-episode evidence to close I2 without conflating training return with task behavior. A broad regression across feasible-branch patterns supports abandoning this observation representation; a sector-specific regression would preserve a narrower branch hypothesis. The result cannot establish the official 98% goal."
+      }
+    },
+    "request_fingerprint": "555ff90af67cd3925e03ed32cc38819b67e021dc8e9c51e73ce39522794ad60b",
+    "session_id": "S6",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T1 produced archived candidates, and M1/M2 show identical development outcomes and mechanism for T1:checkpoint-100352 and T1:checkpoint-120832. Neither candidate has a working, best-known, or retained role because neither has been tested after the scientifically justified intervention.",
     "completed_operations": [
@@ -3420,9 +4585,10 @@
     "objective": "Advance I2 toward an evidence-supported answer to its scientific question: Does explicit analytic IK branch feasibility and joint-limit-margin conditioning enable a learned policy to select the folded feasible branch in the failure sector, reducing the -150 to -120 degree failures and the six no-first-reach cases without changing the official task?",
     "operation_ids": [
       "T2",
-      "M3"
+      "M3",
+      "M4"
     ],
-    "scientific_parent_commit": "8995132bd91a1d775fb05e27c7f6abdf088c278d"
+    "scientific_parent_commit": "cd7110f9071fefb279cf6fb1003a30b6858998b4"
   },
   "terminal_state": null
 }
