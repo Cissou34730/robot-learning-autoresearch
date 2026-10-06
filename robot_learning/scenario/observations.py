@@ -34,9 +34,9 @@ def reach_observation(data) -> np.ndarray:
     elbow_folded = -elbow_open
     shoulder_folded = shoulder_for_elbow(elbow_folded)
     joint_limit = np.pi * 170.0 / 180.0
-    branch_limit_margins = [
-        float(np.min(joint_limit - np.abs([shoulder_open, elbow_open]))),
-        float(np.min(joint_limit - np.abs([shoulder_folded, elbow_folded]))),
+    branch_feasibility = [
+        float(np.all(np.abs([shoulder_open, elbow_open]) <= joint_limit)),
+        float(np.all(np.abs([shoulder_folded, elbow_folded]) <= joint_limit)),
     ]
     end_effector = data.site("end_effector").xpos.copy()
     return np.concatenate(
@@ -50,6 +50,6 @@ def reach_observation(data) -> np.ndarray:
                 wrap_to_pi(shoulder_folded - float(data.qpos[0])),
                 wrap_to_pi(elbow_folded - float(data.qpos[1])),
             ],
-            branch_limit_margins,
+            branch_feasibility,
         ]
     ).astype(np.float32)
