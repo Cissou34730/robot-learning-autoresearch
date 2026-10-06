@@ -5720,38 +5720,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I3",
-        "outcome": "unsupported",
-        "reason": "I3 is not supported. On identical episode seeds and evaluation semantics, the unchanged 11-value observation with a 50% folded-only-feasible training mixture achieved 122/160 versus 151/160 for T1, with zero candidate wins and 29 reference wins. In the targeted -150 to -120 degree sector, success fell from 14/20 to 4/20; no-first-reach failures increased from 7 to 26 and post-entry interrupted holds from 2 to 12. Targeted exposure alone therefore did not improve branch-dependent approach and caused broad regression, including on both-feasible targets. Close I3 and redirect the next inquiry to trajectory-preserving evidence that discriminates insufficient policy/control capacity from handling of the straight-reset singular transient."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I3",
-        "outcome": "unsupported",
-        "reason": "I3 is not supported. On identical episode seeds and evaluation semantics, the unchanged 11-value observation with a 50% folded-only-feasible training mixture achieved 122/160 versus 151/160 for T1, with zero candidate wins and 29 reference wins. In the targeted -150 to -120 degree sector, success fell from 14/20 to 4/20; no-first-reach failures increased from 7 to 26 and post-entry interrupted holds from 2 to 12. Targeted exposure alone therefore did not improve branch-dependent approach and caused broad regression, including on both-feasible targets. Close I3 and redirect the next inquiry to trajectory-preserving evidence that discriminates insufficient policy/control capacity from handling of the straight-reset singular transient.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E15",
-    "inquiry_id": "I3",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "unsupported",
-        "reason": "I3 is not supported. On identical episode seeds and evaluation semantics, the unchanged 11-value observation with a 50% folded-only-feasible training mixture achieved 122/160 versus 151/160 for T1, with zero candidate wins and 29 reference wins. In the targeted -150 to -120 degree sector, success fell from 14/20 to 4/20; no-first-reach failures increased from 7 to 26 and post-entry interrupted holds from 2 to 12. Targeted exposure alone therefore did not improve branch-dependent approach and caused broad regression, including on both-feasible targets. Close I3 and redirect the next inquiry to trajectory-preserving evidence that discriminates insufficient policy/control capacity from handling of the straight-reset singular transient."
-      }
-    },
-    "request_fingerprint": "9151b7b3f19710b77b755576200c41dc47ba5cd5286e780d99088e89d8b0e716",
-    "session_id": "S10",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T1:checkpoint-120832 remains the strongest measured development reference at 151/160 but has no assigned role. T3:checkpoint-120832 is rejected as the I3 intervention candidate because it regressed to 122/160. T2:checkpoint-120832 remains rejected at 39/160. No candidate is assigned a working, best-known, or retained role.",
     "completed_operations": [],
