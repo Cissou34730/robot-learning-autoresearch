@@ -105,7 +105,7 @@ def make_ik_records() -> list[dict]:
 
 def load_mass_matrix(model: mujoco.MjModel, data: mujoco.MjData) -> np.ndarray:
     mass_matrix = np.zeros((model.nv, model.nv), dtype=np.float64)
-    mujoco.mj_fullM(model, mass_matrix.ravel(), data.M)
+    mujoco.mj_fullM(model, data, mass_matrix)
     return mass_matrix
 
 
