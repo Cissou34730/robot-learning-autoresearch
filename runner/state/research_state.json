@@ -1242,49 +1242,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "set_best_known",
-        "candidate_id": "T1:checkpoint-100352",
-        "evidence": [
-          "M1"
-        ],
-        "reason": "Assign the strongest available late-training checkpoint as best-known so the campaign can request the protected official assessment. Its 199/200 result on the separate official-distribution development panel supports assessment now; the single brief hold exit leaves a residual stabilization uncertainty but does not justify another full training allocation before the protected decision."
-      },
-      "publication": {
-        "destination": "campaigns/checkpoints/retained/ab62348f-7e1f-4d20-8036-6c194621d93c/t1-cada55eb5-fc7c23e693905e6d5689efd430b412e39de81e99e2a8042275ac03ef5cbbcc50",
-        "fingerprint": "fc7c23e693905e6d5689efd430b412e39de81e99e2a8042275ac03ef5cbbcc50",
-        "source": "campaigns/checkpoints/candidates/ab62348f-7e1f-4d20-8036-6c194621d93c/t1/checkpoint-100352"
-      },
-      "result": {
-        "action": "set_best_known",
-        "candidate": "T1:checkpoint-100352",
-        "evidence": [
-          "M1"
-        ],
-        "status": "assigned"
-      }
-    },
-    "failure": null,
-    "id": "E2",
-    "inquiry_id": null,
-    "kind": "model_role",
-    "progress": "completed",
-    "request": {
-      "model_role": {
-        "action": "set_best_known",
-        "candidate": "T1:checkpoint-100352",
-        "evidence": [
-          "M1"
-        ],
-        "reason": "Assign the strongest available late-training checkpoint as best-known so the campaign can request the protected official assessment. Its 199/200 result on the separate official-distribution development panel supports assessment now; the single brief hold exit leaves a residual stabilization uncertainty but does not justify another full training allocation before the protected decision."
-      }
-    },
-    "request_fingerprint": "aaa3bba74c03f2293749b7101f15fe72400f0a73e272f7590e240a1bde71115d",
-    "session_id": "S2",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "No candidate role has been assigned yet. T1:checkpoint-100352 is the evidence-backed candidate proposed for best-known assignment in goal review because it is the strongest late-training checkpoint and achieved 99.5% on M1; this is not an official success claim.",
     "completed_operations": [
