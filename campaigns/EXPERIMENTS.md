@@ -13,3 +13,4 @@
 | T2 | training | I1 | completed |
 | M5 | measurement | I1 | completed |
 | T3 | training | I1 | completed |
+| T4 | training | I1 | failed |
