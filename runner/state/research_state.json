@@ -1,13 +1,5 @@
 {
-  "active_inquiry": {
-    "closure_condition": "After one 120000-step training run and paired 160-episode development measurement against T1:checkpoint-120832, support the inquiry only if success improves without a broad regression, with a specific reduction in no-first-reach failures in the previously failing -150 to -120 degree sector and corresponding improvement in first-reach timing or early approach errors. If no-first-reach failures persist with comparable transient signatures, or if the intervention degrades both-feasible targets, close it unsupported and redirect to a different control or policy-capacity mechanism. If no-first-reach failures fall but post-entry short holds become dominant, redirect to hold stabilization and sampled-boundary behavior.",
-    "goal_connection": "The unchanged T1 baseline reaches 151/160, leaving a nine-episode gap to the human goal. M6 shows seven failures with no first reach and two post-entry interruptions, all in folded-only-feasible negative-angle sectors; failures also show larger early tangential error, persistent command saturation, and positive-elbow overshoot than successful episodes. A training-distribution intervention that preserves the baseline observation tests whether the missing capability is learned branch-dependent approach dynamics rather than an observation representation problem, while directly targeting the episodes that prevent uninterrupted success.",
-    "id": "I3",
-    "opened_in_session": "S7",
-    "question": "Can targeted training exposure to folded-only-feasible approach geometries improve the baseline policy's branch-dependent approach without changing the observation or official task semantics?",
-    "rationale": "M6 resolved the immediate failure-class uncertainty enough to justify an intervention: seven of nine failures lacked first reach and the remaining two failed immediately after entry, so hold stabilization alone is not the dominant development gap. The failures are all folded-only-feasible and exhibit a distinct saturated, overshooting approach trajectory. I2 showed that appending analytic branch margins and feasibility flags caused a broad reach regression, so this inquiry deliberately keeps the baseline observation and changes only training exposure to difficult branch-conditioned geometries. The result will discriminate whether the policy lacks experience with the feasible folded approach or whether the failure persists despite relevant exposure.",
-    "reframes": []
-  },
+  "active_inquiry": null,
   "campaign": {
     "base_commit": "e059e62856966cf4051a7e8d127b164be07249ef",
     "id": "9fa1f256-b083-45b2-8127-d7e4e00728b8",
@@ -2477,16 +2469,16 @@
     }
   },
   "counters": {
-    "event": 14,
+    "event": 15,
     "inquiry": 3,
     "measurement": 7,
-    "session": 9,
+    "session": 10,
     "training": 3
   },
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -5703,9 +5695,63 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-06T06:20:50Z",
+      "error": null,
+      "id": "E15",
+      "inquiry_id": "I3",
+      "kind": "inquiry",
+      "request": {
+        "action": "close",
+        "outcome": "unsupported",
+        "reason": "I3 is not supported. On identical episode seeds and evaluation semantics, the unchanged 11-value observation with a 50% folded-only-feasible training mixture achieved 122/160 versus 151/160 for T1, with zero candidate wins and 29 reference wins. In the targeted -150 to -120 degree sector, success fell from 14/20 to 4/20; no-first-reach failures increased from 7 to 26 and post-entry interrupted holds from 2 to 12. Targeted exposure alone therefore did not improve branch-dependent approach and caused broad regression, including on both-feasible targets. Close I3 and redirect the next inquiry to trajectory-preserving evidence that discriminates insufficient policy/control capacity from handling of the straight-reset singular transient."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I3",
+        "outcome": "unsupported",
+        "reason": "I3 is not supported. On identical episode seeds and evaluation semantics, the unchanged 11-value observation with a 50% folded-only-feasible training mixture achieved 122/160 versus 151/160 for T1, with zero candidate wins and 29 reference wins. In the targeted -150 to -120 degree sector, success fell from 14/20 to 4/20; no-first-reach failures increased from 7 to 26 and post-entry interrupted holds from 2 to 12. Targeted exposure alone therefore did not improve branch-dependent approach and caused broad regression, including on both-feasible targets. Close I3 and redirect the next inquiry to trajectory-preserving evidence that discriminates insufficient policy/control capacity from handling of the straight-reset singular transient.",
+        "status": "completed"
+      },
+      "session_id": "S10",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "close",
+        "inquiry_id": "I3",
+        "outcome": "unsupported",
+        "reason": "I3 is not supported. On identical episode seeds and evaluation semantics, the unchanged 11-value observation with a 50% folded-only-feasible training mixture achieved 122/160 versus 151/160 for T1, with zero candidate wins and 29 reference wins. In the targeted -150 to -120 degree sector, success fell from 14/20 to 4/20; no-first-reach failures increased from 7 to 26 and post-entry interrupted holds from 2 to 12. Targeted exposure alone therefore did not improve branch-dependent approach and caused broad regression, including on both-feasible targets. Close I3 and redirect the next inquiry to trajectory-preserving evidence that discriminates insufficient policy/control capacity from handling of the straight-reset singular transient."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I3",
+        "outcome": "unsupported",
+        "reason": "I3 is not supported. On identical episode seeds and evaluation semantics, the unchanged 11-value observation with a 50% folded-only-feasible training mixture achieved 122/160 versus 151/160 for T1, with zero candidate wins and 29 reference wins. In the targeted -150 to -120 degree sector, success fell from 14/20 to 4/20; no-first-reach failures increased from 7 to 26 and post-entry interrupted holds from 2 to 12. Targeted exposure alone therefore did not improve branch-dependent approach and caused broad regression, including on both-feasible targets. Close I3 and redirect the next inquiry to trajectory-preserving evidence that discriminates insufficient policy/control capacity from handling of the straight-reset singular transient.",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E15",
+    "inquiry_id": "I3",
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "close",
+        "outcome": "unsupported",
+        "reason": "I3 is not supported. On identical episode seeds and evaluation semantics, the unchanged 11-value observation with a 50% folded-only-feasible training mixture achieved 122/160 versus 151/160 for T1, with zero candidate wins and 29 reference wins. In the targeted -150 to -120 degree sector, success fell from 14/20 to 4/20; no-first-reach failures increased from 7 to 26 and post-entry interrupted holds from 2 to 12. Targeted exposure alone therefore did not improve branch-dependent approach and caused broad regression, including on both-feasible targets. Close I3 and redirect the next inquiry to trajectory-preserving evidence that discriminates insufficient policy/control capacity from handling of the straight-reset singular transient."
+      }
+    },
+    "request_fingerprint": "9151b7b3f19710b77b755576200c41dc47ba5cd5286e780d99088e89d8b0e716",
+    "session_id": "S10",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T1:checkpoint-120832 remains the strongest measured development reference at 151/160 but has no assigned role. T3:checkpoint-120832 is rejected as the I3 intervention candidate because it regressed to 122/160. T2:checkpoint-120832 remains rejected at 39/160. No candidate is assigned a working, best-known, or retained role.",
     "completed_operations": [],
@@ -5731,6 +5777,21 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "196071d3-4826-4be8-b328-a586cc6342b6",
+    "id": "S10",
+    "inquiry_id": "I3",
+    "kind": "inquiry",
+    "objective": "Advance I3 toward an evidence-supported answer to its scientific question: Can targeted training exposure to folded-only-feasible approach geometries improve the baseline policy's branch-dependent approach without changing the observation or official task semantics?",
+    "operation_ids": [
+      "E15"
+    ],
+    "scientific_parent_commit": "bd5291718cef72b1a90fd386da58aa9fbb7d2742"
+  },
   "terminal_state": null
 }
