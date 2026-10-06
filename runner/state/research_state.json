@@ -18,7 +18,9 @@
   "candidates": {
     "T1:checkpoint-100352": {
       "artifact": "campaigns/checkpoints/candidates/1d55787c-9b86-48a5-ab74-3853d0375648/t1/checkpoint-100352",
-      "evaluation_artifacts": [],
+      "evaluation_artifacts": [
+        "campaigns/evaluations/1d55787c-9b86-48a5-ab74-3853d0375648/evaluation-1d55787c-9b86-48a5-ab74-3853d0375648-m2-T1-checkpoint-100352-160ep-seed4200-604d52985c97.json"
+      ],
       "fingerprint": "87d1ee958e27408086d06c14bef6793a5188ba144e3271d13044b1157ae3b532",
       "id": "T1:checkpoint-100352",
       "name": "checkpoint-100352",
@@ -836,7 +838,7 @@
   "counters": {
     "event": 3,
     "inquiry": 1,
-    "measurement": 1,
+    "measurement": 2,
     "session": 3,
     "training": 1
   },
@@ -1321,9 +1323,397 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-06T20:00:52Z",
+      "error": null,
+      "id": "M2",
+      "inquiry_id": "I1",
+      "kind": "measurement",
+      "request": {
+        "description": "Evaluate the strongest T1 baseline checkpoint on the fixed official-geometry development panel to measure complete-hold success and distinguish reach, stabilization, and radial or angular failure patterns.",
+        "measurements": [
+          {
+            "candidate": "T1:checkpoint-100352",
+            "episodes": 160,
+            "instrument": "research_evaluation",
+            "label": "T1 strongest-training-checkpoint official-geometry development panel",
+            "seed": 4200
+          }
+        ],
+        "rationale": "T1 training statistics peak at 97% for T1:checkpoint-100352 on the narrower 14-20 cm training distribution, but they do not establish official success or generalization. A shared-seed research evaluation across the full 6-20 cm radius and angle distribution is the next decisive policy-level measurement: success with first-entry timing, minimum distance, hold interruptions, and performance by radius and angle can distinguish a broad stabilization deficit from the omitted 6-14 cm coverage risk or localized geometry difficulty before changing the recipe."
+      },
+      "result": {
+        "measurements": [
+          {
+            "candidate": "T1:checkpoint-100352",
+            "candidate_id": "T1:checkpoint-100352",
+            "instrument": "research_evaluation",
+            "label": "T1 strongest-training-checkpoint official-geometry development panel",
+            "metrics": {
+              "episodes": 160,
+              "evaluation_artifact": "campaigns/evaluations/1d55787c-9b86-48a5-ab74-3853d0375648/evaluation-1d55787c-9b86-48a5-ab74-3853d0375648-m2-T1-checkpoint-100352-160ep-seed4200-604d52985c97.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 8,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/model",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/seed",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/official_benchmark",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 160,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "reward_total",
+                      "steps",
+                      "success",
+                      "terminated",
+                      "truncated"
+                    ],
+                    "path": "/episode_results",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 160,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "final_distance_cm",
+                      "first_reach_step",
+                      "hold_interruptions",
+                      "in_tolerance_steps",
+                      "max_held_steps",
+                      "min_distance_cm",
+                      "target_angle_degrees",
+                      "target_radius_cm"
+                    ],
+                    "path": "/research_evidence/episode_diagnostics",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence/units",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/research_evidence/units/distance",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/time",
+                    "type": "string"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "c8d5efc70d8c9739f9a9c0e152784a00328f9b350e08577fadc3c5239eb0ba0d",
+              "evaluation_semantics": "604d52985c97",
+              "model_fingerprint": "87d1ee958e27408086d06c14bef6793a5188ba144e3271d13044b1157ae3b532",
+              "official_benchmark": false,
+              "schema_version": 5,
+              "seed": 4200,
+              "success_percent": 94.375,
+              "successes": 151
+            }
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": null
+      },
+      "session_id": "S3",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "evaluation_semantics": "604d52985c97",
+      "measurements": [
+        {
+          "artifact": "campaigns/checkpoints/candidates/1d55787c-9b86-48a5-ab74-3853d0375648/t1/checkpoint-100352",
+          "candidate": "T1:checkpoint-100352",
+          "candidate_id": "T1:checkpoint-100352",
+          "episodes": 160,
+          "instrument": "research_evaluation",
+          "label": "T1 strongest-training-checkpoint official-geometry development panel",
+          "model_fingerprint": "87d1ee958e27408086d06c14bef6793a5188ba144e3271d13044b1157ae3b532",
+          "seed": 4200
+        }
+      ],
+      "module_provenance": null,
+      "paired_comparisons": [],
+      "partial_results": [
+        {
+          "candidate": "T1:checkpoint-100352",
+          "candidate_id": "T1:checkpoint-100352",
+          "instrument": "research_evaluation",
+          "label": "T1 strongest-training-checkpoint official-geometry development panel",
+          "metrics": {
+            "episodes": 160,
+            "evaluation_artifact": "campaigns/evaluations/1d55787c-9b86-48a5-ab74-3853d0375648/evaluation-1d55787c-9b86-48a5-ab74-3853d0375648-m2-T1-checkpoint-100352-160ep-seed4200-604d52985c97.json",
+            "evaluation_artifact_contents": {
+              "scope": "structure_only",
+              "sections": [
+                {
+                  "entries": 8,
+                  "path": "",
+                  "type": "object"
+                },
+                {
+                  "path": "/schema_version",
+                  "type": "number"
+                },
+                {
+                  "path": "/model",
+                  "type": "string"
+                },
+                {
+                  "path": "/episodes",
+                  "type": "number"
+                },
+                {
+                  "path": "/seed",
+                  "type": "number"
+                },
+                {
+                  "path": "/official_benchmark",
+                  "type": "boolean"
+                },
+                {
+                  "path": "/success_percent",
+                  "type": "number"
+                },
+                {
+                  "entries": 160,
+                  "field_names": [
+                    "episode",
+                    "episode_seed",
+                    "reward_total",
+                    "steps",
+                    "success",
+                    "terminated",
+                    "truncated"
+                  ],
+                  "path": "/episode_results",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/research_evidence",
+                  "type": "object"
+                },
+                {
+                  "entries": 160,
+                  "field_names": [
+                    "episode",
+                    "episode_seed",
+                    "final_distance_cm",
+                    "first_reach_step",
+                    "hold_interruptions",
+                    "in_tolerance_steps",
+                    "max_held_steps",
+                    "min_distance_cm",
+                    "target_angle_degrees",
+                    "target_radius_cm"
+                  ],
+                  "path": "/research_evidence/episode_diagnostics",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/research_evidence/units",
+                  "type": "object"
+                },
+                {
+                  "path": "/research_evidence/units/distance",
+                  "type": "string"
+                },
+                {
+                  "path": "/research_evidence/units/time",
+                  "type": "string"
+                }
+              ],
+              "truncated": false
+            },
+            "evaluation_artifact_fingerprint": "c8d5efc70d8c9739f9a9c0e152784a00328f9b350e08577fadc3c5239eb0ba0d",
+            "evaluation_semantics": "604d52985c97",
+            "model_fingerprint": "87d1ee958e27408086d06c14bef6793a5188ba144e3271d13044b1157ae3b532",
+            "official_benchmark": false,
+            "schema_version": 5,
+            "seed": 4200,
+            "success_percent": 94.375,
+            "successes": 151
+          }
+        }
+      ],
+      "result": {
+        "measurements": [
+          {
+            "candidate": "T1:checkpoint-100352",
+            "candidate_id": "T1:checkpoint-100352",
+            "instrument": "research_evaluation",
+            "label": "T1 strongest-training-checkpoint official-geometry development panel",
+            "metrics": {
+              "episodes": 160,
+              "evaluation_artifact": "campaigns/evaluations/1d55787c-9b86-48a5-ab74-3853d0375648/evaluation-1d55787c-9b86-48a5-ab74-3853d0375648-m2-T1-checkpoint-100352-160ep-seed4200-604d52985c97.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 8,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/model",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/seed",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/official_benchmark",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 160,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "reward_total",
+                      "steps",
+                      "success",
+                      "terminated",
+                      "truncated"
+                    ],
+                    "path": "/episode_results",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 160,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "final_distance_cm",
+                      "first_reach_step",
+                      "hold_interruptions",
+                      "in_tolerance_steps",
+                      "max_held_steps",
+                      "min_distance_cm",
+                      "target_angle_degrees",
+                      "target_radius_cm"
+                    ],
+                    "path": "/research_evidence/episode_diagnostics",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence/units",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/research_evidence/units/distance",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/time",
+                    "type": "string"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "c8d5efc70d8c9739f9a9c0e152784a00328f9b350e08577fadc3c5239eb0ba0d",
+              "evaluation_semantics": "604d52985c97",
+              "model_fingerprint": "87d1ee958e27408086d06c14bef6793a5188ba144e3271d13044b1157ae3b532",
+              "official_benchmark": false,
+              "schema_version": 5,
+              "seed": 4200,
+              "success_percent": 94.375,
+              "successes": 151
+            }
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": null
+      },
+      "task_reference_contract": null
+    },
+    "failure": null,
+    "id": "M2",
+    "inquiry_id": "I1",
+    "kind": "measurement",
+    "progress": "completed",
+    "request": {
+      "measurement": {
+        "description": "Evaluate the strongest T1 baseline checkpoint on the fixed official-geometry development panel to measure complete-hold success and distinguish reach, stabilization, and radial or angular failure patterns.",
+        "measurements": [
+          {
+            "candidate": "T1:checkpoint-100352",
+            "episodes": 160,
+            "instrument": "research_evaluation",
+            "label": "T1 strongest-training-checkpoint official-geometry development panel",
+            "seed": 4200
+          }
+        ],
+        "rationale": "T1 training statistics peak at 97% for T1:checkpoint-100352 on the narrower 14-20 cm training distribution, but they do not establish official success or generalization. A shared-seed research evaluation across the full 6-20 cm radius and angle distribution is the next decisive policy-level measurement: success with first-entry timing, minimum distance, hold interruptions, and performance by radius and angle can distinguish a broad stabilization deficit from the omitted 6-14 cm coverage risk or localized geometry difficulty before changing the recipe."
+      }
+    },
+    "request_fingerprint": "6ae25c9c9895fad84583d086bf480ce1a32b92862d1ebc5117a678ae32c8116b",
+    "session_id": "S3",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No training candidate exists. Working, best-known, and retained roles remain unassigned; M1 is measurement evidence and E2 records the opening of I1, not a policy candidate.",
     "completed_operations": [
@@ -1361,7 +1751,8 @@
     "kind": "inquiry",
     "objective": "Advance I1 toward an evidence-supported answer to its scientific question: Can a learned policy using the available bounded direct-motor interface reliably enter and maintain the complete uninterrupted 2-second hold across the official 6-20 cm, full-angle distribution, and if not, is the limiting capability primarily braking and stabilization, omitted radial coverage, or branch-conditioned geometric difficulty?",
     "operation_ids": [
-      "T1"
+      "T1",
+      "M2"
     ],
     "scientific_parent_commit": "c58520b7d0cf8b054b16d9fa78c23cb905b797f3"
   },
