@@ -455,7 +455,7 @@ its scientific breadth or achieve its result.
 | Scientific-exhaustion / no-credible-route outcome | **Removed from future requests and instructions.** Obsolete pending execution is rejected. Historical E19 remains readable and unchanged. Directly affected checks pass; scientific effect remains unassessed. |
 | Fifteen-inquiry cap | **Decoupled; value unchanged.** The launcher pauses after active work is checkpointed, without a terminal state. Measurements keep their permission. Only an explicit maintainer increase at that paused boundary resumes execution. Later cap removal remains pending. E19 at four of fifteen inquiries was not cap-triggered. |
 | Publication/recovery, maintainer training allocation, and goal-review role availability | Implemented; not active repair items. |
-| Independent prompt-stack review R1-R8 | **Backlog recorded below.** R1 is implemented first as a bounded startup handoff. R2-R8 remain unimplemented and separately scoped; none is a campaign operation or Runner scientific gate. |
+| Independent prompt-stack review R1-R8 | **R1 and R2 implemented as separate bounded changes.** R1 carries the PI-selected scientific-model synthesis into startup. R2 removes the generic policy destination from the shared persona and places scientific context before operational options in ordinary PI sessions while preserving their persona-first rule. R3-R8 remain unimplemented and separately scoped; none is a campaign operation or Runner scientific gate. |
 
 The startup allocation change is tactical, not a solution to scientific
 continuity. Counterevidence preservation and official-assessment readiness
@@ -2089,6 +2089,43 @@ separate from harness changes so their outcomes are not conflated.
   not verify the model's truth, require measurement first, formulate a
   procedural question before acting, or treat the preliminary model as an
   authority or intervention menu.
+
+## 2026-10-06: implement R2 scientific-context ordering
+
+- **Source:** independent prompt-stack review preserved in
+  `docs/prompt-instruction-stack-review-20261005.md`, recommendation R2.
+- **Approved scope:** remove the learned-policy destination from the shared PI
+  identity. The persona now assigns scientific direction toward the
+  human-authored scenario goal and integrates robotics, learning, control,
+  simulation, system identification, experimental design and scientific
+  software as the problem requires, without implying a research method.
+- **Session ordering:** ordinary PI scientific-session prompts remain
+  persona-first. They then present the human goal, essential task conditions
+  and protected boundaries; initial physical understanding and current
+  synthesis; completed evidence and recorded interpretive limits; goal gap and
+  decision frontier; active inquiry and objective; decision guidance; legal
+  operations and applicable training allocation; then source routing and
+  submission mechanics.
+- **Intentional deviation:** the review's literal human-goal-before-persona
+  ordering is not applied to `New-ScientificSessionPrompt`. The established
+  persona-first rule remains for ordinary phases. The preliminary
+  scientific-model prompt keeps its separately documented human-goal-first
+  exception and is otherwise unchanged.
+- **Resource boundary:** startup keeps its requested-step ceiling and inquiry
+  work keeps the maintainer allocation in the operations/resource area.
+  Goal-review and checkpoint-only transitions do not repeat a training
+  allocation because training is not legal there.
+- **Unchanged:** R1, the scenario's actual learned-policy requirement, PI
+  authority, legal instruments, resource values, validation, campaign state,
+  operation schemas and the preliminary prompt ordering. No Runner scientific
+  judgment or gate is added.
+- **R3-R8 backlog:** inquiry meaning, continuation/recovery classification,
+  candidate-free instrument discoverability, replacement-authority wording,
+  routing/backend alignment and instruction ownership/repetition remain
+  unimplemented and separately scoped.
+- **Disposition:** R2 is implemented as prompt framing and ordering only. No
+  campaign, training, reset, resume, measurement, evaluation or assessment was
+  executed.
 
 ## 2026-10-06: allow Runner transactions during protected-runtime checks
 

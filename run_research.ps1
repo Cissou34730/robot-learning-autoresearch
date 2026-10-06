@@ -64,7 +64,7 @@ if ($PIBackend -eq "opencode" -and $Reasoning -eq "max") {
 }
 
 $piPersona = @(
-    "You are the Principal Investigator responsible for leading this campaign toward a learned policy that satisfies the human goal, without lowering scientific standards or inventing certainty. You bring deep expertise in robotics, reinforcement learning, control, simulation, system identification, experimental design, and scientific software, and you integrate these disciplines to understand and reshape the complete embodied learning system."
+    "You are the Principal Investigator responsible for scientific direction toward the human goal defined in contracts/scenario.md. Integrate robotics, learning, control, simulation, system identification, experimental design, and scientific software as the problem requires. The scenario defines the required outcome; no research method is implied by this role."
     "You set the scientific direction. Develop and challenge mechanistic explanations, determine which unknowns matter, create the measurements and tools needed to resolve them, and redesign any PI-owned part of the system when the evidence warrants it. Reason about robot behavior, learning dynamics, implementation, and experimental evidence as parts of one scientific problem rather than defaulting to local parameter or reward adjustments."
     "The human supplies the goal and protected boundary, not the research program. Existing code, architecture, metrics, prior hypotheses, and previous decisions are provisional scientific artifacts rather than authorities. Do not wait for the human or the current implementation to identify the decisive mechanism, method, or investigation."
 ) -join " "
@@ -758,12 +758,8 @@ function New-ScientificSessionPrompt {
     else {
         [string]$session.objective
     }
-    $actionGuidance = if ($transition) {
-        @(
-            "The sole legal next action is the checkpoint operation that saves the scientific session record."
-            "Do not request training, measurement, model-role changes, restoration, another inquiry change, or a campaign conclusion in this session."
-            "Use the scientific session record contract in contracts/instruments.md and preserve the transition decision, evidence, remaining goal gap, and next direction."
-        )
+    $decisionGuidance = if ($transition) {
+        @()
     }
     else {
         @(
@@ -775,8 +771,16 @@ function New-ScientificSessionPrompt {
                 "When evidence resolves or redirects the active inquiry, record that decision explicitly rather than drifting to another question."
             }
             "When the current line of work reaches a stable decision, preserve the synthesis, consequential competing explanations, claim limits, supporting evidence, remaining gap, decision frontier, and next direction in a scientific session record."
-            "When ready to act, use the matching contract in contracts/instruments.md to submit one scientific action."
         )
+    }
+    $legalOperations = if ($transition) {
+        @(
+            "The sole legal next action is the checkpoint operation that saves the scientific session record."
+            "Do not request training, measurement, model-role changes, restoration, another inquiry change, or a campaign conclusion in this session."
+        )
+    }
+    else {
+        @("Use only the operation kinds listed as available in campaigns/brief.md.")
     }
     $startupHandoffGuidance = if ($session.kind -eq "startup") {
         $modelHandoff = "The PI-authored decision-relevant synthesis is available in campaigns/brief.md under 'Initial scientific model'."
@@ -801,36 +805,49 @@ function New-ScientificSessionPrompt {
         @()
     }
 
-    $trainingAllocation = if ($session.kind -eq "startup") {
+    $trainingAllocation = if ($transition -or $session.kind -eq "goal_review") {
+        ""
+    }
+    elseif ($session.kind -eq "startup") {
         "Training ceiling: $Timesteps requested steps per run."
     }
     else {
         "Maintainer training allocation: $Timesteps steps per run. Training requests must match this allocation; neither the PI nor the Runner may independently change it."
     }
+    $sourceGuidance = if ($session.kind -eq "startup") {
+        "Begin with pi_workspace/scientific_model.md, campaigns/brief.md and the latest scientific session record. Consult contracts/scenario.md and other evidence as needed."
+    }
+    else {
+        "Begin with campaigns/brief.md and the latest scientific session record. Consult contracts/scenario.md, pi_workspace/scientific_model.md, and other evidence only as the scientific question requires."
+    }
+    $submissionGuidance = if ($transition) {
+        "Use the scientific session record contract in contracts/instruments.md and preserve the transition decision, evidence, remaining goal gap, and next direction."
+    }
+    else {
+        "When ready to act, use the matching contract in contracts/instruments.md to submit one scientific action."
+    }
 
     $sections = @(
         $piPersona
         "Human goal: $goal"
-        "Current evidence relative to the goal: $bestEvidence $(Get-LatestSessionResult -State $State)"
+        "The essential task conditions and protected boundaries are defined in contracts/scenario.md."
+        $startupHandoffGuidance
+        $scientificModelUseGuidance
         "Current scientific understanding: $synthesis"
-        "Scientific decision frontier: $frontier"
+        "Completed evidence relative to the goal and its recorded interpretive limits: $bestEvidence $(Get-LatestSessionResult -State $State)"
         "Current goal gap: $gap"
+        "Scientific decision frontier: $frontier"
         if ($session.kind -ne "startup") {
             "Active inquiry: $inquiry"
         }
         "Current objective: $objective"
+        "Direct every decision toward the human goal and distinguish evidence from conjecture."
+        $decisionGuidance
+        $legalOperations
         $trainingAllocation
         $correction
-        $startupHandoffGuidance
-        $scientificModelUseGuidance
-        "Direct every decision toward the human goal and distinguish evidence from conjecture."
-        $actionGuidance
-        if ($session.kind -eq "startup") {
-            "Begin with pi_workspace/scientific_model.md, campaigns/brief.md and the latest scientific session record. Consult contracts/scenario.md and other evidence as needed."
-        }
-        else {
-            "Begin with campaigns/brief.md and the latest scientific session record. Consult contracts/scenario.md, pi_workspace/scientific_model.md, and other evidence only as the scientific question requires."
-        }
+        $sourceGuidance
+        $submissionGuidance
     ) | Where-Object { $_ }
     return ($sections -join "`n`n")
 }
