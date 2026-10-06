@@ -361,44 +361,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "open",
-        "inquiry": {
-          "closure_condition": "Close or reframe after a full-distribution candidate evaluation reports episode success, first-entry step, maximum held steps, interruption count, and radius-conditioned outcomes sufficient to identify acquisition/coverage, post-entry regulation, or a consequential branch/posture or limit-conditioned failure pattern.",
-          "goal_connection": "The human goal requires at least 196 of 200 official episodes to complete an uninterrupted 100-step hold. Resolving whether the first policy fails before entry or after entry determines whether the next intervention should expand learning coverage or improve braking-sensitive stabilization.",
-          "id": "I1",
-          "opened_in_session": "S2",
-          "question": "For a first learned policy exposed to the full official 0.06-0.20 m target distribution, are complete-hold failures dominated by inner-radius acquisition and coverage, or by post-entry regulation and hold interruption?",
-          "rationale": "M1 found substantial bounded torque authority and therefore does not support another plant-authority probe as the highest-value next action. No learned candidate exists, so official assessment is unavailable and cannot test the decision frontier. A bounded learned-policy inquiry is required to obtain the discriminating reach-versus-hold evidence while preserving the official success definition.",
-          "reframes": []
-        }
-      },
-      "result": {
-        "action": "open",
-        "inquiry_id": "I1",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E2",
-    "inquiry_id": null,
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "open",
-        "closure_condition": "Close or reframe after a full-distribution candidate evaluation reports episode success, first-entry step, maximum held steps, interruption count, and radius-conditioned outcomes sufficient to identify acquisition/coverage, post-entry regulation, or a consequential branch/posture or limit-conditioned failure pattern.",
-        "goal_connection": "The human goal requires at least 196 of 200 official episodes to complete an uninterrupted 100-step hold. Resolving whether the first policy fails before entry or after entry determines whether the next intervention should expand learning coverage or improve braking-sensitive stabilization.",
-        "question": "For a first learned policy exposed to the full official 0.06-0.20 m target distribution, are complete-hold failures dominated by inner-radius acquisition and coverage, or by post-entry regulation and hold interruption?",
-        "rationale": "M1 found substantial bounded torque authority and therefore does not support another plant-authority probe as the highest-value next action. No learned candidate exists, so official assessment is unavailable and cannot test the decision frontier. A bounded learned-policy inquiry is required to obtain the discriminating reach-versus-hold evidence while preserving the official success definition."
-      }
-    },
-    "request_fingerprint": "44fbf4e020ba9d52932f89ad67a4dc407e74b1d6f35f30ed92138b8e4f64caa6",
-    "session_id": "S2",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "No candidates exist; no model role is assigned.",
     "completed_operations": [
