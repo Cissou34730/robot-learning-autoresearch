@@ -837,13 +837,20 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "official_assessment_requested",
+  "last_verdict": "official assessment goal not reached; success 97.0%; 200 episodes",
   "model_roles": {
     "best_known": "T1:checkpoint-100352",
     "retained": {},
     "working": null
   },
-  "official_assessment": null,
+  "official_assessment": {
+    "artifact": "campaigns/checkpoints/retained/ab62348f-7e1f-4d20-8036-6c194621d93c/t1-cada55eb5-fc7c23e693905e6d5689efd430b412e39de81e99e2a8042275ac03ef5cbbcc50",
+    "completed_at": "2026-10-06T23:07:18Z",
+    "fingerprint": "fc7c23e693905e6d5689efd430b412e39de81e99e2a8042275ac03ef5cbbcc50",
+    "model": "T1:checkpoint-100352",
+    "status": "failed",
+    "summary": "goal not reached; success 97.0%; 200 episodes"
+  },
   "operation_events": [
     {
       "completed_at": "2026-10-06T22:58:43Z",
@@ -1242,7 +1249,7 @@
       "supersedes": null
     },
     {
-      "completed_at": "2026-10-06T23:05:52Z",
+      "completed_at": "2026-10-06T23:07:18Z",
       "error": null,
       "id": "E3",
       "inquiry_id": null,
@@ -1253,7 +1260,7 @@
       },
       "result": {
         "model": "T1:checkpoint-100352",
-        "status": "official_assessment_requested"
+        "status": "official_assessment_failed"
       },
       "session_id": "S2",
       "status": "completed",
@@ -1293,6 +1300,6 @@
   "terminal_state": {
     "model": "T1:checkpoint-100352",
     "reason": "Request the protected 200-episode assessment for the explicitly assigned best-known candidate T1:checkpoint-100352. M1 achieved 199/200 on a separate official-distribution development panel, with broad radial success and one isolated one-step hold exit at radius 15.91 cm; this supports proceeding to the decisive protected test rather than spending another full allocation on an unconfirmed stabilization mechanism. If the protected result is at least 196/200, the human goal is met; a lower result will redirect the campaign to hold-boundary diagnostics, including endpoint velocity, action saturation, and geometry or branch conditioning.",
-    "status": "official_assessment_requested"
+    "status": "official_assessment_failed"
   }
 }
