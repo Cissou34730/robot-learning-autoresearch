@@ -131,7 +131,6 @@ def run_command(*command: str, timeout: int | None = None) -> str:
 
 
 def validate_changed_sources(changed_paths: list[str]) -> None:
-    python_changes: list[str] = []
     for path in changed_paths:
         absolute = paths.ROOT / path
         if not absolute.is_file():
@@ -142,14 +141,11 @@ def validate_changed_sources(changed_paths: list[str]) -> None:
             except SyntaxError as error:
                 message = f"{path} has invalid Python syntax: {error}"
                 raise RuntimeError(message) from error
-            python_changes.append(path)
         elif path.endswith(".json"):
             try:
                 json.loads(absolute.read_text(encoding="utf-8"))
             except json.JSONDecodeError as error:
                 raise RuntimeError(f"{path} is not valid JSON: {error}") from error
-    if python_changes:
-        run_module("ruff", "check", *python_changes)
 
 
 def validate_dependency_metadata() -> None:

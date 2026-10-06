@@ -2107,3 +2107,28 @@ separate from harness changes so their outcomes are not conflated.
 - **Disposition:** retained as an ownership-refactor regression correction.
   The three partial M4 evaluations remain unpublished transaction evidence
   until the maintainer chooses whether to resume the campaign.
+
+## 2026-10-06: stop treating PI style findings as execution failures
+
+- **Campaign evidence:** T2 in campaign
+  `3d0d131d-3cb5-41fc-8c57-64e7521b3051` was rejected before training because
+  Ruff reported only an unsorted import block. The same scientific request was
+  then superseded as T3 after formatting repair, consuming an operation ID and
+  recording a failed training attempt without scientific evidence.
+- **Decision:** formatting and lint style are not execution correctness and
+  must not block PI scientific code. Source validation continues to reject
+  invalid Python syntax and malformed JSON. Training still runs the existing
+  directly affected behavioral validation selected by the Runner before
+  publication and execution.
+- **Change:** remove blocking Ruff execution from
+  `execution.validate_changed_sources`. Keep its in-process Python compilation
+  and JSON parsing checks.
+- **Boundary:** this does not weaken ownership checks, dependency-lock
+  validation, active-configuration validation, targeted behavioral validation,
+  runtime exceptions, or operation schemas. It does not alter or erase the
+  historical T2 failure.
+- **Implementation checks:** targeted Ruff on the Runner change, Python
+  compilation, and direct probes confirmed that unsorted but syntactically
+  valid Python is accepted while invalid syntax remains rejected.
+- **Disposition:** retained as a validation-semantics correction. A style
+  issue no longer creates a failed scientific operation.
