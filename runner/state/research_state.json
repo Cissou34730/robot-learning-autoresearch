@@ -2477,7 +2477,7 @@
     }
   },
   "counters": {
-    "event": 17,
+    "event": 18,
     "inquiry": 4,
     "measurement": 7,
     "session": 11,
@@ -2486,7 +2486,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -5783,30 +5783,161 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-06T06:26:51Z",
+      "error": null,
+      "id": "E18",
+      "inquiry_id": null,
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "T1:checkpoint-120832 remains the strongest measured development reference at 151/160 but has no assigned role. T3:checkpoint-120832 is rejected as the I3 intervention candidate at 122/160. T2:checkpoint-120832 remains rejected at 39/160. No candidate is assigned a working, best-known, or retained role.",
+        "completed_operations": [
+          "E17"
+        ],
+        "cumulative_resource_use": "Three fresh 120000-requested-step training operations (T1, T2, T3), paired 160-episode development evaluations M1, M3, and M7, diagnostic measurements M2, M4, and M6, inquiry lifecycle operations E2, E5, E7, E9, E11, E15, and E17, and checkpoint records. No official assessment and no candidate role assignment.",
+        "current_goal_gap": "The best measured development reference is 151/160 and the protected threshold is 196/200. T3 is 38 failures short of the development target analogue. No candidate has a working, best-known, or retained role.",
+        "current_synthesis": "I3 is unsupported and closed. On identical seeds and evaluation semantics, preserving the 11-value observation while changing only training exposure to a 50% folded-only-feasible mixture reduced success from 151/160 to 122/160, with zero candidate wins and 29 reference wins. The targeted -150 to -120 degree sector fell from 14/20 to 4/20; no-first-reach failures rose from 7 to 26 and post-entry interrupted holds from 2 to 12. This rejects exposure reweighting alone as the missing approach capability, while not identifying whether the remaining baseline failures arise from policy/control capacity or the straight-reset singular transient. M6's seven baseline no-first-reach failures with saturated, overshooting approach trajectories keep reset escape and realized branch-dependent dynamics consequential; its two post-entry failures retain stabilization and sampled-boundary behavior as a secondary risk. The physical model consequence that official targets are kinematically coverable by at least one branch remains consistent with the evidence, so the next decision concerns realized control rather than established unreachable targets. Training return remains non-diagnostic.",
+        "decision_frontier": "The resolved question is whether targeted exposure alone improves branch-dependent approach; it does not. I4 now tests whether the nine baseline failures are better explained by insufficient policy/control capacity or by handling of the straight-reset singular transient. The discriminating evidence must preserve early q2 escape, radial and tangential endpoint error, action saturation, elbow overshoot, first-reach timing, analytic branch conditioning, and post-entry hold outcomes under one controlled intervention against T1:checkpoint-120832. A broad-regression-safe improvement in approach would support a capacity intervention; persistent comparable early transients after a capacity change would favor reset handling; an approach improvement with failures shifting to post-entry interruptions would redirect to stabilization and sampled-boundary behavior. The task, evaluation semantics, and 11-value observation remain unchanged unless such evidence justifies revision.",
+        "evidence_references": [
+          "M6",
+          "E11",
+          "T3",
+          "M7",
+          "E15",
+          "E17"
+        ],
+        "human_goal_connection": "The human goal remains at least 196 successes in the protected 200-episode official panel. The strongest development reference, T1:checkpoint-120832, achieved 151/160, leaving a nine-failure gap to the analogous development target. T3 achieved 122/160, so no official assessment or 98% claim is justified.",
+        "next_direction_or_closure": "The goal-review transition is complete and I4 is open. In the fresh I4 inquiry session, select one controlled intervention that can distinguish policy/control capacity from straight-reset transient handling, then obtain paired trajectory-preserving development evidence against T1:checkpoint-120832. Do not request official assessment before a candidate demonstrates the required development evidence."
+      },
+      "result": {
+        "session_id": "S11",
+        "status": "checkpointed"
+      },
+      "session_id": "S11",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "f1908aaead549bf6c995ab11ce1213d4d5adfe25",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "T1:checkpoint-120832 remains the strongest measured development reference at 151/160 but has no assigned role. T3:checkpoint-120832 is rejected as the I3 intervention candidate at 122/160. T2:checkpoint-120832 remains rejected at 39/160. No candidate is assigned a working, best-known, or retained role.",
+        "completed_operations": [
+          "E17"
+        ],
+        "cumulative_resource_use": "Three fresh 120000-requested-step training operations (T1, T2, T3), paired 160-episode development evaluations M1, M3, and M7, diagnostic measurements M2, M4, and M6, inquiry lifecycle operations E2, E5, E7, E9, E11, E15, and E17, and checkpoint records. No official assessment and no candidate role assignment.",
+        "current_goal_gap": "The best measured development reference is 151/160 and the protected threshold is 196/200. T3 is 38 failures short of the development target analogue. No candidate has a working, best-known, or retained role.",
+        "current_synthesis": "I3 is unsupported and closed. On identical seeds and evaluation semantics, preserving the 11-value observation while changing only training exposure to a 50% folded-only-feasible mixture reduced success from 151/160 to 122/160, with zero candidate wins and 29 reference wins. The targeted -150 to -120 degree sector fell from 14/20 to 4/20; no-first-reach failures rose from 7 to 26 and post-entry interrupted holds from 2 to 12. This rejects exposure reweighting alone as the missing approach capability, while not identifying whether the remaining baseline failures arise from policy/control capacity or the straight-reset singular transient. M6's seven baseline no-first-reach failures with saturated, overshooting approach trajectories keep reset escape and realized branch-dependent dynamics consequential; its two post-entry failures retain stabilization and sampled-boundary behavior as a secondary risk. The physical model consequence that official targets are kinematically coverable by at least one branch remains consistent with the evidence, so the next decision concerns realized control rather than established unreachable targets. Training return remains non-diagnostic.",
+        "decision_frontier": "The resolved question is whether targeted exposure alone improves branch-dependent approach; it does not. I4 now tests whether the nine baseline failures are better explained by insufficient policy/control capacity or by handling of the straight-reset singular transient. The discriminating evidence must preserve early q2 escape, radial and tangential endpoint error, action saturation, elbow overshoot, first-reach timing, analytic branch conditioning, and post-entry hold outcomes under one controlled intervention against T1:checkpoint-120832. A broad-regression-safe improvement in approach would support a capacity intervention; persistent comparable early transients after a capacity change would favor reset handling; an approach improvement with failures shifting to post-entry interruptions would redirect to stabilization and sampled-boundary behavior. The task, evaluation semantics, and 11-value observation remain unchanged unless such evidence justifies revision.",
+        "evidence_references": [
+          "M6",
+          "E11",
+          "T3",
+          "M7",
+          "E15",
+          "E17"
+        ],
+        "human_goal_connection": "The human goal remains at least 196 successes in the protected 200-episode official panel. The strongest development reference, T1:checkpoint-120832, achieved 151/160, leaving a nine-failure gap to the analogous development target. T3 achieved 122/160, so no official assessment or 98% claim is justified.",
+        "inquiry_id": null,
+        "next_direction_or_closure": "The goal-review transition is complete and I4 is open. In the fresh I4 inquiry session, select one controlled intervention that can distinguish policy/control capacity from straight-reset transient handling, then obtain paired trajectory-preserving development evidence against T1:checkpoint-120832. Do not request official assessment before a candidate demonstrates the required development evidence.",
+        "session_id": "S11"
+      },
+      "presentation": {
+        "backend_session_id": "95a1855a-02ff-4637-8e35-7db0966fc0fc",
+        "campaign_id": "9fa1f256-b083-45b2-8127-d7e4e00728b8",
+        "campaign_usage": "35m44s | 73.08 AIU | prompt 11.4m (86% cached) | output 110.5k",
+        "session_id": "S11",
+        "session_kind": "goal_review",
+        "session_usage": "2m02s | 5.06 AIU | prompt 634.6k (77% cached) | output 4k"
+      },
+      "result": {
+        "session_id": "S11",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "a9a9c6058738e67de57cb71c4c99a823b709e6d4",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E18",
+    "inquiry_id": null,
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "T1:checkpoint-120832 remains the strongest measured development reference at 151/160 but has no assigned role. T3:checkpoint-120832 is rejected as the I3 intervention candidate at 122/160. T2:checkpoint-120832 remains rejected at 39/160. No candidate is assigned a working, best-known, or retained role.",
+        "completed_operations": [
+          "E17"
+        ],
+        "cumulative_resource_use": "Three fresh 120000-requested-step training operations (T1, T2, T3), paired 160-episode development evaluations M1, M3, and M7, diagnostic measurements M2, M4, and M6, inquiry lifecycle operations E2, E5, E7, E9, E11, E15, and E17, and checkpoint records. No official assessment and no candidate role assignment.",
+        "current_goal_gap": "The best measured development reference is 151/160 and the protected threshold is 196/200. T3 is 38 failures short of the development target analogue. No candidate has a working, best-known, or retained role.",
+        "current_synthesis": "I3 is unsupported and closed. On identical seeds and evaluation semantics, preserving the 11-value observation while changing only training exposure to a 50% folded-only-feasible mixture reduced success from 151/160 to 122/160, with zero candidate wins and 29 reference wins. The targeted -150 to -120 degree sector fell from 14/20 to 4/20; no-first-reach failures rose from 7 to 26 and post-entry interrupted holds from 2 to 12. This rejects exposure reweighting alone as the missing approach capability, while not identifying whether the remaining baseline failures arise from policy/control capacity or the straight-reset singular transient. M6's seven baseline no-first-reach failures with saturated, overshooting approach trajectories keep reset escape and realized branch-dependent dynamics consequential; its two post-entry failures retain stabilization and sampled-boundary behavior as a secondary risk. The physical model consequence that official targets are kinematically coverable by at least one branch remains consistent with the evidence, so the next decision concerns realized control rather than established unreachable targets. Training return remains non-diagnostic.",
+        "decision_frontier": "The resolved question is whether targeted exposure alone improves branch-dependent approach; it does not. I4 now tests whether the nine baseline failures are better explained by insufficient policy/control capacity or by handling of the straight-reset singular transient. The discriminating evidence must preserve early q2 escape, radial and tangential endpoint error, action saturation, elbow overshoot, first-reach timing, analytic branch conditioning, and post-entry hold outcomes under one controlled intervention against T1:checkpoint-120832. A broad-regression-safe improvement in approach would support a capacity intervention; persistent comparable early transients after a capacity change would favor reset handling; an approach improvement with failures shifting to post-entry interruptions would redirect to stabilization and sampled-boundary behavior. The task, evaluation semantics, and 11-value observation remain unchanged unless such evidence justifies revision.",
+        "evidence_references": [
+          "M6",
+          "E11",
+          "T3",
+          "M7",
+          "E15",
+          "E17"
+        ],
+        "human_goal_connection": "The human goal remains at least 196 successes in the protected 200-episode official panel. The strongest development reference, T1:checkpoint-120832, achieved 151/160, leaving a nine-failure gap to the analogous development target. T3 achieved 122/160, so no official assessment or 98% claim is justified.",
+        "next_direction_or_closure": "The goal-review transition is complete and I4 is open. In the fresh I4 inquiry session, select one controlled intervention that can distinguish policy/control capacity from straight-reset transient handling, then obtain paired trajectory-preserving development evidence against T1:checkpoint-120832. Do not request official assessment before a candidate demonstrates the required development evidence."
+      }
+    },
+    "request_fingerprint": "45e5e43e9afbe499425901e3acc75ff11657222842447807de4c3bac2e855f96",
+    "session_id": "S11",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T1:checkpoint-120832 remains the strongest measured development reference at 151/160 but has no assigned role. T3:checkpoint-120832 is rejected as the I3 intervention candidate at 122/160. T2:checkpoint-120832 remains rejected at 39/160. No candidate is assigned a working, best-known, or retained role.",
     "completed_operations": [
-      "E15"
+      "E17"
     ],
-    "cumulative_resource_use": "Three fresh 120000-requested-step training operations (T1, T2, T3), paired 160-episode development evaluations M1, M3, and M7, diagnostic measurements M2, M4, and M6, inquiry lifecycle operations E2, E5, E7, E9, E11, and E15, and checkpoint records. No official assessment and no candidate role assignment.",
-    "current_goal_gap": "The best measured development reference is 151/160, or nine failures short of the 160-episode target analogue. The protected official threshold remains 196/200. T3 is 38 failures short of the development target analogue. No candidate has a working, best-known, or retained role.",
-    "current_synthesis": "I3 is unsupported and is closed. On identical episode seeds and identical evaluation semantics, preserving the 11-value baseline observation while changing only training exposure to a 50% folded-only-feasible mixture produced 122/160 versus 151/160 for T1, with zero candidate wins and 29 reference wins. The targeted -150 to -120 degree sector fell from 14/20 to 4/20 successes; no-first-reach failures rose from 7 to 26 and post-entry interrupted holds from 2 to 12. Thus exposure reweighting alone did not supply the missing branch-dependent approach capability and caused broad regression, including in the targeted sector and both-feasible targets. The initial physical interpretation remains partly supported but not fully resolved: official targets are kinematically coverable by at least one branch, while branch-dependent limits, the straight-reset singular transient, and realized approach dynamics can still determine success. M6's two baseline post-entry failures preserve a secondary stabilization and sampled-boundary risk, but M7 does not make that the dominant gap. Training return remains non-diagnostic. The transition decision is to close I3 based on its prespecified improvement and no-broad-regression failure, not on training statistics.",
-    "decision_frontier": "The question of whether targeted exposure alone improves branch-dependent approach is resolved negatively. The next decision is whether the remaining nine baseline failures are better explained by insufficient policy/control capacity or by handling of the straight-reset transient. Discriminating evidence must compare early singularity escape, q2 evolution, radial and tangential error, action saturation, elbow overshoot, first-reach timing, and branch-conditioned outcomes under a controlled capacity or reset-transient intervention. Persistent comparable early transients after a capacity change would favor reset handling; improved approach with failures shifting to post-entry holds would redirect to stabilization and sampled-boundary behavior. Preserve the unchanged task and observation unless such evidence justifies revision.",
+    "cumulative_resource_use": "Three fresh 120000-requested-step training operations (T1, T2, T3), paired 160-episode development evaluations M1, M3, and M7, diagnostic measurements M2, M4, and M6, inquiry lifecycle operations E2, E5, E7, E9, E11, E15, and E17, and checkpoint records. No official assessment and no candidate role assignment.",
+    "current_goal_gap": "The best measured development reference is 151/160 and the protected threshold is 196/200. T3 is 38 failures short of the development target analogue. No candidate has a working, best-known, or retained role.",
+    "current_synthesis": "I3 is unsupported and closed. On identical seeds and evaluation semantics, preserving the 11-value observation while changing only training exposure to a 50% folded-only-feasible mixture reduced success from 151/160 to 122/160, with zero candidate wins and 29 reference wins. The targeted -150 to -120 degree sector fell from 14/20 to 4/20; no-first-reach failures rose from 7 to 26 and post-entry interrupted holds from 2 to 12. This rejects exposure reweighting alone as the missing approach capability, while not identifying whether the remaining baseline failures arise from policy/control capacity or the straight-reset singular transient. M6's seven baseline no-first-reach failures with saturated, overshooting approach trajectories keep reset escape and realized branch-dependent dynamics consequential; its two post-entry failures retain stabilization and sampled-boundary behavior as a secondary risk. The physical model consequence that official targets are kinematically coverable by at least one branch remains consistent with the evidence, so the next decision concerns realized control rather than established unreachable targets. Training return remains non-diagnostic.",
+    "decision_frontier": "The resolved question is whether targeted exposure alone improves branch-dependent approach; it does not. I4 now tests whether the nine baseline failures are better explained by insufficient policy/control capacity or by handling of the straight-reset singular transient. The discriminating evidence must preserve early q2 escape, radial and tangential endpoint error, action saturation, elbow overshoot, first-reach timing, analytic branch conditioning, and post-entry hold outcomes under one controlled intervention against T1:checkpoint-120832. A broad-regression-safe improvement in approach would support a capacity intervention; persistent comparable early transients after a capacity change would favor reset handling; an approach improvement with failures shifting to post-entry interruptions would redirect to stabilization and sampled-boundary behavior. The task, evaluation semantics, and 11-value observation remain unchanged unless such evidence justifies revision.",
     "evidence_references": [
       "M6",
       "E11",
       "T3",
       "M7",
-      "E15"
+      "E15",
+      "E17"
     ],
-    "human_goal_connection": "The human goal remains at least 196 successes in the protected 200-episode official panel. T1:checkpoint-120832 is the strongest development reference at 151/160, leaving a nine-episode gap to the target analogue. T3:checkpoint-120832 reached 122/160. Neither development result establishes the official goal, so no official assessment or 98% claim is warranted.",
-    "inquiry_id": "I3",
-    "next_direction_or_closure": "I3 is closed as unsupported. In the fresh session, open a new inquiry on policy/control capacity versus straight-reset transient handling and request trajectory-preserving paired evidence before selecting another training intervention. The evidence should preserve early joint and endpoint trajectories, action saturation, first-reach timing, and branch-conditioned outcomes. Do not request official assessment.",
-    "scientific_commit": "f2df754a522390a61079dd93379e378242b7ce34",
-    "session_id": "S10"
+    "human_goal_connection": "The human goal remains at least 196 successes in the protected 200-episode official panel. The strongest development reference, T1:checkpoint-120832, achieved 151/160, leaving a nine-failure gap to the analogous development target. T3 achieved 122/160, so no official assessment or 98% claim is justified.",
+    "inquiry_id": null,
+    "next_direction_or_closure": "The goal-review transition is complete and I4 is open. In the fresh I4 inquiry session, select one controlled intervention that can distinguish policy/control capacity from straight-reset transient handling, then obtain paired trajectory-preserving development evidence against T1:checkpoint-120832. Do not request official assessment before a candidate demonstrates the required development evidence.",
+    "scientific_commit": "a9a9c6058738e67de57cb71c4c99a823b709e6d4",
+    "session_id": "S11"
   },
   "schema_version": 6,
   "scientific_model": {
@@ -5814,21 +5945,6 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "95a1855a-02ff-4637-8e35-7db0966fc0fc",
-    "id": "S11",
-    "inquiry_id": null,
-    "kind": "goal_review",
-    "objective": "Reassess the scientific direction toward the human goal using completed evidence. You may request measurements to resolve an uncertainty or develop the method before committing to an inquiry. Decide whether to request official assessment or open one bounded goal-linked inquiry.",
-    "operation_ids": [
-      "E17"
-    ],
-    "scientific_parent_commit": "f1908aaead549bf6c995ab11ce1213d4d5adfe25"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
