@@ -17,10 +17,35 @@ import numpy as np
 
 from benchmark.paired_evidence import episode_outcomes
 from contracts.policy_runtime import load_runtime
+from contracts.robots.two_joint_arm import FOREARM_LENGTH, UPPER_ARM_LENGTH
 from robot_learning.scenario.environment import make_evaluation_env
 
 # Bumped when the meaning of a scenario evaluation summary changes.
-RESEARCH_EVALUATION_SUMMARY_VERSION = 4
+RESEARCH_EVALUATION_SUMMARY_VERSION = 5
+
+
+def _wrapped_angle(angle: float) -> float:
+    return float((angle + np.pi) % (2.0 * np.pi) - np.pi)
+
+
+def _branch_targets(target_position: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
+    radius = float(np.hypot(target_position[0], target_position[1]))
+    target_angle = float(np.arctan2(target_position[1], target_position[0]))
+    cosine = (
+        radius**2 - UPPER_ARM_LENGTH**2 - FOREARM_LENGTH**2
+    ) / (2.0 * UPPER_ARM_LENGTH * FOREARM_LENGTH)
+    elbow = float(np.arccos(np.clip(cosine, -1.0, 1.0)))
+
+    def target_for_elbow(elbow_angle: float) -> np.ndarray:
+        shoulder = target_angle - np.arctan2(
+            FOREARM_LENGTH * np.sin(elbow_angle),
+            UPPER_ARM_LENGTH + FOREARM_LENGTH * np.cos(elbow_angle),
+        )
+        return np.array(
+            [_wrapped_angle(float(shoulder)), elbow_angle], dtype=np.float64
+        )
+
+    return target_for_elbow(elbow), target_for_elbow(-elbow)
 
 
 def evaluate_research_model(
@@ -51,9 +76,25 @@ def evaluate_research_model(
         min_distance_cm = float("inf")
         final_distance_cm = float("nan")
         first_reach_step: int | None = None
+        joint_speed_at_first_entry_rad_s: float | None = None
         max_held_steps = 0
         in_tolerance_steps = 0
         hold_interruptions = 0
+        max_joint_speed_rad_s = 0.0
+        max_substep_distance_cm = 0.0
+        max_substep_joint_speed_rad_s = 0.0
+        branch_targets = _branch_targets(target_position)
+        analytic_limit_margins_deg = [
+            float(
+                np.degrees(
+                    np.min(np.pi * 170.0 / 180.0 - np.abs(branch_target))
+                )
+            )
+            for branch_target in branch_targets
+        ]
+        branch_error_at_first_entry: list[float] | None = None
+        final_branch_error: list[float] | None = None
+        final_qpos: list[float] | None = None
         was_in_tolerance = False
         while not (terminated or truncated):
             action = runtime.predict(obs)
@@ -65,10 +106,30 @@ def evaluate_research_model(
             min_distance_cm = min(min_distance_cm, distance_cm)
             final_distance_cm = distance_cm
             max_held_steps = max(max_held_steps, held_steps)
+            joint_speed_rad_s = float(info["joint_speed_rad_s"])
+            max_joint_speed_rad_s = max(max_joint_speed_rad_s, joint_speed_rad_s)
+            max_substep_distance_cm = max(
+                max_substep_distance_cm,
+                100.0 * float(info["substep_max_distance"]),
+            )
+            max_substep_joint_speed_rad_s = max(
+                max_substep_joint_speed_rad_s,
+                float(info["substep_max_joint_speed_rad_s"]),
+            )
+            qpos = np.asarray(env.data.qpos[:2], dtype=np.float64)
+            branch_error = [
+                _wrapped_angle(float(target_joint - current_joint))
+                for branch_target in branch_targets
+                for current_joint, target_joint in zip(qpos, branch_target)
+            ]
+            final_branch_error = branch_error
+            final_qpos = qpos.tolist()
             if held_steps > 0:
                 in_tolerance_steps += 1
                 if first_reach_step is None:
                     first_reach_step = steps
+                    joint_speed_at_first_entry_rad_s = joint_speed_rad_s
+                    branch_error_at_first_entry = branch_error
             elif was_in_tolerance:
                 hold_interruptions += 1
             was_in_tolerance = held_steps > 0
@@ -100,6 +161,14 @@ def evaluate_research_model(
                 "min_distance_cm": min_distance_cm,
                 "final_distance_cm": final_distance_cm,
                 "first_reach_step": first_reach_step,
+                "joint_speed_at_first_entry_rad_s": joint_speed_at_first_entry_rad_s,
+                "max_joint_speed_rad_s": max_joint_speed_rad_s,
+                "max_substep_distance_cm": max_substep_distance_cm,
+                "max_substep_joint_speed_rad_s": max_substep_joint_speed_rad_s,
+                "analytic_branch_limit_margins_deg": analytic_limit_margins_deg,
+                "branch_error_at_first_entry_rad": branch_error_at_first_entry,
+                "final_branch_error_rad": final_branch_error,
+                "final_qpos_rad": final_qpos,
                 "max_held_steps": max_held_steps,
                 "in_tolerance_steps": in_tolerance_steps,
                 "hold_interruptions": hold_interruptions,
@@ -110,7 +179,7 @@ def evaluate_research_model(
 
     successes = sum(episode["success"] for episode in episode_results)
     return {
-        "schema_version": 5,
+        "schema_version": 7,
         "model": str(model_path),
         "episodes": episodes,
         "seed": seed,
@@ -121,7 +190,13 @@ def evaluate_research_model(
         # failures and checking whether performance varies by target geometry.
         "research_evidence": {
             "episode_diagnostics": episode_diagnostics,
-            "units": {"distance": "cm", "time": "control_steps"},
+            "units": {
+                "distance": "cm",
+                "branch_error": "rad",
+                "joint_speed": "rad_per_s",
+                "time": "control_steps",
+            },
+            "branch_order": ["open", "folded"],
         },
     }
 
