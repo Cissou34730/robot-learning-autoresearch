@@ -828,7 +828,7 @@
     }
   },
   "counters": {
-    "event": 2,
+    "event": 3,
     "inquiry": 0,
     "measurement": 1,
     "session": 2,
@@ -837,7 +837,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "assigned",
+  "last_verdict": "official_assessment_requested",
   "model_roles": {
     "best_known": "T1:checkpoint-100352",
     "retained": {},
@@ -1240,9 +1240,62 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-06T23:05:52Z",
+      "error": null,
+      "id": "E3",
+      "inquiry_id": null,
+      "kind": "campaign_conclusion",
+      "request": {
+        "action": "request_official_assessment",
+        "reason": "Request the protected 200-episode assessment for the explicitly assigned best-known candidate T1:checkpoint-100352. M1 achieved 199/200 on a separate official-distribution development panel, with broad radial success and one isolated one-step hold exit at radius 15.91 cm; this supports proceeding to the decisive protected test rather than spending another full allocation on an unconfirmed stabilization mechanism. If the protected result is at least 196/200, the human goal is met; a lower result will redirect the campaign to hold-boundary diagnostics, including endpoint velocity, action saturation, and geometry or branch conditioning."
+      },
+      "result": {
+        "model": "T1:checkpoint-100352",
+        "status": "official_assessment_requested"
+      },
+      "session_id": "S2",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "model": "T1:checkpoint-100352",
+        "reason": "Request the protected 200-episode assessment for the explicitly assigned best-known candidate T1:checkpoint-100352. M1 achieved 199/200 on a separate official-distribution development panel, with broad radial success and one isolated one-step hold exit at radius 15.91 cm; this supports proceeding to the decisive protected test rather than spending another full allocation on an unconfirmed stabilization mechanism. If the protected result is at least 196/200, the human goal is met; a lower result will redirect the campaign to hold-boundary diagnostics, including endpoint velocity, action saturation, and geometry or branch conditioning.",
+        "status": "official_assessment_requested"
+      },
+      "presentation": {
+        "backend_session_id": "50f11f9b-4da6-4e82-9e77-4f42704539b0",
+        "campaign_id": "ab62348f-7e1f-4d20-8036-6c194621d93c",
+        "campaign_usage": "6m16s | 9.16 AIU | prompt 1.2m (84% cached) | output 21.5k",
+        "session_id": "S2",
+        "session_kind": "goal_review",
+        "session_usage": "1m02s | 1.66 AIU | prompt 173.7k (74% cached) | output 2.1k"
+      },
+      "result": {
+        "model": "T1:checkpoint-100352",
+        "status": "official_assessment_requested"
+      }
+    },
+    "failure": null,
+    "id": "E3",
+    "inquiry_id": null,
+    "kind": "campaign_conclusion",
+    "progress": "completed",
+    "request": {
+      "campaign_conclusion": {
+        "action": "request_official_assessment",
+        "reason": "Request the protected 200-episode assessment for the explicitly assigned best-known candidate T1:checkpoint-100352. M1 achieved 199/200 on a separate official-distribution development panel, with broad radial success and one isolated one-step hold exit at radius 15.91 cm; this supports proceeding to the decisive protected test rather than spending another full allocation on an unconfirmed stabilization mechanism. If the protected result is at least 196/200, the human goal is met; a lower result will redirect the campaign to hold-boundary diagnostics, including endpoint velocity, action saturation, and geometry or branch conditioning."
+      }
+    },
+    "request_fingerprint": "aad2e10f3ed96936c265de6b7890bb8467afa079c3a8c35a60fa6e546da1c9e3",
+    "session_id": "S2",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No candidate role has been assigned yet. T1:checkpoint-100352 is the evidence-backed candidate proposed for best-known assignment in goal review because it is the strongest late-training checkpoint and achieved 99.5% on M1; this is not an official success claim.",
     "completed_operations": [
@@ -1270,21 +1323,10 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "50f11f9b-4da6-4e82-9e77-4f42704539b0",
-    "id": "S2",
-    "inquiry_id": null,
-    "kind": "goal_review",
-    "objective": "Reassess the scientific direction toward the human goal using completed evidence. You may request measurements to resolve an uncertainty or develop the method before committing to an inquiry. Decide whether to request official assessment or open one bounded goal-linked inquiry.",
-    "operation_ids": [
-      "E2"
-    ],
-    "scientific_parent_commit": "59c2ccb8c27f799f3335dd0bf1eba0f1947903ac"
-  },
-  "terminal_state": null
+  "scientific_session": null,
+  "terminal_state": {
+    "model": "T1:checkpoint-100352",
+    "reason": "Request the protected 200-episode assessment for the explicitly assigned best-known candidate T1:checkpoint-100352. M1 achieved 199/200 on a separate official-distribution development panel, with broad radial success and one isolated one-step hold exit at radius 15.91 cm; this supports proceeding to the decisive protected test rather than spending another full allocation on an unconfirmed stabilization mechanism. If the protected result is at least 196/200, the human goal is met; a lower result will redirect the campaign to hold-boundary diagnostics, including endpoint velocity, action saturation, and geometry or branch conditioning.",
+    "status": "official_assessment_requested"
+  }
 }
