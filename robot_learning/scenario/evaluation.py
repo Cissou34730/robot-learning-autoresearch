@@ -48,21 +48,12 @@ def evaluate_research_model(
         success = False
         terminated = False
         truncated = False
-        min_distance_cm: float | None = None
+        min_distance_cm = float("inf")
         final_distance_cm = float("nan")
         first_reach_step: int | None = None
-        reached_branch: str | None = None
         max_held_steps = 0
         in_tolerance_steps = 0
         hold_interruptions = 0
-        interruption_steps: list[int] = []
-        hold_margins_cm: list[float] = []
-        action_norms: list[float] = []
-        action_abs_values: list[float] = []
-        joint_speed_values: list[float] = []
-        joint_velocity_abs_values: list[float] = []
-        hold_action_abs_values: list[float] = []
-        hold_joint_velocity_abs_values: list[float] = []
         was_in_tolerance = False
         while not (terminated or truncated):
             action = runtime.predict(obs)
@@ -71,35 +62,15 @@ def evaluate_research_model(
             reward_total += float(reward)
             distance_cm = 100.0 * float(info["distance"])
             held_steps = int(info.get("held_steps", 0))
-            action_array = np.asarray(action, dtype=np.float64).reshape(-1)
-            joint_velocity = np.asarray(env.data.qvel[:2], dtype=np.float64)
-            action_abs = float(np.max(np.abs(action_array)))
-            action_norm = float(np.linalg.norm(action_array))
-            joint_speed = float(np.linalg.norm(joint_velocity))
-            joint_velocity_abs = float(np.max(np.abs(joint_velocity)))
-            action_norms.append(action_norm)
-            action_abs_values.append(action_abs)
-            joint_speed_values.append(joint_speed)
-            joint_velocity_abs_values.append(joint_velocity_abs)
-            if min_distance_cm is None or distance_cm < min_distance_cm:
-                min_distance_cm = distance_cm
+            min_distance_cm = min(min_distance_cm, distance_cm)
             final_distance_cm = distance_cm
             max_held_steps = max(max_held_steps, held_steps)
             if held_steps > 0:
                 in_tolerance_steps += 1
-                hold_margins_cm.append(1.0 - distance_cm)
-                hold_action_abs_values.append(action_abs)
-                hold_joint_velocity_abs_values.append(joint_velocity_abs)
                 if first_reach_step is None:
                     first_reach_step = steps
-                    open_residual = float(np.linalg.norm(obs[7:9]))
-                    folded_residual = float(np.linalg.norm(obs[9:11]))
-                    reached_branch = (
-                        "open" if open_residual <= folded_residual else "folded"
-                    )
             elif was_in_tolerance:
                 hold_interruptions += 1
-                interruption_steps.append(steps)
             was_in_tolerance = held_steps > 0
             if "is_success" in info:
                 success = bool(info["is_success"])
@@ -129,27 +100,9 @@ def evaluate_research_model(
                 "min_distance_cm": min_distance_cm,
                 "final_distance_cm": final_distance_cm,
                 "first_reach_step": first_reach_step,
-                "time_to_entry_steps": first_reach_step,
-                "reached_branch": reached_branch,
                 "max_held_steps": max_held_steps,
                 "in_tolerance_steps": in_tolerance_steps,
                 "hold_interruptions": hold_interruptions,
-                "interruption_steps": interruption_steps,
-                "minimum_hold_margin_cm": (
-                    min(hold_margins_cm) if hold_margins_cm else None
-                ),
-                "max_action_abs": max(action_abs_values),
-                "mean_action_norm": float(np.mean(action_norms)),
-                "max_joint_velocity_abs_rad_per_s": max(joint_velocity_abs_values),
-                "mean_joint_speed_rad_per_s": float(np.mean(joint_speed_values)),
-                "max_hold_action_abs": (
-                    max(hold_action_abs_values) if hold_action_abs_values else None
-                ),
-                "max_hold_joint_velocity_abs_rad_per_s": (
-                    max(hold_joint_velocity_abs_values)
-                    if hold_joint_velocity_abs_values
-                    else None
-                ),
             }
         )
         if progress_callback is not None:
@@ -157,7 +110,7 @@ def evaluate_research_model(
 
     successes = sum(episode["success"] for episode in episode_results)
     return {
-        "schema_version": 6,
+        "schema_version": 5,
         "model": str(model_path),
         "episodes": episodes,
         "seed": seed,
