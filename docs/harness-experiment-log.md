@@ -2077,3 +2077,33 @@ separate from harness changes so their outcomes are not conflated.
 - **Disposition:** R1 implemented for observation. It is a bounded handoff
   correction, not a requirement to measure first or formulate a procedural
   question before acting.
+
+## 2026-10-06: allow Runner transactions during protected-runtime checks
+
+- **Campaign evidence:** campaign
+  `3d0d131d-3cb5-41fc-8c57-64e7521b3051` reached M4 with three of five
+  submeasurements completed. The first diagnostic then failed because its
+  accepted module arguments omitted the required `--artifact` option. The
+  Runner correctly preserved the three evaluation artifacts and
+  `measured_3_of_5` transaction state.
+- **Regression:** accepting the PI's corrected replacement request rechecked
+  research-panel independence through the protected benchmark adapter. The
+  clean-worktree guard rejected the Runner-generated evaluation artifacts and
+  `runner/state/research_state.json` because the ownership restructure
+  classifies all `campaigns/` and `runner/` paths as human-owned. The PI could
+  neither restore nor publish those protected transaction files, creating a
+  recovery deadlock.
+- **Correction:** continue rejecting uncommitted human-owned and protected
+  sources, but exclude paths explicitly registered by
+  `repository.is_runner_owned()` as Runner control or memory. This includes
+  pending state and campaign evaluation artifacts, not Runner source code,
+  benchmark code, contracts, documentation, tests or tools.
+- **Boundary:** no operation schema, scientific judgment, measurement intent,
+  campaign state, pending request, completed artifact or PI-owned code is
+  changed. The fix does not resume or finalize M4.
+- **Implementation checks:** targeted Ruff, Python compilation, and a direct
+  guard probe confirmed that Runner transaction paths are permitted while a
+  dirty contract remains rejected.
+- **Disposition:** retained as an ownership-refactor regression correction.
+  The three partial M4 evaluations remain unpublished transaction evidence
+  until the maintainer chooses whether to resume the campaign.

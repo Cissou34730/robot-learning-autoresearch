@@ -208,7 +208,7 @@
       <p class="intro">The human owns the goal. The PI owns the science and training. The Runner gates and executes operations.</p>
       <p class="intro">The two-joint arm is the current reference scenario. This page presents current status, the scenario, the process, its boundaries, and its history.</p>
       <p class="snapshot">
-        Documentation reviewed: <time datetime="2026-10-05T22:44:00+02:00">5 October 2026, 22:44 CEST</time>, after the maintainer stopped the latest campaign.
+        Documentation reviewed: <time datetime="2026-10-06T06:41:00+02:00">6 October 2026, 06:41 CEST</time>, after the maintainer stopped the latest campaign.
         This page does not update itself.
       </p>
       <p class="snapshot">Current behavior includes the startup semantics restored in <code>efc3be7</code>, the scientific-model goal-first ordering in <code>756ae4b</code>, and the bounded R1 startup handoff. Implementation is not evidence of scientific effectiveness.</p>
@@ -625,6 +625,7 @@
               <tr><td>Shorter startup training<span class="commit"><code>1a15091</code></span></td><td>Positive startup requests can use up to the maintainer's allocation. Inquiry requests use the full allocation. Rollout rounding remains.</td><td>Training remains optional. Scientific benefit of shorter requests is unassessed.</td></tr>
               <tr><td>Goal-review model-role availability<span class="commit"><code>eabb35c</code></span></td><td>The PI can assign the best-known role without requesting official assessment.</td><td>Role assignment does not declare success or establish readiness.</td></tr>
               <tr><td>Large Git publication and recovery<span class="commit"><code>b7727d1</code></span></td><td>Operation publication and completed-operation recovery are repaired.</td><td>This is an operational repair, not a controller-performance improvement.</td></tr>
+              <tr><td>Runner transaction trust during protected checks<span class="commit">6 October</span></td><td>Protected-runtime checks ignore only explicitly registered Runner transaction state and artifacts while continuing to reject dirty protected sources.</td><td>Repairs the M4 replacement deadlock in campaign <code>3d0d131d</code>. It does not resume, publish, or scientifically interpret that operation.</td></tr>
               <tr><td>Bounded Copilot shutdown<span class="commit"><code>2e897c7</code></span></td><td>Session disconnection and client shutdown are bounded. This repair remains separate from readiness withdrawal.</td><td>Provisionally retained operational repair. Campaign-level benefit remains unassessed.</td></tr>
               <tr><td>Rejection of the invented ending</td><td>Future <code>no_credible_route</code> requests and obsolete pending execution are rejected. The instructions no longer offer this ending.</td><td>Historical records remain readable and unchanged. This is not evidence of improved scientific decisions.</td></tr>
               <tr><td>Temporary 15-inquiry cap</td><td>The value remains. The launcher pauses after active work and the session record finish, without a scientific conclusion.</td><td>Only an explicit maintainer increase at that boundary resumes execution. Later removal is not implemented.</td></tr>

@@ -250,7 +250,11 @@ def validate_research_delta_ownership(code_changes: list[str]) -> None:
 
 def validate_clean_human_owned_worktree() -> None:
     changed = repository.status_paths((".",))
-    rejected = sorted(path for path in changed if is_human_owned(path))
+    rejected = sorted(
+        path
+        for path in changed
+        if is_human_owned(path) and not repository.is_runner_owned(path)
+    )
     if rejected:
         raise ValueError(
             "protected or human-owned files have uncommitted changes: "
