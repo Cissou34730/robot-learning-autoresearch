@@ -1,5 +1,13 @@
 {
-  "active_inquiry": null,
+  "active_inquiry": {
+    "closure_condition": "Close or reframe after a full-distribution candidate evaluation reports episode success, first-entry step, maximum held steps, interruption count, and radius-conditioned outcomes sufficient to identify acquisition/coverage, post-entry regulation, or a consequential branch/posture or limit-conditioned failure pattern.",
+    "goal_connection": "The human goal requires at least 196 of 200 official episodes to complete an uninterrupted 100-step hold. Resolving whether the first policy fails before entry or after entry determines whether the next intervention should expand learning coverage or improve braking-sensitive stabilization.",
+    "id": "I1",
+    "opened_in_session": "S2",
+    "question": "For a first learned policy exposed to the full official 0.06-0.20 m target distribution, are complete-hold failures dominated by inner-radius acquisition and coverage, or by post-entry regulation and hold interruption?",
+    "rationale": "M1 found substantial bounded torque authority and therefore does not support another plant-authority probe as the highest-value next action. No learned candidate exists, so official assessment is unavailable and cannot test the decision frontier. A bounded learned-policy inquiry is required to obtain the discriminating reach-versus-hold evidence while preserving the official success definition.",
+    "reframes": []
+  },
   "campaign": {
     "base_commit": "47b250dd3a999763c1bff75a88934fa37777e786",
     "id": "0284114e-1903-4c11-b5f3-820eb4bbacc2",
@@ -9,16 +17,16 @@
   },
   "candidates": {},
   "counters": {
-    "event": 1,
-    "inquiry": 0,
+    "event": 2,
+    "inquiry": 1,
     "measurement": 1,
-    "session": 1,
+    "session": 2,
     "training": 0
   },
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -328,9 +336,69 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-06T22:14:27Z",
+      "error": null,
+      "id": "E2",
+      "inquiry_id": "I1",
+      "kind": "inquiry",
+      "request": {
+        "action": "open",
+        "closure_condition": "Close or reframe after a full-distribution candidate evaluation reports episode success, first-entry step, maximum held steps, interruption count, and radius-conditioned outcomes sufficient to identify acquisition/coverage, post-entry regulation, or a consequential branch/posture or limit-conditioned failure pattern.",
+        "goal_connection": "The human goal requires at least 196 of 200 official episodes to complete an uninterrupted 100-step hold. Resolving whether the first policy fails before entry or after entry determines whether the next intervention should expand learning coverage or improve braking-sensitive stabilization.",
+        "question": "For a first learned policy exposed to the full official 0.06-0.20 m target distribution, are complete-hold failures dominated by inner-radius acquisition and coverage, or by post-entry regulation and hold interruption?",
+        "rationale": "M1 found substantial bounded torque authority and therefore does not support another plant-authority probe as the highest-value next action. No learned candidate exists, so official assessment is unavailable and cannot test the decision frontier. A bounded learned-policy inquiry is required to obtain the discriminating reach-versus-hold evidence while preserving the official success definition."
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I1",
+        "status": "completed"
+      },
+      "session_id": "S2",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "open",
+        "inquiry": {
+          "closure_condition": "Close or reframe after a full-distribution candidate evaluation reports episode success, first-entry step, maximum held steps, interruption count, and radius-conditioned outcomes sufficient to identify acquisition/coverage, post-entry regulation, or a consequential branch/posture or limit-conditioned failure pattern.",
+          "goal_connection": "The human goal requires at least 196 of 200 official episodes to complete an uninterrupted 100-step hold. Resolving whether the first policy fails before entry or after entry determines whether the next intervention should expand learning coverage or improve braking-sensitive stabilization.",
+          "id": "I1",
+          "opened_in_session": "S2",
+          "question": "For a first learned policy exposed to the full official 0.06-0.20 m target distribution, are complete-hold failures dominated by inner-radius acquisition and coverage, or by post-entry regulation and hold interruption?",
+          "rationale": "M1 found substantial bounded torque authority and therefore does not support another plant-authority probe as the highest-value next action. No learned candidate exists, so official assessment is unavailable and cannot test the decision frontier. A bounded learned-policy inquiry is required to obtain the discriminating reach-versus-hold evidence while preserving the official success definition.",
+          "reframes": []
+        }
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I1",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E2",
+    "inquiry_id": null,
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "open",
+        "closure_condition": "Close or reframe after a full-distribution candidate evaluation reports episode success, first-entry step, maximum held steps, interruption count, and radius-conditioned outcomes sufficient to identify acquisition/coverage, post-entry regulation, or a consequential branch/posture or limit-conditioned failure pattern.",
+        "goal_connection": "The human goal requires at least 196 of 200 official episodes to complete an uninterrupted 100-step hold. Resolving whether the first policy fails before entry or after entry determines whether the next intervention should expand learning coverage or improve braking-sensitive stabilization.",
+        "question": "For a first learned policy exposed to the full official 0.06-0.20 m target distribution, are complete-hold failures dominated by inner-radius acquisition and coverage, or by post-entry regulation and hold interruption?",
+        "rationale": "M1 found substantial bounded torque authority and therefore does not support another plant-authority probe as the highest-value next action. No learned candidate exists, so official assessment is unavailable and cannot test the decision frontier. A bounded learned-policy inquiry is required to obtain the discriminating reach-versus-hold evidence while preserving the official success definition."
+      }
+    },
+    "request_fingerprint": "44fbf4e020ba9d52932f89ad67a4dc407e74b1d6f35f30ed92138b8e4f64caa6",
+    "session_id": "S2",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No candidates exist; no model role is assigned.",
     "completed_operations": [
@@ -355,6 +423,21 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "fce534b6-e05b-4764-bedb-97fa6176701b",
+    "id": "S2",
+    "inquiry_id": null,
+    "kind": "goal_review",
+    "objective": "Reassess the scientific direction toward the human goal using completed evidence. You may request measurements to resolve an uncertainty or develop the method before committing to an inquiry. Decide whether to request official assessment or open one bounded goal-linked inquiry.",
+    "operation_ids": [
+      "E2"
+    ],
+    "scientific_parent_commit": "68f15d87a57a4ff8fb0f7fc862ea85ca9196a7dc"
+  },
   "terminal_state": null
 }
