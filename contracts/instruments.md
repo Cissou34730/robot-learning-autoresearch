@@ -1,38 +1,54 @@
 # Scientific instruments
 
-This document specifies exact request shapes, acceptance conditions, and
-outputs. It does not recommend when or whether to use an instrument.
-Scientific decisions belong to the PI under `contracts/program.md`; ownership
-and command authority are defined in `AGENTS.md`.
+This document defines exact request formats, acceptance rules, and outputs.
+It does not tell the PI when or whether to use an instrument.
+`contracts/program.md` assigns scientific decisions to the PI.
+`AGENTS.md` defines ownership and command authority.
 
 ## Operation request envelope
 
-Write `pi_workspace/operation_request.json` as one JSON object containing exactly
-one top-level operation kind:
+Write one JSON object to `pi_workspace/operation_request.json`.
+The object must contain exactly one top-level operation kind:
 
 ```text
 inquiry | measurement | training | checkpoint | model_role |
 restore_recipe | campaign_conclusion
 ```
 
-Measurement identities are `M#`, training identities are `T#`, and other event
-identities are `E#`. Only completed identities may be cited as evidence.
+Measurement identities use `M#`. Training identities use `T#`.
+Other event identities use `E#`.
+Evidence references must identify completed operations.
 
-Accepted operations depend on the current scientific session:
+## Instrument capabilities
 
-- `startup`: measurement, training, model role, recipe restoration, checkpoint;
-- `goal_review`: measurement, model
-  role, inquiry open, or campaign conclusion; checkpoint becomes available only
-  after that session opens the inquiry;
-- `inquiry`: measurement, training, model role, recipe restoration, inquiry
-  reframe or close, checkpoint.
+The available interfaces have these capabilities:
 
-Opening, reframing, and closing an inquiry require a checkpoint before another
-operation.
+- Inquiry operations record inquiry boundaries.
+- Measurement operations record scientific measurements.
+- `research_evaluation` and `task_reference` measure a learned candidate.
+- `python_module` runs a PI-owned experiment or analysis. It does not require a learned candidate.
+- Training operations produce candidates.
+- Checkpoint operations save scientific session records.
+- Model-role operations assign or retain candidates.
+- Recipe restoration restores recorded PI-owned scientific work.
+- Campaign conclusion requests the protected official assessment.
+
+This list does not define a required sequence. It does not give preference to
+an operation.
+
+The current scientific session controls which operations the Runner accepts:
+
+- During `startup`, the Runner accepts measurement, training, model role, recipe restoration, and checkpoint operations.
+- During `goal_review`, the Runner accepts measurement, model role, inquiry open, and campaign conclusion operations.
+- During `goal_review`, checkpoint becomes available only after the session opens an inquiry.
+- During `inquiry`, the Runner accepts measurement, training, model role, recipe restoration, inquiry reframe, inquiry close, and checkpoint operations.
+
+After an inquiry opens, reframes, or closes, the PI must submit a checkpoint
+before another operation.
 
 ## Inquiry operations
 
-Open and reframe use this interface:
+Use this interface to open or reframe an inquiry:
 
 ```json
 {
@@ -46,17 +62,12 @@ Open and reframe use this interface:
 }
 ```
 
-`action` is `open` or `reframe`. All other fields are required and non-empty.
-Opening is accepted only in a goal-review session with no active inquiry.
-Reframing requires the active inquiry's session. `question` records the
-unresolved matter, not an operation name. `goal_connection` records why it
-matters to the human goal. `closure_condition` records the answer, bounded
-conclusion, or redirection that completes the inquiry. `rationale` connects the
-question to current evidence. These meanings do not add a required hypothesis
-form or operation sequence. The Runner validates the interface and does not
-judge scientific adequacy.
+Set `action` to `open` or `reframe`.
+All other fields are required and must be non-empty.
+The Runner accepts `open` only during goal review when no inquiry is active.
+The Runner accepts `reframe` only during the active inquiry session.
 
-Close uses this interface:
+Use this interface to close an inquiry:
 
 ```json
 {
@@ -68,12 +79,10 @@ Close uses this interface:
 }
 ```
 
-`action` is `close`. `outcome` and `reason` are required and non-empty. Closing
-requires the active inquiry's session. `outcome` records the answer supported
-for the inquiry and its remaining uncertainty. `reason` records why the
-inquiry closes and what the result implies for the campaign. Completed
-operation results remain separate evidence. Inquiry operations allocate no
-training identity.
+Set `action` to `close`.
+The `outcome` and `reason` fields are required and must be non-empty.
+The Runner accepts `close` only during the active inquiry session.
+Inquiry operations do not allocate a training identity.
 
 ## Measurement operation
 
@@ -88,11 +97,12 @@ training identity.
 }
 ```
 
-`description`, `rationale`, and `measurements` are required.
-`paired_comparisons` is optional. The strings are non-empty and
-`measurements` is non-empty.
+The `description`, `rationale`, and `measurements` fields are required.
+The `description` and `rationale` strings must be non-empty.
+The `measurements` array must be non-empty.
+The `paired_comparisons` field is optional.
 
-A `research_evaluation` entry has this interface:
+A `research_evaluation` entry uses this interface:
 
 ```json
 {
@@ -104,13 +114,17 @@ A `research_evaluation` entry has this interface:
 }
 ```
 
-`instrument` is `research_evaluation`. `candidate`, `episodes`, and `seed` are
-required; `label` is optional. The candidate is non-empty, the episode count is
-positive, and the seed is non-negative. The episode panel is the half-open
-interval beginning at `seed` and containing `episodes` consecutive episode
-seeds. The Runner rejects overlap with protected benchmark evidence.
+Set `instrument` to `research_evaluation`.
+The `candidate`, `episodes`, and `seed` fields are required.
+The `label` field is optional.
+The candidate value must be non-empty.
+The episode count must be positive.
+The seed must be non-negative.
 
-A `task_reference` entry has this interface:
+The episode panel starts at `seed` and contains `episodes` consecutive episode seeds.
+The Runner rejects overlap with protected benchmark evidence.
+
+A `task_reference` entry uses this interface:
 
 ```json
 {
@@ -120,10 +134,16 @@ A `task_reference` entry has this interface:
 }
 ```
 
-`instrument` is `task_reference`. `candidate` is required and non-empty;
-`label` is optional. The instrument uses its protected fixed panel.
+Set `instrument` to `task_reference`.
+The `candidate` field is required and must be non-empty.
+The `label` field is optional.
+This instrument uses its protected fixed panel.
 
-A `python_module` entry has this interface:
+A `python_module` entry runs one PI-owned Python module as a measurement.
+It can characterize the embodied system, simulation, learning process, or
+another scientific quantity. It does not require a learned candidate.
+
+Use this interface:
 
 ```json
 {
@@ -135,14 +155,16 @@ A `python_module` entry has this interface:
 }
 ```
 
-`instrument` is `python_module`. `module`, `args`, and `artifact` are required;
-`label` is optional. The module is under `robot_learning.lab`,
-`robot_learning.scenario`, or `robot_learning.training`. The artifact is a
-campaign-scoped JSON path under
-`campaigns/evaluations/<current-campaign-id>/`. The exact current campaign
-evaluation root is published in `campaigns/brief.md`.
+Set `instrument` to `python_module`.
+The `module`, `args`, and `artifact` fields are required.
+The `label` field is optional.
+The module must be under `robot_learning.lab`, `robot_learning.scenario`, or
+`robot_learning.training`.
+The artifact must be a campaign JSON path under
+`campaigns/evaluations/<current-campaign-id>/`.
+`campaigns/brief.md` gives the exact evaluation root for the current campaign.
 
-A paired-comparison entry has this interface:
+A paired-comparison entry uses this interface:
 
 ```json
 {
@@ -151,18 +173,19 @@ A paired-comparison entry has this interface:
 }
 ```
 
-Both fields are required and non-empty. Both candidates must have planned
-`research_evaluation` measurements with shared episode seeds.
+Both fields are required and must be non-empty.
+Both candidates must appear in planned esearch_evaluation measurements that
+use the same episode seeds.
 
-The accepted candidate artifacts, evaluator semantics, module sources,
-PI-owned scientific changes, effective parameters, reused-panel identities,
-and paired-comparison integrity facts remain attached to the result.
+The result keeps the accepted candidate artifacts, evaluator semantics, module
+sources, PI-owned scientific changes, and effective parameters.
+It also keeps reused-panel identities and paired-comparison integrity facts.
 
 ### Artifact contents metadata
 
-Completed measurement records retain their compact result facts, artifact path,
-and immutable artifact fingerprint. `evaluation_artifact_contents` adds
-mechanical navigation metadata derived from that JSON artifact:
+A completed measurement record keeps compact result facts, the artifact path,
+and the immutable artifact fingerprint.
+`evaluation_artifact_contents` adds navigation metadata from the JSON artifact:
 
 ```json
 {
@@ -185,22 +208,28 @@ mechanical navigation metadata derived from that JSON artifact:
 }
 ```
 
-The scope is `structure_only`: the inventory contains no measurement values or
-scientific interpretation. Paths are JSON Pointers, with the empty pointer
-identifying the root and escaped tokens identifying object members. Object
-and array sections carry their entry counts. Object members are traversed
-breadth-first; array elements are not expanded into individual paths.
-`field_names`, when present, is the union of keys in actual object rows of an
-array, not a schema inferred from one sample row.
+The scope is `structure_only`.
+The inventory contains no measurement values or scientific interpretation.
+Paths use JSON Pointer syntax.
+The empty pointer identifies the root.
+Escaped tokens identify object members.
+Object and array sections include their entry counts.
 
-The inventory has a bounded metadata size. `truncated` marks omitted sections
-or field names; `fields_omitted` and `field_count` identify an array whose field
-list did not fit. Even an untruncated inventory describes structure rather
-than the full evidence. The full artifact remains unchanged and available
-through its recorded path. This metadata applies to all measurement
-instruments without requiring any scenario-specific section or field.
-Live feedback and the brief distinguish the reduced result summary from
-artifact contents, and explicitly identify results with no recorded inventory.
+The inventory traverses object members breadth-first.
+It does not expand array elements into individual paths.
+When present, `field_names` contains the union of keys in actual object rows of
+an array. It is not a schema inferred from one sample row.
+
+The inventory has a bounded metadata size.
+`truncated` identifies omitted sections or field names.
+`fields_omitted` and `field_count` identify an array whose field list did not fit.
+An untruncated inventory still describes structure, not the full evidence.
+The full artifact remains unchanged at its recorded path.
+
+This metadata applies to all measurement instruments.
+It does not require a scenario-specific section or field.
+Live feedback and the brief distinguish the reduced result summary from the
+artifact contents. They also identify results with no recorded inventory.
 
 ## Training operation
 
@@ -217,32 +246,41 @@ artifact contents, and explicitly identify results with no recorded inventory.
 }
 ```
 
-`initialization` is `fresh` or `transfer`. `seed`, `steps`, `description`, and
-`rationale` are required. The seed is non-negative, and the strings are
-non-empty. `steps` is a positive integer. During startup, it may be any value up
-to the maintainer's current allocation, shown in the phase prompt. During an
-inquiry, it must equal that allocation. The maintainer configures the allocation
-with launcher `-Timesteps` or Runner `--timesteps`; the PI may not raise it.
-Requests outside the session's allocation contract are rejected at validation,
-acceptance, and before training dispatch.
-`parent` is required and non-empty for transfer
-training and is omitted for fresh training.
+Set `initialization` to `fresh` or `transfer`.
+The `seed`, `steps`, `description`, and `rationale` fields are required.
+The seed must be non-negative.
+The `description` and `rationale` strings must be non-empty.
+The `steps` value must be a positive integer.
 
-The operation validates PI-owned changed sources and active parameters,
-executes the requested seed and accepted step count, archives all
-produced candidates, and records the parent, scientific recipe, and
-learning-dynamics facts.
+During startup, the PI can request any positive value up to the maintainer's
+current allocation. The phase prompt shows this allocation.
+During an inquiry, `steps` must equal the allocation.
+The maintainer configures the allocation with launcher `-Timesteps` or Runner
+`--timesteps`.
+The PI must not raise the allocation.
+The Runner rejects requests outside the session allocation contract during
+validation, acceptance, and training dispatch.
+
+For transfer training, `parent` is required and must be non-empty.
+For fresh training, omit `parent`.
+
+The Runner validates changed PI-owned sources and active parameters.
+It executes the accepted seed and step count.
+It archives all produced candidates.
+It records the parent, scientific recipe, and learning-dynamics facts.
 Completion does not assign working, best-known, or retained roles.
-Actual completed steps may round up to the learning algorithm's rollout
-boundary; that does not authorize a different allocation. An already accepted
-training request must still satisfy the current session's allocation contract
-before dispatch; completed results can finish publication without a new
-training allocation.
+
+The learning algorithm can round actual completed steps up to its rollout
+boundary. This does not authorize a different allocation.
+Before dispatch, an accepted training request must still satisfy the current
+session allocation contract.
+A completed result can finish publication without a new training allocation.
 
 ## Scientific session record
 
-The `checkpoint` operation saves the scientific session record. It does not
-save policy weights. A policy checkpoint is a separate training artifact.
+The `checkpoint` operation saves the scientific session record.
+It does not save policy weights.
+A policy checkpoint is a separate training artifact.
 
 ```json
 {
@@ -266,11 +304,13 @@ save policy weights. A policy checkpoint is a separate training artifact.
 }
 ```
 
-Every field is required. String fields are non-empty. `completed_operations`
-exactly matches the active session's completed operation IDs. Every evidence
-reference is a completed operation identity. Artifact paths are outputs of
-those operations, not independent evidence references. An accepted scientific
-session record ends the current scientific session.
+Every field is required.
+All string fields must be non-empty.
+`completed_operations` must exactly match the active session's completed
+operation identities.
+Every evidence reference must identify a completed operation.
+Artifact paths are operation outputs, not independent evidence references.
+The accepted scientific session record ends the current scientific session.
 
 ## Model-role operation
 
@@ -289,13 +329,17 @@ session record ends the current scientific session.
 }
 ```
 
-`action` is `set_working`, `set_best_known`, or `retain`. `candidate`, `reason`,
-and `evidence` are required. The evidence array is non-empty and names
-completed operation identities. `label` is required only for retention and
-must be non-empty, unique, and distinct from the fixed role names.
+Set `action` to `set_working`, `set_best_known`, or `retain`.
+The `candidate`, `reason`, and `evidence` fields are required.
+The evidence array must be non-empty.
+Each evidence item must identify a completed operation.
 
-Retention archives the candidate under the requested label. Each action
-updates only the requested role.
+The `label` field is required only for retention.
+The label must be non-empty and unique.
+It must differ from the fixed role names.
+
+The `retain` action archives the candidate under the requested label.
+Each action updates only the requested role.
 
 ## Recipe restoration
 
@@ -308,10 +352,12 @@ updates only the requested role.
 }
 ```
 
-Both fields are required and non-empty. The operation restores the PI-owned
-scientific files and parameters represented by the candidate's recorded recipe,
-removes PI-owned files absent from that recipe, and verifies the result. It does
-not assign a model role.
+Both fields are required and must be non-empty.
+The operation restores the PI-owned scientific files and parameters from the
+candidate's recorded recipe.
+It removes PI-owned files that are absent from that recipe.
+It verifies the result.
+It does not assign a model role.
 
 ## Campaign conclusion
 
@@ -324,19 +370,21 @@ not assign a model role.
 }
 ```
 
-`action` is `request_official_assessment`. `reason` is required and non-empty.
-The request requires a goal-review session and no active inquiry.
-An assessment request also requires an explicit best-known
-candidate. It executes the protected official assessment and records its
-result. No other campaign-conclusion action is supported.
+Set `action` to `request_official_assessment`.
+The `reason` field is required and must be non-empty.
+The Runner accepts the request only during goal review when no inquiry is active.
+The request also requires an explicit best-known candidate.
+The Runner executes the protected official assessment and records its result.
+No other campaign-conclusion action is supported.
 
 ## Scientific-model publication
 
 Before other campaign work, `pi_workspace/scientific_model.md` must contain
 substantive `Established facts`, `Physical consequences`, `Unknowns`, and
-`Decision-relevant synthesis` registers. The final register is the PI-selected
-handoff into startup and preserves the assumptions, source references, and
-discriminating evidence for the consequences and unknowns most likely to
-change the initial direction. Once accepted, the model remains fixed for the
-campaign while later checkpoints preserve or revise its consequential
-conclusions.
+`Decision-relevant synthesis` registers.
+The PI selects the final register as the handoff into startup.
+The register preserves assumptions, source references, and discriminating
+evidence. It includes the consequences and unknowns most likely to change the
+initial direction.
+After acceptance, the model remains fixed for the campaign.
+Later checkpoints preserve or revise its consequential conclusions.

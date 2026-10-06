@@ -447,7 +447,7 @@ its scientific breadth or achieve its result.
 | Reliable measurement-evidence inspection | Discoverability provisionally retained. In `48993cfd`, M5 feedback advertised diagnostics, but the PI closed without inspecting the strata and incorrectly claimed no outer-reaching gain. In `2381bcbf`, M3/M4 diagnostic reads stopped at lines 1-310, were described as full inspection, and remaining non-entry cases were lost in the synthesis. Decision-linked inspection and interpretation remain unresolved. |
 | Context flooding | Brief-only compaction implemented below: 57.39% smaller on the completed campaign, with all candidates and inventory references preserved. Campaign benefit remains unassessed; prompt replay and SDK output handling are unchanged and remain separate possible work. |
 | Training-shaped inquiry commitments and scientific continuity | Open, with a positive local observation in `2381bcbf`: one inquiry sustained diagnostics and two successive method interventions. The question-based objective was active, but causation is unproved. Both aggregate losses and aggregate gains have obscured consequential subgroup evidence in handoffs. Startup `2573991c` still chose baseline training after the exact two-string restoration. The two requested model reviews identified missing operation-selection and measurement-purpose guidance, but not a single proven cause of the startup drift. Only those two historical passages are restored; no replacement readiness guidance is added. |
-| Fresh-session scientific handoff fidelity | **Open.** There is no separate free-form message from an outgoing PI session to the next fresh PI session. Same-session invocations resume the backend conversation. Fresh sessions instead receive the durable scientific session record, generated brief, completed-operation history, referenced artifacts and initial scientific model. The current concern is not the absence of a private message channel. It is whether the structured handoff preserves evidence references, competing explanations, contradictory evidence and claim limits without distortion or operation-shaped commitment. R1, the measurement-evidence handoff, R4 and the broader scientific-continuity item address parts of this concern, but the adequacy of the fresh-session handoff remains unassessed. |
+| Fresh-session scientific handoff fidelity | **Open.** There is no separate free-form message from an outgoing PI session to the next fresh PI session. Same-session invocations resume the backend conversation. Fresh sessions instead receive the durable scientific session record, generated brief, completed-operation history, referenced artifacts and initial scientific model. The current concern is not the absence of a private message channel. It is whether the structured handoff preserves evidence references, competing explanations, contradictory evidence and claim limits without distortion or operation-shaped commitment. R1, the measurement-evidence handoff, later recovery work and the broader scientific-continuity item address parts of this concern, but the adequacy of the fresh-session handoff remains unassessed. |
 | Checkpoint nomination and evidence selection | Deferred behind progression; available training facts are not proof of development performance. |
 | Operation-submission handoff clarification | Still unimplemented. |
 | Explicit protection of the old protocol log | Still unimplemented; read-access policy is a separate decision. |
@@ -456,7 +456,7 @@ its scientific breadth or achieve its result.
 | Scientific-exhaustion / no-credible-route outcome | **Removed from future requests and instructions.** Obsolete pending execution is rejected. Historical E19 remains readable and unchanged. Directly affected checks pass; scientific effect remains unassessed. |
 | Fifteen-inquiry cap | **Decoupled; value unchanged.** The launcher pauses after active work is checkpointed, without a terminal state. Measurements keep their permission. Only an explicit maintainer increase at that paused boundary resumes execution. Later cap removal remains pending. E19 at four of fifteen inquiries was not cap-triggered. |
 | Publication/recovery, maintainer training allocation, and goal-review role availability | Implemented; not active repair items. |
-| Independent prompt-stack review R1-R8 | **R1 is implemented. R2 is partially implemented and paused. R3 is implemented with a narrower scope.** R2 removes the generic policy destination and puts scientific context before operational options. It does not put the human goal before the PI role in ordinary sessions. R3 clarifies inquiry opening and closure records without adding a repeated question-first procedure. R4-R8 remain unimplemented and separately scoped. None is a campaign operation or Runner scientific gate. |
+| Independent prompt-stack review R1-R8 | **R1, R5-1, and R5-2 are implemented. R2 is partially implemented and paused. R3 and R4 are discarded for distinct reasons.** R2 removes the generic policy destination and puts scientific context before operational options. It does not put the human goal before the PI role in ordinary sessions. R3 made the inquiry question too important. The original inquiry rules are restored. R4 became redundant after later recovery work supplied its useful behavior. R5-2 explains candidate-free measurement capability without prescribing an operation or sequence. R5-1 rewrites the instrument contract in controlled English without changing its schemas or mechanical rules. R6-R8 remain open and separately scoped. None is a campaign operation or Runner scientific gate. |
 
 The startup allocation change is tactical, not a solution to scientific
 continuity. Counterevidence preservation and official-assessment readiness
@@ -2178,6 +2178,33 @@ separate from harness changes so their outcomes are not conflated.
   and paused. R4-R8 remain separate backlog items. No campaign operation was
   started, resumed or reset.
 
+## 2026-10-06: discard R3 and restore pragmatic inquiry closure
+
+- **RCA:** R3 made the inquiry question too important. A broad capability or
+  mechanism question can support more investigation without a clear end. The
+  question can then become the campaign's governing unit instead of a temporary
+  aid to the human goal.
+- **Correction:** remove the R3 question definitions from the program,
+  instrument contract and goal-review prompt. Restore the original definition
+  of an inquiry as a temporary question or obstacle. Restore the actionable
+  result as one valid reason for closure.
+- **Rollback boundary:** the instrument contract and goal-review prompt match
+  their exact pre-R3 text. The program contract also matches its pre-R3 text,
+  except for the closure rule below. Commit `9c5ef61` also included the
+  previously approved handoff backlog row and R2 pause documentation. Those
+  separate records remain.
+- **Closure rule:** the PI may close an inquiry with a limited or inconclusive
+  result while the human goal remains unmet. Closure does not require a
+  complete answer to the inquiry question. The campaign then returns to goal
+  review.
+- **Evidence limit:** the active campaign showed that R3 reached the PI prompt
+  and produced a capability-shaped question. It did not prove that R3 improved
+  campaign decisions. The risk follows from the contract semantics, not from a
+  demonstrated endless inquiry.
+- **Disposition:** R3 is discarded. The inquiry lifecycle remains. R2 remains
+  partial and paused. R4-R8 remain separate backlog items. No campaign
+  operation was started, resumed or reset.
+
 ## 2026-10-06: allow Runner transactions during protected-runtime checks
 
 - **Campaign evidence:** campaign
@@ -2232,3 +2259,65 @@ separate from harness changes so their outcomes are not conflated.
   valid Python is accepted while invalid syntax remains rejected.
 - **Disposition:** retained as a validation-semantics correction. A style
   issue no longer creates a failed scientific operation.
+
+## 2026-10-06: discard R4 and continue with R5
+
+- **Proposal:** R4 proposed explicit reconsideration after results. It also
+  proposed explicit classification of request, execution-environment,
+  implementation and publication failures.
+- **Decision:** discard R4 as an independent remediation item. Later recovery
+  work already returns an error to the same PI and backend session. It
+  preserves valid evidence and excludes failed operations from scientific
+  evidence. The PI repairs the same action unless the diagnosis changes the
+  scientific decision.
+- **Checkpoint boundary:** current checkpoint guidance records changed
+  evidence, unresolved uncertainty and the next direction. The full R4 wording
+  would mostly repeat these instructions. It could also cause unnecessary
+  reconsideration after routine results.
+- **Current example:** the recent observation-shape mismatch was an
+  implementation mismatch. The PI drew no scientific conclusion and repaired
+  the same bounded action. Durable records show that T4 failed before training,
+  is execution history rather than scientific evidence, and was superseded by
+  T5. These records do not prove why the PI responded this way.
+- **Safeguard boundary:** discarding R4 does not remove or weaken recovery
+  safeguards. Failure classification remains useful even though the separate
+  R4 wording is unnecessary.
+- **Disposition:** R4 is discarded because later recovery work superseded its
+  useful proposal. R1 remains implemented. R2 remains partial and paused. R3
+  remains discarded for its separate inquiry-semantics reason. R5-R8 remain
+  open and separately scoped. No campaign operation was started, resumed or
+  reset.
+## 2026-10-06: implement R5-2 candidate-free capability visibility
+
+- **Problem:** the instrument contract gave clear scientific names to training
+  and candidate evaluation. It described `python_module` only through module
+  paths, arguments and artifact paths. This could hide its candidate-free
+  scientific capability behind a technical interface name.
+- **Change:** add a short capability overview before the detailed interfaces.
+  State that `python_module` runs a PI-owned experiment or analysis and does not
+  require a learned candidate. Repeat that capability beside its interface.
+- **Boundary:** the overview does not define a required sequence or give
+  preference to an operation. It adds no instrument, schema field, permission,
+  scientific gate or Runner judgment.
+- **Disposition:** R5-2 is implemented. It makes candidate-free measurement
+  visible without making measurement the default. No campaign operation was
+  started, resumed or reset.
+
+## 2026-10-06: implement R5-1 controlled-English instrument contract
+
+- **Order:** the maintainer approved R5-2 before R5-1. The item numbers identify
+  their scopes, not their execution order.
+- **Change:** rewrite the explanatory text in `contracts/instruments.md` with
+  the ASD-STE100 skill. Use short sentences, active voice, consistent terms and
+  one condition per sentence. Keep technical names where the contract requires
+  them.
+- **Preserved contract:** all 14 fenced text and JSON blocks match the pre-R5
+  contract exactly. Operation kinds, field types, required fields, acceptance
+  rules, permissions, resource limits, outputs and evidence rules are
+  unchanged. R5-2 is the only added semantic explanation.
+- **Language check:** the structural checker reports zero errors. It reports 15
+  advisory warnings for required technical terms such as `training`, `working`,
+  `learning` and `discriminating`.
+- **Disposition:** R5-1 is implemented as a wording refactor. R5-2 remains the
+  separate capability clarification. R6-R8 remain open. No campaign operation
+  was started, resumed or reset.
