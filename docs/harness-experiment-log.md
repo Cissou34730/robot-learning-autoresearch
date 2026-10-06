@@ -2321,3 +2321,21 @@ separate from harness changes so their outcomes are not conflated.
 - **Disposition:** R5-1 is implemented as a wording refactor. R5-2 remains the
   separate capability clarification. R6-R8 remain open. No campaign operation
   was started, resumed or reset.
+
+## 2026-10-07: propose custom Copilot tools for bounded PI capabilities
+
+- **Hypothesis:** custom Copilot SDK tools can give the PI a smaller and more
+  relevant context than generic shell and editing tools. A tool can return the
+  required files or structured evidence instead of adding broad file content
+  to the PI context. This can reduce token use and help the PI construct the
+  context for a scientific decision.
+- **Initial application:** a preliminary-phase
+  `publish_scientific_model` tool could accept the complete scientific model,
+  validate its required structure and publish it deterministically. The
+  preliminary toolset could provide repository inspection and this publication
+  tool without generic write, edit or shell capabilities.
+- **Boundary:** tools provide information or perform mechanical publication.
+  They do not select scientific questions, interpret evidence or choose an
+  operation. The Runner keeps the authoritative acceptance check.
+- **Status:** proposal only. No SDK tool, phase-specific toolset or runtime
+  behavior changed.
