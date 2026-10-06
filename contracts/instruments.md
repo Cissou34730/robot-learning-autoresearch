@@ -324,5 +324,10 @@ result. No other campaign-conclusion action is supported.
 ## Scientific-model publication
 
 Before other campaign work, `pi_workspace/scientific_model.md` must contain
-substantive `Established facts`, `Physical consequences`, and `Unknowns`
-registers. Once accepted, it remains fixed for the campaign.
+substantive `Established facts`, `Physical consequences`, `Unknowns`, and
+`Decision-relevant synthesis` registers. The final register is the PI-selected
+handoff into startup and preserves the assumptions, source references, and
+discriminating evidence for the consequences and unknowns most likely to
+change the initial direction. Once accepted, the model remains fixed for the
+campaign while later checkpoints preserve or revise its consequential
+conclusions.

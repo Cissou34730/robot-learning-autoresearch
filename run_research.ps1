@@ -95,7 +95,9 @@ Analyze, from first principles and from the human-authored implementation:
 * physical, kinematic, dynamic, control, or observability constraints that may create qualitatively different classes of behavior or failure;
 * which physical quantities across the complete behavior would be scientifically meaningful for understanding the robot.
 
-For each consequential physical implication, state which scientific decision it could change and what observation or evidence would support, weaken, or revise it. Keep this decision relevance distinct from a proposed intervention: the model should identify consequences and discriminating needs, not prescribe a recipe.
+For each consequential physical implication or unknown, state which possible research decisions it could change, the assumptions on which that relevance depends, the implementation or contract source references supporting it, and what observation or evidence would support, weaken, or revise it. Keep this decision relevance distinct from a proposed intervention: the model should identify consequences and discriminating needs, not prescribe a recipe.
+
+Finish with a substantive section headed `## Decision-relevant synthesis`. Select only the physical consequences and unknowns most likely to change the first campaign decisions. For each selected item, compactly preserve its decision relevance, assumptions, source references, and discriminating evidence. This is the PI-authored handoff into startup, not an intervention plan.
 
 The final output should be a compact but substantive Scientific model of the robot and task. It should explain how the complete coupled system works physically and scientifically, not merely list what files contain or imply a future intervention agenda.
 '@
@@ -777,30 +779,22 @@ function New-ScientificSessionPrompt {
         )
     }
     $startupHandoffGuidance = if ($session.kind -eq "startup") {
-        $modelHandoff = "The model content is available in campaigns/brief.md under 'Initial scientific model'."
+        $modelHandoff = "The PI-authored decision-relevant synthesis is available in campaigns/brief.md under 'Initial scientific model'."
         $modelPath = Join-Path (Get-Location) "pi_workspace\scientific_model.md"
         if (Test-Path -LiteralPath $modelPath -PathType Leaf) {
             $modelText = Get-Content -LiteralPath $modelPath -Raw
-            $consequences = [regex]::Match(
+            $selectedSynthesis = [regex]::Match(
                 $modelText,
-                "(?ms)^## Physical consequences\s+(.*?)(?=^## |\z)"
+                "(?ms)^## Decision-relevant synthesis\s+(.*?)(?=^## |\z)"
             ).Groups[1].Value.Trim()
-            $unknowns = [regex]::Match(
-                $modelText,
-                "(?ms)^## Unknowns\s+(.*?)(?=^## |\z)"
-            ).Groups[1].Value.Trim()
-            if ($consequences -or $unknowns) {
-                $modelHandoff = @(
-                    "Decision-relevant content from the initial scientific model:"
-                    if ($consequences) { "Physical consequences:`n$consequences" }
-                    if ($unknowns) { "Unknowns and revision needs:`n$unknowns" }
-                ) -join "`n`n"
+            if ($selectedSynthesis) {
+                $modelHandoff = "PI-selected decision-relevant synthesis from the initial scientific model:`n$selectedSynthesis"
             }
         }
         @(
-            "Before selecting the first action, read pi_workspace/scientific_model.md as the initial physical model."
+            "Before selecting the first action, read pi_workspace/scientific_model.md as the initial physical model and contracts/program.md as the lifecycle contract."
             $modelHandoff
-            "Convert the handoff into a concise startup synthesis: identify which consequences are decision-relevant now, which competing explanations they support, what evidence would discriminate them, and how the first action follows. Treat the model as revisable in light of evidence; do not treat it as an intervention menu or require a measurement merely to restate it."
+            "Use this selected handoff to state which scientific distinction or capability question should determine the initial direction, what findings would change that decision, and how the first action follows. Treat the model as revisable in light of evidence; do not treat it as an intervention menu or require a measurement merely to restate it."
         )
     }
     else {
@@ -885,7 +879,7 @@ function Invoke-ScientificModelPhase {
         $piPersona
         "Current objective: $scientificModelPhaseObjective"
         "Base the model on contracts/scenario.md and the relevant human-authored implementation."
-        "The document must contain substantive registers headed Established facts, Physical consequences, and Unknowns. Distinguish repository facts from reasoned implications and unresolved quantities."
+        "The document must contain substantive registers headed Established facts, Physical consequences, Unknowns, and Decision-relevant synthesis. Distinguish repository facts from reasoned implications and unresolved quantities, and preserve source references for later verification."
         "Include only what is justified before campaign evidence exists. Write the result to pi_workspace/scientific_model.md."
     ) -join "`n`n"
 
@@ -900,7 +894,7 @@ function Invoke-ScientificModelPhase {
             "Human goal: $goal"
             $piPersona
             "The scientific model could not be accepted: $script:ScientificModelValidationFeedback"
-            "Correct pi_workspace/scientific_model.md while preserving valid content and ensuring all three required registers are substantive."
+            "Correct pi_workspace/scientific_model.md while preserving valid content and ensuring all four required registers are substantive, source-recoverable, and decision-relevant."
         ) -join "`n`n"
         Invoke-PISession -Prompt $retry -Phase "scientific model" -Continue -Preliminary
         if (Test-StopAfterOperation $script:PIExitCode "PI session") {

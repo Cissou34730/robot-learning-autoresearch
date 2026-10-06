@@ -2053,18 +2053,25 @@ separate from harness changes so their outcomes are not conflated.
   exercised together or one at a time. Campaign state and pending operation
   state remain untouched.
 
-## 2026-10-05 to 2026-10-06: implement full R1 scientific-model handoff
+## 2026-10-05 to 2026-10-06: complete R1 scientific-model handoff
 
 - **Source:** independent prompt-stack review preserved in
   `docs/prompt-instruction-stack-review-20261005.md`, recommendations R1-R8.
 - **Approved scope:** implement R1 only. The preliminary model now requires
-  each consequential implication to identify the decision it could change and
-  the evidence that would revise it. Startup receives the physical-consequence
-  and unknowns sections directly, must synthesize their decision relevance
-  before choosing an action, and later checkpoints are instructed to preserve
-  or revise those conclusions through the existing synthesis and decision
-  frontier fields. The generated brief now exposes the model content and its
-  publication route.
+  assumptions and implementation or contract source references for each
+  consequential implication or unknown. It must finish with a concise
+  PI-authored `Decision-relevant synthesis` selecting only the conclusions most
+  likely to change initial campaign decisions. Startup receives that selected
+  synthesis rather than Runner-selected full model sections, and the brief
+  routes directly to both the frozen model and `contracts/program.md`. Later
+  checkpoints continue to preserve or revise consequential conclusions through
+  the existing synthesis and decision-frontier fields.
+- **Campaign evidence:** campaign `9fa1f256` verified that the earlier R1
+  handoff reached the actual startup prompt and materially shaped startup,
+  measurements, inquiries and checkpoints. The same campaign also propagated
+  a physical-direction error and several evidence-transcription errors. R1
+  provides continuity, not scientific verification; those fidelity and action-
+  selection problems remain separately tracked.
 - **Unchanged:** persona wording, prompt ordering outside this startup-specific
   guidance, inquiry semantics, instrument contracts, operation permissions,
   training allocation, Runner validation, campaign state, and pending requests.
@@ -2075,12 +2082,13 @@ separate from harness changes so their outcomes are not conflated.
   alignment, and R8 instruction ownership/repetition remain unimplemented.
   Their proposed wording is not silently included in R1.
 - **Implementation checks:** PowerShell parsing, targeted Python compilation,
-  brief rendering, and whitespace checks passed. The live campaign state and
-  pending operation request were not modified. Scientific effectiveness remains
-  unassessed.
-- **Disposition:** R1 is implemented as a bounded continuity mechanism. It
-  does not require measurement first, formulate a procedural question before
-  acting, or treat the preliminary model as an authority or intervention menu.
+  scientific-model contract probes, brief rendering, and whitespace checks
+  passed. The stopped campaign state, T4 recipe commit and pending operation
+  request were not modified or executed.
+- **Disposition:** R1 is complete as a bounded continuity mechanism. It does
+  not verify the model's truth, require measurement first, formulate a
+  procedural question before acting, or treat the preliminary model as an
+  authority or intervention menu.
 
 ## 2026-10-06: allow Runner transactions during protected-runtime checks
 

@@ -46,7 +46,8 @@ def _scientific_model_lines(state: dict) -> list[str]:
     model_path = state["scientific_model"]["path"]
     model_file = ROOT / model_path
     lines = [
-        f"- Source: `{model_path}`.",
+        f"- Source: [`{model_path}`](../{model_path}).",
+        "- Lifecycle contract: [`contracts/program.md`](../contracts/program.md).",
         f"- Publication status: `{state['scientific_model']['status']}`.",
     ]
     commit = state["scientific_model"].get("commit")
@@ -56,15 +57,14 @@ def _scientific_model_lines(state: dict) -> list[str]:
         lines.append("- Model content is not available in the current worktree.")
         return lines
     text = model_file.read_text(encoding="utf-8")
-    for heading, label in (
-        ("Physical consequences", "Decision-relevant physical consequences"),
-        ("Unknowns", "Unknowns and revision needs"),
-    ):
-        section = _markdown_section(text, heading)
-        if section:
-            lines.extend([f"- **{label}:** {section}"])
-    if len(lines) == 3 and not commit:
-        lines.append("- Model content has no recognized consequence or unknowns sections.")
+    selected = _markdown_section(text, "Decision-relevant synthesis")
+    if selected:
+        lines.append(f"- **PI-selected decision-relevant synthesis:** {selected}")
+    else:
+        lines.append(
+            "- This historical model predates the required PI-selected "
+            "decision-relevant synthesis."
+        )
     return lines
 
 

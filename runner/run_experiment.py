@@ -1783,8 +1783,24 @@ def check_scientific_model_deliverable(*, quiet: bool = False) -> int:
     try:
         if not paths.SCIENTIFIC_MODEL_PATH.is_file():
             raise FileNotFoundError("pi_workspace/scientific_model.md is missing")
-        if not paths.SCIENTIFIC_MODEL_PATH.read_text(encoding="utf-8").strip():
+        text = paths.SCIENTIFIC_MODEL_PATH.read_text(encoding="utf-8")
+        if not text.strip():
             raise ValueError("pi_workspace/scientific_model.md is empty")
+        for heading in (
+            "Established facts",
+            "Physical consequences",
+            "Unknowns",
+            "Decision-relevant synthesis",
+        ):
+            match = re.search(
+                rf"(?ms)^## {re.escape(heading)}\s+(.*?)(?=^## |\Z)",
+                text,
+            )
+            if not match or not match.group(1).strip():
+                raise ValueError(
+                    f"pi_workspace/scientific_model.md requires a substantive "
+                    f"## {heading} section"
+                )
     except (OSError, UnicodeError, ValueError) as error:
         print(f"SCIENTIFIC_MODEL_DELIVERABLE_INVALID: {error}")
         return 1
