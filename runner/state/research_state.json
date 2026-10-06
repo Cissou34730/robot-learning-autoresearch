@@ -184,7 +184,8 @@
       "artifact": "campaigns/checkpoints/candidates/9fa1f256-b083-45b2-8127-d7e4e00728b8/t1/checkpoint-120832",
       "evaluation_artifacts": [
         "campaigns/evaluations/9fa1f256-b083-45b2-8127-d7e4e00728b8/evaluation-9fa1f256-b083-45b2-8127-d7e4e00728b8-m1-T1-checkpoint-120832-160ep-seed4200-604d52985c97.json",
-        "campaigns/evaluations/9fa1f256-b083-45b2-8127-d7e4e00728b8/evaluation-9fa1f256-b083-45b2-8127-d7e4e00728b8-m3-T1-checkpoint-120832-160ep-seed4200-5a94cbf00677.json"
+        "campaigns/evaluations/9fa1f256-b083-45b2-8127-d7e4e00728b8/evaluation-9fa1f256-b083-45b2-8127-d7e4e00728b8-m3-T1-checkpoint-120832-160ep-seed4200-5a94cbf00677.json",
+        "campaigns/evaluations/9fa1f256-b083-45b2-8127-d7e4e00728b8/evaluation-9fa1f256-b083-45b2-8127-d7e4e00728b8-m6-T1-checkpoint-120832-160ep-seed4200-764f502c8370.json"
       ],
       "fingerprint": "e59f4fb52c50c26b24be370eb3981078f6ad5e8ffb5a6c7eac06cad0685a5663",
       "id": "T1:checkpoint-120832",
@@ -1658,7 +1659,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -3853,6 +3854,175 @@
       "status": "failed",
       "superseded_by": "M6",
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-06T05:52:02Z",
+      "error": null,
+      "id": "M6",
+      "inquiry_id": null,
+      "kind": "measurement",
+      "request": {
+        "description": "Remeasure the unchanged T1 terminal checkpoint on the shared 160-episode development panel with trajectory-level diagnostics for the reset transient, approach geometry, and hold behavior.",
+        "measurements": [
+          {
+            "candidate": "T1:checkpoint-120832",
+            "episodes": 160,
+            "instrument": "research_evaluation",
+            "label": "T1 baseline transient and hold trajectory diagnostics after M5 repair",
+            "seed": 4200
+          }
+        ],
+        "rationale": "M5 failed before producing evidence because the diagnostic implementation used a nonexistent MuJoCo site_xvelp field. The implementation now uses the supported mj_objectVelocity API and preserves the requested per-control-step trajectory. The nine baseline failures remain compatible with singular-start approach difficulty, branch-dependent dynamics, or residual stabilization, while the T2 observation intervention caused a broad no-first-reach regression and cannot discriminate those mechanisms. Repeating the unchanged T1 measurement with early elbow motion, radial and tangential endpoint errors, clipped action saturation, first-reach timing, analytic branch pattern, uninterrupted hold, and within-control-interval excursions will determine whether the failing -150 to -120 degree sector is preceded by a transient/approach signature or by post-entry instability, and will set the next bounded goal-linked inquiry."
+      },
+      "result": {
+        "measurements": [
+          {
+            "candidate": "T1:checkpoint-120832",
+            "candidate_id": "T1:checkpoint-120832",
+            "instrument": "research_evaluation",
+            "label": "T1 baseline transient and hold trajectory diagnostics after M5 repair",
+            "metrics": {
+              "episodes": 160,
+              "evaluation_artifact": "campaigns/evaluations/9fa1f256-b083-45b2-8127-d7e4e00728b8/evaluation-9fa1f256-b083-45b2-8127-d7e4e00728b8-m6-T1-checkpoint-120832-160ep-seed4200-764f502c8370.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 8,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/model",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/seed",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/official_benchmark",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 160,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "reward_total",
+                      "steps",
+                      "success",
+                      "terminated",
+                      "truncated"
+                    ],
+                    "path": "/episode_results",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/research_evidence",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 160,
+                    "field_names": [
+                      "analytic_branches",
+                      "episode",
+                      "episode_seed",
+                      "final_distance_cm",
+                      "first_reach_step",
+                      "hold_interruptions",
+                      "in_tolerance_steps",
+                      "interruption_class",
+                      "max_held_steps",
+                      "min_distance_cm",
+                      "target_angle_degrees",
+                      "target_radius_cm",
+                      "trajectory"
+                    ],
+                    "path": "/research_evidence/episode_diagnostics",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/research_evidence/units",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/research_evidence/trajectory_semantics",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/research_evidence/units/distance",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/time",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/joint_position",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/joint_velocity",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/speed",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/trajectory_semantics/radial_error",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/trajectory_semantics/tangential_error",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/trajectory_semantics/action",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/trajectory_semantics/substep_distances",
+                    "type": "string"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "bf7c0c5085e08d3783affc60dbcf8a41c2eb0cb0fccfdea9ec8499220445680e",
+              "evaluation_semantics": "764f502c8370",
+              "model_fingerprint": "e59f4fb52c50c26b24be370eb3981078f6ad5e8ffb5a6c7eac06cad0685a5663",
+              "official_benchmark": false,
+              "schema_version": 7,
+              "seed": 4200,
+              "success_percent": 94.375,
+              "successes": 151
+            }
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": null
+      },
+      "session_id": "S7",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": "M5"
     }
   ],
   "pending_operation": {
@@ -3872,15 +4042,298 @@
       ],
       "module_provenance": null,
       "paired_comparisons": [],
-      "partial_results": [],
-      "result": null,
+      "partial_results": [
+        {
+          "candidate": "T1:checkpoint-120832",
+          "candidate_id": "T1:checkpoint-120832",
+          "instrument": "research_evaluation",
+          "label": "T1 baseline transient and hold trajectory diagnostics after M5 repair",
+          "metrics": {
+            "episodes": 160,
+            "evaluation_artifact": "campaigns/evaluations/9fa1f256-b083-45b2-8127-d7e4e00728b8/evaluation-9fa1f256-b083-45b2-8127-d7e4e00728b8-m6-T1-checkpoint-120832-160ep-seed4200-764f502c8370.json",
+            "evaluation_artifact_contents": {
+              "scope": "structure_only",
+              "sections": [
+                {
+                  "entries": 8,
+                  "path": "",
+                  "type": "object"
+                },
+                {
+                  "path": "/schema_version",
+                  "type": "number"
+                },
+                {
+                  "path": "/model",
+                  "type": "string"
+                },
+                {
+                  "path": "/episodes",
+                  "type": "number"
+                },
+                {
+                  "path": "/seed",
+                  "type": "number"
+                },
+                {
+                  "path": "/official_benchmark",
+                  "type": "boolean"
+                },
+                {
+                  "path": "/success_percent",
+                  "type": "number"
+                },
+                {
+                  "entries": 160,
+                  "field_names": [
+                    "episode",
+                    "episode_seed",
+                    "reward_total",
+                    "steps",
+                    "success",
+                    "terminated",
+                    "truncated"
+                  ],
+                  "path": "/episode_results",
+                  "type": "array"
+                },
+                {
+                  "entries": 3,
+                  "path": "/research_evidence",
+                  "type": "object"
+                },
+                {
+                  "entries": 160,
+                  "field_names": [
+                    "analytic_branches",
+                    "episode",
+                    "episode_seed",
+                    "final_distance_cm",
+                    "first_reach_step",
+                    "hold_interruptions",
+                    "in_tolerance_steps",
+                    "interruption_class",
+                    "max_held_steps",
+                    "min_distance_cm",
+                    "target_angle_degrees",
+                    "target_radius_cm",
+                    "trajectory"
+                  ],
+                  "path": "/research_evidence/episode_diagnostics",
+                  "type": "array"
+                },
+                {
+                  "entries": 5,
+                  "path": "/research_evidence/units",
+                  "type": "object"
+                },
+                {
+                  "entries": 4,
+                  "path": "/research_evidence/trajectory_semantics",
+                  "type": "object"
+                },
+                {
+                  "path": "/research_evidence/units/distance",
+                  "type": "string"
+                },
+                {
+                  "path": "/research_evidence/units/time",
+                  "type": "string"
+                },
+                {
+                  "path": "/research_evidence/units/joint_position",
+                  "type": "string"
+                },
+                {
+                  "path": "/research_evidence/units/joint_velocity",
+                  "type": "string"
+                },
+                {
+                  "path": "/research_evidence/units/speed",
+                  "type": "string"
+                },
+                {
+                  "path": "/research_evidence/trajectory_semantics/radial_error",
+                  "type": "string"
+                },
+                {
+                  "path": "/research_evidence/trajectory_semantics/tangential_error",
+                  "type": "string"
+                },
+                {
+                  "path": "/research_evidence/trajectory_semantics/action",
+                  "type": "string"
+                },
+                {
+                  "path": "/research_evidence/trajectory_semantics/substep_distances",
+                  "type": "string"
+                }
+              ],
+              "truncated": false
+            },
+            "evaluation_artifact_fingerprint": "bf7c0c5085e08d3783affc60dbcf8a41c2eb0cb0fccfdea9ec8499220445680e",
+            "evaluation_semantics": "764f502c8370",
+            "model_fingerprint": "e59f4fb52c50c26b24be370eb3981078f6ad5e8ffb5a6c7eac06cad0685a5663",
+            "official_benchmark": false,
+            "schema_version": 7,
+            "seed": 4200,
+            "success_percent": 94.375,
+            "successes": 151
+          }
+        }
+      ],
+      "result": {
+        "measurements": [
+          {
+            "candidate": "T1:checkpoint-120832",
+            "candidate_id": "T1:checkpoint-120832",
+            "instrument": "research_evaluation",
+            "label": "T1 baseline transient and hold trajectory diagnostics after M5 repair",
+            "metrics": {
+              "episodes": 160,
+              "evaluation_artifact": "campaigns/evaluations/9fa1f256-b083-45b2-8127-d7e4e00728b8/evaluation-9fa1f256-b083-45b2-8127-d7e4e00728b8-m6-T1-checkpoint-120832-160ep-seed4200-764f502c8370.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 8,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/model",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/seed",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/official_benchmark",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 160,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "reward_total",
+                      "steps",
+                      "success",
+                      "terminated",
+                      "truncated"
+                    ],
+                    "path": "/episode_results",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/research_evidence",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 160,
+                    "field_names": [
+                      "analytic_branches",
+                      "episode",
+                      "episode_seed",
+                      "final_distance_cm",
+                      "first_reach_step",
+                      "hold_interruptions",
+                      "in_tolerance_steps",
+                      "interruption_class",
+                      "max_held_steps",
+                      "min_distance_cm",
+                      "target_angle_degrees",
+                      "target_radius_cm",
+                      "trajectory"
+                    ],
+                    "path": "/research_evidence/episode_diagnostics",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/research_evidence/units",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/research_evidence/trajectory_semantics",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/research_evidence/units/distance",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/time",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/joint_position",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/joint_velocity",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/speed",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/trajectory_semantics/radial_error",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/trajectory_semantics/tangential_error",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/trajectory_semantics/action",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/trajectory_semantics/substep_distances",
+                    "type": "string"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "bf7c0c5085e08d3783affc60dbcf8a41c2eb0cb0fccfdea9ec8499220445680e",
+              "evaluation_semantics": "764f502c8370",
+              "model_fingerprint": "e59f4fb52c50c26b24be370eb3981078f6ad5e8ffb5a6c7eac06cad0685a5663",
+              "official_benchmark": false,
+              "schema_version": 7,
+              "seed": 4200,
+              "success_percent": 94.375,
+              "successes": 151
+            }
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": null
+      },
       "task_reference_contract": null
     },
     "failure": null,
     "id": "M6",
     "inquiry_id": null,
     "kind": "measurement",
-    "progress": "accepted",
+    "progress": "completed",
     "request": {
       "measurement": {
         "description": "Remeasure the unchanged T1 terminal checkpoint on the shared 160-episode development panel with trajectory-level diagnostics for the reset transient, approach geometry, and hold behavior.",
@@ -3947,7 +4400,9 @@
     "inquiry_id": null,
     "kind": "goal_review",
     "objective": "Reassess the scientific direction toward the human goal using completed evidence. You may request measurements to resolve an uncertainty or develop the method before committing to an inquiry. Decide whether to request official assessment or open one bounded goal-linked inquiry.",
-    "operation_ids": [],
+    "operation_ids": [
+      "M6"
+    ],
     "scientific_parent_commit": "35963be1de3c02a0a532ed8ac416d14c2ebeb2f1"
   },
   "terminal_state": null
