@@ -3785,38 +3785,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I2",
-        "outcome": "I2 is not supported and is closed. Explicit analytic branch-feasibility and joint-limit-margin conditioning did not make the folded feasible branch actionable; it produced a severe broad regression rather than reducing the hypothesized sector failures.",
-        "reason": "M3 found T2:checkpoint-120832 at 39/160 successes versus 151/160 for the shared-seed T1 reference, with 112 discordant episodes and no intervention wins. M4 shows 115 T2 failures had no first reach and only 6 had post-entry interruption. The intervention failed in every -150 to -180 degree episode (34/34 across those two sectors), in all 14 folded-only-feasible targets, and in all 17 -120 to -90 degree targets, while the reference succeeded in 13/14, 5/14, and 15/17 respectively. The reference was perfect on all 140 both-feasible targets; T2 succeeded on only 39/140. Thus the intervention did not selectively repair the inferred shoulder-limit branch mechanism and instead disrupted the learned reach policy broadly. The physical consequences that remain decision-relevant are the straight-reset transient and branch-dependent dynamics, but the current evidence does not justify another margin-feature intervention. Hold stabilization is not the immediate bottleneck for T2 because its dominant failure class is no-first-reach. The official 98% goal remains untested and unmet."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I2",
-        "outcome": "I2 is not supported and is closed. Explicit analytic branch-feasibility and joint-limit-margin conditioning did not make the folded feasible branch actionable; it produced a severe broad regression rather than reducing the hypothesized sector failures.",
-        "reason": "M3 found T2:checkpoint-120832 at 39/160 successes versus 151/160 for the shared-seed T1 reference, with 112 discordant episodes and no intervention wins. M4 shows 115 T2 failures had no first reach and only 6 had post-entry interruption. The intervention failed in every -150 to -180 degree episode (34/34 across those two sectors), in all 14 folded-only-feasible targets, and in all 17 -120 to -90 degree targets, while the reference succeeded in 13/14, 5/14, and 15/17 respectively. The reference was perfect on all 140 both-feasible targets; T2 succeeded on only 39/140. Thus the intervention did not selectively repair the inferred shoulder-limit branch mechanism and instead disrupted the learned reach policy broadly. The physical consequences that remain decision-relevant are the straight-reset transient and branch-dependent dynamics, but the current evidence does not justify another margin-feature intervention. Hold stabilization is not the immediate bottleneck for T2 because its dominant failure class is no-first-reach. The official 98% goal remains untested and unmet.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E9",
-    "inquiry_id": "I2",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "I2 is not supported and is closed. Explicit analytic branch-feasibility and joint-limit-margin conditioning did not make the folded feasible branch actionable; it produced a severe broad regression rather than reducing the hypothesized sector failures.",
-        "reason": "M3 found T2:checkpoint-120832 at 39/160 successes versus 151/160 for the shared-seed T1 reference, with 112 discordant episodes and no intervention wins. M4 shows 115 T2 failures had no first reach and only 6 had post-entry interruption. The intervention failed in every -150 to -180 degree episode (34/34 across those two sectors), in all 14 folded-only-feasible targets, and in all 17 -120 to -90 degree targets, while the reference succeeded in 13/14, 5/14, and 15/17 respectively. The reference was perfect on all 140 both-feasible targets; T2 succeeded on only 39/140. Thus the intervention did not selectively repair the inferred shoulder-limit branch mechanism and instead disrupted the learned reach policy broadly. The physical consequences that remain decision-relevant are the straight-reset transient and branch-dependent dynamics, but the current evidence does not justify another margin-feature intervention. Hold stabilization is not the immediate bottleneck for T2 because its dominant failure class is no-first-reach. The official 98% goal remains untested and unmet."
-      }
-    },
-    "request_fingerprint": "eb1974c994661bcfc2d8c942c7eb53dc001bddeedff92d33918f7c2f986fefbe",
-    "session_id": "S6",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T1 produced archived candidates, and M1/M2 show identical development outcomes and mechanism for T1:checkpoint-100352 and T1:checkpoint-120832. Neither candidate has a working, best-known, or retained role because neither has been tested after the scientifically justified intervention.",
     "completed_operations": [
