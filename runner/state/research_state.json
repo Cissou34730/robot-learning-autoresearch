@@ -1008,7 +1008,9 @@
     },
     "T2:checkpoint-120832": {
       "artifact": "campaigns/checkpoints/candidates/1d55787c-9b86-48a5-ab74-3853d0375648/t2/checkpoint-120832",
-      "evaluation_artifacts": [],
+      "evaluation_artifacts": [
+        "campaigns/evaluations/1d55787c-9b86-48a5-ab74-3853d0375648/evaluation-1d55787c-9b86-48a5-ab74-3853d0375648-m5-T2-checkpoint-120832-160ep-seed4200-dab0f6b63ca9.json"
+      ],
       "fingerprint": "23f6d6af50f879b26d249774fc3217be7060bfa49864a0f690dfa7bbc79b1ce1",
       "id": "T2:checkpoint-120832",
       "name": "checkpoint-120832",
@@ -1656,7 +1658,7 @@
   "counters": {
     "event": 3,
     "inquiry": 1,
-    "measurement": 4,
+    "measurement": 5,
     "session": 3,
     "training": 2
   },
@@ -2788,9 +2790,460 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-06T20:22:16Z",
+      "error": null,
+      "id": "M5",
+      "inquiry_id": "I1",
+      "kind": "measurement",
+      "request": {
+        "description": "Evaluate the final T2 branch-margin observation candidate on the same official-geometry development panel used for T1.",
+        "measurements": [
+          {
+            "candidate": "T2:checkpoint-120832",
+            "episodes": 160,
+            "instrument": "research_evaluation",
+            "label": "T2 final branch-margin candidate shared-seed comparison panel",
+            "seed": 4200
+          }
+        ],
+        "rationale": "T2 added explicit analytic branch joint-limit margins, but its learning dynamics plateaued at only 32% training success by 120832 steps versus T1's 97%, so the intervention has not yet produced a credible candidate. A shared-seed evaluation of T2:checkpoint-120832 distinguishes whether it selectively resolves the M4 angular branch failure despite poor aggregate learning, or instead causes broad reach and stabilization degradation. The existing enhanced branch, velocity, interruption, and substep diagnostics preserve direct comparability with T1 and determine whether to redesign the observation or pursue a different branch-aware intervention."
+      },
+      "result": {
+        "measurements": [
+          {
+            "candidate": "T2:checkpoint-120832",
+            "candidate_id": "T2:checkpoint-120832",
+            "instrument": "research_evaluation",
+            "label": "T2 final branch-margin candidate shared-seed comparison panel",
+            "metrics": {
+              "episodes": 160,
+              "evaluation_artifact": "campaigns/evaluations/1d55787c-9b86-48a5-ab74-3853d0375648/evaluation-1d55787c-9b86-48a5-ab74-3853d0375648-m5-T2-checkpoint-120832-160ep-seed4200-dab0f6b63ca9.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 8,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/model",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/seed",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/official_benchmark",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 160,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "reward_total",
+                      "steps",
+                      "success",
+                      "terminated",
+                      "truncated"
+                    ],
+                    "path": "/episode_results",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/research_evidence",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 160,
+                    "field_names": [
+                      "analytic_branch_limit_margins_deg",
+                      "branch_error_at_first_entry_rad",
+                      "episode",
+                      "episode_seed",
+                      "final_branch_error_rad",
+                      "final_distance_cm",
+                      "final_qpos_rad",
+                      "first_reach_step",
+                      "hold_interruptions",
+                      "in_tolerance_steps",
+                      "joint_speed_at_first_entry_rad_s",
+                      "max_held_steps",
+                      "max_joint_speed_rad_s",
+                      "max_substep_distance_cm",
+                      "max_substep_joint_speed_rad_s",
+                      "min_distance_cm",
+                      "target_angle_degrees",
+                      "target_radius_cm"
+                    ],
+                    "path": "/research_evidence/episode_diagnostics",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/research_evidence/units",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence/branch_order",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/research_evidence/units/distance",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/branch_error",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/joint_speed",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/time",
+                    "type": "string"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "e3ca59cdf364a76f156a203c6b9105c8ca643d0d170f0aec06da4c58c182792f",
+              "evaluation_semantics": "dab0f6b63ca9",
+              "model_fingerprint": "23f6d6af50f879b26d249774fc3217be7060bfa49864a0f690dfa7bbc79b1ce1",
+              "official_benchmark": false,
+              "schema_version": 7,
+              "seed": 4200,
+              "success_percent": 17.5,
+              "successes": 28
+            }
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": null
+      },
+      "session_id": "S3",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "evaluation_semantics": "dab0f6b63ca9",
+      "measurements": [
+        {
+          "artifact": "campaigns/checkpoints/candidates/1d55787c-9b86-48a5-ab74-3853d0375648/t2/checkpoint-120832",
+          "candidate": "T2:checkpoint-120832",
+          "candidate_id": "T2:checkpoint-120832",
+          "episodes": 160,
+          "instrument": "research_evaluation",
+          "label": "T2 final branch-margin candidate shared-seed comparison panel",
+          "model_fingerprint": "23f6d6af50f879b26d249774fc3217be7060bfa49864a0f690dfa7bbc79b1ce1",
+          "seed": 4200
+        }
+      ],
+      "module_provenance": null,
+      "paired_comparisons": [],
+      "partial_results": [
+        {
+          "candidate": "T2:checkpoint-120832",
+          "candidate_id": "T2:checkpoint-120832",
+          "instrument": "research_evaluation",
+          "label": "T2 final branch-margin candidate shared-seed comparison panel",
+          "metrics": {
+            "episodes": 160,
+            "evaluation_artifact": "campaigns/evaluations/1d55787c-9b86-48a5-ab74-3853d0375648/evaluation-1d55787c-9b86-48a5-ab74-3853d0375648-m5-T2-checkpoint-120832-160ep-seed4200-dab0f6b63ca9.json",
+            "evaluation_artifact_contents": {
+              "scope": "structure_only",
+              "sections": [
+                {
+                  "entries": 8,
+                  "path": "",
+                  "type": "object"
+                },
+                {
+                  "path": "/schema_version",
+                  "type": "number"
+                },
+                {
+                  "path": "/model",
+                  "type": "string"
+                },
+                {
+                  "path": "/episodes",
+                  "type": "number"
+                },
+                {
+                  "path": "/seed",
+                  "type": "number"
+                },
+                {
+                  "path": "/official_benchmark",
+                  "type": "boolean"
+                },
+                {
+                  "path": "/success_percent",
+                  "type": "number"
+                },
+                {
+                  "entries": 160,
+                  "field_names": [
+                    "episode",
+                    "episode_seed",
+                    "reward_total",
+                    "steps",
+                    "success",
+                    "terminated",
+                    "truncated"
+                  ],
+                  "path": "/episode_results",
+                  "type": "array"
+                },
+                {
+                  "entries": 3,
+                  "path": "/research_evidence",
+                  "type": "object"
+                },
+                {
+                  "entries": 160,
+                  "field_names": [
+                    "analytic_branch_limit_margins_deg",
+                    "branch_error_at_first_entry_rad",
+                    "episode",
+                    "episode_seed",
+                    "final_branch_error_rad",
+                    "final_distance_cm",
+                    "final_qpos_rad",
+                    "first_reach_step",
+                    "hold_interruptions",
+                    "in_tolerance_steps",
+                    "joint_speed_at_first_entry_rad_s",
+                    "max_held_steps",
+                    "max_joint_speed_rad_s",
+                    "max_substep_distance_cm",
+                    "max_substep_joint_speed_rad_s",
+                    "min_distance_cm",
+                    "target_angle_degrees",
+                    "target_radius_cm"
+                  ],
+                  "path": "/research_evidence/episode_diagnostics",
+                  "type": "array"
+                },
+                {
+                  "entries": 4,
+                  "path": "/research_evidence/units",
+                  "type": "object"
+                },
+                {
+                  "entries": 2,
+                  "path": "/research_evidence/branch_order",
+                  "type": "array"
+                },
+                {
+                  "path": "/research_evidence/units/distance",
+                  "type": "string"
+                },
+                {
+                  "path": "/research_evidence/units/branch_error",
+                  "type": "string"
+                },
+                {
+                  "path": "/research_evidence/units/joint_speed",
+                  "type": "string"
+                },
+                {
+                  "path": "/research_evidence/units/time",
+                  "type": "string"
+                }
+              ],
+              "truncated": false
+            },
+            "evaluation_artifact_fingerprint": "e3ca59cdf364a76f156a203c6b9105c8ca643d0d170f0aec06da4c58c182792f",
+            "evaluation_semantics": "dab0f6b63ca9",
+            "model_fingerprint": "23f6d6af50f879b26d249774fc3217be7060bfa49864a0f690dfa7bbc79b1ce1",
+            "official_benchmark": false,
+            "schema_version": 7,
+            "seed": 4200,
+            "success_percent": 17.5,
+            "successes": 28
+          }
+        }
+      ],
+      "result": {
+        "measurements": [
+          {
+            "candidate": "T2:checkpoint-120832",
+            "candidate_id": "T2:checkpoint-120832",
+            "instrument": "research_evaluation",
+            "label": "T2 final branch-margin candidate shared-seed comparison panel",
+            "metrics": {
+              "episodes": 160,
+              "evaluation_artifact": "campaigns/evaluations/1d55787c-9b86-48a5-ab74-3853d0375648/evaluation-1d55787c-9b86-48a5-ab74-3853d0375648-m5-T2-checkpoint-120832-160ep-seed4200-dab0f6b63ca9.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 8,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/model",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/seed",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/official_benchmark",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 160,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "reward_total",
+                      "steps",
+                      "success",
+                      "terminated",
+                      "truncated"
+                    ],
+                    "path": "/episode_results",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/research_evidence",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 160,
+                    "field_names": [
+                      "analytic_branch_limit_margins_deg",
+                      "branch_error_at_first_entry_rad",
+                      "episode",
+                      "episode_seed",
+                      "final_branch_error_rad",
+                      "final_distance_cm",
+                      "final_qpos_rad",
+                      "first_reach_step",
+                      "hold_interruptions",
+                      "in_tolerance_steps",
+                      "joint_speed_at_first_entry_rad_s",
+                      "max_held_steps",
+                      "max_joint_speed_rad_s",
+                      "max_substep_distance_cm",
+                      "max_substep_joint_speed_rad_s",
+                      "min_distance_cm",
+                      "target_angle_degrees",
+                      "target_radius_cm"
+                    ],
+                    "path": "/research_evidence/episode_diagnostics",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/research_evidence/units",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence/branch_order",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/research_evidence/units/distance",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/branch_error",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/joint_speed",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/time",
+                    "type": "string"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "e3ca59cdf364a76f156a203c6b9105c8ca643d0d170f0aec06da4c58c182792f",
+              "evaluation_semantics": "dab0f6b63ca9",
+              "model_fingerprint": "23f6d6af50f879b26d249774fc3217be7060bfa49864a0f690dfa7bbc79b1ce1",
+              "official_benchmark": false,
+              "schema_version": 7,
+              "seed": 4200,
+              "success_percent": 17.5,
+              "successes": 28
+            }
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": null
+      },
+      "task_reference_contract": null
+    },
+    "failure": null,
+    "id": "M5",
+    "inquiry_id": "I1",
+    "kind": "measurement",
+    "progress": "completed",
+    "request": {
+      "measurement": {
+        "description": "Evaluate the final T2 branch-margin observation candidate on the same official-geometry development panel used for T1.",
+        "measurements": [
+          {
+            "candidate": "T2:checkpoint-120832",
+            "episodes": 160,
+            "instrument": "research_evaluation",
+            "label": "T2 final branch-margin candidate shared-seed comparison panel",
+            "seed": 4200
+          }
+        ],
+        "rationale": "T2 added explicit analytic branch joint-limit margins, but its learning dynamics plateaued at only 32% training success by 120832 steps versus T1's 97%, so the intervention has not yet produced a credible candidate. A shared-seed evaluation of T2:checkpoint-120832 distinguishes whether it selectively resolves the M4 angular branch failure despite poor aggregate learning, or instead causes broad reach and stabilization degradation. The existing enhanced branch, velocity, interruption, and substep diagnostics preserve direct comparability with T1 and determine whether to redesign the observation or pursue a different branch-aware intervention."
+      }
+    },
+    "request_fingerprint": "63aba4b1b1c76073a41f298be3e1425e29dfe81bf35e32a61fcad0d8f0b1b77e",
+    "session_id": "S3",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No training candidate exists. Working, best-known, and retained roles remain unassigned; M1 is measurement evidence and E2 records the opening of I1, not a policy candidate.",
     "completed_operations": [
@@ -2832,7 +3285,8 @@
       "M2",
       "M3",
       "M4",
-      "T2"
+      "T2",
+      "M5"
     ],
     "scientific_parent_commit": "234d984ae79fdfa9baef67fb0a0eee90658ca42a"
   },
