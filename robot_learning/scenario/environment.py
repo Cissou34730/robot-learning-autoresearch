@@ -42,15 +42,18 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
         frame_skip: int = FRAME_SKIP,
         max_episode_steps: int = MAX_EPISODE_STEPS,
         policy_runtime=None,
+        collect_diagnostics: bool = False,
     ) -> None:
         super().__init__()
         self.max_episode_steps = max_episode_steps
         self.frame_skip = frame_skip
         self.target_radius_range = target_radius_range
         self.policy_io = policy_runtime.io if policy_runtime else make_policy_io()
+        self.collect_diagnostics = collect_diagnostics
 
         self.model = mujoco.MjModel.from_xml_path(str(TWO_JOINT_ARM_XML_PATH))
         self.data = mujoco.MjData(self.model)
+        self._end_effector_site_id = self.model.site("end_effector").id
 
         self.success_threshold = success_threshold
         control_dt = self.model.opt.timestep * self.frame_skip
@@ -74,6 +77,18 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
 
     def _end_effector_position(self) -> np.ndarray:
         return self.data.site("end_effector").xpos.copy()
+
+    def _end_effector_speed(self) -> float:
+        velocity = np.zeros(6, dtype=np.float64)
+        mujoco.mj_objectVelocity(
+            self.model,
+            self.data,
+            mujoco.mjtObj.mjOBJ_SITE,
+            self._end_effector_site_id,
+            velocity,
+            0,
+        )
+        return float(np.linalg.norm(velocity[3:]))
 
     def _distance_to_target(self) -> float:
         return float(
@@ -128,8 +143,13 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
             self.action_space.high,
         )
         self.data.ctrl[:] = action
+        substep_distances: list[float] = []
+        substep_speeds: list[float] = []
         for _ in range(self.frame_skip):
             mujoco.mj_step(self.model, self.data)
+            if self.collect_diagnostics:
+                substep_distances.append(self._distance_to_target())
+                substep_speeds.append(self._end_effector_speed())
 
         distance = self._distance_to_target()
 
@@ -165,13 +185,20 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
             # ever sees `reward.total`.
             "reward_components": reward.components,
         }
+        if self.collect_diagnostics:
+            info["research_substeps"] = {
+                "distances": substep_distances,
+                "speeds": substep_speeds,
+            }
         return self._observation(), float(reward.total), terminated, truncated, info
 
 
 def make_evaluation_env(*, policy_runtime=None) -> gym.Env:
     """Build the fixed-distribution environment used by research evaluation."""
     env = TwoJointArmReachEnv(
-        target_radius_range=TARGET_RADIUS_RANGE, policy_runtime=policy_runtime
+        target_radius_range=TARGET_RADIUS_RANGE,
+        policy_runtime=policy_runtime,
+        collect_diagnostics=True,
     )
     if policy_runtime is not None:
         env.observation_space = policy_runtime.observation_space
