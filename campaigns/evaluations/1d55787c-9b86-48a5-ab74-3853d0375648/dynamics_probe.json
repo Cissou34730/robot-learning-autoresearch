@@ -1,0 +1,477 @@
+{
+  "schema_version": 1,
+  "measurement": "compiled_dynamics_and_bounded_command_response",
+  "model": {
+    "timestep_s": 0.002,
+    "frame_skip": 10,
+    "actuator_gear": [
+      5.0,
+      5.0
+    ],
+    "body_mass_kg": [
+      0.0,
+      0.2010619298297468,
+      0.09896016858807849,
+      0.05247716368556391,
+      0.007238229473870883
+    ],
+    "body_inertia_kg_m2": [
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.00010723302924253161,
+        0.00010723302924253161,
+        0.00016084954386379744
+      ],
+      [
+        0.0001682676295170863,
+        0.0001682676295170863,
+        1.0814932709982864e-05
+      ],
+      [
+        6.109741244031255e-05,
+        6.109741244031255e-05,
+        3.674125280936861e-06
+      ],
+      [
+        4.169220176949629e-07,
+        4.169220176949629e-07,
+        4.169220176949629e-07
+      ]
+    ],
+    "joint_damping": [
+      0.5,
+      0.5
+    ],
+    "joint_armature": [
+      0.01,
+      0.01
+    ]
+  },
+  "control_interval_s": 0.02,
+  "configurations": [
+    {
+      "radius_cm": 6.0,
+      "branch": "open",
+      "qpos_rad": [
+        -0.9817653565786228,
+        2.619277831783745
+      ],
+      "joint_limit_margin_deg": [
+        113.74898859588859,
+        19.926434866614237
+      ],
+      "jacobian_singular_values_m": [
+        0.10012443807242778,
+        0.05979211403421504
+      ],
+      "pulse_responses": [
+        {
+          "command": [
+            1.0,
+            0.0
+          ],
+          "pulse_control_steps": 1,
+          "brake_control_steps": 9,
+          "speed_after_pulse_rad_s": 5.834479433253816,
+          "displacement_after_pulse_cm": 0.3646414288553054,
+          "peak_joint_speed_rad_s": 9.993865046442757,
+          "peak_end_effector_displacement_cm": 7.583468546572872,
+          "final_joint_speed_rad_s": 9.993865046442757
+        },
+        {
+          "command": [
+            -1.0,
+            0.0
+          ],
+          "pulse_control_steps": 1,
+          "brake_control_steps": 9,
+          "speed_after_pulse_rad_s": 5.834450953502147,
+          "displacement_after_pulse_cm": 0.36483355579086996,
+          "peak_joint_speed_rad_s": 9.993871128099396,
+          "peak_end_effector_displacement_cm": 7.566815950589296,
+          "final_joint_speed_rad_s": 9.993871128099396
+        },
+        {
+          "command": [
+            0.0,
+            1.0
+          ],
+          "pulse_control_steps": 1,
+          "brake_control_steps": 9,
+          "speed_after_pulse_rad_s": 6.078028179438769,
+          "displacement_after_pulse_cm": 0.6392073035715867,
+          "peak_joint_speed_rad_s": 9.996676452068584,
+          "peak_end_effector_displacement_cm": 12.686513424248593,
+          "final_joint_speed_rad_s": 9.996676452068584
+        },
+        {
+          "command": [
+            0.0,
+            -1.0
+          ],
+          "pulse_control_steps": 1,
+          "brake_control_steps": 9,
+          "speed_after_pulse_rad_s": 6.077935184730072,
+          "displacement_after_pulse_cm": 0.6393514927192115,
+          "peak_joint_speed_rad_s": 9.541181120247787,
+          "peak_end_effector_displacement_cm": 4.218315581603343,
+          "final_joint_speed_rad_s": 0.21967244678355982
+        }
+      ]
+    },
+    {
+      "radius_cm": 6.0,
+      "branch": "folded",
+      "qpos_rad": [
+        0.9817653565786228,
+        -2.619277831783745
+      ],
+      "joint_limit_margin_deg": [
+        113.74898859588859,
+        19.926434866614237
+      ],
+      "jacobian_singular_values_m": [
+        0.10012443807242778,
+        0.05979211403421504
+      ],
+      "pulse_responses": [
+        {
+          "command": [
+            1.0,
+            0.0
+          ],
+          "pulse_control_steps": 1,
+          "brake_control_steps": 9,
+          "speed_after_pulse_rad_s": 5.834450953502147,
+          "displacement_after_pulse_cm": 0.36483355579086996,
+          "peak_joint_speed_rad_s": 9.993871128099396,
+          "peak_end_effector_displacement_cm": 7.566815950589296,
+          "final_joint_speed_rad_s": 9.993871128099396
+        },
+        {
+          "command": [
+            -1.0,
+            0.0
+          ],
+          "pulse_control_steps": 1,
+          "brake_control_steps": 9,
+          "speed_after_pulse_rad_s": 5.834479433253816,
+          "displacement_after_pulse_cm": 0.3646414288553054,
+          "peak_joint_speed_rad_s": 9.993865046442757,
+          "peak_end_effector_displacement_cm": 7.583468546572872,
+          "final_joint_speed_rad_s": 9.993865046442757
+        },
+        {
+          "command": [
+            0.0,
+            1.0
+          ],
+          "pulse_control_steps": 1,
+          "brake_control_steps": 9,
+          "speed_after_pulse_rad_s": 6.077935184730072,
+          "displacement_after_pulse_cm": 0.6393514927192115,
+          "peak_joint_speed_rad_s": 9.541181120247787,
+          "peak_end_effector_displacement_cm": 4.218315581603343,
+          "final_joint_speed_rad_s": 0.21967244678355982
+        },
+        {
+          "command": [
+            0.0,
+            -1.0
+          ],
+          "pulse_control_steps": 1,
+          "brake_control_steps": 9,
+          "speed_after_pulse_rad_s": 6.078028179438769,
+          "displacement_after_pulse_cm": 0.6392073035715867,
+          "peak_joint_speed_rad_s": 9.996676452068584,
+          "peak_end_effector_displacement_cm": 12.686513424248593,
+          "final_joint_speed_rad_s": 9.996676452068584
+        }
+      ]
+    },
+    {
+      "radius_cm": 13.0,
+      "branch": "open",
+      "qpos_rad": [
+        -0.8193554744895192,
+        1.8886200307227774
+      ],
+      "joint_limit_margin_deg": [
+        123.05438939081158,
+        61.79004313571699
+      ],
+      "jacobian_singular_values_m": [
+        0.14348859717003384,
+        0.07944194409866716
+      ],
+      "pulse_responses": [
+        {
+          "command": [
+            1.0,
+            0.0
+          ],
+          "pulse_control_steps": 1,
+          "brake_control_steps": 9,
+          "speed_after_pulse_rad_s": 5.7248324528250105,
+          "displacement_after_pulse_cm": 0.7709152727158077,
+          "peak_joint_speed_rad_s": 9.991971215044165,
+          "peak_end_effector_displacement_cm": 16.34029756343895,
+          "final_joint_speed_rad_s": 9.991971215044165
+        },
+        {
+          "command": [
+            -1.0,
+            0.0
+          ],
+          "pulse_control_steps": 1,
+          "brake_control_steps": 9,
+          "speed_after_pulse_rad_s": 5.72488912523094,
+          "displacement_after_pulse_cm": 0.7709503156397637,
+          "peak_joint_speed_rad_s": 9.991963366744628,
+          "peak_end_effector_displacement_cm": 16.309048489572813,
+          "final_joint_speed_rad_s": 9.991963366744628
+        },
+        {
+          "command": [
+            0.0,
+            1.0
+          ],
+          "pulse_control_steps": 1,
+          "brake_control_steps": 9,
+          "speed_after_pulse_rad_s": 6.0779494107579355,
+          "displacement_after_pulse_cm": 0.6373602106593929,
+          "peak_joint_speed_rad_s": 9.996244920493279,
+          "peak_end_effector_displacement_cm": 12.602712338735136,
+          "final_joint_speed_rad_s": 9.996244920493279
+        },
+        {
+          "command": [
+            0.0,
+            -1.0
+          ],
+          "pulse_control_steps": 1,
+          "brake_control_steps": 9,
+          "speed_after_pulse_rad_s": 6.078149875030203,
+          "displacement_after_pulse_cm": 0.6366157707518101,
+          "peak_joint_speed_rad_s": 9.985571734783454,
+          "peak_end_effector_displacement_cm": 10.950535266556871,
+          "final_joint_speed_rad_s": 1.0738943221691333
+        }
+      ]
+    },
+    {
+      "radius_cm": 13.0,
+      "branch": "folded",
+      "qpos_rad": [
+        0.8193554744895192,
+        -1.8886200307227774
+      ],
+      "joint_limit_margin_deg": [
+        123.05438939081158,
+        61.79004313571699
+      ],
+      "jacobian_singular_values_m": [
+        0.14348859717003384,
+        0.07944194409866716
+      ],
+      "pulse_responses": [
+        {
+          "command": [
+            1.0,
+            0.0
+          ],
+          "pulse_control_steps": 1,
+          "brake_control_steps": 9,
+          "speed_after_pulse_rad_s": 5.72488912523094,
+          "displacement_after_pulse_cm": 0.7709503156397637,
+          "peak_joint_speed_rad_s": 9.991963366744628,
+          "peak_end_effector_displacement_cm": 16.309048489572813,
+          "final_joint_speed_rad_s": 9.991963366744628
+        },
+        {
+          "command": [
+            -1.0,
+            0.0
+          ],
+          "pulse_control_steps": 1,
+          "brake_control_steps": 9,
+          "speed_after_pulse_rad_s": 5.7248324528250105,
+          "displacement_after_pulse_cm": 0.7709152727158077,
+          "peak_joint_speed_rad_s": 9.991971215044165,
+          "peak_end_effector_displacement_cm": 16.34029756343895,
+          "final_joint_speed_rad_s": 9.991971215044165
+        },
+        {
+          "command": [
+            0.0,
+            1.0
+          ],
+          "pulse_control_steps": 1,
+          "brake_control_steps": 9,
+          "speed_after_pulse_rad_s": 6.078149875030203,
+          "displacement_after_pulse_cm": 0.6366157707518101,
+          "peak_joint_speed_rad_s": 9.985571734783454,
+          "peak_end_effector_displacement_cm": 10.950535266556871,
+          "final_joint_speed_rad_s": 1.0738943221691333
+        },
+        {
+          "command": [
+            0.0,
+            -1.0
+          ],
+          "pulse_control_steps": 1,
+          "brake_control_steps": 9,
+          "speed_after_pulse_rad_s": 6.0779494107579355,
+          "displacement_after_pulse_cm": 0.6373602106593929,
+          "peak_joint_speed_rad_s": 9.996244920493279,
+          "peak_end_effector_displacement_cm": 12.602712338735136,
+          "final_joint_speed_rad_s": 9.996244920493279
+        }
+      ]
+    },
+    {
+      "radius_cm": 20.0,
+      "branch": "open",
+      "qpos_rad": [
+        -0.3897607327974747,
+        0.8632118900695407
+      ],
+      "joint_limit_margin_deg": [
+        147.6683549907785,
+        120.54160187350456
+      ],
+      "jacobian_singular_values_m": [
+        0.2197213164573944,
+        0.041503531105552424
+      ],
+      "pulse_responses": [
+        {
+          "command": [
+            1.0,
+            0.0
+          ],
+          "pulse_control_steps": 1,
+          "brake_control_steps": 9,
+          "speed_after_pulse_rad_s": 5.546568005196688,
+          "displacement_after_pulse_cm": 1.130464012883355,
+          "peak_joint_speed_rad_s": 9.988730468416053,
+          "peak_end_effector_displacement_cm": 24.85641154029893,
+          "final_joint_speed_rad_s": 9.988730468416053
+        },
+        {
+          "command": [
+            -1.0,
+            0.0
+          ],
+          "pulse_control_steps": 1,
+          "brake_control_steps": 9,
+          "speed_after_pulse_rad_s": 5.546726566329173,
+          "displacement_after_pulse_cm": 1.130410791633651,
+          "peak_joint_speed_rad_s": 9.988690665649601,
+          "peak_end_effector_displacement_cm": 24.824525626080646,
+          "final_joint_speed_rad_s": 9.988690665649601
+        },
+        {
+          "command": [
+            0.0,
+            1.0
+          ],
+          "pulse_control_steps": 1,
+          "brake_control_steps": 9,
+          "speed_after_pulse_rad_s": 6.081330667674862,
+          "displacement_after_pulse_cm": 0.6127040273765965,
+          "peak_joint_speed_rad_s": 9.995749921509091,
+          "peak_end_effector_displacement_cm": 12.512788577992614,
+          "final_joint_speed_rad_s": 9.995749921509091
+        },
+        {
+          "command": [
+            0.0,
+            -1.0
+          ],
+          "pulse_control_steps": 1,
+          "brake_control_steps": 9,
+          "speed_after_pulse_rad_s": 6.081961605755569,
+          "displacement_after_pulse_cm": 0.6107935625191464,
+          "peak_joint_speed_rad_s": 9.996560430645703,
+          "peak_end_effector_displacement_cm": 12.691705117609642,
+          "final_joint_speed_rad_s": 9.996560430645703
+        }
+      ]
+    },
+    {
+      "radius_cm": 20.0,
+      "branch": "folded",
+      "qpos_rad": [
+        0.3897607327974747,
+        -0.8632118900695407
+      ],
+      "joint_limit_margin_deg": [
+        147.6683549907785,
+        120.54160187350456
+      ],
+      "jacobian_singular_values_m": [
+        0.2197213164573944,
+        0.04150353110555242
+      ],
+      "pulse_responses": [
+        {
+          "command": [
+            1.0,
+            0.0
+          ],
+          "pulse_control_steps": 1,
+          "brake_control_steps": 9,
+          "speed_after_pulse_rad_s": 5.546726566329173,
+          "displacement_after_pulse_cm": 1.130410791633651,
+          "peak_joint_speed_rad_s": 9.988690665649601,
+          "peak_end_effector_displacement_cm": 24.824525626080646,
+          "final_joint_speed_rad_s": 9.988690665649601
+        },
+        {
+          "command": [
+            -1.0,
+            0.0
+          ],
+          "pulse_control_steps": 1,
+          "brake_control_steps": 9,
+          "speed_after_pulse_rad_s": 5.546568005196688,
+          "displacement_after_pulse_cm": 1.130464012883355,
+          "peak_joint_speed_rad_s": 9.988730468416053,
+          "peak_end_effector_displacement_cm": 24.85641154029893,
+          "final_joint_speed_rad_s": 9.988730468416053
+        },
+        {
+          "command": [
+            0.0,
+            1.0
+          ],
+          "pulse_control_steps": 1,
+          "brake_control_steps": 9,
+          "speed_after_pulse_rad_s": 6.081961605755569,
+          "displacement_after_pulse_cm": 0.6107935625191464,
+          "peak_joint_speed_rad_s": 9.996560430645703,
+          "peak_end_effector_displacement_cm": 12.691705117609642,
+          "final_joint_speed_rad_s": 9.996560430645703
+        },
+        {
+          "command": [
+            0.0,
+            -1.0
+          ],
+          "pulse_control_steps": 1,
+          "brake_control_steps": 9,
+          "speed_after_pulse_rad_s": 6.081330667674862,
+          "displacement_after_pulse_cm": 0.6127040273765965,
+          "peak_joint_speed_rad_s": 9.995749921509091,
+          "peak_end_effector_displacement_cm": 12.512788577992614,
+          "final_joint_speed_rad_s": 9.995749921509091
+        }
+      ]
+    }
+  ]
+}
