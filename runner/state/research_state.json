@@ -391,44 +391,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "open",
-        "inquiry": {
-          "closure_condition": "Close when a fresh policy and official-distribution development evaluation provide per-episode first-reach step, entry and held distance, maximum held steps, interruptions, target radius and angle, and action or velocity diagnostics sufficient to assign the dominant failure mode and choose the next goal-directed intervention.",
-          "goal_connection": "The human goal requires at least 196 of 200 episodes to complete an uninterrupted 100-step hold. Identifying whether failures occur before first reach or after entry determines whether the next intervention should expand radius and branch coverage or improve trajectory shaping and low-velocity stabilization.",
-          "id": "I1",
-          "opened_in_session": "S2",
-          "question": "For a first learned policy trained on the official 6-20 cm target distribution, is the dominant failure mechanism inability to reach a feasible branch configuration, or entry and stabilization failure caused by excessive velocity or action-induced excursion?",
-          "rationale": "M3 established that sampled inner and outer targets have valid IK branches, while action response and conditioning vary with configuration; it did not establish policy-level reach or hold behavior. No learned candidate or episode evidence exists, so official assessment cannot be requested. This bounded inquiry will obtain the first policy evidence needed to discriminate reach and branch/limit coverage failures from successful entry followed by unstable holds, without treating either mechanism as established in advance.",
-          "reframes": []
-        }
-      },
-      "result": {
-        "action": "open",
-        "inquiry_id": "I1",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E2",
-    "inquiry_id": null,
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "open",
-        "closure_condition": "Close when a fresh policy and official-distribution development evaluation provide per-episode first-reach step, entry and held distance, maximum held steps, interruptions, target radius and angle, and action or velocity diagnostics sufficient to assign the dominant failure mode and choose the next goal-directed intervention.",
-        "goal_connection": "The human goal requires at least 196 of 200 episodes to complete an uninterrupted 100-step hold. Identifying whether failures occur before first reach or after entry determines whether the next intervention should expand radius and branch coverage or improve trajectory shaping and low-velocity stabilization.",
-        "question": "For a first learned policy trained on the official 6-20 cm target distribution, is the dominant failure mechanism inability to reach a feasible branch configuration, or entry and stabilization failure caused by excessive velocity or action-induced excursion?",
-        "rationale": "M3 established that sampled inner and outer targets have valid IK branches, while action response and conditioning vary with configuration; it did not establish policy-level reach or hold behavior. No learned candidate or episode evidence exists, so official assessment cannot be requested. This bounded inquiry will obtain the first policy evidence needed to discriminate reach and branch/limit coverage failures from successful entry followed by unstable holds, without treating either mechanism as established in advance."
-      }
-    },
-    "request_fingerprint": "ad62080218fc8cd749f76bc5a507dc14751dfcad40651964db331a5f077bd382",
-    "session_id": "S2",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "No policy candidate exists and no working, best-known, or retained role is assigned. M3 is a completed physical measurement only.",
     "completed_operations": [
