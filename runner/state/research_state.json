@@ -1649,7 +1649,7 @@
     }
   },
   "counters": {
-    "event": 9,
+    "event": 10,
     "inquiry": 2,
     "measurement": 4,
     "session": 6,
@@ -1658,7 +1658,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -3783,31 +3783,189 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-06T05:46:15Z",
+      "error": null,
+      "id": "E10",
+      "inquiry_id": "I2",
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "T1:checkpoint-120832 remains the strongest measured development reference at 151/160, but no candidate is assigned a working, best-known, or retained role. T2:checkpoint-120832 is rejected as an intervention candidate because it achieved 39/160 and produced a broad no-first-reach regression.",
+        "completed_operations": [
+          "T2",
+          "M3",
+          "M4",
+          "E9"
+        ],
+        "cumulative_resource_use": "Two fresh 120000-requested-step training operations (T1 and T2), paired 160-episode development evaluations (M1 and M3), the I1 diagnostic measurement (M2), the I2 paired diagnostic measurement (M4), two inquiry openings/closures including I2 (E2, E5, E7, E9), and checkpoint records; no official assessment and no candidate role assignment.",
+        "current_goal_gap": "The development reference gap is nine failures relative to 160 episodes, and the intervention widened the observed gap to 121 failures. No candidate has a working, best-known, or retained role.",
+        "current_synthesis": "T1 and M1 established a reproducible 151/160 baseline and showed that additional late baseline training did not change the shared outcomes. M2, E5, and E7 supported a branch-selection or shoulder-limit hypothesis because all nine baseline failures had an infeasible positive-elbow branch while the folded branch remained feasible, with concentration in the -150 to -120 degree sector. I2 tested that hypothesis by appending analytic branch joint-limit margins and feasibility flags to the observation. T2 training had zero training success through 120832 steps. M3 showed 39/160 for T2 versus 151/160 for the shared-seed baseline, with 112 discordant episodes and no intervention wins. M4 showed that T2 had 115 no-first-reach failures, including all 14 folded-only-feasible targets and all 34 targets in the -180 to -120 degree sectors, while the reference succeeded on 13/14 folded-only-feasible targets and 29/34 in those sectors. T2 also succeeded on only 39/140 both-feasible targets where the reference succeeded on all 140. I2 therefore does not support explicit branch-feasibility and margin conditioning as an actionable intervention; it caused a broad reach-policy regression rather than selectively repairing the hypothesized sector. The initial model consequence that reset begins at a straight singular configuration remains decision-relevant, as does the possibility that branch-dependent approach dynamics matter, but hold stabilization and sampled-boundary effects are not the immediate explanation for T2 because its failures overwhelmingly lacked first reach. The evidence does not establish that the baseline's nine failures are exclusively transient failures, because the baseline branch/hold evidence remains compatible with shoulder-limit and approach-geometry mechanisms.",
+        "decision_frontier": "The next inquiry must determine whether the baseline development gap is caused primarily by the straight-reset transient and approach geometry, by branch-dependent folded dynamics, or by residual hold stabilization after successful approach. The discriminating evidence should preserve early elbow motion, radial and tangential endpoint errors, action saturation, first-reach timing, analytic branch pattern, maximum uninterrupted hold, and interruption class, with comparison against the unchanged T1 baseline. A reduction in no-first-reach failures specifically in the previously failing -150 to -120 degree sector after a transient/approach intervention would support the reset-geometry mechanism. Persistent failures after comparable early transients, or a shift to post-entry short holds, would redirect toward branch-dependent dynamics or velocity/sampled-boundary stabilization. The official 98% claim remains reserved for the protected 200-episode assessment.",
+        "evidence_references": [
+          "T1",
+          "M1",
+          "E2",
+          "M2",
+          "E5",
+          "E7",
+          "T2",
+          "M3",
+          "M4",
+          "E9"
+        ],
+        "human_goal_connection": "The human goal remains at least 196 successes in the protected 200-episode official panel. The baseline reference reached 151/160 on the development panel, while the I2 intervention reached 39/160; the official goal remains untested and unmet.",
+        "next_direction_or_closure": "I2 is closed unsupported. In the fresh session, investigate the reset transient and approach geometry before attempting another branch-feature intervention: retain trajectory diagnostics that can distinguish singular-start escape, radial versus tangential progress, action saturation, and branch-conditioned first reach. Do not claim the official goal from the development panel."
+      },
+      "result": {
+        "session_id": "S6",
+        "status": "checkpointed"
+      },
+      "session_id": "S6",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "cd7110f9071fefb279cf6fb1003a30b6858998b4",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "T1:checkpoint-120832 remains the strongest measured development reference at 151/160, but no candidate is assigned a working, best-known, or retained role. T2:checkpoint-120832 is rejected as an intervention candidate because it achieved 39/160 and produced a broad no-first-reach regression.",
+        "completed_operations": [
+          "T2",
+          "M3",
+          "M4",
+          "E9"
+        ],
+        "cumulative_resource_use": "Two fresh 120000-requested-step training operations (T1 and T2), paired 160-episode development evaluations (M1 and M3), the I1 diagnostic measurement (M2), the I2 paired diagnostic measurement (M4), two inquiry openings/closures including I2 (E2, E5, E7, E9), and checkpoint records; no official assessment and no candidate role assignment.",
+        "current_goal_gap": "The development reference gap is nine failures relative to 160 episodes, and the intervention widened the observed gap to 121 failures. No candidate has a working, best-known, or retained role.",
+        "current_synthesis": "T1 and M1 established a reproducible 151/160 baseline and showed that additional late baseline training did not change the shared outcomes. M2, E5, and E7 supported a branch-selection or shoulder-limit hypothesis because all nine baseline failures had an infeasible positive-elbow branch while the folded branch remained feasible, with concentration in the -150 to -120 degree sector. I2 tested that hypothesis by appending analytic branch joint-limit margins and feasibility flags to the observation. T2 training had zero training success through 120832 steps. M3 showed 39/160 for T2 versus 151/160 for the shared-seed baseline, with 112 discordant episodes and no intervention wins. M4 showed that T2 had 115 no-first-reach failures, including all 14 folded-only-feasible targets and all 34 targets in the -180 to -120 degree sectors, while the reference succeeded on 13/14 folded-only-feasible targets and 29/34 in those sectors. T2 also succeeded on only 39/140 both-feasible targets where the reference succeeded on all 140. I2 therefore does not support explicit branch-feasibility and margin conditioning as an actionable intervention; it caused a broad reach-policy regression rather than selectively repairing the hypothesized sector. The initial model consequence that reset begins at a straight singular configuration remains decision-relevant, as does the possibility that branch-dependent approach dynamics matter, but hold stabilization and sampled-boundary effects are not the immediate explanation for T2 because its failures overwhelmingly lacked first reach. The evidence does not establish that the baseline's nine failures are exclusively transient failures, because the baseline branch/hold evidence remains compatible with shoulder-limit and approach-geometry mechanisms.",
+        "decision_frontier": "The next inquiry must determine whether the baseline development gap is caused primarily by the straight-reset transient and approach geometry, by branch-dependent folded dynamics, or by residual hold stabilization after successful approach. The discriminating evidence should preserve early elbow motion, radial and tangential endpoint errors, action saturation, first-reach timing, analytic branch pattern, maximum uninterrupted hold, and interruption class, with comparison against the unchanged T1 baseline. A reduction in no-first-reach failures specifically in the previously failing -150 to -120 degree sector after a transient/approach intervention would support the reset-geometry mechanism. Persistent failures after comparable early transients, or a shift to post-entry short holds, would redirect toward branch-dependent dynamics or velocity/sampled-boundary stabilization. The official 98% claim remains reserved for the protected 200-episode assessment.",
+        "evidence_references": [
+          "T1",
+          "M1",
+          "E2",
+          "M2",
+          "E5",
+          "E7",
+          "T2",
+          "M3",
+          "M4",
+          "E9"
+        ],
+        "human_goal_connection": "The human goal remains at least 196 successes in the protected 200-episode official panel. The baseline reference reached 151/160 on the development panel, while the I2 intervention reached 39/160; the official goal remains untested and unmet.",
+        "inquiry_id": "I2",
+        "next_direction_or_closure": "I2 is closed unsupported. In the fresh session, investigate the reset transient and approach geometry before attempting another branch-feature intervention: retain trajectory diagnostics that can distinguish singular-start escape, radial versus tangential progress, action saturation, and branch-conditioned first reach. Do not claim the official goal from the development panel.",
+        "session_id": "S6"
+      },
+      "presentation": {
+        "backend_session_id": "1d72265f-074f-44d1-9eba-81f9609ad19a",
+        "campaign_id": "9fa1f256-b083-45b2-8127-d7e4e00728b8",
+        "campaign_usage": "17m58s | 37.72 AIU | prompt 5.4m (84% cached) | output 62.8k",
+        "session_id": "S6",
+        "session_kind": "inquiry",
+        "session_usage": "4m25s | 7.71 AIU | prompt 1.4m (90% cached) | output 14.8k"
+      },
+      "result": {
+        "session_id": "S6",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "cccbef08def0fbe0ad8ce5ba26889718e2f6e6b5",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E10",
+    "inquiry_id": "I2",
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "T1:checkpoint-120832 remains the strongest measured development reference at 151/160, but no candidate is assigned a working, best-known, or retained role. T2:checkpoint-120832 is rejected as an intervention candidate because it achieved 39/160 and produced a broad no-first-reach regression.",
+        "completed_operations": [
+          "T2",
+          "M3",
+          "M4",
+          "E9"
+        ],
+        "cumulative_resource_use": "Two fresh 120000-requested-step training operations (T1 and T2), paired 160-episode development evaluations (M1 and M3), the I1 diagnostic measurement (M2), the I2 paired diagnostic measurement (M4), two inquiry openings/closures including I2 (E2, E5, E7, E9), and checkpoint records; no official assessment and no candidate role assignment.",
+        "current_goal_gap": "The development reference gap is nine failures relative to 160 episodes, and the intervention widened the observed gap to 121 failures. No candidate has a working, best-known, or retained role.",
+        "current_synthesis": "T1 and M1 established a reproducible 151/160 baseline and showed that additional late baseline training did not change the shared outcomes. M2, E5, and E7 supported a branch-selection or shoulder-limit hypothesis because all nine baseline failures had an infeasible positive-elbow branch while the folded branch remained feasible, with concentration in the -150 to -120 degree sector. I2 tested that hypothesis by appending analytic branch joint-limit margins and feasibility flags to the observation. T2 training had zero training success through 120832 steps. M3 showed 39/160 for T2 versus 151/160 for the shared-seed baseline, with 112 discordant episodes and no intervention wins. M4 showed that T2 had 115 no-first-reach failures, including all 14 folded-only-feasible targets and all 34 targets in the -180 to -120 degree sectors, while the reference succeeded on 13/14 folded-only-feasible targets and 29/34 in those sectors. T2 also succeeded on only 39/140 both-feasible targets where the reference succeeded on all 140. I2 therefore does not support explicit branch-feasibility and margin conditioning as an actionable intervention; it caused a broad reach-policy regression rather than selectively repairing the hypothesized sector. The initial model consequence that reset begins at a straight singular configuration remains decision-relevant, as does the possibility that branch-dependent approach dynamics matter, but hold stabilization and sampled-boundary effects are not the immediate explanation for T2 because its failures overwhelmingly lacked first reach. The evidence does not establish that the baseline's nine failures are exclusively transient failures, because the baseline branch/hold evidence remains compatible with shoulder-limit and approach-geometry mechanisms.",
+        "decision_frontier": "The next inquiry must determine whether the baseline development gap is caused primarily by the straight-reset transient and approach geometry, by branch-dependent folded dynamics, or by residual hold stabilization after successful approach. The discriminating evidence should preserve early elbow motion, radial and tangential endpoint errors, action saturation, first-reach timing, analytic branch pattern, maximum uninterrupted hold, and interruption class, with comparison against the unchanged T1 baseline. A reduction in no-first-reach failures specifically in the previously failing -150 to -120 degree sector after a transient/approach intervention would support the reset-geometry mechanism. Persistent failures after comparable early transients, or a shift to post-entry short holds, would redirect toward branch-dependent dynamics or velocity/sampled-boundary stabilization. The official 98% claim remains reserved for the protected 200-episode assessment.",
+        "evidence_references": [
+          "T1",
+          "M1",
+          "E2",
+          "M2",
+          "E5",
+          "E7",
+          "T2",
+          "M3",
+          "M4",
+          "E9"
+        ],
+        "human_goal_connection": "The human goal remains at least 196 successes in the protected 200-episode official panel. The baseline reference reached 151/160 on the development panel, while the I2 intervention reached 39/160; the official goal remains untested and unmet.",
+        "next_direction_or_closure": "I2 is closed unsupported. In the fresh session, investigate the reset transient and approach geometry before attempting another branch-feature intervention: retain trajectory diagnostics that can distinguish singular-start escape, radial versus tangential progress, action saturation, and branch-conditioned first reach. Do not claim the official goal from the development panel."
+      }
+    },
+    "request_fingerprint": "997d91f7063c29cdd243538202748a7832255befdbb107ae2bc0fdef6490434a",
+    "session_id": "S6",
+    "supersedes": null
+  },
   "pi_checkpoint": {
-    "candidates_and_roles": "T1 produced archived candidates, and M1/M2 show identical development outcomes and mechanism for T1:checkpoint-100352 and T1:checkpoint-120832. Neither candidate has a working, best-known, or retained role because neither has been tested after the scientifically justified intervention.",
+    "candidates_and_roles": "T1:checkpoint-120832 remains the strongest measured development reference at 151/160, but no candidate is assigned a working, best-known, or retained role. T2:checkpoint-120832 is rejected as an intervention candidate because it achieved 39/160 and produced a broad no-first-reach regression.",
     "completed_operations": [
-      "E7"
+      "T2",
+      "M3",
+      "M4",
+      "E9"
     ],
-    "cumulative_resource_use": "One 120000-requested-step fresh baseline training operation, one paired 160-episode development evaluation, one inquiry-opening operation, one bounded diagnostic analysis, one inquiry closure, and one new inquiry-opening operation; no additional training, measurement, official assessment, or candidate role assignment.",
-    "current_goal_gap": "The measured development gap is nine shared failures relative to the 160-episode proxy, and no candidate has a working, best-known, or retained role. No post-intervention candidate has yet been trained or evaluated.",
-    "current_synthesis": "T1 established the baseline candidates, and M1 showed identical 151/160 outcomes for T1:checkpoint-100352 and T1:checkpoint-120832 on identical seeds, so additional late baseline training alone did not close the gap. M2 showed that all nine shared failures had an analytically infeasible positive-elbow branch while the folded branch remained feasible; failures concentrated in the -150 to -120 degree sector, with six failures there versus at most three in any radius bin. Six failures had no first reach and three had post-entry interruption, and both candidates reproduced the same seeds and branch pattern. E5 therefore closed I1 in favor of a dominant angular-sector branch-selection or shoulder-limit mechanism, supporting the model consequence that valid branch choice is configuration-dependent. E7 opened I2 to test whether explicit analytic branch feasibility and joint-limit margins make that mechanism actionable. E7 adds no behavioral evidence: straight-reset transients, velocity regulation, sampled-boundary semantics, hold-counter observability, inner-radius transfer, and folded-branch dynamics remain unresolved. The intervention must therefore be judged by retained sector, branch, reach, and hold diagnostics rather than success rate alone.",
-    "decision_frontier": "The next inquiry must distinguish whether explicit feasible-branch conditioning is sufficient to close the development gap or whether the no-first-reach transient also requires treatment. The discriminating result is a fresh 120000-step intervention run evaluated against a baseline reference on shared seeds with angle/radius-conditioned success, branch feasibility, first-reach timing, maximum uninterrupted hold, and interruption class. Reduced -150 to -120 degree and no-first-reach failures would support the branch mechanism; persistent branch-conditioned sector failures would weaken it; a shift toward post-entry short holds would redirect the next action toward velocity, stabilization, or sampled-boundary mechanisms.",
+    "cumulative_resource_use": "Two fresh 120000-requested-step training operations (T1 and T2), paired 160-episode development evaluations (M1 and M3), the I1 diagnostic measurement (M2), the I2 paired diagnostic measurement (M4), two inquiry openings/closures including I2 (E2, E5, E7, E9), and checkpoint records; no official assessment and no candidate role assignment.",
+    "current_goal_gap": "The development reference gap is nine failures relative to 160 episodes, and the intervention widened the observed gap to 121 failures. No candidate has a working, best-known, or retained role.",
+    "current_synthesis": "T1 and M1 established a reproducible 151/160 baseline and showed that additional late baseline training did not change the shared outcomes. M2, E5, and E7 supported a branch-selection or shoulder-limit hypothesis because all nine baseline failures had an infeasible positive-elbow branch while the folded branch remained feasible, with concentration in the -150 to -120 degree sector. I2 tested that hypothesis by appending analytic branch joint-limit margins and feasibility flags to the observation. T2 training had zero training success through 120832 steps. M3 showed 39/160 for T2 versus 151/160 for the shared-seed baseline, with 112 discordant episodes and no intervention wins. M4 showed that T2 had 115 no-first-reach failures, including all 14 folded-only-feasible targets and all 34 targets in the -180 to -120 degree sectors, while the reference succeeded on 13/14 folded-only-feasible targets and 29/34 in those sectors. T2 also succeeded on only 39/140 both-feasible targets where the reference succeeded on all 140. I2 therefore does not support explicit branch-feasibility and margin conditioning as an actionable intervention; it caused a broad reach-policy regression rather than selectively repairing the hypothesized sector. The initial model consequence that reset begins at a straight singular configuration remains decision-relevant, as does the possibility that branch-dependent approach dynamics matter, but hold stabilization and sampled-boundary effects are not the immediate explanation for T2 because its failures overwhelmingly lacked first reach. The evidence does not establish that the baseline's nine failures are exclusively transient failures, because the baseline branch/hold evidence remains compatible with shoulder-limit and approach-geometry mechanisms.",
+    "decision_frontier": "The next inquiry must determine whether the baseline development gap is caused primarily by the straight-reset transient and approach geometry, by branch-dependent folded dynamics, or by residual hold stabilization after successful approach. The discriminating evidence should preserve early elbow motion, radial and tangential endpoint errors, action saturation, first-reach timing, analytic branch pattern, maximum uninterrupted hold, and interruption class, with comparison against the unchanged T1 baseline. A reduction in no-first-reach failures specifically in the previously failing -150 to -120 degree sector after a transient/approach intervention would support the reset-geometry mechanism. Persistent failures after comparable early transients, or a shift to post-entry short holds, would redirect toward branch-dependent dynamics or velocity/sampled-boundary stabilization. The official 98% claim remains reserved for the protected 200-episode assessment.",
     "evidence_references": [
       "T1",
       "M1",
       "E2",
       "M2",
       "E5",
-      "E7"
+      "E7",
+      "T2",
+      "M3",
+      "M4",
+      "E9"
     ],
-    "human_goal_connection": "The human goal requires at least 196 successes in the protected 200-episode official panel. The two late baseline candidates achieved 151/160 (94.375%) on the development panel, so the objective remains untested and unmet. Opening I2 selects a scientifically justified intervention but provides no evidence of improved policy performance.",
-    "inquiry_id": null,
-    "next_direction_or_closure": "I2 is open and becomes actionable in the next inquiry session. Implement only the bounded observation change that exposes analytic branch feasibility and joint-limit margins, preserve the official task, reward, evaluation semantics, and training allocation, then request one fresh 120000-step run. Evaluate the resulting candidate against a baseline reference with the specified paired sector and branch diagnostics before considering stabilization changes or official assessment.",
-    "scientific_commit": "ad01882e85527005e0660016fedef736666b7b77",
-    "session_id": "S5"
+    "human_goal_connection": "The human goal remains at least 196 successes in the protected 200-episode official panel. The baseline reference reached 151/160 on the development panel, while the I2 intervention reached 39/160; the official goal remains untested and unmet.",
+    "inquiry_id": "I2",
+    "next_direction_or_closure": "I2 is closed unsupported. In the fresh session, investigate the reset transient and approach geometry before attempting another branch-feature intervention: retain trajectory diagnostics that can distinguish singular-start escape, radial versus tangential progress, action saturation, and branch-conditioned first reach. Do not claim the official goal from the development panel.",
+    "scientific_commit": "cccbef08def0fbe0ad8ce5ba26889718e2f6e6b5",
+    "session_id": "S6"
   },
   "schema_version": 6,
   "scientific_model": {
@@ -3815,24 +3973,6 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "1d72265f-074f-44d1-9eba-81f9609ad19a",
-    "id": "S6",
-    "inquiry_id": "I2",
-    "kind": "inquiry",
-    "objective": "Advance I2 toward an evidence-supported answer to its scientific question: Does explicit analytic IK branch feasibility and joint-limit-margin conditioning enable a learned policy to select the folded feasible branch in the failure sector, reducing the -150 to -120 degree failures and the six no-first-reach cases without changing the official task?",
-    "operation_ids": [
-      "T2",
-      "M3",
-      "M4",
-      "E9"
-    ],
-    "scientific_parent_commit": "cd7110f9071fefb279cf6fb1003a30b6858998b4"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
