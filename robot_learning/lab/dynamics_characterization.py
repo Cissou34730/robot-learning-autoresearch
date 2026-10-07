@@ -30,7 +30,7 @@ def inverse_kinematics(radius: float, branch_sign: int) -> np.ndarray:
 
 def full_mass_matrix(model: mujoco.MjModel, data: mujoco.MjData) -> np.ndarray:
     matrix = np.zeros((model.nv, model.nv), dtype=np.float64)
-    mujoco.mj_fullM(model, matrix, data.qM)
+    mujoco.mj_fullM(model, data, matrix)
     return matrix
 
 
@@ -68,6 +68,8 @@ def step_response(
     peak_position_change = 0.0
     velocity_below_threshold_step: int | None = None
     samples: list[dict] = []
+    previous_end_effector_position = data.site_xpos[0].copy()
+    end_effector_speed = 0.0
 
     for control_step in range(CONTROL_STEPS):
         control = np.zeros(2, dtype=np.float64)
@@ -77,7 +79,14 @@ def step_response(
             data.ctrl[:] = control
             mujoco.mj_step(model, data)
             joint_speed = float(np.linalg.norm(data.qvel[:2]))
-            end_effector_speed = float(np.linalg.norm(data.site_xvelp[0]))
+            current_end_effector_position = data.site_xpos[0].copy()
+            end_effector_speed = float(
+                np.linalg.norm(
+                    (current_end_effector_position - previous_end_effector_position)
+                    / model.opt.timestep
+                )
+            )
+            previous_end_effector_position = current_end_effector_position
             peak_joint_speed = max(peak_joint_speed, joint_speed)
             peak_end_effector_speed = max(peak_end_effector_speed, end_effector_speed)
             peak_position_change = max(
@@ -96,7 +105,7 @@ def step_response(
                     "control_step": control_step + 1,
                     "joint_position": data.qpos[:2].tolist(),
                     "joint_velocity": data.qvel[:2].tolist(),
-                    "end_effector_speed": float(np.linalg.norm(data.site_xvelp[0])),
+                    "end_effector_speed": end_effector_speed,
                 }
             )
 
