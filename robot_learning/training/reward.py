@@ -23,6 +23,9 @@ HOLD_EXIT_FORFEIT_FRACTION = 0.0
 OUTSIDE_BAND_WIDTH = 0.01
 OUTSIDE_BAND_PENALTY = 0.1
 HOLD_COMPLETE_BONUS = 50.0
+SETTLING_DISTANCE_SCALE = 0.02
+SETTLING_VELOCITY_SCALE = 2.0
+SETTLING_VELOCITY_COEFFICIENT = 0.25
 
 
 @dataclass(frozen=True)
@@ -49,6 +52,7 @@ def reach_reward(
     current_distance: float,
     success_threshold: float,
     action: np.ndarray | None = None,
+    qvel: np.ndarray | None = None,
     held_steps: int = 0,
     previous_held_steps: int = 0,
     hold_steps_required: int = 100,
@@ -85,6 +89,18 @@ def reach_reward(
         outside_band = -(OUTSIDE_BAND_PENALTY * outside_fraction)
     reward += outside_band
 
+    settling = 0.0
+    if qvel is not None:
+        proximity = float(np.exp(-current_distance / SETTLING_DISTANCE_SCALE))
+        velocity_fraction = min(
+            float(np.linalg.norm(qvel)) / SETTLING_VELOCITY_SCALE,
+            1.0,
+        )
+        settling = -(
+            SETTLING_VELOCITY_COEFFICIENT * proximity * velocity_fraction
+        )
+    reward += settling
+
     hold_complete = 0.0
     if held_steps >= hold_steps_required and previous_held_steps < hold_steps_required:
         hold_complete = HOLD_COMPLETE_BONUS
@@ -102,6 +118,7 @@ def reach_reward(
             "closeness": float(closeness),
             "hold_progress": float(hold_progress),
             "outside_band": float(outside_band),
+            "settling": float(settling),
             "hold_complete": float(hold_complete),
             "action_cost": float(action_cost),
         },
