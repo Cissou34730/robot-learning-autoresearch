@@ -17,7 +17,7 @@ PROGRESS_COEFFICIENT = 10.0
 CLOSENESS_COEFFICIENT = 4.0
 CLOSENESS_LENGTH_SCALE = 0.05
 ACTION_COST_COEFFICIENT = 0.01
-BRANCH_SWITCH_PENALTY = 1.0
+ACTION_DELTA_COST_COEFFICIENT = 0.05
 HOLD_PROGRESS_BONUS = 50.0
 HOLD_PROGRESS_EXPONENT = 1.0
 HOLD_EXIT_FORFEIT_FRACTION = 0.0
@@ -50,7 +50,7 @@ def reach_reward(
     current_distance: float,
     success_threshold: float,
     action: np.ndarray | None = None,
-    branch_switched: bool = False,
+    action_delta: np.ndarray | None = None,
     held_steps: int = 0,
     previous_held_steps: int = 0,
     hold_steps_required: int = 100,
@@ -87,9 +87,6 @@ def reach_reward(
         outside_band = -(OUTSIDE_BAND_PENALTY * outside_fraction)
     reward += outside_band
 
-    branch_switch_penalty = -BRANCH_SWITCH_PENALTY if branch_switched else 0.0
-    reward += branch_switch_penalty
-
     hold_complete = 0.0
     if held_steps >= hold_steps_required and previous_held_steps < hold_steps_required:
         hold_complete = HOLD_COMPLETE_BONUS
@@ -100,6 +97,14 @@ def reach_reward(
         action_cost = -(ACTION_COST_COEFFICIENT * float(np.sum(np.square(action))))
     reward += action_cost
 
+    action_delta_cost = 0.0
+    if action_delta is not None:
+        action_delta_cost = -(
+            ACTION_DELTA_COST_COEFFICIENT
+            * float(np.sum(np.square(action_delta)))
+        )
+    reward += action_delta_cost
+
     return RewardResult(
         total=float(reward),
         components={
@@ -107,8 +112,8 @@ def reach_reward(
             "closeness": float(closeness),
             "hold_progress": float(hold_progress),
             "outside_band": float(outside_band),
-            "branch_switch_penalty": float(branch_switch_penalty),
             "hold_complete": float(hold_complete),
             "action_cost": float(action_cost),
+            "action_delta_cost": float(action_delta_cost),
         },
     )
