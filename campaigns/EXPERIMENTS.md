@@ -19,3 +19,4 @@
 | M5 | measurement | I2 | completed |
 | E8 | checkpoint | I2 | checkpointed |
 | E9 | restore_recipe | I2 | restored |
+| M6 | measurement | I2 | completed |
