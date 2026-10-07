@@ -9677,55 +9677,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "set_best_known",
-        "candidate_id": "T5:checkpoint-120832",
-        "evidence": [
-          "T5",
-          "M8",
-          "M9"
-        ],
-        "reason": "T5 is the strongest evidence-backed candidate toward the human goal. It improved over T3 on a fresh 100-episode panel while preserving 14-20 cm competence (M8), and then achieved 98% on a fresh shared panel against T6 at 90%, winning all eight discordant episodes (M9). No completed evidence establishes a reproducible radius-, branch-, or action-response-conditioned dynamics failure that would justify delaying official assessment."
-      },
-      "publication": {
-        "destination": "campaigns/checkpoints/retained/06656182-d7f0-4011-898d-2b870e8a2a54/t5-c8cf701d5-c5aa283d9e8e6811bfc947c7475a191df3a6c0b965c66e9645ffa1a2d2cad399",
-        "fingerprint": "c5aa283d9e8e6811bfc947c7475a191df3a6c0b965c66e9645ffa1a2d2cad399",
-        "source": "campaigns/checkpoints/candidates/06656182-d7f0-4011-898d-2b870e8a2a54/t5/checkpoint-120832"
-      },
-      "result": {
-        "action": "set_best_known",
-        "candidate": "T5:checkpoint-120832",
-        "evidence": [
-          "T5",
-          "M8",
-          "M9"
-        ],
-        "status": "assigned"
-      }
-    },
-    "failure": null,
-    "id": "E22",
-    "inquiry_id": null,
-    "kind": "model_role",
-    "progress": "completed",
-    "request": {
-      "model_role": {
-        "action": "set_best_known",
-        "candidate": "T5:checkpoint-120832",
-        "evidence": [
-          "T5",
-          "M8",
-          "M9"
-        ],
-        "reason": "T5 is the strongest evidence-backed candidate toward the human goal. It improved over T3 on a fresh 100-episode panel while preserving 14-20 cm competence (M8), and then achieved 98% on a fresh shared panel against T6 at 90%, winning all eight discordant episodes (M9). No completed evidence establishes a reproducible radius-, branch-, or action-response-conditioned dynamics failure that would justify delaying official assessment."
-      }
-    },
-    "request_fingerprint": "181074347f7e35d8ad55ade7e3548626c755595b6eddabfbcffd935cb9eefa3c",
-    "session_id": "S12",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "No formal model role has been assigned. T5:checkpoint-120832 remains the strongest development candidate, achieving 98% on M9's fresh 100-episode panel. T6:checkpoint-120832 is rejected as the tested Cartesian-velocity transient refinement after achieving 90% on M9. T3, T4, T1, and T2 remain prior experimental references, and M7 remains a completed compiled-response characterization rather than a policy candidate.",
     "completed_operations": [
