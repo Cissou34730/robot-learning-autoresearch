@@ -27,3 +27,4 @@
 | M12 | measurement | I1 | completed |
 | M13 | measurement | I1 | completed |
 | E6 | restore_recipe | I1 | restored |
+| T7 | training | I1 | completed |
