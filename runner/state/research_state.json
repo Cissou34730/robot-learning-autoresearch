@@ -9306,55 +9306,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "set_best_known",
-        "candidate_id": "T1:checkpoint-100352",
-        "evidence": [
-          "M10",
-          "M9",
-          "M7"
-        ],
-        "reason": "T1 is the best-supported candidate for the human goal. It achieved 196/200 on the protected task-reference-v1 panel, exactly meeting the 98% threshold under protected development semantics, while T4 and T5 interventions failed to improve paired full-distribution research outcomes. Assigning best-known makes T1 eligible for the required official assessment; the campaign must not treat the task-reference result as the official result."
-      },
-      "publication": {
-        "destination": "campaigns/checkpoints/retained/b366ab54-1218-4ab4-9bf1-3fd6a19c86bb/t1-cada55eb5-f174fc31e2c08e528f3cf86a0aee1d451937287596c56b2bf913e2a67fae157a",
-        "fingerprint": "f174fc31e2c08e528f3cf86a0aee1d451937287596c56b2bf913e2a67fae157a",
-        "source": "campaigns/checkpoints/candidates/b366ab54-1218-4ab4-9bf1-3fd6a19c86bb/t1/checkpoint-100352"
-      },
-      "result": {
-        "action": "set_best_known",
-        "candidate": "T1:checkpoint-100352",
-        "evidence": [
-          "M10",
-          "M9",
-          "M7"
-        ],
-        "status": "assigned"
-      }
-    },
-    "failure": null,
-    "id": "E11",
-    "inquiry_id": "I2",
-    "kind": "model_role",
-    "progress": "completed",
-    "request": {
-      "model_role": {
-        "action": "set_best_known",
-        "candidate": "T1:checkpoint-100352",
-        "evidence": [
-          "M10",
-          "M9",
-          "M7"
-        ],
-        "reason": "T1 is the best-supported candidate for the human goal. It achieved 196/200 on the protected task-reference-v1 panel, exactly meeting the 98% threshold under protected development semantics, while T4 and T5 interventions failed to improve paired full-distribution research outcomes. Assigning best-known makes T1 eligible for the required official assessment; the campaign must not treat the task-reference result as the official result."
-      }
-    },
-    "request_fingerprint": "78c13c53cc8a9225ec0107797e37515642c00a0197f02998b74092cb304dd61d",
-    "session_id": "S6",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T1:checkpoint-100352 remains the baseline and strongest candidate by M3, but no working, best-known, or retained role is assigned. T2:checkpoint-5120 and T2:checkpoint-10240 are rejected as settling-aware intervention candidates after M4. T3:checkpoint-80896 is rejected as a branch-penalty candidate after M5. The current modified source should be restored to the T1 baseline before the next intervention.",
     "completed_operations": [
