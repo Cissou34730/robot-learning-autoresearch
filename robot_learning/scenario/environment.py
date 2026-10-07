@@ -42,12 +42,14 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
         frame_skip: int = FRAME_SKIP,
         max_episode_steps: int = MAX_EPISODE_STEPS,
         policy_runtime=None,
+        trace_substeps: bool = False,
     ) -> None:
         super().__init__()
         self.max_episode_steps = max_episode_steps
         self.frame_skip = frame_skip
         self.target_radius_range = target_radius_range
         self.policy_io = policy_runtime.io if policy_runtime else make_policy_io()
+        self.trace_substeps = trace_substeps
 
         self.model = mujoco.MjModel.from_xml_path(str(TWO_JOINT_ARM_XML_PATH))
         self.data = mujoco.MjData(self.model)
@@ -128,8 +130,11 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
             self.action_space.high,
         )
         self.data.ctrl[:] = action
+        substep_distances = []
         for _ in range(self.frame_skip):
             mujoco.mj_step(self.model, self.data)
+            if self.trace_substeps:
+                substep_distances.append(self._distance_to_target())
 
         distance = self._distance_to_target()
 
@@ -165,13 +170,28 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
             # ever sees `reward.total`.
             "reward_components": reward.components,
         }
+        if self.trace_substeps:
+            info.update(
+                {
+                    "applied_action": action.copy(),
+                    "qpos": self.data.qpos.copy(),
+                    "qvel": self.data.qvel.copy(),
+                    "qacc": self.data.qacc.copy(),
+                    "actuator_force": self.data.actuator_force.copy(),
+                    "substep_distances": np.asarray(
+                        substep_distances, dtype=np.float64
+                    ),
+                }
+            )
         return self._observation(), float(reward.total), terminated, truncated, info
 
 
-def make_evaluation_env(*, policy_runtime=None) -> gym.Env:
+def make_evaluation_env(*, policy_runtime=None, trace_substeps: bool = False) -> gym.Env:
     """Build the fixed-distribution environment used by research evaluation."""
     env = TwoJointArmReachEnv(
-        target_radius_range=TARGET_RADIUS_RANGE, policy_runtime=policy_runtime
+        target_radius_range=TARGET_RADIUS_RANGE,
+        policy_runtime=policy_runtime,
+        trace_substeps=trace_substeps,
     )
     if policy_runtime is not None:
         env.observation_space = policy_runtime.observation_space
