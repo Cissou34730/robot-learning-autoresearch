@@ -1,5 +1,16 @@
 {
-  "active_inquiry": null,
+  "active_inquiry": {
+    "closure_condition": "Close when one bounded settling refinement is evaluated against T3 with radius-stratified success and residual failure diagnostics, or when targeted evidence shows that residual failures are dominated by configuration-dependent saturation or inadequate compiled acceleration and therefore redirects the work to actuator/dynamics characterization. Preserve the inquiry if neither route is yet discriminated.",
+    "goal_connection": "The human goal requires at least 98% complete uninterrupted holds over the official 6-20 cm distribution. T3 remains at 94% on repeated development panels, so the residual failures must be reduced without sacrificing outer-radius competence before official assessment is justified.",
+    "handoff_conclusion": "Observed facts: T1 achieved 73% on its matched panels, with failures concentrated below 14 cm; M3 found 22 non-entries and 5 interrupted holds, action saturation in all interrupted episodes but also many successful episodes, branch switching in both successful and failing episodes, and no failure concentration in hidden substep excursions. The fresh full-domain T2 recipe achieved 35%, establishing that recipe as insufficient but not rejecting coverage or identifying a physical cause. T3 transferred from T1 with one bounded velocity-aware settling reward term. On the matched M4 panel T3 achieved 94% versus T1's 71%, won 24 of 25 discordant episodes, improved 6-10 cm success from 27.6% to 93.1% and 10-14 cm success from 82.8% to 100%, and retained high 14-20 cm success at 90.5% versus 92.9% for T1. This supports branch-conditioned approach and hold instability as the dominant actionable mechanism. It does not prove that mechanism is exclusive, does not establish that the residual failures are caused by actuator authority or compiled dynamics, and does not make T3 an official pass.",
+    "handoff_question": "How can the velocity-aware settling intervention be refined to raise official-distribution success from 94% toward 98% while preserving 14-20 cm competence, and do residual failures indicate configuration-dependent actuator authority or compiled-dynamics limits?",
+    "handoff_source_session_id": "S5",
+    "id": "I3",
+    "opened_in_session": "S6",
+    "question": "How can the velocity-aware settling intervention be refined to raise official-distribution success from 94% toward 98% while preserving 14-20 cm competence, and do residual failures indicate configuration-dependent actuator authority or compiled-dynamics limits?",
+    "rationale": "M5 reproduced T3's 94% success and its paired advantage over T1 (94% versus 76%, 20 T3 wins versus 2 T1 wins), strengthening the intervention's actionable value but not establishing that it explains the remaining failures. The protected artifact summary does not expose trace values, so the competing settling-refinement and authority/dynamics explanations remain unresolved. This bounded inquiry keeps the exact goal-linked question while requiring evidence that can redirect the method rather than presuming another reward change.",
+    "reframes": []
+  },
   "campaign": {
     "base_commit": "a5d5b4c0fe00c1103abb30662c0874b87de08157",
     "id": "06656182-d7f0-4011-898d-2b870e8a2a54",
@@ -2469,8 +2480,8 @@
     }
   },
   "counters": {
-    "event": 9,
-    "inquiry": 2,
+    "event": 10,
+    "inquiry": 3,
     "measurement": 5,
     "session": 6,
     "training": 3
@@ -4764,9 +4775,72 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-07T20:17:39Z",
+      "error": null,
+      "id": "E10",
+      "inquiry_id": "I3",
+      "kind": "inquiry",
+      "request": {
+        "action": "open",
+        "closure_condition": "Close when one bounded settling refinement is evaluated against T3 with radius-stratified success and residual failure diagnostics, or when targeted evidence shows that residual failures are dominated by configuration-dependent saturation or inadequate compiled acceleration and therefore redirects the work to actuator/dynamics characterization. Preserve the inquiry if neither route is yet discriminated.",
+        "goal_connection": "The human goal requires at least 98% complete uninterrupted holds over the official 6-20 cm distribution. T3 remains at 94% on repeated development panels, so the residual failures must be reduced without sacrificing outer-radius competence before official assessment is justified.",
+        "question": "How can the velocity-aware settling intervention be refined to raise official-distribution success from 94% toward 98% while preserving 14-20 cm competence, and do residual failures indicate configuration-dependent actuator authority or compiled-dynamics limits?",
+        "rationale": "M5 reproduced T3's 94% success and its paired advantage over T1 (94% versus 76%, 20 T3 wins versus 2 T1 wins), strengthening the intervention's actionable value but not establishing that it explains the remaining failures. The protected artifact summary does not expose trace values, so the competing settling-refinement and authority/dynamics explanations remain unresolved. This bounded inquiry keeps the exact goal-linked question while requiring evidence that can redirect the method rather than presuming another reward change."
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I3",
+        "status": "completed"
+      },
+      "session_id": "S6",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "open",
+        "inquiry": {
+          "closure_condition": "Close when one bounded settling refinement is evaluated against T3 with radius-stratified success and residual failure diagnostics, or when targeted evidence shows that residual failures are dominated by configuration-dependent saturation or inadequate compiled acceleration and therefore redirects the work to actuator/dynamics characterization. Preserve the inquiry if neither route is yet discriminated.",
+          "goal_connection": "The human goal requires at least 98% complete uninterrupted holds over the official 6-20 cm distribution. T3 remains at 94% on repeated development panels, so the residual failures must be reduced without sacrificing outer-radius competence before official assessment is justified.",
+          "handoff_conclusion": "Observed facts: T1 achieved 73% on its matched panels, with failures concentrated below 14 cm; M3 found 22 non-entries and 5 interrupted holds, action saturation in all interrupted episodes but also many successful episodes, branch switching in both successful and failing episodes, and no failure concentration in hidden substep excursions. The fresh full-domain T2 recipe achieved 35%, establishing that recipe as insufficient but not rejecting coverage or identifying a physical cause. T3 transferred from T1 with one bounded velocity-aware settling reward term. On the matched M4 panel T3 achieved 94% versus T1's 71%, won 24 of 25 discordant episodes, improved 6-10 cm success from 27.6% to 93.1% and 10-14 cm success from 82.8% to 100%, and retained high 14-20 cm success at 90.5% versus 92.9% for T1. This supports branch-conditioned approach and hold instability as the dominant actionable mechanism. It does not prove that mechanism is exclusive, does not establish that the residual failures are caused by actuator authority or compiled dynamics, and does not make T3 an official pass.",
+          "handoff_question": "How can the velocity-aware settling intervention be refined to raise official-distribution success from 94% toward 98% while preserving 14-20 cm competence, and do residual failures indicate configuration-dependent actuator authority or compiled-dynamics limits?",
+          "handoff_source_session_id": "S5",
+          "id": "I3",
+          "opened_in_session": "S6",
+          "question": "How can the velocity-aware settling intervention be refined to raise official-distribution success from 94% toward 98% while preserving 14-20 cm competence, and do residual failures indicate configuration-dependent actuator authority or compiled-dynamics limits?",
+          "rationale": "M5 reproduced T3's 94% success and its paired advantage over T1 (94% versus 76%, 20 T3 wins versus 2 T1 wins), strengthening the intervention's actionable value but not establishing that it explains the remaining failures. The protected artifact summary does not expose trace values, so the competing settling-refinement and authority/dynamics explanations remain unresolved. This bounded inquiry keeps the exact goal-linked question while requiring evidence that can redirect the method rather than presuming another reward change.",
+          "reframes": []
+        }
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I3",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E10",
+    "inquiry_id": null,
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "open",
+        "closure_condition": "Close when one bounded settling refinement is evaluated against T3 with radius-stratified success and residual failure diagnostics, or when targeted evidence shows that residual failures are dominated by configuration-dependent saturation or inadequate compiled acceleration and therefore redirects the work to actuator/dynamics characterization. Preserve the inquiry if neither route is yet discriminated.",
+        "goal_connection": "The human goal requires at least 98% complete uninterrupted holds over the official 6-20 cm distribution. T3 remains at 94% on repeated development panels, so the residual failures must be reduced without sacrificing outer-radius competence before official assessment is justified.",
+        "question": "How can the velocity-aware settling intervention be refined to raise official-distribution success from 94% toward 98% while preserving 14-20 cm competence, and do residual failures indicate configuration-dependent actuator authority or compiled-dynamics limits?",
+        "rationale": "M5 reproduced T3's 94% success and its paired advantage over T1 (94% versus 76%, 20 T3 wins versus 2 T1 wins), strengthening the intervention's actionable value but not establishing that it explains the remaining failures. The protected artifact summary does not expose trace values, so the competing settling-refinement and authority/dynamics explanations remain unresolved. This bounded inquiry keeps the exact goal-linked question while requiring evidence that can redirect the method rather than presuming another reward change."
+      }
+    },
+    "request_fingerprint": "354d5d7a8a5aa7cbcc3a690362a102068dec45117bd8f419271883c495a916fa",
+    "session_id": "S6",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No formal model role has been assigned. T3:checkpoint-120832 is the strongest evaluated development candidate at 94% on M4 and is the leading candidate for the next inquiry; T1:checkpoint-120832 remains the matched 73%/71% reference, and T2:checkpoint-120832 remains evidence about the insufficient fresh full-domain recipe.",
     "completed_operations": [
@@ -4815,7 +4889,8 @@
     "kind": "goal_review",
     "objective": "Reassess the scientific direction toward the human goal using completed evidence. You may request measurements to resolve an uncertainty or develop the method before committing to an inquiry. Decide whether to request official assessment or open one bounded goal-linked inquiry.",
     "operation_ids": [
-      "M5"
+      "M5",
+      "E10"
     ],
     "scientific_parent_commit": "8f22e3b283073d635aea22b49b2ff553a71b1ca2"
   },
