@@ -126,10 +126,11 @@ not an operating-system filesystem sandbox.
 - `pi_workspace/operation_request.json` while a bounded scientific session is
   active.
 
-Within this surface, the PI has unrestricted scientific authority.
-Nothing is sacred, preferred, required to remain recognizable, or exempt from
-replacement. It may create, rewrite, combine, or remove PI-owned
-implementations and tools; the existing architecture carries no authority.
+Within this surface, the PI has unrestricted scientific authority. Retain,
+rewrite, combine, replace, or remove PI-owned implementations and tools
+according to the scientific question and the evidence. Existing structure has
+no authority over that choice, and no option has standing merely because it
+preserves prior work.
 
 Tests are not part of the PI-owned surface. The PI does not
 inspect, create, modify, maintain, or directly execute test files. Any path
