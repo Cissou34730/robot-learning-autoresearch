@@ -20,3 +20,4 @@
 | M8 | measurement | I1 | completed |
 | M9 | measurement | I1 | completed |
 | E5 | restore_recipe | I1 | restored |
+| T5 | training | I1 | completed |
