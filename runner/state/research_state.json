@@ -1,5 +1,16 @@
 {
-  "active_inquiry": null,
+  "active_inquiry": {
+    "closure_condition": "Close or reframe after a full-range fresh candidate has been evaluated with per-episode first-entry time, maximum uninterrupted hold, interruptions, timeout cause, target radius and angle, branch or joint-limit margin, and phase-aligned endpoint/joint velocity and action diagnostics sufficient to identify the dominant failure mechanism and choose the next intervention.",
+    "goal_connection": "The human objective requires at least 196 of 200 official episodes to complete an uninterrupted 2-second hold. This inquiry directly tests whether a fresh policy trained across the full 0.06-0.20 m radius range can achieve that behavior, while allocating failures among inner-radius distribution shift, target-angle and branch-limit geometry, maneuver timeout, and post-entry settling.",
+    "handoff_conclusion": "Observation from completed operation M1: a 2,088-point official-range grid found at least one joint-limit-valid inverse-kinematic branch for every target. The valid branch fraction was 0.9444, the minimum best-branch joint-limit margin was 12.33 degrees, and the minimum valid-branch Jacobian singular value was 0.0415. Compiled MuJoCo dynamics contain nonzero geom-derived masses and inertias, retain the authored 0.002 s timestep, 0.5 damping, 0.01 armature, and 5.0 actuator gear. Full-control open-loop probes produced initial joint accelerations of about 393-483 rad/s^2 and joint velocities of about 5.3-6.0 rad/s after ten 0.002 s substeps. These observations weaken the explanation that official failures are caused by unreachable targets or a generally weak actuator, and make braking/settling under 50 Hz action updates the leading physical capability concern. They do not establish closed-loop success: the torque probes were short and open-loop, did not use target-directed control, and did not measure tolerance interruptions or endpoint velocity during a hold. Branch selection remains consequential because 5.56% of sampled nominal branches were invalid and margins are angle-dependent. The omitted inner-radius training range, hidden hold phase, and actual learned-policy behavior remain untested. Thus the model's broad-reach consequence is supported, its stabilization concern is strengthened but not proven, and no claim about the 98% objective is yet justified.",
+    "handoff_question": "Can a fresh policy trained on the full official radius distribution reliably convert the measured torque authority into uninterrupted 2-second holds, and are its failures concentrated in inner-radius/angle/branch geometries or in post-entry settling?",
+    "handoff_source_session_id": "S1",
+    "id": "I1",
+    "opened_in_session": "S2",
+    "question": "Can a fresh policy trained on the full official radius distribution reliably convert the measured torque authority into uninterrupted 2-second holds, and are its failures concentrated in inner-radius/angle/branch geometries or in post-entry settling?",
+    "rationale": "M1 found at least one valid inverse-kinematic branch for every sampled official target and measured substantial short-horizon torque authority, weakening target infeasibility and generally weak actuation as primary explanations. It did not test a closed-loop policy, the omitted inner-radius training range, or the authoritative 100-step uninterrupted hold. A fresh full-distribution policy followed by stratified behavioral diagnostics is therefore the most discriminating operation: high first-entry with low hold completion would support braking and settling as the leading bottleneck, inner-radius deficits would support coverage, angle-localized failures near low branch margins would support branch-aware control, and broad timeout failures would support maneuver-horizon or temporal-control changes.",
+    "reframes": []
+  },
   "campaign": {
     "base_commit": "321d80426fdf48e21b8e9e7fbf63f0b18e007ba7",
     "id": "97633a56-b4b1-434f-b17c-cf110c555c07",
@@ -9,16 +20,16 @@
   },
   "candidates": {},
   "counters": {
-    "event": 1,
-    "inquiry": 0,
+    "event": 2,
+    "inquiry": 1,
     "measurement": 1,
-    "session": 1,
+    "session": 2,
     "training": 0
   },
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -362,9 +373,72 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-07T09:36:11Z",
+      "error": null,
+      "id": "E2",
+      "inquiry_id": "I1",
+      "kind": "inquiry",
+      "request": {
+        "action": "open",
+        "closure_condition": "Close or reframe after a full-range fresh candidate has been evaluated with per-episode first-entry time, maximum uninterrupted hold, interruptions, timeout cause, target radius and angle, branch or joint-limit margin, and phase-aligned endpoint/joint velocity and action diagnostics sufficient to identify the dominant failure mechanism and choose the next intervention.",
+        "goal_connection": "The human objective requires at least 196 of 200 official episodes to complete an uninterrupted 2-second hold. This inquiry directly tests whether a fresh policy trained across the full 0.06-0.20 m radius range can achieve that behavior, while allocating failures among inner-radius distribution shift, target-angle and branch-limit geometry, maneuver timeout, and post-entry settling.",
+        "question": "Can a fresh policy trained on the full official radius distribution reliably convert the measured torque authority into uninterrupted 2-second holds, and are its failures concentrated in inner-radius/angle/branch geometries or in post-entry settling?",
+        "rationale": "M1 found at least one valid inverse-kinematic branch for every sampled official target and measured substantial short-horizon torque authority, weakening target infeasibility and generally weak actuation as primary explanations. It did not test a closed-loop policy, the omitted inner-radius training range, or the authoritative 100-step uninterrupted hold. A fresh full-distribution policy followed by stratified behavioral diagnostics is therefore the most discriminating operation: high first-entry with low hold completion would support braking and settling as the leading bottleneck, inner-radius deficits would support coverage, angle-localized failures near low branch margins would support branch-aware control, and broad timeout failures would support maneuver-horizon or temporal-control changes."
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I1",
+        "status": "completed"
+      },
+      "session_id": "S2",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "open",
+        "inquiry": {
+          "closure_condition": "Close or reframe after a full-range fresh candidate has been evaluated with per-episode first-entry time, maximum uninterrupted hold, interruptions, timeout cause, target radius and angle, branch or joint-limit margin, and phase-aligned endpoint/joint velocity and action diagnostics sufficient to identify the dominant failure mechanism and choose the next intervention.",
+          "goal_connection": "The human objective requires at least 196 of 200 official episodes to complete an uninterrupted 2-second hold. This inquiry directly tests whether a fresh policy trained across the full 0.06-0.20 m radius range can achieve that behavior, while allocating failures among inner-radius distribution shift, target-angle and branch-limit geometry, maneuver timeout, and post-entry settling.",
+          "handoff_conclusion": "Observation from completed operation M1: a 2,088-point official-range grid found at least one joint-limit-valid inverse-kinematic branch for every target. The valid branch fraction was 0.9444, the minimum best-branch joint-limit margin was 12.33 degrees, and the minimum valid-branch Jacobian singular value was 0.0415. Compiled MuJoCo dynamics contain nonzero geom-derived masses and inertias, retain the authored 0.002 s timestep, 0.5 damping, 0.01 armature, and 5.0 actuator gear. Full-control open-loop probes produced initial joint accelerations of about 393-483 rad/s^2 and joint velocities of about 5.3-6.0 rad/s after ten 0.002 s substeps. These observations weaken the explanation that official failures are caused by unreachable targets or a generally weak actuator, and make braking/settling under 50 Hz action updates the leading physical capability concern. They do not establish closed-loop success: the torque probes were short and open-loop, did not use target-directed control, and did not measure tolerance interruptions or endpoint velocity during a hold. Branch selection remains consequential because 5.56% of sampled nominal branches were invalid and margins are angle-dependent. The omitted inner-radius training range, hidden hold phase, and actual learned-policy behavior remain untested. Thus the model's broad-reach consequence is supported, its stabilization concern is strengthened but not proven, and no claim about the 98% objective is yet justified.",
+          "handoff_question": "Can a fresh policy trained on the full official radius distribution reliably convert the measured torque authority into uninterrupted 2-second holds, and are its failures concentrated in inner-radius/angle/branch geometries or in post-entry settling?",
+          "handoff_source_session_id": "S1",
+          "id": "I1",
+          "opened_in_session": "S2",
+          "question": "Can a fresh policy trained on the full official radius distribution reliably convert the measured torque authority into uninterrupted 2-second holds, and are its failures concentrated in inner-radius/angle/branch geometries or in post-entry settling?",
+          "rationale": "M1 found at least one valid inverse-kinematic branch for every sampled official target and measured substantial short-horizon torque authority, weakening target infeasibility and generally weak actuation as primary explanations. It did not test a closed-loop policy, the omitted inner-radius training range, or the authoritative 100-step uninterrupted hold. A fresh full-distribution policy followed by stratified behavioral diagnostics is therefore the most discriminating operation: high first-entry with low hold completion would support braking and settling as the leading bottleneck, inner-radius deficits would support coverage, angle-localized failures near low branch margins would support branch-aware control, and broad timeout failures would support maneuver-horizon or temporal-control changes.",
+          "reframes": []
+        }
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I1",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E2",
+    "inquiry_id": null,
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "open",
+        "closure_condition": "Close or reframe after a full-range fresh candidate has been evaluated with per-episode first-entry time, maximum uninterrupted hold, interruptions, timeout cause, target radius and angle, branch or joint-limit margin, and phase-aligned endpoint/joint velocity and action diagnostics sufficient to identify the dominant failure mechanism and choose the next intervention.",
+        "goal_connection": "The human objective requires at least 196 of 200 official episodes to complete an uninterrupted 2-second hold. This inquiry directly tests whether a fresh policy trained across the full 0.06-0.20 m radius range can achieve that behavior, while allocating failures among inner-radius distribution shift, target-angle and branch-limit geometry, maneuver timeout, and post-entry settling.",
+        "question": "Can a fresh policy trained on the full official radius distribution reliably convert the measured torque authority into uninterrupted 2-second holds, and are its failures concentrated in inner-radius/angle/branch geometries or in post-entry settling?",
+        "rationale": "M1 found at least one valid inverse-kinematic branch for every sampled official target and measured substantial short-horizon torque authority, weakening target infeasibility and generally weak actuation as primary explanations. It did not test a closed-loop policy, the omitted inner-radius training range, or the authoritative 100-step uninterrupted hold. A fresh full-distribution policy followed by stratified behavioral diagnostics is therefore the most discriminating operation: high first-entry with low hold completion would support braking and settling as the leading bottleneck, inner-radius deficits would support coverage, angle-localized failures near low branch margins would support branch-aware control, and broad timeout failures would support maneuver-horizon or temporal-control changes."
+      }
+    },
+    "request_fingerprint": "97504c1a052bf6df92e2c3dec4a0fbed5ebc0fe89148606077c6d20fdbe74fb6",
+    "session_id": "S2",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No candidates exist. Working, best-known, and retained roles remain empty because M1 was a physical characterization, not a policy result.",
     "completed_operations": [
@@ -390,6 +464,21 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "70133e6d-ba3b-450b-9973-d8b66f83cd21",
+    "id": "S2",
+    "inquiry_id": null,
+    "kind": "goal_review",
+    "objective": "Reassess the scientific direction toward the human goal using completed evidence. You may request measurements to resolve an uncertainty or develop the method before committing to an inquiry. Decide whether to request official assessment or open one bounded goal-linked inquiry.",
+    "operation_ids": [
+      "E2"
+    ],
+    "scientific_parent_commit": "64712fccfceea849480dfb084b5776264f30cd05"
+  },
   "terminal_state": null
 }
