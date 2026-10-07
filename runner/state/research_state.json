@@ -8036,38 +8036,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I4",
-        "outcome": "I4 closes with a limited positive learned-control result. T5's anticipatory-braking refinement reached 95% versus T3's 93% on a fresh shared 100-episode panel, improving 6-10 cm success from 90.3% to 93.5%, preserving 10-14 cm at 100%, and improving 14-20 cm success from 92% to 94%.",
-        "reason": "M8 satisfies I4's closure condition by evaluating one bounded learned transient-braking refinement distinct from increasing the rejected velocity penalty coefficient, with radius-stratified residual diagnostics. Widening the settling gate while restoring the original penalty magnitude produced a meaningful paired improvement and no 14-20 cm regression, supporting learned approach/braking refinement as an actionable route. The remaining five T5 failures span near-base and outer-radius targets, and M7 already showed strong compiled saturated responses without a branch-specific authority collapse; together these results do not establish configuration-dependent actuator authority or compiled-dynamics limits as the dominant cause. The human 98% objective remains unmet, so the next inquiry must continue the learned-control route rather than request official assessment."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I4",
-        "outcome": "I4 closes with a limited positive learned-control result. T5's anticipatory-braking refinement reached 95% versus T3's 93% on a fresh shared 100-episode panel, improving 6-10 cm success from 90.3% to 93.5%, preserving 10-14 cm at 100%, and improving 14-20 cm success from 92% to 94%.",
-        "reason": "M8 satisfies I4's closure condition by evaluating one bounded learned transient-braking refinement distinct from increasing the rejected velocity penalty coefficient, with radius-stratified residual diagnostics. Widening the settling gate while restoring the original penalty magnitude produced a meaningful paired improvement and no 14-20 cm regression, supporting learned approach/braking refinement as an actionable route. The remaining five T5 failures span near-base and outer-radius targets, and M7 already showed strong compiled saturated responses without a branch-specific authority collapse; together these results do not establish configuration-dependent actuator authority or compiled-dynamics limits as the dominant cause. The human 98% objective remains unmet, so the next inquiry must continue the learned-control route rather than request official assessment.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E16",
-    "inquiry_id": "I4",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "I4 closes with a limited positive learned-control result. T5's anticipatory-braking refinement reached 95% versus T3's 93% on a fresh shared 100-episode panel, improving 6-10 cm success from 90.3% to 93.5%, preserving 10-14 cm at 100%, and improving 14-20 cm success from 92% to 94%.",
-        "reason": "M8 satisfies I4's closure condition by evaluating one bounded learned transient-braking refinement distinct from increasing the rejected velocity penalty coefficient, with radius-stratified residual diagnostics. Widening the settling gate while restoring the original penalty magnitude produced a meaningful paired improvement and no 14-20 cm regression, supporting learned approach/braking refinement as an actionable route. The remaining five T5 failures span near-base and outer-radius targets, and M7 already showed strong compiled saturated responses without a branch-specific authority collapse; together these results do not establish configuration-dependent actuator authority or compiled-dynamics limits as the dominant cause. The human 98% objective remains unmet, so the next inquiry must continue the learned-control route rather than request official assessment."
-      }
-    },
-    "request_fingerprint": "aef82ed15dc4f09dac037a0d6d826b3c9b7cf3d8e194cb951981a6f958a5b0c1",
-    "session_id": "S9",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "No formal model role has been assigned. T3:checkpoint-120832 remains the strongest evaluated development candidate at 94% on M4 and M5 and 95% on M6. T4:checkpoint-120832 is retained only as evidence that doubling the settling velocity penalty is an inferior refinement. T1 remains the paired reference and T2 remains evidence about the insufficient tested fresh full-domain recipe. M7 is a completed characterization measurement, not a policy candidate.",
     "completed_operations": [
