@@ -1,0 +1,1122 @@
+{
+  "schema_version": 1,
+  "measurement": "compiled_dynamics_and_control_rate_response",
+  "model": "C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\contracts\\robots\\two_joint_arm.xml",
+  "control_dt_seconds": 0.02,
+  "frame_skip": 10,
+  "compiled_model": {
+    "nq": 2,
+    "nv": 2,
+    "nbody": 5,
+    "body_mass": [
+      0.0,
+      0.2010619298297468,
+      0.09896016858807849,
+      0.05247716368556391,
+      0.007238229473870883
+    ],
+    "body_inertia": [
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.00010723302924253161,
+        0.00010723302924253161,
+        0.00016084954386379744
+      ],
+      [
+        0.0001682676295170863,
+        0.0001682676295170863,
+        1.0814932709982864e-05
+      ],
+      [
+        6.109741244031255e-05,
+        6.109741244031255e-05,
+        3.674125280936861e-06
+      ],
+      [
+        4.169220176949629e-07,
+        4.169220176949629e-07,
+        4.169220176949629e-07
+      ]
+    ],
+    "dof_damping": [
+      0.5,
+      0.5
+    ],
+    "dof_armature": [
+      0.01,
+      0.01
+    ],
+    "actuator_gear": [
+      [
+        5.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        5.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    ],
+    "actuator_ctrlrange": [
+      [
+        -1.0,
+        1.0
+      ],
+      [
+        -1.0,
+        1.0
+      ]
+    ]
+  },
+  "configurations": [
+    {
+      "target_radius_m": 0.06,
+      "branch_sign": -1,
+      "joint_configuration_rad": [
+        0.9817653565786228,
+        -2.619277831783745
+      ],
+      "end_effector_position_m": [
+        0.059999999999999984,
+        0.0,
+        0.02
+      ],
+      "mass_matrix": [
+        [
+          0.010926723212830647,
+          -8.059092951071003e-05
+        ],
+        [
+          -8.059092951071003e-05,
+          0.010192290321654222
+        ]
+      ],
+      "actuator_responses": [
+        {
+          "control": [
+            1.0,
+            0.0
+          ],
+          "actuator_joint_torque": [
+            5.0,
+            0.0
+          ],
+          "joint_acceleration": [
+            457.62041510240573,
+            3.6184266197584294
+          ]
+        },
+        {
+          "control": [
+            0.0,
+            1.0
+          ],
+          "actuator_joint_torque": [
+            0.0,
+            5.0
+          ],
+          "joint_acceleration": [
+            3.618426619758429,
+            490.5954848775441
+          ]
+        }
+      ],
+      "step_responses": [
+        {
+          "axis": 0,
+          "command": "positive_unit_control",
+          "control_dt_seconds": 0.02,
+          "active_control_steps": 25,
+          "total_control_steps": 150,
+          "peak_joint_speed": 9.99924795595957,
+          "peak_end_effector_speed": 0.606584591432326,
+          "peak_joint_position_change": 2.0636244178204293,
+          "velocity_below_threshold_step_after_release": 30,
+          "samples": [
+            {
+              "control_step": 1,
+              "joint_position": [
+                1.054267592259045,
+                -2.6188632666981775
+              ],
+              "joint_velocity": [
+                5.834376020014572,
+                0.029570016926443104
+              ],
+              "end_effector_speed": 0.3271883081293577
+            },
+            {
+              "control_step": 25,
+              "joint_position": [
+                2.975346361673541,
+                -2.6131657312198135
+              ],
+              "joint_velocity": [
+                -0.0002636502921535022,
+                7.867196870975738e-06
+              ],
+              "end_effector_speed": 1.736412170938648e-05
+            },
+            {
+              "control_step": 150,
+              "joint_position": [
+                2.9670597283903626,
+                -2.61316526072758
+              ],
+              "joint_velocity": [
+                -8.68734455221897e-14,
+                -1.3452019999214093e-17
+              ],
+              "end_effector_speed": 0.0
+            }
+          ]
+        },
+        {
+          "axis": 1,
+          "command": "positive_unit_control",
+          "control_dt_seconds": 0.02,
+          "active_control_steps": 25,
+          "total_control_steps": 150,
+          "peak_joint_speed": 10.00016656921053,
+          "peak_end_effector_speed": 1.0072041670743503,
+          "peak_joint_position_change": 4.999899670659483,
+          "velocity_below_threshold_step_after_release": 32,
+          "samples": [
+            {
+              "control_step": 1,
+              "joint_position": [
+                0.982130276964941,
+                -2.5431696338507854
+              ],
+              "joint_velocity": [
+                0.022161492086461943,
+                6.077894781752007
+              ],
+              "end_effector_speed": 0.5692999638523751
+            },
+            {
+              "control_step": 25,
+              "joint_position": [
+                0.9802054637298699,
+                2.1767784028334756
+              ],
+              "joint_velocity": [
+                0.05791016376226112,
+                9.999995377541932
+              ],
+              "end_effector_speed": 1.0020207843058508
+            },
+            {
+              "control_step": 150,
+              "joint_position": [
+                0.9818540517099928,
+                2.3806218380890396
+              ],
+              "joint_velocity": [
+                -1.9810673508041356e-48,
+                1.0098202565202564e-49
+              ],
+              "end_effector_speed": 0.0
+            }
+          ]
+        }
+      ],
+      "impulse_responses": [
+        {
+          "axis": 0,
+          "command": "one_control_step_positive_unit_impulse",
+          "control_dt_seconds": 0.02,
+          "total_control_steps": 150,
+          "peak_joint_speed": 5.834450953502147,
+          "max_joint_displacement": 0.20000011137217416,
+          "max_end_effector_displacement": 0.011980733389993604
+        },
+        {
+          "axis": 1,
+          "command": "one_control_step_positive_unit_impulse",
+          "control_dt_seconds": 0.02,
+          "total_control_steps": 150,
+          "peak_joint_speed": 6.077935184730072,
+          "max_joint_displacement": 0.20000049910956408,
+          "max_end_effector_displacement": 0.01996672977270721
+        }
+      ]
+    },
+    {
+      "target_radius_m": 0.06,
+      "branch_sign": 1,
+      "joint_configuration_rad": [
+        -0.9817653565786228,
+        2.619277831783745
+      ],
+      "end_effector_position_m": [
+        0.059999999999999984,
+        0.0,
+        0.02
+      ],
+      "mass_matrix": [
+        [
+          0.010926723212830647,
+          -8.059092951071003e-05
+        ],
+        [
+          -8.059092951071003e-05,
+          0.010192290321654222
+        ]
+      ],
+      "actuator_responses": [
+        {
+          "control": [
+            1.0,
+            0.0
+          ],
+          "actuator_joint_torque": [
+            5.0,
+            0.0
+          ],
+          "joint_acceleration": [
+            457.62041510240573,
+            3.6184266197584294
+          ]
+        },
+        {
+          "control": [
+            0.0,
+            1.0
+          ],
+          "actuator_joint_torque": [
+            0.0,
+            5.0
+          ],
+          "joint_acceleration": [
+            3.618426619758429,
+            490.5954848775441
+          ]
+        }
+      ],
+      "step_responses": [
+        {
+          "axis": 0,
+          "command": "positive_unit_control",
+          "control_dt_seconds": 0.02,
+          "active_control_steps": 25,
+          "total_control_steps": 150,
+          "peak_joint_speed": 9.999847648622781,
+          "peak_end_effector_speed": 0.6099552174182359,
+          "peak_joint_position_change": 4.0245196016416385,
+          "velocity_below_threshold_step_after_release": 31,
+          "samples": [
+            {
+              "control_step": 1,
+              "joint_position": [
+                -0.9092627160015511,
+                2.6196546571354027
+              ],
+              "joint_velocity": [
+                5.834430582491406,
+                0.023875408913197678
+              ],
+              "end_effector_speed": 0.3268713223143945
+            },
+            {
+              "control_step": 25,
+              "joint_position": [
+                2.9880021220483104,
+                2.6069771184401085
+              ],
+              "joint_velocity": [
+                -0.46960896129953245,
+                -0.0015581216117290988
+              ],
+              "end_effector_speed": 0.030676731404603717
+            },
+            {
+              "control_step": 150,
+              "joint_position": [
+                2.9670597283903626,
+                2.60701700114681
+              ],
+              "joint_velocity": [
+                -8.677467428072781e-14,
+                -1.1085908939914264e-17
+              ],
+              "end_effector_speed": 0.0
+            }
+          ]
+        },
+        {
+          "axis": 1,
+          "command": "positive_unit_control",
+          "control_dt_seconds": 0.02,
+          "active_control_steps": 25,
+          "total_control_steps": 150,
+          "peak_joint_speed": 9.201075894234371,
+          "peak_end_effector_speed": 0.919573669089112,
+          "peak_joint_position_change": 0.4135553890603765,
+          "velocity_below_threshold_step_after_release": 30,
+          "samples": [
+            {
+              "control_step": 1,
+              "joint_position": [
+                -0.9813415889146339,
+                2.695386453369986
+              ],
+              "joint_velocity": [
+                0.03073195616527189,
+                6.077950484902128
+              ],
+              "end_effector_speed": 0.5690966454166114
+            },
+            {
+              "control_step": 25,
+              "joint_position": [
+                -0.9817787722859308,
+                2.9768915739510944
+              ],
+              "joint_velocity": [
+                2.1018854630039628e-08,
+                -2.889237379874501e-07
+              ],
+              "end_effector_speed": 3.169582591757125e-08
+            },
+            {
+              "control_step": 150,
+              "joint_position": [
+                -0.9817787716554367,
+                2.967059728390362
+              ],
+              "joint_velocity": [
+                4.417784821485091e-31,
+                -7.178843131276983e-14
+              ],
+              "end_effector_speed": 0.0
+            }
+          ]
+        }
+      ],
+      "impulse_responses": [
+        {
+          "axis": 0,
+          "command": "one_control_step_positive_unit_impulse",
+          "control_dt_seconds": 0.02,
+          "total_control_steps": 150,
+          "peak_joint_speed": 5.834479433253816,
+          "max_joint_displacement": 0.20000011074641183,
+          "max_end_effector_displacement": 0.011983519256469769
+        },
+        {
+          "axis": 1,
+          "command": "one_control_step_positive_unit_impulse",
+          "control_dt_seconds": 0.02,
+          "total_control_steps": 150,
+          "peak_joint_speed": 6.078028179438769,
+          "max_joint_displacement": 0.19999933616974994,
+          "max_end_effector_displacement": 0.019966634846382832
+        }
+      ]
+    },
+    {
+      "target_radius_m": 0.13,
+      "branch_sign": -1,
+      "joint_configuration_rad": [
+        0.8193554744895192,
+        -1.8886200307227774
+      ],
+      "end_effector_position_m": [
+        0.13,
+        0.0,
+        0.02
+      ],
+      "mass_matrix": [
+        [
+          0.011275696351339647,
+          9.389563974378999e-05
+        ],
+        [
+          9.389563974378999e-05,
+          0.010192290321654222
+        ]
+      ],
+      "actuator_responses": [
+        {
+          "control": [
+            1.0,
+            0.0
+          ],
+          "actuator_joint_torque": [
+            5.0,
+            0.0
+          ],
+          "joint_acceleration": [
+            443.4656135249434,
+            -4.0853906405934035
+          ]
+        },
+        {
+          "control": [
+            0.0,
+            1.0
+          ],
+          "actuator_joint_torque": [
+            0.0,
+            5.0
+          ],
+          "joint_acceleration": [
+            -4.0853906405934035,
+            490.60451013097054
+          ]
+        }
+      ],
+      "step_responses": [
+        {
+          "axis": 0,
+          "command": "positive_unit_control",
+          "control_dt_seconds": 0.02,
+          "active_control_steps": 25,
+          "total_control_steps": 150,
+          "peak_joint_speed": 9.999053907882026,
+          "peak_end_effector_speed": 1.3105597003715554,
+          "peak_joint_position_change": 2.219096473579049,
+          "velocity_below_threshold_step_after_release": 30,
+          "samples": [
+            {
+              "control_step": 1,
+              "joint_position": [
+                0.8902597892949918,
+                -1.8890366325181427
+              ],
+              "joint_velocity": [
+                5.724832820642997,
+                -0.025390389446076085
+              ],
+              "end_effector_speed": 0.6935251405061706
+            },
+            {
+              "control_step": 25,
+              "joint_position": [
+                2.975351371146858,
+                -1.8761322235940057
+              ],
+              "joint_velocity": [
+                -0.0004684145204628069,
+                -1.539815449031667e-05
+              ],
+              "end_effector_speed": 6.726003376507677e-05
+            },
+            {
+              "control_step": 150,
+              "joint_position": [
+                2.9670597283903626,
+                -1.8761321232807837
+              ],
+              "joint_velocity": [
+                -8.435217580085368e-14,
+                2.3684707821525198e-30
+              ],
+              "end_effector_speed": 0.0
+            }
+          ]
+        },
+        {
+          "axis": 1,
+          "command": "positive_unit_control",
+          "control_dt_seconds": 0.02,
+          "active_control_steps": 25,
+          "total_control_steps": 150,
+          "peak_joint_speed": 10.000166521184426,
+          "peak_end_effector_speed": 1.007203962149624,
+          "peak_joint_position_change": 4.9031768941647655,
+          "velocity_below_threshold_step_after_release": 34,
+          "samples": [
+            {
+              "control_step": 1,
+              "joint_position": [
+                0.8188504415907888,
+                -1.8125104329767523
+              ],
+              "joint_velocity": [
+                -0.03850815068570786,
+                6.078027889509921
+              ],
+              "end_effector_speed": 0.5668186591346771
+            },
+            {
+              "control_step": 25,
+              "joint_position": [
+                0.8210733472352645,
+                2.9074397301299593
+              ],
+              "joint_velocity": [
+                0.027953628349636727,
+                9.999911198241659
+              ],
+              "end_effector_speed": 0.9995148154552576
+            },
+            {
+              "control_step": 150,
+              "joint_position": [
+                0.8194273160625414,
+                2.967059728390362
+              ],
+              "joint_velocity": [
+                1.1217571913890998e-30,
+                -7.178856210834586e-14
+              ],
+              "end_effector_speed": 0.0
+            }
+          ]
+        }
+      ],
+      "impulse_responses": [
+        {
+          "axis": 0,
+          "command": "one_control_step_positive_unit_impulse",
+          "control_dt_seconds": 0.02,
+          "total_control_steps": 150,
+          "peak_joint_speed": 5.72488912523094,
+          "max_joint_displacement": 0.20000038153428093,
+          "max_end_effector_displacement": 0.02597882280872895
+        },
+        {
+          "axis": 1,
+          "command": "one_control_step_positive_unit_impulse",
+          "control_dt_seconds": 0.02,
+          "total_control_steps": 150,
+          "peak_joint_speed": 6.078149875030203,
+          "max_joint_displacement": 0.1999982496662157,
+          "max_end_effector_displacement": 0.019966475442884615
+        }
+      ]
+    },
+    {
+      "target_radius_m": 0.13,
+      "branch_sign": 1,
+      "joint_configuration_rad": [
+        -0.8193554744895192,
+        1.8886200307227774
+      ],
+      "end_effector_position_m": [
+        0.13,
+        0.0,
+        0.02
+      ],
+      "mass_matrix": [
+        [
+          0.011275696351339647,
+          9.389563974378999e-05
+        ],
+        [
+          9.389563974378999e-05,
+          0.010192290321654222
+        ]
+      ],
+      "actuator_responses": [
+        {
+          "control": [
+            1.0,
+            0.0
+          ],
+          "actuator_joint_torque": [
+            5.0,
+            0.0
+          ],
+          "joint_acceleration": [
+            443.4656135249434,
+            -4.0853906405934035
+          ]
+        },
+        {
+          "control": [
+            0.0,
+            1.0
+          ],
+          "actuator_joint_torque": [
+            0.0,
+            5.0
+          ],
+          "joint_acceleration": [
+            -4.0853906405934035,
+            490.60451013097054
+          ]
+        }
+      ],
+      "step_responses": [
+        {
+          "axis": 0,
+          "command": "positive_unit_control",
+          "control_dt_seconds": 0.02,
+          "active_control_steps": 25,
+          "total_control_steps": 150,
+          "peak_joint_speed": 9.999458473567095,
+          "peak_end_effector_speed": 1.3166175920822027,
+          "peak_joint_position_change": 3.8586671342914176,
+          "velocity_below_threshold_step_after_release": 31,
+          "samples": [
+            {
+              "control_step": 1,
+              "joint_position": [
+                -0.7484519890957321,
+                1.8881343888481332
+              ],
+              "joint_velocity": [
+                5.724720332484952,
+                -0.03582914667981961
+              ],
+              "end_effector_speed": 0.6934625017517588
+            },
+            {
+              "control_step": 25,
+              "joint_position": [
+                2.982148817173259,
+                1.86653597615855
+              ],
+              "joint_velocity": [
+                -0.2619457071259563,
+                -0.0018744052084105046
+              ],
+              "end_effector_speed": 0.03716794311649697
+            },
+            {
+              "control_step": 150,
+              "joint_position": [
+                2.9670597283903626,
+                1.8664431161571748
+              ],
+              "joint_velocity": [
+                -8.431946025048583e-14,
+                -5.8409251300242195e-30
+              ],
+              "end_effector_speed": 0.0
+            }
+          ]
+        },
+        {
+          "axis": 1,
+          "command": "positive_unit_control",
+          "control_dt_seconds": 0.02,
+          "active_control_steps": 25,
+          "total_control_steps": 150,
+          "peak_joint_speed": 9.97715539559879,
+          "peak_end_effector_speed": 0.997292120542435,
+          "peak_joint_position_change": 1.1590281708741876,
+          "velocity_below_threshold_step_after_release": 30,
+          "samples": [
+            {
+              "control_step": 1,
+              "joint_position": [
+                -0.8197534107150464,
+                1.9647287128403805
+              ],
+              "joint_velocity": [
+                -0.022860400322094555,
+                6.077906419305076
+              ],
+              "end_effector_speed": 0.5679716365677996
+            },
+            {
+              "control_step": 25,
+              "joint_position": [
+                -0.8194017260931137,
+                2.976891736570569
+              ],
+              "joint_velocity": [
+                4.5376226516026045e-07,
+                -6.995445403357225e-06
+              ],
+              "end_effector_speed": 7.662925329710484e-07
+            },
+            {
+              "control_step": 150,
+              "joint_position": [
+                -0.8194017144840531,
+                2.967059728390362
+              ],
+              "joint_velocity": [
+                9.620476073085799e-31,
+                -7.178843131713747e-14
+              ],
+              "end_effector_speed": 0.0
+            }
+          ]
+        }
+      ],
+      "impulse_responses": [
+        {
+          "axis": 0,
+          "command": "one_control_step_positive_unit_impulse",
+          "control_dt_seconds": 0.02,
+          "total_control_steps": 150,
+          "peak_joint_speed": 5.7248324528250105,
+          "max_joint_displacement": 0.20000037945172555,
+          "max_end_effector_displacement": 0.025941479117549102
+        },
+        {
+          "axis": 1,
+          "command": "one_control_step_positive_unit_impulse",
+          "control_dt_seconds": 0.02,
+          "total_control_steps": 150,
+          "peak_joint_speed": 6.0779494107579355,
+          "max_joint_displacement": 0.2000009228401844,
+          "max_end_effector_displacement": 0.019966737477165663
+        }
+      ]
+    },
+    {
+      "target_radius_m": 0.2,
+      "branch_sign": -1,
+      "joint_configuration_rad": [
+        0.3897607327974747,
+        -0.8632118900695407
+      ],
+      "end_effector_position_m": [
+        0.20000000000000004,
+        6.938893903907228e-18,
+        0.02
+      ],
+      "mass_matrix": [
+        [
+          0.011881807591907911,
+          0.0003969512600279217
+        ],
+        [
+          0.0003969512600279217,
+          0.010192290321654222
+        ]
+      ],
+      "actuator_responses": [
+        {
+          "control": [
+            1.0,
+            0.0
+          ],
+          "actuator_joint_torque": [
+            5.0,
+            0.0
+          ],
+          "joint_acceleration": [
+            421.35963553168773,
+            -16.41036832456151
+          ]
+        },
+        {
+          "control": [
+            0.0,
+            1.0
+          ],
+          "actuator_joint_torque": [
+            0.0,
+            5.0
+          ],
+          "joint_acceleration": [
+            -16.41036832456151,
+            491.20599574634105
+          ]
+        }
+      ],
+      "step_responses": [
+        {
+          "axis": 0,
+          "command": "positive_unit_control",
+          "control_dt_seconds": 0.02,
+          "active_control_steps": 25,
+          "total_control_steps": 150,
+          "peak_joint_speed": 9.999541032241462,
+          "peak_end_effector_speed": 2.0053546484374913,
+          "peak_joint_position_change": 2.647372560764789,
+          "velocity_below_threshold_step_after_release": 30,
+          "samples": [
+            {
+              "control_step": 1,
+              "joint_position": [
+                0.4580871929672801,
+                -0.8650255093897604
+              ],
+              "joint_velocity": [
+                5.545388968880408,
+                -0.12180634401092998
+              ],
+              "end_effector_speed": 1.0230270222089524
+            },
+            {
+              "control_step": 25,
+              "joint_position": [
+                2.975404295668847,
+                -0.851204189352409
+              ],
+              "joint_velocity": [
+                -0.0026262423544602355,
+                -0.0002995525860014235
+              ],
+              "end_effector_speed": 0.0005983902573176754
+            },
+            {
+              "control_step": 150,
+              "joint_position": [
+                2.9670597283903626,
+                -0.8512119942136204
+              ],
+              "joint_velocity": [
+                -8.148139823688776e-14,
+                4.6405857891312545e-30
+              ],
+              "end_effector_speed": 0.0
+            }
+          ]
+        },
+        {
+          "axis": 1,
+          "command": "positive_unit_control",
+          "control_dt_seconds": 0.02,
+          "active_control_steps": 25,
+          "total_control_steps": 150,
+          "peak_joint_speed": 10.00016237359101,
+          "peak_end_effector_speed": 1.0071460097745943,
+          "peak_joint_position_change": 3.9020495368390544,
+          "velocity_below_threshold_step_after_release": 31,
+          "samples": [
+            {
+              "control_step": 1,
+              "joint_position": [
+                0.38788247155684696,
+                -0.7870560035699494
+              ],
+              "joint_velocity": [
+                -0.13136715265380203,
+                6.080542709749557
+              ],
+              "end_effector_speed": 0.546261649474616
+            },
+            {
+              "control_step": 25,
+              "joint_position": [
+                0.38972471167964245,
+                2.9842094497409475
+              ],
+              "joint_velocity": [
+                0.0007687219656720944,
+                -0.2799536919153874
+              ],
+              "end_effector_speed": 0.030019313353516104
+            },
+            {
+              "control_step": 150,
+              "joint_position": [
+                0.3898078603493583,
+                2.967059728390362
+              ],
+              "joint_velocity": [
+                1.188499143718627e-30,
+                -7.178749108330648e-14
+              ],
+              "end_effector_speed": 0.0
+            }
+          ]
+        }
+      ],
+      "impulse_responses": [
+        {
+          "axis": 0,
+          "command": "one_control_step_positive_unit_impulse",
+          "control_dt_seconds": 0.02,
+          "total_control_steps": 150,
+          "peak_joint_speed": 5.546726566329173,
+          "max_joint_displacement": 0.2000002233391961,
+          "max_end_effector_displacement": 0.039961147091425404
+        },
+        {
+          "axis": 1,
+          "command": "one_control_step_positive_unit_impulse",
+          "control_dt_seconds": 0.02,
+          "total_control_steps": 150,
+          "peak_joint_speed": 6.081961605755569,
+          "max_joint_displacement": 0.19999561326171086,
+          "max_end_effector_displacement": 0.019966493446230017
+        }
+      ]
+    },
+    {
+      "target_radius_m": 0.2,
+      "branch_sign": 1,
+      "joint_configuration_rad": [
+        -0.3897607327974747,
+        0.8632118900695407
+      ],
+      "end_effector_position_m": [
+        0.20000000000000004,
+        -6.938893903907228e-18,
+        0.02
+      ],
+      "mass_matrix": [
+        [
+          0.011881807591907911,
+          0.0003969512600279217
+        ],
+        [
+          0.0003969512600279217,
+          0.010192290321654222
+        ]
+      ],
+      "actuator_responses": [
+        {
+          "control": [
+            1.0,
+            0.0
+          ],
+          "actuator_joint_torque": [
+            5.0,
+            0.0
+          ],
+          "joint_acceleration": [
+            421.35963553168773,
+            -16.41036832456151
+          ]
+        },
+        {
+          "control": [
+            0.0,
+            1.0
+          ],
+          "actuator_joint_torque": [
+            0.0,
+            5.0
+          ],
+          "joint_acceleration": [
+            -16.41036832456151,
+            491.20599574634105
+          ]
+        }
+      ],
+      "step_responses": [
+        {
+          "axis": 0,
+          "command": "positive_unit_control",
+          "control_dt_seconds": 0.02,
+          "active_control_steps": 25,
+          "total_control_steps": 150,
+          "peak_joint_speed": 9.999662786590156,
+          "peak_end_effector_speed": 2.0056529881253065,
+          "peak_joint_position_change": 3.4272028950071665,
+          "velocity_below_threshold_step_after_release": 30,
+          "samples": [
+            {
+              "control_step": 1,
+              "joint_position": [
+                -0.32143672679371527,
+                0.8613466201244865
+              ],
+              "joint_velocity": [
+                5.545052729445988,
+                -0.12964128946892337
+              ],
+              "end_effector_speed": 1.0231149116831462
+            },
+            {
+              "control_step": 25,
+              "joint_position": [
+                2.976693904566211,
+                0.8479237096322433
+              ],
+              "joint_velocity": [
+                -0.05431583955373042,
+                -0.0031825465473392634
+              ],
+              "end_effector_speed": 0.012060631826485577
+            },
+            {
+              "control_step": 150,
+              "joint_position": [
+                2.9670597283903626,
+                0.847814765515338
+              ],
+              "joint_velocity": [
+                -8.147943212921353e-14,
+                -1.5656254459114117e-30
+              ],
+              "end_effector_speed": 0.0
+            }
+          ]
+        },
+        {
+          "axis": 1,
+          "command": "positive_unit_control",
+          "control_dt_seconds": 0.02,
+          "active_control_steps": 25,
+          "total_control_steps": 150,
+          "peak_joint_speed": 9.999734436568904,
+          "peak_end_effector_speed": 1.001053762547296,
+          "peak_joint_position_change": 2.1803009266645854,
+          "velocity_below_threshold_step_after_release": 30,
+          "samples": [
+            {
+              "control_step": 1,
+              "joint_position": [
+                -0.3915594487980968,
+                0.9393648460415956
+              ],
+              "joint_velocity": [
+                -0.1196885005943006,
+                6.080152740879811
+              ],
+              "end_effector_speed": 0.5491787506055538
+            },
+            {
+              "control_step": 25,
+              "joint_position": [
+                -0.38980646665790575,
+                2.9769008711410683
+              ],
+              "joint_velocity": [
+                1.8663204934890246e-05,
+                -0.00038335423695966134
+              ],
+              "end_effector_speed": 4.1862434529691465e-05
+            },
+            {
+              "control_step": 150,
+              "joint_position": [
+                -0.3898059708012755,
+                2.967059728390362
+              ],
+              "joint_velocity": [
+                5.567303852391168e-31,
+                -7.178842594113184e-14
+              ],
+              "end_effector_speed": 0.0
+            }
+          ]
+        }
+      ],
+      "impulse_responses": [
+        {
+          "axis": 0,
+          "command": "one_control_step_positive_unit_impulse",
+          "control_dt_seconds": 0.02,
+          "total_control_steps": 150,
+          "peak_joint_speed": 5.546568005196688,
+          "max_joint_displacement": 0.2000002209866749,
+          "max_end_effector_displacement": 0.039908443766288354
+        },
+        {
+          "axis": 1,
+          "command": "one_control_step_positive_unit_impulse",
+          "control_dt_seconds": 0.02,
+          "total_control_steps": 150,
+          "peak_joint_speed": 6.081330667674862,
+          "max_joint_displacement": 0.20000414788618767,
+          "max_end_effector_displacement": 0.01996728224630171
+        }
+      ]
+    }
+  ]
+}
