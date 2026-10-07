@@ -4926,7 +4926,7 @@
     }
   },
   "counters": {
-    "event": 22,
+    "event": 23,
     "inquiry": 5,
     "measurement": 9,
     "session": 12,
@@ -4935,7 +4935,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "assigned",
+  "last_verdict": "official_assessment_requested",
   "model_roles": {
     "best_known": "T5:checkpoint-120832",
     "retained": {},
@@ -9675,9 +9675,62 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-07T21:09:24Z",
+      "error": null,
+      "id": "E23",
+      "inquiry_id": null,
+      "kind": "campaign_conclusion",
+      "request": {
+        "action": "request_official_assessment",
+        "reason": "T5:checkpoint-120832 is the assigned best-known candidate. It achieved 95% on M8 while improving near-base and 14-20 cm competence over T3, and achieved 98% on M9's fresh shared 100-episode panel against T6's 90%, winning all eight discordant episodes. The remaining gap is protected confirmation on the fixed 200-episode official panel. Completed evidence does not show a reproducible radius-, branch-, or action-response-conditioned dynamics signature that would justify delaying assessment for another inquiry."
+      },
+      "result": {
+        "model": "T5:checkpoint-120832",
+        "status": "official_assessment_requested"
+      },
+      "session_id": "S12",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "model": "T5:checkpoint-120832",
+        "reason": "T5:checkpoint-120832 is the assigned best-known candidate. It achieved 95% on M8 while improving near-base and 14-20 cm competence over T3, and achieved 98% on M9's fresh shared 100-episode panel against T6's 90%, winning all eight discordant episodes. The remaining gap is protected confirmation on the fixed 200-episode official panel. Completed evidence does not show a reproducible radius-, branch-, or action-response-conditioned dynamics signature that would justify delaying assessment for another inquiry.",
+        "status": "official_assessment_requested"
+      },
+      "presentation": {
+        "backend_session_id": "e5ad2415-ec54-469f-80b7-68bec7db1e75",
+        "campaign_id": "06656182-d7f0-4011-898d-2b870e8a2a54",
+        "campaign_usage": "27m26s | 84.87 AIU | prompt 13.6m (86% cached) | output 117.1k",
+        "session_id": "S12",
+        "session_kind": "goal_review",
+        "session_usage": "1m05s | 3.27 AIU | prompt 298.3k (68% cached) | output 3.7k"
+      },
+      "result": {
+        "model": "T5:checkpoint-120832",
+        "status": "official_assessment_requested"
+      }
+    },
+    "failure": null,
+    "id": "E23",
+    "inquiry_id": null,
+    "kind": "campaign_conclusion",
+    "progress": "completed",
+    "request": {
+      "campaign_conclusion": {
+        "action": "request_official_assessment",
+        "reason": "T5:checkpoint-120832 is the assigned best-known candidate. It achieved 95% on M8 while improving near-base and 14-20 cm competence over T3, and achieved 98% on M9's fresh shared 100-episode panel against T6's 90%, winning all eight discordant episodes. The remaining gap is protected confirmation on the fixed 200-episode official panel. Completed evidence does not show a reproducible radius-, branch-, or action-response-conditioned dynamics signature that would justify delaying assessment for another inquiry."
+      }
+    },
+    "request_fingerprint": "bb7611771d4df8e2bc2779a5983734723377a498e6901550e06e883598bb0783",
+    "session_id": "S12",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No formal model role has been assigned. T5:checkpoint-120832 remains the strongest development candidate, achieving 98% on M9's fresh 100-episode panel. T6:checkpoint-120832 is rejected as the tested Cartesian-velocity transient refinement after achieving 90% on M9. T3, T4, T1, and T2 remain prior experimental references, and M7 remains a completed compiled-response characterization rather than a policy candidate.",
     "completed_operations": [
@@ -9728,21 +9781,10 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "e5ad2415-ec54-469f-80b7-68bec7db1e75",
-    "id": "S12",
-    "inquiry_id": null,
-    "kind": "goal_review",
-    "objective": "Reassess the scientific direction toward the human goal using completed evidence. You may request measurements to resolve an uncertainty or develop the method before committing to an inquiry. Decide whether to request official assessment or open one bounded goal-linked inquiry.",
-    "operation_ids": [
-      "E22"
-    ],
-    "scientific_parent_commit": "5c05ec5a9de6387e8265ae3bf03a996131a096e6"
-  },
-  "terminal_state": null
+  "scientific_session": null,
+  "terminal_state": {
+    "model": "T5:checkpoint-120832",
+    "reason": "T5:checkpoint-120832 is the assigned best-known candidate. It achieved 95% on M8 while improving near-base and 14-20 cm competence over T3, and achieved 98% on M9's fresh shared 100-episode panel against T6's 90%, winning all eight discordant episodes. The remaining gap is protected confirmation on the fixed 200-episode official panel. Completed evidence does not show a reproducible radius-, branch-, or action-response-conditioned dynamics signature that would justify delaying assessment for another inquiry.",
+    "status": "official_assessment_requested"
+  }
 }
