@@ -4351,38 +4351,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I2",
-        "outcome": "The bounded velocity-aware settling intervention supports branch-conditioned approach and hold instability as the dominant actionable mechanism for the persistent near-base failures. T3 reached 94% on the matched held-out panel versus 71% for T1, improved 6-10 cm success from 27.6% to 93.1% and 10-14 cm success from 82.8% to 100%, while preserving high 14-20 cm competence at 90.5% versus T1's 92.9%.",
-        "reason": "I2's closure condition is met: one bounded intervention recovered the near-base failure region without a broad outer-radius regression. The result weakens compiled-dynamics or global actuator-authority limits as the dominant explanation and further deprioritizes hidden substep excursions, but does not rule out configuration-dependent authority as a contributor to the remaining failures. The 94% candidate is not yet sufficient for the 98% human goal, so the next goal review must decide whether to refine this intervention or characterize the residual authority/dynamics limitation."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I2",
-        "outcome": "The bounded velocity-aware settling intervention supports branch-conditioned approach and hold instability as the dominant actionable mechanism for the persistent near-base failures. T3 reached 94% on the matched held-out panel versus 71% for T1, improved 6-10 cm success from 27.6% to 93.1% and 10-14 cm success from 82.8% to 100%, while preserving high 14-20 cm competence at 90.5% versus T1's 92.9%.",
-        "reason": "I2's closure condition is met: one bounded intervention recovered the near-base failure region without a broad outer-radius regression. The result weakens compiled-dynamics or global actuator-authority limits as the dominant explanation and further deprioritizes hidden substep excursions, but does not rule out configuration-dependent authority as a contributor to the remaining failures. The 94% candidate is not yet sufficient for the 98% human goal, so the next goal review must decide whether to refine this intervention or characterize the residual authority/dynamics limitation.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E8",
-    "inquiry_id": "I2",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "The bounded velocity-aware settling intervention supports branch-conditioned approach and hold instability as the dominant actionable mechanism for the persistent near-base failures. T3 reached 94% on the matched held-out panel versus 71% for T1, improved 6-10 cm success from 27.6% to 93.1% and 10-14 cm success from 82.8% to 100%, while preserving high 14-20 cm competence at 90.5% versus T1's 92.9%.",
-        "reason": "I2's closure condition is met: one bounded intervention recovered the near-base failure region without a broad outer-radius regression. The result weakens compiled-dynamics or global actuator-authority limits as the dominant explanation and further deprioritizes hidden substep excursions, but does not rule out configuration-dependent authority as a contributor to the remaining failures. The 94% candidate is not yet sufficient for the 98% human goal, so the next goal review must decide whether to refine this intervention or characterize the residual authority/dynamics limitation."
-      }
-    },
-    "request_fingerprint": "74c4322d8e033e510934bb6812ea484ed0c22fbd3e2835fe04865c6bcc4e496a",
-    "session_id": "S5",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "No working, best-known, or retained candidate role has been assigned. T1:checkpoint-120832 remains the strongest evaluated reference at 73% and the baseline for I2. T2:checkpoint-120832 remains noncompetitive at 35% and is retained only as evidence about the tested full-domain training recipe.",
     "completed_operations": [
