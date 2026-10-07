@@ -2,8 +2,3 @@
 
 | Operation | Kind | Inquiry | Result |
 |---|---|---|---|
-| T1 | training | - | completed |
-| M1 | measurement | - | completed |
-| E1 | checkpoint | - | checkpointed |
-| E2 | model_role | - | assigned |
-| E3 | campaign_conclusion | - | official_assessment_failed |
