@@ -28,3 +28,4 @@
 | M7 | measurement | - | completed |
 | E14 | inquiry | I4 | completed |
 | E15 | checkpoint | - | checkpointed |
+| T5 | training | I4 | completed |
