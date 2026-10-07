@@ -2479,16 +2479,16 @@
     }
   },
   "counters": {
-    "event": 8,
+    "event": 9,
     "inquiry": 2,
     "measurement": 5,
-    "session": 5,
+    "session": 6,
     "training": 3
   },
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "restored",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -5067,9 +5067,113 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-07T06:22:17Z",
+      "error": null,
+      "id": "E9",
+      "inquiry_id": "I2",
+      "kind": "restore_recipe",
+      "request": {
+        "candidate": "T1:checkpoint-100352",
+        "reason": "Restore the strongest baseline recipe before the next I2 intervention. T2's settling-aware penalties and T3's branch-switch penalty both underperformed T1, so action-transition or protected-boundary evidence must be collected from the unchanged T1 source rather than from the rejected T3 modification."
+      },
+      "result": {
+        "candidate": "T1:checkpoint-100352",
+        "restored_paths": [
+          "robot_learning/scenario/environment.py",
+          "robot_learning/scenario/evaluation.py",
+          "robot_learning/training/reward.py"
+        ],
+        "scientific_commit": "3aee9f5f98439d65e23ac1db22684d4446a4bf29",
+        "status": "restored"
+      },
+      "session_id": "S6",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "candidate_id": "T1:checkpoint-100352",
+        "parameters": {
+          "algorithm": {
+            "name": "ppo"
+          },
+          "policy": {
+            "activation": "tanh",
+            "net_arch": [
+              64,
+              64
+            ]
+          },
+          "ppo": {
+            "batch_size": 64,
+            "ent_coef": 0.01,
+            "gae_lambda": 0.95,
+            "gamma": 0.99,
+            "learning_rate": 0.0003,
+            "n_steps": 1024
+          },
+          "training": {
+            "checkpoint_every_steps": 5000,
+            "n_envs": 1
+          }
+        },
+        "parent": "3aee9f5f98439d65e23ac1db22684d4446a4bf29",
+        "remove_created": [],
+        "restore": [
+          "robot_learning/scenario/environment.py",
+          "robot_learning/scenario/evaluation.py",
+          "robot_learning/training/reward.py"
+        ],
+        "session_id": "S6"
+      },
+      "pre_restore_manifest": [
+        {
+          "exists": true,
+          "fingerprint": "6accbfd59a773a7756521a6e89d47953d6dee106aa8cb63a8533bbc632fc612e",
+          "path": "robot_learning/scenario/environment.py"
+        },
+        {
+          "exists": true,
+          "fingerprint": "613b7d185d315213f5a14b05812e567f5af7837a1c01ce54edcae5114abf8d57",
+          "path": "robot_learning/scenario/evaluation.py"
+        },
+        {
+          "exists": true,
+          "fingerprint": "38f75f3a9ec16f45a18850add4f5577892a19989a5211eb7c12a829a46d632dc",
+          "path": "robot_learning/training/reward.py"
+        }
+      ],
+      "result": {
+        "candidate": "T1:checkpoint-100352",
+        "restored_paths": [
+          "robot_learning/scenario/environment.py",
+          "robot_learning/scenario/evaluation.py",
+          "robot_learning/training/reward.py"
+        ],
+        "scientific_commit": "3aee9f5f98439d65e23ac1db22684d4446a4bf29",
+        "status": "restored"
+      }
+    },
+    "failure": null,
+    "id": "E9",
+    "inquiry_id": "I2",
+    "kind": "restore_recipe",
+    "progress": "completed",
+    "request": {
+      "restore_recipe": {
+        "candidate": "T1:checkpoint-100352",
+        "reason": "Restore the strongest baseline recipe before the next I2 intervention. T2's settling-aware penalties and T3's branch-switch penalty both underperformed T1, so action-transition or protected-boundary evidence must be collected from the unchanged T1 source rather than from the rejected T3 modification."
+      }
+    },
+    "request_fingerprint": "ab3025087e25fec9eac8be1a43e3071dced85bd749b10734257d5031cb98fda8",
+    "session_id": "S6",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T1:checkpoint-100352 remains the baseline and strongest candidate by M3, but no working, best-known, or retained role is assigned. T2:checkpoint-5120 and T2:checkpoint-10240 are rejected as settling-aware intervention candidates after M4. T3:checkpoint-80896 is rejected as a branch-penalty candidate after M5. The current modified source should be restored to the T1 baseline before the next intervention.",
     "completed_operations": [
@@ -5106,6 +5210,21 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "16bab36e-134f-4e0c-b952-c49aded596d6",
+    "id": "S6",
+    "inquiry_id": "I2",
+    "kind": "inquiry",
+    "objective": "Advance I2 toward an evidence-supported answer to its scientific question: What intervention most reliably suppresses high-velocity entry and branch-switch-induced saturated corrections so the policy maintains the complete uninterrupted 100-step hold under the official task distribution?",
+    "operation_ids": [
+      "E9"
+    ],
+    "scientific_parent_commit": "3aee9f5f98439d65e23ac1db22684d4446a4bf29"
+  },
   "terminal_state": null
 }
