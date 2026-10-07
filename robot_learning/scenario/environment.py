@@ -43,6 +43,7 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
         frame_skip: int = FRAME_SKIP,
         max_episode_steps: int = MAX_EPISODE_STEPS,
         target_radius_sampler: Callable[[np.random.Generator], float] | None = None,
+        target_angle_sampler: Callable[[np.random.Generator], float] | None = None,
         policy_runtime=None,
     ) -> None:
         super().__init__()
@@ -50,6 +51,7 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
         self.frame_skip = frame_skip
         self.target_radius_range = target_radius_range
         self.target_radius_sampler = target_radius_sampler
+        self.target_angle_sampler = target_angle_sampler
         self.policy_io = policy_runtime.io if policy_runtime else make_policy_io()
 
         self.model = mujoco.MjModel.from_xml_path(str(TWO_JOINT_ARM_XML_PATH))
@@ -84,7 +86,10 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
         )
 
     def _sample_target_position(self) -> None:
-        angle = float(self.np_random.uniform(-np.pi, np.pi))
+        if self.target_angle_sampler is None:
+            angle = float(self.np_random.uniform(-np.pi, np.pi))
+        else:
+            angle = float(self.target_angle_sampler(self.np_random))
         if self.target_radius_sampler is None:
             radius = float(
                 self.np_random.uniform(
