@@ -2467,7 +2467,7 @@
     }
   },
   "counters": {
-    "event": 8,
+    "event": 9,
     "inquiry": 2,
     "measurement": 4,
     "session": 5,
@@ -2476,7 +2476,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -4349,19 +4349,171 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-07T20:15:06Z",
+      "error": null,
+      "id": "E9",
+      "inquiry_id": "I2",
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "No formal model role has been assigned. T3:checkpoint-120832 is the strongest evaluated development candidate at 94% on M4 and is the leading candidate for the next inquiry; T1:checkpoint-120832 remains the matched 73%/71% reference, and T2:checkpoint-120832 remains evidence about the insufficient fresh full-domain recipe.",
+        "completed_operations": [
+          "T3",
+          "M4",
+          "E8"
+        ],
+        "cumulative_resource_use": "The campaign has completed three 120000-step training runs, four 100-episode research panels including the M3 mechanistic trace and M4 matched intervention evaluation, and two inquiry closures/openings through I2. T3 used one transfer training allocation and changed only robot_learning/scenario/environment.py and robot_learning/training/reward.py. No dependencies were installed.",
+        "current_goal_gap": "T3:checkpoint-120832 achieved 94% on M4, leaving a 4 percentage-point development gap to the 98% objective. Its 14-20 cm success was 90.5% on M4, so official assessment is not yet justified.",
+        "current_synthesis": "Observed facts: T1 achieved 73% on its matched panels, with failures concentrated below 14 cm; M3 found 22 non-entries and 5 interrupted holds, action saturation in all interrupted episodes but also many successful episodes, branch switching in both successful and failing episodes, and no failure concentration in hidden substep excursions. The fresh full-domain T2 recipe achieved 35%, establishing that recipe as insufficient but not rejecting coverage or identifying a physical cause. T3 transferred from T1 with one bounded velocity-aware settling reward term. On the matched M4 panel T3 achieved 94% versus T1's 71%, won 24 of 25 discordant episodes, improved 6-10 cm success from 27.6% to 93.1% and 10-14 cm success from 82.8% to 100%, and retained high 14-20 cm success at 90.5% versus 92.9% for T1. This supports branch-conditioned approach and hold instability as the dominant actionable mechanism. It does not prove that mechanism is exclusive, does not establish that the residual failures are caused by actuator authority or compiled dynamics, and does not make T3 an official pass.",
+        "decision_frontier": "I2 is closed because one bounded settling intervention recovered the near-base failure region without a broad 14-20 cm regression. The next unresolved distinction is whether the remaining 6% failures can be removed by refining the settling/approach intervention, or whether their residual pattern reflects configuration-dependent actuator authority or compiled-dynamics limits. Residual M4 failures include both near-base and outer-radius cases, while T3 remains better than T1 on the shared panel; targeted residual-failure traces with q/qdot/action, saturation, actuator force, qacc, branch, and radius would support an authority/dynamics redirection, whereas further success from a bounded settling refinement with preserved 14-20 cm competence would support continuing the control/representation route. Hidden substep excursions remain deprioritized unless new traces show predictive failure concentration.",
+        "evidence_references": [
+          "T1",
+          "M1",
+          "T2",
+          "M2",
+          "E4",
+          "M3",
+          "E6",
+          "T3",
+          "M4",
+          "E8"
+        ],
+        "human_goal_connection": "The human goal requires at least 98% complete uninterrupted holds over the official 6-20 cm radial distribution. I2 produced T3 at 94% on a matched held-out panel, reducing the measured gap to 4 percentage points while preserving high outer-radius competence.",
+        "next_direction_or_closure": "The I2 close decision is complete. The next fresh inquiry should first use the M4 residual-failure evidence to select one bounded refinement of the velocity-aware settling intervention or a targeted actuator/dynamics characterization, then evaluate against T3 with radius-stratified success and explicit residual failure-phase diagnostics. The direction changes to authority/compiled-dynamics characterization if residual failures remain saturated with inadequate acceleration; it stays on settling refinement if the residual gap decreases without degrading 14-20 cm competence.",
+        "next_question": "How can the velocity-aware settling intervention be refined to raise official-distribution success from 94% toward 98% while preserving 14-20 cm competence, and do residual failures indicate configuration-dependent actuator authority or compiled-dynamics limits?"
+      },
+      "result": {
+        "session_id": "S5",
+        "status": "checkpointed"
+      },
+      "session_id": "S5",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "a38ada0658340828628f3346922496abbc6bd65e",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "No formal model role has been assigned. T3:checkpoint-120832 is the strongest evaluated development candidate at 94% on M4 and is the leading candidate for the next inquiry; T1:checkpoint-120832 remains the matched 73%/71% reference, and T2:checkpoint-120832 remains evidence about the insufficient fresh full-domain recipe.",
+        "completed_operations": [
+          "T3",
+          "M4",
+          "E8"
+        ],
+        "cumulative_resource_use": "The campaign has completed three 120000-step training runs, four 100-episode research panels including the M3 mechanistic trace and M4 matched intervention evaluation, and two inquiry closures/openings through I2. T3 used one transfer training allocation and changed only robot_learning/scenario/environment.py and robot_learning/training/reward.py. No dependencies were installed.",
+        "current_goal_gap": "T3:checkpoint-120832 achieved 94% on M4, leaving a 4 percentage-point development gap to the 98% objective. Its 14-20 cm success was 90.5% on M4, so official assessment is not yet justified.",
+        "current_synthesis": "Observed facts: T1 achieved 73% on its matched panels, with failures concentrated below 14 cm; M3 found 22 non-entries and 5 interrupted holds, action saturation in all interrupted episodes but also many successful episodes, branch switching in both successful and failing episodes, and no failure concentration in hidden substep excursions. The fresh full-domain T2 recipe achieved 35%, establishing that recipe as insufficient but not rejecting coverage or identifying a physical cause. T3 transferred from T1 with one bounded velocity-aware settling reward term. On the matched M4 panel T3 achieved 94% versus T1's 71%, won 24 of 25 discordant episodes, improved 6-10 cm success from 27.6% to 93.1% and 10-14 cm success from 82.8% to 100%, and retained high 14-20 cm success at 90.5% versus 92.9% for T1. This supports branch-conditioned approach and hold instability as the dominant actionable mechanism. It does not prove that mechanism is exclusive, does not establish that the residual failures are caused by actuator authority or compiled dynamics, and does not make T3 an official pass.",
+        "decision_frontier": "I2 is closed because one bounded settling intervention recovered the near-base failure region without a broad 14-20 cm regression. The next unresolved distinction is whether the remaining 6% failures can be removed by refining the settling/approach intervention, or whether their residual pattern reflects configuration-dependent actuator authority or compiled-dynamics limits. Residual M4 failures include both near-base and outer-radius cases, while T3 remains better than T1 on the shared panel; targeted residual-failure traces with q/qdot/action, saturation, actuator force, qacc, branch, and radius would support an authority/dynamics redirection, whereas further success from a bounded settling refinement with preserved 14-20 cm competence would support continuing the control/representation route. Hidden substep excursions remain deprioritized unless new traces show predictive failure concentration.",
+        "evidence_references": [
+          "T1",
+          "M1",
+          "T2",
+          "M2",
+          "E4",
+          "M3",
+          "E6",
+          "T3",
+          "M4",
+          "E8"
+        ],
+        "human_goal_connection": "The human goal requires at least 98% complete uninterrupted holds over the official 6-20 cm radial distribution. I2 produced T3 at 94% on a matched held-out panel, reducing the measured gap to 4 percentage points while preserving high outer-radius competence.",
+        "inquiry_id": "I2",
+        "next_direction_or_closure": "The I2 close decision is complete. The next fresh inquiry should first use the M4 residual-failure evidence to select one bounded refinement of the velocity-aware settling intervention or a targeted actuator/dynamics characterization, then evaluate against T3 with radius-stratified success and explicit residual failure-phase diagnostics. The direction changes to authority/compiled-dynamics characterization if residual failures remain saturated with inadequate acceleration; it stays on settling refinement if the residual gap decreases without degrading 14-20 cm competence.",
+        "next_question": "How can the velocity-aware settling intervention be refined to raise official-distribution success from 94% toward 98% while preserving 14-20 cm competence, and do residual failures indicate configuration-dependent actuator authority or compiled-dynamics limits?",
+        "session_id": "S5"
+      },
+      "presentation": {
+        "backend_session_id": "4e7926f1-11ee-4e81-9102-da841b9fbd7b",
+        "campaign_id": "06656182-d7f0-4011-898d-2b870e8a2a54",
+        "campaign_usage": "12m44s | 32.30 AIU | prompt 4.7m (85% cached) | output 55.8k",
+        "session_id": "S5",
+        "session_kind": "inquiry",
+        "session_usage": "3m02s | 8.35 AIU | prompt 1.4m (87% cached) | output 13.2k"
+      },
+      "result": {
+        "session_id": "S5",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "6b2df17b7a37bc7d1845ef750ef3eea6797305eb",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E9",
+    "inquiry_id": "I2",
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "No formal model role has been assigned. T3:checkpoint-120832 is the strongest evaluated development candidate at 94% on M4 and is the leading candidate for the next inquiry; T1:checkpoint-120832 remains the matched 73%/71% reference, and T2:checkpoint-120832 remains evidence about the insufficient fresh full-domain recipe.",
+        "completed_operations": [
+          "T3",
+          "M4",
+          "E8"
+        ],
+        "cumulative_resource_use": "The campaign has completed three 120000-step training runs, four 100-episode research panels including the M3 mechanistic trace and M4 matched intervention evaluation, and two inquiry closures/openings through I2. T3 used one transfer training allocation and changed only robot_learning/scenario/environment.py and robot_learning/training/reward.py. No dependencies were installed.",
+        "current_goal_gap": "T3:checkpoint-120832 achieved 94% on M4, leaving a 4 percentage-point development gap to the 98% objective. Its 14-20 cm success was 90.5% on M4, so official assessment is not yet justified.",
+        "current_synthesis": "Observed facts: T1 achieved 73% on its matched panels, with failures concentrated below 14 cm; M3 found 22 non-entries and 5 interrupted holds, action saturation in all interrupted episodes but also many successful episodes, branch switching in both successful and failing episodes, and no failure concentration in hidden substep excursions. The fresh full-domain T2 recipe achieved 35%, establishing that recipe as insufficient but not rejecting coverage or identifying a physical cause. T3 transferred from T1 with one bounded velocity-aware settling reward term. On the matched M4 panel T3 achieved 94% versus T1's 71%, won 24 of 25 discordant episodes, improved 6-10 cm success from 27.6% to 93.1% and 10-14 cm success from 82.8% to 100%, and retained high 14-20 cm success at 90.5% versus 92.9% for T1. This supports branch-conditioned approach and hold instability as the dominant actionable mechanism. It does not prove that mechanism is exclusive, does not establish that the residual failures are caused by actuator authority or compiled dynamics, and does not make T3 an official pass.",
+        "decision_frontier": "I2 is closed because one bounded settling intervention recovered the near-base failure region without a broad 14-20 cm regression. The next unresolved distinction is whether the remaining 6% failures can be removed by refining the settling/approach intervention, or whether their residual pattern reflects configuration-dependent actuator authority or compiled-dynamics limits. Residual M4 failures include both near-base and outer-radius cases, while T3 remains better than T1 on the shared panel; targeted residual-failure traces with q/qdot/action, saturation, actuator force, qacc, branch, and radius would support an authority/dynamics redirection, whereas further success from a bounded settling refinement with preserved 14-20 cm competence would support continuing the control/representation route. Hidden substep excursions remain deprioritized unless new traces show predictive failure concentration.",
+        "evidence_references": [
+          "T1",
+          "M1",
+          "T2",
+          "M2",
+          "E4",
+          "M3",
+          "E6",
+          "T3",
+          "M4",
+          "E8"
+        ],
+        "human_goal_connection": "The human goal requires at least 98% complete uninterrupted holds over the official 6-20 cm radial distribution. I2 produced T3 at 94% on a matched held-out panel, reducing the measured gap to 4 percentage points while preserving high outer-radius competence.",
+        "next_direction_or_closure": "The I2 close decision is complete. The next fresh inquiry should first use the M4 residual-failure evidence to select one bounded refinement of the velocity-aware settling intervention or a targeted actuator/dynamics characterization, then evaluate against T3 with radius-stratified success and explicit residual failure-phase diagnostics. The direction changes to authority/compiled-dynamics characterization if residual failures remain saturated with inadequate acceleration; it stays on settling refinement if the residual gap decreases without degrading 14-20 cm competence.",
+        "next_question": "How can the velocity-aware settling intervention be refined to raise official-distribution success from 94% toward 98% while preserving 14-20 cm competence, and do residual failures indicate configuration-dependent actuator authority or compiled-dynamics limits?"
+      }
+    },
+    "request_fingerprint": "069fbd07cc0958d8888059ea9498f8be88561f893432e0f5845e3fba00d69c68",
+    "session_id": "S5",
+    "supersedes": null
+  },
   "pi_checkpoint": {
-    "candidates_and_roles": "No working, best-known, or retained candidate role has been assigned. T1:checkpoint-120832 remains the strongest evaluated reference at 73% and the baseline for I2. T2:checkpoint-120832 remains noncompetitive at 35% and is retained only as evidence about the tested full-domain training recipe.",
+    "candidates_and_roles": "No formal model role has been assigned. T3:checkpoint-120832 is the strongest evaluated development candidate at 94% on M4 and is the leading candidate for the next inquiry; T1:checkpoint-120832 remains the matched 73%/71% reference, and T2:checkpoint-120832 remains evidence about the insufficient fresh full-domain recipe.",
     "completed_operations": [
-      "M3",
-      "E6"
+      "T3",
+      "M4",
+      "E8"
     ],
-    "cumulative_resource_use": "The campaign has completed two fresh 120000-step training runs, two 100-episode research panels, and the M3 100-episode mechanistic trace of T1 with q/qdot, action, actuator force, qacc, branch, Jacobian, and simulator-substep evidence. No dependencies were installed. The current goal-review session completed M3 and opened I2; it added no training allocation.",
-    "current_goal_gap": "T1:checkpoint-120832 remains the strongest evaluated candidate at 73% success, 25 percentage points below the 98% objective. T2:checkpoint-120832 achieved 35% on the matched panel. No candidate justifies official assessment.",
-    "current_synthesis": "Observed facts: T1 trained on 14-20 cm reached recorded training success 0.96 and achieved 73% on M1 and M2. M1 and M3 show failures concentrated near the base, while 14-20 cm episodes were almost entirely successful. M3 classified 100 T1 episodes with 73 successes, 22 non-entries, and 5 interrupted holds; the 6-14 cm region contained the failures while the 14-20 cm region had near-complete success. M3 recorded action saturation in all interrupted episodes but also frequent saturation in successful episodes, so global actuator shortage is not established; authority may be configuration- or trajectory-dependent. Branch switching occurred in both successful and failing episodes, so switching alone is not causal evidence. Hidden substep distance excursions were not concentrated in failures and were larger in some successful outer-radius episodes, weakening hidden substep excursions as the dominant explanation under the task's sampled success semantics. The T2 full-domain recipe still achieved only 35% and degraded the competent baseline, so that tested recipe is insufficient; this does not reject coverage as a broader method or establish a physical cause. Interpretation changed from an unresolved three-way diagnostic frontier to a narrowed near-base distinction between branch-conditioned approach/hold behavior and configuration-dependent actuator or compiled-dynamics limits. Reachability remains a prior rather than an observed failure cause.",
-    "decision_frontier": "The remaining decision is whether a branch- and dynamics-aware approach/hold intervention can recover the near-base non-entries and interrupted holds while preserving the already competent 14-20 cm behavior, or whether configuration-dependent actuator authority and compiled dynamics limit that intervention. A matched held-out evaluation of one bounded intervention against T1, stratified by radius and failure phase, will discriminate the routes: near-base recovery with preserved 14-20 cm success supports trajectory/branch-aware control or representation as the actionable route; persistent saturated failures with inadequate acceleration redirects to compiled-dynamics or authority characterization. Hidden substep excursions are deprioritized unless a targeted result reverses M3's lack of failure concentration.",
+    "cumulative_resource_use": "The campaign has completed three 120000-step training runs, four 100-episode research panels including the M3 mechanistic trace and M4 matched intervention evaluation, and two inquiry closures/openings through I2. T3 used one transfer training allocation and changed only robot_learning/scenario/environment.py and robot_learning/training/reward.py. No dependencies were installed.",
+    "current_goal_gap": "T3:checkpoint-120832 achieved 94% on M4, leaving a 4 percentage-point development gap to the 98% objective. Its 14-20 cm success was 90.5% on M4, so official assessment is not yet justified.",
+    "current_synthesis": "Observed facts: T1 achieved 73% on its matched panels, with failures concentrated below 14 cm; M3 found 22 non-entries and 5 interrupted holds, action saturation in all interrupted episodes but also many successful episodes, branch switching in both successful and failing episodes, and no failure concentration in hidden substep excursions. The fresh full-domain T2 recipe achieved 35%, establishing that recipe as insufficient but not rejecting coverage or identifying a physical cause. T3 transferred from T1 with one bounded velocity-aware settling reward term. On the matched M4 panel T3 achieved 94% versus T1's 71%, won 24 of 25 discordant episodes, improved 6-10 cm success from 27.6% to 93.1% and 10-14 cm success from 82.8% to 100%, and retained high 14-20 cm success at 90.5% versus 92.9% for T1. This supports branch-conditioned approach and hold instability as the dominant actionable mechanism. It does not prove that mechanism is exclusive, does not establish that the residual failures are caused by actuator authority or compiled dynamics, and does not make T3 an official pass.",
+    "decision_frontier": "I2 is closed because one bounded settling intervention recovered the near-base failure region without a broad 14-20 cm regression. The next unresolved distinction is whether the remaining 6% failures can be removed by refining the settling/approach intervention, or whether their residual pattern reflects configuration-dependent actuator authority or compiled-dynamics limits. Residual M4 failures include both near-base and outer-radius cases, while T3 remains better than T1 on the shared panel; targeted residual-failure traces with q/qdot/action, saturation, actuator force, qacc, branch, and radius would support an authority/dynamics redirection, whereas further success from a bounded settling refinement with preserved 14-20 cm competence would support continuing the control/representation route. Hidden substep excursions remain deprioritized unless new traces show predictive failure concentration.",
     "evidence_references": [
       "T1",
       "M1",
@@ -4369,14 +4521,17 @@
       "M2",
       "E4",
       "M3",
-      "E6"
+      "E6",
+      "T3",
+      "M4",
+      "E8"
     ],
-    "human_goal_connection": "The human goal requires at least 98% complete uninterrupted holds over the official uniform 6-20 cm radial distribution. T1:checkpoint-120832 remains at 73% on the 100-episode research panel, leaving a 25 percentage-point gap. The goal review opened I2 because M3 identifies a specific near-base failure mechanism frontier and a bounded intervention can now be tested without treating the weak full-domain recipe as sufficient evidence.",
-    "inquiry_id": null,
-    "next_direction_or_closure": "Goal review opened I2 and ended. In the fresh inquiry session, implement or adapt one bounded branch- and dynamics-aware approach/hold intervention, then evaluate the resulting candidate against T1 on a matched held-out panel with radius-stratified success, first entry, interruptions, saturation, and preserved 14-20 cm competence. Close I2 if the intervention meets its recovery and non-regression condition; otherwise redirect explicitly to compiled-dynamics or configuration-dependent actuator-authority characterization.",
-    "next_question": "Which mechanism\u2014branch-conditioned trajectory and hold instability, compiled-dynamics or actuator-authority limits, or hidden substep excursions\u2014dominates the persistent near-base failures, and what evidence-supported intervention can raise official success toward 98% without degrading 14-20 cm competence?",
-    "scientific_commit": "96cbca1cc774e5eecf5027d7bb326500f2750069",
-    "session_id": "S4"
+    "human_goal_connection": "The human goal requires at least 98% complete uninterrupted holds over the official 6-20 cm radial distribution. I2 produced T3 at 94% on a matched held-out panel, reducing the measured gap to 4 percentage points while preserving high outer-radius competence.",
+    "inquiry_id": "I2",
+    "next_direction_or_closure": "The I2 close decision is complete. The next fresh inquiry should first use the M4 residual-failure evidence to select one bounded refinement of the velocity-aware settling intervention or a targeted actuator/dynamics characterization, then evaluate against T3 with radius-stratified success and explicit residual failure-phase diagnostics. The direction changes to authority/compiled-dynamics characterization if residual failures remain saturated with inadequate acceleration; it stays on settling refinement if the residual gap decreases without degrading 14-20 cm competence.",
+    "next_question": "How can the velocity-aware settling intervention be refined to raise official-distribution success from 94% toward 98% while preserving 14-20 cm competence, and do residual failures indicate configuration-dependent actuator authority or compiled-dynamics limits?",
+    "scientific_commit": "6b2df17b7a37bc7d1845ef750ef3eea6797305eb",
+    "session_id": "S5"
   },
   "schema_version": 6,
   "scientific_model": {
@@ -4384,23 +4539,6 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "4e7926f1-11ee-4e81-9102-da841b9fbd7b",
-    "id": "S5",
-    "inquiry_id": "I2",
-    "kind": "inquiry",
-    "objective": "Advance I2 toward an evidence-supported answer to its scientific question: Which mechanism\u2014branch-conditioned trajectory and hold instability, compiled-dynamics or actuator-authority limits, or hidden substep excursions\u2014dominates the persistent near-base failures, and what evidence-supported intervention can raise official success toward 98% without degrading 14-20 cm competence?",
-    "operation_ids": [
-      "T3",
-      "M4",
-      "E8"
-    ],
-    "scientific_parent_commit": "a38ada0658340828628f3346922496abbc6bd65e"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
