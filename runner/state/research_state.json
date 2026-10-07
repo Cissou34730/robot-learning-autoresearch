@@ -2645,7 +2645,9 @@
     },
     "T4:checkpoint-120832": {
       "artifact": "campaigns/checkpoints/candidates/97633a56-b4b1-434f-b17c-cf110c555c07/t4/checkpoint-120832",
-      "evaluation_artifacts": [],
+      "evaluation_artifacts": [
+        "campaigns/evaluations/97633a56-b4b1-434f-b17c-cf110c555c07/evaluation-97633a56-b4b1-434f-b17c-cf110c555c07-m8-T4-checkpoint-120832-200ep-seed103000-7f90e097efda.json"
+      ],
       "fingerprint": "aac5477c1dcb8edb80dc291cceea51f238c4d72c8efc9fd56ccfbe3fcf640761",
       "id": "T4:checkpoint-120832",
       "name": "checkpoint-120832",
@@ -3293,7 +3295,7 @@
   "counters": {
     "event": 4,
     "inquiry": 1,
-    "measurement": 7,
+    "measurement": 8,
     "session": 3,
     "training": 4
   },
@@ -6215,9 +6217,471 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-07T10:58:07Z",
+      "error": null,
+      "id": "M8",
+      "inquiry_id": "I1",
+      "kind": "measurement",
+      "request": {
+        "description": "Evaluate T4:checkpoint-120832 on a fresh 200-episode full-range research panel with the established hold, geometry, timeout, velocity, and action diagnostics.",
+        "measurements": [
+          {
+            "candidate": "T4:checkpoint-120832",
+            "episodes": 200,
+            "instrument": "research_evaluation",
+            "label": "T4 full-range diagnostic evaluation",
+            "seed": 103000
+          }
+        ],
+        "paired_comparisons": [],
+        "rationale": "T4 was designed to test whether the T3 timeout concentration near the angle seam was caused by insufficient training exposure. Its training log shows no completed training successes, so training statistics cannot establish whether the intervention helped or failed. A behavioral evaluation is the discriminating next operation: the established evaluator will measure uninterrupted hold success and allocate failures by angle, radius, branch-limit margin, maneuver timeout, and post-entry settling. The panel starts at seed 103000 to avoid overlap with the T1 and T3 development panels. If seam-angle timeouts improve without broad coverage loss, angle exposure is supported; if T4 remains broadly unsuccessful or shifts failures into other geometries, the next direction should address the observation/control representation rather than further sampling changes."
+      },
+      "result": {
+        "measurements": [
+          {
+            "candidate": "T4:checkpoint-120832",
+            "candidate_id": "T4:checkpoint-120832",
+            "instrument": "research_evaluation",
+            "label": "T4 full-range diagnostic evaluation",
+            "metrics": {
+              "episodes": 200,
+              "evaluation_artifact": "campaigns/evaluations/97633a56-b4b1-434f-b17c-cf110c555c07/evaluation-97633a56-b4b1-434f-b17c-cf110c555c07-m8-T4-checkpoint-120832-200ep-seed103000-7f90e097efda.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 8,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/model",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/seed",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/official_benchmark",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 200,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "reward_total",
+                      "steps",
+                      "success",
+                      "terminated",
+                      "truncated"
+                    ],
+                    "path": "/episode_results",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 200,
+                    "field_names": [
+                      "best_branch",
+                      "best_joint_limit_margin_degrees",
+                      "branches",
+                      "episode",
+                      "episode_seed",
+                      "final_distance_cm",
+                      "first_entry_diagnostics",
+                      "first_reach_step",
+                      "hold_interruptions",
+                      "hold_peak_action_abs",
+                      "hold_peak_endpoint_speed",
+                      "hold_peak_joint_speed",
+                      "in_tolerance_steps",
+                      "interruption_diagnostics",
+                      "max_held_steps",
+                      "min_distance_cm",
+                      "peak_action_abs_max",
+                      "peak_endpoint_speed",
+                      "peak_joint_speed",
+                      "target_angle_degrees",
+                      "target_radius_cm",
+                      "termination_cause"
+                    ],
+                    "path": "/research_evidence/episode_diagnostics",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/research_evidence/units",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/research_evidence/units/distance",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/time",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/joint_velocity",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/endpoint_velocity",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/action",
+                    "type": "string"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "4d9e24acb6932a1b42f2d14bae9cd67fcb2f8346973354b0592c0ccd44581a8d",
+              "evaluation_semantics": "7f90e097efda",
+              "model_fingerprint": "aac5477c1dcb8edb80dc291cceea51f238c4d72c8efc9fd56ccfbe3fcf640761",
+              "official_benchmark": false,
+              "schema_version": 5,
+              "seed": 103000,
+              "success_percent": 18.0,
+              "successes": 36
+            }
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": null
+      },
+      "session_id": "S3",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "evaluation_semantics": "7f90e097efda",
+      "measurements": [
+        {
+          "artifact": "campaigns/checkpoints/candidates/97633a56-b4b1-434f-b17c-cf110c555c07/t4/checkpoint-120832",
+          "candidate": "T4:checkpoint-120832",
+          "candidate_id": "T4:checkpoint-120832",
+          "episodes": 200,
+          "instrument": "research_evaluation",
+          "label": "T4 full-range diagnostic evaluation",
+          "model_fingerprint": "aac5477c1dcb8edb80dc291cceea51f238c4d72c8efc9fd56ccfbe3fcf640761",
+          "seed": 103000
+        }
+      ],
+      "module_provenance": null,
+      "paired_comparisons": [],
+      "partial_results": [
+        {
+          "candidate": "T4:checkpoint-120832",
+          "candidate_id": "T4:checkpoint-120832",
+          "instrument": "research_evaluation",
+          "label": "T4 full-range diagnostic evaluation",
+          "metrics": {
+            "episodes": 200,
+            "evaluation_artifact": "campaigns/evaluations/97633a56-b4b1-434f-b17c-cf110c555c07/evaluation-97633a56-b4b1-434f-b17c-cf110c555c07-m8-T4-checkpoint-120832-200ep-seed103000-7f90e097efda.json",
+            "evaluation_artifact_contents": {
+              "scope": "structure_only",
+              "sections": [
+                {
+                  "entries": 8,
+                  "path": "",
+                  "type": "object"
+                },
+                {
+                  "path": "/schema_version",
+                  "type": "number"
+                },
+                {
+                  "path": "/model",
+                  "type": "string"
+                },
+                {
+                  "path": "/episodes",
+                  "type": "number"
+                },
+                {
+                  "path": "/seed",
+                  "type": "number"
+                },
+                {
+                  "path": "/official_benchmark",
+                  "type": "boolean"
+                },
+                {
+                  "path": "/success_percent",
+                  "type": "number"
+                },
+                {
+                  "entries": 200,
+                  "field_names": [
+                    "episode",
+                    "episode_seed",
+                    "reward_total",
+                    "steps",
+                    "success",
+                    "terminated",
+                    "truncated"
+                  ],
+                  "path": "/episode_results",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/research_evidence",
+                  "type": "object"
+                },
+                {
+                  "entries": 200,
+                  "field_names": [
+                    "best_branch",
+                    "best_joint_limit_margin_degrees",
+                    "branches",
+                    "episode",
+                    "episode_seed",
+                    "final_distance_cm",
+                    "first_entry_diagnostics",
+                    "first_reach_step",
+                    "hold_interruptions",
+                    "hold_peak_action_abs",
+                    "hold_peak_endpoint_speed",
+                    "hold_peak_joint_speed",
+                    "in_tolerance_steps",
+                    "interruption_diagnostics",
+                    "max_held_steps",
+                    "min_distance_cm",
+                    "peak_action_abs_max",
+                    "peak_endpoint_speed",
+                    "peak_joint_speed",
+                    "target_angle_degrees",
+                    "target_radius_cm",
+                    "termination_cause"
+                  ],
+                  "path": "/research_evidence/episode_diagnostics",
+                  "type": "array"
+                },
+                {
+                  "entries": 5,
+                  "path": "/research_evidence/units",
+                  "type": "object"
+                },
+                {
+                  "path": "/research_evidence/units/distance",
+                  "type": "string"
+                },
+                {
+                  "path": "/research_evidence/units/time",
+                  "type": "string"
+                },
+                {
+                  "path": "/research_evidence/units/joint_velocity",
+                  "type": "string"
+                },
+                {
+                  "path": "/research_evidence/units/endpoint_velocity",
+                  "type": "string"
+                },
+                {
+                  "path": "/research_evidence/units/action",
+                  "type": "string"
+                }
+              ],
+              "truncated": false
+            },
+            "evaluation_artifact_fingerprint": "4d9e24acb6932a1b42f2d14bae9cd67fcb2f8346973354b0592c0ccd44581a8d",
+            "evaluation_semantics": "7f90e097efda",
+            "model_fingerprint": "aac5477c1dcb8edb80dc291cceea51f238c4d72c8efc9fd56ccfbe3fcf640761",
+            "official_benchmark": false,
+            "schema_version": 5,
+            "seed": 103000,
+            "success_percent": 18.0,
+            "successes": 36
+          }
+        }
+      ],
+      "result": {
+        "measurements": [
+          {
+            "candidate": "T4:checkpoint-120832",
+            "candidate_id": "T4:checkpoint-120832",
+            "instrument": "research_evaluation",
+            "label": "T4 full-range diagnostic evaluation",
+            "metrics": {
+              "episodes": 200,
+              "evaluation_artifact": "campaigns/evaluations/97633a56-b4b1-434f-b17c-cf110c555c07/evaluation-97633a56-b4b1-434f-b17c-cf110c555c07-m8-T4-checkpoint-120832-200ep-seed103000-7f90e097efda.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 8,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/model",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/seed",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/official_benchmark",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 200,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "reward_total",
+                      "steps",
+                      "success",
+                      "terminated",
+                      "truncated"
+                    ],
+                    "path": "/episode_results",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 200,
+                    "field_names": [
+                      "best_branch",
+                      "best_joint_limit_margin_degrees",
+                      "branches",
+                      "episode",
+                      "episode_seed",
+                      "final_distance_cm",
+                      "first_entry_diagnostics",
+                      "first_reach_step",
+                      "hold_interruptions",
+                      "hold_peak_action_abs",
+                      "hold_peak_endpoint_speed",
+                      "hold_peak_joint_speed",
+                      "in_tolerance_steps",
+                      "interruption_diagnostics",
+                      "max_held_steps",
+                      "min_distance_cm",
+                      "peak_action_abs_max",
+                      "peak_endpoint_speed",
+                      "peak_joint_speed",
+                      "target_angle_degrees",
+                      "target_radius_cm",
+                      "termination_cause"
+                    ],
+                    "path": "/research_evidence/episode_diagnostics",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/research_evidence/units",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/research_evidence/units/distance",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/time",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/joint_velocity",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/endpoint_velocity",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/action",
+                    "type": "string"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "4d9e24acb6932a1b42f2d14bae9cd67fcb2f8346973354b0592c0ccd44581a8d",
+              "evaluation_semantics": "7f90e097efda",
+              "model_fingerprint": "aac5477c1dcb8edb80dc291cceea51f238c4d72c8efc9fd56ccfbe3fcf640761",
+              "official_benchmark": false,
+              "schema_version": 5,
+              "seed": 103000,
+              "success_percent": 18.0,
+              "successes": 36
+            }
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": null
+      },
+      "task_reference_contract": null
+    },
+    "failure": null,
+    "id": "M8",
+    "inquiry_id": "I1",
+    "kind": "measurement",
+    "progress": "completed",
+    "request": {
+      "measurement": {
+        "description": "Evaluate T4:checkpoint-120832 on a fresh 200-episode full-range research panel with the established hold, geometry, timeout, velocity, and action diagnostics.",
+        "measurements": [
+          {
+            "candidate": "T4:checkpoint-120832",
+            "episodes": 200,
+            "instrument": "research_evaluation",
+            "label": "T4 full-range diagnostic evaluation",
+            "seed": 103000
+          }
+        ],
+        "paired_comparisons": [],
+        "rationale": "T4 was designed to test whether the T3 timeout concentration near the angle seam was caused by insufficient training exposure. Its training log shows no completed training successes, so training statistics cannot establish whether the intervention helped or failed. A behavioral evaluation is the discriminating next operation: the established evaluator will measure uninterrupted hold success and allocate failures by angle, radius, branch-limit margin, maneuver timeout, and post-entry settling. The panel starts at seed 103000 to avoid overlap with the T1 and T3 development panels. If seam-angle timeouts improve without broad coverage loss, angle exposure is supported; if T4 remains broadly unsuccessful or shifts failures into other geometries, the next direction should address the observation/control representation rather than further sampling changes."
+      }
+    },
+    "request_fingerprint": "0f4d83db72bad592351a9201bcfb6beb22d1a7ee8d3aca69832bb043dda1b2a0",
+    "session_id": "S3",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No candidates exist. I1 has just opened and no learned policy has yet been trained or assigned a working, best-known, or retained role.",
     "completed_operations": [
@@ -6266,7 +6730,8 @@
       "T3",
       "M6",
       "M7",
-      "T4"
+      "T4",
+      "M8"
     ],
     "scientific_parent_commit": "f63a80c6bb31c978c34e4cf046df334d91af356d"
   },
