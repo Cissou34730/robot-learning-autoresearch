@@ -30,3 +30,4 @@
 | E15 | checkpoint | - | checkpointed |
 | T5 | training | I4 | completed |
 | M8 | measurement | I4 | completed |
+| E16 | inquiry | I4 | completed |

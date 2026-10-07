@@ -1,16 +1,5 @@
 {
-  "active_inquiry": {
-    "closure_condition": "Close when one bounded learned approach or branch-selection refinement, distinct from increasing the rejected velocity penalty coefficient, is evaluated against T3 on a fresh matched panel with radius-stratified success and residual failure diagnostics. A meaningful success increase toward 98% with no 14-20 cm regression supports continuing the learned-control route; failure despite adequate compiled responses closes this route and records that the remaining cause is unresolved rather than attributing it to actuator authority.",
-    "goal_connection": "The human goal requires at least 98% complete uninterrupted holds over the official 6-20 cm distribution. T3 remains at 94% on M4 and M5 and 95% on M6, so official assessment is not justified. M7 found strong compiled saturated responses across representative radii and both IK branches, without a branch-specific authority collapse, making a learned approach or branch-selection refinement the most actionable route to recover the remaining failures while preserving 14-20 cm competence.",
-    "handoff_conclusion": "Observed facts: T1 achieved 73% on its matched panels, with failures concentrated below 14 cm. M3 found 22 non-entries and 5 interrupted holds, action saturation in all interrupted episodes but also many successful episodes, branch switching in successful and failing episodes, and no failure concentration in hidden substep excursions. T2 achieved 35%, establishing that fresh full-domain training recipe as insufficient but not rejecting coverage or identifying a physical cause. T3 transferred from T1 with one bounded velocity-aware settling reward term and achieved 94% on M4 and M5, improving near-base performance while preserving high outer-radius competence. M6 showed T3 at 95% and T4 at 85% on shared seeds. T4 changed only the settling velocity penalty coefficient from 0.25 to 0.5; its losses were concentrated at 6-10 cm (20/30 versus T3's 29/30), with a smaller 14-20 cm regression (41/44 versus 42/44). This rejects the tested stronger penalty as a useful refinement, not the broader settling/control explanation. M6 traces show near-universal action saturation in both T3 successes and T4 failures, so saturation alone does not establish configuration-dependent actuator authority or compiled-dynamics limits. The reproducible T3 advantage supports branch-conditioned approach and hold instability as important actionable mechanisms, but the remaining causal distinction between learned approach/representation limits and physical authority remains unresolved.",
-    "handoff_question": "How can the velocity-aware settling intervention be refined to raise official-distribution success from 94% toward 98% while preserving 14-20 cm competence, and do residual failures indicate configuration-dependent actuator authority or compiled-dynamics limits?",
-    "handoff_source_session_id": "S7",
-    "id": "I4",
-    "opened_in_session": "S8",
-    "question": "How can the velocity-aware settling intervention be refined to raise official-distribution success from 94% toward 98% while preserving 14-20 cm competence, and do residual failures indicate configuration-dependent actuator authority or compiled-dynamics limits?",
-    "rationale": "M7 supplies the previously missing compiled-dynamics evidence: the model's actuator limits, masses, inertias, damping, and armature are explicit at runtime, and saturated actions produce large initial accelerations and measurable 20 ms joint motion across 6, 10, 14, 18, and 20 cm targets on both branches. The responses vary with configuration but do not show inadequate authority or a branch-specific collapse. This changes the decision frontier from primarily authority characterization to learned approach, branch selection, and transient braking design. M3 and M6 still prevent treating saturation as irrelevant, so the inquiry will test one bounded learned refinement against T3 rather than assume that M7 alone establishes a policy cause.",
-    "reframes": []
-  },
+  "active_inquiry": null,
   "campaign": {
     "base_commit": "a5d5b4c0fe00c1103abb30662c0874b87de08157",
     "id": "06656182-d7f0-4011-898d-2b870e8a2a54",
@@ -4118,7 +4107,7 @@
     }
   },
   "counters": {
-    "event": 15,
+    "event": 16,
     "inquiry": 4,
     "measurement": 8,
     "session": 9,
@@ -8022,9 +8011,63 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-07T20:38:44Z",
+      "error": null,
+      "id": "E16",
+      "inquiry_id": "I4",
+      "kind": "inquiry",
+      "request": {
+        "action": "close",
+        "outcome": "I4 closes with a limited positive learned-control result. T5's anticipatory-braking refinement reached 95% versus T3's 93% on a fresh shared 100-episode panel, improving 6-10 cm success from 90.3% to 93.5%, preserving 10-14 cm at 100%, and improving 14-20 cm success from 92% to 94%.",
+        "reason": "M8 satisfies I4's closure condition by evaluating one bounded learned transient-braking refinement distinct from increasing the rejected velocity penalty coefficient, with radius-stratified residual diagnostics. Widening the settling gate while restoring the original penalty magnitude produced a meaningful paired improvement and no 14-20 cm regression, supporting learned approach/braking refinement as an actionable route. The remaining five T5 failures span near-base and outer-radius targets, and M7 already showed strong compiled saturated responses without a branch-specific authority collapse; together these results do not establish configuration-dependent actuator authority or compiled-dynamics limits as the dominant cause. The human 98% objective remains unmet, so the next inquiry must continue the learned-control route rather than request official assessment."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I4",
+        "outcome": "I4 closes with a limited positive learned-control result. T5's anticipatory-braking refinement reached 95% versus T3's 93% on a fresh shared 100-episode panel, improving 6-10 cm success from 90.3% to 93.5%, preserving 10-14 cm at 100%, and improving 14-20 cm success from 92% to 94%.",
+        "reason": "M8 satisfies I4's closure condition by evaluating one bounded learned transient-braking refinement distinct from increasing the rejected velocity penalty coefficient, with radius-stratified residual diagnostics. Widening the settling gate while restoring the original penalty magnitude produced a meaningful paired improvement and no 14-20 cm regression, supporting learned approach/braking refinement as an actionable route. The remaining five T5 failures span near-base and outer-radius targets, and M7 already showed strong compiled saturated responses without a branch-specific authority collapse; together these results do not establish configuration-dependent actuator authority or compiled-dynamics limits as the dominant cause. The human 98% objective remains unmet, so the next inquiry must continue the learned-control route rather than request official assessment.",
+        "status": "completed"
+      },
+      "session_id": "S9",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "close",
+        "inquiry_id": "I4",
+        "outcome": "I4 closes with a limited positive learned-control result. T5's anticipatory-braking refinement reached 95% versus T3's 93% on a fresh shared 100-episode panel, improving 6-10 cm success from 90.3% to 93.5%, preserving 10-14 cm at 100%, and improving 14-20 cm success from 92% to 94%.",
+        "reason": "M8 satisfies I4's closure condition by evaluating one bounded learned transient-braking refinement distinct from increasing the rejected velocity penalty coefficient, with radius-stratified residual diagnostics. Widening the settling gate while restoring the original penalty magnitude produced a meaningful paired improvement and no 14-20 cm regression, supporting learned approach/braking refinement as an actionable route. The remaining five T5 failures span near-base and outer-radius targets, and M7 already showed strong compiled saturated responses without a branch-specific authority collapse; together these results do not establish configuration-dependent actuator authority or compiled-dynamics limits as the dominant cause. The human 98% objective remains unmet, so the next inquiry must continue the learned-control route rather than request official assessment."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I4",
+        "outcome": "I4 closes with a limited positive learned-control result. T5's anticipatory-braking refinement reached 95% versus T3's 93% on a fresh shared 100-episode panel, improving 6-10 cm success from 90.3% to 93.5%, preserving 10-14 cm at 100%, and improving 14-20 cm success from 92% to 94%.",
+        "reason": "M8 satisfies I4's closure condition by evaluating one bounded learned transient-braking refinement distinct from increasing the rejected velocity penalty coefficient, with radius-stratified residual diagnostics. Widening the settling gate while restoring the original penalty magnitude produced a meaningful paired improvement and no 14-20 cm regression, supporting learned approach/braking refinement as an actionable route. The remaining five T5 failures span near-base and outer-radius targets, and M7 already showed strong compiled saturated responses without a branch-specific authority collapse; together these results do not establish configuration-dependent actuator authority or compiled-dynamics limits as the dominant cause. The human 98% objective remains unmet, so the next inquiry must continue the learned-control route rather than request official assessment.",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E16",
+    "inquiry_id": "I4",
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "close",
+        "outcome": "I4 closes with a limited positive learned-control result. T5's anticipatory-braking refinement reached 95% versus T3's 93% on a fresh shared 100-episode panel, improving 6-10 cm success from 90.3% to 93.5%, preserving 10-14 cm at 100%, and improving 14-20 cm success from 92% to 94%.",
+        "reason": "M8 satisfies I4's closure condition by evaluating one bounded learned transient-braking refinement distinct from increasing the rejected velocity penalty coefficient, with radius-stratified residual diagnostics. Widening the settling gate while restoring the original penalty magnitude produced a meaningful paired improvement and no 14-20 cm regression, supporting learned approach/braking refinement as an actionable route. The remaining five T5 failures span near-base and outer-radius targets, and M7 already showed strong compiled saturated responses without a branch-specific authority collapse; together these results do not establish configuration-dependent actuator authority or compiled-dynamics limits as the dominant cause. The human 98% objective remains unmet, so the next inquiry must continue the learned-control route rather than request official assessment."
+      }
+    },
+    "request_fingerprint": "aef82ed15dc4f09dac037a0d6d826b3c9b7cf3d8e194cb951981a6f958a5b0c1",
+    "session_id": "S9",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No formal model role has been assigned. T3:checkpoint-120832 remains the strongest evaluated development candidate at 94% on M4 and M5 and 95% on M6. T4:checkpoint-120832 is retained only as evidence that doubling the settling velocity penalty is an inferior refinement. T1 remains the paired reference and T2 remains evidence about the insufficient tested fresh full-domain recipe. M7 is a completed characterization measurement, not a policy candidate.",
     "completed_operations": [
@@ -8080,7 +8123,8 @@
     "objective": "Advance I4 toward an evidence-supported answer to its scientific question: How can the velocity-aware settling intervention be refined to raise official-distribution success from 94% toward 98% while preserving 14-20 cm competence, and do residual failures indicate configuration-dependent actuator authority or compiled-dynamics limits?",
     "operation_ids": [
       "T5",
-      "M8"
+      "M8",
+      "E16"
     ],
     "scientific_parent_commit": "d1051aeb7e2fb3ec642c71c45562c0bfef4effa0"
   },
