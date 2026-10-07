@@ -437,7 +437,29 @@ its scientific breadth or achieve its result.
 
 ## Current backlog and remaining work
 
-### Current backlog (2026-10-04)
+### Outstanding issue register (2026-10-07)
+
+Use `OI-###` as the stable identifier for an outstanding harness issue. Do not
+reuse an identifier after an issue is resolved, withdrawn or rejected.
+Implementation checks and unassessed campaign effects are not separate issues.
+
+| ID | Issue | Status / boundary |
+|---|---|---|
+| OI-001 | Startup scientific-method selection | **Open.** Startup can produce a meaningful physical or methodological study, but it can also default directly to training without evidence that training is the most informative action. R1 improved the preliminary-to-startup handoff but did not establish reliable action selection. This is separate from the startup training budget. |
+| OI-002 | Inquiry control and bounded closure | **Open.** An inquiry can continue after its evidence answers the decision need. Questions and closure conditions must permit positive, negative, limited or inconclusive conclusions without requiring a successful intervention. No design or runtime change is approved. |
+| OI-003 | Measurement-evidence inspection and interpretation | **Open.** The PI has overlooked advertised diagnostic strata, read partial artifacts as complete and lost consequential counterevidence in synthesis. Discoverability is retained, but decision-linked inspection remains unresolved. |
+| OI-004 | Checkpoint nomination, evidence selection and scientific progression | **Open; partly deferred behind OI-002.** Available training facts can nominate an artifact but do not prove development performance. The PI must select artifacts and subsequent operations from the learning trajectory, evidence need and remaining uncertainty rather than defaulting to another training recipe. |
+| OI-005 | Counterevidence preservation and official-assessment readiness | **Postponed.** The narrow readiness guidance was withdrawn. Residual-evidence loss and premature readiness conclusions remain unresolved. No replacement readiness prompt is approved. |
+| OI-006 | Full startup-budget review | **Pending.** Shorter startup requests are permitted, but the maintainer-owned 120,000-step ceiling and its scientific effect have not received the planned full review. This budget question is not the cause or solution for OI-001. |
+| OI-007 | Complete prompt-stack review item R2 | **Paused.** Scientific context now precedes operational options, but ordinary sessions do not place the human goal before the PI role. The remaining ordering change is not approved. |
+| OI-008 | Residual context-delivery work | **Possible work, not approved.** Brief-only compaction is implemented. Prompt replay and SDK output handling remain separate possible causes of context flooding. |
+| OI-009 | Operation-submission handoff clarification | **Unimplemented.** No change is approved. |
+| OI-010 | Explicit protection of the old protocol log | **Unimplemented.** Read-access policy remains a separate decision. |
+| OI-011 | Console clarity and maintainer-file read controls | **Deferred.** Phase-specific source-read controls are implemented. Console presentation and any further maintainer-file controls remain separate work. |
+| OI-012 | Independent frozen-policy publication | **Proposal only.** Publication independent of training is not approved or implemented. Campaign recovery is not authorized. |
+| OI-013 | Remove the temporary fifteen-inquiry cap | **Pending.** The cap now pauses at a checkpointed boundary and no longer represents scientific exhaustion. Its value is unchanged. Removal remains a later maintainer decision. |
+
+### Detailed backlog and status context
 
 | Item | Status / boundary |
 |---|---|
@@ -456,7 +478,7 @@ its scientific breadth or achieve its result.
 | Scientific-exhaustion / no-credible-route outcome | **Removed from future requests and instructions.** Obsolete pending execution is rejected. Historical E19 remains readable and unchanged. Directly affected checks pass; scientific effect remains unassessed. |
 | Fifteen-inquiry cap | **Decoupled; value unchanged.** The launcher pauses after active work is checkpointed, without a terminal state. Measurements keep their permission. Only an explicit maintainer increase at that paused boundary resumes execution. Later cap removal remains pending. E19 at four of fifteen inquiries was not cap-triggered. |
 | Publication/recovery, maintainer training allocation, and goal-review role availability | Implemented; not active repair items. |
-| Independent prompt-stack review R1-R8 | **R1, R5-1, and R5-2 are implemented. R2 is partially implemented and paused. R3 and R4 are discarded for distinct reasons.** R2 removes the generic policy destination and puts scientific context before operational options. It does not put the human goal before the PI role in ordinary sessions. R3 made the inquiry question too important. The original inquiry rules are restored. R4 became redundant after later recovery work supplied its useful behavior. R5-2 explains candidate-free measurement capability without prescribing an operation or sequence. R5-1 rewrites the instrument contract in controlled English without changing its schemas or mechanical rules. R6-R8 remain open and separately scoped. None is a campaign operation or Runner scientific gate. |
+| Independent prompt-stack review R1-R8 | **R1, R5-1, R5-2, R6, R7 and R8 are implemented. R2 is partially implemented and paused as OI-007. R3 and R4 are discarded for distinct reasons.** R2 removes the generic policy destination and puts scientific context before operational options. It does not put the human goal before the PI role in ordinary sessions. R3 made the inquiry question too important. The original inquiry rules are restored. R4 became redundant after later recovery work supplied its useful behavior. R5-2 explains candidate-free measurement capability without prescribing an operation or sequence. R5-1 rewrites the instrument contract in controlled English without changing its schemas or mechanical rules. R6 clarifies retention and replacement neutrality. R7 corrects routing and paths. R8 assigns instruction types to one owner and removes launcher repetition. None is a campaign operation or Runner scientific gate. |
 
 The startup allocation change is tactical, not a solution to scientific
 continuity. Counterevidence preservation and official-assessment readiness
@@ -2373,7 +2395,7 @@ separate from harness changes so their outcomes are not conflated.
 - **Status:** implemented for the next fresh campaign. No campaign operation
   was started, resumed or reset during implementation.
 
-## 2026-10-07: log inquiry-control failure from campaign b366ab54
+## 2026-10-07: log inquiry-control failure from campaign b366ab54 (OI-002)
 
 - **Observation:** I2 asked which intervention would most reliably suppress the
   observed failure mechanism. This question did not define a bounded set of
@@ -2409,4 +2431,22 @@ separate from harness changes so their outcomes are not conflated.
 - **Boundary:** the assessment-readiness issue remains postponed. No campaign
   has been launched, resumed, reset, trained, measured, or evaluated.
 - **Status:** R6 and R7 are implemented. The b366ab54 inquiry-control finding
-  remains intact for separate follow-up.
+  remains intact as OI-002 for separate follow-up.
+
+## 2026-10-07: implement R8 and number outstanding issues
+
+- **R8 implementation:** commit `8166e2f` assigns lifecycle meanings to
+  `contracts/program.md`, mechanics to `contracts/instruments.md`, ownership
+  and command authority to `AGENTS.md`, and current state and legal actions to
+  the launcher prompt. It removes repeated launcher guidance without changing
+  inquiry closure, operation permissions, allocation values or Runner
+  validation.
+- **Issue register:** the active backlog now uses stable `OI-###` identifiers.
+  OI-001 records unreliable startup scientific-method selection separately
+  from OI-006, the startup-budget review. OI-002 identifies the inquiry-control
+  failure already recorded above.
+- **Boundary:** numbering does not prioritize an issue, approve a solution or
+  establish scientific effect. Completed changes and unassessed effects remain
+  status context rather than new outstanding issues.
+- **Status:** R8 is implemented. OI-001 through OI-013 are the current
+  outstanding-issue register.
