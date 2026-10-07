@@ -39,4 +39,4 @@
 | E20 | inquiry | I5 | completed |
 | E21 | checkpoint | I5 | checkpointed |
 | E22 | model_role | - | assigned |
-| E23 | campaign_conclusion | - | official_assessment_requested |
+| E23 | campaign_conclusion | - | official_assessment_passed |
