@@ -191,7 +191,9 @@
     },
     "T1:checkpoint-120832": {
       "artifact": "campaigns/checkpoints/candidates/97633a56-b4b1-434f-b17c-cf110c555c07/t1/checkpoint-120832",
-      "evaluation_artifacts": [],
+      "evaluation_artifacts": [
+        "campaigns/evaluations/97633a56-b4b1-434f-b17c-cf110c555c07/evaluation-97633a56-b4b1-434f-b17c-cf110c555c07-m2-T1-checkpoint-120832-200ep-seed100000-e1902a438dc3.json"
+      ],
       "fingerprint": "0af82f8f7fd6e653584d3b534f1aebcfd15d392429c4e076cd2e1c8f9b28c4d7",
       "id": "T1:checkpoint-120832",
       "name": "checkpoint-120832",
@@ -839,7 +841,7 @@
   "counters": {
     "event": 3,
     "inquiry": 1,
-    "measurement": 1,
+    "measurement": 2,
     "session": 3,
     "training": 1
   },
@@ -1454,9 +1456,469 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-07T10:08:02Z",
+      "error": null,
+      "id": "M2",
+      "inquiry_id": "I1",
+      "kind": "measurement",
+      "request": {
+        "description": "Evaluate the final full-range training checkpoint on 200 fresh official-distribution development episodes with complete hold, geometry, timeout, and phase-aligned motion diagnostics.",
+        "measurements": [
+          {
+            "candidate": "T1:checkpoint-120832",
+            "episodes": 200,
+            "instrument": "research_evaluation",
+            "label": "full-range final checkpoint capability and settling diagnostics",
+            "seed": 100000
+          }
+        ],
+        "rationale": "T1 trained on the complete 0.06-0.20 m radius range but reached only 0.60 internal success at its final checkpoint, which is not evidence for the 98% objective. This evaluation distinguishes the competing I1 mechanisms: first-entry and timeout statistics test maneuver capability, radius and angle plus branch-limit margins test geometric concentration, and first-entry, hold, interruption, velocity, and action diagnostics test post-entry settling under the 2-second uninterrupted criterion."
+      },
+      "result": {
+        "measurements": [
+          {
+            "candidate": "T1:checkpoint-120832",
+            "candidate_id": "T1:checkpoint-120832",
+            "instrument": "research_evaluation",
+            "label": "full-range final checkpoint capability and settling diagnostics",
+            "metrics": {
+              "episodes": 200,
+              "evaluation_artifact": "campaigns/evaluations/97633a56-b4b1-434f-b17c-cf110c555c07/evaluation-97633a56-b4b1-434f-b17c-cf110c555c07-m2-T1-checkpoint-120832-200ep-seed100000-e1902a438dc3.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 8,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/model",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/seed",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/official_benchmark",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 200,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "reward_total",
+                      "steps",
+                      "success",
+                      "terminated",
+                      "truncated"
+                    ],
+                    "path": "/episode_results",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 200,
+                    "field_names": [
+                      "best_branch",
+                      "best_joint_limit_margin_degrees",
+                      "branches",
+                      "episode",
+                      "episode_seed",
+                      "final_distance_cm",
+                      "first_entry_diagnostics",
+                      "first_reach_step",
+                      "hold_interruptions",
+                      "hold_peak_action_abs",
+                      "hold_peak_endpoint_speed",
+                      "hold_peak_joint_speed",
+                      "in_tolerance_steps",
+                      "interruption_diagnostics",
+                      "max_held_steps",
+                      "min_distance_cm",
+                      "peak_action_abs_max",
+                      "peak_endpoint_speed",
+                      "peak_joint_speed",
+                      "target_angle_degrees",
+                      "target_radius_cm",
+                      "termination_cause"
+                    ],
+                    "path": "/research_evidence/episode_diagnostics",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/research_evidence/units",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/research_evidence/units/distance",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/time",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/joint_velocity",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/endpoint_velocity",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/action",
+                    "type": "string"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "0d8afbe4a93bff75afcf9d836f73e9aa7afc9c79aa9162968a9c98fb0bb22713",
+              "evaluation_semantics": "e1902a438dc3",
+              "model_fingerprint": "0af82f8f7fd6e653584d3b534f1aebcfd15d392429c4e076cd2e1c8f9b28c4d7",
+              "official_benchmark": false,
+              "schema_version": 5,
+              "seed": 100000,
+              "success_percent": 60.0,
+              "successes": 120
+            }
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": null
+      },
+      "session_id": "S3",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "evaluation_semantics": "e1902a438dc3",
+      "measurements": [
+        {
+          "artifact": "campaigns/checkpoints/candidates/97633a56-b4b1-434f-b17c-cf110c555c07/t1/checkpoint-120832",
+          "candidate": "T1:checkpoint-120832",
+          "candidate_id": "T1:checkpoint-120832",
+          "episodes": 200,
+          "instrument": "research_evaluation",
+          "label": "full-range final checkpoint capability and settling diagnostics",
+          "model_fingerprint": "0af82f8f7fd6e653584d3b534f1aebcfd15d392429c4e076cd2e1c8f9b28c4d7",
+          "seed": 100000
+        }
+      ],
+      "module_provenance": null,
+      "paired_comparisons": [],
+      "partial_results": [
+        {
+          "candidate": "T1:checkpoint-120832",
+          "candidate_id": "T1:checkpoint-120832",
+          "instrument": "research_evaluation",
+          "label": "full-range final checkpoint capability and settling diagnostics",
+          "metrics": {
+            "episodes": 200,
+            "evaluation_artifact": "campaigns/evaluations/97633a56-b4b1-434f-b17c-cf110c555c07/evaluation-97633a56-b4b1-434f-b17c-cf110c555c07-m2-T1-checkpoint-120832-200ep-seed100000-e1902a438dc3.json",
+            "evaluation_artifact_contents": {
+              "scope": "structure_only",
+              "sections": [
+                {
+                  "entries": 8,
+                  "path": "",
+                  "type": "object"
+                },
+                {
+                  "path": "/schema_version",
+                  "type": "number"
+                },
+                {
+                  "path": "/model",
+                  "type": "string"
+                },
+                {
+                  "path": "/episodes",
+                  "type": "number"
+                },
+                {
+                  "path": "/seed",
+                  "type": "number"
+                },
+                {
+                  "path": "/official_benchmark",
+                  "type": "boolean"
+                },
+                {
+                  "path": "/success_percent",
+                  "type": "number"
+                },
+                {
+                  "entries": 200,
+                  "field_names": [
+                    "episode",
+                    "episode_seed",
+                    "reward_total",
+                    "steps",
+                    "success",
+                    "terminated",
+                    "truncated"
+                  ],
+                  "path": "/episode_results",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/research_evidence",
+                  "type": "object"
+                },
+                {
+                  "entries": 200,
+                  "field_names": [
+                    "best_branch",
+                    "best_joint_limit_margin_degrees",
+                    "branches",
+                    "episode",
+                    "episode_seed",
+                    "final_distance_cm",
+                    "first_entry_diagnostics",
+                    "first_reach_step",
+                    "hold_interruptions",
+                    "hold_peak_action_abs",
+                    "hold_peak_endpoint_speed",
+                    "hold_peak_joint_speed",
+                    "in_tolerance_steps",
+                    "interruption_diagnostics",
+                    "max_held_steps",
+                    "min_distance_cm",
+                    "peak_action_abs_max",
+                    "peak_endpoint_speed",
+                    "peak_joint_speed",
+                    "target_angle_degrees",
+                    "target_radius_cm",
+                    "termination_cause"
+                  ],
+                  "path": "/research_evidence/episode_diagnostics",
+                  "type": "array"
+                },
+                {
+                  "entries": 5,
+                  "path": "/research_evidence/units",
+                  "type": "object"
+                },
+                {
+                  "path": "/research_evidence/units/distance",
+                  "type": "string"
+                },
+                {
+                  "path": "/research_evidence/units/time",
+                  "type": "string"
+                },
+                {
+                  "path": "/research_evidence/units/joint_velocity",
+                  "type": "string"
+                },
+                {
+                  "path": "/research_evidence/units/endpoint_velocity",
+                  "type": "string"
+                },
+                {
+                  "path": "/research_evidence/units/action",
+                  "type": "string"
+                }
+              ],
+              "truncated": false
+            },
+            "evaluation_artifact_fingerprint": "0d8afbe4a93bff75afcf9d836f73e9aa7afc9c79aa9162968a9c98fb0bb22713",
+            "evaluation_semantics": "e1902a438dc3",
+            "model_fingerprint": "0af82f8f7fd6e653584d3b534f1aebcfd15d392429c4e076cd2e1c8f9b28c4d7",
+            "official_benchmark": false,
+            "schema_version": 5,
+            "seed": 100000,
+            "success_percent": 60.0,
+            "successes": 120
+          }
+        }
+      ],
+      "result": {
+        "measurements": [
+          {
+            "candidate": "T1:checkpoint-120832",
+            "candidate_id": "T1:checkpoint-120832",
+            "instrument": "research_evaluation",
+            "label": "full-range final checkpoint capability and settling diagnostics",
+            "metrics": {
+              "episodes": 200,
+              "evaluation_artifact": "campaigns/evaluations/97633a56-b4b1-434f-b17c-cf110c555c07/evaluation-97633a56-b4b1-434f-b17c-cf110c555c07-m2-T1-checkpoint-120832-200ep-seed100000-e1902a438dc3.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 8,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/model",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/seed",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/official_benchmark",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 200,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "reward_total",
+                      "steps",
+                      "success",
+                      "terminated",
+                      "truncated"
+                    ],
+                    "path": "/episode_results",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 200,
+                    "field_names": [
+                      "best_branch",
+                      "best_joint_limit_margin_degrees",
+                      "branches",
+                      "episode",
+                      "episode_seed",
+                      "final_distance_cm",
+                      "first_entry_diagnostics",
+                      "first_reach_step",
+                      "hold_interruptions",
+                      "hold_peak_action_abs",
+                      "hold_peak_endpoint_speed",
+                      "hold_peak_joint_speed",
+                      "in_tolerance_steps",
+                      "interruption_diagnostics",
+                      "max_held_steps",
+                      "min_distance_cm",
+                      "peak_action_abs_max",
+                      "peak_endpoint_speed",
+                      "peak_joint_speed",
+                      "target_angle_degrees",
+                      "target_radius_cm",
+                      "termination_cause"
+                    ],
+                    "path": "/research_evidence/episode_diagnostics",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/research_evidence/units",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/research_evidence/units/distance",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/time",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/joint_velocity",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/endpoint_velocity",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/action",
+                    "type": "string"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "0d8afbe4a93bff75afcf9d836f73e9aa7afc9c79aa9162968a9c98fb0bb22713",
+              "evaluation_semantics": "e1902a438dc3",
+              "model_fingerprint": "0af82f8f7fd6e653584d3b534f1aebcfd15d392429c4e076cd2e1c8f9b28c4d7",
+              "official_benchmark": false,
+              "schema_version": 5,
+              "seed": 100000,
+              "success_percent": 60.0,
+              "successes": 120
+            }
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": null
+      },
+      "task_reference_contract": null
+    },
+    "failure": null,
+    "id": "M2",
+    "inquiry_id": "I1",
+    "kind": "measurement",
+    "progress": "completed",
+    "request": {
+      "measurement": {
+        "description": "Evaluate the final full-range training checkpoint on 200 fresh official-distribution development episodes with complete hold, geometry, timeout, and phase-aligned motion diagnostics.",
+        "measurements": [
+          {
+            "candidate": "T1:checkpoint-120832",
+            "episodes": 200,
+            "instrument": "research_evaluation",
+            "label": "full-range final checkpoint capability and settling diagnostics",
+            "seed": 100000
+          }
+        ],
+        "rationale": "T1 trained on the complete 0.06-0.20 m radius range but reached only 0.60 internal success at its final checkpoint, which is not evidence for the 98% objective. This evaluation distinguishes the competing I1 mechanisms: first-entry and timeout statistics test maneuver capability, radius and angle plus branch-limit margins test geometric concentration, and first-entry, hold, interruption, velocity, and action diagnostics test post-entry settling under the 2-second uninterrupted criterion."
+      }
+    },
+    "request_fingerprint": "ae7a0a0a664cec71f9aa5fa2f9be14f43a764e5092483c360580409e941f8268",
+    "session_id": "S3",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No candidates exist. I1 has just opened and no learned policy has yet been trained or assigned a working, best-known, or retained role.",
     "completed_operations": [
@@ -1495,7 +1957,8 @@
     "kind": "inquiry",
     "objective": "Advance I1 toward an evidence-supported answer to its scientific question: Can a fresh policy trained on the full official radius distribution reliably convert the measured torque authority into uninterrupted 2-second holds, and are its failures concentrated in inner-radius/angle/branch geometries or in post-entry settling?",
     "operation_ids": [
-      "T1"
+      "T1",
+      "M2"
     ],
     "scientific_parent_commit": "693574ddc28f60b8336c9a25fa526d019907b5e1"
   },
