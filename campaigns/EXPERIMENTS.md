@@ -17,3 +17,4 @@
 | M4 | measurement | I2 | completed |
 | T3 | training | I2 | completed |
 | M5 | measurement | I2 | completed |
+| E8 | checkpoint | I2 | checkpointed |
