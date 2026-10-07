@@ -182,7 +182,8 @@
       "artifact": "campaigns/checkpoints/candidates/06656182-d7f0-4011-898d-2b870e8a2a54/t1/checkpoint-120832",
       "evaluation_artifacts": [
         "campaigns/evaluations/06656182-d7f0-4011-898d-2b870e8a2a54/evaluation-06656182-d7f0-4011-898d-2b870e8a2a54-m1-T1-checkpoint-120832-100ep-seed100000-604d52985c97.json",
-        "campaigns/evaluations/06656182-d7f0-4011-898d-2b870e8a2a54/evaluation-06656182-d7f0-4011-898d-2b870e8a2a54-m2-T1-checkpoint-120832-100ep-seed100000-604d52985c97.json"
+        "campaigns/evaluations/06656182-d7f0-4011-898d-2b870e8a2a54/evaluation-06656182-d7f0-4011-898d-2b870e8a2a54-m2-T1-checkpoint-120832-100ep-seed100000-604d52985c97.json",
+        "campaigns/evaluations/06656182-d7f0-4011-898d-2b870e8a2a54/evaluation-06656182-d7f0-4011-898d-2b870e8a2a54-m3-T1-checkpoint-120832-100ep-seed100000-52a0bda9c8e9.json"
       ],
       "fingerprint": "dd074ab8d2a94a66201a35663594c717471602cf49f8450be4ae0def69b7a7f7",
       "id": "T1:checkpoint-120832",
@@ -1649,14 +1650,14 @@
   "counters": {
     "event": 5,
     "inquiry": 1,
-    "measurement": 2,
-    "session": 3,
+    "measurement": 3,
+    "session": 4,
     "training": 2
   },
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -2724,9 +2725,403 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-07T20:04:46Z",
+      "error": null,
+      "id": "M3",
+      "inquiry_id": null,
+      "kind": "measurement",
+      "request": {
+        "description": "Trace T1:checkpoint-120832 on the matched 100-episode development panel with control-boundary and simulator-substep diagnostics.",
+        "measurements": [
+          {
+            "candidate": "T1:checkpoint-120832",
+            "episodes": 100,
+            "instrument": "research_evaluation",
+            "label": "T1 mechanistic trajectory and substep trace",
+            "seed": 100000
+          }
+        ],
+        "rationale": "The candidate is 25 percentage points below the human goal, and existing evidence identifies near-base non-entry and interrupted holds without distinguishing branch-conditioned trajectory instability, compiled-dynamics or actuator-authority limits, and hidden substep excursions. The measurement records target geometry, q, qdot, applied action, actuator force, qacc, branch occupancy and switching, Jacobian determinant and conditioning, control-boundary distance, and all ten simulator-step distances for every episode. High entry speed or branch switching, saturated commands with inadequate acceleration, or large within-interval excursions would select different next interventions while preserving the 14-20 cm baseline for comparison."
+      },
+      "result": {
+        "measurements": [
+          {
+            "candidate": "T1:checkpoint-120832",
+            "candidate_id": "T1:checkpoint-120832",
+            "instrument": "research_evaluation",
+            "label": "T1 mechanistic trajectory and substep trace",
+            "metrics": {
+              "episodes": 100,
+              "evaluation_artifact": "campaigns/evaluations/06656182-d7f0-4011-898d-2b870e8a2a54/evaluation-06656182-d7f0-4011-898d-2b870e8a2a54-m3-T1-checkpoint-120832-100ep-seed100000-52a0bda9c8e9.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 8,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/model",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/seed",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/official_benchmark",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 100,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "reward_total",
+                      "steps",
+                      "success",
+                      "terminated",
+                      "truncated"
+                    ],
+                    "path": "/episode_results",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 100,
+                    "field_names": [
+                      "branch_switches",
+                      "episode",
+                      "episode_seed",
+                      "final_distance_cm",
+                      "first_reach_step",
+                      "hold_interruptions",
+                      "in_tolerance_steps",
+                      "max_held_steps",
+                      "min_distance_cm",
+                      "target_angle_degrees",
+                      "target_radius_cm",
+                      "trajectory_trace"
+                    ],
+                    "path": "/research_evidence/episode_diagnostics",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence/units",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/research_evidence/units/distance",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/time",
+                    "type": "string"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "b696f5b721a140e8868a8d74188d92a64e41d3203b9489f0335f68459c2a0c6c",
+              "evaluation_semantics": "52a0bda9c8e9",
+              "model_fingerprint": "dd074ab8d2a94a66201a35663594c717471602cf49f8450be4ae0def69b7a7f7",
+              "official_benchmark": false,
+              "schema_version": 6,
+              "seed": 100000,
+              "success_percent": 73.0,
+              "successes": 73
+            }
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": null
+      },
+      "session_id": "S4",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "evaluation_semantics": "52a0bda9c8e9",
+      "measurements": [
+        {
+          "artifact": "campaigns/checkpoints/candidates/06656182-d7f0-4011-898d-2b870e8a2a54/t1/checkpoint-120832",
+          "candidate": "T1:checkpoint-120832",
+          "candidate_id": "T1:checkpoint-120832",
+          "episodes": 100,
+          "instrument": "research_evaluation",
+          "label": "T1 mechanistic trajectory and substep trace",
+          "model_fingerprint": "dd074ab8d2a94a66201a35663594c717471602cf49f8450be4ae0def69b7a7f7",
+          "seed": 100000
+        }
+      ],
+      "module_provenance": null,
+      "paired_comparisons": [],
+      "partial_results": [
+        {
+          "candidate": "T1:checkpoint-120832",
+          "candidate_id": "T1:checkpoint-120832",
+          "instrument": "research_evaluation",
+          "label": "T1 mechanistic trajectory and substep trace",
+          "metrics": {
+            "episodes": 100,
+            "evaluation_artifact": "campaigns/evaluations/06656182-d7f0-4011-898d-2b870e8a2a54/evaluation-06656182-d7f0-4011-898d-2b870e8a2a54-m3-T1-checkpoint-120832-100ep-seed100000-52a0bda9c8e9.json",
+            "evaluation_artifact_contents": {
+              "scope": "structure_only",
+              "sections": [
+                {
+                  "entries": 8,
+                  "path": "",
+                  "type": "object"
+                },
+                {
+                  "path": "/schema_version",
+                  "type": "number"
+                },
+                {
+                  "path": "/model",
+                  "type": "string"
+                },
+                {
+                  "path": "/episodes",
+                  "type": "number"
+                },
+                {
+                  "path": "/seed",
+                  "type": "number"
+                },
+                {
+                  "path": "/official_benchmark",
+                  "type": "boolean"
+                },
+                {
+                  "path": "/success_percent",
+                  "type": "number"
+                },
+                {
+                  "entries": 100,
+                  "field_names": [
+                    "episode",
+                    "episode_seed",
+                    "reward_total",
+                    "steps",
+                    "success",
+                    "terminated",
+                    "truncated"
+                  ],
+                  "path": "/episode_results",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/research_evidence",
+                  "type": "object"
+                },
+                {
+                  "entries": 100,
+                  "field_names": [
+                    "branch_switches",
+                    "episode",
+                    "episode_seed",
+                    "final_distance_cm",
+                    "first_reach_step",
+                    "hold_interruptions",
+                    "in_tolerance_steps",
+                    "max_held_steps",
+                    "min_distance_cm",
+                    "target_angle_degrees",
+                    "target_radius_cm",
+                    "trajectory_trace"
+                  ],
+                  "path": "/research_evidence/episode_diagnostics",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/research_evidence/units",
+                  "type": "object"
+                },
+                {
+                  "path": "/research_evidence/units/distance",
+                  "type": "string"
+                },
+                {
+                  "path": "/research_evidence/units/time",
+                  "type": "string"
+                }
+              ],
+              "truncated": false
+            },
+            "evaluation_artifact_fingerprint": "b696f5b721a140e8868a8d74188d92a64e41d3203b9489f0335f68459c2a0c6c",
+            "evaluation_semantics": "52a0bda9c8e9",
+            "model_fingerprint": "dd074ab8d2a94a66201a35663594c717471602cf49f8450be4ae0def69b7a7f7",
+            "official_benchmark": false,
+            "schema_version": 6,
+            "seed": 100000,
+            "success_percent": 73.0,
+            "successes": 73
+          }
+        }
+      ],
+      "result": {
+        "measurements": [
+          {
+            "candidate": "T1:checkpoint-120832",
+            "candidate_id": "T1:checkpoint-120832",
+            "instrument": "research_evaluation",
+            "label": "T1 mechanistic trajectory and substep trace",
+            "metrics": {
+              "episodes": 100,
+              "evaluation_artifact": "campaigns/evaluations/06656182-d7f0-4011-898d-2b870e8a2a54/evaluation-06656182-d7f0-4011-898d-2b870e8a2a54-m3-T1-checkpoint-120832-100ep-seed100000-52a0bda9c8e9.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 8,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/model",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/seed",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/official_benchmark",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 100,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "reward_total",
+                      "steps",
+                      "success",
+                      "terminated",
+                      "truncated"
+                    ],
+                    "path": "/episode_results",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 100,
+                    "field_names": [
+                      "branch_switches",
+                      "episode",
+                      "episode_seed",
+                      "final_distance_cm",
+                      "first_reach_step",
+                      "hold_interruptions",
+                      "in_tolerance_steps",
+                      "max_held_steps",
+                      "min_distance_cm",
+                      "target_angle_degrees",
+                      "target_radius_cm",
+                      "trajectory_trace"
+                    ],
+                    "path": "/research_evidence/episode_diagnostics",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence/units",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/research_evidence/units/distance",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/time",
+                    "type": "string"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "b696f5b721a140e8868a8d74188d92a64e41d3203b9489f0335f68459c2a0c6c",
+              "evaluation_semantics": "52a0bda9c8e9",
+              "model_fingerprint": "dd074ab8d2a94a66201a35663594c717471602cf49f8450be4ae0def69b7a7f7",
+              "official_benchmark": false,
+              "schema_version": 6,
+              "seed": 100000,
+              "success_percent": 73.0,
+              "successes": 73
+            }
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": null
+      },
+      "task_reference_contract": null
+    },
+    "failure": null,
+    "id": "M3",
+    "inquiry_id": null,
+    "kind": "measurement",
+    "progress": "completed",
+    "request": {
+      "measurement": {
+        "description": "Trace T1:checkpoint-120832 on the matched 100-episode development panel with control-boundary and simulator-substep diagnostics.",
+        "measurements": [
+          {
+            "candidate": "T1:checkpoint-120832",
+            "episodes": 100,
+            "instrument": "research_evaluation",
+            "label": "T1 mechanistic trajectory and substep trace",
+            "seed": 100000
+          }
+        ],
+        "rationale": "The candidate is 25 percentage points below the human goal, and existing evidence identifies near-base non-entry and interrupted holds without distinguishing branch-conditioned trajectory instability, compiled-dynamics or actuator-authority limits, and hidden substep excursions. The measurement records target geometry, q, qdot, applied action, actuator force, qacc, branch occupancy and switching, Jacobian determinant and conditioning, control-boundary distance, and all ten simulator-step distances for every episode. High entry speed or branch switching, saturated commands with inadequate acceleration, or large within-interval excursions would select different next interventions while preserving the 14-20 cm baseline for comparison."
+      }
+    },
+    "request_fingerprint": "85fdcec5c6cf7895f40e8ecb3a5da2fed5799ca3b91daf5b747b00cb2004dc36",
+    "session_id": "S4",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No working, best-known, or retained candidate role has been assigned. T1:checkpoint-120832 is the strongest evaluated reference at 73% on M1 and M2; T2:checkpoint-120832 is not competitive at 35% on M2 and is retained only as evidence about the tested full-domain recipe.",
     "completed_operations": [
@@ -2758,6 +3153,21 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "0d367f27-d4ea-487d-9b0d-ae41a83f6154",
+    "id": "S4",
+    "inquiry_id": null,
+    "kind": "goal_review",
+    "objective": "Reassess the scientific direction toward the human goal using completed evidence. You may request measurements to resolve an uncertainty or develop the method before committing to an inquiry. Decide whether to request official assessment or open one bounded goal-linked inquiry.",
+    "operation_ids": [
+      "M3"
+    ],
+    "scientific_parent_commit": "4cddfb62cc93c40e799532c6abcabc13900a2600"
+  },
   "terminal_state": null
 }
