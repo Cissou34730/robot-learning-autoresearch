@@ -1,5 +1,16 @@
 {
-  "active_inquiry": null,
+  "active_inquiry": {
+    "closure_condition": "Close or reframe after a baseline candidate has been evaluated on a seed-controlled panel spanning the official radius and angle distribution, with failures localized by radius-angle bin, executed IK branch, first-entry step and distance, entry velocity, maximum held steps, interruption count, and action saturation. An inner-radius or branch-localized deficit with stable holds elsewhere supports coverage and branch-consistency work; all-radius failures with low entry error and repeated hold exits support precision-regulation work.",
+    "goal_connection": "The human goal requires at least 196 of 200 official episodes to complete an uninterrupted 100-step hold within 1 cm. This inquiry will identify whether the first policy's gap is primarily caused by missing inner-radius and branch coverage or by inadequate closed-loop precision during the hold, determining whether the next intervention should change training distribution and branch representation or control and stabilization.",
+    "handoff_conclusion": "Observed in M2: the compiled model uses 0.02 s control intervals, 5.0 joint torque at unit control, approximately 0.0102-0.0119 joint mass-matrix diagonal terms across the tested radii, and approximately 421-491 rad/s^2 initial unit-control acceleration. A 25-control-step saturated step reached roughly 9.2-10.0 rad/s joint speed and the post-release joint velocity fell below 0.02 rad/s by control step 30-34. A one-control-step saturated impulse produced up to about 0.040 m end-effector displacement at the outer radius, versus about 0.012 m at the inner radius. Interpretation: gross actuator authority and damping are not the leading hard ceiling for reaching or settling; the plant can become highly sensitive to poorly regulated 20 ms action changes, especially near the outer radius. Competing explanations now are (A) policy/distribution limitation, with failures concentrated in the untrained inner annulus or inconsistent IK branch use, versus (B) learned closed-loop precision limitation, with entry velocity or residual oscillation causing hold interruptions despite adequate plant authority. M2 does not measure a learned policy, action saturation during task behavior, branch consistency, or continuous hold semantics, so it cannot establish which explanation dominates.",
+    "handoff_question": "For the first trained policy under the official target distribution, are episode failures dominated by unseen inner-radius and IK-branch regimes or by residual motion and interruptions during the 100-step hold?",
+    "handoff_source_session_id": "S1",
+    "id": "I1",
+    "opened_in_session": "S2",
+    "question": "For the first trained policy under the official target distribution, are episode failures dominated by unseen inner-radius and IK-branch regimes or by residual motion and interruptions during the 100-step hold?",
+    "rationale": "M2 found adequate gross actuator authority and damping at the 20 ms control interval, while also showing that poorly regulated action changes can move the end effector substantially, especially at the outer radius. It did not observe a learned policy, task-time action saturation, branch usage, or hold interruptions. The highest-value next evidence is therefore a first-policy baseline followed by full-distribution, stratified trajectory diagnostics that directly discriminate distribution and branch limitation from residual-motion and hold-phase precision limitation.",
+    "reframes": []
+  },
   "campaign": {
     "base_commit": "782d4b725ce12a1947f63ecc0bba15c83a07f317",
     "id": "b366ab54-1218-4ab4-9bf1-3fd6a19c86bb",
@@ -9,16 +20,16 @@
   },
   "candidates": {},
   "counters": {
-    "event": 1,
-    "inquiry": 0,
+    "event": 2,
+    "inquiry": 1,
     "measurement": 2,
-    "session": 1,
+    "session": 2,
     "training": 0
   },
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -298,9 +309,72 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-07T04:35:27Z",
+      "error": null,
+      "id": "E2",
+      "inquiry_id": "I1",
+      "kind": "inquiry",
+      "request": {
+        "action": "open",
+        "closure_condition": "Close or reframe after a baseline candidate has been evaluated on a seed-controlled panel spanning the official radius and angle distribution, with failures localized by radius-angle bin, executed IK branch, first-entry step and distance, entry velocity, maximum held steps, interruption count, and action saturation. An inner-radius or branch-localized deficit with stable holds elsewhere supports coverage and branch-consistency work; all-radius failures with low entry error and repeated hold exits support precision-regulation work.",
+        "goal_connection": "The human goal requires at least 196 of 200 official episodes to complete an uninterrupted 100-step hold within 1 cm. This inquiry will identify whether the first policy's gap is primarily caused by missing inner-radius and branch coverage or by inadequate closed-loop precision during the hold, determining whether the next intervention should change training distribution and branch representation or control and stabilization.",
+        "question": "For the first trained policy under the official target distribution, are episode failures dominated by unseen inner-radius and IK-branch regimes or by residual motion and interruptions during the 100-step hold?",
+        "rationale": "M2 found adequate gross actuator authority and damping at the 20 ms control interval, while also showing that poorly regulated action changes can move the end effector substantially, especially at the outer radius. It did not observe a learned policy, task-time action saturation, branch usage, or hold interruptions. The highest-value next evidence is therefore a first-policy baseline followed by full-distribution, stratified trajectory diagnostics that directly discriminate distribution and branch limitation from residual-motion and hold-phase precision limitation."
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I1",
+        "status": "completed"
+      },
+      "session_id": "S2",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "open",
+        "inquiry": {
+          "closure_condition": "Close or reframe after a baseline candidate has been evaluated on a seed-controlled panel spanning the official radius and angle distribution, with failures localized by radius-angle bin, executed IK branch, first-entry step and distance, entry velocity, maximum held steps, interruption count, and action saturation. An inner-radius or branch-localized deficit with stable holds elsewhere supports coverage and branch-consistency work; all-radius failures with low entry error and repeated hold exits support precision-regulation work.",
+          "goal_connection": "The human goal requires at least 196 of 200 official episodes to complete an uninterrupted 100-step hold within 1 cm. This inquiry will identify whether the first policy's gap is primarily caused by missing inner-radius and branch coverage or by inadequate closed-loop precision during the hold, determining whether the next intervention should change training distribution and branch representation or control and stabilization.",
+          "handoff_conclusion": "Observed in M2: the compiled model uses 0.02 s control intervals, 5.0 joint torque at unit control, approximately 0.0102-0.0119 joint mass-matrix diagonal terms across the tested radii, and approximately 421-491 rad/s^2 initial unit-control acceleration. A 25-control-step saturated step reached roughly 9.2-10.0 rad/s joint speed and the post-release joint velocity fell below 0.02 rad/s by control step 30-34. A one-control-step saturated impulse produced up to about 0.040 m end-effector displacement at the outer radius, versus about 0.012 m at the inner radius. Interpretation: gross actuator authority and damping are not the leading hard ceiling for reaching or settling; the plant can become highly sensitive to poorly regulated 20 ms action changes, especially near the outer radius. Competing explanations now are (A) policy/distribution limitation, with failures concentrated in the untrained inner annulus or inconsistent IK branch use, versus (B) learned closed-loop precision limitation, with entry velocity or residual oscillation causing hold interruptions despite adequate plant authority. M2 does not measure a learned policy, action saturation during task behavior, branch consistency, or continuous hold semantics, so it cannot establish which explanation dominates.",
+          "handoff_question": "For the first trained policy under the official target distribution, are episode failures dominated by unseen inner-radius and IK-branch regimes or by residual motion and interruptions during the 100-step hold?",
+          "handoff_source_session_id": "S1",
+          "id": "I1",
+          "opened_in_session": "S2",
+          "question": "For the first trained policy under the official target distribution, are episode failures dominated by unseen inner-radius and IK-branch regimes or by residual motion and interruptions during the 100-step hold?",
+          "rationale": "M2 found adequate gross actuator authority and damping at the 20 ms control interval, while also showing that poorly regulated action changes can move the end effector substantially, especially at the outer radius. It did not observe a learned policy, task-time action saturation, branch usage, or hold interruptions. The highest-value next evidence is therefore a first-policy baseline followed by full-distribution, stratified trajectory diagnostics that directly discriminate distribution and branch limitation from residual-motion and hold-phase precision limitation.",
+          "reframes": []
+        }
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I1",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E2",
+    "inquiry_id": null,
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "open",
+        "closure_condition": "Close or reframe after a baseline candidate has been evaluated on a seed-controlled panel spanning the official radius and angle distribution, with failures localized by radius-angle bin, executed IK branch, first-entry step and distance, entry velocity, maximum held steps, interruption count, and action saturation. An inner-radius or branch-localized deficit with stable holds elsewhere supports coverage and branch-consistency work; all-radius failures with low entry error and repeated hold exits support precision-regulation work.",
+        "goal_connection": "The human goal requires at least 196 of 200 official episodes to complete an uninterrupted 100-step hold within 1 cm. This inquiry will identify whether the first policy's gap is primarily caused by missing inner-radius and branch coverage or by inadequate closed-loop precision during the hold, determining whether the next intervention should change training distribution and branch representation or control and stabilization.",
+        "question": "For the first trained policy under the official target distribution, are episode failures dominated by unseen inner-radius and IK-branch regimes or by residual motion and interruptions during the 100-step hold?",
+        "rationale": "M2 found adequate gross actuator authority and damping at the 20 ms control interval, while also showing that poorly regulated action changes can move the end effector substantially, especially at the outer radius. It did not observe a learned policy, task-time action saturation, branch usage, or hold interruptions. The highest-value next evidence is therefore a first-policy baseline followed by full-distribution, stratified trajectory diagnostics that directly discriminate distribution and branch limitation from residual-motion and hold-phase precision limitation."
+      }
+    },
+    "request_fingerprint": "4e67db6692771fb26dcb53cf1c8b8f22b0bffb84044b9259ef7bb4f8cdd4c455",
+    "session_id": "S2",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No learned candidates exist yet; working, best-known, and retained roles remain empty.",
     "completed_operations": [
@@ -326,6 +400,21 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "a5b4869f-8108-4c55-8306-173e1d01cf44",
+    "id": "S2",
+    "inquiry_id": null,
+    "kind": "goal_review",
+    "objective": "Reassess the scientific direction toward the human goal using completed evidence. You may request measurements to resolve an uncertainty or develop the method before committing to an inquiry. Decide whether to request official assessment or open one bounded goal-linked inquiry.",
+    "operation_ids": [
+      "E2"
+    ],
+    "scientific_parent_commit": "9a461081d9fe4d85bfd8ee951afd2308005b00cc"
+  },
   "terminal_state": null
 }
