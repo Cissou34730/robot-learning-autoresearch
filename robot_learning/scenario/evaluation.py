@@ -55,6 +55,21 @@ def evaluate_research_model(
         in_tolerance_steps = 0
         hold_interruptions = 0
         was_in_tolerance = False
+        continuous_success = False
+        continuous_violation_intervals = 0
+        first_entry_joint_speed = None
+        first_entry_end_effector_speed = None
+        first_entry_max_end_effector_speed = None
+        branch_sign_at_first_entry = None
+        branch_sign_at_final = None
+        branch_switches = 0
+        previous_branch_sign = None
+        max_abs_action = 0.0
+        max_action_delta = 0.0
+        saturated_action_steps = 0
+        max_joint_speed = 0.0
+        max_end_effector_speed = 0.0
+        max_substep_distance_cm = 0.0
         while not (terminated or truncated):
             action = runtime.predict(obs)
             obs, reward, terminated, truncated, info = env.step(action)
@@ -69,9 +84,35 @@ def evaluate_research_model(
                 in_tolerance_steps += 1
                 if first_reach_step is None:
                     first_reach_step = steps
+                    first_entry_joint_speed = float(info["joint_speed"])
+                    first_entry_end_effector_speed = float(info["end_effector_speed"])
+                    first_entry_max_end_effector_speed = float(
+                        info["max_end_effector_speed"]
+                    )
+                    branch_sign_at_first_entry = int(info["branch_sign"])
             elif was_in_tolerance:
                 hold_interruptions += 1
             was_in_tolerance = held_steps > 0
+            branch_sign = int(info["branch_sign"])
+            if branch_sign != 0:
+                if previous_branch_sign not in (None, 0, branch_sign):
+                    branch_switches += 1
+                previous_branch_sign = branch_sign
+                branch_sign_at_final = branch_sign
+            continuous_success = bool(info["continuous_success"])
+            if bool(info["substep_outside_tolerance"]):
+                continuous_violation_intervals += 1
+            max_abs_action = max(max_abs_action, float(info["max_abs_action"]))
+            max_action_delta = max(max_action_delta, float(info["max_action_delta"]))
+            saturated_action_steps += int(info["action_saturated"])
+            max_joint_speed = max(max_joint_speed, float(info["max_joint_speed"]))
+            max_end_effector_speed = max(
+                max_end_effector_speed, float(info["max_end_effector_speed"])
+            )
+            max_substep_distance_cm = max(
+                max_substep_distance_cm,
+                100.0 * float(info["substep_max_distance"]),
+            )
             if "is_success" in info:
                 success = bool(info["is_success"])
 
@@ -103,6 +144,21 @@ def evaluate_research_model(
                 "max_held_steps": max_held_steps,
                 "in_tolerance_steps": in_tolerance_steps,
                 "hold_interruptions": hold_interruptions,
+                "continuous_success": continuous_success,
+                "continuous_violation_intervals": continuous_violation_intervals,
+                "first_entry_joint_speed": first_entry_joint_speed,
+                "first_entry_end_effector_speed": first_entry_end_effector_speed,
+                "first_entry_max_end_effector_speed": first_entry_max_end_effector_speed,
+                "branch_sign_at_first_entry": branch_sign_at_first_entry,
+                "branch_sign_at_final": branch_sign_at_final,
+                "branch_switches": branch_switches,
+                "max_abs_action": max_abs_action,
+                "max_action_delta": max_action_delta,
+                "saturated_action_steps": saturated_action_steps,
+                "saturated_action_fraction": saturated_action_steps / steps,
+                "max_joint_speed": max_joint_speed,
+                "max_end_effector_speed": max_end_effector_speed,
+                "max_substep_distance_cm": max_substep_distance_cm,
             }
         )
         if progress_callback is not None:
