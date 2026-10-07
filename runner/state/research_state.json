@@ -3471,7 +3471,8 @@
     "T5:checkpoint-120832": {
       "artifact": "campaigns/checkpoints/candidates/06656182-d7f0-4011-898d-2b870e8a2a54/t5/checkpoint-120832",
       "evaluation_artifacts": [
-        "campaigns/evaluations/06656182-d7f0-4011-898d-2b870e8a2a54/evaluation-06656182-d7f0-4011-898d-2b870e8a2a54-m8-T5-checkpoint-120832-100ep-seed104000-32a29cbd2310.json"
+        "campaigns/evaluations/06656182-d7f0-4011-898d-2b870e8a2a54/evaluation-06656182-d7f0-4011-898d-2b870e8a2a54-m8-T5-checkpoint-120832-100ep-seed104000-32a29cbd2310.json",
+        "campaigns/evaluations/06656182-d7f0-4011-898d-2b870e8a2a54/evaluation-06656182-d7f0-4011-898d-2b870e8a2a54-m9-T5-checkpoint-120832-100ep-seed105000-492ef89249a7.json"
       ],
       "fingerprint": "c5aa283d9e8e6811bfc947c7475a191df3a6c0b965c66e9645ffa1a2d2cad399",
       "id": "T5:checkpoint-120832",
@@ -4288,7 +4289,9 @@
     },
     "T6:checkpoint-120832": {
       "artifact": "campaigns/checkpoints/candidates/06656182-d7f0-4011-898d-2b870e8a2a54/t6/checkpoint-120832",
-      "evaluation_artifacts": [],
+      "evaluation_artifacts": [
+        "campaigns/evaluations/06656182-d7f0-4011-898d-2b870e8a2a54/evaluation-06656182-d7f0-4011-898d-2b870e8a2a54-m9-T6-checkpoint-120832-100ep-seed105000-492ef89249a7.json"
+      ],
       "fingerprint": "b463a6619ffc565733c55b3882f98dfbb50bfabecc481b0072d91afcd7b58cde",
       "id": "T6:checkpoint-120832",
       "name": "checkpoint-120832",
@@ -4936,7 +4939,7 @@
   "counters": {
     "event": 19,
     "inquiry": 5,
-    "measurement": 8,
+    "measurement": 9,
     "session": 11,
     "training": 6
   },
@@ -9202,9 +9205,1104 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-07T21:06:28Z",
+      "error": null,
+      "id": "M9",
+      "inquiry_id": "I5",
+      "kind": "measurement",
+      "request": {
+        "description": "Evaluate the T6 Cartesian-velocity settling refinement against T5 on a fresh shared 100-episode official-distribution research panel with radius-stratified success and residual failure-phase diagnostics.",
+        "measurements": [
+          {
+            "candidate": "T6:checkpoint-120832",
+            "episodes": 100,
+            "instrument": "research_evaluation",
+            "label": "T6 Cartesian-velocity settling refinement panel",
+            "seed": 105000
+          },
+          {
+            "candidate": "T5:checkpoint-120832",
+            "episodes": 100,
+            "instrument": "research_evaluation",
+            "label": "T5 paired reference panel",
+            "seed": 105000
+          }
+        ],
+        "paired_comparisons": [
+          {
+            "candidate": "T6:checkpoint-120832",
+            "reference": "T5:checkpoint-120832"
+          }
+        ],
+        "rationale": "T6 is the one bounded refinement selected for I5: it transfers from T5, preserves the 3 cm anticipatory-braking gate and 0.25 coefficient, and changes only the near-target velocity representation from joint speed to Jacobian-derived end-effector Cartesian speed. Training statistics do not establish complete uninterrupted holds, so a paired held-out evaluation on identical unseen seeds is required. Improvement toward 98% with no 14-20 cm regression supports continuing learned transient and branch-conditioned control; a negative or regressive result closes this tested route, with configuration-dependent dynamics revisited only if the residual failures show a reproducible radius-, branch-, or response-linked signature despite M7."
+      },
+      "result": {
+        "measurements": [
+          {
+            "candidate": "T6:checkpoint-120832",
+            "candidate_id": "T6:checkpoint-120832",
+            "instrument": "research_evaluation",
+            "label": "T6 Cartesian-velocity settling refinement panel",
+            "metrics": {
+              "episodes": 100,
+              "evaluation_artifact": "campaigns/evaluations/06656182-d7f0-4011-898d-2b870e8a2a54/evaluation-06656182-d7f0-4011-898d-2b870e8a2a54-m9-T6-checkpoint-120832-100ep-seed105000-492ef89249a7.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 8,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/model",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/seed",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/official_benchmark",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 100,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "reward_total",
+                      "steps",
+                      "success",
+                      "terminated",
+                      "truncated"
+                    ],
+                    "path": "/episode_results",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 100,
+                    "field_names": [
+                      "branch_switches",
+                      "episode",
+                      "episode_seed",
+                      "final_distance_cm",
+                      "first_reach_step",
+                      "hold_interruptions",
+                      "in_tolerance_steps",
+                      "max_held_steps",
+                      "min_distance_cm",
+                      "target_angle_degrees",
+                      "target_radius_cm",
+                      "trajectory_trace"
+                    ],
+                    "path": "/research_evidence/episode_diagnostics",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence/units",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/research_evidence/units/distance",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/time",
+                    "type": "string"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "b8d9f7ea6056cc681f89239c3aebc5349f14f924221656e9b1ee3f37df00cfe5",
+              "evaluation_semantics": "492ef89249a7",
+              "model_fingerprint": "b463a6619ffc565733c55b3882f98dfbb50bfabecc481b0072d91afcd7b58cde",
+              "official_benchmark": false,
+              "schema_version": 6,
+              "seed": 105000,
+              "success_percent": 90.0,
+              "successes": 90
+            }
+          },
+          {
+            "candidate": "T5:checkpoint-120832",
+            "candidate_id": "T5:checkpoint-120832",
+            "instrument": "research_evaluation",
+            "label": "T5 paired reference panel",
+            "metrics": {
+              "episodes": 100,
+              "evaluation_artifact": "campaigns/evaluations/06656182-d7f0-4011-898d-2b870e8a2a54/evaluation-06656182-d7f0-4011-898d-2b870e8a2a54-m9-T5-checkpoint-120832-100ep-seed105000-492ef89249a7.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 8,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/model",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/seed",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/official_benchmark",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 100,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "reward_total",
+                      "steps",
+                      "success",
+                      "terminated",
+                      "truncated"
+                    ],
+                    "path": "/episode_results",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 100,
+                    "field_names": [
+                      "branch_switches",
+                      "episode",
+                      "episode_seed",
+                      "final_distance_cm",
+                      "first_reach_step",
+                      "hold_interruptions",
+                      "in_tolerance_steps",
+                      "max_held_steps",
+                      "min_distance_cm",
+                      "target_angle_degrees",
+                      "target_radius_cm",
+                      "trajectory_trace"
+                    ],
+                    "path": "/research_evidence/episode_diagnostics",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence/units",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/research_evidence/units/distance",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/time",
+                    "type": "string"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "8d8f9e6ff62b57c3286240f2b9ad0400f027d7097d2f91aab98100cab4596a6d",
+              "evaluation_semantics": "492ef89249a7",
+              "model_fingerprint": "c5aa283d9e8e6811bfc947c7475a191df3a6c0b965c66e9645ffa1a2d2cad399",
+              "official_benchmark": false,
+              "schema_version": 6,
+              "seed": 105000,
+              "success_percent": 98.0,
+              "successes": 98
+            }
+          }
+        ],
+        "paired_comparisons": [
+          {
+            "candidate": "T6:checkpoint-120832",
+            "candidate_model_fingerprint": "b463a6619ffc565733c55b3882f98dfbb50bfabecc481b0072d91afcd7b58cde",
+            "candidate_wins": 0,
+            "discordant_episodes": 8,
+            "episodes": 100,
+            "net_wins": -8,
+            "reference": "T5:checkpoint-120832",
+            "reference_model_fingerprint": "c5aa283d9e8e6811bfc947c7475a191df3a6c0b965c66e9645ffa1a2d2cad399",
+            "reference_wins": 8,
+            "shared_episode_seeds": [
+              105000,
+              105001,
+              105002,
+              105003,
+              105004,
+              105005,
+              105006,
+              105007,
+              105008,
+              105009,
+              105010,
+              105011,
+              105012,
+              105013,
+              105014,
+              105015,
+              105016,
+              105017,
+              105018,
+              105019,
+              105020,
+              105021,
+              105022,
+              105023,
+              105024,
+              105025,
+              105026,
+              105027,
+              105028,
+              105029,
+              105030,
+              105031,
+              105032,
+              105033,
+              105034,
+              105035,
+              105036,
+              105037,
+              105038,
+              105039,
+              105040,
+              105041,
+              105042,
+              105043,
+              105044,
+              105045,
+              105046,
+              105047,
+              105048,
+              105049,
+              105050,
+              105051,
+              105052,
+              105053,
+              105054,
+              105055,
+              105056,
+              105057,
+              105058,
+              105059,
+              105060,
+              105061,
+              105062,
+              105063,
+              105064,
+              105065,
+              105066,
+              105067,
+              105068,
+              105069,
+              105070,
+              105071,
+              105072,
+              105073,
+              105074,
+              105075,
+              105076,
+              105077,
+              105078,
+              105079,
+              105080,
+              105081,
+              105082,
+              105083,
+              105084,
+              105085,
+              105086,
+              105087,
+              105088,
+              105089,
+              105090,
+              105091,
+              105092,
+              105093,
+              105094,
+              105095,
+              105096,
+              105097,
+              105098,
+              105099
+            ],
+            "source_artifacts": [
+              "campaigns/evaluations/06656182-d7f0-4011-898d-2b870e8a2a54/evaluation-06656182-d7f0-4011-898d-2b870e8a2a54-m9-T6-checkpoint-120832-100ep-seed105000-492ef89249a7.json",
+              "campaigns/evaluations/06656182-d7f0-4011-898d-2b870e8a2a54/evaluation-06656182-d7f0-4011-898d-2b870e8a2a54-m9-T5-checkpoint-120832-100ep-seed105000-492ef89249a7.json"
+            ],
+            "success_delta_percent": -8.0
+          }
+        ],
+        "status": "completed",
+        "tool_provenance": null
+      },
+      "session_id": "S11",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "evaluation_semantics": "492ef89249a7",
+      "measurements": [
+        {
+          "artifact": "campaigns/checkpoints/candidates/06656182-d7f0-4011-898d-2b870e8a2a54/t6/checkpoint-120832",
+          "candidate": "T6:checkpoint-120832",
+          "candidate_id": "T6:checkpoint-120832",
+          "episodes": 100,
+          "instrument": "research_evaluation",
+          "label": "T6 Cartesian-velocity settling refinement panel",
+          "model_fingerprint": "b463a6619ffc565733c55b3882f98dfbb50bfabecc481b0072d91afcd7b58cde",
+          "seed": 105000
+        },
+        {
+          "artifact": "campaigns/checkpoints/candidates/06656182-d7f0-4011-898d-2b870e8a2a54/t5/checkpoint-120832",
+          "candidate": "T5:checkpoint-120832",
+          "candidate_id": "T5:checkpoint-120832",
+          "episodes": 100,
+          "instrument": "research_evaluation",
+          "label": "T5 paired reference panel",
+          "model_fingerprint": "c5aa283d9e8e6811bfc947c7475a191df3a6c0b965c66e9645ffa1a2d2cad399",
+          "seed": 105000
+        }
+      ],
+      "module_provenance": null,
+      "paired_comparisons": [
+        {
+          "candidate": "T6:checkpoint-120832",
+          "candidate_measurement_indexes": [
+            0
+          ],
+          "candidate_model_fingerprint": "b463a6619ffc565733c55b3882f98dfbb50bfabecc481b0072d91afcd7b58cde",
+          "reference": "T5:checkpoint-120832",
+          "reference_measurement_indexes": [
+            1
+          ],
+          "reference_model_fingerprint": "c5aa283d9e8e6811bfc947c7475a191df3a6c0b965c66e9645ffa1a2d2cad399",
+          "shared_episode_seeds": [
+            105000,
+            105001,
+            105002,
+            105003,
+            105004,
+            105005,
+            105006,
+            105007,
+            105008,
+            105009,
+            105010,
+            105011,
+            105012,
+            105013,
+            105014,
+            105015,
+            105016,
+            105017,
+            105018,
+            105019,
+            105020,
+            105021,
+            105022,
+            105023,
+            105024,
+            105025,
+            105026,
+            105027,
+            105028,
+            105029,
+            105030,
+            105031,
+            105032,
+            105033,
+            105034,
+            105035,
+            105036,
+            105037,
+            105038,
+            105039,
+            105040,
+            105041,
+            105042,
+            105043,
+            105044,
+            105045,
+            105046,
+            105047,
+            105048,
+            105049,
+            105050,
+            105051,
+            105052,
+            105053,
+            105054,
+            105055,
+            105056,
+            105057,
+            105058,
+            105059,
+            105060,
+            105061,
+            105062,
+            105063,
+            105064,
+            105065,
+            105066,
+            105067,
+            105068,
+            105069,
+            105070,
+            105071,
+            105072,
+            105073,
+            105074,
+            105075,
+            105076,
+            105077,
+            105078,
+            105079,
+            105080,
+            105081,
+            105082,
+            105083,
+            105084,
+            105085,
+            105086,
+            105087,
+            105088,
+            105089,
+            105090,
+            105091,
+            105092,
+            105093,
+            105094,
+            105095,
+            105096,
+            105097,
+            105098,
+            105099
+          ]
+        }
+      ],
+      "partial_results": [
+        {
+          "candidate": "T6:checkpoint-120832",
+          "candidate_id": "T6:checkpoint-120832",
+          "instrument": "research_evaluation",
+          "label": "T6 Cartesian-velocity settling refinement panel",
+          "metrics": {
+            "episodes": 100,
+            "evaluation_artifact": "campaigns/evaluations/06656182-d7f0-4011-898d-2b870e8a2a54/evaluation-06656182-d7f0-4011-898d-2b870e8a2a54-m9-T6-checkpoint-120832-100ep-seed105000-492ef89249a7.json",
+            "evaluation_artifact_contents": {
+              "scope": "structure_only",
+              "sections": [
+                {
+                  "entries": 8,
+                  "path": "",
+                  "type": "object"
+                },
+                {
+                  "path": "/schema_version",
+                  "type": "number"
+                },
+                {
+                  "path": "/model",
+                  "type": "string"
+                },
+                {
+                  "path": "/episodes",
+                  "type": "number"
+                },
+                {
+                  "path": "/seed",
+                  "type": "number"
+                },
+                {
+                  "path": "/official_benchmark",
+                  "type": "boolean"
+                },
+                {
+                  "path": "/success_percent",
+                  "type": "number"
+                },
+                {
+                  "entries": 100,
+                  "field_names": [
+                    "episode",
+                    "episode_seed",
+                    "reward_total",
+                    "steps",
+                    "success",
+                    "terminated",
+                    "truncated"
+                  ],
+                  "path": "/episode_results",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/research_evidence",
+                  "type": "object"
+                },
+                {
+                  "entries": 100,
+                  "field_names": [
+                    "branch_switches",
+                    "episode",
+                    "episode_seed",
+                    "final_distance_cm",
+                    "first_reach_step",
+                    "hold_interruptions",
+                    "in_tolerance_steps",
+                    "max_held_steps",
+                    "min_distance_cm",
+                    "target_angle_degrees",
+                    "target_radius_cm",
+                    "trajectory_trace"
+                  ],
+                  "path": "/research_evidence/episode_diagnostics",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/research_evidence/units",
+                  "type": "object"
+                },
+                {
+                  "path": "/research_evidence/units/distance",
+                  "type": "string"
+                },
+                {
+                  "path": "/research_evidence/units/time",
+                  "type": "string"
+                }
+              ],
+              "truncated": false
+            },
+            "evaluation_artifact_fingerprint": "b8d9f7ea6056cc681f89239c3aebc5349f14f924221656e9b1ee3f37df00cfe5",
+            "evaluation_semantics": "492ef89249a7",
+            "model_fingerprint": "b463a6619ffc565733c55b3882f98dfbb50bfabecc481b0072d91afcd7b58cde",
+            "official_benchmark": false,
+            "schema_version": 6,
+            "seed": 105000,
+            "success_percent": 90.0,
+            "successes": 90
+          }
+        },
+        {
+          "candidate": "T5:checkpoint-120832",
+          "candidate_id": "T5:checkpoint-120832",
+          "instrument": "research_evaluation",
+          "label": "T5 paired reference panel",
+          "metrics": {
+            "episodes": 100,
+            "evaluation_artifact": "campaigns/evaluations/06656182-d7f0-4011-898d-2b870e8a2a54/evaluation-06656182-d7f0-4011-898d-2b870e8a2a54-m9-T5-checkpoint-120832-100ep-seed105000-492ef89249a7.json",
+            "evaluation_artifact_contents": {
+              "scope": "structure_only",
+              "sections": [
+                {
+                  "entries": 8,
+                  "path": "",
+                  "type": "object"
+                },
+                {
+                  "path": "/schema_version",
+                  "type": "number"
+                },
+                {
+                  "path": "/model",
+                  "type": "string"
+                },
+                {
+                  "path": "/episodes",
+                  "type": "number"
+                },
+                {
+                  "path": "/seed",
+                  "type": "number"
+                },
+                {
+                  "path": "/official_benchmark",
+                  "type": "boolean"
+                },
+                {
+                  "path": "/success_percent",
+                  "type": "number"
+                },
+                {
+                  "entries": 100,
+                  "field_names": [
+                    "episode",
+                    "episode_seed",
+                    "reward_total",
+                    "steps",
+                    "success",
+                    "terminated",
+                    "truncated"
+                  ],
+                  "path": "/episode_results",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/research_evidence",
+                  "type": "object"
+                },
+                {
+                  "entries": 100,
+                  "field_names": [
+                    "branch_switches",
+                    "episode",
+                    "episode_seed",
+                    "final_distance_cm",
+                    "first_reach_step",
+                    "hold_interruptions",
+                    "in_tolerance_steps",
+                    "max_held_steps",
+                    "min_distance_cm",
+                    "target_angle_degrees",
+                    "target_radius_cm",
+                    "trajectory_trace"
+                  ],
+                  "path": "/research_evidence/episode_diagnostics",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/research_evidence/units",
+                  "type": "object"
+                },
+                {
+                  "path": "/research_evidence/units/distance",
+                  "type": "string"
+                },
+                {
+                  "path": "/research_evidence/units/time",
+                  "type": "string"
+                }
+              ],
+              "truncated": false
+            },
+            "evaluation_artifact_fingerprint": "8d8f9e6ff62b57c3286240f2b9ad0400f027d7097d2f91aab98100cab4596a6d",
+            "evaluation_semantics": "492ef89249a7",
+            "model_fingerprint": "c5aa283d9e8e6811bfc947c7475a191df3a6c0b965c66e9645ffa1a2d2cad399",
+            "official_benchmark": false,
+            "schema_version": 6,
+            "seed": 105000,
+            "success_percent": 98.0,
+            "successes": 98
+          }
+        }
+      ],
+      "result": {
+        "measurements": [
+          {
+            "candidate": "T6:checkpoint-120832",
+            "candidate_id": "T6:checkpoint-120832",
+            "instrument": "research_evaluation",
+            "label": "T6 Cartesian-velocity settling refinement panel",
+            "metrics": {
+              "episodes": 100,
+              "evaluation_artifact": "campaigns/evaluations/06656182-d7f0-4011-898d-2b870e8a2a54/evaluation-06656182-d7f0-4011-898d-2b870e8a2a54-m9-T6-checkpoint-120832-100ep-seed105000-492ef89249a7.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 8,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/model",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/seed",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/official_benchmark",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 100,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "reward_total",
+                      "steps",
+                      "success",
+                      "terminated",
+                      "truncated"
+                    ],
+                    "path": "/episode_results",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 100,
+                    "field_names": [
+                      "branch_switches",
+                      "episode",
+                      "episode_seed",
+                      "final_distance_cm",
+                      "first_reach_step",
+                      "hold_interruptions",
+                      "in_tolerance_steps",
+                      "max_held_steps",
+                      "min_distance_cm",
+                      "target_angle_degrees",
+                      "target_radius_cm",
+                      "trajectory_trace"
+                    ],
+                    "path": "/research_evidence/episode_diagnostics",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence/units",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/research_evidence/units/distance",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/time",
+                    "type": "string"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "b8d9f7ea6056cc681f89239c3aebc5349f14f924221656e9b1ee3f37df00cfe5",
+              "evaluation_semantics": "492ef89249a7",
+              "model_fingerprint": "b463a6619ffc565733c55b3882f98dfbb50bfabecc481b0072d91afcd7b58cde",
+              "official_benchmark": false,
+              "schema_version": 6,
+              "seed": 105000,
+              "success_percent": 90.0,
+              "successes": 90
+            }
+          },
+          {
+            "candidate": "T5:checkpoint-120832",
+            "candidate_id": "T5:checkpoint-120832",
+            "instrument": "research_evaluation",
+            "label": "T5 paired reference panel",
+            "metrics": {
+              "episodes": 100,
+              "evaluation_artifact": "campaigns/evaluations/06656182-d7f0-4011-898d-2b870e8a2a54/evaluation-06656182-d7f0-4011-898d-2b870e8a2a54-m9-T5-checkpoint-120832-100ep-seed105000-492ef89249a7.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 8,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/model",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/seed",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/official_benchmark",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 100,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "reward_total",
+                      "steps",
+                      "success",
+                      "terminated",
+                      "truncated"
+                    ],
+                    "path": "/episode_results",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 100,
+                    "field_names": [
+                      "branch_switches",
+                      "episode",
+                      "episode_seed",
+                      "final_distance_cm",
+                      "first_reach_step",
+                      "hold_interruptions",
+                      "in_tolerance_steps",
+                      "max_held_steps",
+                      "min_distance_cm",
+                      "target_angle_degrees",
+                      "target_radius_cm",
+                      "trajectory_trace"
+                    ],
+                    "path": "/research_evidence/episode_diagnostics",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence/units",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/research_evidence/units/distance",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/time",
+                    "type": "string"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "8d8f9e6ff62b57c3286240f2b9ad0400f027d7097d2f91aab98100cab4596a6d",
+              "evaluation_semantics": "492ef89249a7",
+              "model_fingerprint": "c5aa283d9e8e6811bfc947c7475a191df3a6c0b965c66e9645ffa1a2d2cad399",
+              "official_benchmark": false,
+              "schema_version": 6,
+              "seed": 105000,
+              "success_percent": 98.0,
+              "successes": 98
+            }
+          }
+        ],
+        "paired_comparisons": [
+          {
+            "candidate": "T6:checkpoint-120832",
+            "candidate_model_fingerprint": "b463a6619ffc565733c55b3882f98dfbb50bfabecc481b0072d91afcd7b58cde",
+            "candidate_wins": 0,
+            "discordant_episodes": 8,
+            "episodes": 100,
+            "net_wins": -8,
+            "reference": "T5:checkpoint-120832",
+            "reference_model_fingerprint": "c5aa283d9e8e6811bfc947c7475a191df3a6c0b965c66e9645ffa1a2d2cad399",
+            "reference_wins": 8,
+            "shared_episode_seeds": [
+              105000,
+              105001,
+              105002,
+              105003,
+              105004,
+              105005,
+              105006,
+              105007,
+              105008,
+              105009,
+              105010,
+              105011,
+              105012,
+              105013,
+              105014,
+              105015,
+              105016,
+              105017,
+              105018,
+              105019,
+              105020,
+              105021,
+              105022,
+              105023,
+              105024,
+              105025,
+              105026,
+              105027,
+              105028,
+              105029,
+              105030,
+              105031,
+              105032,
+              105033,
+              105034,
+              105035,
+              105036,
+              105037,
+              105038,
+              105039,
+              105040,
+              105041,
+              105042,
+              105043,
+              105044,
+              105045,
+              105046,
+              105047,
+              105048,
+              105049,
+              105050,
+              105051,
+              105052,
+              105053,
+              105054,
+              105055,
+              105056,
+              105057,
+              105058,
+              105059,
+              105060,
+              105061,
+              105062,
+              105063,
+              105064,
+              105065,
+              105066,
+              105067,
+              105068,
+              105069,
+              105070,
+              105071,
+              105072,
+              105073,
+              105074,
+              105075,
+              105076,
+              105077,
+              105078,
+              105079,
+              105080,
+              105081,
+              105082,
+              105083,
+              105084,
+              105085,
+              105086,
+              105087,
+              105088,
+              105089,
+              105090,
+              105091,
+              105092,
+              105093,
+              105094,
+              105095,
+              105096,
+              105097,
+              105098,
+              105099
+            ],
+            "source_artifacts": [
+              "campaigns/evaluations/06656182-d7f0-4011-898d-2b870e8a2a54/evaluation-06656182-d7f0-4011-898d-2b870e8a2a54-m9-T6-checkpoint-120832-100ep-seed105000-492ef89249a7.json",
+              "campaigns/evaluations/06656182-d7f0-4011-898d-2b870e8a2a54/evaluation-06656182-d7f0-4011-898d-2b870e8a2a54-m9-T5-checkpoint-120832-100ep-seed105000-492ef89249a7.json"
+            ],
+            "success_delta_percent": -8.0
+          }
+        ],
+        "status": "completed",
+        "tool_provenance": null
+      },
+      "task_reference_contract": null
+    },
+    "failure": null,
+    "id": "M9",
+    "inquiry_id": "I5",
+    "kind": "measurement",
+    "progress": "completed",
+    "request": {
+      "measurement": {
+        "description": "Evaluate the T6 Cartesian-velocity settling refinement against T5 on a fresh shared 100-episode official-distribution research panel with radius-stratified success and residual failure-phase diagnostics.",
+        "measurements": [
+          {
+            "candidate": "T6:checkpoint-120832",
+            "episodes": 100,
+            "instrument": "research_evaluation",
+            "label": "T6 Cartesian-velocity settling refinement panel",
+            "seed": 105000
+          },
+          {
+            "candidate": "T5:checkpoint-120832",
+            "episodes": 100,
+            "instrument": "research_evaluation",
+            "label": "T5 paired reference panel",
+            "seed": 105000
+          }
+        ],
+        "paired_comparisons": [
+          {
+            "candidate": "T6:checkpoint-120832",
+            "reference": "T5:checkpoint-120832"
+          }
+        ],
+        "rationale": "T6 is the one bounded refinement selected for I5: it transfers from T5, preserves the 3 cm anticipatory-braking gate and 0.25 coefficient, and changes only the near-target velocity representation from joint speed to Jacobian-derived end-effector Cartesian speed. Training statistics do not establish complete uninterrupted holds, so a paired held-out evaluation on identical unseen seeds is required. Improvement toward 98% with no 14-20 cm regression supports continuing learned transient and branch-conditioned control; a negative or regressive result closes this tested route, with configuration-dependent dynamics revisited only if the residual failures show a reproducible radius-, branch-, or response-linked signature despite M7."
+      }
+    },
+    "request_fingerprint": "78af68147b557c03623c8e4323f95eae006504aaa68a9c7fcfc99cce754fa787",
+    "session_id": "S11",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No formal model role has been assigned. T5:checkpoint-120832 remains the strongest evaluated development candidate at 95% on M8 and the reference for I5. T3:checkpoint-120832 remains the prior paired reference at 94% on M4 and M5 and 95% on M6. T4:checkpoint-120832 is evidence that doubling the settling velocity penalty is inferior. T1 remains the earlier paired reference, T2 remains evidence about the insufficient tested fresh full-domain recipe, and M7 remains a completed characterization measurement rather than a policy candidate.",
     "completed_operations": [
@@ -9262,7 +10360,8 @@
     "kind": "inquiry",
     "objective": "Advance I5 toward an evidence-supported answer to its scientific question: How can learned anticipatory braking and branch-conditioned approach be refined beyond T5 to raise official-distribution success from 95% toward 98% while preserving 14-20 cm competence, and what residual failure signature would justify revisiting configuration-dependent dynamics?",
     "operation_ids": [
-      "T6"
+      "T6",
+      "M9"
     ],
     "scientific_parent_commit": "b197755826d8fcb30d64fbd1bb2a2d3d5b214085"
   },
