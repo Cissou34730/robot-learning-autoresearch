@@ -29,3 +29,4 @@
 | E6 | restore_recipe | I1 | restored |
 | T7 | training | I1 | completed |
 | M14 | measurement | I1 | completed |
+| M15 | measurement | I1 | completed |
