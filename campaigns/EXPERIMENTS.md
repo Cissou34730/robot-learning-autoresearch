@@ -18,3 +18,4 @@
 | M7 | measurement | I1 | completed |
 | T4 | training | I1 | completed |
 | M8 | measurement | I1 | completed |
+| M9 | measurement | I1 | completed |
