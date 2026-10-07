@@ -446,7 +446,7 @@ its scientific breadth or achieve its result.
 | Shorter startup training | Tactical change implemented below. The PI may request any positive integer up to the maintainer's per-run allocation during startup, never a larger request. Training remains optional; inquiry requests still use the full allocation. Existing rollout rounding is retained. Campaign effect is unassessed. |
 | Reliable measurement-evidence inspection | Discoverability provisionally retained. In `48993cfd`, M5 feedback advertised diagnostics, but the PI closed without inspecting the strata and incorrectly claimed no outer-reaching gain. In `2381bcbf`, M3/M4 diagnostic reads stopped at lines 1-310, were described as full inspection, and remaining non-entry cases were lost in the synthesis. Decision-linked inspection and interpretation remain unresolved. |
 | Context flooding | Brief-only compaction implemented below: 57.39% smaller on the completed campaign, with all candidates and inventory references preserved. Campaign benefit remains unassessed; prompt replay and SDK output handling are unchanged and remain separate possible work. |
-| Training-shaped inquiry commitments and scientific continuity | Open, with a positive local observation in `2381bcbf`: one inquiry sustained diagnostics and two successive method interventions. The question-based objective was active, but causation is unproved. Both aggregate losses and aggregate gains have obscured consequential subgroup evidence in handoffs. Startup `2573991c` still chose baseline training after the exact two-string restoration. The two requested model reviews identified missing operation-selection and measurement-purpose guidance, but not a single proven cause of the startup drift. Only those two historical passages are restored; no replacement readiness guidance is added. |
+| Training-shaped inquiry commitments and scientific continuity | Open. Campaign `b366ab54` preserved the exact I2 question across sessions, but the question asked which intervention would work. Each negative result therefore led to another intervention. A bounded inquiry question must permit a positive, negative, limited or inconclusive answer. The inquiry must close when it reaches its declared evidence boundary. No runtime change is approved. |
 | Fresh-session scientific handoff fidelity | **Exact conclusion and next-question handoff implemented below; campaign effect remains unassessed.** Startup and inquiry checkpoints now state the next inquiry question. The Runner preserves the source conclusion and question in inquiry state and injects them verbatim into goal-review and inquiry prompts as the same PI's restored scientific state. This removes dependence on the generated brief as the sole compact carrier. It does not prove that the PI will preserve all consequential evidence or select the correct question. |
 | Checkpoint nomination and evidence selection | Deferred behind progression; available training facts are not proof of development performance. |
 | Operation-submission handoff clarification | Still unimplemented. |
@@ -2372,3 +2372,41 @@ separate from harness changes so their outcomes are not conflated.
   goal-review checkpoint that changes the opened inquiry question.
 - **Status:** implemented for the next fresh campaign. No campaign operation
   was started, resumed or reset during implementation.
+
+## 2026-10-07: log inquiry-control failure from campaign b366ab54
+
+- **Observation:** I2 asked which intervention would most reliably suppress the
+  observed failure mechanism. This question did not define a bounded set of
+  interventions. It also made a successful intervention appear to be the
+  required answer.
+- **Decision-progress loss:** M4 supplied the first negative intervention
+  result. M5 weakened the branch-switch cause. M7 showed no improvement from
+  action smoothing. I2 still continued to full-distribution training. M9
+  finally supplied sufficient evidence to close the inquiry.
+- **RCA:** the exact handoff worked. It preserved the conclusion and question
+  across fresh contexts. The preserved question was too broad. Each failed
+  intervention removed one option but did not answer which intervention would
+  work.
+- **Required improvement:** an inquiry question must permit a positive,
+  negative, limited or inconclusive answer. Its closure condition must define
+  the evidence needed for a decision. It must not require the PI to find a
+  successful intervention.
+- **Evidence:** campaign `b366ab54-1218-4ab4-9bf1-3fd6a19c86bb` and
+  `docs/research-overview/robot-campaign-b366ab54-final-analysis-20261007.html`.
+- **Boundary:** this entry records the inquiry-control issue only. Assessment
+  readiness is postponed. No prompt, contract, Runner or campaign behavior
+  changed.
+- **Status:** open for a separately approved design and implementation.
+
+## 2026-10-07: implement R6 and R7
+
+- **R6:** implemented in commit `fa5bd6b` to clarify retention and replacement
+  neutrality. Existing PI-owned structure has no standing over a scientific
+  choice.
+- **R7:** implemented in commit `80e4add` to align contract paths, protected
+  paths, and policy routing with the current repository layout.
+- **Validation:** validation was performed for both commits.
+- **Boundary:** the assessment-readiness issue remains postponed. No campaign
+  has been launched, resumed, reset, trained, measured, or evaluated.
+- **Status:** R6 and R7 are implemented. The b366ab54 inquiry-control finding
+  remains intact for separate follow-up.

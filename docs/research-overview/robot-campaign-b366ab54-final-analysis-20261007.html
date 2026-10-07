@@ -1,0 +1,1023 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Final analysis of robot-learning campaign b366ab54-1218-4ab4-9bf1-3fd6a19c86bb.">
+  <title>Campaign b366ab54 final analysis</title>
+  <script>
+  (() => {
+    const param = new URLSearchParams(window.location.search).get("scoutTheme");
+    const theme =
+      param || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+    document.documentElement.setAttribute("data-theme", theme);
+  })();
+</script>
+  <style>
+    :root {
+      color-scheme: light;
+      --cp-bg: #f7f4ef;
+      --cp-bg-elevated: #fcfbf8;
+      --cp-surface: #ffffff;
+      --cp-surface-soft: #f5f5f5;
+      --cp-border: #dedede;
+      --cp-border-strong: #919191;
+      --cp-text: #242424;
+      --cp-text-muted: #5c5c5c;
+      --cp-text-soft: #6f6f6f;
+      --cp-accent: #b11f4b;
+      --cp-accent-hover: #9a1a41;
+      --cp-accent-soft: rgba(177, 31, 75, 0.08);
+      --cp-accent-fg: #ffffff;
+      --cp-success: #16a34a;
+      --cp-danger: #dc2626;
+      --cp-warning: #f59e0b;
+      --cp-link: #0078d4;
+      --cp-shadow: 0 18px 48px rgba(0, 0, 0, 0.12);
+      --cp-overlay: rgba(255, 255, 255, 0.8);
+      --cp-panel: rgba(255, 255, 255, 0.86);
+      --cp-panel-strong: rgba(255, 255, 255, 0.96);
+      --cp-sheen: rgba(255, 255, 255, 0.55);
+      --cp-highlight: rgba(177, 31, 75, 0.12);
+    }
+    html[data-theme="dark"] {
+      color-scheme: dark;
+      --cp-bg: #3d3b3a;
+      --cp-bg-elevated: #343231;
+      --cp-surface: #292929;
+      --cp-surface-soft: #2e2e2e;
+      --cp-border: #474747;
+      --cp-border-strong: #5f5f5f;
+      --cp-text: #dedede;
+      --cp-text-muted: #919191;
+      --cp-text-soft: #b0b0b0;
+      --cp-accent: #fd8ea1;
+      --cp-accent-hover: #fb7b91;
+      --cp-accent-soft: rgba(253, 142, 161, 0.14);
+      --cp-accent-fg: #1a1a1a;
+      --cp-success: #4ade80;
+      --cp-danger: #f87171;
+      --cp-warning: #fbbf24;
+      --cp-link: #4da6ff;
+      --cp-shadow: 0 18px 48px rgba(0, 0, 0, 0.32);
+      --cp-overlay: rgba(41, 41, 41, 0.88);
+      --cp-panel: rgba(41, 41, 41, 0.72);
+      --cp-panel-strong: rgba(41, 41, 41, 0.96);
+      --cp-sheen: rgba(255, 255, 255, 0.04);
+      --cp-highlight: rgba(253, 142, 161, 0.12);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      background: var(--cp-bg);
+      color: var(--cp-text);
+      font-family: "Segoe UI", Aptos, Calibri, -apple-system, BlinkMacSystemFont, sans-serif;
+      line-height: 1.55;
+    }
+
+    a {
+      color: var(--cp-link);
+      text-underline-offset: 0.18em;
+    }
+
+    a:hover {
+      color: var(--cp-accent-hover);
+    }
+
+    :focus-visible {
+      outline: 0.2rem solid var(--cp-accent);
+      outline-offset: 0.2rem;
+    }
+
+    .skip-link {
+      position: absolute;
+      top: 0.5rem;
+      left: 0.5rem;
+      z-index: 20;
+      padding: 0.5rem 0.75rem;
+      background: var(--cp-accent);
+      color: var(--cp-accent-fg);
+      border-radius: 0.625rem;
+      transform: translateY(-180%);
+    }
+
+    .skip-link:focus {
+      transform: translateY(0);
+    }
+
+    .page {
+      width: min(76rem, calc(100% - 2rem));
+      margin: 0 auto;
+      padding: 2rem 0 4rem;
+    }
+
+    .hero {
+      padding: clamp(1.5rem, 4vw, 3rem);
+      background: var(--cp-bg-elevated);
+      border: 1px solid var(--cp-border);
+      border-top: 0.375rem solid var(--cp-accent);
+      border-radius: 1rem;
+    }
+
+    .eyebrow {
+      margin: 0;
+      color: var(--cp-accent);
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    h1,
+    h2,
+    h3 {
+      line-height: 1.2;
+      text-wrap: balance;
+    }
+
+    h1 {
+      max-width: 19ch;
+      margin: 0.5rem 0 0.75rem;
+      font-size: clamp(2rem, 6vw, 4rem);
+      letter-spacing: -0.035em;
+    }
+
+    h2 {
+      margin: 0 0 1rem;
+      font-size: clamp(1.45rem, 3vw, 2rem);
+    }
+
+    h3 {
+      margin: 0 0 0.5rem;
+      font-size: 1.05rem;
+    }
+
+    p {
+      margin: 0 0 0.75rem;
+    }
+
+    p:last-child {
+      margin-bottom: 0;
+    }
+
+    code,
+    .mono {
+      font-family: Consolas, "Courier New", Courier, monospace;
+      overflow-wrap: anywhere;
+    }
+
+    .lede {
+      max-width: 70ch;
+      color: var(--cp-text-soft);
+      font-size: 1.08rem;
+    }
+
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 1.25rem;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      min-height: 2rem;
+      padding: 0.25rem 0.75rem;
+      background: var(--cp-surface);
+      color: var(--cp-text);
+      border: 1px solid var(--cp-border);
+      border-radius: 0.625rem;
+      font-size: 0.84rem;
+      font-weight: 600;
+    }
+
+    .pill.fail {
+      background: var(--cp-accent-soft);
+      color: var(--cp-accent);
+      border-color: var(--cp-accent);
+    }
+
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      margin: 1rem 0;
+      padding: 0.75rem 1rem;
+      background: var(--cp-panel-strong);
+      border: 1px solid var(--cp-border);
+      border-radius: 0.625rem;
+    }
+
+    nav ul {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem 1rem;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    nav a {
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+
+    section {
+      scroll-margin-top: 5rem;
+      margin-top: 1rem;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      gap: 1rem;
+    }
+
+    .card {
+      grid-column: span 12;
+      padding: clamp(1.25rem, 3vw, 2rem);
+      background: var(--cp-surface);
+      border: 1px solid var(--cp-border);
+      border-radius: 1rem;
+      box-shadow: 0 0 2px var(--cp-border), 0 1px 2px var(--cp-highlight);
+    }
+
+    .card.accent {
+      background: var(--cp-accent-soft);
+      border-color: var(--cp-accent);
+    }
+
+    .card.danger {
+      border-left: 0.4rem solid var(--cp-danger);
+    }
+
+    .card.warning {
+      border-left: 0.4rem solid var(--cp-warning);
+    }
+
+    .card.success {
+      border-left: 0.4rem solid var(--cp-success);
+    }
+
+    .span-4 {
+      grid-column: span 4;
+    }
+
+    .span-6 {
+      grid-column: span 6;
+    }
+
+    .span-8 {
+      grid-column: span 8;
+    }
+
+    .stat {
+      padding: 1rem;
+      background: var(--cp-surface-soft);
+      border: 1px solid var(--cp-border);
+      border-radius: 0.625rem;
+    }
+
+    .stat strong {
+      display: block;
+      color: var(--cp-accent);
+      font-size: clamp(1.45rem, 4vw, 2rem);
+      line-height: 1.1;
+    }
+
+    .stat span {
+      color: var(--cp-text-muted);
+      font-size: 0.86rem;
+    }
+
+    .result-line {
+      display: grid;
+      grid-template-columns: minmax(7rem, 0.7fr) minmax(12rem, 2fr) auto;
+      gap: 0.75rem;
+      align-items: center;
+      padding: 0.75rem 0;
+      border-bottom: 1px solid var(--cp-border);
+    }
+
+    .result-line:last-child {
+      border-bottom: 0;
+    }
+
+    .bar-track {
+      height: 0.75rem;
+      overflow: hidden;
+      background: var(--cp-surface-soft);
+      border: 1px solid var(--cp-border);
+      border-radius: 0.625rem;
+    }
+
+    .bar {
+      height: 100%;
+      background: var(--cp-accent);
+    }
+
+    .bar.reference {
+      background: var(--cp-text-muted);
+    }
+
+    .w-995 { width: 99.5%; }
+    .w-980 { width: 98%; }
+    .w-975 { width: 97.5%; }
+    .w-970 { width: 97%; }
+    .w-965 { width: 96.5%; }
+    .w-960 { width: 96%; }
+    .w-910 { width: 91%; }
+
+    .table-wrap {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.92rem;
+    }
+
+    th,
+    td {
+      padding: 0.75rem;
+      text-align: left;
+      vertical-align: top;
+      border-bottom: 1px solid var(--cp-border);
+    }
+
+    th {
+      background: var(--cp-surface-soft);
+      color: var(--cp-text-muted);
+      font-size: 0.8rem;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+    }
+
+    tr:last-child td {
+      border-bottom: 0;
+    }
+
+    blockquote {
+      margin: 1rem 0 0;
+      padding: 1rem 1.25rem;
+      background: var(--cp-surface-soft);
+      border-left: 0.3rem solid var(--cp-accent);
+      border-radius: 0.625rem;
+    }
+
+    .decision-map {
+      display: grid;
+      gap: 0.75rem;
+      margin: 1rem 0 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .decision-stage {
+      display: grid;
+      grid-template-columns: 3.5rem minmax(0, 1fr);
+      gap: 1rem;
+      padding: 1rem;
+      background: var(--cp-surface);
+      border: 1px solid var(--cp-border);
+      border-radius: 0.625rem;
+    }
+
+    .decision-stage .stage {
+      display: grid;
+      place-items: center;
+      width: 3rem;
+      height: 3rem;
+      background: var(--cp-surface-soft);
+      color: var(--cp-text);
+      border: 1px solid var(--cp-border-strong);
+      border-radius: 0.625rem;
+      font-weight: 800;
+    }
+
+    .decision-stage.stop {
+      background: var(--cp-accent-soft);
+      border: 0.18rem solid var(--cp-accent);
+    }
+
+    .decision-stage.stop .stage {
+      background: var(--cp-accent);
+      color: var(--cp-accent-fg);
+      border-color: var(--cp-accent);
+    }
+
+    .decision-stage.drift {
+      border-left: 0.4rem solid var(--cp-warning);
+    }
+
+    .tag {
+      display: inline-block;
+      margin-bottom: 0.35rem;
+      color: var(--cp-accent);
+      font-size: 0.76rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .callout {
+      padding: 1rem 1.25rem;
+      background: var(--cp-accent-soft);
+      border: 1px solid var(--cp-accent);
+      border-radius: 0.625rem;
+    }
+
+    .muted {
+      color: var(--cp-text-muted);
+    }
+
+    .small {
+      font-size: 0.86rem;
+    }
+
+    ul,
+    ol {
+      padding-left: 1.35rem;
+    }
+
+    li + li {
+      margin-top: 0.5rem;
+    }
+
+    footer {
+      margin-top: 1rem;
+      padding: 1.25rem;
+      color: var(--cp-text-muted);
+      border-top: 1px solid var(--cp-border);
+      font-size: 0.84rem;
+    }
+
+    @media (max-width: 800px) {
+      .span-4,
+      .span-6,
+      .span-8 {
+        grid-column: span 12;
+      }
+
+      .result-line {
+        grid-template-columns: 1fr auto;
+      }
+
+      .result-line .bar-track {
+        grid-column: 1 / -1;
+      }
+
+      nav {
+        position: static;
+      }
+    }
+
+    @media (max-width: 520px) {
+      .page {
+        width: min(100% - 1rem, 76rem);
+        padding-top: 0.5rem;
+      }
+
+      .decision-stage {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media print {
+      body {
+        background: var(--cp-surface);
+        font-size: 10.5pt;
+      }
+
+      .page {
+        width: 100%;
+        padding: 0;
+      }
+
+      nav,
+      .skip-link {
+        display: none;
+      }
+
+      .hero,
+      .card,
+      .decision-stage {
+        box-shadow: none;
+        break-inside: avoid;
+      }
+
+      section {
+        break-before: auto;
+      }
+
+      a {
+        color: var(--cp-text);
+        text-decoration: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to report</a>
+  <main class="page" id="main">
+    <header class="hero">
+      <p class="eyebrow">Final campaign analysis · 7 October 2026</p>
+      <h1>T1 remained best, but the official goal was not reached</h1>
+      <p class="lede">
+        Campaign <code>b366ab54-1218-4ab4-9bf1-3fd6a19c86bb</code> ended after the official assessment.
+        The assessed T1 checkpoint achieved 194 successes in 200 episodes.
+        The required result was at least 196 successes.
+      </p>
+      <div class="meta" aria-label="Campaign summary">
+        <span class="pill fail">Official result: failed</span>
+        <span class="pill">T1:checkpoint-100352</span>
+        <span class="pill">194 / 200</span>
+        <span class="pill">97.0%</span>
+        <span class="pill">5 training runs</span>
+      </div>
+    </header>
+
+    <nav aria-label="Report sections">
+      <ul>
+        <li><a href="#result">Executive result</a></li>
+        <li><a href="#timeline">Timeline</a></li>
+        <li><a href="#interventions">Interventions</a></li>
+        <li><a href="#reliability">T1 reliability</a></li>
+        <li><a href="#i2">I2 decision progress</a></li>
+        <li><a href="#progress">Two types of progress</a></li>
+        <li><a href="#cost">Resource cost</a></li>
+        <li><a href="#harness">Harness findings</a></li>
+        <li><a href="#conclusions">Conclusions</a></li>
+      </ul>
+    </nav>
+
+    <section id="result" class="grid" aria-labelledby="result-title">
+      <article class="card span-8 danger">
+        <p class="eyebrow">Executive result</p>
+        <h2 id="result-title">The selection was sound. The readiness case was weak.</h2>
+        <p>
+          T1 was the correct selection because no tested intervention beat it on paired evidence.
+          T2, T3, T4, and T5 all failed to establish a better policy.
+        </p>
+        <p>
+          The official result was also consistent with the repeated T1 panels.
+          Those panels centered below the 98% goal.
+        </p>
+        <p>
+          M10 achieved exactly 196 of 200.
+          It supplied no margin above the threshold.
+          The official panel then produced 194 of 200.
+        </p>
+      </article>
+      <aside class="card span-4 accent" aria-label="Official assessment details">
+        <h2>Official endpoint</h2>
+        <div class="stat">
+          <strong>194 / 200</strong>
+          <span>Six failures. The goal allowed at most four.</span>
+        </div>
+        <div class="stat">
+          <strong>97.0%</strong>
+          <span>One percentage point below the 98% goal.</span>
+        </div>
+        <p class="small muted">
+          The state file stores the 97.0% summary.
+          The E14 result record stores only <code>official_assessment_failed</code>.
+        </p>
+      </aside>
+    </section>
+
+    <section id="timeline" class="card" aria-labelledby="timeline-title">
+      <p class="eyebrow">Campaign timeline</p>
+      <h2 id="timeline-title">The campaign moved from diagnosis to repeated intervention tests</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th scope="col">Stage</th>
+              <th scope="col">Work</th>
+              <th scope="col">Decision result</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>M2</td>
+              <td>Characterized dynamics and actuator response.</td>
+              <td>Gross authority and damping did not appear to set the main limit.</td>
+            </tr>
+            <tr>
+              <td>T1 and M3</td>
+              <td>Trained the baseline and evaluated 200 full-distribution episodes.</td>
+              <td>T1 achieved 199 of 200. I1 then closed.</td>
+            </tr>
+            <tr>
+              <td>T2 and M4</td>
+              <td>Added settling-aware penalties.</td>
+              <td>T2 achieved 193. T1 achieved 194 on the same panel.</td>
+            </tr>
+            <tr>
+              <td>T3 and M5</td>
+              <td>Added a branch-switch penalty.</td>
+              <td>T3 achieved 182. T1 achieved 194 on the same panel.</td>
+            </tr>
+            <tr>
+              <td>M6</td>
+              <td>Audited continuous within-interval behavior.</td>
+              <td>The audit supported a measurement limitation. It did not produce a better policy.</td>
+            </tr>
+            <tr>
+              <td>T4 and M7</td>
+              <td>Regularized action transitions.</td>
+              <td>T4 tied T1 at 192. No episode outcome differed.</td>
+            </tr>
+            <tr>
+              <td>T5, M8, and M9</td>
+              <td>Trained on the full target-radius distribution.</td>
+              <td>T5 tied once at 196, then lost twice to T1.</td>
+            </tr>
+            <tr>
+              <td>M10</td>
+              <td>Evaluated T1 on the protected task-reference panel.</td>
+              <td>T1 achieved exactly 196 of 200.</td>
+            </tr>
+            <tr>
+              <td>E14</td>
+              <td>Requested the official assessment for T1.</td>
+              <td>The campaign ended at 194 of 200.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="interventions" class="card" aria-labelledby="interventions-title">
+      <p class="eyebrow">Intervention comparison</p>
+      <h2 id="interventions-title">No intervention produced a paired gain over T1</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th scope="col">Intervention</th>
+              <th scope="col">Candidate result</th>
+              <th scope="col">T1 result</th>
+              <th scope="col">Interpretation</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>T2 settling intervention</td>
+              <td>193 / 200</td>
+              <td>194 / 200</td>
+              <td>The direct settling intervention did not improve T1. Later T2 training collapsed.</td>
+            </tr>
+            <tr>
+              <td>T3 branch penalty</td>
+              <td>182 / 200</td>
+              <td>194 / 200</td>
+              <td>Direct branch penalization was harmful. It weakened the original causal framing.</td>
+            </tr>
+            <tr>
+              <td>T4 action-transition intervention</td>
+              <td>192 / 200</td>
+              <td>192 / 200</td>
+              <td>All 200 episode outcomes matched. The intervention made no decision progress.</td>
+            </tr>
+            <tr>
+              <td>T5 full-radius intervention at M8</td>
+              <td>196 / 200</td>
+              <td>196 / 200</td>
+              <td>The result reached the threshold but did not beat T1.</td>
+            </tr>
+            <tr>
+              <td>T5 checkpoints at M9</td>
+              <td>194 and 193 / 200</td>
+              <td>195 / 200</td>
+              <td>Both checkpoints lost on paired evidence. M9 justified final rejection.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="callout">
+        <strong>Why T1 was selected again:</strong>
+        T1 remained the only candidate that no tested intervention beat on paired full-distribution evidence.
+        Best-known selection and assessment readiness were separate decisions.
+      </div>
+    </section>
+
+    <section id="reliability" class="grid" aria-labelledby="reliability-title">
+      <article class="card span-8">
+        <p class="eyebrow">T1 reliability panel</p>
+        <h2 id="reliability-title">Repeated panels placed T1 near the goal, not safely above it</h2>
+        <div class="result-line">
+          <strong>M3</strong>
+          <div class="bar-track" aria-label="M3 success rate 99.5 percent"><div class="bar reference w-995"></div></div>
+          <span>199</span>
+        </div>
+        <div class="result-line">
+          <strong>M4</strong>
+          <div class="bar-track" aria-label="M4 success rate 97 percent"><div class="bar reference w-970"></div></div>
+          <span>194</span>
+        </div>
+        <div class="result-line">
+          <strong>M5</strong>
+          <div class="bar-track" aria-label="M5 success rate 97 percent"><div class="bar reference w-970"></div></div>
+          <span>194</span>
+        </div>
+        <div class="result-line">
+          <strong>M6</strong>
+          <div class="bar-track" aria-label="M6 success rate 96.5 percent"><div class="bar reference w-965"></div></div>
+          <span>193</span>
+        </div>
+        <div class="result-line">
+          <strong>M7</strong>
+          <div class="bar-track" aria-label="M7 success rate 96 percent"><div class="bar reference w-960"></div></div>
+          <span>192</span>
+        </div>
+        <div class="result-line">
+          <strong>M8</strong>
+          <div class="bar-track" aria-label="M8 success rate 98 percent"><div class="bar reference w-980"></div></div>
+          <span>196</span>
+        </div>
+        <div class="result-line">
+          <strong>M9</strong>
+          <div class="bar-track" aria-label="M9 success rate 97.5 percent"><div class="bar reference w-975"></div></div>
+          <span>195</span>
+        </div>
+        <p class="small muted">
+          Each bar shows successes out of 200.
+          Only M3 and M8 reached at least 196.
+        </p>
+      </article>
+      <aside class="card span-4 warning">
+        <h2>What the seven panels imply</h2>
+        <div class="stat">
+          <strong>1363 / 1400</strong>
+          <span>Pooled research result for T1.</span>
+        </div>
+        <div class="stat">
+          <strong>97.357%</strong>
+          <span>Pooled descriptive success rate.</span>
+        </div>
+        <div class="stat">
+          <strong>2 of 7</strong>
+          <span>Panels that reached 196 successes.</span>
+        </div>
+        <p>
+          The pooled rate gives an approximate expectation of 194.7 successes per 200 episodes.
+        </p>
+        <p>
+          A simple binomial estimate gives about a 0.389 probability of at least 196 successes.
+        </p>
+        <p class="small muted">
+          This is an estimate, not a certainty.
+          It treats the pooled rate as fixed and treats episodes as independent.
+        </p>
+      </aside>
+    </section>
+
+    <section id="i2" class="card" aria-labelledby="i2-title">
+      <p class="eyebrow">I2 decision progress</p>
+      <h2 id="i2-title">Decision progress stopped at M7. Inquiry drift appeared at T5 and M8.</h2>
+      <p>I2 asked:</p>
+      <blockquote>
+        “What intervention most reliably suppresses high-velocity entry and branch-switch-induced saturated corrections so the policy maintains the complete uninterrupted 100-step hold under the official task distribution?”
+      </blockquote>
+      <p>
+        The closure condition allowed closure after one bounded intervention comparison.
+        The question still implied a search for a successful intervention.
+        This mismatch helped I2 remain open.
+      </p>
+
+      <ol class="decision-map" aria-label="I2 staged decision map">
+        <li class="decision-stage">
+          <span class="stage">A</span>
+          <div>
+            <span class="tag">M4 · First natural closure point</span>
+            <h3>T2 failed</h3>
+            <p>
+              T2 achieved 193 and T1 achieved 194.
+              The PI had enough evidence to conclude that this direct intervention did not improve T1.
+            </p>
+          </div>
+        </li>
+        <li class="decision-stage">
+          <span class="stage">B</span>
+          <div>
+            <span class="tag">M5 · Strong redirection point</span>
+            <h3>The original causal framing weakened</h3>
+            <p>
+              T3 achieved 182 while T1 achieved 194.
+              Direct branch penalization caused a large loss.
+            </p>
+          </div>
+        </li>
+        <li class="decision-stage stop">
+          <span class="stage">C</span>
+          <div>
+            <span class="tag">M7 · Decision stagnation became clear</span>
+            <h3>Further intervention search stopped advancing the decision</h3>
+            <p>
+              T4 and T1 both achieved 192.
+              Zero episode outcomes differed.
+              The new intervention supplied no candidate advantage.
+            </p>
+          </div>
+        </li>
+        <li class="decision-stage drift">
+          <span class="stage">D</span>
+          <div>
+            <span class="tag">T5 and M8 · Inquiry drift</span>
+            <h3>The work returned to distribution coverage</h3>
+            <p>
+              I1 had already weakened missing radius coverage as the dominant cause.
+              T5 moved away from I2's stated intervention mechanism.
+            </p>
+          </div>
+        </li>
+        <li class="decision-stage">
+          <span class="stage">E</span>
+          <div>
+            <span class="tag">M9 · Proper final closure evidence</span>
+            <h3>Both T5 checkpoints lost to T1</h3>
+            <p>
+              T5 achieved 194 and 193.
+              T1 achieved 195.
+              This evidence supported final closure.
+            </p>
+          </div>
+        </li>
+        <li class="decision-stage">
+          <span class="stage">F</span>
+          <div>
+            <span class="tag">M10 · Readiness gate</span>
+            <h3>M10 did not answer I2</h3>
+            <p>
+              M10 tested T1 on the task-reference panel.
+              It caused closure because T1 reached exactly 196.
+              It did not validate an I2 intervention.
+            </p>
+          </div>
+        </li>
+      </ol>
+    </section>
+
+    <section id="progress" class="grid" aria-labelledby="progress-title">
+      <div class="card span-12">
+        <p class="eyebrow">Separate outcomes</p>
+        <h2 id="progress-title">Scientific progress did not produce policy-performance progress</h2>
+      </div>
+      <article class="card span-6 success">
+        <h3>Scientific progress</h3>
+        <ul>
+          <li>I1 separated reach failure from hold failure.</li>
+          <li>M2 weakened gross actuator authority as the main limit.</li>
+          <li>M3 linked the observed failure to fast entry, correction saturation, and hold interruption.</li>
+          <li>M4 and M5 showed that direct reward penalties did not control the proposed mechanism.</li>
+          <li>M6 showed that sampled results can hide within-interval violations.</li>
+          <li>M7 showed that action smoothing did not change episode outcomes.</li>
+          <li>M9 showed that broader distribution training did not beat T1.</li>
+        </ul>
+      </article>
+      <article class="card span-6 danger">
+        <h3>Policy-performance progress</h3>
+        <ul>
+          <li>T1 remained the best candidate from its first measured checkpoint.</li>
+          <li>No later candidate produced a paired gain.</li>
+          <li>The work after T1 used 483,328 rollout steps.</li>
+          <li>The work after T1 used 2,800 development evaluation episodes.</li>
+          <li>This additional work produced no better candidate.</li>
+          <li>The official result remained below the campaign goal.</li>
+        </ul>
+      </article>
+    </section>
+
+    <section id="cost" class="card" aria-labelledby="cost-title">
+      <p class="eyebrow">Resource cost</p>
+      <h2 id="cost-title">Most campaign work occurred after T1 already existed</h2>
+      <div class="grid">
+        <div class="stat span-4">
+          <strong>5</strong>
+          <span>Completed training runs.</span>
+        </div>
+        <div class="stat span-4">
+          <strong>604,160</strong>
+          <span>Total rollout steps.</span>
+        </div>
+        <div class="stat span-4">
+          <strong>3,000</strong>
+          <span>Development evaluation episodes.</span>
+        </div>
+        <div class="stat span-4">
+          <strong>≈ 3.51 h</strong>
+          <span>Elapsed campaign time from start to official result.</span>
+        </div>
+        <div class="stat span-4">
+          <strong>483,328</strong>
+          <span>Additional rollout steps after T1.</span>
+        </div>
+        <div class="stat span-4">
+          <strong>2,800</strong>
+          <span>Additional evaluation episodes after the first T1 panel.</span>
+        </div>
+      </div>
+      <p class="small muted">
+        The elapsed time is about 3 hours and 30 minutes.
+        It includes lifecycle work and the official endpoint.
+      </p>
+    </section>
+
+    <section id="harness" class="card" aria-labelledby="harness-title">
+      <p class="eyebrow">Harness findings</p>
+      <h2 id="harness-title">The records expose three lifecycle lessons</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th scope="col">Finding</th>
+              <th scope="col">Evidence</th>
+              <th scope="col">Bounded lesson</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Inquiry closure and inquiry wording pulled in different directions.</td>
+              <td>I2 allowed closure after one bounded comparison. Its question asked for the most reliable intervention.</td>
+              <td>A broad success-seeking question can keep work open after its formal closure test is met.</td>
+            </tr>
+            <tr>
+              <td>The readiness gate had no margin.</td>
+              <td>M10 achieved exactly 196. Seven T1 research panels pooled to 97.357%.</td>
+              <td>Best-known evidence supported T1 selection. It did not strongly support official readiness.</td>
+            </tr>
+            <tr>
+              <td>The final checkpoint described the wrong failure transition.</td>
+              <td>It said an official failure redirects the next inquiry.</td>
+              <td>The lifecycle contract makes official pass or failure terminal for the campaign.</td>
+            </tr>
+            <tr>
+              <td>The generated brief is stale after termination.</td>
+              <td>The top reports official failure. Later checkpoint text says the assessment remains unrun and unused.</td>
+              <td>Terminal facts and copied checkpoint facts can conflict in one generated document.</td>
+            </tr>
+            <tr>
+              <td>The durable records split the official result.</td>
+              <td>E14 records only <code>official_assessment_failed</code>. The state file stores the 97.0% summary.</td>
+              <td>A final analysis must read both records to recover status and score.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="small muted">
+        These findings describe this campaign and its record flow.
+        They do not propose unrelated harness changes.
+      </p>
+      <p class="small muted">
+        <strong>Current harness status · 7 October 2026:</strong>
+        R6 is implemented for retention and replacement neutrality.
+        R7 is implemented for contract, path, and routing accuracy.
+        Validation was performed for both changes.
+        The assessment-readiness issue remains postponed.
+        No campaign has been launched.
+      </p>
+    </section>
+
+    <section id="conclusions" class="grid" aria-labelledby="conclusions-title">
+      <article class="card span-12 accent">
+        <p class="eyebrow">Final conclusions</p>
+        <h2 id="conclusions-title">The campaign improved its explanation, but not its best policy</h2>
+        <ol>
+          <li>T1 selection was correct because no intervention beat it on paired evidence.</li>
+          <li>The official failure was plausible from the repeated T1 panels.</li>
+          <li>The seven panels centered near 194.7 successes per 200, not safely above 196.</li>
+          <li>M10 met the threshold exactly. It supplied no readiness margin.</li>
+          <li>I2 had enough evidence to close after M4. Its causal framing clearly weakened at M5.</li>
+          <li>I2 stopped making decision progress at M7. T5 and M8 then showed inquiry drift.</li>
+          <li>M9 supplied the correct final closure evidence. M10 was a readiness gate.</li>
+          <li>Scientific knowledge increased. Policy performance did not improve beyond T1.</li>
+          <li>The official result ended the campaign under the lifecycle contract.</li>
+        </ol>
+      </article>
+    </section>
+
+    <footer>
+      <p>
+        Evidence sources: <code>campaigns/brief.md</code>, <code>campaigns/results.jsonl</code>,
+        <code>runner/state/research_state.json</code>, and the campaign evaluation artifacts.
+      </p>
+      <p>
+        This report uses STE-flavored explanatory English.
+        It does not claim certified ASD-STE100 compliance.
+      </p>
+    </footer>
+  </main>
+</body>
+</html>
