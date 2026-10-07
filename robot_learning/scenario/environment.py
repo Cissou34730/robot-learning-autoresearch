@@ -71,6 +71,7 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
         self._previous_distance = 0.0
         self._held_steps = 0
         self._outside_after_hold = False
+        self._branch_sign: int | None = None
 
     def _end_effector_position(self) -> np.ndarray:
         return self.data.site("end_effector").xpos.copy()
@@ -99,6 +100,34 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
     def _observation(self) -> np.ndarray:
         return self.policy_io.observe(self.data)
 
+    def _nearest_branch_sign(self) -> int:
+        target_x = float(self.data.mocap_pos[0][0])
+        target_y = float(self.data.mocap_pos[0][1])
+        cosine = (
+            target_x**2
+            + target_y**2
+            - 0.12**2
+            - 0.10**2
+        ) / (2.0 * 0.12 * 0.10)
+        elbow_open = float(np.arccos(np.clip(cosine, -1.0, 1.0)))
+
+        def branch_error(elbow: float) -> float:
+            shoulder = np.arctan2(target_y, target_x) - np.arctan2(
+                0.10 * np.sin(elbow),
+                0.12 + 0.10 * np.cos(elbow),
+            )
+            errors = np.asarray(
+                [
+                    (float(self.data.qpos[0]) - shoulder + np.pi) % (2.0 * np.pi)
+                    - np.pi,
+                    (float(self.data.qpos[1]) - elbow + np.pi) % (2.0 * np.pi)
+                    - np.pi,
+                ]
+            )
+            return float(np.sum(np.square(errors)))
+
+        return 1 if branch_error(elbow_open) <= branch_error(-elbow_open) else -1
+
     def reset(
         self, *, seed: int | None = None, options: dict[str, Any] | None = None
     ) -> tuple[np.ndarray, dict[str, Any]]:
@@ -117,6 +146,7 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
         self._previous_distance = self._distance_to_target()
         self._held_steps = 0
         self._outside_after_hold = False
+        self._branch_sign = self._nearest_branch_sign()
         return self._observation(), {}
 
     def step(
@@ -132,6 +162,11 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
             mujoco.mj_step(self.model, self.data)
 
         distance = self._distance_to_target()
+        branch_sign = self._nearest_branch_sign()
+        branch_switched = (
+            self._branch_sign is not None and branch_sign != self._branch_sign
+        )
+        self._branch_sign = branch_sign
 
         previous_held_steps = self._held_steps
         if distance <= self.success_threshold:
@@ -147,7 +182,7 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
             distance,
             self.success_threshold,
             action,
-            joint_velocity=self.data.qvel[:2],
+            branch_switched=branch_switched,
             held_steps=self._held_steps,
             previous_held_steps=previous_held_steps,
             hold_steps_required=self.hold_steps_required,
