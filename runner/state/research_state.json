@@ -1647,7 +1647,7 @@
     }
   },
   "counters": {
-    "event": 4,
+    "event": 5,
     "inquiry": 1,
     "measurement": 2,
     "session": 3,
@@ -1656,7 +1656,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -2687,29 +2687,169 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-07T20:02:08Z",
+      "error": null,
+      "id": "E5",
+      "inquiry_id": "I1",
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "No working, best-known, or retained candidate role has been assigned. T1:checkpoint-120832 is the strongest evaluated reference at 73% on M1 and M2; T2:checkpoint-120832 is not competitive at 35% on M2 and is retained only as evidence about the tested full-domain recipe.",
+        "completed_operations": [
+          "T2",
+          "M2",
+          "E4"
+        ],
+        "cumulative_resource_use": "Two fresh 120000-step training runs were requested and completed at 120832 simulator-training steps each, producing T1 and T2 candidates. Two 100-episode research evaluation panels were completed: M1 for T1 and paired M2 for T2 and T1 on shared seeds. No dependencies were installed. I1 was opened and closed; the tested full-domain training change modified only robot_learning/training/environment.py.",
+        "current_goal_gap": "The strongest evaluated candidate remains T1:checkpoint-120832 at 73% success, leaving a 25 percentage-point gap to 98%. T2:checkpoint-120832 achieved 35% on the matched panel, so no candidate justifies official assessment.",
+        "current_synthesis": "Observed facts: T1 trained on 14-20 cm reached recorded training success 0.96 and achieved 73% on M1. M1 failures concentrated below 14 cm, with both non-entry and interrupted near-base holds. T2 was trained fresh on the full 6-20 cm range but recorded zero training success through 120832 steps and achieved only 35% on M2, versus T1's 73% on the same 100 episode seeds; T2 won 13 episodes while T1 won 51, with 64 discordant episodes. Interpretation: the tested full-domain training recipe is insufficient and degraded the competent baseline, so missing radial coverage alone is not an adequate explanation or intervention. This negative recipe result does not reject coverage as a broader method and does not establish a physical cause. Reachability remains a prior rather than an observed failure cause. Branch-conditioned trajectory or stabilization failure, actuator authority, compiled dynamics, and hidden substep excursions remain unresolved because the evaluation diagnostics lack q/qdot/action and substep traces.",
+        "decision_frontier": "The unresolved distinction is whether persistent near-base failures arise primarily from branch-conditioned approach and hold behavior, from insufficient or configuration-dependent actuator authority under the compiled dynamics, or from harmful motion hidden between control-boundary observations. A diagnostic measurement that records q, qdot, action, actuator and acceleration quantities, branch/Jacobian descriptors, and simulator-substep distance for successful, non-entry, and interrupted episodes will discriminate these mechanisms. High entry velocity or branch switching would prioritize trajectory and branch-aware control; saturation with inadequate acceleration would prioritize authority or dynamics-aware control; large substep excursions would change the relevant hold mechanism; absence of these signatures would redirect toward learning representation or recipe design.",
+        "evidence_references": [
+          "T1",
+          "M1",
+          "T2",
+          "M2",
+          "E4"
+        ],
+        "human_goal_connection": "The human goal requires at least 98% complete uninterrupted holds over the official uniform 6-20 cm radial distribution. T1 remains far below that requirement at 73% on the 100-episode research panel; the full-domain coverage intervention did not improve the gap.",
+        "next_direction_or_closure": "I1 is closed with a negative result for the tested full-domain training recipe. The next inquiry should begin with a PI-owned diagnostic measurement of T1 behavior and compiled simulator response, stratified by radius and failure phase, recording branch, q/qdot, action, actuator authority, qacc, Jacobian conditioning, and every simulator-step distance. Use that evidence to choose between branch-aware trajectory/control redesign, dynamics or authority intervention, and learning-recipe redesign.",
+        "next_question": "Which mechanism\u2014branch-conditioned trajectory and hold instability, compiled-dynamics or actuator-authority limits, or hidden substep excursions\u2014dominates the persistent near-base failures, and what evidence-supported intervention can raise official success toward 98% without degrading 14-20 cm competence?"
+      },
+      "result": {
+        "session_id": "S3",
+        "status": "checkpointed"
+      },
+      "session_id": "S3",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "ec5f46cc3071c1afd5ec88d6baf3bcdf99b348e8",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "No working, best-known, or retained candidate role has been assigned. T1:checkpoint-120832 is the strongest evaluated reference at 73% on M1 and M2; T2:checkpoint-120832 is not competitive at 35% on M2 and is retained only as evidence about the tested full-domain recipe.",
+        "completed_operations": [
+          "T2",
+          "M2",
+          "E4"
+        ],
+        "cumulative_resource_use": "Two fresh 120000-step training runs were requested and completed at 120832 simulator-training steps each, producing T1 and T2 candidates. Two 100-episode research evaluation panels were completed: M1 for T1 and paired M2 for T2 and T1 on shared seeds. No dependencies were installed. I1 was opened and closed; the tested full-domain training change modified only robot_learning/training/environment.py.",
+        "current_goal_gap": "The strongest evaluated candidate remains T1:checkpoint-120832 at 73% success, leaving a 25 percentage-point gap to 98%. T2:checkpoint-120832 achieved 35% on the matched panel, so no candidate justifies official assessment.",
+        "current_synthesis": "Observed facts: T1 trained on 14-20 cm reached recorded training success 0.96 and achieved 73% on M1. M1 failures concentrated below 14 cm, with both non-entry and interrupted near-base holds. T2 was trained fresh on the full 6-20 cm range but recorded zero training success through 120832 steps and achieved only 35% on M2, versus T1's 73% on the same 100 episode seeds; T2 won 13 episodes while T1 won 51, with 64 discordant episodes. Interpretation: the tested full-domain training recipe is insufficient and degraded the competent baseline, so missing radial coverage alone is not an adequate explanation or intervention. This negative recipe result does not reject coverage as a broader method and does not establish a physical cause. Reachability remains a prior rather than an observed failure cause. Branch-conditioned trajectory or stabilization failure, actuator authority, compiled dynamics, and hidden substep excursions remain unresolved because the evaluation diagnostics lack q/qdot/action and substep traces.",
+        "decision_frontier": "The unresolved distinction is whether persistent near-base failures arise primarily from branch-conditioned approach and hold behavior, from insufficient or configuration-dependent actuator authority under the compiled dynamics, or from harmful motion hidden between control-boundary observations. A diagnostic measurement that records q, qdot, action, actuator and acceleration quantities, branch/Jacobian descriptors, and simulator-substep distance for successful, non-entry, and interrupted episodes will discriminate these mechanisms. High entry velocity or branch switching would prioritize trajectory and branch-aware control; saturation with inadequate acceleration would prioritize authority or dynamics-aware control; large substep excursions would change the relevant hold mechanism; absence of these signatures would redirect toward learning representation or recipe design.",
+        "evidence_references": [
+          "T1",
+          "M1",
+          "T2",
+          "M2",
+          "E4"
+        ],
+        "human_goal_connection": "The human goal requires at least 98% complete uninterrupted holds over the official uniform 6-20 cm radial distribution. T1 remains far below that requirement at 73% on the 100-episode research panel; the full-domain coverage intervention did not improve the gap.",
+        "inquiry_id": "I1",
+        "next_direction_or_closure": "I1 is closed with a negative result for the tested full-domain training recipe. The next inquiry should begin with a PI-owned diagnostic measurement of T1 behavior and compiled simulator response, stratified by radius and failure phase, recording branch, q/qdot, action, actuator authority, qacc, Jacobian conditioning, and every simulator-step distance. Use that evidence to choose between branch-aware trajectory/control redesign, dynamics or authority intervention, and learning-recipe redesign.",
+        "next_question": "Which mechanism\u2014branch-conditioned trajectory and hold instability, compiled-dynamics or actuator-authority limits, or hidden substep excursions\u2014dominates the persistent near-base failures, and what evidence-supported intervention can raise official success toward 98% without degrading 14-20 cm competence?",
+        "session_id": "S3"
+      },
+      "presentation": {
+        "backend_session_id": "9d228067-ba21-44e1-ad05-301fe6e9713d",
+        "campaign_id": "06656182-d7f0-4011-898d-2b870e8a2a54",
+        "campaign_usage": "6m13s | 15.70 AIU | prompt 2m (81% cached) | output 26.6k",
+        "session_id": "S3",
+        "session_kind": "inquiry",
+        "session_usage": "1m32s | 4.46 AIU | prompt 640k (83% cached) | output 5.5k"
+      },
+      "result": {
+        "session_id": "S3",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "87ea7b5b5e800d179302d20a0cf93821c46d897c",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E5",
+    "inquiry_id": "I1",
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "No working, best-known, or retained candidate role has been assigned. T1:checkpoint-120832 is the strongest evaluated reference at 73% on M1 and M2; T2:checkpoint-120832 is not competitive at 35% on M2 and is retained only as evidence about the tested full-domain recipe.",
+        "completed_operations": [
+          "T2",
+          "M2",
+          "E4"
+        ],
+        "cumulative_resource_use": "Two fresh 120000-step training runs were requested and completed at 120832 simulator-training steps each, producing T1 and T2 candidates. Two 100-episode research evaluation panels were completed: M1 for T1 and paired M2 for T2 and T1 on shared seeds. No dependencies were installed. I1 was opened and closed; the tested full-domain training change modified only robot_learning/training/environment.py.",
+        "current_goal_gap": "The strongest evaluated candidate remains T1:checkpoint-120832 at 73% success, leaving a 25 percentage-point gap to 98%. T2:checkpoint-120832 achieved 35% on the matched panel, so no candidate justifies official assessment.",
+        "current_synthesis": "Observed facts: T1 trained on 14-20 cm reached recorded training success 0.96 and achieved 73% on M1. M1 failures concentrated below 14 cm, with both non-entry and interrupted near-base holds. T2 was trained fresh on the full 6-20 cm range but recorded zero training success through 120832 steps and achieved only 35% on M2, versus T1's 73% on the same 100 episode seeds; T2 won 13 episodes while T1 won 51, with 64 discordant episodes. Interpretation: the tested full-domain training recipe is insufficient and degraded the competent baseline, so missing radial coverage alone is not an adequate explanation or intervention. This negative recipe result does not reject coverage as a broader method and does not establish a physical cause. Reachability remains a prior rather than an observed failure cause. Branch-conditioned trajectory or stabilization failure, actuator authority, compiled dynamics, and hidden substep excursions remain unresolved because the evaluation diagnostics lack q/qdot/action and substep traces.",
+        "decision_frontier": "The unresolved distinction is whether persistent near-base failures arise primarily from branch-conditioned approach and hold behavior, from insufficient or configuration-dependent actuator authority under the compiled dynamics, or from harmful motion hidden between control-boundary observations. A diagnostic measurement that records q, qdot, action, actuator and acceleration quantities, branch/Jacobian descriptors, and simulator-substep distance for successful, non-entry, and interrupted episodes will discriminate these mechanisms. High entry velocity or branch switching would prioritize trajectory and branch-aware control; saturation with inadequate acceleration would prioritize authority or dynamics-aware control; large substep excursions would change the relevant hold mechanism; absence of these signatures would redirect toward learning representation or recipe design.",
+        "evidence_references": [
+          "T1",
+          "M1",
+          "T2",
+          "M2",
+          "E4"
+        ],
+        "human_goal_connection": "The human goal requires at least 98% complete uninterrupted holds over the official uniform 6-20 cm radial distribution. T1 remains far below that requirement at 73% on the 100-episode research panel; the full-domain coverage intervention did not improve the gap.",
+        "next_direction_or_closure": "I1 is closed with a negative result for the tested full-domain training recipe. The next inquiry should begin with a PI-owned diagnostic measurement of T1 behavior and compiled simulator response, stratified by radius and failure phase, recording branch, q/qdot, action, actuator authority, qacc, Jacobian conditioning, and every simulator-step distance. Use that evidence to choose between branch-aware trajectory/control redesign, dynamics or authority intervention, and learning-recipe redesign.",
+        "next_question": "Which mechanism\u2014branch-conditioned trajectory and hold instability, compiled-dynamics or actuator-authority limits, or hidden substep excursions\u2014dominates the persistent near-base failures, and what evidence-supported intervention can raise official success toward 98% without degrading 14-20 cm competence?"
+      }
+    },
+    "request_fingerprint": "89dafd7fd3b4c1ff451aa74f2014cf2d1e8ce137ae0fd518618dc3f9ddd546ac",
+    "session_id": "S3",
+    "supersedes": null
+  },
   "pi_checkpoint": {
-    "candidates_and_roles": "No working, best-known, or retained candidate role has been assigned. T1:checkpoint-120832 remains the strongest evaluated baseline and the reference candidate for I1, but its 73% M1 result does not justify official assessment or a best-known role.",
+    "candidates_and_roles": "No working, best-known, or retained candidate role has been assigned. T1:checkpoint-120832 is the strongest evaluated reference at 73% on M1 and M2; T2:checkpoint-120832 is not competitive at 35% on M2 and is retained only as evidence about the tested full-domain recipe.",
     "completed_operations": [
-      "E2"
+      "T2",
+      "M2",
+      "E4"
     ],
-    "cumulative_resource_use": "Before I1, one fresh training run was requested at 120000 steps and completed at 120832 simulator-training steps, and one 100-episode research evaluation panel was completed for T1:checkpoint-120832. The current goal-review session opened I1 and added no training, measurement, dependency, or scientific-source resources.",
-    "current_goal_gap": "T1:checkpoint-120832 achieved 73% success on M1's 100-episode held-out official-distribution panel, leaving a 25 percentage-point gap to the 98% objective. Failures are concentrated in the 6-14 cm region omitted from baseline training; the official 200-episode assessment is not justified.",
-    "current_synthesis": "Observed facts: T1 training used the 14-20 cm radial range and reached recorded training success 0.96 at 120832 steps. M1 evaluated T1:checkpoint-120832 on 100 disjoint official-distribution episodes and recorded 73 successes. Successful episodes in the 14-20 cm region consistently completed the 100-step hold, while failures concentrated below 14 cm; some near-base episodes never entered tolerance and others entered but suffered repeated interruptions. One extreme near-base failure remained far from the target. Interpretation: radial distribution shift and insufficient learned near-base coverage remain the strongest actionable explanation, while configuration-dependent stabilization remains a competing explanation for interrupted near-base holds. The existing evidence does not establish reachability failure, branch causality, actuator-authority limits, or hidden substep excursions because M1 lacks q/qdot/action and substep traces. Inquiry I1 now records the bounded test of full 6-20 cm training under unchanged task mechanics; no new behavioral evidence has yet changed the prior interpretation.",
-    "decision_frontier": "The unresolved distinction is whether explicit training coverage of the official 6-20 cm radial distribution recovers near-base approach and uninterrupted holding while preserving 14-20 cm competence, or whether failures persist because of branch-conditioned stabilization, actuator authority, or compiled-dynamics effects. A full-allocation policy trained with 6-20 cm coverage and evaluated on a matched held-out, radius-stratified panel will discriminate these explanations: near-base recovery with preserved outer-domain performance supports coverage as the actionable route toward 98%; persistent failures or interruptions redirects the inquiry to branch-conditioned traces and compiled dynamics/control authority.",
+    "cumulative_resource_use": "Two fresh 120000-step training runs were requested and completed at 120832 simulator-training steps each, producing T1 and T2 candidates. Two 100-episode research evaluation panels were completed: M1 for T1 and paired M2 for T2 and T1 on shared seeds. No dependencies were installed. I1 was opened and closed; the tested full-domain training change modified only robot_learning/training/environment.py.",
+    "current_goal_gap": "The strongest evaluated candidate remains T1:checkpoint-120832 at 73% success, leaving a 25 percentage-point gap to 98%. T2:checkpoint-120832 achieved 35% on the matched panel, so no candidate justifies official assessment.",
+    "current_synthesis": "Observed facts: T1 trained on 14-20 cm reached recorded training success 0.96 and achieved 73% on M1. M1 failures concentrated below 14 cm, with both non-entry and interrupted near-base holds. T2 was trained fresh on the full 6-20 cm range but recorded zero training success through 120832 steps and achieved only 35% on M2, versus T1's 73% on the same 100 episode seeds; T2 won 13 episodes while T1 won 51, with 64 discordant episodes. Interpretation: the tested full-domain training recipe is insufficient and degraded the competent baseline, so missing radial coverage alone is not an adequate explanation or intervention. This negative recipe result does not reject coverage as a broader method and does not establish a physical cause. Reachability remains a prior rather than an observed failure cause. Branch-conditioned trajectory or stabilization failure, actuator authority, compiled dynamics, and hidden substep excursions remain unresolved because the evaluation diagnostics lack q/qdot/action and substep traces.",
+    "decision_frontier": "The unresolved distinction is whether persistent near-base failures arise primarily from branch-conditioned approach and hold behavior, from insufficient or configuration-dependent actuator authority under the compiled dynamics, or from harmful motion hidden between control-boundary observations. A diagnostic measurement that records q, qdot, action, actuator and acceleration quantities, branch/Jacobian descriptors, and simulator-substep distance for successful, non-entry, and interrupted episodes will discriminate these mechanisms. High entry velocity or branch switching would prioritize trajectory and branch-aware control; saturation with inadequate acceleration would prioritize authority or dynamics-aware control; large substep excursions would change the relevant hold mechanism; absence of these signatures would redirect toward learning representation or recipe design.",
     "evidence_references": [
       "T1",
       "M1",
-      "E2"
+      "T2",
+      "M2",
+      "E4"
     ],
-    "human_goal_connection": "The human goal requires at least 98% complete uninterrupted holds over the official uniform 6-20 cm radial distribution. The strongest evaluated baseline achieves only 73% on a disjoint official-distribution research panel, so the campaign remains 25 percentage points below the objective. Inquiry I1 was opened because its full-domain coverage test directly targets the observed near-base gap.",
-    "inquiry_id": null,
-    "next_direction_or_closure": "The goal-review transition is complete and I1 is open. In the fresh inquiry session, request the full available training allocation for a policy trained explicitly on the official 6-20 cm radial range, preserving full angular coverage and current task mechanics; then evaluate its held-out radius-stratified success and interruption behavior against the T1 baseline before closing or redirecting I1.",
-    "next_question": "Does training on the full official 6-20 cm radial distribution, while preserving full angular coverage and the current task mechanics, raise near-base success enough to close the 98% goal gap without degrading the already competent 14-20 cm behavior?",
-    "scientific_commit": "76092dd72b0ea37a432ebca60e146edf637e05c1",
-    "session_id": "S2"
+    "human_goal_connection": "The human goal requires at least 98% complete uninterrupted holds over the official uniform 6-20 cm radial distribution. T1 remains far below that requirement at 73% on the 100-episode research panel; the full-domain coverage intervention did not improve the gap.",
+    "inquiry_id": "I1",
+    "next_direction_or_closure": "I1 is closed with a negative result for the tested full-domain training recipe. The next inquiry should begin with a PI-owned diagnostic measurement of T1 behavior and compiled simulator response, stratified by radius and failure phase, recording branch, q/qdot, action, actuator authority, qacc, Jacobian conditioning, and every simulator-step distance. Use that evidence to choose between branch-aware trajectory/control redesign, dynamics or authority intervention, and learning-recipe redesign.",
+    "next_question": "Which mechanism\u2014branch-conditioned trajectory and hold instability, compiled-dynamics or actuator-authority limits, or hidden substep excursions\u2014dominates the persistent near-base failures, and what evidence-supported intervention can raise official success toward 98% without degrading 14-20 cm competence?",
+    "scientific_commit": "87ea7b5b5e800d179302d20a0cf93821c46d897c",
+    "session_id": "S3"
   },
   "schema_version": 6,
   "scientific_model": {
@@ -2717,23 +2857,6 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "9d228067-ba21-44e1-ad05-301fe6e9713d",
-    "id": "S3",
-    "inquiry_id": "I1",
-    "kind": "inquiry",
-    "objective": "Advance I1 toward an evidence-supported answer to its scientific question: Does training on the full official 6-20 cm radial distribution, while preserving full angular coverage and the current task mechanics, raise near-base success enough to close the 98% goal gap without degrading the already competent 14-20 cm behavior?",
-    "operation_ids": [
-      "T2",
-      "M2",
-      "E4"
-    ],
-    "scientific_parent_commit": "ec5f46cc3071c1afd5ec88d6baf3bcdf99b348e8"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
