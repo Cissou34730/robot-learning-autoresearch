@@ -15,8 +15,8 @@ from robot_learning.scenario.environment import TwoJointArmReachEnv
 TRAINING_TARGET_RADIUS_RANGE = (0.06, 0.20)
 OUTER_RADIUS_RANGE = (0.14, 0.20)
 OUTER_RADIUS_OVERSAMPLE_PROBABILITY = 0.25
-HARD_ANGLE_RANGE = (3.0 * np.pi / 4.0, np.pi)
-HARD_ANGLE_OVERSAMPLE_PROBABILITY = 0.10
+UPPER_ANGLE_RANGE = (np.pi / 2.0, np.pi)
+UPPER_ANGLE_OVERSAMPLE_PROBABILITY = 0.15
 
 
 def sample_training_radius(rng: np.random.Generator) -> float:
@@ -29,12 +29,9 @@ def sample_training_radius(rng: np.random.Generator) -> float:
 
 
 def sample_training_angle(rng: np.random.Generator) -> float:
-    """Add limited exposure to seam-adjacent angles without abandoning coverage."""
-    if rng.random() < HARD_ANGLE_OVERSAMPLE_PROBABILITY:
-        lower, upper = HARD_ANGLE_RANGE
-        if rng.random() < 0.5:
-            lower, upper = -upper, -lower
-        return float(rng.uniform(lower, upper))
+    """Increase exposure to the residual upper-angle maneuver deficit."""
+    if rng.random() < UPPER_ANGLE_OVERSAMPLE_PROBABILITY:
+        return float(rng.uniform(*UPPER_ANGLE_RANGE))
     return float(rng.uniform(-np.pi, np.pi))
 
 
