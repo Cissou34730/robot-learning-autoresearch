@@ -2689,38 +2689,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I1",
-        "outcome": "I1 closed with a negative coverage intervention result: explicit 6-20 cm training did not recover the official-distribution gap. On the matched 100-episode panel, T2 achieved 35% success versus 73% for T1, with 13 candidate wins versus 51 reference wins and 64 discordant episodes.",
-        "reason": "M2 satisfies I1's closure condition by showing persistent failure after full radial coverage, including degradation rather than preservation of the previously competent behavior. This result rejects the tested full-domain training recipe as sufficient, but does not by itself reject coverage as a broader method or establish a physical cause. The campaign must redirect to branch-conditioned traces and compiled dynamics/control-authority measurements to distinguish poor approach, branch behavior, actuator limits, and hidden dynamic response."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I1",
-        "outcome": "I1 closed with a negative coverage intervention result: explicit 6-20 cm training did not recover the official-distribution gap. On the matched 100-episode panel, T2 achieved 35% success versus 73% for T1, with 13 candidate wins versus 51 reference wins and 64 discordant episodes.",
-        "reason": "M2 satisfies I1's closure condition by showing persistent failure after full radial coverage, including degradation rather than preservation of the previously competent behavior. This result rejects the tested full-domain training recipe as sufficient, but does not by itself reject coverage as a broader method or establish a physical cause. The campaign must redirect to branch-conditioned traces and compiled dynamics/control-authority measurements to distinguish poor approach, branch behavior, actuator limits, and hidden dynamic response.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E4",
-    "inquiry_id": "I1",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "I1 closed with a negative coverage intervention result: explicit 6-20 cm training did not recover the official-distribution gap. On the matched 100-episode panel, T2 achieved 35% success versus 73% for T1, with 13 candidate wins versus 51 reference wins and 64 discordant episodes.",
-        "reason": "M2 satisfies I1's closure condition by showing persistent failure after full radial coverage, including degradation rather than preservation of the previously competent behavior. This result rejects the tested full-domain training recipe as sufficient, but does not by itself reject coverage as a broader method or establish a physical cause. The campaign must redirect to branch-conditioned traces and compiled dynamics/control-authority measurements to distinguish poor approach, branch behavior, actuator limits, and hidden dynamic response."
-      }
-    },
-    "request_fingerprint": "34499e0a6933c122223c2cf76fd0411d7e2a5264e88b75c6892cbbc75536f20b",
-    "session_id": "S3",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "No working, best-known, or retained candidate role has been assigned. T1:checkpoint-120832 remains the strongest evaluated baseline and the reference candidate for I1, but its 73% M1 result does not justify official assessment or a best-known role.",
     "completed_operations": [
