@@ -21,7 +21,9 @@
   "candidates": {
     "T1:checkpoint-100352": {
       "artifact": "campaigns/checkpoints/candidates/b366ab54-1218-4ab4-9bf1-3fd6a19c86bb/t1/checkpoint-100352",
-      "evaluation_artifacts": [],
+      "evaluation_artifacts": [
+        "campaigns/evaluations/b366ab54-1218-4ab4-9bf1-3fd6a19c86bb/evaluation-b366ab54-1218-4ab4-9bf1-3fd6a19c86bb-m3-T1-checkpoint-100352-200ep-seed10000-11203266ea5b.json"
+      ],
       "fingerprint": "f174fc31e2c08e528f3cf86a0aee1d451937287596c56b2bf913e2a67fae157a",
       "id": "T1:checkpoint-100352",
       "name": "checkpoint-100352",
@@ -839,7 +841,7 @@
   "counters": {
     "event": 3,
     "inquiry": 1,
-    "measurement": 2,
+    "measurement": 3,
     "session": 3,
     "training": 1
   },
@@ -1384,9 +1386,424 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-07T04:47:43Z",
+      "error": null,
+      "id": "M3",
+      "inquiry_id": "I1",
+      "kind": "measurement",
+      "request": {
+        "description": "Evaluate T1:checkpoint-100352 on a 200-episode seed-controlled research panel using the full official 0.06 m to 0.20 m radius and full angular target distribution, with episode and trajectory diagnostics for the I1 mechanism split.",
+        "measurements": [
+          {
+            "candidate": "T1:checkpoint-100352",
+            "episodes": 200,
+            "instrument": "research_evaluation",
+            "label": "I1 baseline full-distribution diagnostic panel",
+            "seed": 10000
+          }
+        ],
+        "rationale": "T1:checkpoint-100352 is the first-run checkpoint with the highest recorded training success, but training covered only the outer 0.14 m to 0.20 m annulus and cannot establish official competence. This panel directly tests whether failures localize to inner radius, angle, or executed IK branch, or instead occur after low-error entry through residual motion and hold interruptions. The evaluator records success, radius-angle location, first-entry step and distance, joint and end-effector entry velocity, maximum held steps, interruptions, branch assignment and switching, and action saturation. An inner-radius or branch-localized deficit with stable holds elsewhere supports coverage and branch-consistency work; all-radius failures after low-error entry with repeated interruptions support precision-regulation work."
+      },
+      "result": {
+        "measurements": [
+          {
+            "candidate": "T1:checkpoint-100352",
+            "candidate_id": "T1:checkpoint-100352",
+            "instrument": "research_evaluation",
+            "label": "I1 baseline full-distribution diagnostic panel",
+            "metrics": {
+              "episodes": 200,
+              "evaluation_artifact": "campaigns/evaluations/b366ab54-1218-4ab4-9bf1-3fd6a19c86bb/evaluation-b366ab54-1218-4ab4-9bf1-3fd6a19c86bb-m3-T1-checkpoint-100352-200ep-seed10000-11203266ea5b.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 8,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/model",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/seed",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/official_benchmark",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 200,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "reward_total",
+                      "steps",
+                      "success",
+                      "terminated",
+                      "truncated"
+                    ],
+                    "path": "/episode_results",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 200,
+                    "field_names": [
+                      "branch_sign_at_final",
+                      "branch_sign_at_first_entry",
+                      "branch_switches",
+                      "episode",
+                      "episode_seed",
+                      "final_distance_cm",
+                      "first_entry_distance_cm",
+                      "first_entry_end_effector_velocity_cm_s",
+                      "first_entry_joint_velocity_rad_s",
+                      "first_reach_step",
+                      "hold_interruptions",
+                      "in_tolerance_steps",
+                      "max_abs_action",
+                      "max_held_steps",
+                      "min_distance_cm",
+                      "saturated_action_fraction",
+                      "saturated_action_steps",
+                      "target_angle_degrees",
+                      "target_radius_cm"
+                    ],
+                    "path": "/research_evidence/episode_diagnostics",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence/units",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/research_evidence/units/distance",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/time",
+                    "type": "string"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "7be9cdb71ea5a1b2c46f155982142a3e64e4c25370bd90cd610ca60ebd7a7ca4",
+              "evaluation_semantics": "11203266ea5b",
+              "model_fingerprint": "f174fc31e2c08e528f3cf86a0aee1d451937287596c56b2bf913e2a67fae157a",
+              "official_benchmark": false,
+              "schema_version": 5,
+              "seed": 10000,
+              "success_percent": 99.5,
+              "successes": 199
+            }
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": null
+      },
+      "session_id": "S3",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "evaluation_semantics": "11203266ea5b",
+      "measurements": [
+        {
+          "artifact": "campaigns/checkpoints/candidates/b366ab54-1218-4ab4-9bf1-3fd6a19c86bb/t1/checkpoint-100352",
+          "candidate": "T1:checkpoint-100352",
+          "candidate_id": "T1:checkpoint-100352",
+          "episodes": 200,
+          "instrument": "research_evaluation",
+          "label": "I1 baseline full-distribution diagnostic panel",
+          "model_fingerprint": "f174fc31e2c08e528f3cf86a0aee1d451937287596c56b2bf913e2a67fae157a",
+          "seed": 10000
+        }
+      ],
+      "module_provenance": null,
+      "paired_comparisons": [],
+      "partial_results": [
+        {
+          "candidate": "T1:checkpoint-100352",
+          "candidate_id": "T1:checkpoint-100352",
+          "instrument": "research_evaluation",
+          "label": "I1 baseline full-distribution diagnostic panel",
+          "metrics": {
+            "episodes": 200,
+            "evaluation_artifact": "campaigns/evaluations/b366ab54-1218-4ab4-9bf1-3fd6a19c86bb/evaluation-b366ab54-1218-4ab4-9bf1-3fd6a19c86bb-m3-T1-checkpoint-100352-200ep-seed10000-11203266ea5b.json",
+            "evaluation_artifact_contents": {
+              "scope": "structure_only",
+              "sections": [
+                {
+                  "entries": 8,
+                  "path": "",
+                  "type": "object"
+                },
+                {
+                  "path": "/schema_version",
+                  "type": "number"
+                },
+                {
+                  "path": "/model",
+                  "type": "string"
+                },
+                {
+                  "path": "/episodes",
+                  "type": "number"
+                },
+                {
+                  "path": "/seed",
+                  "type": "number"
+                },
+                {
+                  "path": "/official_benchmark",
+                  "type": "boolean"
+                },
+                {
+                  "path": "/success_percent",
+                  "type": "number"
+                },
+                {
+                  "entries": 200,
+                  "field_names": [
+                    "episode",
+                    "episode_seed",
+                    "reward_total",
+                    "steps",
+                    "success",
+                    "terminated",
+                    "truncated"
+                  ],
+                  "path": "/episode_results",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/research_evidence",
+                  "type": "object"
+                },
+                {
+                  "entries": 200,
+                  "field_names": [
+                    "branch_sign_at_final",
+                    "branch_sign_at_first_entry",
+                    "branch_switches",
+                    "episode",
+                    "episode_seed",
+                    "final_distance_cm",
+                    "first_entry_distance_cm",
+                    "first_entry_end_effector_velocity_cm_s",
+                    "first_entry_joint_velocity_rad_s",
+                    "first_reach_step",
+                    "hold_interruptions",
+                    "in_tolerance_steps",
+                    "max_abs_action",
+                    "max_held_steps",
+                    "min_distance_cm",
+                    "saturated_action_fraction",
+                    "saturated_action_steps",
+                    "target_angle_degrees",
+                    "target_radius_cm"
+                  ],
+                  "path": "/research_evidence/episode_diagnostics",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/research_evidence/units",
+                  "type": "object"
+                },
+                {
+                  "path": "/research_evidence/units/distance",
+                  "type": "string"
+                },
+                {
+                  "path": "/research_evidence/units/time",
+                  "type": "string"
+                }
+              ],
+              "truncated": false
+            },
+            "evaluation_artifact_fingerprint": "7be9cdb71ea5a1b2c46f155982142a3e64e4c25370bd90cd610ca60ebd7a7ca4",
+            "evaluation_semantics": "11203266ea5b",
+            "model_fingerprint": "f174fc31e2c08e528f3cf86a0aee1d451937287596c56b2bf913e2a67fae157a",
+            "official_benchmark": false,
+            "schema_version": 5,
+            "seed": 10000,
+            "success_percent": 99.5,
+            "successes": 199
+          }
+        }
+      ],
+      "result": {
+        "measurements": [
+          {
+            "candidate": "T1:checkpoint-100352",
+            "candidate_id": "T1:checkpoint-100352",
+            "instrument": "research_evaluation",
+            "label": "I1 baseline full-distribution diagnostic panel",
+            "metrics": {
+              "episodes": 200,
+              "evaluation_artifact": "campaigns/evaluations/b366ab54-1218-4ab4-9bf1-3fd6a19c86bb/evaluation-b366ab54-1218-4ab4-9bf1-3fd6a19c86bb-m3-T1-checkpoint-100352-200ep-seed10000-11203266ea5b.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 8,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/model",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/seed",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/official_benchmark",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 200,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "reward_total",
+                      "steps",
+                      "success",
+                      "terminated",
+                      "truncated"
+                    ],
+                    "path": "/episode_results",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 200,
+                    "field_names": [
+                      "branch_sign_at_final",
+                      "branch_sign_at_first_entry",
+                      "branch_switches",
+                      "episode",
+                      "episode_seed",
+                      "final_distance_cm",
+                      "first_entry_distance_cm",
+                      "first_entry_end_effector_velocity_cm_s",
+                      "first_entry_joint_velocity_rad_s",
+                      "first_reach_step",
+                      "hold_interruptions",
+                      "in_tolerance_steps",
+                      "max_abs_action",
+                      "max_held_steps",
+                      "min_distance_cm",
+                      "saturated_action_fraction",
+                      "saturated_action_steps",
+                      "target_angle_degrees",
+                      "target_radius_cm"
+                    ],
+                    "path": "/research_evidence/episode_diagnostics",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence/units",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/research_evidence/units/distance",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/time",
+                    "type": "string"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "7be9cdb71ea5a1b2c46f155982142a3e64e4c25370bd90cd610ca60ebd7a7ca4",
+              "evaluation_semantics": "11203266ea5b",
+              "model_fingerprint": "f174fc31e2c08e528f3cf86a0aee1d451937287596c56b2bf913e2a67fae157a",
+              "official_benchmark": false,
+              "schema_version": 5,
+              "seed": 10000,
+              "success_percent": 99.5,
+              "successes": 199
+            }
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": null
+      },
+      "task_reference_contract": null
+    },
+    "failure": null,
+    "id": "M3",
+    "inquiry_id": "I1",
+    "kind": "measurement",
+    "progress": "completed",
+    "request": {
+      "measurement": {
+        "description": "Evaluate T1:checkpoint-100352 on a 200-episode seed-controlled research panel using the full official 0.06 m to 0.20 m radius and full angular target distribution, with episode and trajectory diagnostics for the I1 mechanism split.",
+        "measurements": [
+          {
+            "candidate": "T1:checkpoint-100352",
+            "episodes": 200,
+            "instrument": "research_evaluation",
+            "label": "I1 baseline full-distribution diagnostic panel",
+            "seed": 10000
+          }
+        ],
+        "rationale": "T1:checkpoint-100352 is the first-run checkpoint with the highest recorded training success, but training covered only the outer 0.14 m to 0.20 m annulus and cannot establish official competence. This panel directly tests whether failures localize to inner radius, angle, or executed IK branch, or instead occur after low-error entry through residual motion and hold interruptions. The evaluator records success, radius-angle location, first-entry step and distance, joint and end-effector entry velocity, maximum held steps, interruptions, branch assignment and switching, and action saturation. An inner-radius or branch-localized deficit with stable holds elsewhere supports coverage and branch-consistency work; all-radius failures after low-error entry with repeated interruptions support precision-regulation work."
+      }
+    },
+    "request_fingerprint": "9ede897860f0384fa395fad1b68a19c702b8e52e1272fc9ec8dc04cce5f235fd",
+    "session_id": "S3",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No learned candidates exist yet; working, best-known, and retained roles remain empty.",
     "completed_operations": [
@@ -1425,7 +1842,8 @@
     "kind": "inquiry",
     "objective": "Advance I1 toward an evidence-supported answer to its scientific question: For the first trained policy under the official target distribution, are episode failures dominated by unseen inner-radius and IK-branch regimes or by residual motion and interruptions during the 100-step hold?",
     "operation_ids": [
-      "T1"
+      "T1",
+      "M3"
     ],
     "scientific_parent_commit": "3aee9f5f98439d65e23ac1db22684d4446a4bf29"
   },
