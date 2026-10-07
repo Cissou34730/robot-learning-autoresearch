@@ -33,3 +33,4 @@
 | T8 | training | I1 | completed |
 | M16 | measurement | I1 | completed |
 | M17 | measurement | I1 | completed |
+| E7 | restore_recipe | I1 | restored |
