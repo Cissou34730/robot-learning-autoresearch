@@ -4112,16 +4112,16 @@
     }
   },
   "counters": {
-    "event": 13,
+    "event": 14,
     "inquiry": 2,
     "measurement": 10,
-    "session": 6,
+    "session": 7,
     "training": 5
   },
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "official_assessment_requested",
   "model_roles": {
     "best_known": "T1:checkpoint-100352",
     "retained": {},
@@ -9375,9 +9375,62 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-07T07:50:50Z",
+      "error": null,
+      "id": "E14",
+      "inquiry_id": null,
+      "kind": "campaign_conclusion",
+      "request": {
+        "action": "request_official_assessment",
+        "reason": "Request the protected official 200-episode assessment of the explicit best-known candidate T1:checkpoint-100352. M10 achieved exactly 196/200 under the protected task-reference semantics, while T4 and T5 did not improve T1 on paired full-distribution evidence. The remaining goal-linked question is whether this frozen policy achieves at least 196 successes under the authoritative complete uninterrupted 100-step hold criterion; another reward, transition, branch, or coverage intervention is not justified before that endpoint is measured."
+      },
+      "result": {
+        "model": "T1:checkpoint-100352",
+        "status": "official_assessment_requested"
+      },
+      "session_id": "S7",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "model": "T1:checkpoint-100352",
+        "reason": "Request the protected official 200-episode assessment of the explicit best-known candidate T1:checkpoint-100352. M10 achieved exactly 196/200 under the protected task-reference semantics, while T4 and T5 did not improve T1 on paired full-distribution evidence. The remaining goal-linked question is whether this frozen policy achieves at least 196 successes under the authoritative complete uninterrupted 100-step hold criterion; another reward, transition, branch, or coverage intervention is not justified before that endpoint is measured.",
+        "status": "official_assessment_requested"
+      },
+      "presentation": {
+        "backend_session_id": "566857bf-10e1-4ba0-b3a9-68bd2dfc40f2",
+        "campaign_id": "b366ab54-1218-4ab4-9bf1-3fd6a19c86bb",
+        "campaign_usage": "32m23s | 62.28 AIU | prompt 11m (89% cached) | output 92.6k",
+        "session_id": "S7",
+        "session_kind": "goal_review",
+        "session_usage": "37s | 1.61 AIU | prompt 185.4k (75% cached) | output 1.3k"
+      },
+      "result": {
+        "model": "T1:checkpoint-100352",
+        "status": "official_assessment_requested"
+      }
+    },
+    "failure": null,
+    "id": "E14",
+    "inquiry_id": null,
+    "kind": "campaign_conclusion",
+    "progress": "completed",
+    "request": {
+      "campaign_conclusion": {
+        "action": "request_official_assessment",
+        "reason": "Request the protected official 200-episode assessment of the explicit best-known candidate T1:checkpoint-100352. M10 achieved exactly 196/200 under the protected task-reference semantics, while T4 and T5 did not improve T1 on paired full-distribution evidence. The remaining goal-linked question is whether this frozen policy achieves at least 196 successes under the authoritative complete uninterrupted 100-step hold criterion; another reward, transition, branch, or coverage intervention is not justified before that endpoint is measured."
+      }
+    },
+    "request_fingerprint": "d6fcb2044abe9e01e1e36a5b984e5a3d7349fcd47c93d6c92bdcddbfc64e33c8",
+    "session_id": "S7",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T1:checkpoint-100352 is assigned best-known. T4:checkpoint-5120 is rejected as an action-transition intervention after tying T1 at 192/200 and showing late training collapse. T5:checkpoint-15360 and T5:checkpoint-105472 are rejected as reliable conditioning interventions after losing to T1 on paired panels. No working or retained role is assigned.",
     "completed_operations": [
@@ -9432,5 +9485,9 @@
     "status": "ready"
   },
   "scientific_session": null,
-  "terminal_state": null
+  "terminal_state": {
+    "model": "T1:checkpoint-100352",
+    "reason": "Request the protected official 200-episode assessment of the explicit best-known candidate T1:checkpoint-100352. M10 achieved exactly 196/200 under the protected task-reference semantics, while T4 and T5 did not improve T1 on paired full-distribution evidence. The remaining goal-linked question is whether this frozen policy achieves at least 196 successes under the authoritative complete uninterrupted 100-step hold criterion; another reward, transition, branch, or coverage intervention is not justified before that endpoint is measured.",
+    "status": "official_assessment_requested"
+  }
 }
