@@ -1,16 +1,5 @@
 {
-  "active_inquiry": {
-    "closure_condition": "Close when one bounded settling refinement is evaluated against T3 with radius-stratified success and residual failure diagnostics, or when targeted evidence shows that residual failures are dominated by configuration-dependent saturation or inadequate compiled acceleration and therefore redirects the work to actuator/dynamics characterization. Preserve the inquiry if neither route is yet discriminated.",
-    "goal_connection": "The human goal requires at least 98% complete uninterrupted holds over the official 6-20 cm distribution. T3 remains at 94% on repeated development panels, so the residual failures must be reduced without sacrificing outer-radius competence before official assessment is justified.",
-    "handoff_conclusion": "Observed facts: T1 achieved 73% on its matched panels, with failures concentrated below 14 cm; M3 found 22 non-entries and 5 interrupted holds, action saturation in all interrupted episodes but also many successful episodes, branch switching in both successful and failing episodes, and no failure concentration in hidden substep excursions. The fresh full-domain T2 recipe achieved 35%, establishing that recipe as insufficient but not rejecting coverage or identifying a physical cause. T3 transferred from T1 with one bounded velocity-aware settling reward term. On the matched M4 panel T3 achieved 94% versus T1's 71%, won 24 of 25 discordant episodes, improved 6-10 cm success from 27.6% to 93.1% and 10-14 cm success from 82.8% to 100%, and retained high 14-20 cm success at 90.5% versus 92.9% for T1. This supports branch-conditioned approach and hold instability as the dominant actionable mechanism. It does not prove that mechanism is exclusive, does not establish that the residual failures are caused by actuator authority or compiled dynamics, and does not make T3 an official pass.",
-    "handoff_question": "How can the velocity-aware settling intervention be refined to raise official-distribution success from 94% toward 98% while preserving 14-20 cm competence, and do residual failures indicate configuration-dependent actuator authority or compiled-dynamics limits?",
-    "handoff_source_session_id": "S5",
-    "id": "I3",
-    "opened_in_session": "S6",
-    "question": "How can the velocity-aware settling intervention be refined to raise official-distribution success from 94% toward 98% while preserving 14-20 cm competence, and do residual failures indicate configuration-dependent actuator authority or compiled-dynamics limits?",
-    "rationale": "M5 reproduced T3's 94% success and its paired advantage over T1 (94% versus 76%, 20 T3 wins versus 2 T1 wins), strengthening the intervention's actionable value but not establishing that it explains the remaining failures. The protected artifact summary does not expose trace values, so the competing settling-refinement and authority/dynamics explanations remain unresolved. This bounded inquiry keeps the exact goal-linked question while requiring evidence that can redirect the method rather than presuming another reward change.",
-    "reframes": []
-  },
+  "active_inquiry": null,
   "campaign": {
     "base_commit": "a5d5b4c0fe00c1103abb30662c0874b87de08157",
     "id": "06656182-d7f0-4011-898d-2b870e8a2a54",
@@ -3299,7 +3288,7 @@
     }
   },
   "counters": {
-    "event": 11,
+    "event": 12,
     "inquiry": 3,
     "measurement": 6,
     "session": 7,
@@ -6241,9 +6230,63 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-07T20:26:38Z",
+      "error": null,
+      "id": "E12",
+      "inquiry_id": "I3",
+      "kind": "inquiry",
+      "request": {
+        "action": "close",
+        "outcome": "The bounded T4 refinement is rejected as a route toward the goal: on a fresh shared 100-episode panel, T4 achieved 85% versus T3's 95%, with the loss concentrated at 6-10 cm (20/30 versus 29/30) and a smaller 14-20 cm regression (41/44 versus 42/44). The detailed traces still show near-universal action saturation in both failures and successes, so they do not establish configuration-dependent actuator authority or compiled-dynamics limits. I3 therefore closes with an actionable negative refinement result and an unresolved authority-versus-learning distinction.",
+        "reason": "The inquiry closure condition is met because one bounded settling refinement was evaluated against T3 with radius-stratified success and residual-failure dynamics diagnostics. Increasing the velocity penalty did not improve complete holds and instead damaged near-base competence; this rejects that coefficient change, not the broader settling/control route. Since comparable saturation appears in T3 successes and T4 failures, the current evidence cannot justify redirecting to actuator/dynamics characterization. T3 remains the strongest development candidate, but the 98% human goal is not established."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I3",
+        "outcome": "The bounded T4 refinement is rejected as a route toward the goal: on a fresh shared 100-episode panel, T4 achieved 85% versus T3's 95%, with the loss concentrated at 6-10 cm (20/30 versus 29/30) and a smaller 14-20 cm regression (41/44 versus 42/44). The detailed traces still show near-universal action saturation in both failures and successes, so they do not establish configuration-dependent actuator authority or compiled-dynamics limits. I3 therefore closes with an actionable negative refinement result and an unresolved authority-versus-learning distinction.",
+        "reason": "The inquiry closure condition is met because one bounded settling refinement was evaluated against T3 with radius-stratified success and residual-failure dynamics diagnostics. Increasing the velocity penalty did not improve complete holds and instead damaged near-base competence; this rejects that coefficient change, not the broader settling/control route. Since comparable saturation appears in T3 successes and T4 failures, the current evidence cannot justify redirecting to actuator/dynamics characterization. T3 remains the strongest development candidate, but the 98% human goal is not established.",
+        "status": "completed"
+      },
+      "session_id": "S7",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "close",
+        "inquiry_id": "I3",
+        "outcome": "The bounded T4 refinement is rejected as a route toward the goal: on a fresh shared 100-episode panel, T4 achieved 85% versus T3's 95%, with the loss concentrated at 6-10 cm (20/30 versus 29/30) and a smaller 14-20 cm regression (41/44 versus 42/44). The detailed traces still show near-universal action saturation in both failures and successes, so they do not establish configuration-dependent actuator authority or compiled-dynamics limits. I3 therefore closes with an actionable negative refinement result and an unresolved authority-versus-learning distinction.",
+        "reason": "The inquiry closure condition is met because one bounded settling refinement was evaluated against T3 with radius-stratified success and residual-failure dynamics diagnostics. Increasing the velocity penalty did not improve complete holds and instead damaged near-base competence; this rejects that coefficient change, not the broader settling/control route. Since comparable saturation appears in T3 successes and T4 failures, the current evidence cannot justify redirecting to actuator/dynamics characterization. T3 remains the strongest development candidate, but the 98% human goal is not established."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I3",
+        "outcome": "The bounded T4 refinement is rejected as a route toward the goal: on a fresh shared 100-episode panel, T4 achieved 85% versus T3's 95%, with the loss concentrated at 6-10 cm (20/30 versus 29/30) and a smaller 14-20 cm regression (41/44 versus 42/44). The detailed traces still show near-universal action saturation in both failures and successes, so they do not establish configuration-dependent actuator authority or compiled-dynamics limits. I3 therefore closes with an actionable negative refinement result and an unresolved authority-versus-learning distinction.",
+        "reason": "The inquiry closure condition is met because one bounded settling refinement was evaluated against T3 with radius-stratified success and residual-failure dynamics diagnostics. Increasing the velocity penalty did not improve complete holds and instead damaged near-base competence; this rejects that coefficient change, not the broader settling/control route. Since comparable saturation appears in T3 successes and T4 failures, the current evidence cannot justify redirecting to actuator/dynamics characterization. T3 remains the strongest development candidate, but the 98% human goal is not established.",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E12",
+    "inquiry_id": "I3",
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "close",
+        "outcome": "The bounded T4 refinement is rejected as a route toward the goal: on a fresh shared 100-episode panel, T4 achieved 85% versus T3's 95%, with the loss concentrated at 6-10 cm (20/30 versus 29/30) and a smaller 14-20 cm regression (41/44 versus 42/44). The detailed traces still show near-universal action saturation in both failures and successes, so they do not establish configuration-dependent actuator authority or compiled-dynamics limits. I3 therefore closes with an actionable negative refinement result and an unresolved authority-versus-learning distinction.",
+        "reason": "The inquiry closure condition is met because one bounded settling refinement was evaluated against T3 with radius-stratified success and residual-failure dynamics diagnostics. Increasing the velocity penalty did not improve complete holds and instead damaged near-base competence; this rejects that coefficient change, not the broader settling/control route. Since comparable saturation appears in T3 successes and T4 failures, the current evidence cannot justify redirecting to actuator/dynamics characterization. T3 remains the strongest development candidate, but the 98% human goal is not established."
+      }
+    },
+    "request_fingerprint": "fff3bc833dc05ec46c659b62b28902aa596371dcb81adf57e9e4de5aa49cf7c0",
+    "session_id": "S7",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No formal model role has been assigned. T3:checkpoint-120832 remains the strongest evaluated development candidate at 94% on M4 and M5 and is the leading candidate for I3. T1:checkpoint-120832 remains the paired reference; T2:checkpoint-120832 remains evidence about the insufficient fresh full-domain recipe.",
     "completed_operations": [
@@ -6294,7 +6337,8 @@
     "objective": "Advance I3 toward an evidence-supported answer to its scientific question: How can the velocity-aware settling intervention be refined to raise official-distribution success from 94% toward 98% while preserving 14-20 cm competence, and do residual failures indicate configuration-dependent actuator authority or compiled-dynamics limits?",
     "operation_ids": [
       "T4",
-      "M6"
+      "M6",
+      "E12"
     ],
     "scientific_parent_commit": "aab0d7d1836b111e4ec1d2ec5a82fef0877564d2"
   },
