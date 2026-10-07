@@ -16,7 +16,7 @@ TRAINING_TARGET_RADIUS_RANGE = (0.06, 0.20)
 OUTER_RADIUS_RANGE = (0.14, 0.20)
 OUTER_RADIUS_OVERSAMPLE_PROBABILITY = 0.25
 HARD_ANGLE_RANGE = (3.0 * np.pi / 4.0, np.pi)
-POSITIVE_HARD_ANGLE_OVERSAMPLE_PROBABILITY = 0.20
+HARD_ANGLE_OVERSAMPLE_PROBABILITY = 0.10
 
 
 def sample_training_radius(rng: np.random.Generator) -> float:
@@ -29,9 +29,12 @@ def sample_training_radius(rng: np.random.Generator) -> float:
 
 
 def sample_training_angle(rng: np.random.Generator) -> float:
-    """Target the asymmetric positive-angle maneuver deficit while retaining support."""
-    if rng.random() < POSITIVE_HARD_ANGLE_OVERSAMPLE_PROBABILITY:
-        return float(rng.uniform(*HARD_ANGLE_RANGE))
+    """Add limited exposure to seam-adjacent angles without abandoning coverage."""
+    if rng.random() < HARD_ANGLE_OVERSAMPLE_PROBABILITY:
+        lower, upper = HARD_ANGLE_RANGE
+        if rng.random() < 0.5:
+            lower, upper = -upper, -lower
+        return float(rng.uniform(lower, upper))
     return float(rng.uniform(-np.pi, np.pi))
 
 
