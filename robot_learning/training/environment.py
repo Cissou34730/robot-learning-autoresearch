@@ -8,12 +8,27 @@ excluded from the research-evaluation semantics fingerprint.
 """
 
 import gymnasium as gym
+import numpy as np
 
 from robot_learning.scenario.environment import TwoJointArmReachEnv
 
-TRAINING_TARGET_RADIUS_RANGE = (0.14, 0.20)
+TRAINING_TARGET_RADIUS_RANGE = (0.06, 0.20)
+OUTER_RADIUS_RANGE = (0.14, 0.20)
+OUTER_RADIUS_OVERSAMPLE_PROBABILITY = 0.25
+
+
+def sample_training_radius(rng: np.random.Generator) -> float:
+    """Retain full support while increasing exposure to timeout-prone targets."""
+    if rng.random() < OUTER_RADIUS_OVERSAMPLE_PROBABILITY:
+        lower, upper = OUTER_RADIUS_RANGE
+    else:
+        lower, upper = TRAINING_TARGET_RADIUS_RANGE
+    return float(rng.uniform(lower, upper))
 
 
 def make_training_env() -> gym.Env:
     """Build the Gymnasium environment used for training this scenario."""
-    return TwoJointArmReachEnv(target_radius_range=TRAINING_TARGET_RADIUS_RANGE)
+    return TwoJointArmReachEnv(
+        target_radius_range=TRAINING_TARGET_RADIUS_RANGE,
+        target_radius_sampler=sample_training_radius,
+    )
