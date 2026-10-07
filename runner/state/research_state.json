@@ -1,16 +1,5 @@
 {
-  "active_inquiry": {
-    "closure_condition": "Close after one bounded learned refinement is evaluated against T5 on a fresh matched panel with radius-stratified success and residual failure-phase diagnostics. Continue learned control if success improves without 14-20 cm regression; otherwise record the tested route as unresolved and revisit configuration-dependent dynamics only if the residual failures show a reproducible dynamics-linked signature despite M7 response evidence.",
-    "goal_connection": "T5 reached 95% on a fresh official-distribution development panel, leaving a 3 percentage-point gap to the 98% human goal. This inquiry targets the remaining failures while requiring no regression in the 14-20 cm region.",
-    "handoff_conclusion": "Observed facts: T1 achieved 73% on matched panels with failures concentrated below 14 cm. M3 found 22 non-entries and 5 interrupted holds; interrupted episodes saturated actions, but saturation was also common in successes, branch switching occurred in both successes and failures, and hidden substep excursions were not failure-concentrated. T2 achieved 35%, establishing that the tested fresh full-domain recipe is insufficient without rejecting coverage as a broader method. T3 transferred from T1 with a bounded velocity-aware settling term and achieved 94% on M4 and M5 and 95% on M6, improving near-base performance while preserving strong outer-radius competence. T4 increased the velocity penalty coefficient from 0.25 to 0.5 and fell to 85% on M6, concentrated at 6-10 cm; this rejects that stronger coefficient, not settling control broadly. M7 measured strong compiled saturated responses and approximately 0.07-0.08 rad joint displacement over 20 ms across representative 6-20 cm configurations and both IK branches, without a branch-specific authority collapse. T5 restored the 0.25 coefficient and widened the velocity-aware settling gate from 2 cm to 3 cm. M8 measured T5 at 95% versus T3 at 93% on a fresh shared 100-episode panel; T5 improved 6-10 cm and 14-20 cm strata without regression and retained 100% in 10-14 cm. Interpretation: the T5 result is reproducible evidence that earlier learned braking can improve complete-hold success, so learned approach/transient-braking refinement remains the leading actionable mechanism. The five T5 failures span near-base and outer-radius targets, while M7 and the comparable saturation in M3/M6 do not establish configuration-dependent actuator authority or compiled-dynamics limits as their cause. The residual physical interaction remains unresolved and should be revisited only if further learned refinements fail despite adequate compiled response evidence.",
-    "handoff_question": "How can learned anticipatory braking and branch-conditioned approach be refined beyond T5 to raise official-distribution success from 95% toward 98% while preserving 14-20 cm competence, and what residual failure signature would justify revisiting configuration-dependent dynamics?",
-    "handoff_source_session_id": "S9",
-    "id": "I5",
-    "opened_in_session": "S10",
-    "question": "How can learned anticipatory braking and branch-conditioned approach be refined beyond T5 to raise official-distribution success from 95% toward 98% while preserving 14-20 cm competence, and what residual failure signature would justify revisiting configuration-dependent dynamics?",
-    "rationale": "T5 reproducibly improved complete-hold success over T3, including near-base and outer-radius strata, while M7 measured strong compiled saturated responses across representative radii and both IK branches. The next decision is therefore best informed by a bounded refinement of anticipatory braking, branch-conditioned approach, or transient representation, with failure-phase and radius diagnostics capable of distinguishing remaining learned-control errors from a consequential configuration-dependent dynamics interaction.",
-    "reframes": []
-  },
+  "active_inquiry": null,
   "campaign": {
     "base_commit": "a5d5b4c0fe00c1103abb30662c0874b87de08157",
     "id": "06656182-d7f0-4011-898d-2b870e8a2a54",
@@ -4937,7 +4926,7 @@
     }
   },
   "counters": {
-    "event": 19,
+    "event": 20,
     "inquiry": 5,
     "measurement": 9,
     "session": 11,
@@ -9576,9 +9565,63 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-07T21:07:06Z",
+      "error": null,
+      "id": "E20",
+      "inquiry_id": "I5",
+      "kind": "inquiry",
+      "request": {
+        "action": "close",
+        "outcome": "I5 closes with a negative result for the tested Cartesian-velocity transient refinement. On the fresh shared 100-episode panel, T6 achieved 90% while T5 achieved 98%; T6 won no episode and lost all eight discordant episodes.",
+        "reason": "M9 satisfies I5's closure condition by evaluating one bounded learned refinement beyond T5 with matched seeds and trajectory diagnostics. Replacing near-target joint-speed settling with Jacobian-derived end-effector Cartesian speed, while preserving T5's 3 cm gate and 0.25 coefficient, substantially regressed complete-hold success, so this transient representation is rejected as a route toward the human goal. The result does not reject learned anticipatory braking or branch-conditioned control broadly, and it does not establish configuration-dependent dynamics as the cause: M9's aggregate outcome is insufficient without a reproducible residual signature linking failures to radius, IK branch, action-response mismatch, or inadequate acceleration despite M7's measured compiled response. The next campaign decision should therefore preserve T5 as the strongest development candidate and use a targeted dynamics-linked measurement only if the residual failure traces provide that signature; otherwise continue from the goal review with the human 98% objective still unmet."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I5",
+        "outcome": "I5 closes with a negative result for the tested Cartesian-velocity transient refinement. On the fresh shared 100-episode panel, T6 achieved 90% while T5 achieved 98%; T6 won no episode and lost all eight discordant episodes.",
+        "reason": "M9 satisfies I5's closure condition by evaluating one bounded learned refinement beyond T5 with matched seeds and trajectory diagnostics. Replacing near-target joint-speed settling with Jacobian-derived end-effector Cartesian speed, while preserving T5's 3 cm gate and 0.25 coefficient, substantially regressed complete-hold success, so this transient representation is rejected as a route toward the human goal. The result does not reject learned anticipatory braking or branch-conditioned control broadly, and it does not establish configuration-dependent dynamics as the cause: M9's aggregate outcome is insufficient without a reproducible residual signature linking failures to radius, IK branch, action-response mismatch, or inadequate acceleration despite M7's measured compiled response. The next campaign decision should therefore preserve T5 as the strongest development candidate and use a targeted dynamics-linked measurement only if the residual failure traces provide that signature; otherwise continue from the goal review with the human 98% objective still unmet.",
+        "status": "completed"
+      },
+      "session_id": "S11",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "close",
+        "inquiry_id": "I5",
+        "outcome": "I5 closes with a negative result for the tested Cartesian-velocity transient refinement. On the fresh shared 100-episode panel, T6 achieved 90% while T5 achieved 98%; T6 won no episode and lost all eight discordant episodes.",
+        "reason": "M9 satisfies I5's closure condition by evaluating one bounded learned refinement beyond T5 with matched seeds and trajectory diagnostics. Replacing near-target joint-speed settling with Jacobian-derived end-effector Cartesian speed, while preserving T5's 3 cm gate and 0.25 coefficient, substantially regressed complete-hold success, so this transient representation is rejected as a route toward the human goal. The result does not reject learned anticipatory braking or branch-conditioned control broadly, and it does not establish configuration-dependent dynamics as the cause: M9's aggregate outcome is insufficient without a reproducible residual signature linking failures to radius, IK branch, action-response mismatch, or inadequate acceleration despite M7's measured compiled response. The next campaign decision should therefore preserve T5 as the strongest development candidate and use a targeted dynamics-linked measurement only if the residual failure traces provide that signature; otherwise continue from the goal review with the human 98% objective still unmet."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I5",
+        "outcome": "I5 closes with a negative result for the tested Cartesian-velocity transient refinement. On the fresh shared 100-episode panel, T6 achieved 90% while T5 achieved 98%; T6 won no episode and lost all eight discordant episodes.",
+        "reason": "M9 satisfies I5's closure condition by evaluating one bounded learned refinement beyond T5 with matched seeds and trajectory diagnostics. Replacing near-target joint-speed settling with Jacobian-derived end-effector Cartesian speed, while preserving T5's 3 cm gate and 0.25 coefficient, substantially regressed complete-hold success, so this transient representation is rejected as a route toward the human goal. The result does not reject learned anticipatory braking or branch-conditioned control broadly, and it does not establish configuration-dependent dynamics as the cause: M9's aggregate outcome is insufficient without a reproducible residual signature linking failures to radius, IK branch, action-response mismatch, or inadequate acceleration despite M7's measured compiled response. The next campaign decision should therefore preserve T5 as the strongest development candidate and use a targeted dynamics-linked measurement only if the residual failure traces provide that signature; otherwise continue from the goal review with the human 98% objective still unmet.",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E20",
+    "inquiry_id": "I5",
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "close",
+        "outcome": "I5 closes with a negative result for the tested Cartesian-velocity transient refinement. On the fresh shared 100-episode panel, T6 achieved 90% while T5 achieved 98%; T6 won no episode and lost all eight discordant episodes.",
+        "reason": "M9 satisfies I5's closure condition by evaluating one bounded learned refinement beyond T5 with matched seeds and trajectory diagnostics. Replacing near-target joint-speed settling with Jacobian-derived end-effector Cartesian speed, while preserving T5's 3 cm gate and 0.25 coefficient, substantially regressed complete-hold success, so this transient representation is rejected as a route toward the human goal. The result does not reject learned anticipatory braking or branch-conditioned control broadly, and it does not establish configuration-dependent dynamics as the cause: M9's aggregate outcome is insufficient without a reproducible residual signature linking failures to radius, IK branch, action-response mismatch, or inadequate acceleration despite M7's measured compiled response. The next campaign decision should therefore preserve T5 as the strongest development candidate and use a targeted dynamics-linked measurement only if the residual failure traces provide that signature; otherwise continue from the goal review with the human 98% objective still unmet."
+      }
+    },
+    "request_fingerprint": "ffc5407f214ab925f24d0498cb472baff80245121b467ea7caa2c24a11e6660e",
+    "session_id": "S11",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No formal model role has been assigned. T5:checkpoint-120832 remains the strongest evaluated development candidate at 95% on M8 and the reference for I5. T3:checkpoint-120832 remains the prior paired reference at 94% on M4 and M5 and 95% on M6. T4:checkpoint-120832 is evidence that doubling the settling velocity penalty is inferior. T1 remains the earlier paired reference, T2 remains evidence about the insufficient tested fresh full-domain recipe, and M7 remains a completed characterization measurement rather than a policy candidate.",
     "completed_operations": [
@@ -9637,7 +9680,8 @@
     "objective": "Advance I5 toward an evidence-supported answer to its scientific question: How can learned anticipatory braking and branch-conditioned approach be refined beyond T5 to raise official-distribution success from 95% toward 98% while preserving 14-20 cm competence, and what residual failure signature would justify revisiting configuration-dependent dynamics?",
     "operation_ids": [
       "T6",
-      "M9"
+      "M9",
+      "E20"
     ],
     "scientific_parent_commit": "b197755826d8fcb30d64fbd1bb2a2d3d5b214085"
   },
