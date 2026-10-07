@@ -1,16 +1,5 @@
 {
-  "active_inquiry": {
-    "closure_condition": "Close when one bounded intervention informed by M3 has been evaluated against T1 on a matched held-out panel and either raises near-base success while preserving 14-20 cm competence, or fails to do so and redirects the campaign to the remaining actuator-authority or compiled-dynamics explanation. Hidden substep excursions are deprioritized unless a targeted intervention measurement shows that their magnitude predicts failure rather than success.",
-    "goal_connection": "The best candidate remains at 73% success, 25 percentage points below the required 98%. M3 shows that failures are concentrated near the base, with 22 non-entries and 5 interrupted holds, while 14-20 cm episodes are almost entirely successful. This inquiry directly tests an intervention for the near-base gap while requiring preservation of the competent outer-radius behavior.",
-    "handoff_conclusion": "Observed facts: T1 trained on 14-20 cm reached recorded training success 0.96 and achieved 73% on M1. M1 failures concentrated below 14 cm, with both non-entry and interrupted near-base holds. T2 was trained fresh on the full 6-20 cm range but recorded zero training success through 120832 steps and achieved only 35% on M2, versus T1's 73% on the same 100 episode seeds; T2 won 13 episodes while T1 won 51, with 64 discordant episodes. Interpretation: the tested full-domain training recipe is insufficient and degraded the competent baseline, so missing radial coverage alone is not an adequate explanation or intervention. This negative recipe result does not reject coverage as a broader method and does not establish a physical cause. Reachability remains a prior rather than an observed failure cause. Branch-conditioned trajectory or stabilization failure, actuator authority, compiled dynamics, and hidden substep excursions remain unresolved because the evaluation diagnostics lack q/qdot/action and substep traces.",
-    "handoff_question": "Which mechanism\u2014branch-conditioned trajectory and hold instability, compiled-dynamics or actuator-authority limits, or hidden substep excursions\u2014dominates the persistent near-base failures, and what evidence-supported intervention can raise official success toward 98% without degrading 14-20 cm competence?",
-    "handoff_source_session_id": "S3",
-    "id": "I2",
-    "opened_in_session": "S4",
-    "question": "Which mechanism\u2014branch-conditioned trajectory and hold instability, compiled-dynamics or actuator-authority limits, or hidden substep excursions\u2014dominates the persistent near-base failures, and what evidence-supported intervention can raise official success toward 98% without degrading 14-20 cm competence?",
-    "rationale": "M3 provides the first mechanistic traces. Near-base non-entry and interruption dominate the gap; interrupted episodes saturate actions, but saturation is also common in successful episodes, so authority may be configuration-dependent rather than globally insufficient. Branch switching is present in both successes and failures, making unconditioned switching or trajectory quality a competing explanation. Substep excursions are larger in successful outer episodes than in failures, so they do not currently support hidden excursions as the dominant cause. The inquiry will therefore develop and test a branch- and dynamics-aware approach/hold intervention, using preserved 14-20 cm performance as a non-regression criterion.",
-    "reframes": []
-  },
+  "active_inquiry": null,
   "campaign": {
     "base_commit": "a5d5b4c0fe00c1103abb30662c0874b87de08157",
     "id": "06656182-d7f0-4011-898d-2b870e8a2a54",
@@ -2478,7 +2467,7 @@
     }
   },
   "counters": {
-    "event": 7,
+    "event": 8,
     "inquiry": 2,
     "measurement": 4,
     "session": 5,
@@ -4337,9 +4326,63 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-07T20:14:19Z",
+      "error": null,
+      "id": "E8",
+      "inquiry_id": "I2",
+      "kind": "inquiry",
+      "request": {
+        "action": "close",
+        "outcome": "The bounded velocity-aware settling intervention supports branch-conditioned approach and hold instability as the dominant actionable mechanism for the persistent near-base failures. T3 reached 94% on the matched held-out panel versus 71% for T1, improved 6-10 cm success from 27.6% to 93.1% and 10-14 cm success from 82.8% to 100%, while preserving high 14-20 cm competence at 90.5% versus T1's 92.9%.",
+        "reason": "I2's closure condition is met: one bounded intervention recovered the near-base failure region without a broad outer-radius regression. The result weakens compiled-dynamics or global actuator-authority limits as the dominant explanation and further deprioritizes hidden substep excursions, but does not rule out configuration-dependent authority as a contributor to the remaining failures. The 94% candidate is not yet sufficient for the 98% human goal, so the next goal review must decide whether to refine this intervention or characterize the residual authority/dynamics limitation."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I2",
+        "outcome": "The bounded velocity-aware settling intervention supports branch-conditioned approach and hold instability as the dominant actionable mechanism for the persistent near-base failures. T3 reached 94% on the matched held-out panel versus 71% for T1, improved 6-10 cm success from 27.6% to 93.1% and 10-14 cm success from 82.8% to 100%, while preserving high 14-20 cm competence at 90.5% versus T1's 92.9%.",
+        "reason": "I2's closure condition is met: one bounded intervention recovered the near-base failure region without a broad outer-radius regression. The result weakens compiled-dynamics or global actuator-authority limits as the dominant explanation and further deprioritizes hidden substep excursions, but does not rule out configuration-dependent authority as a contributor to the remaining failures. The 94% candidate is not yet sufficient for the 98% human goal, so the next goal review must decide whether to refine this intervention or characterize the residual authority/dynamics limitation.",
+        "status": "completed"
+      },
+      "session_id": "S5",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "close",
+        "inquiry_id": "I2",
+        "outcome": "The bounded velocity-aware settling intervention supports branch-conditioned approach and hold instability as the dominant actionable mechanism for the persistent near-base failures. T3 reached 94% on the matched held-out panel versus 71% for T1, improved 6-10 cm success from 27.6% to 93.1% and 10-14 cm success from 82.8% to 100%, while preserving high 14-20 cm competence at 90.5% versus T1's 92.9%.",
+        "reason": "I2's closure condition is met: one bounded intervention recovered the near-base failure region without a broad outer-radius regression. The result weakens compiled-dynamics or global actuator-authority limits as the dominant explanation and further deprioritizes hidden substep excursions, but does not rule out configuration-dependent authority as a contributor to the remaining failures. The 94% candidate is not yet sufficient for the 98% human goal, so the next goal review must decide whether to refine this intervention or characterize the residual authority/dynamics limitation."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I2",
+        "outcome": "The bounded velocity-aware settling intervention supports branch-conditioned approach and hold instability as the dominant actionable mechanism for the persistent near-base failures. T3 reached 94% on the matched held-out panel versus 71% for T1, improved 6-10 cm success from 27.6% to 93.1% and 10-14 cm success from 82.8% to 100%, while preserving high 14-20 cm competence at 90.5% versus T1's 92.9%.",
+        "reason": "I2's closure condition is met: one bounded intervention recovered the near-base failure region without a broad outer-radius regression. The result weakens compiled-dynamics or global actuator-authority limits as the dominant explanation and further deprioritizes hidden substep excursions, but does not rule out configuration-dependent authority as a contributor to the remaining failures. The 94% candidate is not yet sufficient for the 98% human goal, so the next goal review must decide whether to refine this intervention or characterize the residual authority/dynamics limitation.",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E8",
+    "inquiry_id": "I2",
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "close",
+        "outcome": "The bounded velocity-aware settling intervention supports branch-conditioned approach and hold instability as the dominant actionable mechanism for the persistent near-base failures. T3 reached 94% on the matched held-out panel versus 71% for T1, improved 6-10 cm success from 27.6% to 93.1% and 10-14 cm success from 82.8% to 100%, while preserving high 14-20 cm competence at 90.5% versus T1's 92.9%.",
+        "reason": "I2's closure condition is met: one bounded intervention recovered the near-base failure region without a broad outer-radius regression. The result weakens compiled-dynamics or global actuator-authority limits as the dominant explanation and further deprioritizes hidden substep excursions, but does not rule out configuration-dependent authority as a contributor to the remaining failures. The 94% candidate is not yet sufficient for the 98% human goal, so the next goal review must decide whether to refine this intervention or characterize the residual authority/dynamics limitation."
+      }
+    },
+    "request_fingerprint": "74c4322d8e033e510934bb6812ea484ed0c22fbd3e2835fe04865c6bcc4e496a",
+    "session_id": "S5",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No working, best-known, or retained candidate role has been assigned. T1:checkpoint-120832 remains the strongest evaluated reference at 73% and the baseline for I2. T2:checkpoint-120832 remains noncompetitive at 35% and is retained only as evidence about the tested full-domain training recipe.",
     "completed_operations": [
@@ -4385,7 +4428,8 @@
     "objective": "Advance I2 toward an evidence-supported answer to its scientific question: Which mechanism\u2014branch-conditioned trajectory and hold instability, compiled-dynamics or actuator-authority limits, or hidden substep excursions\u2014dominates the persistent near-base failures, and what evidence-supported intervention can raise official success toward 98% without degrading 14-20 cm competence?",
     "operation_ids": [
       "T3",
-      "M4"
+      "M4",
+      "E8"
     ],
     "scientific_parent_commit": "a38ada0658340828628f3346922496abbc6bd65e"
   },
