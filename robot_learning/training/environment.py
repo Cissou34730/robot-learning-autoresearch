@@ -16,7 +16,7 @@ TRAINING_TARGET_RADIUS_RANGE = (0.06, 0.20)
 OUTER_RADIUS_RANGE = (0.14, 0.20)
 OUTER_RADIUS_OVERSAMPLE_PROBABILITY = 0.25
 HARD_ANGLE_RANGE = (3.0 * np.pi / 4.0, np.pi)
-HARD_ANGLE_OVERSAMPLE_PROBABILITY = 0.5
+HARD_ANGLE_OVERSAMPLE_PROBABILITY = 0.10
 
 
 def sample_training_radius(rng: np.random.Generator) -> float:
@@ -29,7 +29,7 @@ def sample_training_radius(rng: np.random.Generator) -> float:
 
 
 def sample_training_angle(rng: np.random.Generator) -> float:
-    """Increase exposure to the seam-adjacent angle sectors that time out."""
+    """Add limited exposure to seam-adjacent angles without abandoning coverage."""
     if rng.random() < HARD_ANGLE_OVERSAMPLE_PROBABILITY:
         lower, upper = HARD_ANGLE_RANGE
         if rng.random() < 0.5:
