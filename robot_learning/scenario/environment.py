@@ -70,9 +70,7 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
         self._step_count = 0
         self._previous_distance = 0.0
         self._held_steps = 0
-        self._continuous_held_steps = 0
         self._outside_after_hold = False
-        self._previous_action = np.zeros(2, dtype=np.float64)
 
     def _end_effector_position(self) -> np.ndarray:
         return self.data.site("end_effector").xpos.copy()
@@ -118,9 +116,7 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
         self._step_count = 0
         self._previous_distance = self._distance_to_target()
         self._held_steps = 0
-        self._continuous_held_steps = 0
         self._outside_after_hold = False
-        self._previous_action = np.zeros(2, dtype=np.float64)
         return self._observation(), {}
 
     def step(
@@ -131,39 +127,11 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
             self.action_space.low,
             self.action_space.high,
         )
-        action_delta = action - self._previous_action
-        max_abs_action = float(np.max(np.abs(action)))
-        saturated = bool(np.any(np.abs(action) >= 1.0 - 1e-8))
-        previous_end_effector_position = self._end_effector_position()
-        substep_distances: list[float] = []
-        max_joint_speed = 0.0
-        max_end_effector_speed = 0.0
-        end_effector_speed = 0.0
         self.data.ctrl[:] = action
         for _ in range(self.frame_skip):
             mujoco.mj_step(self.model, self.data)
-            substep_distances.append(self._distance_to_target())
-            max_joint_speed = max(
-                max_joint_speed, float(np.linalg.norm(self.data.qvel[:2]))
-            )
-            end_effector_speed = float(
-                np.linalg.norm(
-                    (self._end_effector_position() - previous_end_effector_position)
-                    / self.model.opt.timestep
-                )
-            )
-            max_end_effector_speed = max(max_end_effector_speed, end_effector_speed)
-            previous_end_effector_position = self._end_effector_position()
 
         distance = self._distance_to_target()
-        interval_within_tolerance = all(
-            substep_distance <= self.success_threshold
-            for substep_distance in substep_distances
-        )
-        if interval_within_tolerance:
-            self._continuous_held_steps += 1
-        else:
-            self._continuous_held_steps = 0
 
         previous_held_steps = self._held_steps
         if distance <= self.success_threshold:
@@ -193,24 +161,10 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
             "distance": distance,
             "is_success": terminated,
             "held_steps": self._held_steps,
-            "continuous_held_steps": self._continuous_held_steps,
-            "continuous_success": self._continuous_held_steps >= self.hold_steps_required,
-            "substep_max_distance": max(substep_distances),
-            "substep_outside_tolerance": not interval_within_tolerance,
-            "joint_speed": float(np.linalg.norm(self.data.qvel[:2])),
-            "max_joint_speed": max_joint_speed,
-            "end_effector_speed": end_effector_speed,
-            "max_end_effector_speed": max_end_effector_speed,
-            "action_delta": float(np.linalg.norm(action_delta)),
-            "max_action_delta": float(np.max(np.abs(action_delta))),
-            "max_abs_action": max_abs_action,
-            "action_saturated": saturated,
-            "branch_sign": int(np.sign(self.data.qpos[1])),
             # Arbitrary scenario-owned attribution; the RL algorithm still only
             # ever sees `reward.total`.
             "reward_components": reward.components,
         }
-        self._previous_action = action.copy()
         return self._observation(), float(reward.total), terminated, truncated, info
 
 
