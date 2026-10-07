@@ -17,6 +17,9 @@ PROGRESS_COEFFICIENT = 10.0
 CLOSENESS_COEFFICIENT = 4.0
 CLOSENESS_LENGTH_SCALE = 0.05
 ACTION_COST_COEFFICIENT = 0.01
+STABILIZATION_DISTANCE_SCALE = 0.03
+JOINT_VELOCITY_COST_COEFFICIENT = 0.04
+STABILIZATION_ACTION_COST_COEFFICIENT = 0.1
 HOLD_PROGRESS_BONUS = 50.0
 HOLD_PROGRESS_EXPONENT = 1.0
 HOLD_EXIT_FORFEIT_FRACTION = 0.0
@@ -44,11 +47,16 @@ def _hold_progress_potential(held_steps: int, hold_steps_required: int) -> float
     return HOLD_PROGRESS_BONUS * float(progress**HOLD_PROGRESS_EXPONENT)
 
 
+def _stabilization_weight(distance: float) -> float:
+    return float(np.exp(-distance / STABILIZATION_DISTANCE_SCALE))
+
+
 def reach_reward(
     previous_distance: float,
     current_distance: float,
     success_threshold: float,
     action: np.ndarray | None = None,
+    joint_velocity: np.ndarray | None = None,
     held_steps: int = 0,
     previous_held_steps: int = 0,
     hold_steps_required: int = 100,
@@ -85,6 +93,16 @@ def reach_reward(
         outside_band = -(OUTSIDE_BAND_PENALTY * outside_fraction)
     reward += outside_band
 
+    stabilization_weight = _stabilization_weight(current_distance)
+    velocity_cost = 0.0
+    if joint_velocity is not None:
+        velocity_cost = -(
+            JOINT_VELOCITY_COST_COEFFICIENT
+            * stabilization_weight
+            * float(np.sum(np.square(joint_velocity)))
+        )
+        reward += velocity_cost
+
     hold_complete = 0.0
     if held_steps >= hold_steps_required and previous_held_steps < hold_steps_required:
         hold_complete = HOLD_COMPLETE_BONUS
@@ -95,6 +113,15 @@ def reach_reward(
         action_cost = -(ACTION_COST_COEFFICIENT * float(np.sum(np.square(action))))
     reward += action_cost
 
+    stabilization_action_cost = 0.0
+    if action is not None:
+        stabilization_action_cost = -(
+            STABILIZATION_ACTION_COST_COEFFICIENT
+            * stabilization_weight
+            * float(np.sum(np.square(action)))
+        )
+        reward += stabilization_action_cost
+
     return RewardResult(
         total=float(reward),
         components={
@@ -102,7 +129,9 @@ def reach_reward(
             "closeness": float(closeness),
             "hold_progress": float(hold_progress),
             "outside_band": float(outside_band),
+            "joint_velocity_cost": float(velocity_cost),
             "hold_complete": float(hold_complete),
             "action_cost": float(action_cost),
+            "stabilization_action_cost": float(stabilization_action_cost),
         },
     )
