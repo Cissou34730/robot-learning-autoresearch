@@ -9,7 +9,7 @@
   },
   "candidates": {},
   "counters": {
-    "event": 0,
+    "event": 1,
     "inquiry": 0,
     "measurement": 2,
     "session": 1,
@@ -18,7 +18,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -267,31 +267,152 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": "M1"
+    },
+    {
+      "completed_at": "2026-10-07T04:34:16Z",
+      "error": null,
+      "id": "E1",
+      "inquiry_id": null,
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "No learned candidates exist yet; working, best-known, and retained roles remain empty.",
+        "completed_operations": [
+          "M2"
+        ],
+        "cumulative_resource_use": "One completed learning-independent measurement (M2); no training steps or policy-evaluation episodes consumed. M1 was a failed implementation attempt and is superseded execution history, not evidence.",
+        "current_goal_gap": "No learned candidate has been trained or evaluated, so the distance to 98% official success is unmeasured. The remaining actionable gap is to determine whether a policy can exploit the available plant authority across the full target distribution while regulating residual motion during the complete hold.",
+        "current_synthesis": "Observed in M2: the compiled model uses 0.02 s control intervals, 5.0 joint torque at unit control, approximately 0.0102-0.0119 joint mass-matrix diagonal terms across the tested radii, and approximately 421-491 rad/s^2 initial unit-control acceleration. A 25-control-step saturated step reached roughly 9.2-10.0 rad/s joint speed and the post-release joint velocity fell below 0.02 rad/s by control step 30-34. A one-control-step saturated impulse produced up to about 0.040 m end-effector displacement at the outer radius, versus about 0.012 m at the inner radius. Interpretation: gross actuator authority and damping are not the leading hard ceiling for reaching or settling; the plant can become highly sensitive to poorly regulated 20 ms action changes, especially near the outer radius. Competing explanations now are (A) policy/distribution limitation, with failures concentrated in the untrained inner annulus or inconsistent IK branch use, versus (B) learned closed-loop precision limitation, with entry velocity or residual oscillation causing hold interruptions despite adequate plant authority. M2 does not measure a learned policy, action saturation during task behavior, branch consistency, or continuous hold semantics, so it cannot establish which explanation dominates.",
+        "decision_frontier": "Does a baseline learned policy fail primarily because training omits the inner 0.06-0.14 m annulus and leaves branch usage inconsistent, or because the policy cannot regulate entry and hold-phase motion tightly enough at 50 Hz? Discriminating evidence is a full-distribution policy evaluation with radius-angle bins, first-entry step and distance, maximum held steps, interruptions, and branch traces; an inner-radius deficit supports coverage/branch limitation, while all-radius failures with low entry error but repeated hold exits support precision regulation. If failures correlate with action saturation and residual velocity, prioritize control-aware policy design; if failures correlate with radius and branch while stable holds occur when reached, prioritize training coverage and branch-consistent representation.",
+        "evidence_references": [
+          "M2"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 of 200 official episodes to complete an uninterrupted 2 second hold inside the 1 cm tolerance. M2 establishes the plant capability needed to decide whether to prioritize control authority diagnosis or learned-policy and distribution diagnosis before training.",
+        "next_direction_or_closure": "End startup with this checkpoint and enter goal review. The next scientific direction should open the stated policy-failure localization question and use a baseline training run followed by stratified research evaluation, unless goal review identifies a stronger direct route to the same distinction.",
+        "next_question": "For the first trained policy under the official target distribution, are episode failures dominated by unseen inner-radius and IK-branch regimes or by residual motion and interruptions during the 100-step hold?"
+      },
+      "result": {
+        "session_id": "S1",
+        "status": "checkpointed"
+      },
+      "session_id": "S1",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
-  "pi_checkpoint": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "bab28a713a83caaa538a178d55ccb46e416217f6",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "No learned candidates exist yet; working, best-known, and retained roles remain empty.",
+        "completed_operations": [
+          "M2"
+        ],
+        "cumulative_resource_use": "One completed learning-independent measurement (M2); no training steps or policy-evaluation episodes consumed. M1 was a failed implementation attempt and is superseded execution history, not evidence.",
+        "current_goal_gap": "No learned candidate has been trained or evaluated, so the distance to 98% official success is unmeasured. The remaining actionable gap is to determine whether a policy can exploit the available plant authority across the full target distribution while regulating residual motion during the complete hold.",
+        "current_synthesis": "Observed in M2: the compiled model uses 0.02 s control intervals, 5.0 joint torque at unit control, approximately 0.0102-0.0119 joint mass-matrix diagonal terms across the tested radii, and approximately 421-491 rad/s^2 initial unit-control acceleration. A 25-control-step saturated step reached roughly 9.2-10.0 rad/s joint speed and the post-release joint velocity fell below 0.02 rad/s by control step 30-34. A one-control-step saturated impulse produced up to about 0.040 m end-effector displacement at the outer radius, versus about 0.012 m at the inner radius. Interpretation: gross actuator authority and damping are not the leading hard ceiling for reaching or settling; the plant can become highly sensitive to poorly regulated 20 ms action changes, especially near the outer radius. Competing explanations now are (A) policy/distribution limitation, with failures concentrated in the untrained inner annulus or inconsistent IK branch use, versus (B) learned closed-loop precision limitation, with entry velocity or residual oscillation causing hold interruptions despite adequate plant authority. M2 does not measure a learned policy, action saturation during task behavior, branch consistency, or continuous hold semantics, so it cannot establish which explanation dominates.",
+        "decision_frontier": "Does a baseline learned policy fail primarily because training omits the inner 0.06-0.14 m annulus and leaves branch usage inconsistent, or because the policy cannot regulate entry and hold-phase motion tightly enough at 50 Hz? Discriminating evidence is a full-distribution policy evaluation with radius-angle bins, first-entry step and distance, maximum held steps, interruptions, and branch traces; an inner-radius deficit supports coverage/branch limitation, while all-radius failures with low entry error but repeated hold exits support precision regulation. If failures correlate with action saturation and residual velocity, prioritize control-aware policy design; if failures correlate with radius and branch while stable holds occur when reached, prioritize training coverage and branch-consistent representation.",
+        "evidence_references": [
+          "M2"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 of 200 official episodes to complete an uninterrupted 2 second hold inside the 1 cm tolerance. M2 establishes the plant capability needed to decide whether to prioritize control authority diagnosis or learned-policy and distribution diagnosis before training.",
+        "inquiry_id": null,
+        "next_direction_or_closure": "End startup with this checkpoint and enter goal review. The next scientific direction should open the stated policy-failure localization question and use a baseline training run followed by stratified research evaluation, unless goal review identifies a stronger direct route to the same distinction.",
+        "next_question": "For the first trained policy under the official target distribution, are episode failures dominated by unseen inner-radius and IK-branch regimes or by residual motion and interruptions during the 100-step hold?",
+        "session_id": "S1"
+      },
+      "presentation": {
+        "backend_session_id": "6c2c5ab6-87ea-41da-aa78-74aede5bc106",
+        "campaign_id": "b366ab54-1218-4ab4-9bf1-3fd6a19c86bb",
+        "campaign_usage": "9m23s | 12.04 AIU | prompt 2.1m (92% cached) | output 33.3k",
+        "session_id": "S1",
+        "session_kind": "startup",
+        "session_usage": "6m24s | 8.86 AIU | prompt 1.8m (93% cached) | output 20.6k"
+      },
+      "result": {
+        "session_id": "S1",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "6ae492b08882eb7149dd37cc4af49e6dba598534",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E1",
+    "inquiry_id": null,
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "No learned candidates exist yet; working, best-known, and retained roles remain empty.",
+        "completed_operations": [
+          "M2"
+        ],
+        "cumulative_resource_use": "One completed learning-independent measurement (M2); no training steps or policy-evaluation episodes consumed. M1 was a failed implementation attempt and is superseded execution history, not evidence.",
+        "current_goal_gap": "No learned candidate has been trained or evaluated, so the distance to 98% official success is unmeasured. The remaining actionable gap is to determine whether a policy can exploit the available plant authority across the full target distribution while regulating residual motion during the complete hold.",
+        "current_synthesis": "Observed in M2: the compiled model uses 0.02 s control intervals, 5.0 joint torque at unit control, approximately 0.0102-0.0119 joint mass-matrix diagonal terms across the tested radii, and approximately 421-491 rad/s^2 initial unit-control acceleration. A 25-control-step saturated step reached roughly 9.2-10.0 rad/s joint speed and the post-release joint velocity fell below 0.02 rad/s by control step 30-34. A one-control-step saturated impulse produced up to about 0.040 m end-effector displacement at the outer radius, versus about 0.012 m at the inner radius. Interpretation: gross actuator authority and damping are not the leading hard ceiling for reaching or settling; the plant can become highly sensitive to poorly regulated 20 ms action changes, especially near the outer radius. Competing explanations now are (A) policy/distribution limitation, with failures concentrated in the untrained inner annulus or inconsistent IK branch use, versus (B) learned closed-loop precision limitation, with entry velocity or residual oscillation causing hold interruptions despite adequate plant authority. M2 does not measure a learned policy, action saturation during task behavior, branch consistency, or continuous hold semantics, so it cannot establish which explanation dominates.",
+        "decision_frontier": "Does a baseline learned policy fail primarily because training omits the inner 0.06-0.14 m annulus and leaves branch usage inconsistent, or because the policy cannot regulate entry and hold-phase motion tightly enough at 50 Hz? Discriminating evidence is a full-distribution policy evaluation with radius-angle bins, first-entry step and distance, maximum held steps, interruptions, and branch traces; an inner-radius deficit supports coverage/branch limitation, while all-radius failures with low entry error but repeated hold exits support precision regulation. If failures correlate with action saturation and residual velocity, prioritize control-aware policy design; if failures correlate with radius and branch while stable holds occur when reached, prioritize training coverage and branch-consistent representation.",
+        "evidence_references": [
+          "M2"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 of 200 official episodes to complete an uninterrupted 2 second hold inside the 1 cm tolerance. M2 establishes the plant capability needed to decide whether to prioritize control authority diagnosis or learned-policy and distribution diagnosis before training.",
+        "next_direction_or_closure": "End startup with this checkpoint and enter goal review. The next scientific direction should open the stated policy-failure localization question and use a baseline training run followed by stratified research evaluation, unless goal review identifies a stronger direct route to the same distinction.",
+        "next_question": "For the first trained policy under the official target distribution, are episode failures dominated by unseen inner-radius and IK-branch regimes or by residual motion and interruptions during the 100-step hold?"
+      }
+    },
+    "request_fingerprint": "6437e8cd19e28d2846194c4480dcf5a3bff415e28cb0df79ce8127c053e5116b",
+    "session_id": "S1",
+    "supersedes": null
+  },
+  "pi_checkpoint": {
+    "candidates_and_roles": "No learned candidates exist yet; working, best-known, and retained roles remain empty.",
+    "completed_operations": [
+      "M2"
+    ],
+    "cumulative_resource_use": "One completed learning-independent measurement (M2); no training steps or policy-evaluation episodes consumed. M1 was a failed implementation attempt and is superseded execution history, not evidence.",
+    "current_goal_gap": "No learned candidate has been trained or evaluated, so the distance to 98% official success is unmeasured. The remaining actionable gap is to determine whether a policy can exploit the available plant authority across the full target distribution while regulating residual motion during the complete hold.",
+    "current_synthesis": "Observed in M2: the compiled model uses 0.02 s control intervals, 5.0 joint torque at unit control, approximately 0.0102-0.0119 joint mass-matrix diagonal terms across the tested radii, and approximately 421-491 rad/s^2 initial unit-control acceleration. A 25-control-step saturated step reached roughly 9.2-10.0 rad/s joint speed and the post-release joint velocity fell below 0.02 rad/s by control step 30-34. A one-control-step saturated impulse produced up to about 0.040 m end-effector displacement at the outer radius, versus about 0.012 m at the inner radius. Interpretation: gross actuator authority and damping are not the leading hard ceiling for reaching or settling; the plant can become highly sensitive to poorly regulated 20 ms action changes, especially near the outer radius. Competing explanations now are (A) policy/distribution limitation, with failures concentrated in the untrained inner annulus or inconsistent IK branch use, versus (B) learned closed-loop precision limitation, with entry velocity or residual oscillation causing hold interruptions despite adequate plant authority. M2 does not measure a learned policy, action saturation during task behavior, branch consistency, or continuous hold semantics, so it cannot establish which explanation dominates.",
+    "decision_frontier": "Does a baseline learned policy fail primarily because training omits the inner 0.06-0.14 m annulus and leaves branch usage inconsistent, or because the policy cannot regulate entry and hold-phase motion tightly enough at 50 Hz? Discriminating evidence is a full-distribution policy evaluation with radius-angle bins, first-entry step and distance, maximum held steps, interruptions, and branch traces; an inner-radius deficit supports coverage/branch limitation, while all-radius failures with low entry error but repeated hold exits support precision regulation. If failures correlate with action saturation and residual velocity, prioritize control-aware policy design; if failures correlate with radius and branch while stable holds occur when reached, prioritize training coverage and branch-consistent representation.",
+    "evidence_references": [
+      "M2"
+    ],
+    "human_goal_connection": "The human goal requires at least 196 of 200 official episodes to complete an uninterrupted 2 second hold inside the 1 cm tolerance. M2 establishes the plant capability needed to decide whether to prioritize control authority diagnosis or learned-policy and distribution diagnosis before training.",
+    "inquiry_id": null,
+    "next_direction_or_closure": "End startup with this checkpoint and enter goal review. The next scientific direction should open the stated policy-failure localization question and use a baseline training run followed by stratified research evaluation, unless goal review identifies a stronger direct route to the same distinction.",
+    "next_question": "For the first trained policy under the official target distribution, are episode failures dominated by unseen inner-radius and IK-branch regimes or by residual motion and interruptions during the 100-step hold?",
+    "scientific_commit": "6ae492b08882eb7149dd37cc4af49e6dba598534",
+    "session_id": "S1"
+  },
   "schema_version": 6,
   "scientific_model": {
     "commit": "3310fae6f7772c284de46041aadd9a3735dd4e4f",
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "6c2c5ab6-87ea-41da-aa78-74aede5bc106",
-    "id": "S1",
-    "inquiry_id": null,
-    "kind": "startup",
-    "objective": "Establish the most credible initial scientific direction toward the human goal from the scientific model and available evidence. Use scientific work in this session to establish or refine that direction, including building or adapting reusable scientific tools and PI-owned methods where needed. These capabilities can support subsequent inquiries. Choose the first useful scientific action and explain why it advances the direction. Preserve the work actually performed, resulting understanding, remaining uncertainties and chosen next action in the scientific session record.",
-    "operation_ids": [
-      "M2"
-    ],
-    "scientific_parent_commit": "bab28a713a83caaa538a178d55ccb46e416217f6"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
