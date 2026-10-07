@@ -1542,38 +1542,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I1",
-        "outcome": "I1 is closed in favor of residual-motion and hold-phase precision as the dominant observed failure mechanism, with branch switching and saturated action as contributing triggers rather than an unseen-inner-radius deficit.",
-        "reason": "M3 evaluated T1:checkpoint-100352 on 200 full-distribution research episodes and achieved 199 successes (99.5%). The only failure was at radius 15.91 cm and angle -138.23 degrees, outside the untrained inner annulus: it first entered at 0.92 cm with 6.42 rad/s joint speed and 47.10 cm/s end-effector speed, switched inferred IK branch once, held for only one step, then interrupted and remained truncated at 500 steps with saturated actions throughout. Inner-radius cases in the same panel completed 100-step holds, while successful episodes across the annulus maintained zero hold interruptions. This satisfies the closure condition and supports precision/stabilization and branch-consistency work, while the research panel remains non-official and does not resolve continuous within-substep versus protected benchmark semantics."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I1",
-        "outcome": "I1 is closed in favor of residual-motion and hold-phase precision as the dominant observed failure mechanism, with branch switching and saturated action as contributing triggers rather than an unseen-inner-radius deficit.",
-        "reason": "M3 evaluated T1:checkpoint-100352 on 200 full-distribution research episodes and achieved 199 successes (99.5%). The only failure was at radius 15.91 cm and angle -138.23 degrees, outside the untrained inner annulus: it first entered at 0.92 cm with 6.42 rad/s joint speed and 47.10 cm/s end-effector speed, switched inferred IK branch once, held for only one step, then interrupted and remained truncated at 500 steps with saturated actions throughout. Inner-radius cases in the same panel completed 100-step holds, while successful episodes across the annulus maintained zero hold interruptions. This satisfies the closure condition and supports precision/stabilization and branch-consistency work, while the research panel remains non-official and does not resolve continuous within-substep versus protected benchmark semantics.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E4",
-    "inquiry_id": "I1",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "I1 is closed in favor of residual-motion and hold-phase precision as the dominant observed failure mechanism, with branch switching and saturated action as contributing triggers rather than an unseen-inner-radius deficit.",
-        "reason": "M3 evaluated T1:checkpoint-100352 on 200 full-distribution research episodes and achieved 199 successes (99.5%). The only failure was at radius 15.91 cm and angle -138.23 degrees, outside the untrained inner annulus: it first entered at 0.92 cm with 6.42 rad/s joint speed and 47.10 cm/s end-effector speed, switched inferred IK branch once, held for only one step, then interrupted and remained truncated at 500 steps with saturated actions throughout. Inner-radius cases in the same panel completed 100-step holds, while successful episodes across the annulus maintained zero hold interruptions. This satisfies the closure condition and supports precision/stabilization and branch-consistency work, while the research panel remains non-official and does not resolve continuous within-substep versus protected benchmark semantics."
-      }
-    },
-    "request_fingerprint": "94fe08a38d5a723c066a1e5372037af78273c6cf26b9a31afdda877a37ca5ef4",
-    "session_id": "S3",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "No learned candidates exist yet; working, best-known, and retained roles remain empty.",
     "completed_operations": [
