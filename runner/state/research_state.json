@@ -3288,7 +3288,7 @@
     }
   },
   "counters": {
-    "event": 12,
+    "event": 13,
     "inquiry": 3,
     "measurement": 6,
     "session": 7,
@@ -3297,7 +3297,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -6253,19 +6253,186 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-07T20:27:18Z",
+      "error": null,
+      "id": "E13",
+      "inquiry_id": "I3",
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "No formal model role has been assigned. T3:checkpoint-120832 remains the strongest evaluated development candidate at 94% on M4 and M5 and 95% on M6. T4:checkpoint-120832 is retained only as evidence that doubling the settling velocity penalty is an inferior refinement. T1 remains the paired reference and T2 remains evidence about the insufficient fresh full-domain recipe.",
+        "completed_operations": [
+          "T4",
+          "M6",
+          "E12"
+        ],
+        "cumulative_resource_use": "The campaign has completed four 120000-step training runs, six 100-episode research panels (M1 through M6, with paired candidates where applicable), and the I3 inquiry closure recorded by E12. T3 changed robot_learning/scenario/environment.py and robot_learning/training/reward.py; T4 changed only robot_learning/training/reward.py. No dependencies were installed.",
+        "current_goal_gap": "T3:checkpoint-120832 achieved 94% on M4 and M5 and 95% on M6, leaving at least a 3 percentage-point development gap to the 98% objective. T4:checkpoint-120832 achieved 85% on M6 and is not a viable replacement.",
+        "current_synthesis": "Observed facts: T1 achieved 73% on its matched panels, with failures concentrated below 14 cm. M3 found 22 non-entries and 5 interrupted holds, action saturation in all interrupted episodes but also many successful episodes, branch switching in successful and failing episodes, and no failure concentration in hidden substep excursions. T2 achieved 35%, establishing that fresh full-domain training recipe as insufficient but not rejecting coverage or identifying a physical cause. T3 transferred from T1 with one bounded velocity-aware settling reward term and achieved 94% on M4 and M5, improving near-base performance while preserving high outer-radius competence. M6 showed T3 at 95% and T4 at 85% on shared seeds. T4 changed only the settling velocity penalty coefficient from 0.25 to 0.5; its losses were concentrated at 6-10 cm (20/30 versus T3's 29/30), with a smaller 14-20 cm regression (41/44 versus 42/44). This rejects the tested stronger penalty as a useful refinement, not the broader settling/control explanation. M6 traces show near-universal action saturation in both T3 successes and T4 failures, so saturation alone does not establish configuration-dependent actuator authority or compiled-dynamics limits. The reproducible T3 advantage supports branch-conditioned approach and hold instability as important actionable mechanisms, but the remaining causal distinction between learned approach/representation limits and physical authority remains unresolved.",
+        "decision_frontier": "The stronger velocity penalty cannot be continued: it reduced complete success and disproportionately damaged the near-base region. The next decision must distinguish whether T3's residual failures are primarily a learned approach/branch-selection limitation or a configuration-dependent authority/compiled-dynamics limitation. Runtime model introspection and action/free-response sweeps, linked to radius and branch, would support redirecting to actuator/dynamics characterization if saturated commands produce inadequate acceleration or braking in the failing configurations. If those responses are adequate, the route should return to policy representation or approach design rather than further increasing the same settling penalty. T3 remains the strongest development candidate, but no evidence supports official assessment.",
+        "evidence_references": [
+          "T1",
+          "M1",
+          "T2",
+          "M2",
+          "E4",
+          "M3",
+          "E6",
+          "T3",
+          "M4",
+          "E8",
+          "M5",
+          "E10",
+          "T4",
+          "M6",
+          "E12"
+        ],
+        "human_goal_connection": "The human goal requires at least 98% complete uninterrupted holds over the official 6-20 cm distribution. T3 remains below that threshold, and T4 worsened development performance, so official assessment is not justified.",
+        "next_direction_or_closure": "I3 is closed with a limited actionable negative result. In the next goal-review/inquiry session, preserve T3 as the development reference and use targeted compiled-dynamics or actuator-response characterization to resolve the authority-versus-learned-control distinction before selecting another intervention. Do not request official assessment until a candidate has evidence meeting the 98% goal under the official task distribution.",
+        "next_question": "How can the velocity-aware settling intervention be refined to raise official-distribution success from 94% toward 98% while preserving 14-20 cm competence, and do residual failures indicate configuration-dependent actuator authority or compiled-dynamics limits?"
+      },
+      "result": {
+        "session_id": "S7",
+        "status": "checkpointed"
+      },
+      "session_id": "S7",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "aab0d7d1836b111e4ec1d2ec5a82fef0877564d2",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "No formal model role has been assigned. T3:checkpoint-120832 remains the strongest evaluated development candidate at 94% on M4 and M5 and 95% on M6. T4:checkpoint-120832 is retained only as evidence that doubling the settling velocity penalty is an inferior refinement. T1 remains the paired reference and T2 remains evidence about the insufficient fresh full-domain recipe.",
+        "completed_operations": [
+          "T4",
+          "M6",
+          "E12"
+        ],
+        "cumulative_resource_use": "The campaign has completed four 120000-step training runs, six 100-episode research panels (M1 through M6, with paired candidates where applicable), and the I3 inquiry closure recorded by E12. T3 changed robot_learning/scenario/environment.py and robot_learning/training/reward.py; T4 changed only robot_learning/training/reward.py. No dependencies were installed.",
+        "current_goal_gap": "T3:checkpoint-120832 achieved 94% on M4 and M5 and 95% on M6, leaving at least a 3 percentage-point development gap to the 98% objective. T4:checkpoint-120832 achieved 85% on M6 and is not a viable replacement.",
+        "current_synthesis": "Observed facts: T1 achieved 73% on its matched panels, with failures concentrated below 14 cm. M3 found 22 non-entries and 5 interrupted holds, action saturation in all interrupted episodes but also many successful episodes, branch switching in successful and failing episodes, and no failure concentration in hidden substep excursions. T2 achieved 35%, establishing that fresh full-domain training recipe as insufficient but not rejecting coverage or identifying a physical cause. T3 transferred from T1 with one bounded velocity-aware settling reward term and achieved 94% on M4 and M5, improving near-base performance while preserving high outer-radius competence. M6 showed T3 at 95% and T4 at 85% on shared seeds. T4 changed only the settling velocity penalty coefficient from 0.25 to 0.5; its losses were concentrated at 6-10 cm (20/30 versus T3's 29/30), with a smaller 14-20 cm regression (41/44 versus 42/44). This rejects the tested stronger penalty as a useful refinement, not the broader settling/control explanation. M6 traces show near-universal action saturation in both T3 successes and T4 failures, so saturation alone does not establish configuration-dependent actuator authority or compiled-dynamics limits. The reproducible T3 advantage supports branch-conditioned approach and hold instability as important actionable mechanisms, but the remaining causal distinction between learned approach/representation limits and physical authority remains unresolved.",
+        "decision_frontier": "The stronger velocity penalty cannot be continued: it reduced complete success and disproportionately damaged the near-base region. The next decision must distinguish whether T3's residual failures are primarily a learned approach/branch-selection limitation or a configuration-dependent authority/compiled-dynamics limitation. Runtime model introspection and action/free-response sweeps, linked to radius and branch, would support redirecting to actuator/dynamics characterization if saturated commands produce inadequate acceleration or braking in the failing configurations. If those responses are adequate, the route should return to policy representation or approach design rather than further increasing the same settling penalty. T3 remains the strongest development candidate, but no evidence supports official assessment.",
+        "evidence_references": [
+          "T1",
+          "M1",
+          "T2",
+          "M2",
+          "E4",
+          "M3",
+          "E6",
+          "T3",
+          "M4",
+          "E8",
+          "M5",
+          "E10",
+          "T4",
+          "M6",
+          "E12"
+        ],
+        "human_goal_connection": "The human goal requires at least 98% complete uninterrupted holds over the official 6-20 cm distribution. T3 remains below that threshold, and T4 worsened development performance, so official assessment is not justified.",
+        "inquiry_id": "I3",
+        "next_direction_or_closure": "I3 is closed with a limited actionable negative result. In the next goal-review/inquiry session, preserve T3 as the development reference and use targeted compiled-dynamics or actuator-response characterization to resolve the authority-versus-learned-control distinction before selecting another intervention. Do not request official assessment until a candidate has evidence meeting the 98% goal under the official task distribution.",
+        "next_question": "How can the velocity-aware settling intervention be refined to raise official-distribution success from 94% toward 98% while preserving 14-20 cm competence, and do residual failures indicate configuration-dependent actuator authority or compiled-dynamics limits?",
+        "session_id": "S7"
+      },
+      "presentation": {
+        "backend_session_id": "090cc220-fadc-49c8-b82e-b7947b65da22",
+        "campaign_id": "06656182-d7f0-4011-898d-2b870e8a2a54",
+        "campaign_usage": "17m29s | 46.28 AIU | prompt 7.2m (86% cached) | output 75.4k",
+        "session_id": "S7",
+        "session_kind": "inquiry",
+        "session_usage": "3m16s | 9.63 AIU | prompt 1.9m (91% cached) | output 14.2k"
+      },
+      "result": {
+        "session_id": "S7",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "5329f7bd5364de703d798bcbacaad53a37ed24e5",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E13",
+    "inquiry_id": "I3",
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "No formal model role has been assigned. T3:checkpoint-120832 remains the strongest evaluated development candidate at 94% on M4 and M5 and 95% on M6. T4:checkpoint-120832 is retained only as evidence that doubling the settling velocity penalty is an inferior refinement. T1 remains the paired reference and T2 remains evidence about the insufficient fresh full-domain recipe.",
+        "completed_operations": [
+          "T4",
+          "M6",
+          "E12"
+        ],
+        "cumulative_resource_use": "The campaign has completed four 120000-step training runs, six 100-episode research panels (M1 through M6, with paired candidates where applicable), and the I3 inquiry closure recorded by E12. T3 changed robot_learning/scenario/environment.py and robot_learning/training/reward.py; T4 changed only robot_learning/training/reward.py. No dependencies were installed.",
+        "current_goal_gap": "T3:checkpoint-120832 achieved 94% on M4 and M5 and 95% on M6, leaving at least a 3 percentage-point development gap to the 98% objective. T4:checkpoint-120832 achieved 85% on M6 and is not a viable replacement.",
+        "current_synthesis": "Observed facts: T1 achieved 73% on its matched panels, with failures concentrated below 14 cm. M3 found 22 non-entries and 5 interrupted holds, action saturation in all interrupted episodes but also many successful episodes, branch switching in successful and failing episodes, and no failure concentration in hidden substep excursions. T2 achieved 35%, establishing that fresh full-domain training recipe as insufficient but not rejecting coverage or identifying a physical cause. T3 transferred from T1 with one bounded velocity-aware settling reward term and achieved 94% on M4 and M5, improving near-base performance while preserving high outer-radius competence. M6 showed T3 at 95% and T4 at 85% on shared seeds. T4 changed only the settling velocity penalty coefficient from 0.25 to 0.5; its losses were concentrated at 6-10 cm (20/30 versus T3's 29/30), with a smaller 14-20 cm regression (41/44 versus 42/44). This rejects the tested stronger penalty as a useful refinement, not the broader settling/control explanation. M6 traces show near-universal action saturation in both T3 successes and T4 failures, so saturation alone does not establish configuration-dependent actuator authority or compiled-dynamics limits. The reproducible T3 advantage supports branch-conditioned approach and hold instability as important actionable mechanisms, but the remaining causal distinction between learned approach/representation limits and physical authority remains unresolved.",
+        "decision_frontier": "The stronger velocity penalty cannot be continued: it reduced complete success and disproportionately damaged the near-base region. The next decision must distinguish whether T3's residual failures are primarily a learned approach/branch-selection limitation or a configuration-dependent authority/compiled-dynamics limitation. Runtime model introspection and action/free-response sweeps, linked to radius and branch, would support redirecting to actuator/dynamics characterization if saturated commands produce inadequate acceleration or braking in the failing configurations. If those responses are adequate, the route should return to policy representation or approach design rather than further increasing the same settling penalty. T3 remains the strongest development candidate, but no evidence supports official assessment.",
+        "evidence_references": [
+          "T1",
+          "M1",
+          "T2",
+          "M2",
+          "E4",
+          "M3",
+          "E6",
+          "T3",
+          "M4",
+          "E8",
+          "M5",
+          "E10",
+          "T4",
+          "M6",
+          "E12"
+        ],
+        "human_goal_connection": "The human goal requires at least 98% complete uninterrupted holds over the official 6-20 cm distribution. T3 remains below that threshold, and T4 worsened development performance, so official assessment is not justified.",
+        "next_direction_or_closure": "I3 is closed with a limited actionable negative result. In the next goal-review/inquiry session, preserve T3 as the development reference and use targeted compiled-dynamics or actuator-response characterization to resolve the authority-versus-learned-control distinction before selecting another intervention. Do not request official assessment until a candidate has evidence meeting the 98% goal under the official task distribution.",
+        "next_question": "How can the velocity-aware settling intervention be refined to raise official-distribution success from 94% toward 98% while preserving 14-20 cm competence, and do residual failures indicate configuration-dependent actuator authority or compiled-dynamics limits?"
+      }
+    },
+    "request_fingerprint": "a06578e153e4666048c6296a328a2bb7b0433ccb33d64979ae9efc93c0f6952d",
+    "session_id": "S7",
+    "supersedes": null
+  },
   "pi_checkpoint": {
-    "candidates_and_roles": "No formal model role has been assigned. T3:checkpoint-120832 remains the strongest evaluated development candidate at 94% on M4 and M5 and is the leading candidate for I3. T1:checkpoint-120832 remains the paired reference; T2:checkpoint-120832 remains evidence about the insufficient fresh full-domain recipe.",
+    "candidates_and_roles": "No formal model role has been assigned. T3:checkpoint-120832 remains the strongest evaluated development candidate at 94% on M4 and M5 and 95% on M6. T4:checkpoint-120832 is retained only as evidence that doubling the settling velocity penalty is an inferior refinement. T1 remains the paired reference and T2 remains evidence about the insufficient fresh full-domain recipe.",
     "completed_operations": [
-      "M5",
-      "E10"
+      "T4",
+      "M6",
+      "E12"
     ],
-    "cumulative_resource_use": "The campaign has completed three 120000-step training runs, five 100-episode research panels (M1 through M5, with paired candidates where applicable), and three inquiry openings/closures through I3. T3 used one transfer training allocation and changed only robot_learning/scenario/environment.py and robot_learning/training/reward.py. No dependencies were installed.",
-    "current_goal_gap": "T3:checkpoint-120832 achieved 94% on M4 and 94% again on M5, leaving a 4 percentage-point development gap to the 98% objective. Its 14-20 cm success was 90.5% on M4, so official assessment remains unjustified.",
-    "current_synthesis": "Observed facts: T1 achieved 73% on its matched panels, with failures concentrated below 14 cm; M3 found 22 non-entries and 5 interrupted holds, action saturation in all interrupted episodes but also many successful episodes, branch switching in both successful and failing episodes, and no failure concentration in hidden substep excursions. The fresh full-domain T2 recipe achieved 35%, establishing that recipe as insufficient but not rejecting coverage or identifying a physical cause. T3 transferred from T1 with one bounded velocity-aware settling reward term. On M4 T3 achieved 94% versus T1's 71%, won 24 of 25 discordant episodes, improved 6-10 cm success from 27.6% to 93.1% and 10-14 cm success from 82.8% to 100%, and retained 14-20 cm success of 90.5% versus T1's 92.9%. M5 reproduced T3 at 94% versus T1 at 76% on shared seeds, with 20 T3 wins versus 2 T1 wins among discordant episodes. These results support branch-conditioned approach and hold instability as the dominant actionable mechanism and establish a reproducible T3 advantage, but they do not prove that settling is the exclusive cause of residual failures. M5's recorded structure confirms that full q/qdot/action, actuator force, qacc, branch, radius, and substep traces were produced, but the available result summary exposes no measurement values; therefore authority/dynamics versus settling remains unresolved.",
-    "decision_frontier": "I3 will distinguish whether the remaining 6% failures can be removed by one bounded refinement of the velocity-aware settling/approach intervention while preserving 14-20 cm competence, or whether they reflect configuration-dependent actuator authority or compiled-dynamics limits. A refinement that reduces residual failures without outer-radius regression supports continuing the control/representation route. Residual failures showing persistent action saturation with inadequate acceleration, especially when stratified by radius or branch, redirect the work to actuator/dynamics characterization. If neither mechanism is discriminated, the inquiry remains open rather than treating repeated 94% as an official result.",
+    "cumulative_resource_use": "The campaign has completed four 120000-step training runs, six 100-episode research panels (M1 through M6, with paired candidates where applicable), and the I3 inquiry closure recorded by E12. T3 changed robot_learning/scenario/environment.py and robot_learning/training/reward.py; T4 changed only robot_learning/training/reward.py. No dependencies were installed.",
+    "current_goal_gap": "T3:checkpoint-120832 achieved 94% on M4 and M5 and 95% on M6, leaving at least a 3 percentage-point development gap to the 98% objective. T4:checkpoint-120832 achieved 85% on M6 and is not a viable replacement.",
+    "current_synthesis": "Observed facts: T1 achieved 73% on its matched panels, with failures concentrated below 14 cm. M3 found 22 non-entries and 5 interrupted holds, action saturation in all interrupted episodes but also many successful episodes, branch switching in successful and failing episodes, and no failure concentration in hidden substep excursions. T2 achieved 35%, establishing that fresh full-domain training recipe as insufficient but not rejecting coverage or identifying a physical cause. T3 transferred from T1 with one bounded velocity-aware settling reward term and achieved 94% on M4 and M5, improving near-base performance while preserving high outer-radius competence. M6 showed T3 at 95% and T4 at 85% on shared seeds. T4 changed only the settling velocity penalty coefficient from 0.25 to 0.5; its losses were concentrated at 6-10 cm (20/30 versus T3's 29/30), with a smaller 14-20 cm regression (41/44 versus 42/44). This rejects the tested stronger penalty as a useful refinement, not the broader settling/control explanation. M6 traces show near-universal action saturation in both T3 successes and T4 failures, so saturation alone does not establish configuration-dependent actuator authority or compiled-dynamics limits. The reproducible T3 advantage supports branch-conditioned approach and hold instability as important actionable mechanisms, but the remaining causal distinction between learned approach/representation limits and physical authority remains unresolved.",
+    "decision_frontier": "The stronger velocity penalty cannot be continued: it reduced complete success and disproportionately damaged the near-base region. The next decision must distinguish whether T3's residual failures are primarily a learned approach/branch-selection limitation or a configuration-dependent authority/compiled-dynamics limitation. Runtime model introspection and action/free-response sweeps, linked to radius and branch, would support redirecting to actuator/dynamics characterization if saturated commands produce inadequate acceleration or braking in the failing configurations. If those responses are adequate, the route should return to policy representation or approach design rather than further increasing the same settling penalty. T3 remains the strongest development candidate, but no evidence supports official assessment.",
     "evidence_references": [
       "T1",
       "M1",
@@ -6278,14 +6445,17 @@
       "M4",
       "E8",
       "M5",
-      "E10"
+      "E10",
+      "T4",
+      "M6",
+      "E12"
     ],
-    "human_goal_connection": "The human goal requires at least 98% complete uninterrupted holds over the official 6-20 cm distribution. T3 remains at 94% on repeated development panels, so official assessment is not justified; I3 is opened to reduce the residual failure gap without sacrificing outer-radius competence.",
-    "inquiry_id": null,
-    "next_direction_or_closure": "I3 is opened and this goal-review checkpoint records the transition to a fresh inquiry session. The next action must use the available inquiry instruments to resolve the settling-refinement versus actuator/dynamics distinction, then evaluate any bounded intervention against T3 with radius-stratified success and residual failure diagnostics. Do not request official assessment until a candidate has evidence meeting the 98% goal under the official task distribution.",
+    "human_goal_connection": "The human goal requires at least 98% complete uninterrupted holds over the official 6-20 cm distribution. T3 remains below that threshold, and T4 worsened development performance, so official assessment is not justified.",
+    "inquiry_id": "I3",
+    "next_direction_or_closure": "I3 is closed with a limited actionable negative result. In the next goal-review/inquiry session, preserve T3 as the development reference and use targeted compiled-dynamics or actuator-response characterization to resolve the authority-versus-learned-control distinction before selecting another intervention. Do not request official assessment until a candidate has evidence meeting the 98% goal under the official task distribution.",
     "next_question": "How can the velocity-aware settling intervention be refined to raise official-distribution success from 94% toward 98% while preserving 14-20 cm competence, and do residual failures indicate configuration-dependent actuator authority or compiled-dynamics limits?",
-    "scientific_commit": "a3e3d0fa2592c4dc0e136a500da55d55d53ab3e0",
-    "session_id": "S6"
+    "scientific_commit": "5329f7bd5364de703d798bcbacaad53a37ed24e5",
+    "session_id": "S7"
   },
   "schema_version": 6,
   "scientific_model": {
@@ -6293,23 +6463,6 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "090cc220-fadc-49c8-b82e-b7947b65da22",
-    "id": "S7",
-    "inquiry_id": "I3",
-    "kind": "inquiry",
-    "objective": "Advance I3 toward an evidence-supported answer to its scientific question: How can the velocity-aware settling intervention be refined to raise official-distribution success from 94% toward 98% while preserving 14-20 cm competence, and do residual failures indicate configuration-dependent actuator authority or compiled-dynamics limits?",
-    "operation_ids": [
-      "T4",
-      "M6",
-      "E12"
-    ],
-    "scientific_parent_commit": "aab0d7d1836b111e4ec1d2ec5a82fef0877564d2"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
