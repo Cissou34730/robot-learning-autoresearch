@@ -184,7 +184,8 @@
         "campaigns/evaluations/06656182-d7f0-4011-898d-2b870e8a2a54/evaluation-06656182-d7f0-4011-898d-2b870e8a2a54-m1-T1-checkpoint-120832-100ep-seed100000-604d52985c97.json",
         "campaigns/evaluations/06656182-d7f0-4011-898d-2b870e8a2a54/evaluation-06656182-d7f0-4011-898d-2b870e8a2a54-m2-T1-checkpoint-120832-100ep-seed100000-604d52985c97.json",
         "campaigns/evaluations/06656182-d7f0-4011-898d-2b870e8a2a54/evaluation-06656182-d7f0-4011-898d-2b870e8a2a54-m3-T1-checkpoint-120832-100ep-seed100000-52a0bda9c8e9.json",
-        "campaigns/evaluations/06656182-d7f0-4011-898d-2b870e8a2a54/evaluation-06656182-d7f0-4011-898d-2b870e8a2a54-m4-T1-checkpoint-120832-100ep-seed101000-32a29cbd2310.json"
+        "campaigns/evaluations/06656182-d7f0-4011-898d-2b870e8a2a54/evaluation-06656182-d7f0-4011-898d-2b870e8a2a54-m4-T1-checkpoint-120832-100ep-seed101000-32a29cbd2310.json",
+        "campaigns/evaluations/06656182-d7f0-4011-898d-2b870e8a2a54/evaluation-06656182-d7f0-4011-898d-2b870e8a2a54-m5-T1-checkpoint-120832-100ep-seed102000-32a29cbd2310.json"
       ],
       "fingerprint": "dd074ab8d2a94a66201a35663594c717471602cf49f8450be4ae0def69b7a7f7",
       "id": "T1:checkpoint-120832",
@@ -1820,7 +1821,8 @@
     "T3:checkpoint-120832": {
       "artifact": "campaigns/checkpoints/candidates/06656182-d7f0-4011-898d-2b870e8a2a54/t3/checkpoint-120832",
       "evaluation_artifacts": [
-        "campaigns/evaluations/06656182-d7f0-4011-898d-2b870e8a2a54/evaluation-06656182-d7f0-4011-898d-2b870e8a2a54-m4-T3-checkpoint-120832-100ep-seed101000-32a29cbd2310.json"
+        "campaigns/evaluations/06656182-d7f0-4011-898d-2b870e8a2a54/evaluation-06656182-d7f0-4011-898d-2b870e8a2a54-m4-T3-checkpoint-120832-100ep-seed101000-32a29cbd2310.json",
+        "campaigns/evaluations/06656182-d7f0-4011-898d-2b870e8a2a54/evaluation-06656182-d7f0-4011-898d-2b870e8a2a54-m5-T3-checkpoint-120832-100ep-seed102000-32a29cbd2310.json"
       ],
       "fingerprint": "1b4022a6cdc5789bace44f7ad3151d10c6284a1912dbb61e3f7e8c82d44a733c",
       "id": "T3:checkpoint-120832",
@@ -2469,14 +2471,14 @@
   "counters": {
     "event": 9,
     "inquiry": 2,
-    "measurement": 4,
-    "session": 5,
+    "measurement": 5,
+    "session": 6,
     "training": 3
   },
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -4391,9 +4393,1104 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-07T20:16:59Z",
+      "error": null,
+      "id": "M5",
+      "inquiry_id": null,
+      "kind": "measurement",
+      "request": {
+        "description": "Run a fresh paired 100-episode research panel for T3 and its T1 reference, retaining full trajectory traces for every episode.",
+        "measurements": [
+          {
+            "candidate": "T3:checkpoint-120832",
+            "episodes": 100,
+            "instrument": "research_evaluation",
+            "label": "T3 fresh residual-failure dynamics panel",
+            "seed": 102000
+          },
+          {
+            "candidate": "T1:checkpoint-120832",
+            "episodes": 100,
+            "instrument": "research_evaluation",
+            "label": "T1 paired residual-failure dynamics reference",
+            "seed": 102000
+          }
+        ],
+        "paired_comparisons": [
+          {
+            "candidate": "T3:checkpoint-120832",
+            "reference": "T1:checkpoint-120832"
+          }
+        ],
+        "rationale": "The remaining 6% development failures are not yet assigned to a mechanism. The trajectory traces will test whether T3 failures are preceded by excessive entry velocity and hold interruptions despite available control authority, or by persistent action-bound behavior with configuration-dependent actuator force and acceleration. Radius, branch, Jacobian, q/qdot, applied action, actuator force, qacc, control-boundary distance, and substep distance allow the settling-refinement route to be distinguished from an authority or compiled-dynamics redirection. T1 on the same episode seeds identifies whether any residual pattern is shared with the pre-intervention policy."
+      },
+      "result": {
+        "measurements": [
+          {
+            "candidate": "T3:checkpoint-120832",
+            "candidate_id": "T3:checkpoint-120832",
+            "instrument": "research_evaluation",
+            "label": "T3 fresh residual-failure dynamics panel",
+            "metrics": {
+              "episodes": 100,
+              "evaluation_artifact": "campaigns/evaluations/06656182-d7f0-4011-898d-2b870e8a2a54/evaluation-06656182-d7f0-4011-898d-2b870e8a2a54-m5-T3-checkpoint-120832-100ep-seed102000-32a29cbd2310.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 8,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/model",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/seed",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/official_benchmark",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 100,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "reward_total",
+                      "steps",
+                      "success",
+                      "terminated",
+                      "truncated"
+                    ],
+                    "path": "/episode_results",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 100,
+                    "field_names": [
+                      "branch_switches",
+                      "episode",
+                      "episode_seed",
+                      "final_distance_cm",
+                      "first_reach_step",
+                      "hold_interruptions",
+                      "in_tolerance_steps",
+                      "max_held_steps",
+                      "min_distance_cm",
+                      "target_angle_degrees",
+                      "target_radius_cm",
+                      "trajectory_trace"
+                    ],
+                    "path": "/research_evidence/episode_diagnostics",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence/units",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/research_evidence/units/distance",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/time",
+                    "type": "string"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "5c7cfca0df0c139e8cd7b7d5f08a63f94e0ab380dd80d5eafd1350c0c8d9505e",
+              "evaluation_semantics": "32a29cbd2310",
+              "model_fingerprint": "1b4022a6cdc5789bace44f7ad3151d10c6284a1912dbb61e3f7e8c82d44a733c",
+              "official_benchmark": false,
+              "schema_version": 6,
+              "seed": 102000,
+              "success_percent": 94.0,
+              "successes": 94
+            }
+          },
+          {
+            "candidate": "T1:checkpoint-120832",
+            "candidate_id": "T1:checkpoint-120832",
+            "instrument": "research_evaluation",
+            "label": "T1 paired residual-failure dynamics reference",
+            "metrics": {
+              "episodes": 100,
+              "evaluation_artifact": "campaigns/evaluations/06656182-d7f0-4011-898d-2b870e8a2a54/evaluation-06656182-d7f0-4011-898d-2b870e8a2a54-m5-T1-checkpoint-120832-100ep-seed102000-32a29cbd2310.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 8,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/model",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/seed",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/official_benchmark",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 100,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "reward_total",
+                      "steps",
+                      "success",
+                      "terminated",
+                      "truncated"
+                    ],
+                    "path": "/episode_results",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 100,
+                    "field_names": [
+                      "branch_switches",
+                      "episode",
+                      "episode_seed",
+                      "final_distance_cm",
+                      "first_reach_step",
+                      "hold_interruptions",
+                      "in_tolerance_steps",
+                      "max_held_steps",
+                      "min_distance_cm",
+                      "target_angle_degrees",
+                      "target_radius_cm",
+                      "trajectory_trace"
+                    ],
+                    "path": "/research_evidence/episode_diagnostics",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence/units",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/research_evidence/units/distance",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/time",
+                    "type": "string"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "8e3d7884a2155bb5e67fb85a72b849338d201ed505efd73a2b303dcb2a097f0c",
+              "evaluation_semantics": "32a29cbd2310",
+              "model_fingerprint": "dd074ab8d2a94a66201a35663594c717471602cf49f8450be4ae0def69b7a7f7",
+              "official_benchmark": false,
+              "schema_version": 6,
+              "seed": 102000,
+              "success_percent": 76.0,
+              "successes": 76
+            }
+          }
+        ],
+        "paired_comparisons": [
+          {
+            "candidate": "T3:checkpoint-120832",
+            "candidate_model_fingerprint": "1b4022a6cdc5789bace44f7ad3151d10c6284a1912dbb61e3f7e8c82d44a733c",
+            "candidate_wins": 20,
+            "discordant_episodes": 22,
+            "episodes": 100,
+            "net_wins": 18,
+            "reference": "T1:checkpoint-120832",
+            "reference_model_fingerprint": "dd074ab8d2a94a66201a35663594c717471602cf49f8450be4ae0def69b7a7f7",
+            "reference_wins": 2,
+            "shared_episode_seeds": [
+              102000,
+              102001,
+              102002,
+              102003,
+              102004,
+              102005,
+              102006,
+              102007,
+              102008,
+              102009,
+              102010,
+              102011,
+              102012,
+              102013,
+              102014,
+              102015,
+              102016,
+              102017,
+              102018,
+              102019,
+              102020,
+              102021,
+              102022,
+              102023,
+              102024,
+              102025,
+              102026,
+              102027,
+              102028,
+              102029,
+              102030,
+              102031,
+              102032,
+              102033,
+              102034,
+              102035,
+              102036,
+              102037,
+              102038,
+              102039,
+              102040,
+              102041,
+              102042,
+              102043,
+              102044,
+              102045,
+              102046,
+              102047,
+              102048,
+              102049,
+              102050,
+              102051,
+              102052,
+              102053,
+              102054,
+              102055,
+              102056,
+              102057,
+              102058,
+              102059,
+              102060,
+              102061,
+              102062,
+              102063,
+              102064,
+              102065,
+              102066,
+              102067,
+              102068,
+              102069,
+              102070,
+              102071,
+              102072,
+              102073,
+              102074,
+              102075,
+              102076,
+              102077,
+              102078,
+              102079,
+              102080,
+              102081,
+              102082,
+              102083,
+              102084,
+              102085,
+              102086,
+              102087,
+              102088,
+              102089,
+              102090,
+              102091,
+              102092,
+              102093,
+              102094,
+              102095,
+              102096,
+              102097,
+              102098,
+              102099
+            ],
+            "source_artifacts": [
+              "campaigns/evaluations/06656182-d7f0-4011-898d-2b870e8a2a54/evaluation-06656182-d7f0-4011-898d-2b870e8a2a54-m5-T3-checkpoint-120832-100ep-seed102000-32a29cbd2310.json",
+              "campaigns/evaluations/06656182-d7f0-4011-898d-2b870e8a2a54/evaluation-06656182-d7f0-4011-898d-2b870e8a2a54-m5-T1-checkpoint-120832-100ep-seed102000-32a29cbd2310.json"
+            ],
+            "success_delta_percent": 18.0
+          }
+        ],
+        "status": "completed",
+        "tool_provenance": null
+      },
+      "session_id": "S6",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "evaluation_semantics": "32a29cbd2310",
+      "measurements": [
+        {
+          "artifact": "campaigns/checkpoints/candidates/06656182-d7f0-4011-898d-2b870e8a2a54/t3/checkpoint-120832",
+          "candidate": "T3:checkpoint-120832",
+          "candidate_id": "T3:checkpoint-120832",
+          "episodes": 100,
+          "instrument": "research_evaluation",
+          "label": "T3 fresh residual-failure dynamics panel",
+          "model_fingerprint": "1b4022a6cdc5789bace44f7ad3151d10c6284a1912dbb61e3f7e8c82d44a733c",
+          "seed": 102000
+        },
+        {
+          "artifact": "campaigns/checkpoints/candidates/06656182-d7f0-4011-898d-2b870e8a2a54/t1/checkpoint-120832",
+          "candidate": "T1:checkpoint-120832",
+          "candidate_id": "T1:checkpoint-120832",
+          "episodes": 100,
+          "instrument": "research_evaluation",
+          "label": "T1 paired residual-failure dynamics reference",
+          "model_fingerprint": "dd074ab8d2a94a66201a35663594c717471602cf49f8450be4ae0def69b7a7f7",
+          "seed": 102000
+        }
+      ],
+      "module_provenance": null,
+      "paired_comparisons": [
+        {
+          "candidate": "T3:checkpoint-120832",
+          "candidate_measurement_indexes": [
+            0
+          ],
+          "candidate_model_fingerprint": "1b4022a6cdc5789bace44f7ad3151d10c6284a1912dbb61e3f7e8c82d44a733c",
+          "reference": "T1:checkpoint-120832",
+          "reference_measurement_indexes": [
+            1
+          ],
+          "reference_model_fingerprint": "dd074ab8d2a94a66201a35663594c717471602cf49f8450be4ae0def69b7a7f7",
+          "shared_episode_seeds": [
+            102000,
+            102001,
+            102002,
+            102003,
+            102004,
+            102005,
+            102006,
+            102007,
+            102008,
+            102009,
+            102010,
+            102011,
+            102012,
+            102013,
+            102014,
+            102015,
+            102016,
+            102017,
+            102018,
+            102019,
+            102020,
+            102021,
+            102022,
+            102023,
+            102024,
+            102025,
+            102026,
+            102027,
+            102028,
+            102029,
+            102030,
+            102031,
+            102032,
+            102033,
+            102034,
+            102035,
+            102036,
+            102037,
+            102038,
+            102039,
+            102040,
+            102041,
+            102042,
+            102043,
+            102044,
+            102045,
+            102046,
+            102047,
+            102048,
+            102049,
+            102050,
+            102051,
+            102052,
+            102053,
+            102054,
+            102055,
+            102056,
+            102057,
+            102058,
+            102059,
+            102060,
+            102061,
+            102062,
+            102063,
+            102064,
+            102065,
+            102066,
+            102067,
+            102068,
+            102069,
+            102070,
+            102071,
+            102072,
+            102073,
+            102074,
+            102075,
+            102076,
+            102077,
+            102078,
+            102079,
+            102080,
+            102081,
+            102082,
+            102083,
+            102084,
+            102085,
+            102086,
+            102087,
+            102088,
+            102089,
+            102090,
+            102091,
+            102092,
+            102093,
+            102094,
+            102095,
+            102096,
+            102097,
+            102098,
+            102099
+          ]
+        }
+      ],
+      "partial_results": [
+        {
+          "candidate": "T3:checkpoint-120832",
+          "candidate_id": "T3:checkpoint-120832",
+          "instrument": "research_evaluation",
+          "label": "T3 fresh residual-failure dynamics panel",
+          "metrics": {
+            "episodes": 100,
+            "evaluation_artifact": "campaigns/evaluations/06656182-d7f0-4011-898d-2b870e8a2a54/evaluation-06656182-d7f0-4011-898d-2b870e8a2a54-m5-T3-checkpoint-120832-100ep-seed102000-32a29cbd2310.json",
+            "evaluation_artifact_contents": {
+              "scope": "structure_only",
+              "sections": [
+                {
+                  "entries": 8,
+                  "path": "",
+                  "type": "object"
+                },
+                {
+                  "path": "/schema_version",
+                  "type": "number"
+                },
+                {
+                  "path": "/model",
+                  "type": "string"
+                },
+                {
+                  "path": "/episodes",
+                  "type": "number"
+                },
+                {
+                  "path": "/seed",
+                  "type": "number"
+                },
+                {
+                  "path": "/official_benchmark",
+                  "type": "boolean"
+                },
+                {
+                  "path": "/success_percent",
+                  "type": "number"
+                },
+                {
+                  "entries": 100,
+                  "field_names": [
+                    "episode",
+                    "episode_seed",
+                    "reward_total",
+                    "steps",
+                    "success",
+                    "terminated",
+                    "truncated"
+                  ],
+                  "path": "/episode_results",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/research_evidence",
+                  "type": "object"
+                },
+                {
+                  "entries": 100,
+                  "field_names": [
+                    "branch_switches",
+                    "episode",
+                    "episode_seed",
+                    "final_distance_cm",
+                    "first_reach_step",
+                    "hold_interruptions",
+                    "in_tolerance_steps",
+                    "max_held_steps",
+                    "min_distance_cm",
+                    "target_angle_degrees",
+                    "target_radius_cm",
+                    "trajectory_trace"
+                  ],
+                  "path": "/research_evidence/episode_diagnostics",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/research_evidence/units",
+                  "type": "object"
+                },
+                {
+                  "path": "/research_evidence/units/distance",
+                  "type": "string"
+                },
+                {
+                  "path": "/research_evidence/units/time",
+                  "type": "string"
+                }
+              ],
+              "truncated": false
+            },
+            "evaluation_artifact_fingerprint": "5c7cfca0df0c139e8cd7b7d5f08a63f94e0ab380dd80d5eafd1350c0c8d9505e",
+            "evaluation_semantics": "32a29cbd2310",
+            "model_fingerprint": "1b4022a6cdc5789bace44f7ad3151d10c6284a1912dbb61e3f7e8c82d44a733c",
+            "official_benchmark": false,
+            "schema_version": 6,
+            "seed": 102000,
+            "success_percent": 94.0,
+            "successes": 94
+          }
+        },
+        {
+          "candidate": "T1:checkpoint-120832",
+          "candidate_id": "T1:checkpoint-120832",
+          "instrument": "research_evaluation",
+          "label": "T1 paired residual-failure dynamics reference",
+          "metrics": {
+            "episodes": 100,
+            "evaluation_artifact": "campaigns/evaluations/06656182-d7f0-4011-898d-2b870e8a2a54/evaluation-06656182-d7f0-4011-898d-2b870e8a2a54-m5-T1-checkpoint-120832-100ep-seed102000-32a29cbd2310.json",
+            "evaluation_artifact_contents": {
+              "scope": "structure_only",
+              "sections": [
+                {
+                  "entries": 8,
+                  "path": "",
+                  "type": "object"
+                },
+                {
+                  "path": "/schema_version",
+                  "type": "number"
+                },
+                {
+                  "path": "/model",
+                  "type": "string"
+                },
+                {
+                  "path": "/episodes",
+                  "type": "number"
+                },
+                {
+                  "path": "/seed",
+                  "type": "number"
+                },
+                {
+                  "path": "/official_benchmark",
+                  "type": "boolean"
+                },
+                {
+                  "path": "/success_percent",
+                  "type": "number"
+                },
+                {
+                  "entries": 100,
+                  "field_names": [
+                    "episode",
+                    "episode_seed",
+                    "reward_total",
+                    "steps",
+                    "success",
+                    "terminated",
+                    "truncated"
+                  ],
+                  "path": "/episode_results",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/research_evidence",
+                  "type": "object"
+                },
+                {
+                  "entries": 100,
+                  "field_names": [
+                    "branch_switches",
+                    "episode",
+                    "episode_seed",
+                    "final_distance_cm",
+                    "first_reach_step",
+                    "hold_interruptions",
+                    "in_tolerance_steps",
+                    "max_held_steps",
+                    "min_distance_cm",
+                    "target_angle_degrees",
+                    "target_radius_cm",
+                    "trajectory_trace"
+                  ],
+                  "path": "/research_evidence/episode_diagnostics",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/research_evidence/units",
+                  "type": "object"
+                },
+                {
+                  "path": "/research_evidence/units/distance",
+                  "type": "string"
+                },
+                {
+                  "path": "/research_evidence/units/time",
+                  "type": "string"
+                }
+              ],
+              "truncated": false
+            },
+            "evaluation_artifact_fingerprint": "8e3d7884a2155bb5e67fb85a72b849338d201ed505efd73a2b303dcb2a097f0c",
+            "evaluation_semantics": "32a29cbd2310",
+            "model_fingerprint": "dd074ab8d2a94a66201a35663594c717471602cf49f8450be4ae0def69b7a7f7",
+            "official_benchmark": false,
+            "schema_version": 6,
+            "seed": 102000,
+            "success_percent": 76.0,
+            "successes": 76
+          }
+        }
+      ],
+      "result": {
+        "measurements": [
+          {
+            "candidate": "T3:checkpoint-120832",
+            "candidate_id": "T3:checkpoint-120832",
+            "instrument": "research_evaluation",
+            "label": "T3 fresh residual-failure dynamics panel",
+            "metrics": {
+              "episodes": 100,
+              "evaluation_artifact": "campaigns/evaluations/06656182-d7f0-4011-898d-2b870e8a2a54/evaluation-06656182-d7f0-4011-898d-2b870e8a2a54-m5-T3-checkpoint-120832-100ep-seed102000-32a29cbd2310.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 8,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/model",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/seed",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/official_benchmark",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 100,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "reward_total",
+                      "steps",
+                      "success",
+                      "terminated",
+                      "truncated"
+                    ],
+                    "path": "/episode_results",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 100,
+                    "field_names": [
+                      "branch_switches",
+                      "episode",
+                      "episode_seed",
+                      "final_distance_cm",
+                      "first_reach_step",
+                      "hold_interruptions",
+                      "in_tolerance_steps",
+                      "max_held_steps",
+                      "min_distance_cm",
+                      "target_angle_degrees",
+                      "target_radius_cm",
+                      "trajectory_trace"
+                    ],
+                    "path": "/research_evidence/episode_diagnostics",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence/units",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/research_evidence/units/distance",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/time",
+                    "type": "string"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "5c7cfca0df0c139e8cd7b7d5f08a63f94e0ab380dd80d5eafd1350c0c8d9505e",
+              "evaluation_semantics": "32a29cbd2310",
+              "model_fingerprint": "1b4022a6cdc5789bace44f7ad3151d10c6284a1912dbb61e3f7e8c82d44a733c",
+              "official_benchmark": false,
+              "schema_version": 6,
+              "seed": 102000,
+              "success_percent": 94.0,
+              "successes": 94
+            }
+          },
+          {
+            "candidate": "T1:checkpoint-120832",
+            "candidate_id": "T1:checkpoint-120832",
+            "instrument": "research_evaluation",
+            "label": "T1 paired residual-failure dynamics reference",
+            "metrics": {
+              "episodes": 100,
+              "evaluation_artifact": "campaigns/evaluations/06656182-d7f0-4011-898d-2b870e8a2a54/evaluation-06656182-d7f0-4011-898d-2b870e8a2a54-m5-T1-checkpoint-120832-100ep-seed102000-32a29cbd2310.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 8,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/model",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/seed",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/official_benchmark",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 100,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "reward_total",
+                      "steps",
+                      "success",
+                      "terminated",
+                      "truncated"
+                    ],
+                    "path": "/episode_results",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 100,
+                    "field_names": [
+                      "branch_switches",
+                      "episode",
+                      "episode_seed",
+                      "final_distance_cm",
+                      "first_reach_step",
+                      "hold_interruptions",
+                      "in_tolerance_steps",
+                      "max_held_steps",
+                      "min_distance_cm",
+                      "target_angle_degrees",
+                      "target_radius_cm",
+                      "trajectory_trace"
+                    ],
+                    "path": "/research_evidence/episode_diagnostics",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence/units",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/research_evidence/units/distance",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/time",
+                    "type": "string"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "8e3d7884a2155bb5e67fb85a72b849338d201ed505efd73a2b303dcb2a097f0c",
+              "evaluation_semantics": "32a29cbd2310",
+              "model_fingerprint": "dd074ab8d2a94a66201a35663594c717471602cf49f8450be4ae0def69b7a7f7",
+              "official_benchmark": false,
+              "schema_version": 6,
+              "seed": 102000,
+              "success_percent": 76.0,
+              "successes": 76
+            }
+          }
+        ],
+        "paired_comparisons": [
+          {
+            "candidate": "T3:checkpoint-120832",
+            "candidate_model_fingerprint": "1b4022a6cdc5789bace44f7ad3151d10c6284a1912dbb61e3f7e8c82d44a733c",
+            "candidate_wins": 20,
+            "discordant_episodes": 22,
+            "episodes": 100,
+            "net_wins": 18,
+            "reference": "T1:checkpoint-120832",
+            "reference_model_fingerprint": "dd074ab8d2a94a66201a35663594c717471602cf49f8450be4ae0def69b7a7f7",
+            "reference_wins": 2,
+            "shared_episode_seeds": [
+              102000,
+              102001,
+              102002,
+              102003,
+              102004,
+              102005,
+              102006,
+              102007,
+              102008,
+              102009,
+              102010,
+              102011,
+              102012,
+              102013,
+              102014,
+              102015,
+              102016,
+              102017,
+              102018,
+              102019,
+              102020,
+              102021,
+              102022,
+              102023,
+              102024,
+              102025,
+              102026,
+              102027,
+              102028,
+              102029,
+              102030,
+              102031,
+              102032,
+              102033,
+              102034,
+              102035,
+              102036,
+              102037,
+              102038,
+              102039,
+              102040,
+              102041,
+              102042,
+              102043,
+              102044,
+              102045,
+              102046,
+              102047,
+              102048,
+              102049,
+              102050,
+              102051,
+              102052,
+              102053,
+              102054,
+              102055,
+              102056,
+              102057,
+              102058,
+              102059,
+              102060,
+              102061,
+              102062,
+              102063,
+              102064,
+              102065,
+              102066,
+              102067,
+              102068,
+              102069,
+              102070,
+              102071,
+              102072,
+              102073,
+              102074,
+              102075,
+              102076,
+              102077,
+              102078,
+              102079,
+              102080,
+              102081,
+              102082,
+              102083,
+              102084,
+              102085,
+              102086,
+              102087,
+              102088,
+              102089,
+              102090,
+              102091,
+              102092,
+              102093,
+              102094,
+              102095,
+              102096,
+              102097,
+              102098,
+              102099
+            ],
+            "source_artifacts": [
+              "campaigns/evaluations/06656182-d7f0-4011-898d-2b870e8a2a54/evaluation-06656182-d7f0-4011-898d-2b870e8a2a54-m5-T3-checkpoint-120832-100ep-seed102000-32a29cbd2310.json",
+              "campaigns/evaluations/06656182-d7f0-4011-898d-2b870e8a2a54/evaluation-06656182-d7f0-4011-898d-2b870e8a2a54-m5-T1-checkpoint-120832-100ep-seed102000-32a29cbd2310.json"
+            ],
+            "success_delta_percent": 18.0
+          }
+        ],
+        "status": "completed",
+        "tool_provenance": null
+      },
+      "task_reference_contract": null
+    },
+    "failure": null,
+    "id": "M5",
+    "inquiry_id": null,
+    "kind": "measurement",
+    "progress": "completed",
+    "request": {
+      "measurement": {
+        "description": "Run a fresh paired 100-episode research panel for T3 and its T1 reference, retaining full trajectory traces for every episode.",
+        "measurements": [
+          {
+            "candidate": "T3:checkpoint-120832",
+            "episodes": 100,
+            "instrument": "research_evaluation",
+            "label": "T3 fresh residual-failure dynamics panel",
+            "seed": 102000
+          },
+          {
+            "candidate": "T1:checkpoint-120832",
+            "episodes": 100,
+            "instrument": "research_evaluation",
+            "label": "T1 paired residual-failure dynamics reference",
+            "seed": 102000
+          }
+        ],
+        "paired_comparisons": [
+          {
+            "candidate": "T3:checkpoint-120832",
+            "reference": "T1:checkpoint-120832"
+          }
+        ],
+        "rationale": "The remaining 6% development failures are not yet assigned to a mechanism. The trajectory traces will test whether T3 failures are preceded by excessive entry velocity and hold interruptions despite available control authority, or by persistent action-bound behavior with configuration-dependent actuator force and acceleration. Radius, branch, Jacobian, q/qdot, applied action, actuator force, qacc, control-boundary distance, and substep distance allow the settling-refinement route to be distinguished from an authority or compiled-dynamics redirection. T1 on the same episode seeds identifies whether any residual pattern is shared with the pre-intervention policy."
+      }
+    },
+    "request_fingerprint": "43c1cc3cc2660ebb48225a50e1034119f5d7c341ab7704bba5f91b1f540ee76a",
+    "session_id": "S6",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No formal model role has been assigned. T3:checkpoint-120832 is the strongest evaluated development candidate at 94% on M4 and is the leading candidate for the next inquiry; T1:checkpoint-120832 remains the matched 73%/71% reference, and T2:checkpoint-120832 remains evidence about the insufficient fresh full-domain recipe.",
     "completed_operations": [
@@ -4430,6 +5527,21 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "5aca9098-f12e-4cfc-aa53-c17ef2c0d089",
+    "id": "S6",
+    "inquiry_id": null,
+    "kind": "goal_review",
+    "objective": "Reassess the scientific direction toward the human goal using completed evidence. You may request measurements to resolve an uncertainty or develop the method before committing to an inquiry. Decide whether to request official assessment or open one bounded goal-linked inquiry.",
+    "operation_ids": [
+      "M5"
+    ],
+    "scientific_parent_commit": "8f22e3b283073d635aea22b49b2ff553a71b1ca2"
+  },
   "terminal_state": null
 }
