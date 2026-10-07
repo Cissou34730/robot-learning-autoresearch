@@ -6255,38 +6255,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I3",
-        "outcome": "The bounded T4 refinement is rejected as a route toward the goal: on a fresh shared 100-episode panel, T4 achieved 85% versus T3's 95%, with the loss concentrated at 6-10 cm (20/30 versus 29/30) and a smaller 14-20 cm regression (41/44 versus 42/44). The detailed traces still show near-universal action saturation in both failures and successes, so they do not establish configuration-dependent actuator authority or compiled-dynamics limits. I3 therefore closes with an actionable negative refinement result and an unresolved authority-versus-learning distinction.",
-        "reason": "The inquiry closure condition is met because one bounded settling refinement was evaluated against T3 with radius-stratified success and residual-failure dynamics diagnostics. Increasing the velocity penalty did not improve complete holds and instead damaged near-base competence; this rejects that coefficient change, not the broader settling/control route. Since comparable saturation appears in T3 successes and T4 failures, the current evidence cannot justify redirecting to actuator/dynamics characterization. T3 remains the strongest development candidate, but the 98% human goal is not established."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I3",
-        "outcome": "The bounded T4 refinement is rejected as a route toward the goal: on a fresh shared 100-episode panel, T4 achieved 85% versus T3's 95%, with the loss concentrated at 6-10 cm (20/30 versus 29/30) and a smaller 14-20 cm regression (41/44 versus 42/44). The detailed traces still show near-universal action saturation in both failures and successes, so they do not establish configuration-dependent actuator authority or compiled-dynamics limits. I3 therefore closes with an actionable negative refinement result and an unresolved authority-versus-learning distinction.",
-        "reason": "The inquiry closure condition is met because one bounded settling refinement was evaluated against T3 with radius-stratified success and residual-failure dynamics diagnostics. Increasing the velocity penalty did not improve complete holds and instead damaged near-base competence; this rejects that coefficient change, not the broader settling/control route. Since comparable saturation appears in T3 successes and T4 failures, the current evidence cannot justify redirecting to actuator/dynamics characterization. T3 remains the strongest development candidate, but the 98% human goal is not established.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E12",
-    "inquiry_id": "I3",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "The bounded T4 refinement is rejected as a route toward the goal: on a fresh shared 100-episode panel, T4 achieved 85% versus T3's 95%, with the loss concentrated at 6-10 cm (20/30 versus 29/30) and a smaller 14-20 cm regression (41/44 versus 42/44). The detailed traces still show near-universal action saturation in both failures and successes, so they do not establish configuration-dependent actuator authority or compiled-dynamics limits. I3 therefore closes with an actionable negative refinement result and an unresolved authority-versus-learning distinction.",
-        "reason": "The inquiry closure condition is met because one bounded settling refinement was evaluated against T3 with radius-stratified success and residual-failure dynamics diagnostics. Increasing the velocity penalty did not improve complete holds and instead damaged near-base competence; this rejects that coefficient change, not the broader settling/control route. Since comparable saturation appears in T3 successes and T4 failures, the current evidence cannot justify redirecting to actuator/dynamics characterization. T3 remains the strongest development candidate, but the 98% human goal is not established."
-      }
-    },
-    "request_fingerprint": "fff3bc833dc05ec46c659b62b28902aa596371dcb81adf57e9e4de5aa49cf7c0",
-    "session_id": "S7",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "No formal model role has been assigned. T3:checkpoint-120832 remains the strongest evaluated development candidate at 94% on M4 and M5 and is the leading candidate for I3. T1:checkpoint-120832 remains the paired reference; T2:checkpoint-120832 remains evidence about the insufficient fresh full-domain recipe.",
     "completed_operations": [
