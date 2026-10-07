@@ -9318,38 +9318,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I2",
-        "outcome": "I2 is closed in favor of the unchanged T1 baseline as the most reliable available policy. The action-transition intervention T4 tied T1 at 192/200 with no paired wins and degraded during training. Full-distribution training T5 reached 196/200 once on task-reference-style research evaluation but lost to T1 on paired diagnostic evaluation at both tested checkpoints (194 versus 195 and 193 versus 195). T1 achieved 196/200 on the protected task-reference-v1 panel, exactly meeting the development threshold. No tested intervention reliably suppressed the failure mechanism beyond T1, so the next scientific direction is protected assessment of T1, with continuous-versus-sampled diagnostics retained as a claim limitation rather than an unvalidated reason to alter the task.",
-        "reason": "The closure condition is satisfied: bounded action-transition and policy-conditioning interventions were compared against T1 on identical full-distribution panels with complete-hold outcomes and diagnostic instrumentation, and the protected task-reference panel established T1 at the 196/200 threshold. The remaining uncertainty is the official endpoint result, not an unresolved intervention choice within I2."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I2",
-        "outcome": "I2 is closed in favor of the unchanged T1 baseline as the most reliable available policy. The action-transition intervention T4 tied T1 at 192/200 with no paired wins and degraded during training. Full-distribution training T5 reached 196/200 once on task-reference-style research evaluation but lost to T1 on paired diagnostic evaluation at both tested checkpoints (194 versus 195 and 193 versus 195). T1 achieved 196/200 on the protected task-reference-v1 panel, exactly meeting the development threshold. No tested intervention reliably suppressed the failure mechanism beyond T1, so the next scientific direction is protected assessment of T1, with continuous-versus-sampled diagnostics retained as a claim limitation rather than an unvalidated reason to alter the task.",
-        "reason": "The closure condition is satisfied: bounded action-transition and policy-conditioning interventions were compared against T1 on identical full-distribution panels with complete-hold outcomes and diagnostic instrumentation, and the protected task-reference panel established T1 at the 196/200 threshold. The remaining uncertainty is the official endpoint result, not an unresolved intervention choice within I2.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E12",
-    "inquiry_id": "I2",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "I2 is closed in favor of the unchanged T1 baseline as the most reliable available policy. The action-transition intervention T4 tied T1 at 192/200 with no paired wins and degraded during training. Full-distribution training T5 reached 196/200 once on task-reference-style research evaluation but lost to T1 on paired diagnostic evaluation at both tested checkpoints (194 versus 195 and 193 versus 195). T1 achieved 196/200 on the protected task-reference-v1 panel, exactly meeting the development threshold. No tested intervention reliably suppressed the failure mechanism beyond T1, so the next scientific direction is protected assessment of T1, with continuous-versus-sampled diagnostics retained as a claim limitation rather than an unvalidated reason to alter the task.",
-        "reason": "The closure condition is satisfied: bounded action-transition and policy-conditioning interventions were compared against T1 on identical full-distribution panels with complete-hold outcomes and diagnostic instrumentation, and the protected task-reference panel established T1 at the 196/200 threshold. The remaining uncertainty is the official endpoint result, not an unresolved intervention choice within I2."
-      }
-    },
-    "request_fingerprint": "3bc9f4bb775279d4f04284da5dae5c0e8c969efa62c0dbb500f8ad61958fa2c8",
-    "session_id": "S6",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T1:checkpoint-100352 remains the baseline and strongest candidate by M3, but no working, best-known, or retained role is assigned. T2:checkpoint-5120 and T2:checkpoint-10240 are rejected as settling-aware intervention candidates after M4. T3:checkpoint-80896 is rejected as a branch-penalty candidate after M5. The current modified source should be restored to the T1 baseline before the next intervention.",
     "completed_operations": [
