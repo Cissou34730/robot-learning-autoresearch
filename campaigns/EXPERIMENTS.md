@@ -28,3 +28,4 @@
 | M9 | measurement | I2 | completed |
 | M10 | measurement | I2 | completed |
 | E11 | model_role | I2 | assigned |
+| E12 | inquiry | I2 | completed |
