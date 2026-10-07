@@ -30,3 +30,4 @@
 | T7 | training | I1 | completed |
 | M14 | measurement | I1 | completed |
 | M15 | measurement | I1 | completed |
+| T8 | training | I1 | completed |
