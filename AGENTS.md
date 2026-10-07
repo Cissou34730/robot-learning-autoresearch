@@ -20,15 +20,10 @@ must target those packages and versions.
 
 `jello` is available through the PI environment for JSON and JSONL artifacts.
 
-All project Python execution goes through `uv run`. Never invoke system
+All project Python execution goes through `uv run`. The PI must not execute
+tests or repository validation commands directly; request Runner validation
+through the contracts in `contracts/instruments.md`. Never invoke system
 `python`, `python3`, `pytest` or `ruff`, or the interpreter inside `.venv`.
-
-```bash
-uv run python <script>
-uv run python -m <module>
-uv run pytest <target>
-uv run ruff <arguments>
-```
 
 ## Command authority
 

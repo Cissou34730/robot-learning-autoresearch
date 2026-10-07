@@ -5,7 +5,7 @@ import { fileURLToPath } from "node:url";
 /**
  * Which shell invocations this harness refuses.
  *
- * A faithful port of the policy in `researcher_copilot.py`, so both PI
+ * A faithful port of the launcher policy, so both PI
  * backends enforce the same rules with the same wording. Only what a segment
  * actually executes is judged, never what it merely names: reading or grepping a
  * protected path is ordinary research.
@@ -16,11 +16,11 @@ import { fileURLToPath } from "node:url";
 
 export const GIT_DENIAL =
   "This action is unavailable. Use read-only Git only when code inspection " +
-  "requires it; use the restoration contract in research/instruments.md when " +
+  "requires it; use the restore_recipe contract in contracts/instruments.md when " +
   "a saved recipe is needed.";
 export const EXECUTION_DENIAL =
   "This action is unavailable. Use the matching execution contract in " +
-  "research/instruments.md.";
+  "contracts/instruments.md.";
 export const SUITE_DENIAL =
   "Repository-wide tests are unavailable here. Use targeted checks that address " +
   "uncertainty introduced by the scientific work.";
@@ -31,7 +31,7 @@ export const FILE_EDIT_DENIAL =
 
 const RESERVED_SCRIPT_NAMES = new Set([
   "run_experiment.py",
-  "runner_assessment.py",
+  "assessment.py",
   "migrate_research_state.py",
   "final_benchmark.py",
   "migrate_policy_runtime.py",
@@ -47,14 +47,14 @@ const RESERVED_SCRIPT_PATHS = [
 ];
 
 const RESERVED_MODULES = new Set([
-  "research.run_experiment",
-  "research.runner_assessment",
-  "research.migrate_policy_runtime",
-  "research.reset_campaign",
+  "runner.run_experiment",
+  "runner.assessment",
+  "runner.migrate_policy_runtime",
+  "runner.reset_campaign",
   "robot_learning.evaluate",
   "robot_learning.train",
   "robot_learning.play",
-  "robot_learning.benchmark.final_benchmark",
+  "benchmark.final_benchmark",
 ]);
 
 const READ_ONLY_GIT = new Set([
@@ -194,24 +194,24 @@ export function isPIWritablePath(target: string, preliminary = false): boolean {
   if (
     new Set([
       "robot_learning/scenario/__init__.py",
-      "robot_learning/scenario/final_benchmark.py",
-      "robot_learning/scenario/task_reference.py",
+      "benchmark/adapters/final_benchmark.py",
+      "benchmark/adapters/task_reference.py",
     ]).has(path)
   ) {
     return false;
   }
-  if (preliminary) return path === "research/scientific_model.md";
+  if (preliminary) return path === "pi_workspace/scientific_model.md";
   return (
     new Set([
       "robot_learning/train.py",
       "robot_learning/evaluate.py",
       "robot_learning/play.py",
-      "research/current_params.json",
-      "research/operation_request.json",
+      "robot_learning/training/current_params.json",
+      "pi_workspace/operation_request.json",
     ]).has(path) ||
     path.startsWith("robot_learning/scenario/") ||
     path.startsWith("robot_learning/training/") ||
-    path.startsWith("research/lab/")
+    path.startsWith("robot_learning/lab/")
   );
 }
 

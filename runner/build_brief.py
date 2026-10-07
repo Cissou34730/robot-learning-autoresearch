@@ -364,7 +364,8 @@ def _session_lines(state: dict) -> list[str]:
     )
     return [
         f"- Session kind: `{session['kind']}`",
-        "- Available operation kinds: "
+        "- Phase-level operation capabilities (current transition rules may "
+        "further restrict them): "
         + ", ".join(f"`{operation}`" for operation in allowed),
         f"- Campaign evaluation artifact root: `{evaluation_root}`",
         f"- Objective: {session['objective']}",
@@ -407,10 +408,9 @@ def _candidate_lines(state: dict) -> list[str]:
     lines.extend(
         [
             (
-                "- Archive paths and full candidate metadata: "
-                "`runner/state/research_state.json`, `candidates[candidate ID]`. "
-                "The table includes every candidate; training statistics are not "
-                "development measurements."
+                "- Published candidate metadata: the table below includes every "
+                "candidate and its recorded training and evaluation references. "
+                "Training statistics are not development measurements."
             ),
             "",
             (

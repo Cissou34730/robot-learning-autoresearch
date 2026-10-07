@@ -154,7 +154,7 @@ def test_startup_brief_exposes_phase_operations_and_artifact_root(
     assert "`measurement`" in text
     assert (
         "`inquiry`"
-        not in text.split("- Available operation kinds:", 1)[1].split("\n", 1)[0]
+        not in text.split("- Phase-level operation capabilities", 1)[1].split("\n", 1)[0]
     )
     assert (
         "- Campaign evaluation artifact root: `campaigns/evaluations/campaign/`"

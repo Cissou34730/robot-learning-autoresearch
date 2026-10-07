@@ -75,11 +75,11 @@ const DISABLED_TOOLS: Record<string, boolean> = {
   todoread: false,
 };
 
-const CAMPAIGN_CONTEXT_GUIDANCE = `- Begin with research/brief.md and follow its evidence references as the
+const CAMPAIGN_CONTEXT_GUIDANCE = `- Begin with campaigns/brief.md and follow its evidence references as the
   scientific question requires.
 - Existing PI-owned implementations have no privileged status; inspect, modify,
   or replace them as the scientific work requires.`;
-const PRELIMINARY_CONTEXT_GUIDANCE = `- Build the preliminary scientific model only from research/scenario.md and
+const PRELIMINARY_CONTEXT_GUIDANCE = `- Build the preliminary scientific model only from contracts/scenario.md and
   relevant human-authored implementation.`;
 
 const POLICY = `<pi_operating_context>
@@ -87,7 +87,7 @@ ${CAMPAIGN_CONTEXT_GUIDANCE}
 - Work within the scientific surface defined in AGENTS.md.
 - Use targeted local analysis when it resolves uncertainty in the scientific work.
 - When external execution or restoration is needed, follow the matching contract
-  in research/instruments.md instead of executing it directly.
+  in contracts/instruments.md instead of executing it directly.
 </pi_operating_context>`;
 
 export function policyForContext(preliminary: boolean): string {

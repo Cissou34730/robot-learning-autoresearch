@@ -436,7 +436,7 @@ export class Console {
   fileChanged(operation: FileOperation, path: string): void {
     const operationRequest = path
       .replace(/\\/g, "/")
-      .endsWith("research/operation_request.json");
+      .endsWith("pi_workspace/operation_request.json");
     path = fullConsolePath(path);
     const marker =
       operation === "created" ? "+" : operation === "deleted" ? "-" : "~";

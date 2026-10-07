@@ -15,19 +15,19 @@ import {
 } from "../src/policy.ts";
 
 test("reading a protected path is research, not execution", () => {
-  assert.equal(commandDenial("Get-Content research/run_experiment.py"), null);
-  assert.equal(commandDenial("rg run_experiment.py research/"), null);
-  assert.equal(commandDenial("Select-String -Path research/runner_protocol.py foo"), null);
+  assert.equal(commandDenial("Get-Content runner/run_experiment.py"), null);
+  assert.equal(commandDenial("rg run_experiment.py runner/"), null);
+  assert.equal(commandDenial("Select-String -Path runner/protocol.py foo"), null);
 });
 
 test("naming a reserved path to a reader is allowed but running it is not", () => {
-  assert.equal(commandDenial("uv run python research/run_experiment.py"), EXECUTION_DENIAL);
+  assert.equal(commandDenial("uv run python runner/run_experiment.py"), EXECUTION_DENIAL);
   assert.equal(
-    commandDenial("uv run python -m research.run_experiment --check-operation"),
+    commandDenial("uv run python -m runner.run_experiment --check-operation"),
     EXECUTION_DENIAL,
   );
   assert.equal(commandDenial("python robot_learning/train.py"), EXECUTION_DENIAL);
-  assert.equal(commandDenial("python -m research.migrate_policy_runtime"), EXECUTION_DENIAL);
+  assert.equal(commandDenial("python -m runner.migrate_policy_runtime"), EXECUTION_DENIAL);
   assert.equal(commandDenial(".\\run_research.ps1"), EXECUTION_DENIAL);
   assert.equal(commandDenial("& .\\run_research.ps1"), EXECUTION_DENIAL);
   assert.equal(commandDenial(".\\reset_research.ps1 -Mode Fresh"), EXECUTION_DENIAL);
@@ -183,20 +183,20 @@ test("explicit edit targets enforce the PI-owned surface", () => {
   assert.equal(
     permissionEditDenial({
       type: "edit",
-      metadata: { filePath: "research/run_experiment.py" },
+      metadata: { filePath: "runner/run_experiment.py" },
     }),
     FILE_EDIT_DENIAL,
   );
   assert.equal(
     permissionEditDenial(
-      { type: "write", pattern: ["research/scientific_model.md"] },
+      { type: "write", pattern: ["pi_workspace/scientific_model.md"] },
       true,
     ),
     null,
   );
   assert.equal(
     permissionEditDenial(
-      { type: "write", pattern: ["research/operation_request.json"] },
+      { type: "write", pattern: ["pi_workspace/operation_request.json"] },
       true,
     ),
     FILE_EDIT_DENIAL,
@@ -213,9 +213,9 @@ test("a shell permission yields the command it will run", () => {
   assert.equal(
     permissionCommandText({
       type: "bash",
-      metadata: { command: "uv run python research/run_experiment.py" },
+      metadata: { command: "uv run python runner/run_experiment.py" },
     }),
-    "uv run python research/run_experiment.py",
+    "uv run python runner/run_experiment.py",
   );
   assert.equal(
     permissionCommandText({ type: "bash", title: "git push origin HEAD" }),
