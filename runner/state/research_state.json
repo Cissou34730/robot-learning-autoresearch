@@ -1827,7 +1827,9 @@
     },
     "T3:checkpoint-120832": {
       "artifact": "campaigns/checkpoints/candidates/97633a56-b4b1-434f-b17c-cf110c555c07/t3/checkpoint-120832",
-      "evaluation_artifacts": [],
+      "evaluation_artifacts": [
+        "campaigns/evaluations/97633a56-b4b1-434f-b17c-cf110c555c07/evaluation-97633a56-b4b1-434f-b17c-cf110c555c07-m6-T3-checkpoint-120832-200ep-seed102000-91fdbdd53ead.json"
+      ],
       "fingerprint": "78c65fef2183b3d27c8172dd3984afb798398909ebbd6c47df9f9fc41a4e3b02",
       "id": "T3:checkpoint-120832",
       "name": "checkpoint-120832",
@@ -2475,7 +2477,7 @@
   "counters": {
     "event": 4,
     "inquiry": 1,
-    "measurement": 5,
+    "measurement": 6,
     "session": 3,
     "training": 3
   },
@@ -4639,9 +4641,469 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-07T10:43:38Z",
+      "error": null,
+      "id": "M6",
+      "inquiry_id": "I1",
+      "kind": "measurement",
+      "request": {
+        "description": "Evaluate T3 checkpoint 120832 on 200 fresh episodes from the unchanged official 0.06-0.20 m distribution with complete hold, geometry, timeout, and phase-aligned motion diagnostics.",
+        "measurements": [
+          {
+            "candidate": "T3:checkpoint-120832",
+            "episodes": 200,
+            "instrument": "research_evaluation",
+            "label": "T3 full-range oversampling capability and settling evaluation",
+            "seed": 102000
+          }
+        ],
+        "rationale": "T3 preserved full official support and oversampled the outer radius band by 25%, but its terminal training success was 0.37, so training statistics do not establish whether the intervention reduced T1's outer-band maneuver timeouts. A fresh full-range research evaluation will measure uninterrupted hold success and allocate failures by radius, angle, joint-limit margin, maneuver timeout, post-entry interruptions, velocity, and action. The panel starts at seed 102000 to avoid overlap with M2 and M4."
+      },
+      "result": {
+        "measurements": [
+          {
+            "candidate": "T3:checkpoint-120832",
+            "candidate_id": "T3:checkpoint-120832",
+            "instrument": "research_evaluation",
+            "label": "T3 full-range oversampling capability and settling evaluation",
+            "metrics": {
+              "episodes": 200,
+              "evaluation_artifact": "campaigns/evaluations/97633a56-b4b1-434f-b17c-cf110c555c07/evaluation-97633a56-b4b1-434f-b17c-cf110c555c07-m6-T3-checkpoint-120832-200ep-seed102000-91fdbdd53ead.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 8,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/model",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/seed",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/official_benchmark",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 200,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "reward_total",
+                      "steps",
+                      "success",
+                      "terminated",
+                      "truncated"
+                    ],
+                    "path": "/episode_results",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 200,
+                    "field_names": [
+                      "best_branch",
+                      "best_joint_limit_margin_degrees",
+                      "branches",
+                      "episode",
+                      "episode_seed",
+                      "final_distance_cm",
+                      "first_entry_diagnostics",
+                      "first_reach_step",
+                      "hold_interruptions",
+                      "hold_peak_action_abs",
+                      "hold_peak_endpoint_speed",
+                      "hold_peak_joint_speed",
+                      "in_tolerance_steps",
+                      "interruption_diagnostics",
+                      "max_held_steps",
+                      "min_distance_cm",
+                      "peak_action_abs_max",
+                      "peak_endpoint_speed",
+                      "peak_joint_speed",
+                      "target_angle_degrees",
+                      "target_radius_cm",
+                      "termination_cause"
+                    ],
+                    "path": "/research_evidence/episode_diagnostics",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/research_evidence/units",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/research_evidence/units/distance",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/time",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/joint_velocity",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/endpoint_velocity",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/action",
+                    "type": "string"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "6de015fa01dee9a4cee1dbc215fc7a8bd44706a33894a3dc882c9aa3fb7cfbfa",
+              "evaluation_semantics": "91fdbdd53ead",
+              "model_fingerprint": "78c65fef2183b3d27c8172dd3984afb798398909ebbd6c47df9f9fc41a4e3b02",
+              "official_benchmark": false,
+              "schema_version": 5,
+              "seed": 102000,
+              "success_percent": 70.5,
+              "successes": 141
+            }
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": null
+      },
+      "session_id": "S3",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "evaluation_semantics": "91fdbdd53ead",
+      "measurements": [
+        {
+          "artifact": "campaigns/checkpoints/candidates/97633a56-b4b1-434f-b17c-cf110c555c07/t3/checkpoint-120832",
+          "candidate": "T3:checkpoint-120832",
+          "candidate_id": "T3:checkpoint-120832",
+          "episodes": 200,
+          "instrument": "research_evaluation",
+          "label": "T3 full-range oversampling capability and settling evaluation",
+          "model_fingerprint": "78c65fef2183b3d27c8172dd3984afb798398909ebbd6c47df9f9fc41a4e3b02",
+          "seed": 102000
+        }
+      ],
+      "module_provenance": null,
+      "paired_comparisons": [],
+      "partial_results": [
+        {
+          "candidate": "T3:checkpoint-120832",
+          "candidate_id": "T3:checkpoint-120832",
+          "instrument": "research_evaluation",
+          "label": "T3 full-range oversampling capability and settling evaluation",
+          "metrics": {
+            "episodes": 200,
+            "evaluation_artifact": "campaigns/evaluations/97633a56-b4b1-434f-b17c-cf110c555c07/evaluation-97633a56-b4b1-434f-b17c-cf110c555c07-m6-T3-checkpoint-120832-200ep-seed102000-91fdbdd53ead.json",
+            "evaluation_artifact_contents": {
+              "scope": "structure_only",
+              "sections": [
+                {
+                  "entries": 8,
+                  "path": "",
+                  "type": "object"
+                },
+                {
+                  "path": "/schema_version",
+                  "type": "number"
+                },
+                {
+                  "path": "/model",
+                  "type": "string"
+                },
+                {
+                  "path": "/episodes",
+                  "type": "number"
+                },
+                {
+                  "path": "/seed",
+                  "type": "number"
+                },
+                {
+                  "path": "/official_benchmark",
+                  "type": "boolean"
+                },
+                {
+                  "path": "/success_percent",
+                  "type": "number"
+                },
+                {
+                  "entries": 200,
+                  "field_names": [
+                    "episode",
+                    "episode_seed",
+                    "reward_total",
+                    "steps",
+                    "success",
+                    "terminated",
+                    "truncated"
+                  ],
+                  "path": "/episode_results",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/research_evidence",
+                  "type": "object"
+                },
+                {
+                  "entries": 200,
+                  "field_names": [
+                    "best_branch",
+                    "best_joint_limit_margin_degrees",
+                    "branches",
+                    "episode",
+                    "episode_seed",
+                    "final_distance_cm",
+                    "first_entry_diagnostics",
+                    "first_reach_step",
+                    "hold_interruptions",
+                    "hold_peak_action_abs",
+                    "hold_peak_endpoint_speed",
+                    "hold_peak_joint_speed",
+                    "in_tolerance_steps",
+                    "interruption_diagnostics",
+                    "max_held_steps",
+                    "min_distance_cm",
+                    "peak_action_abs_max",
+                    "peak_endpoint_speed",
+                    "peak_joint_speed",
+                    "target_angle_degrees",
+                    "target_radius_cm",
+                    "termination_cause"
+                  ],
+                  "path": "/research_evidence/episode_diagnostics",
+                  "type": "array"
+                },
+                {
+                  "entries": 5,
+                  "path": "/research_evidence/units",
+                  "type": "object"
+                },
+                {
+                  "path": "/research_evidence/units/distance",
+                  "type": "string"
+                },
+                {
+                  "path": "/research_evidence/units/time",
+                  "type": "string"
+                },
+                {
+                  "path": "/research_evidence/units/joint_velocity",
+                  "type": "string"
+                },
+                {
+                  "path": "/research_evidence/units/endpoint_velocity",
+                  "type": "string"
+                },
+                {
+                  "path": "/research_evidence/units/action",
+                  "type": "string"
+                }
+              ],
+              "truncated": false
+            },
+            "evaluation_artifact_fingerprint": "6de015fa01dee9a4cee1dbc215fc7a8bd44706a33894a3dc882c9aa3fb7cfbfa",
+            "evaluation_semantics": "91fdbdd53ead",
+            "model_fingerprint": "78c65fef2183b3d27c8172dd3984afb798398909ebbd6c47df9f9fc41a4e3b02",
+            "official_benchmark": false,
+            "schema_version": 5,
+            "seed": 102000,
+            "success_percent": 70.5,
+            "successes": 141
+          }
+        }
+      ],
+      "result": {
+        "measurements": [
+          {
+            "candidate": "T3:checkpoint-120832",
+            "candidate_id": "T3:checkpoint-120832",
+            "instrument": "research_evaluation",
+            "label": "T3 full-range oversampling capability and settling evaluation",
+            "metrics": {
+              "episodes": 200,
+              "evaluation_artifact": "campaigns/evaluations/97633a56-b4b1-434f-b17c-cf110c555c07/evaluation-97633a56-b4b1-434f-b17c-cf110c555c07-m6-T3-checkpoint-120832-200ep-seed102000-91fdbdd53ead.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 8,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/model",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/seed",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/official_benchmark",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 200,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "reward_total",
+                      "steps",
+                      "success",
+                      "terminated",
+                      "truncated"
+                    ],
+                    "path": "/episode_results",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 200,
+                    "field_names": [
+                      "best_branch",
+                      "best_joint_limit_margin_degrees",
+                      "branches",
+                      "episode",
+                      "episode_seed",
+                      "final_distance_cm",
+                      "first_entry_diagnostics",
+                      "first_reach_step",
+                      "hold_interruptions",
+                      "hold_peak_action_abs",
+                      "hold_peak_endpoint_speed",
+                      "hold_peak_joint_speed",
+                      "in_tolerance_steps",
+                      "interruption_diagnostics",
+                      "max_held_steps",
+                      "min_distance_cm",
+                      "peak_action_abs_max",
+                      "peak_endpoint_speed",
+                      "peak_joint_speed",
+                      "target_angle_degrees",
+                      "target_radius_cm",
+                      "termination_cause"
+                    ],
+                    "path": "/research_evidence/episode_diagnostics",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/research_evidence/units",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/research_evidence/units/distance",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/time",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/joint_velocity",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/endpoint_velocity",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/action",
+                    "type": "string"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "6de015fa01dee9a4cee1dbc215fc7a8bd44706a33894a3dc882c9aa3fb7cfbfa",
+              "evaluation_semantics": "91fdbdd53ead",
+              "model_fingerprint": "78c65fef2183b3d27c8172dd3984afb798398909ebbd6c47df9f9fc41a4e3b02",
+              "official_benchmark": false,
+              "schema_version": 5,
+              "seed": 102000,
+              "success_percent": 70.5,
+              "successes": 141
+            }
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": null
+      },
+      "task_reference_contract": null
+    },
+    "failure": null,
+    "id": "M6",
+    "inquiry_id": "I1",
+    "kind": "measurement",
+    "progress": "completed",
+    "request": {
+      "measurement": {
+        "description": "Evaluate T3 checkpoint 120832 on 200 fresh episodes from the unchanged official 0.06-0.20 m distribution with complete hold, geometry, timeout, and phase-aligned motion diagnostics.",
+        "measurements": [
+          {
+            "candidate": "T3:checkpoint-120832",
+            "episodes": 200,
+            "instrument": "research_evaluation",
+            "label": "T3 full-range oversampling capability and settling evaluation",
+            "seed": 102000
+          }
+        ],
+        "rationale": "T3 preserved full official support and oversampled the outer radius band by 25%, but its terminal training success was 0.37, so training statistics do not establish whether the intervention reduced T1's outer-band maneuver timeouts. A fresh full-range research evaluation will measure uninterrupted hold success and allocate failures by radius, angle, joint-limit margin, maneuver timeout, post-entry interruptions, velocity, and action. The panel starts at seed 102000 to avoid overlap with M2 and M4."
+      }
+    },
+    "request_fingerprint": "d90fd6b23a4fd689ac158bbaee242d70ce032af5c7234a64dfdfcc466f8d277a",
+    "session_id": "S3",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No candidates exist. I1 has just opened and no learned policy has yet been trained or assigned a working, best-known, or retained role.",
     "completed_operations": [
@@ -4687,7 +5149,8 @@
       "M4",
       "M5",
       "E4",
-      "T3"
+      "T3",
+      "M6"
     ],
     "scientific_parent_commit": "ae360a70571e96f07e9b35050bfd8bacedb339a6"
   },
