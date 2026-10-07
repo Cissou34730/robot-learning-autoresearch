@@ -1249,47 +1249,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "open",
-        "inquiry": {
-          "closure_condition": "Close when a full-allocation policy trained with explicit 6-20 cm radial coverage has been evaluated on a matched held-out panel and the radius-stratified success and interruption results either show substantial near-base recovery with preserved 14-20 cm competence, or show persistent near-base failure that redirects the work to branch-conditioned traces and compiled dynamics/control authority.",
-          "goal_connection": "The current best evidence is 73% success on a held-out official-distribution panel, with failures concentrated in the 6-14 cm region omitted from baseline training. Closing this inquiry directly tests whether restoring that missing coverage can move the learned policy toward the required 98% complete uninterrupted-hold success.",
-          "handoff_conclusion": "Observed facts: T1 training on radii 14-20 cm reached recorded training success 0.96 at 120832 steps. M1 evaluated that checkpoint on 100 disjoint official-distribution episodes and recorded 73 successes. In the complete M1 artifact, successful episodes in the 14-20 cm region consistently reached the 100-step hold, while the failures are concentrated at radii below 14 cm; several near-base episodes never entered tolerance, and a smaller subset entered but suffered repeated interruptions. One extreme near-base failure remained far from the target. Interpretation: the strongest supported explanation is radial distribution shift and a learned policy failure to map/control near-base targets, not general inability to stabilize: outer-domain targets are reliably held once reached. A secondary explanation is configuration-dependent hold instability near some inner targets, supported by the near-base interruption cases, but this cannot explain the clean outer-domain performance and is not yet separated from poor near-base approach. Reachability remains a prior model consequence rather than an observed failure cause because M1 does not test compiled IK limits directly; the near-base pattern is more consistent with learned coverage than unreachable geometry. Branch choice, actuator authority, and hidden substep excursions remain unresolved because M1 records no q/qdot/action or substep traces. The evidence is one 100-episode panel, not the official 200-episode assessment, so it establishes direction but not the final success rate.",
-          "handoff_question": "Does training on the full official 6-20 cm radial distribution, while preserving full angular coverage and the current task mechanics, raise near-base success enough to close the 98% goal gap without degrading the already competent 14-20 cm behavior?",
-          "handoff_source_session_id": "S1",
-          "id": "I1",
-          "opened_in_session": "S2",
-          "question": "Does training on the full official 6-20 cm radial distribution, while preserving full angular coverage and the current task mechanics, raise near-base success enough to close the 98% goal gap without degrading the already competent 14-20 cm behavior?",
-          "rationale": "M1 shows reliable complete holds in the already trained 14-20 cm region but concentrated failures below 14 cm, making radial distribution shift the leading actionable explanation. A fresh full-allocation training comparison preserves the current task mechanics and directly tests coverage rather than assuming that reward or training success transfers to the omitted region. If near-base performance recovers without outer-domain degradation, coverage is supported as the next route toward 98%; if failures persist or interruptions remain concentrated near the base, the inquiry will redirect to the unresolved stabilization, branch, and actuator-dynamics mechanisms.",
-          "reframes": []
-        }
-      },
-      "result": {
-        "action": "open",
-        "inquiry_id": "I1",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E2",
-    "inquiry_id": null,
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "open",
-        "closure_condition": "Close when a full-allocation policy trained with explicit 6-20 cm radial coverage has been evaluated on a matched held-out panel and the radius-stratified success and interruption results either show substantial near-base recovery with preserved 14-20 cm competence, or show persistent near-base failure that redirects the work to branch-conditioned traces and compiled dynamics/control authority.",
-        "goal_connection": "The current best evidence is 73% success on a held-out official-distribution panel, with failures concentrated in the 6-14 cm region omitted from baseline training. Closing this inquiry directly tests whether restoring that missing coverage can move the learned policy toward the required 98% complete uninterrupted-hold success.",
-        "question": "Does training on the full official 6-20 cm radial distribution, while preserving full angular coverage and the current task mechanics, raise near-base success enough to close the 98% goal gap without degrading the already competent 14-20 cm behavior?",
-        "rationale": "M1 shows reliable complete holds in the already trained 14-20 cm region but concentrated failures below 14 cm, making radial distribution shift the leading actionable explanation. A fresh full-allocation training comparison preserves the current task mechanics and directly tests coverage rather than assuming that reward or training success transfers to the omitted region. If near-base performance recovers without outer-domain degradation, coverage is supported as the next route toward 98%; if failures persist or interruptions remain concentrated near the base, the inquiry will redirect to the unresolved stabilization, branch, and actuator-dynamics mechanisms."
-      }
-    },
-    "request_fingerprint": "259a2f230616cecd78a344707b7b2f32010d6df21716ee455b2ed0e002778563",
-    "session_id": "S2",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "No working, best-known, or retained candidate role has been assigned. T1:checkpoint-120832 is the strongest evaluated candidate and is the baseline for the next inquiry, but its 73% M1 result does not justify a role assignment or official assessment.",
     "completed_operations": [
