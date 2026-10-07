@@ -82,6 +82,17 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
             np.linalg.norm(self._end_effector_position() - self.data.mocap_pos[0])
         )
 
+    def _end_effector_velocity(self) -> np.ndarray:
+        jacobian = np.zeros((3, self.model.nv), dtype=np.float64)
+        mujoco.mj_jacSite(
+            self.model,
+            self.data,
+            jacobian,
+            None,
+            self.model.site("end_effector").id,
+        )
+        return jacobian @ self.data.qvel
+
     def _sample_target_position(self) -> None:
         angle = float(self.np_random.uniform(-np.pi, np.pi))
         radius = float(
@@ -153,6 +164,7 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
             self.success_threshold,
             action,
             qvel=self.data.qvel,
+            cartesian_velocity=self._end_effector_velocity(),
             held_steps=self._held_steps,
             previous_held_steps=previous_held_steps,
             hold_steps_required=self.hold_steps_required,

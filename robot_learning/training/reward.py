@@ -25,6 +25,7 @@ OUTSIDE_BAND_PENALTY = 0.1
 HOLD_COMPLETE_BONUS = 50.0
 SETTLING_DISTANCE_SCALE = 0.03
 SETTLING_VELOCITY_SCALE = 2.0
+SETTLING_CARTESIAN_VELOCITY_SCALE = 0.25
 SETTLING_VELOCITY_COEFFICIENT = 0.25
 
 
@@ -53,6 +54,7 @@ def reach_reward(
     success_threshold: float,
     action: np.ndarray | None = None,
     qvel: np.ndarray | None = None,
+    cartesian_velocity: np.ndarray | None = None,
     held_steps: int = 0,
     previous_held_steps: int = 0,
     hold_steps_required: int = 100,
@@ -90,10 +92,18 @@ def reach_reward(
     reward += outside_band
 
     settling = 0.0
-    if qvel is not None:
+    settling_velocity = (
+        cartesian_velocity if cartesian_velocity is not None else qvel
+    )
+    settling_velocity_scale = (
+        SETTLING_CARTESIAN_VELOCITY_SCALE
+        if cartesian_velocity is not None
+        else SETTLING_VELOCITY_SCALE
+    )
+    if settling_velocity is not None:
         proximity = float(np.exp(-current_distance / SETTLING_DISTANCE_SCALE))
         velocity_fraction = min(
-            float(np.linalg.norm(qvel)) / SETTLING_VELOCITY_SCALE,
+            float(np.linalg.norm(settling_velocity)) / settling_velocity_scale,
             1.0,
         )
         settling = -(
