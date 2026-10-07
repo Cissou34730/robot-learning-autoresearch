@@ -22,3 +22,4 @@
 | E5 | restore_recipe | I1 | restored |
 | T5 | training | I1 | completed |
 | M10 | measurement | I1 | completed |
+| M11 | measurement | I1 | completed |
