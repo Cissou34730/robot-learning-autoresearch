@@ -1,16 +1,5 @@
 {
-  "active_inquiry": {
-    "closure_condition": "Close or reframe after a baseline candidate has been evaluated on a seed-controlled panel spanning the official radius and angle distribution, with failures localized by radius-angle bin, executed IK branch, first-entry step and distance, entry velocity, maximum held steps, interruption count, and action saturation. An inner-radius or branch-localized deficit with stable holds elsewhere supports coverage and branch-consistency work; all-radius failures with low entry error and repeated hold exits support precision-regulation work.",
-    "goal_connection": "The human goal requires at least 196 of 200 official episodes to complete an uninterrupted 100-step hold within 1 cm. This inquiry will identify whether the first policy's gap is primarily caused by missing inner-radius and branch coverage or by inadequate closed-loop precision during the hold, determining whether the next intervention should change training distribution and branch representation or control and stabilization.",
-    "handoff_conclusion": "Observed in M2: the compiled model uses 0.02 s control intervals, 5.0 joint torque at unit control, approximately 0.0102-0.0119 joint mass-matrix diagonal terms across the tested radii, and approximately 421-491 rad/s^2 initial unit-control acceleration. A 25-control-step saturated step reached roughly 9.2-10.0 rad/s joint speed and the post-release joint velocity fell below 0.02 rad/s by control step 30-34. A one-control-step saturated impulse produced up to about 0.040 m end-effector displacement at the outer radius, versus about 0.012 m at the inner radius. Interpretation: gross actuator authority and damping are not the leading hard ceiling for reaching or settling; the plant can become highly sensitive to poorly regulated 20 ms action changes, especially near the outer radius. Competing explanations now are (A) policy/distribution limitation, with failures concentrated in the untrained inner annulus or inconsistent IK branch use, versus (B) learned closed-loop precision limitation, with entry velocity or residual oscillation causing hold interruptions despite adequate plant authority. M2 does not measure a learned policy, action saturation during task behavior, branch consistency, or continuous hold semantics, so it cannot establish which explanation dominates.",
-    "handoff_question": "For the first trained policy under the official target distribution, are episode failures dominated by unseen inner-radius and IK-branch regimes or by residual motion and interruptions during the 100-step hold?",
-    "handoff_source_session_id": "S1",
-    "id": "I1",
-    "opened_in_session": "S2",
-    "question": "For the first trained policy under the official target distribution, are episode failures dominated by unseen inner-radius and IK-branch regimes or by residual motion and interruptions during the 100-step hold?",
-    "rationale": "M2 found adequate gross actuator authority and damping at the 20 ms control interval, while also showing that poorly regulated action changes can move the end effector substantially, especially at the outer radius. It did not observe a learned policy, task-time action saturation, branch usage, or hold interruptions. The highest-value next evidence is therefore a first-policy baseline followed by full-distribution, stratified trajectory diagnostics that directly discriminate distribution and branch limitation from residual-motion and hold-phase precision limitation.",
-    "reframes": []
-  },
+  "active_inquiry": null,
   "campaign": {
     "base_commit": "782d4b725ce12a1947f63ecc0bba15c83a07f317",
     "id": "b366ab54-1218-4ab4-9bf1-3fd6a19c86bb",
@@ -839,7 +828,7 @@
     }
   },
   "counters": {
-    "event": 3,
+    "event": 4,
     "inquiry": 1,
     "measurement": 3,
     "session": 3,
@@ -1528,9 +1517,63 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-07T04:48:57Z",
+      "error": null,
+      "id": "E4",
+      "inquiry_id": "I1",
+      "kind": "inquiry",
+      "request": {
+        "action": "close",
+        "outcome": "I1 is closed in favor of residual-motion and hold-phase precision as the dominant observed failure mechanism, with branch switching and saturated action as contributing triggers rather than an unseen-inner-radius deficit.",
+        "reason": "M3 evaluated T1:checkpoint-100352 on 200 full-distribution research episodes and achieved 199 successes (99.5%). The only failure was at radius 15.91 cm and angle -138.23 degrees, outside the untrained inner annulus: it first entered at 0.92 cm with 6.42 rad/s joint speed and 47.10 cm/s end-effector speed, switched inferred IK branch once, held for only one step, then interrupted and remained truncated at 500 steps with saturated actions throughout. Inner-radius cases in the same panel completed 100-step holds, while successful episodes across the annulus maintained zero hold interruptions. This satisfies the closure condition and supports precision/stabilization and branch-consistency work, while the research panel remains non-official and does not resolve continuous within-substep versus protected benchmark semantics."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I1",
+        "outcome": "I1 is closed in favor of residual-motion and hold-phase precision as the dominant observed failure mechanism, with branch switching and saturated action as contributing triggers rather than an unseen-inner-radius deficit.",
+        "reason": "M3 evaluated T1:checkpoint-100352 on 200 full-distribution research episodes and achieved 199 successes (99.5%). The only failure was at radius 15.91 cm and angle -138.23 degrees, outside the untrained inner annulus: it first entered at 0.92 cm with 6.42 rad/s joint speed and 47.10 cm/s end-effector speed, switched inferred IK branch once, held for only one step, then interrupted and remained truncated at 500 steps with saturated actions throughout. Inner-radius cases in the same panel completed 100-step holds, while successful episodes across the annulus maintained zero hold interruptions. This satisfies the closure condition and supports precision/stabilization and branch-consistency work, while the research panel remains non-official and does not resolve continuous within-substep versus protected benchmark semantics.",
+        "status": "completed"
+      },
+      "session_id": "S3",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "close",
+        "inquiry_id": "I1",
+        "outcome": "I1 is closed in favor of residual-motion and hold-phase precision as the dominant observed failure mechanism, with branch switching and saturated action as contributing triggers rather than an unseen-inner-radius deficit.",
+        "reason": "M3 evaluated T1:checkpoint-100352 on 200 full-distribution research episodes and achieved 199 successes (99.5%). The only failure was at radius 15.91 cm and angle -138.23 degrees, outside the untrained inner annulus: it first entered at 0.92 cm with 6.42 rad/s joint speed and 47.10 cm/s end-effector speed, switched inferred IK branch once, held for only one step, then interrupted and remained truncated at 500 steps with saturated actions throughout. Inner-radius cases in the same panel completed 100-step holds, while successful episodes across the annulus maintained zero hold interruptions. This satisfies the closure condition and supports precision/stabilization and branch-consistency work, while the research panel remains non-official and does not resolve continuous within-substep versus protected benchmark semantics."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I1",
+        "outcome": "I1 is closed in favor of residual-motion and hold-phase precision as the dominant observed failure mechanism, with branch switching and saturated action as contributing triggers rather than an unseen-inner-radius deficit.",
+        "reason": "M3 evaluated T1:checkpoint-100352 on 200 full-distribution research episodes and achieved 199 successes (99.5%). The only failure was at radius 15.91 cm and angle -138.23 degrees, outside the untrained inner annulus: it first entered at 0.92 cm with 6.42 rad/s joint speed and 47.10 cm/s end-effector speed, switched inferred IK branch once, held for only one step, then interrupted and remained truncated at 500 steps with saturated actions throughout. Inner-radius cases in the same panel completed 100-step holds, while successful episodes across the annulus maintained zero hold interruptions. This satisfies the closure condition and supports precision/stabilization and branch-consistency work, while the research panel remains non-official and does not resolve continuous within-substep versus protected benchmark semantics.",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E4",
+    "inquiry_id": "I1",
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "close",
+        "outcome": "I1 is closed in favor of residual-motion and hold-phase precision as the dominant observed failure mechanism, with branch switching and saturated action as contributing triggers rather than an unseen-inner-radius deficit.",
+        "reason": "M3 evaluated T1:checkpoint-100352 on 200 full-distribution research episodes and achieved 199 successes (99.5%). The only failure was at radius 15.91 cm and angle -138.23 degrees, outside the untrained inner annulus: it first entered at 0.92 cm with 6.42 rad/s joint speed and 47.10 cm/s end-effector speed, switched inferred IK branch once, held for only one step, then interrupted and remained truncated at 500 steps with saturated actions throughout. Inner-radius cases in the same panel completed 100-step holds, while successful episodes across the annulus maintained zero hold interruptions. This satisfies the closure condition and supports precision/stabilization and branch-consistency work, while the research panel remains non-official and does not resolve continuous within-substep versus protected benchmark semantics."
+      }
+    },
+    "request_fingerprint": "94fe08a38d5a723c066a1e5372037af78273c6cf26b9a31afdda877a37ca5ef4",
+    "session_id": "S3",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No learned candidates exist yet; working, best-known, and retained roles remain empty.",
     "completed_operations": [
@@ -1570,7 +1613,8 @@
     "objective": "Advance I1 toward an evidence-supported answer to its scientific question: For the first trained policy under the official target distribution, are episode failures dominated by unseen inner-radius and IK-branch regimes or by residual motion and interruptions during the 100-step hold?",
     "operation_ids": [
       "T1",
-      "M3"
+      "M3",
+      "E4"
     ],
     "scientific_parent_commit": "3aee9f5f98439d65e23ac1db22684d4446a4bf29"
   },
