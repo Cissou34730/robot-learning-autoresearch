@@ -1,5 +1,16 @@
 {
-  "active_inquiry": null,
+  "active_inquiry": {
+    "closure_condition": "Close when one bounded intervention informed by M3 has been evaluated against T1 on a matched held-out panel and either raises near-base success while preserving 14-20 cm competence, or fails to do so and redirects the campaign to the remaining actuator-authority or compiled-dynamics explanation. Hidden substep excursions are deprioritized unless a targeted intervention measurement shows that their magnitude predicts failure rather than success.",
+    "goal_connection": "The best candidate remains at 73% success, 25 percentage points below the required 98%. M3 shows that failures are concentrated near the base, with 22 non-entries and 5 interrupted holds, while 14-20 cm episodes are almost entirely successful. This inquiry directly tests an intervention for the near-base gap while requiring preservation of the competent outer-radius behavior.",
+    "handoff_conclusion": "Observed facts: T1 trained on 14-20 cm reached recorded training success 0.96 and achieved 73% on M1. M1 failures concentrated below 14 cm, with both non-entry and interrupted near-base holds. T2 was trained fresh on the full 6-20 cm range but recorded zero training success through 120832 steps and achieved only 35% on M2, versus T1's 73% on the same 100 episode seeds; T2 won 13 episodes while T1 won 51, with 64 discordant episodes. Interpretation: the tested full-domain training recipe is insufficient and degraded the competent baseline, so missing radial coverage alone is not an adequate explanation or intervention. This negative recipe result does not reject coverage as a broader method and does not establish a physical cause. Reachability remains a prior rather than an observed failure cause. Branch-conditioned trajectory or stabilization failure, actuator authority, compiled dynamics, and hidden substep excursions remain unresolved because the evaluation diagnostics lack q/qdot/action and substep traces.",
+    "handoff_question": "Which mechanism\u2014branch-conditioned trajectory and hold instability, compiled-dynamics or actuator-authority limits, or hidden substep excursions\u2014dominates the persistent near-base failures, and what evidence-supported intervention can raise official success toward 98% without degrading 14-20 cm competence?",
+    "handoff_source_session_id": "S3",
+    "id": "I2",
+    "opened_in_session": "S4",
+    "question": "Which mechanism\u2014branch-conditioned trajectory and hold instability, compiled-dynamics or actuator-authority limits, or hidden substep excursions\u2014dominates the persistent near-base failures, and what evidence-supported intervention can raise official success toward 98% without degrading 14-20 cm competence?",
+    "rationale": "M3 provides the first mechanistic traces. Near-base non-entry and interruption dominate the gap; interrupted episodes saturate actions, but saturation is also common in successful episodes, so authority may be configuration-dependent rather than globally insufficient. Branch switching is present in both successes and failures, making unconditioned switching or trajectory quality a competing explanation. Substep excursions are larger in successful outer episodes than in failures, so they do not currently support hidden excursions as the dominant cause. The inquiry will therefore develop and test a branch- and dynamics-aware approach/hold intervention, using preserved 14-20 cm performance as a non-regression criterion.",
+    "reframes": []
+  },
   "campaign": {
     "base_commit": "a5d5b4c0fe00c1103abb30662c0874b87de08157",
     "id": "06656182-d7f0-4011-898d-2b870e8a2a54",
@@ -1648,8 +1659,8 @@
     }
   },
   "counters": {
-    "event": 5,
-    "inquiry": 1,
+    "event": 6,
+    "inquiry": 2,
     "measurement": 3,
     "session": 4,
     "training": 2
@@ -2860,9 +2871,72 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-07T20:06:09Z",
+      "error": null,
+      "id": "E6",
+      "inquiry_id": "I2",
+      "kind": "inquiry",
+      "request": {
+        "action": "open",
+        "closure_condition": "Close when one bounded intervention informed by M3 has been evaluated against T1 on a matched held-out panel and either raises near-base success while preserving 14-20 cm competence, or fails to do so and redirects the campaign to the remaining actuator-authority or compiled-dynamics explanation. Hidden substep excursions are deprioritized unless a targeted intervention measurement shows that their magnitude predicts failure rather than success.",
+        "goal_connection": "The best candidate remains at 73% success, 25 percentage points below the required 98%. M3 shows that failures are concentrated near the base, with 22 non-entries and 5 interrupted holds, while 14-20 cm episodes are almost entirely successful. This inquiry directly tests an intervention for the near-base gap while requiring preservation of the competent outer-radius behavior.",
+        "question": "Which mechanism\u2014branch-conditioned trajectory and hold instability, compiled-dynamics or actuator-authority limits, or hidden substep excursions\u2014dominates the persistent near-base failures, and what evidence-supported intervention can raise official success toward 98% without degrading 14-20 cm competence?",
+        "rationale": "M3 provides the first mechanistic traces. Near-base non-entry and interruption dominate the gap; interrupted episodes saturate actions, but saturation is also common in successful episodes, so authority may be configuration-dependent rather than globally insufficient. Branch switching is present in both successes and failures, making unconditioned switching or trajectory quality a competing explanation. Substep excursions are larger in successful outer episodes than in failures, so they do not currently support hidden excursions as the dominant cause. The inquiry will therefore develop and test a branch- and dynamics-aware approach/hold intervention, using preserved 14-20 cm performance as a non-regression criterion."
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I2",
+        "status": "completed"
+      },
+      "session_id": "S4",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "open",
+        "inquiry": {
+          "closure_condition": "Close when one bounded intervention informed by M3 has been evaluated against T1 on a matched held-out panel and either raises near-base success while preserving 14-20 cm competence, or fails to do so and redirects the campaign to the remaining actuator-authority or compiled-dynamics explanation. Hidden substep excursions are deprioritized unless a targeted intervention measurement shows that their magnitude predicts failure rather than success.",
+          "goal_connection": "The best candidate remains at 73% success, 25 percentage points below the required 98%. M3 shows that failures are concentrated near the base, with 22 non-entries and 5 interrupted holds, while 14-20 cm episodes are almost entirely successful. This inquiry directly tests an intervention for the near-base gap while requiring preservation of the competent outer-radius behavior.",
+          "handoff_conclusion": "Observed facts: T1 trained on 14-20 cm reached recorded training success 0.96 and achieved 73% on M1. M1 failures concentrated below 14 cm, with both non-entry and interrupted near-base holds. T2 was trained fresh on the full 6-20 cm range but recorded zero training success through 120832 steps and achieved only 35% on M2, versus T1's 73% on the same 100 episode seeds; T2 won 13 episodes while T1 won 51, with 64 discordant episodes. Interpretation: the tested full-domain training recipe is insufficient and degraded the competent baseline, so missing radial coverage alone is not an adequate explanation or intervention. This negative recipe result does not reject coverage as a broader method and does not establish a physical cause. Reachability remains a prior rather than an observed failure cause. Branch-conditioned trajectory or stabilization failure, actuator authority, compiled dynamics, and hidden substep excursions remain unresolved because the evaluation diagnostics lack q/qdot/action and substep traces.",
+          "handoff_question": "Which mechanism\u2014branch-conditioned trajectory and hold instability, compiled-dynamics or actuator-authority limits, or hidden substep excursions\u2014dominates the persistent near-base failures, and what evidence-supported intervention can raise official success toward 98% without degrading 14-20 cm competence?",
+          "handoff_source_session_id": "S3",
+          "id": "I2",
+          "opened_in_session": "S4",
+          "question": "Which mechanism\u2014branch-conditioned trajectory and hold instability, compiled-dynamics or actuator-authority limits, or hidden substep excursions\u2014dominates the persistent near-base failures, and what evidence-supported intervention can raise official success toward 98% without degrading 14-20 cm competence?",
+          "rationale": "M3 provides the first mechanistic traces. Near-base non-entry and interruption dominate the gap; interrupted episodes saturate actions, but saturation is also common in successful episodes, so authority may be configuration-dependent rather than globally insufficient. Branch switching is present in both successes and failures, making unconditioned switching or trajectory quality a competing explanation. Substep excursions are larger in successful outer episodes than in failures, so they do not currently support hidden excursions as the dominant cause. The inquiry will therefore develop and test a branch- and dynamics-aware approach/hold intervention, using preserved 14-20 cm performance as a non-regression criterion.",
+          "reframes": []
+        }
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I2",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E6",
+    "inquiry_id": null,
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "open",
+        "closure_condition": "Close when one bounded intervention informed by M3 has been evaluated against T1 on a matched held-out panel and either raises near-base success while preserving 14-20 cm competence, or fails to do so and redirects the campaign to the remaining actuator-authority or compiled-dynamics explanation. Hidden substep excursions are deprioritized unless a targeted intervention measurement shows that their magnitude predicts failure rather than success.",
+        "goal_connection": "The best candidate remains at 73% success, 25 percentage points below the required 98%. M3 shows that failures are concentrated near the base, with 22 non-entries and 5 interrupted holds, while 14-20 cm episodes are almost entirely successful. This inquiry directly tests an intervention for the near-base gap while requiring preservation of the competent outer-radius behavior.",
+        "question": "Which mechanism\u2014branch-conditioned trajectory and hold instability, compiled-dynamics or actuator-authority limits, or hidden substep excursions\u2014dominates the persistent near-base failures, and what evidence-supported intervention can raise official success toward 98% without degrading 14-20 cm competence?",
+        "rationale": "M3 provides the first mechanistic traces. Near-base non-entry and interruption dominate the gap; interrupted episodes saturate actions, but saturation is also common in successful episodes, so authority may be configuration-dependent rather than globally insufficient. Branch switching is present in both successes and failures, making unconditioned switching or trajectory quality a competing explanation. Substep excursions are larger in successful outer episodes than in failures, so they do not currently support hidden excursions as the dominant cause. The inquiry will therefore develop and test a branch- and dynamics-aware approach/hold intervention, using preserved 14-20 cm performance as a non-regression criterion."
+      }
+    },
+    "request_fingerprint": "f2b00254143e93dbebbf8915fbc23177869b9e063dc773804e3df7684f4dac14",
+    "session_id": "S4",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No working, best-known, or retained candidate role has been assigned. T1:checkpoint-120832 is the strongest evaluated reference at 73% on M1 and M2; T2:checkpoint-120832 is not competitive at 35% on M2 and is retained only as evidence about the tested full-domain recipe.",
     "completed_operations": [
@@ -2906,7 +2980,8 @@
     "kind": "goal_review",
     "objective": "Reassess the scientific direction toward the human goal using completed evidence. You may request measurements to resolve an uncertainty or develop the method before committing to an inquiry. Decide whether to request official assessment or open one bounded goal-linked inquiry.",
     "operation_ids": [
-      "M3"
+      "M3",
+      "E6"
     ],
     "scientific_parent_commit": "4cddfb62cc93c40e799532c6abcabc13900a2600"
   },
