@@ -32,3 +32,4 @@
 | M15 | measurement | I1 | completed |
 | T8 | training | I1 | completed |
 | M16 | measurement | I1 | completed |
+| M17 | measurement | I1 | completed |
