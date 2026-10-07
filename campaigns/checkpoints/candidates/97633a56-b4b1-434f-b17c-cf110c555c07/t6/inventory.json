@@ -1,0 +1,198 @@
+{
+  "candidates": [
+    {
+      "artifact": "campaigns/checkpoints/candidates/97633a56-b4b1-434f-b17c-cf110c555c07/t6/checkpoint-100352",
+      "ep_rew_mean": 81.36234664,
+      "fingerprint": "1195c6ab47ff11f8caca8239a622aeca1f3191f9518baf0c1096597bf26d0e6b",
+      "name": "checkpoint-100352",
+      "timesteps": 100352,
+      "training_success": 0.6
+    },
+    {
+      "artifact": "campaigns/checkpoints/candidates/97633a56-b4b1-434f-b17c-cf110c555c07/t6/checkpoint-10240",
+      "ep_rew_mean": 91.24120391428572,
+      "fingerprint": "38f7d183dee31a93b3fcf949c23b1e2f4e48c4ef61d7824f20aa98c7bd2a309c",
+      "name": "checkpoint-10240",
+      "timesteps": 10240,
+      "training_success": 0.6
+    },
+    {
+      "artifact": "campaigns/checkpoints/candidates/97633a56-b4b1-434f-b17c-cf110c555c07/t6/checkpoint-105472",
+      "ep_rew_mean": 83.5417339,
+      "fingerprint": "d7a48a19bc79dbc8c231256c81dad3238df8afcc4e076a2a40056616baf0a521",
+      "name": "checkpoint-105472",
+      "timesteps": 105472,
+      "training_success": 0.62
+    },
+    {
+      "artifact": "campaigns/checkpoints/candidates/97633a56-b4b1-434f-b17c-cf110c555c07/t6/checkpoint-110592",
+      "ep_rew_mean": 83.97176198999999,
+      "fingerprint": "218ef4e4a0ad6cc8c3eb0e825b0183fe80652aca79d7200e53c8784c540b79ee",
+      "name": "checkpoint-110592",
+      "timesteps": 110592,
+      "training_success": 0.66
+    },
+    {
+      "artifact": "campaigns/checkpoints/candidates/97633a56-b4b1-434f-b17c-cf110c555c07/t6/checkpoint-115712",
+      "ep_rew_mean": 83.23527533000001,
+      "fingerprint": "772b1d42f68576409fd786ea15f33dd091f23899d4576b79485492e19f34692f",
+      "name": "checkpoint-115712",
+      "timesteps": 115712,
+      "training_success": 0.64
+    },
+    {
+      "artifact": "campaigns/checkpoints/candidates/97633a56-b4b1-434f-b17c-cf110c555c07/t6/checkpoint-120832",
+      "ep_rew_mean": 83.02489191000001,
+      "fingerprint": "2504391c20bafe42ec67997cb31c4b74cd7ea08adc1d58fbcd0db01a9d3a6261",
+      "name": "checkpoint-120832",
+      "timesteps": 120832,
+      "training_success": 0.64
+    },
+    {
+      "artifact": "campaigns/checkpoints/candidates/97633a56-b4b1-434f-b17c-cf110c555c07/t6/checkpoint-15360",
+      "ep_rew_mean": 90.15530209433962,
+      "fingerprint": "e47c247ae8351b4c8ed1cf924462c72d112def2fbaedc004cd940b0a0753fc7c",
+      "name": "checkpoint-15360",
+      "timesteps": 15360,
+      "training_success": 0.6037735849056604
+    },
+    {
+      "artifact": "campaigns/checkpoints/candidates/97633a56-b4b1-434f-b17c-cf110c555c07/t6/checkpoint-20480",
+      "ep_rew_mean": 92.80865997101449,
+      "fingerprint": "866e635b7f5fca14e960fbc99e03405fbfd842fbaaf91324e36ea4b1b0717c11",
+      "name": "checkpoint-20480",
+      "timesteps": 20480,
+      "training_success": 0.5797101449275363
+    },
+    {
+      "artifact": "campaigns/checkpoints/candidates/97633a56-b4b1-434f-b17c-cf110c555c07/t6/checkpoint-25600",
+      "ep_rew_mean": 92.72671745882353,
+      "fingerprint": "8e94bbb6d7f7b107fa146419e9d3d049a80df603b1d96a0aec52a7d207f340f3",
+      "name": "checkpoint-25600",
+      "timesteps": 25600,
+      "training_success": 0.5882352941176471
+    },
+    {
+      "artifact": "campaigns/checkpoints/candidates/97633a56-b4b1-434f-b17c-cf110c555c07/t6/checkpoint-30720",
+      "ep_rew_mean": 86.28782367,
+      "fingerprint": "939e4dc9dd4739bafa76a5f57815dde1baaa3dd4cdddce2f678d57d2a47beb8a",
+      "name": "checkpoint-30720",
+      "timesteps": 30720,
+      "training_success": 0.56
+    },
+    {
+      "artifact": "campaigns/checkpoints/candidates/97633a56-b4b1-434f-b17c-cf110c555c07/t6/checkpoint-35840",
+      "ep_rew_mean": 87.96268088999999,
+      "fingerprint": "abb058cbde49d725282e2e5e3be8b5943162f148c93e5d7c8e6454f80bf6fd0f",
+      "name": "checkpoint-35840",
+      "timesteps": 35840,
+      "training_success": 0.55
+    },
+    {
+      "artifact": "campaigns/checkpoints/candidates/97633a56-b4b1-434f-b17c-cf110c555c07/t6/checkpoint-40960",
+      "ep_rew_mean": 88.57684735999999,
+      "fingerprint": "aa084df6ab2d165ad7d81ba522eaffe587f6377e2ecb944a213be09fa57faa09",
+      "name": "checkpoint-40960",
+      "timesteps": 40960,
+      "training_success": 0.53
+    },
+    {
+      "artifact": "campaigns/checkpoints/candidates/97633a56-b4b1-434f-b17c-cf110c555c07/t6/checkpoint-45056",
+      "ep_rew_mean": 87.95798291999999,
+      "fingerprint": "7234e51eb7b90f3a1d38fa8bb468ea49eecd20e1b9e234f14622ae3e5e3b1092",
+      "name": "checkpoint-45056",
+      "timesteps": 45056,
+      "training_success": 0.51
+    },
+    {
+      "artifact": "campaigns/checkpoints/candidates/97633a56-b4b1-434f-b17c-cf110c555c07/t6/checkpoint-50176",
+      "ep_rew_mean": 86.60387667,
+      "fingerprint": "a98a69a43b0656b08cec71d170c49e2e28c1da2c89a5da412526361c3aa3f251",
+      "name": "checkpoint-50176",
+      "timesteps": 50176,
+      "training_success": 0.5
+    },
+    {
+      "artifact": "campaigns/checkpoints/candidates/97633a56-b4b1-434f-b17c-cf110c555c07/t6/checkpoint-5120",
+      "ep_rew_mean": 77.4422565625,
+      "fingerprint": "1f7298746f9715b4d53b243787a05e946ce25bfb73e5e323454c7db2e5c62622",
+      "name": "checkpoint-5120",
+      "timesteps": 5120,
+      "training_success": 0.5625
+    },
+    {
+      "artifact": "campaigns/checkpoints/candidates/97633a56-b4b1-434f-b17c-cf110c555c07/t6/checkpoint-55296",
+      "ep_rew_mean": 89.55253548,
+      "fingerprint": "ed2972fdd2de3476d8954bbe3c1b06b57f7c7f9ad60a96af9f9d395bdd356102",
+      "name": "checkpoint-55296",
+      "timesteps": 55296,
+      "training_success": 0.49
+    },
+    {
+      "artifact": "campaigns/checkpoints/candidates/97633a56-b4b1-434f-b17c-cf110c555c07/t6/checkpoint-60416",
+      "ep_rew_mean": 84.70839828,
+      "fingerprint": "446eb12886ac4126aa23e2dc3ab4365203980a584b6f11d33e62077eae8dcf96",
+      "name": "checkpoint-60416",
+      "timesteps": 60416,
+      "training_success": 0.47
+    },
+    {
+      "artifact": "campaigns/checkpoints/candidates/97633a56-b4b1-434f-b17c-cf110c555c07/t6/checkpoint-65536",
+      "ep_rew_mean": 87.60307184999999,
+      "fingerprint": "e2042c88f6fa4339455cc910d002c3d0d731c61df8be3201c88774a6558a77ec",
+      "name": "checkpoint-65536",
+      "timesteps": 65536,
+      "training_success": 0.47
+    },
+    {
+      "artifact": "campaigns/checkpoints/candidates/97633a56-b4b1-434f-b17c-cf110c555c07/t6/checkpoint-70656",
+      "ep_rew_mean": 85.30239304000001,
+      "fingerprint": "036d93947712e79c1f42f1ddfa95d208d815a780c06ae85a234b72451b4a3529",
+      "name": "checkpoint-70656",
+      "timesteps": 70656,
+      "training_success": 0.5
+    },
+    {
+      "artifact": "campaigns/checkpoints/candidates/97633a56-b4b1-434f-b17c-cf110c555c07/t6/checkpoint-75776",
+      "ep_rew_mean": 85.70533573,
+      "fingerprint": "7e173f2b12d0997ea6e8d1baf846514532d3cb8a4b8837d3f72e357a465d7ee2",
+      "name": "checkpoint-75776",
+      "timesteps": 75776,
+      "training_success": 0.58
+    },
+    {
+      "artifact": "campaigns/checkpoints/candidates/97633a56-b4b1-434f-b17c-cf110c555c07/t6/checkpoint-80896",
+      "ep_rew_mean": 83.24818769,
+      "fingerprint": "2990389a6e4ecdc56a0ab45a4e9d7fc5a3273ef4e63372d861766c4306dab4b1",
+      "name": "checkpoint-80896",
+      "timesteps": 80896,
+      "training_success": 0.55
+    },
+    {
+      "artifact": "campaigns/checkpoints/candidates/97633a56-b4b1-434f-b17c-cf110c555c07/t6/checkpoint-86016",
+      "ep_rew_mean": 78.36174713,
+      "fingerprint": "4e60a5fab6828bff4bc39ad60c4a4f5e195588237ff1c48902b31b39a592847f",
+      "name": "checkpoint-86016",
+      "timesteps": 86016,
+      "training_success": 0.55
+    },
+    {
+      "artifact": "campaigns/checkpoints/candidates/97633a56-b4b1-434f-b17c-cf110c555c07/t6/checkpoint-90112",
+      "ep_rew_mean": 75.57688535999999,
+      "fingerprint": "b81bcc83c8e94ec1ca76e01e6b474022568da40f8dab7ca353d7f4e83eea4528",
+      "name": "checkpoint-90112",
+      "timesteps": 90112,
+      "training_success": 0.55
+    },
+    {
+      "artifact": "campaigns/checkpoints/candidates/97633a56-b4b1-434f-b17c-cf110c555c07/t6/checkpoint-95232",
+      "ep_rew_mean": 79.23048022,
+      "fingerprint": "e4d36dd533c5fc3e76566909293738c1dcef0b85640736fad16bf2b61686cb01",
+      "name": "checkpoint-95232",
+      "timesteps": 95232,
+      "training_success": 0.59
+    }
+  ],
+  "operation": "T6",
+  "schema_version": 1
+}
