@@ -395,3 +395,6 @@ evidence. It includes the consequences and unknowns most likely to change the
 initial direction.
 After acceptance, the model remains fixed for the campaign.
 Later checkpoints preserve or revise its consequential conclusions.
+The Runner checks only that the file exists and that each required register
+section is present and non-empty. It does not check scientific adequacy.
+The PI alone is responsible for whether the model is scientifically sound.

@@ -178,11 +178,6 @@ do not require an additional measurement or a prescribed sequence of actions.
 Only completed operations and their artifacts form the factual campaign
 record.
 
-A useful policy does not establish its proposed cause. A negative recipe
-result or training collapse does not by itself invalidate the broader method.
-Distinguish the tested recipe's outcome from what it establishes about the
-explanation or method it was intended to investigate.
-
 Development measurements support PI judgment but do not declare the official
 goal reached. Working, best-known, and retained roles are explicit,
 evidence-backed operations. Training never changes a role implicitly.

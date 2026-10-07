@@ -752,6 +752,7 @@ function New-ScientificSessionPrompt {
             "Previous session conclusion, verbatim:`n$([string]$checkpoint.current_synthesis)"
             "Question selected for the next inquiry, verbatim:`n$([string]$checkpoint.next_question)"
             "Continue from this restored state. Do not replace or reinterpret it because the model context is fresh. Change it only when new evidence, an implementation finding, or a concrete dead end changes the scientific situation. Record what changed and why."
+            "A useful policy does not establish its proposed cause. A negative recipe result does not by itself invalidate the broader method. Distinguish the tested recipe's outcome from what it establishes about the explanation or method it was intended to investigate."
         )
     }
     elseif ($session.kind -eq "inquiry" -and $State.active_inquiry) {
@@ -760,6 +761,7 @@ function New-ScientificSessionPrompt {
             "Source session conclusion, verbatim:`n$([string]$State.active_inquiry.handoff_conclusion)"
             "Question selected by that session, verbatim:`n$([string]$State.active_inquiry.handoff_question)"
             "Continue from this restored state while solving the active inquiry. Do not replace or reinterpret it because the model context is fresh. Change it only when new evidence, an implementation finding, or a concrete dead end changes the scientific situation. Record what changed and why."
+            "A useful policy does not establish its proposed cause. A negative recipe result does not by itself invalidate the broader method. Distinguish the tested recipe's outcome from what it establishes about the explanation or method it was intended to investigate."
         )
     }
     else {
@@ -782,21 +784,17 @@ function New-ScientificSessionPrompt {
     }
     else {
         @(
-            "Choose the operation whose result would most improve the next decision toward the human goal."
-            "Relate the selected operation to the unresolved scientific distinction or method-development need. The decision frontier records the question and discriminating evidence, not merely a candidate implementation."
-            "At checkpoint, preserve or revise the decision-relevant physical consequences from the initial scientific model in the current synthesis and decision frontier. State what evidence changed, did not change, or remains insufficient, and how that affects the next direction."
-            "At checkpoint, set next_question to the exact scientific question that the same PI must carry into the next fresh context. Preserve the leading mechanism, its priority, and the evidence that can discriminate it."
+            "Decide in this order. State the unresolved scientific distinction. Choose the operation whose result would most improve the next decision toward the human goal. Explain how that result would change the direction. Checkpoint when the line of work reaches a stable decision."
+            "contracts/program.md defines what the scientific session record must preserve, including the meanings of current_synthesis, decision_frontier and next_question. Apply those meanings to the current state shown above."
             if ($session.kind -eq "goal_review") {
                 "In goal review, next_question must exactly match the question of the inquiry opened in this session."
             }
             elseif ($session.kind -eq "inquiry" -and $State.active_inquiry) {
                 "While the inquiry remains active, next_question must exactly match its current question."
             }
-            "Existing PI-owned implementations have no privileged status; inspect, modify, or replace them when that is the most credible scientific action before submitting an operation."
             if ($session.kind -ne "startup") {
                 "When evidence resolves or redirects the active inquiry, record that decision explicitly rather than drifting to another question."
             }
-            "When the current line of work reaches a stable decision, preserve the synthesis, consequential competing explanations, claim limits, supporting evidence, remaining gap, decision frontier, and next direction in a scientific session record."
         )
     }
     $legalOperations = if ($transition) {
@@ -847,7 +845,7 @@ function New-ScientificSessionPrompt {
         "Training ceiling: $Timesteps requested steps per run."
     }
     else {
-        "Maintainer training allocation: $Timesteps steps per run. Training requests must match this allocation; neither the PI nor the Runner may independently change it."
+        "Maintainer training allocation: $Timesteps steps per run."
     }
     $sourceGuidance = if ($session.kind -eq "startup") {
         "Begin with pi_workspace/scientific_model.md, campaigns/brief.md and the latest scientific session record. Consult contracts/scenario.md and other evidence as needed."
@@ -928,8 +926,8 @@ function Invoke-ScientificModelPhase {
 
     $goal = Get-HumanGoalSummary -State $State
     $prompt = @(
-        "Human goal: $goal"
         $piPersona
+        "Human goal: $goal"
         "Current objective: $scientificModelPhaseObjective"
         "Base the model on contracts/scenario.md and the relevant human-authored implementation."
         "The document must contain substantive registers headed Established facts, Physical consequences, Unknowns, and Decision-relevant synthesis. Distinguish repository facts from reasoned implications and unresolved quantities, and preserve source references for later verification."
@@ -944,8 +942,8 @@ function Invoke-ScientificModelPhase {
     }
     if (-not (Test-ScientificModelDeliverable)) {
         $retry = @(
-            "Human goal: $goal"
             $piPersona
+            "Human goal: $goal"
             "The scientific model could not be accepted: $script:ScientificModelValidationFeedback"
             "Correct pi_workspace/scientific_model.md while preserving valid content and ensuring all four required registers are substantive, source-recoverable, and decision-relevant."
         ) -join "`n`n"
@@ -1005,6 +1003,7 @@ function Invoke-PendingOperation {
                 New-ScientificSessionPrompt -State $State
             )
             "The requested action $($pending.id) failed: $($pending.failure)"
+            "An execution failure or a training collapse is not a scientific result about the method under investigation. Distinguish the failed run's outcome from what it establishes about the explanation or method it was intended to investigate."
             "Diagnose and correct the scientific implementation, or choose a different action if the failure changes the scientific decision."
         ) -join "`n`n"
         Invoke-PISession -Prompt $repairPrompt -Phase $State.scientific_session.kind `
