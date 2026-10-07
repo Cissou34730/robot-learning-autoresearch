@@ -21,3 +21,4 @@
 | E9 | restore_recipe | I2 | restored |
 | M6 | measurement | I2 | completed |
 | T4 | training | I2 | completed |
+| M7 | measurement | I2 | completed |
