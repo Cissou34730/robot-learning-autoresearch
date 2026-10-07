@@ -7,8 +7,9 @@ observation space declared by the scenario environment.
 import numpy as np
 
 from contracts.robots.two_joint_arm import FOREARM_LENGTH, UPPER_ARM_LENGTH
+from robot_learning.lab.initial_physics import JOINT_LIMIT
 
-OBSERVATION_SIZE = 15
+OBSERVATION_SIZE = 17
 
 
 def reach_observation(data) -> np.ndarray:
@@ -39,6 +40,13 @@ def reach_observation(data) -> np.ndarray:
     cyclic_branch_residuals = np.concatenate(
         [[np.sin(residual), np.cos(residual)] for residual in branch_residuals]
     )
+    branch_limit_margins = np.asarray(
+        [
+            (JOINT_LIMIT - np.max(np.abs([shoulder_open, elbow_open]))) / JOINT_LIMIT,
+            (JOINT_LIMIT - np.max(np.abs([shoulder_folded, elbow_folded]))) / JOINT_LIMIT,
+        ],
+        dtype=np.float64,
+    )
     end_effector = data.site("end_effector").xpos.copy()
     return np.concatenate(
         [
@@ -46,5 +54,6 @@ def reach_observation(data) -> np.ndarray:
             data.qvel,
             end_effector - data.mocap_pos[0],
             cyclic_branch_residuals,
+            branch_limit_margins,
         ]
     ).astype(np.float32)
