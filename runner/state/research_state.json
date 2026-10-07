@@ -828,7 +828,7 @@
     }
   },
   "counters": {
-    "event": 4,
+    "event": 5,
     "inquiry": 1,
     "measurement": 3,
     "session": 3,
@@ -837,7 +837,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -1540,28 +1540,173 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-07T04:50:17Z",
+      "error": null,
+      "id": "E5",
+      "inquiry_id": "I1",
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "T1:checkpoint-100352 is the best-supported learned candidate by the M3 research evaluation, but no working, best-known, or retained model role has been assigned. All T1 checkpoints remain archived candidates.",
+        "completed_operations": [
+          "T1",
+          "M3",
+          "E4"
+        ],
+        "cumulative_resource_use": "Completed: M2 learning-independent dynamics measurement; T1 fresh training with 120832 completed rollout steps under the 120000-step allocation; M3 one 200-episode research evaluation; E4 closure of I1. No protected official assessment has been consumed.",
+        "current_goal_gap": "The best research evidence is 199/200 successes (99.5%) for T1:checkpoint-100352, but no protected official assessment has been run. The remaining gap is to establish official success and, if needed, eliminate the residual failure mode involving high entry motion, branch switching, and saturated action during the hold.",
+        "current_synthesis": "M2 established that gross actuator authority and damping are not the leading hard ceiling: the plant has strong torque authority and rapid velocity decay, although 20 ms action changes can amplify residual motion. T1 training success on the outer annulus was not sufficient evidence for official competence. M3 tested T1:checkpoint-100352 over 200 targets from the full official radius and angle distribution and achieved 199 successes. Inner-radius targets succeeded, so the untrained inner annulus is not the dominant observed deficit. The sole failure was at 15.91 cm radius after entry at 0.92 cm distance with 6.42 rad/s joint speed and 47.10 cm/s end-effector speed; it switched inferred IK branch once, held for one step, then interrupted and remained saturated through truncation. This revises the leading mechanism toward residual-motion and hold-phase precision, with branch consistency and action saturation as contributing triggers. The local research evaluator remains sampled at control boundaries, so the result does not establish equivalence to continuous protected semantics or the official endpoint.",
+        "decision_frontier": "I1 is resolved for the first baseline: failures were not dominated by unseen inner-radius coverage, because inner targets completed holds and the only failure was at a mid-radius target. The actionable frontier is now whether reducing entry velocity and preventing branch-switching or saturated late corrections can convert the remaining near-perfect research performance into at least 196 protected official successes. Evidence supporting the next intervention would be reduced entry velocity, no branch switches, fewer saturated hold actions, and no hold interruptions on the difficult mid-radius/angular regimes; evidence against it would be uniform official failures or within-interval exits despite stable sampled hold traces.",
+        "evidence_references": [
+          "M2",
+          "T1",
+          "M3",
+          "E4"
+        ],
+        "human_goal_connection": "The human goal is at least 196 successes in the protected 200-episode assessment, with every success requiring an uninterrupted 100-step hold within 1 cm. I1 established the first policy's research-panel performance and localized its residual risk so the next intervention can target the mechanism most likely to close the remaining official-success gap.",
+        "next_direction_or_closure": "I1 is closed. In the fresh session, first preserve T1:checkpoint-100352 as the comparison baseline and investigate a precision/stabilization intervention aimed at entry velocity, branch consistency, and saturation; pair any development evaluation with the protected official assessment before claiming the human goal is met.",
+        "next_question": "What intervention most reliably suppresses high-velocity entry and branch-switch-induced saturated corrections so the policy maintains the complete uninterrupted 100-step hold under the official task distribution?"
+      },
+      "result": {
+        "session_id": "S3",
+        "status": "checkpointed"
+      },
+      "session_id": "S3",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "3aee9f5f98439d65e23ac1db22684d4446a4bf29",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "T1:checkpoint-100352 is the best-supported learned candidate by the M3 research evaluation, but no working, best-known, or retained model role has been assigned. All T1 checkpoints remain archived candidates.",
+        "completed_operations": [
+          "T1",
+          "M3",
+          "E4"
+        ],
+        "cumulative_resource_use": "Completed: M2 learning-independent dynamics measurement; T1 fresh training with 120832 completed rollout steps under the 120000-step allocation; M3 one 200-episode research evaluation; E4 closure of I1. No protected official assessment has been consumed.",
+        "current_goal_gap": "The best research evidence is 199/200 successes (99.5%) for T1:checkpoint-100352, but no protected official assessment has been run. The remaining gap is to establish official success and, if needed, eliminate the residual failure mode involving high entry motion, branch switching, and saturated action during the hold.",
+        "current_synthesis": "M2 established that gross actuator authority and damping are not the leading hard ceiling: the plant has strong torque authority and rapid velocity decay, although 20 ms action changes can amplify residual motion. T1 training success on the outer annulus was not sufficient evidence for official competence. M3 tested T1:checkpoint-100352 over 200 targets from the full official radius and angle distribution and achieved 199 successes. Inner-radius targets succeeded, so the untrained inner annulus is not the dominant observed deficit. The sole failure was at 15.91 cm radius after entry at 0.92 cm distance with 6.42 rad/s joint speed and 47.10 cm/s end-effector speed; it switched inferred IK branch once, held for one step, then interrupted and remained saturated through truncation. This revises the leading mechanism toward residual-motion and hold-phase precision, with branch consistency and action saturation as contributing triggers. The local research evaluator remains sampled at control boundaries, so the result does not establish equivalence to continuous protected semantics or the official endpoint.",
+        "decision_frontier": "I1 is resolved for the first baseline: failures were not dominated by unseen inner-radius coverage, because inner targets completed holds and the only failure was at a mid-radius target. The actionable frontier is now whether reducing entry velocity and preventing branch-switching or saturated late corrections can convert the remaining near-perfect research performance into at least 196 protected official successes. Evidence supporting the next intervention would be reduced entry velocity, no branch switches, fewer saturated hold actions, and no hold interruptions on the difficult mid-radius/angular regimes; evidence against it would be uniform official failures or within-interval exits despite stable sampled hold traces.",
+        "evidence_references": [
+          "M2",
+          "T1",
+          "M3",
+          "E4"
+        ],
+        "human_goal_connection": "The human goal is at least 196 successes in the protected 200-episode assessment, with every success requiring an uninterrupted 100-step hold within 1 cm. I1 established the first policy's research-panel performance and localized its residual risk so the next intervention can target the mechanism most likely to close the remaining official-success gap.",
+        "inquiry_id": "I1",
+        "next_direction_or_closure": "I1 is closed. In the fresh session, first preserve T1:checkpoint-100352 as the comparison baseline and investigate a precision/stabilization intervention aimed at entry velocity, branch consistency, and saturation; pair any development evaluation with the protected official assessment before claiming the human goal is met.",
+        "next_question": "What intervention most reliably suppresses high-velocity entry and branch-switch-induced saturated corrections so the policy maintains the complete uninterrupted 100-step hold under the official task distribution?",
+        "session_id": "S3"
+      },
+      "presentation": {
+        "backend_session_id": "7a55f3ef-13aa-430e-881b-bea64c7dd44e",
+        "campaign_id": "b366ab54-1218-4ab4-9bf1-3fd6a19c86bb",
+        "campaign_usage": "14m11s | 25.86 AIU | prompt 4.2m (88% cached) | output 48k",
+        "session_id": "S3",
+        "session_kind": "inquiry",
+        "session_usage": "3m18s | 11.26 AIU | prompt 1.8m (85% cached) | output 10.5k"
+      },
+      "result": {
+        "session_id": "S3",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "9cc85ca9350bca78921a456327a0c3ad56919916",
+      "scientific_manifest": [
+        {
+          "exists": true,
+          "fingerprint": "613b7d185d315213f5a14b05812e567f5af7837a1c01ce54edcae5114abf8d57",
+          "path": "robot_learning/scenario/evaluation.py"
+        }
+      ],
+      "scientific_paths": [
+        "robot_learning/scenario/evaluation.py"
+      ]
+    },
+    "failure": null,
+    "id": "E5",
+    "inquiry_id": "I1",
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "T1:checkpoint-100352 is the best-supported learned candidate by the M3 research evaluation, but no working, best-known, or retained model role has been assigned. All T1 checkpoints remain archived candidates.",
+        "completed_operations": [
+          "T1",
+          "M3",
+          "E4"
+        ],
+        "cumulative_resource_use": "Completed: M2 learning-independent dynamics measurement; T1 fresh training with 120832 completed rollout steps under the 120000-step allocation; M3 one 200-episode research evaluation; E4 closure of I1. No protected official assessment has been consumed.",
+        "current_goal_gap": "The best research evidence is 199/200 successes (99.5%) for T1:checkpoint-100352, but no protected official assessment has been run. The remaining gap is to establish official success and, if needed, eliminate the residual failure mode involving high entry motion, branch switching, and saturated action during the hold.",
+        "current_synthesis": "M2 established that gross actuator authority and damping are not the leading hard ceiling: the plant has strong torque authority and rapid velocity decay, although 20 ms action changes can amplify residual motion. T1 training success on the outer annulus was not sufficient evidence for official competence. M3 tested T1:checkpoint-100352 over 200 targets from the full official radius and angle distribution and achieved 199 successes. Inner-radius targets succeeded, so the untrained inner annulus is not the dominant observed deficit. The sole failure was at 15.91 cm radius after entry at 0.92 cm distance with 6.42 rad/s joint speed and 47.10 cm/s end-effector speed; it switched inferred IK branch once, held for one step, then interrupted and remained saturated through truncation. This revises the leading mechanism toward residual-motion and hold-phase precision, with branch consistency and action saturation as contributing triggers. The local research evaluator remains sampled at control boundaries, so the result does not establish equivalence to continuous protected semantics or the official endpoint.",
+        "decision_frontier": "I1 is resolved for the first baseline: failures were not dominated by unseen inner-radius coverage, because inner targets completed holds and the only failure was at a mid-radius target. The actionable frontier is now whether reducing entry velocity and preventing branch-switching or saturated late corrections can convert the remaining near-perfect research performance into at least 196 protected official successes. Evidence supporting the next intervention would be reduced entry velocity, no branch switches, fewer saturated hold actions, and no hold interruptions on the difficult mid-radius/angular regimes; evidence against it would be uniform official failures or within-interval exits despite stable sampled hold traces.",
+        "evidence_references": [
+          "M2",
+          "T1",
+          "M3",
+          "E4"
+        ],
+        "human_goal_connection": "The human goal is at least 196 successes in the protected 200-episode assessment, with every success requiring an uninterrupted 100-step hold within 1 cm. I1 established the first policy's research-panel performance and localized its residual risk so the next intervention can target the mechanism most likely to close the remaining official-success gap.",
+        "next_direction_or_closure": "I1 is closed. In the fresh session, first preserve T1:checkpoint-100352 as the comparison baseline and investigate a precision/stabilization intervention aimed at entry velocity, branch consistency, and saturation; pair any development evaluation with the protected official assessment before claiming the human goal is met.",
+        "next_question": "What intervention most reliably suppresses high-velocity entry and branch-switch-induced saturated corrections so the policy maintains the complete uninterrupted 100-step hold under the official task distribution?"
+      }
+    },
+    "request_fingerprint": "d08fe8ef647520b3066207daf801b0f0931098ca17ee379e0a876c8d6cee58e2",
+    "session_id": "S3",
+    "supersedes": null
+  },
   "pi_checkpoint": {
-    "candidates_and_roles": "No learned candidates exist yet; working, best-known, and retained roles remain empty.",
+    "candidates_and_roles": "T1:checkpoint-100352 is the best-supported learned candidate by the M3 research evaluation, but no working, best-known, or retained model role has been assigned. All T1 checkpoints remain archived candidates.",
     "completed_operations": [
-      "E2"
+      "T1",
+      "M3",
+      "E4"
     ],
-    "cumulative_resource_use": "One completed learning-independent measurement (M2) and one completed inquiry-open event (E2); no training steps or policy-evaluation episodes have been consumed. M1 remains superseded failed execution history and is not evidence.",
-    "current_goal_gap": "No learned candidate has been trained or evaluated, so official success and the distance to 98% remain unmeasured. The actionable gap is to determine whether a policy can use the available plant authority across the full 0.06-0.20 m target distribution while maintaining the complete hold.",
-    "current_synthesis": "M2 showed 20 ms control intervals, 5.0 joint torque at unit command, approximately 0.0102-0.0119 joint mass-matrix diagonal terms, approximately 421-491 rad/s^2 initial unit-control acceleration, rapid velocity decay after saturated steps, and configuration-dependent impulse sensitivity. This changed the priority away from gross actuator-authority diagnosis: authority and damping are not the leading established ceiling, although 20 ms action changes can still amplify residual motion. It did not resolve learned-policy behavior, branch usage, task-time saturation, or hold interruptions. The consequential alternatives therefore remain: (A) failures are concentrated in the untrained inner annulus or inconsistent IK-branch use, requiring distribution and branch-consistency changes; or (B) failures occur across radii after entry because residual velocity or oscillation interrupts the hold, requiring precision and stabilization changes. The physical consequences retained from the initial model are reach-versus-hold separation, nonuniform radial/branch geometry, sampled-time stabilization sensitivity, and the distinction between local sampled hold statistics and the protected official outcome; each will be tested against policy trajectories rather than treated as settled explanations.",
-    "decision_frontier": "For the first trained policy under the official target distribution, determine whether failures are localized by inner radius, angle, or executed IK branch, or instead by low entry error followed by residual-motion interruptions during the 100-step hold. Evidence that would revise the coverage/branch explanation is uniform failure across radii with stable branch traces and repeated hold exits; evidence that would revise the precision explanation is stable hold behavior once targets are reached together with an inner-radius or branch-localized deficit. The official endpoint remains authoritative, so local hold diagnostics must be paired with episode success and, where relevant, action saturation and within-interval motion evidence.",
+    "cumulative_resource_use": "Completed: M2 learning-independent dynamics measurement; T1 fresh training with 120832 completed rollout steps under the 120000-step allocation; M3 one 200-episode research evaluation; E4 closure of I1. No protected official assessment has been consumed.",
+    "current_goal_gap": "The best research evidence is 199/200 successes (99.5%) for T1:checkpoint-100352, but no protected official assessment has been run. The remaining gap is to establish official success and, if needed, eliminate the residual failure mode involving high entry motion, branch switching, and saturated action during the hold.",
+    "current_synthesis": "M2 established that gross actuator authority and damping are not the leading hard ceiling: the plant has strong torque authority and rapid velocity decay, although 20 ms action changes can amplify residual motion. T1 training success on the outer annulus was not sufficient evidence for official competence. M3 tested T1:checkpoint-100352 over 200 targets from the full official radius and angle distribution and achieved 199 successes. Inner-radius targets succeeded, so the untrained inner annulus is not the dominant observed deficit. The sole failure was at 15.91 cm radius after entry at 0.92 cm distance with 6.42 rad/s joint speed and 47.10 cm/s end-effector speed; it switched inferred IK branch once, held for one step, then interrupted and remained saturated through truncation. This revises the leading mechanism toward residual-motion and hold-phase precision, with branch consistency and action saturation as contributing triggers. The local research evaluator remains sampled at control boundaries, so the result does not establish equivalence to continuous protected semantics or the official endpoint.",
+    "decision_frontier": "I1 is resolved for the first baseline: failures were not dominated by unseen inner-radius coverage, because inner targets completed holds and the only failure was at a mid-radius target. The actionable frontier is now whether reducing entry velocity and preventing branch-switching or saturated late corrections can convert the remaining near-perfect research performance into at least 196 protected official successes. Evidence supporting the next intervention would be reduced entry velocity, no branch switches, fewer saturated hold actions, and no hold interruptions on the difficult mid-radius/angular regimes; evidence against it would be uniform official failures or within-interval exits despite stable sampled hold traces.",
     "evidence_references": [
       "M2",
-      "E2"
+      "T1",
+      "M3",
+      "E4"
     ],
-    "human_goal_connection": "The human goal is at least 196 successes in the protected 200-episode assessment, where each success requires an uninterrupted 100-step hold within 1 cm. Opening I1 is the direct transition from learning-independent plant evidence to the first policy experiment needed to localize the failure mechanism before choosing an intervention.",
-    "inquiry_id": null,
-    "next_direction_or_closure": "Begin the fresh I1 inquiry session. The first actionable direction is baseline training followed by seed-controlled research evaluation over the full official radius and angle distribution, with radius-angle stratification, branch traces, entry kinematics, hold interruptions, and action saturation sufficient to discriminate the two mechanisms. Do not request protected official assessment before a candidate exists.",
-    "next_question": "For the first trained policy under the official target distribution, are episode failures dominated by unseen inner-radius and IK-branch regimes or by residual motion and interruptions during the 100-step hold?",
-    "scientific_commit": "21de9f63c972856551bf5d00f634b9043ee1a73e",
-    "session_id": "S2"
+    "human_goal_connection": "The human goal is at least 196 successes in the protected 200-episode assessment, with every success requiring an uninterrupted 100-step hold within 1 cm. I1 established the first policy's research-panel performance and localized its residual risk so the next intervention can target the mechanism most likely to close the remaining official-success gap.",
+    "inquiry_id": "I1",
+    "next_direction_or_closure": "I1 is closed. In the fresh session, first preserve T1:checkpoint-100352 as the comparison baseline and investigate a precision/stabilization intervention aimed at entry velocity, branch consistency, and saturation; pair any development evaluation with the protected official assessment before claiming the human goal is met.",
+    "next_question": "What intervention most reliably suppresses high-velocity entry and branch-switch-induced saturated corrections so the policy maintains the complete uninterrupted 100-step hold under the official task distribution?",
+    "scientific_commit": "9cc85ca9350bca78921a456327a0c3ad56919916",
+    "session_id": "S3"
   },
   "schema_version": 6,
   "scientific_model": {
@@ -1569,23 +1714,6 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "7a55f3ef-13aa-430e-881b-bea64c7dd44e",
-    "id": "S3",
-    "inquiry_id": "I1",
-    "kind": "inquiry",
-    "objective": "Advance I1 toward an evidence-supported answer to its scientific question: For the first trained policy under the official target distribution, are episode failures dominated by unseen inner-radius and IK-branch regimes or by residual motion and interruptions during the 100-step hold?",
-    "operation_ids": [
-      "T1",
-      "M3",
-      "E4"
-    ],
-    "scientific_parent_commit": "3aee9f5f98439d65e23ac1db22684d4446a4bf29"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
