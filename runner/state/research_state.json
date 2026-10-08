@@ -394,47 +394,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "open",
-        "inquiry": {
-          "closure_condition": "Close after a first learned candidate has been evaluated on a fixed full-distribution development panel with episode-level first-reach step, maximum held steps, hold interruptions, truncation status, and radius/angle-stratified outcomes sufficient to select a dominant mechanism or explicitly redirect the investigation if the evidence is mixed or inconclusive.",
-          "goal_connection": "The human goal requires at least 196 of 200 official episodes to complete an uninterrupted 2-second hold. At present there is no learned candidate or success evidence. Resolving whether the first candidate fails through post-entry excursions, full-distribution reach and angle coverage, or the 500-step horizon will determine whether the next policy redesign prioritizes stabilization, target-distribution coverage, convergence speed, or a combined method.",
-          "handoff_conclusion": "Observed in M1: the native compiled model has two degrees of freedom, a 2 ms physics step, a 20 ms action interval, inferred nonzero body masses and inertias, damping and armature of 0.5 and 0.01, gear 5, control range [-1, 1], and no explicit actuator force range. Across the singular reset and representative open and folded postures, five full-control action steps produced joint speeds near 10 rad/s; elbow pulses changed q2 by about 0.8 rad, and after release the end effector still moved about 0.9-2.6 cm. No contacts occurred. Interpretation: the initial physical model's saturated-torque and stabilization consequences are supported, so an approach controller that does not brake and settle can plausibly fail the 1 cm uninterrupted hold. The absence of contacts in these trials reduces self-contact as an initial explanation. Competing explanation retained: the baseline training distribution omits official inner radii of 6-14 cm, so a policy may instead fail mainly through target-coverage generalization. M1 is open-loop, uses only three postures and four single-joint pulse directions, and has no learned policy or target-conditioned hold measurement; it cannot rank those explanations for official success.",
-          "handoff_question": "For the first learned candidate on the official target distribution, which mechanism accounts for the goal gap: post-entry hold interruption, inner-radius/angle reach failure, horizon truncation, or a mixed failure mode?",
-          "handoff_source_session_id": "S1",
-          "id": "I1",
-          "opened_in_session": "S2",
-          "question": "For the first learned candidate on the official target distribution, which mechanism accounts for the goal gap: post-entry hold interruption, inner-radius/angle reach failure, horizon truncation, or a mixed failure mode?",
-          "rationale": "M1 established that the compiled direct-torque system can generate fast motion and centimeter-scale post-release displacement, supporting stabilization as a plausible failure mechanism, but M1 had no learned policy, target-conditioned hold measurement, or official-distribution coverage. The baseline training distribution also omits official inner radii of 6-14 cm, preserving a competing coverage explanation. A bounded inquiry centered on the first learned candidate is the highest-value next decision because it produces the missing causal evidence while preserving the distinction between binary uninterrupted success and approach or reward proxies.",
-          "reframes": []
-        }
-      },
-      "result": {
-        "action": "open",
-        "inquiry_id": "I1",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E2",
-    "inquiry_id": null,
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "open",
-        "closure_condition": "Close after a first learned candidate has been evaluated on a fixed full-distribution development panel with episode-level first-reach step, maximum held steps, hold interruptions, truncation status, and radius/angle-stratified outcomes sufficient to select a dominant mechanism or explicitly redirect the investigation if the evidence is mixed or inconclusive.",
-        "goal_connection": "The human goal requires at least 196 of 200 official episodes to complete an uninterrupted 2-second hold. At present there is no learned candidate or success evidence. Resolving whether the first candidate fails through post-entry excursions, full-distribution reach and angle coverage, or the 500-step horizon will determine whether the next policy redesign prioritizes stabilization, target-distribution coverage, convergence speed, or a combined method.",
-        "question": "For the first learned candidate on the official target distribution, which mechanism accounts for the goal gap: post-entry hold interruption, inner-radius/angle reach failure, horizon truncation, or a mixed failure mode?",
-        "rationale": "M1 established that the compiled direct-torque system can generate fast motion and centimeter-scale post-release displacement, supporting stabilization as a plausible failure mechanism, but M1 had no learned policy, target-conditioned hold measurement, or official-distribution coverage. The baseline training distribution also omits official inner radii of 6-14 cm, preserving a competing coverage explanation. A bounded inquiry centered on the first learned candidate is the highest-value next decision because it produces the missing causal evidence while preserving the distinction between binary uninterrupted success and approach or reward proxies."
-      }
-    },
-    "request_fingerprint": "7a5b620ce9d2e7d19f6bd023e489a079d22e5bf215f56dcdc065033f00be93ac",
-    "session_id": "S2",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "No candidates exist; no working, best-known, or retained role is assigned.",
     "completed_operations": [
