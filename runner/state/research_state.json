@@ -2429,38 +2429,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I1",
-        "outcome": "M4 resolves the dominant pre-entry distinction for the baseline development panel: 38 of 42 no-entry failures occurred below the 14 cm training boundary, while only four occurred in the trained 14-20 cm range. The result supports inner-radius distribution shift as the primary pre-entry mechanism, with a consequential secondary sampled-data reach/braking or directional-control tail indicated by the trained-range failures' approximately 1.2-1.4 cm minimum distances, 2.9 m/s maximum end-effector speed, 500 saturated action steps, and negative-angle concentration. The eight entered failures remain consistent with a separate hold-stability problem.",
-        "reason": "The closure condition is met by synchronized radius- and angle-stratified diagnostics from M4. The evidence selects the next bounded direction: train with coverage of the full official 6-20 cm radius distribution while retaining difficult-angle exposure and control-aware reach, braking, and uninterrupted-hold behavior. This is development evidence only; it neither establishes causality for the intervention nor meets the 98% official goal."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I1",
-        "outcome": "M4 resolves the dominant pre-entry distinction for the baseline development panel: 38 of 42 no-entry failures occurred below the 14 cm training boundary, while only four occurred in the trained 14-20 cm range. The result supports inner-radius distribution shift as the primary pre-entry mechanism, with a consequential secondary sampled-data reach/braking or directional-control tail indicated by the trained-range failures' approximately 1.2-1.4 cm minimum distances, 2.9 m/s maximum end-effector speed, 500 saturated action steps, and negative-angle concentration. The eight entered failures remain consistent with a separate hold-stability problem.",
-        "reason": "The closure condition is met by synchronized radius- and angle-stratified diagnostics from M4. The evidence selects the next bounded direction: train with coverage of the full official 6-20 cm radius distribution while retaining difficult-angle exposure and control-aware reach, braking, and uninterrupted-hold behavior. This is development evidence only; it neither establishes causality for the intervention nor meets the 98% official goal.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E7",
-    "inquiry_id": "I1",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "M4 resolves the dominant pre-entry distinction for the baseline development panel: 38 of 42 no-entry failures occurred below the 14 cm training boundary, while only four occurred in the trained 14-20 cm range. The result supports inner-radius distribution shift as the primary pre-entry mechanism, with a consequential secondary sampled-data reach/braking or directional-control tail indicated by the trained-range failures' approximately 1.2-1.4 cm minimum distances, 2.9 m/s maximum end-effector speed, 500 saturated action steps, and negative-angle concentration. The eight entered failures remain consistent with a separate hold-stability problem.",
-        "reason": "The closure condition is met by synchronized radius- and angle-stratified diagnostics from M4. The evidence selects the next bounded direction: train with coverage of the full official 6-20 cm radius distribution while retaining difficult-angle exposure and control-aware reach, braking, and uninterrupted-hold behavior. This is development evidence only; it neither establishes causality for the intervention nor meets the 98% official goal."
-      }
-    },
-    "request_fingerprint": "e736da036aa52397dbf7b81be6d57cf99ef201383fc22e285a314e2e3ac7806f",
-    "session_id": "S5",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T1 produced candidates through 120,832 completed steps, including T1:checkpoint-120832, but no working, best-known, or retained model role is assigned. The candidate remains a diagnostic baseline only; its 68.75% development-panel result is not official assessment evidence.",
     "completed_operations": [
