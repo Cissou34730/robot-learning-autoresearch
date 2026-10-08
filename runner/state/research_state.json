@@ -1,24 +1,5 @@
 {
-  "active_inquiry": {
-    "closure_condition": "Close when synchronized baseline diagnostics show whether no-entry failures cluster with the inner radii absent from training or instead occur across the trained radius range with reach-time, minimum-distance, speed, saturation, or episode-horizon signatures of sampled-data reach and braking, and the result selects the next bounded intervention.",
-    "goal_connection": "The baseline missed the 98% goal by 50 failures, with 42 occurring before first entry despite every such target having at least one feasible analytic branch. Identifying the dominant pre-entry mechanism directs the next intervention toward closing the largest failure class and reducing the official tail to four or fewer.",
-    "handoff_conclusion": "Observed in completed operation M1: on a 29-by-72 grid spanning the official radius and angle ranges, all 2088 targets had at least one joint-limit-feasible analytic IK branch; each individual elbow branch was feasible for 1972 of 2088 samples (94.44%), with the excluded samples near shoulder limits. Analytic forward-kinematics residual was at most 1.6e-16 m. Among sampled feasible branch configurations, the smallest Jacobian singular value was 0.0415 m, so the official terminal set is not intrinsically singular. The compiled actuators transmit control directly with gear 5, and unit controls produced 5-unit generalized actuator force with coupled accelerations of roughly 400-490 rad/s^2 at the probe posture. A 1-second zero-control probe reduced initial joint velocities of [1.0,-0.7] rad/s to numerical zero. Interpretation: static position-space impossibility and terminal Jacobian singularity are contradicted as primary explanations for the official goal gap. The branch result supports a branch-selection explanation for edge targets, while the acceleration and damping results support a competing sampled-data reach/braking/hold explanation. M1 did not measure a learned policy, trajectories, first-entry velocity, actuator saturation during a task, limit impulses, sub-control-step excursions, or protected hold semantics; therefore it cannot rank those closed-loop explanations or establish success.",
-    "handoff_question": "For a first learned candidate trained under the current recipe, are official-distribution failures dominated by branch/joint-limit coverage or by post-entry dynamic instability, as determined by target-conditioned first-entry velocity, hold interruptions, and complete uninterrupted success?",
-    "handoff_source_session_id": "S1",
-    "id": "I1",
-    "opened_in_session": "S2",
-    "question": "For the baseline candidate's 42 no-entry failures, are pre-entry failures primarily caused by inner-radius distribution shift or by sampled-data reach and braking limitations, as determined by target-radius and angle-conditioned minimum distance, maximum end-effector speed, action saturation, and available episode time?",
-    "rationale": "M3 resolves the original branch-versus-post-entry distinction as incomplete: all 42 no-entry failures retained a feasible analytic branch, ruling out branch feasibility as their primary cause, while only 8 failures entered and then interrupted the hold. The dominant unresolved mechanism is therefore pre-entry control. The training distribution begins at 14 cm while the official distribution begins at 6 cm, making inner-radius generalization a competing explanation against sampled-data reach and braking. Target-conditioned no-entry diagnostics can discriminate these explanations before changing the recipe.",
-    "reframes": [
-      {
-        "closure_condition": "Close when synchronized baseline diagnostics show whether no-entry failures cluster with the inner radii absent from training or instead occur across the trained radius range with reach-time, minimum-distance, speed, saturation, or episode-horizon signatures of sampled-data reach and braking, and the result selects the next bounded intervention.",
-        "goal_connection": "The baseline missed the 98% goal by 50 failures, with 42 occurring before first entry despite every such target having at least one feasible analytic branch. Identifying the dominant pre-entry mechanism directs the next intervention toward closing the largest failure class and reducing the official tail to four or fewer.",
-        "question": "For the baseline candidate's 42 no-entry failures, are pre-entry failures primarily caused by inner-radius distribution shift or by sampled-data reach and braking limitations, as determined by target-radius and angle-conditioned minimum distance, maximum end-effector speed, action saturation, and available episode time?",
-        "rationale": "M3 resolves the original branch-versus-post-entry distinction as incomplete: all 42 no-entry failures retained a feasible analytic branch, ruling out branch feasibility as their primary cause, while only 8 failures entered and then interrupted the hold. The dominant unresolved mechanism is therefore pre-entry control. The training distribution begins at 14 cm while the official distribution begins at 6 cm, making inner-radius generalization a competing explanation against sampled-data reach and braking. Target-conditioned no-entry diagnostics can discriminate these explanations before changing the recipe.",
-        "session_id": "S3"
-      }
-    ]
-  },
+  "active_inquiry": null,
   "campaign": {
     "base_commit": "4521496c4291c99a7376bd07efd7b6550695f7ff",
     "id": "bd32cc79-767a-4599-92cd-d889f3ec396b",
@@ -847,16 +828,16 @@
     }
   },
   "counters": {
-    "event": 6,
+    "event": 7,
     "inquiry": 1,
     "measurement": 4,
-    "session": 4,
+    "session": 5,
     "training": 1
   },
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -2423,9 +2404,63 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-08T20:06:10Z",
+      "error": null,
+      "id": "E7",
+      "inquiry_id": "I1",
+      "kind": "inquiry",
+      "request": {
+        "action": "close",
+        "outcome": "M4 resolves the dominant pre-entry distinction for the baseline development panel: 38 of 42 no-entry failures occurred below the 14 cm training boundary, while only four occurred in the trained 14-20 cm range. The result supports inner-radius distribution shift as the primary pre-entry mechanism, with a consequential secondary sampled-data reach/braking or directional-control tail indicated by the trained-range failures' approximately 1.2-1.4 cm minimum distances, 2.9 m/s maximum end-effector speed, 500 saturated action steps, and negative-angle concentration. The eight entered failures remain consistent with a separate hold-stability problem.",
+        "reason": "The closure condition is met by synchronized radius- and angle-stratified diagnostics from M4. The evidence selects the next bounded direction: train with coverage of the full official 6-20 cm radius distribution while retaining difficult-angle exposure and control-aware reach, braking, and uninterrupted-hold behavior. This is development evidence only; it neither establishes causality for the intervention nor meets the 98% official goal."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I1",
+        "outcome": "M4 resolves the dominant pre-entry distinction for the baseline development panel: 38 of 42 no-entry failures occurred below the 14 cm training boundary, while only four occurred in the trained 14-20 cm range. The result supports inner-radius distribution shift as the primary pre-entry mechanism, with a consequential secondary sampled-data reach/braking or directional-control tail indicated by the trained-range failures' approximately 1.2-1.4 cm minimum distances, 2.9 m/s maximum end-effector speed, 500 saturated action steps, and negative-angle concentration. The eight entered failures remain consistent with a separate hold-stability problem.",
+        "reason": "The closure condition is met by synchronized radius- and angle-stratified diagnostics from M4. The evidence selects the next bounded direction: train with coverage of the full official 6-20 cm radius distribution while retaining difficult-angle exposure and control-aware reach, braking, and uninterrupted-hold behavior. This is development evidence only; it neither establishes causality for the intervention nor meets the 98% official goal.",
+        "status": "completed"
+      },
+      "session_id": "S5",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "close",
+        "inquiry_id": "I1",
+        "outcome": "M4 resolves the dominant pre-entry distinction for the baseline development panel: 38 of 42 no-entry failures occurred below the 14 cm training boundary, while only four occurred in the trained 14-20 cm range. The result supports inner-radius distribution shift as the primary pre-entry mechanism, with a consequential secondary sampled-data reach/braking or directional-control tail indicated by the trained-range failures' approximately 1.2-1.4 cm minimum distances, 2.9 m/s maximum end-effector speed, 500 saturated action steps, and negative-angle concentration. The eight entered failures remain consistent with a separate hold-stability problem.",
+        "reason": "The closure condition is met by synchronized radius- and angle-stratified diagnostics from M4. The evidence selects the next bounded direction: train with coverage of the full official 6-20 cm radius distribution while retaining difficult-angle exposure and control-aware reach, braking, and uninterrupted-hold behavior. This is development evidence only; it neither establishes causality for the intervention nor meets the 98% official goal."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I1",
+        "outcome": "M4 resolves the dominant pre-entry distinction for the baseline development panel: 38 of 42 no-entry failures occurred below the 14 cm training boundary, while only four occurred in the trained 14-20 cm range. The result supports inner-radius distribution shift as the primary pre-entry mechanism, with a consequential secondary sampled-data reach/braking or directional-control tail indicated by the trained-range failures' approximately 1.2-1.4 cm minimum distances, 2.9 m/s maximum end-effector speed, 500 saturated action steps, and negative-angle concentration. The eight entered failures remain consistent with a separate hold-stability problem.",
+        "reason": "The closure condition is met by synchronized radius- and angle-stratified diagnostics from M4. The evidence selects the next bounded direction: train with coverage of the full official 6-20 cm radius distribution while retaining difficult-angle exposure and control-aware reach, braking, and uninterrupted-hold behavior. This is development evidence only; it neither establishes causality for the intervention nor meets the 98% official goal.",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E7",
+    "inquiry_id": "I1",
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "close",
+        "outcome": "M4 resolves the dominant pre-entry distinction for the baseline development panel: 38 of 42 no-entry failures occurred below the 14 cm training boundary, while only four occurred in the trained 14-20 cm range. The result supports inner-radius distribution shift as the primary pre-entry mechanism, with a consequential secondary sampled-data reach/braking or directional-control tail indicated by the trained-range failures' approximately 1.2-1.4 cm minimum distances, 2.9 m/s maximum end-effector speed, 500 saturated action steps, and negative-angle concentration. The eight entered failures remain consistent with a separate hold-stability problem.",
+        "reason": "The closure condition is met by synchronized radius- and angle-stratified diagnostics from M4. The evidence selects the next bounded direction: train with coverage of the full official 6-20 cm radius distribution while retaining difficult-angle exposure and control-aware reach, braking, and uninterrupted-hold behavior. This is development evidence only; it neither establishes causality for the intervention nor meets the 98% official goal."
+      }
+    },
+    "request_fingerprint": "e736da036aa52397dbf7b81be6d57cf99ef201383fc22e285a314e2e3ac7806f",
+    "session_id": "S5",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T1 produced candidates through 120,832 completed steps, including T1:checkpoint-120832, but no working, best-known, or retained model role is assigned. The candidate remains a diagnostic baseline only; its 68.75% development-panel result is not official assessment evidence.",
     "completed_operations": [
@@ -2457,6 +2492,21 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "0d65c45a-4fe8-4378-8e29-38dc940699bd",
+    "id": "S5",
+    "inquiry_id": "I1",
+    "kind": "inquiry",
+    "objective": "Advance I1 toward an evidence-supported answer to its scientific question: For the baseline candidate's 42 no-entry failures, are pre-entry failures primarily caused by inner-radius distribution shift or by sampled-data reach and braking limitations, as determined by target-radius and angle-conditioned minimum distance, maximum end-effector speed, action saturation, and available episode time?",
+    "operation_ids": [
+      "E7"
+    ],
+    "scientific_parent_commit": "18697f796845fd0dee7e0051818c88bf696d4075"
+  },
   "terminal_state": null
 }
