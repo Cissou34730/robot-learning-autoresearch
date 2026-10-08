@@ -191,7 +191,9 @@
     },
     "T1:checkpoint-120832": {
       "artifact": "campaigns/checkpoints/candidates/bd32cc79-767a-4599-92cd-d889f3ec396b/t1/checkpoint-120832",
-      "evaluation_artifacts": [],
+      "evaluation_artifacts": [
+        "campaigns/evaluations/bd32cc79-767a-4599-92cd-d889f3ec396b/evaluation-bd32cc79-767a-4599-92cd-d889f3ec396b-m2-T1-checkpoint-120832-160ep-seed4200-f00e36286c7a.json"
+      ],
       "fingerprint": "52bd3fc4113f8ed2bb1ff7d49c89692c39ff495165dd124a1e08a439022d4989",
       "id": "T1:checkpoint-120832",
       "name": "checkpoint-120832",
@@ -839,7 +841,7 @@
   "counters": {
     "event": 3,
     "inquiry": 1,
-    "measurement": 1,
+    "measurement": 2,
     "session": 3,
     "training": 1
   },
@@ -1504,9 +1506,433 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-08T19:57:46Z",
+      "error": null,
+      "id": "M2",
+      "inquiry_id": "I1",
+      "kind": "measurement",
+      "request": {
+        "description": "Evaluate T1:checkpoint-120832 on the independent development panel with synchronized target geometry, analytic branch and joint-limit margins, first-entry velocity and timing, action margins, hold interruptions, maximum uninterrupted hold, and complete task success.",
+        "measurements": [
+          {
+            "candidate": "T1:checkpoint-120832",
+            "episodes": 160,
+            "instrument": "research_evaluation",
+            "label": "T1 latest baseline synchronized reach-and-hold diagnostics",
+            "seed": 4200
+          }
+        ],
+        "rationale": "T1 provides the first learned candidate, but its training success and reward are recipe telemetry rather than evidence about the official task mechanism. The updated research evaluator measures the competing explanations in the same seeded episodes. Failure clustering at targets with low feasible-branch or joint-limit margins, or systematic branch-conditioned outcomes, would direct posture-aware control and distribution coverage. Failures after entry with high joint or Cartesian velocity, low action headroom, repeated interruptions, or short maximum holds would direct braking and hold stabilization. Complete episode success remains the decisive outcome; this development panel diagnoses the route toward the human goal without declaring official success."
+      },
+      "result": {
+        "measurements": [
+          {
+            "candidate": "T1:checkpoint-120832",
+            "candidate_id": "T1:checkpoint-120832",
+            "instrument": "research_evaluation",
+            "label": "T1 latest baseline synchronized reach-and-hold diagnostics",
+            "metrics": {
+              "episodes": 160,
+              "evaluation_artifact": "campaigns/evaluations/bd32cc79-767a-4599-92cd-d889f3ec396b/evaluation-bd32cc79-767a-4599-92cd-d889f3ec396b-m2-T1-checkpoint-120832-160ep-seed4200-f00e36286c7a.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 8,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/model",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/seed",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/official_benchmark",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 160,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "reward_total",
+                      "steps",
+                      "success",
+                      "terminated",
+                      "truncated"
+                    ],
+                    "path": "/episode_results",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 160,
+                    "field_names": [
+                      "action_saturation_steps",
+                      "branch_limit_margins_degrees",
+                      "episode",
+                      "episode_seed",
+                      "final_distance_cm",
+                      "first_entry_action",
+                      "first_entry_branch",
+                      "first_entry_ee_speed_m_s",
+                      "first_entry_ee_velocity_m_s",
+                      "first_entry_joint_limit_margin_degrees",
+                      "first_entry_qvel_rad_s",
+                      "first_reach_step",
+                      "hold_interruptions",
+                      "in_tolerance_steps",
+                      "max_abs_qvel_rad_s",
+                      "max_ee_speed_m_s",
+                      "max_held_steps",
+                      "min_distance_cm",
+                      "minimum_action_margin",
+                      "minimum_joint_limit_margin_degrees",
+                      "target_angle_degrees",
+                      "target_radius_cm"
+                    ],
+                    "path": "/research_evidence/episode_diagnostics",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence/units",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/research_evidence/units/distance",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/time",
+                    "type": "string"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "fcf8b56f14c83a340228da92374c10b6eb7175c0c6fb6b5a84c0057d8aceff5e",
+              "evaluation_semantics": "f00e36286c7a",
+              "model_fingerprint": "52bd3fc4113f8ed2bb1ff7d49c89692c39ff495165dd124a1e08a439022d4989",
+              "official_benchmark": false,
+              "schema_version": 5,
+              "seed": 4200,
+              "success_percent": 68.75,
+              "successes": 110
+            }
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": null
+      },
+      "session_id": "S3",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "evaluation_semantics": "f00e36286c7a",
+      "measurements": [
+        {
+          "artifact": "campaigns/checkpoints/candidates/bd32cc79-767a-4599-92cd-d889f3ec396b/t1/checkpoint-120832",
+          "candidate": "T1:checkpoint-120832",
+          "candidate_id": "T1:checkpoint-120832",
+          "episodes": 160,
+          "instrument": "research_evaluation",
+          "label": "T1 latest baseline synchronized reach-and-hold diagnostics",
+          "model_fingerprint": "52bd3fc4113f8ed2bb1ff7d49c89692c39ff495165dd124a1e08a439022d4989",
+          "seed": 4200
+        }
+      ],
+      "module_provenance": null,
+      "paired_comparisons": [],
+      "partial_results": [
+        {
+          "candidate": "T1:checkpoint-120832",
+          "candidate_id": "T1:checkpoint-120832",
+          "instrument": "research_evaluation",
+          "label": "T1 latest baseline synchronized reach-and-hold diagnostics",
+          "metrics": {
+            "episodes": 160,
+            "evaluation_artifact": "campaigns/evaluations/bd32cc79-767a-4599-92cd-d889f3ec396b/evaluation-bd32cc79-767a-4599-92cd-d889f3ec396b-m2-T1-checkpoint-120832-160ep-seed4200-f00e36286c7a.json",
+            "evaluation_artifact_contents": {
+              "scope": "structure_only",
+              "sections": [
+                {
+                  "entries": 8,
+                  "path": "",
+                  "type": "object"
+                },
+                {
+                  "path": "/schema_version",
+                  "type": "number"
+                },
+                {
+                  "path": "/model",
+                  "type": "string"
+                },
+                {
+                  "path": "/episodes",
+                  "type": "number"
+                },
+                {
+                  "path": "/seed",
+                  "type": "number"
+                },
+                {
+                  "path": "/official_benchmark",
+                  "type": "boolean"
+                },
+                {
+                  "path": "/success_percent",
+                  "type": "number"
+                },
+                {
+                  "entries": 160,
+                  "field_names": [
+                    "episode",
+                    "episode_seed",
+                    "reward_total",
+                    "steps",
+                    "success",
+                    "terminated",
+                    "truncated"
+                  ],
+                  "path": "/episode_results",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/research_evidence",
+                  "type": "object"
+                },
+                {
+                  "entries": 160,
+                  "field_names": [
+                    "action_saturation_steps",
+                    "branch_limit_margins_degrees",
+                    "episode",
+                    "episode_seed",
+                    "final_distance_cm",
+                    "first_entry_action",
+                    "first_entry_branch",
+                    "first_entry_ee_speed_m_s",
+                    "first_entry_ee_velocity_m_s",
+                    "first_entry_joint_limit_margin_degrees",
+                    "first_entry_qvel_rad_s",
+                    "first_reach_step",
+                    "hold_interruptions",
+                    "in_tolerance_steps",
+                    "max_abs_qvel_rad_s",
+                    "max_ee_speed_m_s",
+                    "max_held_steps",
+                    "min_distance_cm",
+                    "minimum_action_margin",
+                    "minimum_joint_limit_margin_degrees",
+                    "target_angle_degrees",
+                    "target_radius_cm"
+                  ],
+                  "path": "/research_evidence/episode_diagnostics",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/research_evidence/units",
+                  "type": "object"
+                },
+                {
+                  "path": "/research_evidence/units/distance",
+                  "type": "string"
+                },
+                {
+                  "path": "/research_evidence/units/time",
+                  "type": "string"
+                }
+              ],
+              "truncated": false
+            },
+            "evaluation_artifact_fingerprint": "fcf8b56f14c83a340228da92374c10b6eb7175c0c6fb6b5a84c0057d8aceff5e",
+            "evaluation_semantics": "f00e36286c7a",
+            "model_fingerprint": "52bd3fc4113f8ed2bb1ff7d49c89692c39ff495165dd124a1e08a439022d4989",
+            "official_benchmark": false,
+            "schema_version": 5,
+            "seed": 4200,
+            "success_percent": 68.75,
+            "successes": 110
+          }
+        }
+      ],
+      "result": {
+        "measurements": [
+          {
+            "candidate": "T1:checkpoint-120832",
+            "candidate_id": "T1:checkpoint-120832",
+            "instrument": "research_evaluation",
+            "label": "T1 latest baseline synchronized reach-and-hold diagnostics",
+            "metrics": {
+              "episodes": 160,
+              "evaluation_artifact": "campaigns/evaluations/bd32cc79-767a-4599-92cd-d889f3ec396b/evaluation-bd32cc79-767a-4599-92cd-d889f3ec396b-m2-T1-checkpoint-120832-160ep-seed4200-f00e36286c7a.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 8,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/model",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/seed",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/official_benchmark",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 160,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "reward_total",
+                      "steps",
+                      "success",
+                      "terminated",
+                      "truncated"
+                    ],
+                    "path": "/episode_results",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 160,
+                    "field_names": [
+                      "action_saturation_steps",
+                      "branch_limit_margins_degrees",
+                      "episode",
+                      "episode_seed",
+                      "final_distance_cm",
+                      "first_entry_action",
+                      "first_entry_branch",
+                      "first_entry_ee_speed_m_s",
+                      "first_entry_ee_velocity_m_s",
+                      "first_entry_joint_limit_margin_degrees",
+                      "first_entry_qvel_rad_s",
+                      "first_reach_step",
+                      "hold_interruptions",
+                      "in_tolerance_steps",
+                      "max_abs_qvel_rad_s",
+                      "max_ee_speed_m_s",
+                      "max_held_steps",
+                      "min_distance_cm",
+                      "minimum_action_margin",
+                      "minimum_joint_limit_margin_degrees",
+                      "target_angle_degrees",
+                      "target_radius_cm"
+                    ],
+                    "path": "/research_evidence/episode_diagnostics",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence/units",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/research_evidence/units/distance",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/time",
+                    "type": "string"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "fcf8b56f14c83a340228da92374c10b6eb7175c0c6fb6b5a84c0057d8aceff5e",
+              "evaluation_semantics": "f00e36286c7a",
+              "model_fingerprint": "52bd3fc4113f8ed2bb1ff7d49c89692c39ff495165dd124a1e08a439022d4989",
+              "official_benchmark": false,
+              "schema_version": 5,
+              "seed": 4200,
+              "success_percent": 68.75,
+              "successes": 110
+            }
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": null
+      },
+      "task_reference_contract": null
+    },
+    "failure": null,
+    "id": "M2",
+    "inquiry_id": "I1",
+    "kind": "measurement",
+    "progress": "completed",
+    "request": {
+      "measurement": {
+        "description": "Evaluate T1:checkpoint-120832 on the independent development panel with synchronized target geometry, analytic branch and joint-limit margins, first-entry velocity and timing, action margins, hold interruptions, maximum uninterrupted hold, and complete task success.",
+        "measurements": [
+          {
+            "candidate": "T1:checkpoint-120832",
+            "episodes": 160,
+            "instrument": "research_evaluation",
+            "label": "T1 latest baseline synchronized reach-and-hold diagnostics",
+            "seed": 4200
+          }
+        ],
+        "rationale": "T1 provides the first learned candidate, but its training success and reward are recipe telemetry rather than evidence about the official task mechanism. The updated research evaluator measures the competing explanations in the same seeded episodes. Failure clustering at targets with low feasible-branch or joint-limit margins, or systematic branch-conditioned outcomes, would direct posture-aware control and distribution coverage. Failures after entry with high joint or Cartesian velocity, low action headroom, repeated interruptions, or short maximum holds would direct braking and hold stabilization. Complete episode success remains the decisive outcome; this development panel diagnoses the route toward the human goal without declaring official success."
+      }
+    },
+    "request_fingerprint": "cd5277f5437ff40d6c70a400e15fdf326e5eefef3d0d94e2e0cc603a4b5adf18",
+    "session_id": "S3",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No candidates exist and no working, best-known, or retained model role is assigned.",
     "completed_operations": [
@@ -1545,7 +1971,8 @@
     "kind": "inquiry",
     "objective": "Advance I1 toward an evidence-supported answer to its scientific question: For a first learned candidate trained under the current recipe, are official-distribution failures dominated by branch/joint-limit coverage or by post-entry dynamic instability, as determined by target-conditioned first-entry velocity, hold interruptions, and complete uninterrupted success?",
     "operation_ids": [
-      "T1"
+      "T1",
+      "M2"
     ],
     "scientific_parent_commit": "be3c52ad10da5ad04a57b12ce7d428ecb9a62459"
   },
