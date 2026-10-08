@@ -1663,47 +1663,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "open",
-        "inquiry": {
-          "closure_condition": "Close when a candidate trained with full official-radius coverage has been compared with T1:checkpoint-120832 on a fixed full-distribution panel using episode success, first reach, maximum held steps, hold interruptions, truncation, and radius/angle stratification, and the result either materially removes inner-radius reach/truncation failures without a new hold deficit or shows persistent inner-radius failure requiring a convergence or branch-aware change.",
-          "goal_connection": "The current best development candidate succeeds on only 110 of 160 full-distribution episodes, with 42 of 50 failures never reaching the target and all failures truncating at the 500-step horizon. Resolving whether official-radius coverage is sufficient is necessary to select the smallest credible redesign toward at least 196 of 200 official successes while preserving the candidate's demonstrated hold behavior.",
-          "handoff_conclusion": "M1 established that the compiled direct-torque system can generate fast motion and centimeter-scale post-release displacement, making stabilization a plausible physical constraint, while finding no contacts in the sampled trials. T1 training succeeded on the outer-radius baseline distribution, but M2 showed that this did not generalize to the official distribution: success was 10/40 at 6-10 cm, 37/53 at 10-14 cm, 37/39 at 14-18 cm, and 26/28 at 18-20 cm. The observed failures were predominantly no-reach episodes ending at the horizon, not post-entry hold interruptions. Thus the initial model's stabilization consequence remains supported but is secondary for this candidate; the leading mechanism is omitted inner-radius coverage coupled to slow or failed convergence, with a smaller residual stabilization problem on difficult targets. This conclusion changed because M2 supplied the first learned-policy, target-conditioned hold and radius-stratified evidence that M1 lacked.",
-          "handoff_question": "Can training on the full official radius distribution eliminate the dominant inner-radius reach and horizon failures while preserving uninterrupted hold stability, or is an additional convergence or branch-aware control change required?",
-          "handoff_source_session_id": "S3",
-          "id": "I2",
-          "opened_in_session": "S4",
-          "question": "Can training on the full official radius distribution eliminate the dominant inner-radius reach and horizon failures while preserving uninterrupted hold stability, or is an additional convergence or branch-aware control change required?",
-          "rationale": "M2 identified omitted inner-radius coverage coupled to slow or failed convergence as the dominant failure mechanism, while post-entry interruption was secondary. The existing candidate was trained on the outer-radius baseline distribution, so its inner-radius failures cannot distinguish insufficient exposure from a need for new convergence or branch-aware control. A bounded full-distribution training and matched diagnostic comparison is the most direct evidence for the next goal-directed decision.",
-          "reframes": []
-        }
-      },
-      "result": {
-        "action": "open",
-        "inquiry_id": "I2",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E6",
-    "inquiry_id": null,
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "open",
-        "closure_condition": "Close when a candidate trained with full official-radius coverage has been compared with T1:checkpoint-120832 on a fixed full-distribution panel using episode success, first reach, maximum held steps, hold interruptions, truncation, and radius/angle stratification, and the result either materially removes inner-radius reach/truncation failures without a new hold deficit or shows persistent inner-radius failure requiring a convergence or branch-aware change.",
-        "goal_connection": "The current best development candidate succeeds on only 110 of 160 full-distribution episodes, with 42 of 50 failures never reaching the target and all failures truncating at the 500-step horizon. Resolving whether official-radius coverage is sufficient is necessary to select the smallest credible redesign toward at least 196 of 200 official successes while preserving the candidate's demonstrated hold behavior.",
-        "question": "Can training on the full official radius distribution eliminate the dominant inner-radius reach and horizon failures while preserving uninterrupted hold stability, or is an additional convergence or branch-aware control change required?",
-        "rationale": "M2 identified omitted inner-radius coverage coupled to slow or failed convergence as the dominant failure mechanism, while post-entry interruption was secondary. The existing candidate was trained on the outer-radius baseline distribution, so its inner-radius failures cannot distinguish insufficient exposure from a need for new convergence or branch-aware control. A bounded full-distribution training and matched diagnostic comparison is the most direct evidence for the next goal-directed decision."
-      }
-    },
-    "request_fingerprint": "e890be62b85b0d071d9d4e03f7dc3b382f16ee4e07fa73408f2730db9090e50c",
-    "session_id": "S4",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T1:checkpoint-120832 is the first learned candidate with full-distribution development evidence (68.75% on 160 episodes); no working, best-known, or retained role has been assigned.",
     "completed_operations": [
