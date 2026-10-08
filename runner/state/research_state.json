@@ -1621,38 +1621,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I1",
-        "outcome": "I1 closes with a limited, actionable answer: the first learned policy is not reliable across the official distribution, and its dominant failure mode is reach-limited and geometry-conditioned rather than stabilization-limited. In M2, 42 of 50 failures never entered tolerance, only 8 failures entered tolerance without completing the hold, and success varied from 59.3% at 6-16 cm to 91.5% at 16-20 cm, with the weakest angle sectors below 65%.",
-        "reason": "M2 satisfies the closure condition with 160 episode-level outcomes containing first-reach step, maximum held steps, interruptions, and radius-angle diagnostics. Together with M1's complete local holds, the evidence shifts the next intervention toward global trajectory generation and coverage of difficult radius-angle geometry. The result diagnoses this PPO recipe and candidate; it does not invalidate learning or establish that terminal stabilization can never matter."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I1",
-        "outcome": "I1 closes with a limited, actionable answer: the first learned policy is not reliable across the official distribution, and its dominant failure mode is reach-limited and geometry-conditioned rather than stabilization-limited. In M2, 42 of 50 failures never entered tolerance, only 8 failures entered tolerance without completing the hold, and success varied from 59.3% at 6-16 cm to 91.5% at 16-20 cm, with the weakest angle sectors below 65%.",
-        "reason": "M2 satisfies the closure condition with 160 episode-level outcomes containing first-reach step, maximum held steps, interruptions, and radius-angle diagnostics. Together with M1's complete local holds, the evidence shifts the next intervention toward global trajectory generation and coverage of difficult radius-angle geometry. The result diagnoses this PPO recipe and candidate; it does not invalidate learning or establish that terminal stabilization can never matter.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E4",
-    "inquiry_id": "I1",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "I1 closes with a limited, actionable answer: the first learned policy is not reliable across the official distribution, and its dominant failure mode is reach-limited and geometry-conditioned rather than stabilization-limited. In M2, 42 of 50 failures never entered tolerance, only 8 failures entered tolerance without completing the hold, and success varied from 59.3% at 6-16 cm to 91.5% at 16-20 cm, with the weakest angle sectors below 65%.",
-        "reason": "M2 satisfies the closure condition with 160 episode-level outcomes containing first-reach step, maximum held steps, interruptions, and radius-angle diagnostics. Together with M1's complete local holds, the evidence shifts the next intervention toward global trajectory generation and coverage of difficult radius-angle geometry. The result diagnoses this PPO recipe and candidate; it does not invalidate learning or establish that terminal stabilization can never matter."
-      }
-    },
-    "request_fingerprint": "428197daeb32e3ca198a4ac25e1778f5dc449223c3e11758ad0b7182292b545e",
-    "session_id": "S3",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "No candidates have been trained, evaluated, or assigned a role. Working, best-known, and retained roles remain empty.",
     "completed_operations": [
