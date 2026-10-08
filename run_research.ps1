@@ -68,6 +68,9 @@ $piPersona = @(
     "You set the scientific direction. Develop and challenge mechanistic explanations, determine which unknowns matter, create the measurements and tools needed to resolve them, and redesign any PI-owned part of the system when the evidence warrants it. Reason about robot behavior, learning dynamics, implementation, and experimental evidence as parts of one scientific problem rather than defaulting to local parameter or reward adjustments."
     "The human supplies the goal and protected boundary, not the research program. Existing code, architecture, metrics, prior hypotheses, and previous decisions are provisional scientific artifacts rather than authorities. Do not wait for the human or the current implementation to identify the decisive mechanism, method, or investigation."
 ) -join " "
+$modelAnalystPersona = @(
+    "You are a robotics and simulation analyst with deep expertise in rigid-body dynamics, kinematics, actuation, sensing, control theory, system identification, and MuJoCo modeling. You build rigorous physical models of embodied systems. You derive every claim from the definitions of the system. You separate what the definitions establish from what you infer and from what remains unknown. A principal investigator will use your model as the scientific foundation of a research campaign. The principal investigator chooses the research. You supply the physical understanding."
+) -join " "
 $scientificModelUseGuidance = @(
     "Use pi_workspace/scientific_model.md as the campaign's initial physical model. Test its interpretation against observed behavior and carry forward what the campaign learns; do not treat it as an intervention menu or a passive reference."
     "Use its physical consequences and unknowns to form competing mechanistic explanations. When an unresolved mechanism could change the scientific direction, seek evidence that discriminates between those explanations; when it cannot, state why it is not consequential."
@@ -77,29 +80,36 @@ $startupPhaseObjective = @'
 Establish the most credible initial scientific direction toward the human goal from the scientific model and available evidence. Use scientific work in this session to establish or refine that direction, including building or adapting reusable scientific tools and PI-owned methods where needed. These capabilities can support subsequent inquiries. Choose the first useful scientific action and explain why it advances the direction. Preserve the work actually performed, resulting understanding, remaining uncertainties and chosen next action in the scientific session record.
 '@
 $scientificModelPhaseObjective = @'
-Construct the campaign's physical and scientific model before any training or campaign evidence exists. Work from first principles and the human-authored implementation to explain the robot as an embodied dynamical system: how its morphology, actuation, sensing, control loop, simulator, and task geometry jointly determine the behaviors that are possible, constrained, or scientifically uncertain.
+Construct the physical and scientific model of the robot and the task. The model exists before any training or campaign evidence.
 
-Do not produce a component inventory or a repository summary. Build a scientific model of the system.
+Work from first principles and from the human-owned definitions of the robot, the simulator, and the task. Explain the robot as an embodied dynamical system. Show how its morphology, actuation, sensing, control loop, simulator, and task geometry together determine the behaviors that are possible, constrained, or scientifically uncertain.
 
-Analyze, from first principles and from the human-authored implementation:
+Build a scientific model of the system. The model explains mechanisms. It gives the reasons behind the behavior, and it goes beyond a list of components or a summary of the repository.
 
-* the robot morphology, degrees of freedom, geometry, reachable workspace, joint constraints, and relevant kinematic structure;
-* the actuation model and how commanded actions produce physical motion over time;
-* the important dynamic properties of the simulated robot, including timing, damping, inertia, control authority, and any other properties that materially affect behavior;
-* the initial physical state and how it shapes the task the controller must solve;
-* the geometry and physical requirements of the task;
-* the coupled physical capabilities required for success, including reaching, trajectory control, convergence, stabilization, and any other relevant behaviors, together with physically justified interactions between them;
-* the sensing and observation model: what physical state is observable, what is derived, what may be ambiguous, and what information is unavailable;
-* the relationship between observation, control action, robot motion, and task outcome;
-* alternative physical configurations or solutions available to the robot, such as multiple kinematic solutions where relevant;
-* physical, kinematic, dynamic, control, or observability constraints that may create qualitatively different classes of behavior or failure;
-* which physical quantities across the complete behavior would be scientifically meaningful for understanding the robot.
+Analyze, from first principles and from the human-owned definitions:
 
-For each consequential physical implication or unknown, state which possible research decisions it could change, the assumptions on which that relevance depends, the implementation or contract source references supporting it, and what observation or evidence would support, weaken, or revise it. Keep this decision relevance distinct from a proposed intervention: the model should identify consequences and discriminating needs, not prescribe a recipe.
+* the robot morphology, degrees of freedom, geometry, reachable workspace, joint constraints, and relevant kinematic structure.
+* the actuation model, and how commanded actions produce physical motion over time.
+* the dynamic properties of the simulated robot that materially affect behavior, including timing, damping, inertia, and control authority.
+* the initial physical state, and how it shapes the task that the controller must solve.
+* the geometry and physical requirements of the task.
+* the coupled physical capabilities that success requires, including reaching, trajectory control, convergence, and stabilization, together with the physically justified interactions between them.
+* the sensing and observation model: which physical state is observable, which is derived, which is ambiguous, and which is unavailable.
+* the relation between observation, control action, robot motion, and task outcome.
+* alternative physical configurations or solutions available to the robot, such as multiple kinematic solutions.
+* the physical, kinematic, dynamic, control, and observability constraints that create qualitatively different classes of behavior or failure.
+* the physical quantities, across the complete behavior, that are scientifically meaningful for understanding the robot.
 
-Finish with a substantive section headed `## Decision-relevant synthesis`. Select only the physical consequences and unknowns most likely to change the first campaign decisions. For each selected item, compactly preserve its decision relevance, assumptions, source references, and discriminating evidence. This is the PI-authored handoff into startup, not an intervention plan.
+For each consequential physical implication and each unknown, state:
 
-The final output should be a compact but substantive Scientific model of the robot and task. It should explain how the complete coupled system works physically and scientifically, not merely list what files contain or imply a future intervention agenda.
+1. The research decisions that it could change.
+2. The assumptions on which that relevance depends.
+3. The source references in the implementation or the contracts.
+4. The observation or evidence that would support, weaken, or revise it.
+
+The model states physical consequences and the evidence that discriminates between them. The principal investigator selects the interventions.
+
+The final output is a compact and substantive scientific model. It explains how the complete coupled system works physically and scientifically.
 '@
 
 function Request-CampaignStop([string]$Message) {
@@ -817,22 +827,9 @@ function New-ScientificSessionPrompt {
         @("Use only the operation kinds listed as available in campaigns/brief.md.")
     }
     $startupHandoffGuidance = if ($session.kind -eq "startup") {
-        $modelHandoff = "The PI-authored decision-relevant synthesis is available in campaigns/brief.md under 'Initial scientific model'."
-        $modelPath = Join-Path (Get-Location) "pi_workspace\scientific_model.md"
-        if (Test-Path -LiteralPath $modelPath -PathType Leaf) {
-            $modelText = Get-Content -LiteralPath $modelPath -Raw
-            $selectedSynthesis = [regex]::Match(
-                $modelText,
-                "(?ms)^## Decision-relevant synthesis\s+(.*?)(?=^## |\z)"
-            ).Groups[1].Value.Trim()
-            if ($selectedSynthesis) {
-                $modelHandoff = "PI-selected decision-relevant synthesis from the initial scientific model:`n$selectedSynthesis"
-            }
-        }
         @(
             "Before selecting the first action, read pi_workspace/scientific_model.md as the initial physical model and contracts/program.md as the lifecycle contract."
-            $modelHandoff
-            "Use this selected handoff to state which scientific distinction or capability question should determine the initial direction, what findings would change that decision, and how the first action follows. Treat the model as revisable in light of evidence; do not treat it as an intervention menu or require a measurement merely to restate it."
+            "From the model, select the scientific distinction or capability question that should determine the initial direction. State which findings would change that decision, and how the first action follows. Treat the model as revisable in light of evidence."
         )
     }
     else {
@@ -927,11 +924,11 @@ function Invoke-ScientificModelPhase {
 
     $goal = Get-HumanGoalSummary -State $State
     $prompt = @(
-        $piPersona
+        $modelAnalystPersona
         "Human goal: $goal"
         "Current objective: $scientificModelPhaseObjective"
-        "Base the model on contracts/scenario.md and the relevant human-authored implementation."
-        "The document must contain substantive registers headed Established facts, Physical consequences, Unknowns, and Decision-relevant synthesis. Distinguish repository facts from reasoned implications and unresolved quantities, and preserve source references for later verification."
+        "Base the model on contracts/scenario.md and on the human-owned definitions of the robot, the simulator, and the task."
+        "The document has three registers, with these headings: Established facts, Physical consequences, and Unknowns. Mark each statement as a repository fact, a reasoned implication, or an unresolved quantity. Keep source references for later verification."
         "Include only what is justified before campaign evidence exists. Write the result to pi_workspace/scientific_model.md."
     ) -join "`n`n"
 
@@ -943,10 +940,10 @@ function Invoke-ScientificModelPhase {
     }
     if (-not (Test-ScientificModelDeliverable)) {
         $retry = @(
-            $piPersona
+            $modelAnalystPersona
             "Human goal: $goal"
             "The scientific model could not be accepted: $script:ScientificModelValidationFeedback"
-            "Correct pi_workspace/scientific_model.md while preserving valid content and ensuring all four required registers are substantive, source-recoverable, and decision-relevant."
+            "Correct pi_workspace/scientific_model.md. Keep the valid content. Make all three required registers substantive and source-recoverable."
         ) -join "`n`n"
         Invoke-PISession -Prompt $retry -Phase "scientific model" -Continue -Preliminary
         if (Test-StopAfterOperation $script:PIExitCode "PI session") {

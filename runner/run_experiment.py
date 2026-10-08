@@ -1797,7 +1797,6 @@ def check_scientific_model_deliverable(*, quiet: bool = False) -> int:
             "Established facts",
             "Physical consequences",
             "Unknowns",
-            "Decision-relevant synthesis",
         ):
             match = re.search(
                 rf"(?ms)^## {re.escape(heading)}\s+(.*?)(?=^## |\Z)",
