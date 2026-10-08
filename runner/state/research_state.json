@@ -9,7 +9,7 @@
   },
   "candidates": {},
   "counters": {
-    "event": 0,
+    "event": 1,
     "inquiry": 0,
     "measurement": 1,
     "session": 1,
@@ -18,7 +18,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -387,31 +387,152 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-08T19:48:30Z",
+      "error": null,
+      "id": "E1",
+      "inquiry_id": null,
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "No candidates exist and no working, best-known, or retained model role is assigned.",
+        "completed_operations": [
+          "M1"
+        ],
+        "cumulative_resource_use": "One non-training characterization measurement completed (M1); zero training steps requested or consumed.",
+        "current_goal_gap": "No learned candidate or closed-loop success evidence exists. The remaining gap is to determine whether failures under the official distribution arise chiefly from branch and joint-limit selection, sampled-data reach and braking, or post-entry hold interruptions, then produce a policy robust enough to keep the tail failure count at four or fewer.",
+        "current_synthesis": "Observed in completed operation M1: on a 29-by-72 grid spanning the official radius and angle ranges, all 2088 targets had at least one joint-limit-feasible analytic IK branch; each individual elbow branch was feasible for 1972 of 2088 samples (94.44%), with the excluded samples near shoulder limits. Analytic forward-kinematics residual was at most 1.6e-16 m. Among sampled feasible branch configurations, the smallest Jacobian singular value was 0.0415 m, so the official terminal set is not intrinsically singular. The compiled actuators transmit control directly with gear 5, and unit controls produced 5-unit generalized actuator force with coupled accelerations of roughly 400-490 rad/s^2 at the probe posture. A 1-second zero-control probe reduced initial joint velocities of [1.0,-0.7] rad/s to numerical zero. Interpretation: static position-space impossibility and terminal Jacobian singularity are contradicted as primary explanations for the official goal gap. The branch result supports a branch-selection explanation for edge targets, while the acceleration and damping results support a competing sampled-data reach/braking/hold explanation. M1 did not measure a learned policy, trajectories, first-entry velocity, actuator saturation during a task, limit impulses, sub-control-step excursions, or protected hold semantics; therefore it cannot rank those closed-loop explanations or establish success.",
+        "decision_frontier": "The unresolved scientific distinction is whether the dominant attainable-policy limitation is (a) target-conditioned branch/joint-limit selection, especially near the approximately 170-degree shoulder boundary, or (b) dynamic closed-loop behavior after choosing a feasible posture: reach time, braking, residual velocity, and repeated exits during the 100-sample hold. Evidence that failure clusters at limit-margin targets or that branch-conditioned trajectories differ materially would direct the campaign toward posture-aware control and distribution coverage. Evidence that failures occur across feasible branches with high first-entry velocity, actuator saturation, or hold interruptions would direct it toward braking/stabilization and hold-aware learning. A policy evaluation with synchronized target geometry, first-entry timing and velocity, maximum uninterrupted hold, interruptions, action magnitude, and success is the discriminating test.",
+        "evidence_references": [
+          "M1"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 of 200 official episodes to complete an uninterrupted 2-second Cartesian hold. M1 establishes that the target positions are statically reachable in the compiled robot, so progress should focus on learning a controller that selects feasible postures, traverses them, brakes residual velocity, and preserves the hold across the full radius-angle distribution.",
+        "next_direction_or_closure": "Checkpoint the startup synthesis and carry the unresolved frontier into goal review. Open an inquiry focused on diagnosing the first learned candidate's reach-versus-hold failure mechanism; use a full-allocation training run only after that inquiry is opened, then evaluate the candidate with the stated synchronized diagnostics.",
+        "next_question": "For a first learned candidate trained under the current recipe, are official-distribution failures dominated by branch/joint-limit coverage or by post-entry dynamic instability, as determined by target-conditioned first-entry velocity, hold interruptions, and complete uninterrupted success?"
+      },
+      "result": {
+        "session_id": "S1",
+        "status": "checkpointed"
+      },
+      "session_id": "S1",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
-  "pi_checkpoint": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "9696da23f6415115e4439b5ef10814b9ebbd4b82",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "No candidates exist and no working, best-known, or retained model role is assigned.",
+        "completed_operations": [
+          "M1"
+        ],
+        "cumulative_resource_use": "One non-training characterization measurement completed (M1); zero training steps requested or consumed.",
+        "current_goal_gap": "No learned candidate or closed-loop success evidence exists. The remaining gap is to determine whether failures under the official distribution arise chiefly from branch and joint-limit selection, sampled-data reach and braking, or post-entry hold interruptions, then produce a policy robust enough to keep the tail failure count at four or fewer.",
+        "current_synthesis": "Observed in completed operation M1: on a 29-by-72 grid spanning the official radius and angle ranges, all 2088 targets had at least one joint-limit-feasible analytic IK branch; each individual elbow branch was feasible for 1972 of 2088 samples (94.44%), with the excluded samples near shoulder limits. Analytic forward-kinematics residual was at most 1.6e-16 m. Among sampled feasible branch configurations, the smallest Jacobian singular value was 0.0415 m, so the official terminal set is not intrinsically singular. The compiled actuators transmit control directly with gear 5, and unit controls produced 5-unit generalized actuator force with coupled accelerations of roughly 400-490 rad/s^2 at the probe posture. A 1-second zero-control probe reduced initial joint velocities of [1.0,-0.7] rad/s to numerical zero. Interpretation: static position-space impossibility and terminal Jacobian singularity are contradicted as primary explanations for the official goal gap. The branch result supports a branch-selection explanation for edge targets, while the acceleration and damping results support a competing sampled-data reach/braking/hold explanation. M1 did not measure a learned policy, trajectories, first-entry velocity, actuator saturation during a task, limit impulses, sub-control-step excursions, or protected hold semantics; therefore it cannot rank those closed-loop explanations or establish success.",
+        "decision_frontier": "The unresolved scientific distinction is whether the dominant attainable-policy limitation is (a) target-conditioned branch/joint-limit selection, especially near the approximately 170-degree shoulder boundary, or (b) dynamic closed-loop behavior after choosing a feasible posture: reach time, braking, residual velocity, and repeated exits during the 100-sample hold. Evidence that failure clusters at limit-margin targets or that branch-conditioned trajectories differ materially would direct the campaign toward posture-aware control and distribution coverage. Evidence that failures occur across feasible branches with high first-entry velocity, actuator saturation, or hold interruptions would direct it toward braking/stabilization and hold-aware learning. A policy evaluation with synchronized target geometry, first-entry timing and velocity, maximum uninterrupted hold, interruptions, action magnitude, and success is the discriminating test.",
+        "evidence_references": [
+          "M1"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 of 200 official episodes to complete an uninterrupted 2-second Cartesian hold. M1 establishes that the target positions are statically reachable in the compiled robot, so progress should focus on learning a controller that selects feasible postures, traverses them, brakes residual velocity, and preserves the hold across the full radius-angle distribution.",
+        "inquiry_id": null,
+        "next_direction_or_closure": "Checkpoint the startup synthesis and carry the unresolved frontier into goal review. Open an inquiry focused on diagnosing the first learned candidate's reach-versus-hold failure mechanism; use a full-allocation training run only after that inquiry is opened, then evaluate the candidate with the stated synchronized diagnostics.",
+        "next_question": "For a first learned candidate trained under the current recipe, are official-distribution failures dominated by branch/joint-limit coverage or by post-entry dynamic instability, as determined by target-conditioned first-entry velocity, hold interruptions, and complete uninterrupted success?",
+        "session_id": "S1"
+      },
+      "presentation": {
+        "backend_session_id": "ff1b146c-64de-4038-87bd-24672d4cf84e",
+        "campaign_id": "bd32cc79-767a-4599-92cd-d889f3ec396b",
+        "campaign_usage": "6m39s | 10.67 AIU | prompt 843.8k (75% cached) | output 34.9k",
+        "session_id": "S1",
+        "session_kind": "startup",
+        "session_usage": "1m41s | 3.44 AIU | prompt 311k (75% cached) | output 8.9k"
+      },
+      "result": {
+        "session_id": "S1",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "44af9578144d7f5be9eb2caa5295ca46dd1113ee",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E1",
+    "inquiry_id": null,
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "No candidates exist and no working, best-known, or retained model role is assigned.",
+        "completed_operations": [
+          "M1"
+        ],
+        "cumulative_resource_use": "One non-training characterization measurement completed (M1); zero training steps requested or consumed.",
+        "current_goal_gap": "No learned candidate or closed-loop success evidence exists. The remaining gap is to determine whether failures under the official distribution arise chiefly from branch and joint-limit selection, sampled-data reach and braking, or post-entry hold interruptions, then produce a policy robust enough to keep the tail failure count at four or fewer.",
+        "current_synthesis": "Observed in completed operation M1: on a 29-by-72 grid spanning the official radius and angle ranges, all 2088 targets had at least one joint-limit-feasible analytic IK branch; each individual elbow branch was feasible for 1972 of 2088 samples (94.44%), with the excluded samples near shoulder limits. Analytic forward-kinematics residual was at most 1.6e-16 m. Among sampled feasible branch configurations, the smallest Jacobian singular value was 0.0415 m, so the official terminal set is not intrinsically singular. The compiled actuators transmit control directly with gear 5, and unit controls produced 5-unit generalized actuator force with coupled accelerations of roughly 400-490 rad/s^2 at the probe posture. A 1-second zero-control probe reduced initial joint velocities of [1.0,-0.7] rad/s to numerical zero. Interpretation: static position-space impossibility and terminal Jacobian singularity are contradicted as primary explanations for the official goal gap. The branch result supports a branch-selection explanation for edge targets, while the acceleration and damping results support a competing sampled-data reach/braking/hold explanation. M1 did not measure a learned policy, trajectories, first-entry velocity, actuator saturation during a task, limit impulses, sub-control-step excursions, or protected hold semantics; therefore it cannot rank those closed-loop explanations or establish success.",
+        "decision_frontier": "The unresolved scientific distinction is whether the dominant attainable-policy limitation is (a) target-conditioned branch/joint-limit selection, especially near the approximately 170-degree shoulder boundary, or (b) dynamic closed-loop behavior after choosing a feasible posture: reach time, braking, residual velocity, and repeated exits during the 100-sample hold. Evidence that failure clusters at limit-margin targets or that branch-conditioned trajectories differ materially would direct the campaign toward posture-aware control and distribution coverage. Evidence that failures occur across feasible branches with high first-entry velocity, actuator saturation, or hold interruptions would direct it toward braking/stabilization and hold-aware learning. A policy evaluation with synchronized target geometry, first-entry timing and velocity, maximum uninterrupted hold, interruptions, action magnitude, and success is the discriminating test.",
+        "evidence_references": [
+          "M1"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 of 200 official episodes to complete an uninterrupted 2-second Cartesian hold. M1 establishes that the target positions are statically reachable in the compiled robot, so progress should focus on learning a controller that selects feasible postures, traverses them, brakes residual velocity, and preserves the hold across the full radius-angle distribution.",
+        "next_direction_or_closure": "Checkpoint the startup synthesis and carry the unresolved frontier into goal review. Open an inquiry focused on diagnosing the first learned candidate's reach-versus-hold failure mechanism; use a full-allocation training run only after that inquiry is opened, then evaluate the candidate with the stated synchronized diagnostics.",
+        "next_question": "For a first learned candidate trained under the current recipe, are official-distribution failures dominated by branch/joint-limit coverage or by post-entry dynamic instability, as determined by target-conditioned first-entry velocity, hold interruptions, and complete uninterrupted success?"
+      }
+    },
+    "request_fingerprint": "58438274d9137a0bb0d8e78ee6beb5acfd7d3a5db1a38cd557fe9670b1cbe84d",
+    "session_id": "S1",
+    "supersedes": null
+  },
+  "pi_checkpoint": {
+    "candidates_and_roles": "No candidates exist and no working, best-known, or retained model role is assigned.",
+    "completed_operations": [
+      "M1"
+    ],
+    "cumulative_resource_use": "One non-training characterization measurement completed (M1); zero training steps requested or consumed.",
+    "current_goal_gap": "No learned candidate or closed-loop success evidence exists. The remaining gap is to determine whether failures under the official distribution arise chiefly from branch and joint-limit selection, sampled-data reach and braking, or post-entry hold interruptions, then produce a policy robust enough to keep the tail failure count at four or fewer.",
+    "current_synthesis": "Observed in completed operation M1: on a 29-by-72 grid spanning the official radius and angle ranges, all 2088 targets had at least one joint-limit-feasible analytic IK branch; each individual elbow branch was feasible for 1972 of 2088 samples (94.44%), with the excluded samples near shoulder limits. Analytic forward-kinematics residual was at most 1.6e-16 m. Among sampled feasible branch configurations, the smallest Jacobian singular value was 0.0415 m, so the official terminal set is not intrinsically singular. The compiled actuators transmit control directly with gear 5, and unit controls produced 5-unit generalized actuator force with coupled accelerations of roughly 400-490 rad/s^2 at the probe posture. A 1-second zero-control probe reduced initial joint velocities of [1.0,-0.7] rad/s to numerical zero. Interpretation: static position-space impossibility and terminal Jacobian singularity are contradicted as primary explanations for the official goal gap. The branch result supports a branch-selection explanation for edge targets, while the acceleration and damping results support a competing sampled-data reach/braking/hold explanation. M1 did not measure a learned policy, trajectories, first-entry velocity, actuator saturation during a task, limit impulses, sub-control-step excursions, or protected hold semantics; therefore it cannot rank those closed-loop explanations or establish success.",
+    "decision_frontier": "The unresolved scientific distinction is whether the dominant attainable-policy limitation is (a) target-conditioned branch/joint-limit selection, especially near the approximately 170-degree shoulder boundary, or (b) dynamic closed-loop behavior after choosing a feasible posture: reach time, braking, residual velocity, and repeated exits during the 100-sample hold. Evidence that failure clusters at limit-margin targets or that branch-conditioned trajectories differ materially would direct the campaign toward posture-aware control and distribution coverage. Evidence that failures occur across feasible branches with high first-entry velocity, actuator saturation, or hold interruptions would direct it toward braking/stabilization and hold-aware learning. A policy evaluation with synchronized target geometry, first-entry timing and velocity, maximum uninterrupted hold, interruptions, action magnitude, and success is the discriminating test.",
+    "evidence_references": [
+      "M1"
+    ],
+    "human_goal_connection": "The human goal requires at least 196 of 200 official episodes to complete an uninterrupted 2-second Cartesian hold. M1 establishes that the target positions are statically reachable in the compiled robot, so progress should focus on learning a controller that selects feasible postures, traverses them, brakes residual velocity, and preserves the hold across the full radius-angle distribution.",
+    "inquiry_id": null,
+    "next_direction_or_closure": "Checkpoint the startup synthesis and carry the unresolved frontier into goal review. Open an inquiry focused on diagnosing the first learned candidate's reach-versus-hold failure mechanism; use a full-allocation training run only after that inquiry is opened, then evaluate the candidate with the stated synchronized diagnostics.",
+    "next_question": "For a first learned candidate trained under the current recipe, are official-distribution failures dominated by branch/joint-limit coverage or by post-entry dynamic instability, as determined by target-conditioned first-entry velocity, hold interruptions, and complete uninterrupted success?",
+    "scientific_commit": "44af9578144d7f5be9eb2caa5295ca46dd1113ee",
+    "session_id": "S1"
+  },
   "schema_version": 6,
   "scientific_model": {
     "commit": "89af6e2a2264f0099489d72eb386232530285d8a",
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "ff1b146c-64de-4038-87bd-24672d4cf84e",
-    "id": "S1",
-    "inquiry_id": null,
-    "kind": "startup",
-    "objective": "Establish the most credible initial scientific direction toward the human goal from the scientific model and available evidence. Use scientific work in this session to establish or refine that direction, including building or adapting reusable scientific tools and PI-owned methods where needed. These capabilities can support subsequent inquiries. Choose the first useful scientific action and explain why it advances the direction. Preserve the work actually performed, resulting understanding, remaining uncertainties and chosen next action in the scientific session record.",
-    "operation_ids": [
-      "M1"
-    ],
-    "scientific_parent_commit": "9696da23f6415115e4439b5ef10814b9ebbd4b82"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
