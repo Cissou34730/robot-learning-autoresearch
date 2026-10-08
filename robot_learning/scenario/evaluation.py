@@ -13,7 +13,6 @@ which never interprets its contents.
 from collections.abc import Callable
 from pathlib import Path
 
-import mujoco
 import numpy as np
 
 from benchmark.paired_evidence import episode_outcomes
@@ -36,7 +35,7 @@ def evaluate_research_model(
     if episodes < 1:
         raise ValueError("an evaluation panel requires at least one episode")
     runtime = load_runtime(model_path, algorithm)
-    env = make_evaluation_env(policy_runtime=runtime, trace_substeps=True)
+    env = make_evaluation_env(policy_runtime=runtime)
 
     episode_results: list[dict] = []
     episode_diagnostics: list[dict] = []
@@ -56,9 +55,6 @@ def evaluate_research_model(
         in_tolerance_steps = 0
         hold_interruptions = 0
         was_in_tolerance = False
-        branch_switches = 0
-        previous_branch: str | None = None
-        trajectory_trace: list[dict] = []
         while not (terminated or truncated):
             action = runtime.predict(obs)
             obs, reward, terminated, truncated, info = env.step(action)
@@ -78,60 +74,6 @@ def evaluate_research_model(
             was_in_tolerance = held_steps > 0
             if "is_success" in info:
                 success = bool(info["is_success"])
-
-            jacobian_position = np.zeros((3, env.model.nv), dtype=np.float64)
-            jacobian_rotation = np.zeros((3, env.model.nv), dtype=np.float64)
-            mujoco.mj_jacSite(
-                env.model,
-                env.data,
-                jacobian_position,
-                jacobian_rotation,
-                env.model.site("end_effector").id,
-            )
-            planar_jacobian = jacobian_position[:2, :2]
-            branch_errors = np.asarray(obs[7:11], dtype=np.float64)
-            branch_error_norms = [
-                float(np.linalg.norm(branch_errors[:2])),
-                float(np.linalg.norm(branch_errors[2:])),
-            ]
-            branch = "open" if branch_error_norms[0] <= branch_error_norms[1] else "folded"
-            if previous_branch is not None and branch != previous_branch:
-                branch_switches += 1
-            previous_branch = branch
-            substep_distances_cm = (
-                100.0
-                * np.asarray(info["substep_distances"], dtype=np.float64)
-            ).tolist()
-            jacobian_condition = float(np.linalg.cond(planar_jacobian))
-            trajectory_trace.append(
-                {
-                    "control_step": steps,
-                    "q_rad": np.asarray(info["qpos"], dtype=np.float64).tolist(),
-                    "qdot_rad_per_s": np.asarray(
-                        info["qvel"], dtype=np.float64
-                    ).tolist(),
-                    "action": np.asarray(
-                        info["applied_action"], dtype=np.float64
-                    ).tolist(),
-                    "actuator_force": np.asarray(
-                        info["actuator_force"], dtype=np.float64
-                    ).tolist(),
-                    "qacc_rad_per_s2": np.asarray(
-                        info["qacc"], dtype=np.float64
-                    ).tolist(),
-                    "distance_cm": distance_cm,
-                    "substep_distances_cm": substep_distances_cm,
-                    "branch": branch,
-                    "branch_error_norms_rad": branch_error_norms,
-                    "jacobian_determinant": float(np.linalg.det(planar_jacobian)),
-                    "jacobian_condition": (
-                        jacobian_condition
-                        if np.isfinite(jacobian_condition)
-                        else None
-                    ),
-                    "held_steps": held_steps,
-                }
-            )
 
         episode_results.append(
             {
@@ -161,8 +103,6 @@ def evaluate_research_model(
                 "max_held_steps": max_held_steps,
                 "in_tolerance_steps": in_tolerance_steps,
                 "hold_interruptions": hold_interruptions,
-                "branch_switches": branch_switches,
-                "trajectory_trace": trajectory_trace,
             }
         )
         if progress_callback is not None:
@@ -170,7 +110,7 @@ def evaluate_research_model(
 
     successes = sum(episode["success"] for episode in episode_results)
     return {
-        "schema_version": 6,
+        "schema_version": 5,
         "model": str(model_path),
         "episodes": episodes,
         "seed": seed,
