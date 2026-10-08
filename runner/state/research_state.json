@@ -1593,38 +1593,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I1",
-        "outcome": "I1 resolves to a mixed failure mode dominated by inner-radius reach/convergence failure with horizon truncation, while post-entry hold interruption is a secondary mechanism. In M2, 42 of 50 failures never reached the 1 cm ball and all 50 failures truncated at 500 steps; only 8 failures reached the ball and then failed through interruption. Success was 10/40 at 6-10 cm, 37/53 at 10-14 cm, 37/39 at 14-18 cm, and 26/28 at 18-20 cm.",
-        "reason": "M2 evaluated T1:checkpoint-120832 on the fixed 160-episode full-distribution panel and recorded the required first-reach, maximum-held, interruption, truncation, radius, and angle diagnostics. The strong inner-radius gradient and no-reach truncations select coverage/convergence as the primary redesign direction; M1's overshoot hypothesis remains relevant because 8 reached episodes were interrupted, including concentrated instability on difficult inner targets, but it is not the dominant cause of the 50 failures. This redirects the campaign toward broadening inner-radius learning while preserving explicit stabilization diagnostics."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I1",
-        "outcome": "I1 resolves to a mixed failure mode dominated by inner-radius reach/convergence failure with horizon truncation, while post-entry hold interruption is a secondary mechanism. In M2, 42 of 50 failures never reached the 1 cm ball and all 50 failures truncated at 500 steps; only 8 failures reached the ball and then failed through interruption. Success was 10/40 at 6-10 cm, 37/53 at 10-14 cm, 37/39 at 14-18 cm, and 26/28 at 18-20 cm.",
-        "reason": "M2 evaluated T1:checkpoint-120832 on the fixed 160-episode full-distribution panel and recorded the required first-reach, maximum-held, interruption, truncation, radius, and angle diagnostics. The strong inner-radius gradient and no-reach truncations select coverage/convergence as the primary redesign direction; M1's overshoot hypothesis remains relevant because 8 reached episodes were interrupted, including concentrated instability on difficult inner targets, but it is not the dominant cause of the 50 failures. This redirects the campaign toward broadening inner-radius learning while preserving explicit stabilization diagnostics.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E4",
-    "inquiry_id": "I1",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "I1 resolves to a mixed failure mode dominated by inner-radius reach/convergence failure with horizon truncation, while post-entry hold interruption is a secondary mechanism. In M2, 42 of 50 failures never reached the 1 cm ball and all 50 failures truncated at 500 steps; only 8 failures reached the ball and then failed through interruption. Success was 10/40 at 6-10 cm, 37/53 at 10-14 cm, 37/39 at 14-18 cm, and 26/28 at 18-20 cm.",
-        "reason": "M2 evaluated T1:checkpoint-120832 on the fixed 160-episode full-distribution panel and recorded the required first-reach, maximum-held, interruption, truncation, radius, and angle diagnostics. The strong inner-radius gradient and no-reach truncations select coverage/convergence as the primary redesign direction; M1's overshoot hypothesis remains relevant because 8 reached episodes were interrupted, including concentrated instability on difficult inner targets, but it is not the dominant cause of the 50 failures. This redirects the campaign toward broadening inner-radius learning while preserving explicit stabilization diagnostics."
-      }
-    },
-    "request_fingerprint": "f8ff7d5bb799207a36d6ea93b1b9bfe5daf07a2129e4b8c9e5cf7d882d0b6c0d",
-    "session_id": "S3",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "No learned candidates exist; no working, best-known, or retained role is assigned.",
     "completed_operations": [
