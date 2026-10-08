@@ -458,6 +458,7 @@ Implementation checks and unassessed campaign effects are not separate issues.
 | OI-011 | Console clarity and maintainer-file read controls | **Deferred.** Phase-specific source-read controls are implemented. Console presentation and any further maintainer-file controls remain separate work. |
 | OI-012 | Independent frozen-policy publication | **Proposal only.** Publication independent of training is not approved or implemented. Campaign recovery is not authorized. |
 | OI-013 | Remove the temporary fifteen-inquiry cap | **Pending.** The cap now pauses at a checkpointed boundary and no longer represents scientific exhaustion. Its value is unchanged. Removal remains a later maintainer decision. |
+| OI-014 | Single-change attribution in an intervention | **Open.** An intervention can change several factors at once and then receive a single-cause explanation. The explanation directs the following inquiries, so a wrong attribution can send later work along the wrong route. The requirement is attribution that matches the change, not a repeatable campaign. A bundled change stays valid when its candidate receives direct paired evaluation and the unresolved attribution stays visible. No design or runtime change is approved. |
 
 ### Detailed backlog and status context
 
@@ -2510,3 +2511,44 @@ separate from harness changes so their outcomes are not conflated.
   measured, or evaluated.
 - **Status:** OI-001 remains open and narrowed. The prompt change is
   implemented and unmeasured.
+
+## 2026-10-08: review campaign 06656182 and record OI-014
+
+- **Campaign:** `06656182-d7f0-4011-898d-2b870e8a2a54` ran on 7 October under
+  the R8 instruction stack without the PI-authority sentence and under the
+  previous scientific-model prompt. It passed the official assessment with
+  196 of 200 episodes (98.0%) using `T5:checkpoint-120832`. The record holds
+  6 training runs, 9 measurements, 5 of 15 inquiries and 23 operations.
+- **Handoff:** no handoff collapsed. Every checkpoint preserved the result,
+  the interpretation, the decision frontier and the next action. Negative
+  results for T2, T4 and T6 stayed explicit to the end of the campaign. This
+  supports the OI-001 retrospective finding. Handoff is not the weakness here.
+- **Inquiry coherence and closure:** each of I1 to I5 closed after one
+  intervention and one matched evaluation. Three closed on a negative or
+  limited result, and the PI accepted them. The campaign therefore shows the
+  bounded closure that OI-002 asks for, without any approved OI-002 change.
+  One run does not establish that the harness now produces that behavior.
+- **OI-002 evidence:** I4 repeats the exact question text of the closed I3
+  inquiry. The I4 rationale, closure condition and experiment are different,
+  so the defect is in the inquiry question rather than the work. OI-002
+  remains open.
+- **OI-014 evidence:** T3 changed the training context and added the settling
+  reward term in one operation. I2 attributed the gain to the settling term
+  alone. T4 and T5 then refined that term. Later evidence supported the
+  braking route, so no failure followed. The risk is route selection, not
+  reproducibility.
+- **Official assessment request:** legitimate and reasonably justified. T5 was
+  the assigned best-known candidate, scored 95% on M8 and 98% on M9, beat T6
+  on all eight discordant M9 episodes, and no inquiry was active. The E23
+  reason emphasized the 98% panel and the absence of a dynamics signature. It
+  did not weigh the conflicting 95% and 98% results against the value of one
+  more inquiry. Requiring near-certain readiness would instead let a campaign
+  continue without end, so the balance, not the certainty, is the open point.
+  This sits inside OI-005, whose replacement guidance stays postponed.
+- **Reporting:** `docs/research-overview/robot-campaign-06656182-final-analysis-20261008.html`
+  records the campaign, and the overview was updated in commit `5f58dd5`.
+- **Boundary:** this entry records a review and one new issue. No prompt,
+  contract, Runner or campaign behavior changed. No campaign was launched,
+  resumed, reset, trained, measured or evaluated.
+- **Status:** OI-014 is open and unimplemented. OI-002 and OI-005 remain open.
+  The new scientific-model prompt is still untested by any campaign.
