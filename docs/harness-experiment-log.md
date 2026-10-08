@@ -445,7 +445,7 @@ Implementation checks and unassessed campaign effects are not separate issues.
 
 | ID | Issue | Status / boundary |
 |---|---|---|
-| OI-001 | Startup scientific-method selection | **Open.** Startup can produce a meaningful physical or methodological study, but it can also default directly to training without evidence that training is the most informative action. R1 improved the preliminary-to-startup handoff but did not establish reliable action selection. This is separate from the startup training budget. |
+| OI-001 | Startup scientific-method selection | **Open, narrowed 2026-10-08.** Defined as a failure of traceable coupling from the PI-generated scientific briefing, through startup action selection, to the startup handoff. Three failure locations: briefing defect, use defect and handoff defect. A five-campaign retrospective found no handoff collapse and sound startups in four of five. It found one use defect (06656182) and a briefing that steered the method in four of five. R8 had removed the PI-authority sentence, now restored. The scientific-model prompt was rewritten without the synthesis section. Effect on startup selection is not yet observed. This is separate from the startup training budget. |
 | OI-002 | Inquiry control and bounded closure | **Open.** An inquiry can continue after its evidence answers the decision need. Questions and closure conditions must permit positive, negative, limited or inconclusive conclusions without requiring a successful intervention. No design or runtime change is approved. |
 | OI-003 | Measurement-evidence inspection and interpretation | **Open.** The PI has overlooked advertised diagnostic strata, read partial artifacts as complete and lost consequential counterevidence in synthesis. Discoverability is retained, but decision-linked inspection remains unresolved. |
 | OI-004 | Checkpoint nomination, evidence selection and scientific progression | **Open; partly deferred behind OI-002.** Available training facts can nominate an artifact but do not prove development performance. The PI must select artifacts and subsequent operations from the learning trajectory, evidence need and remaining uncertainty rather than defaulting to another training recipe. |
@@ -2450,3 +2450,63 @@ separate from harness changes so their outcomes are not conflated.
   status context rather than new outstanding issues.
 - **Status:** R8 is implemented. OI-001 through OI-013 are the current
   outstanding-issue register.
+
+## 2026-10-08: OI-001 retrospective, R8 correction, and neutral scientific-model prompt
+
+- **OI-001 definition:** a failure of traceable coupling from the PI-generated
+  scientific briefing, through startup action selection, to startup handoff
+  content. It ends at the startup handoff. Training is not a defect when it is
+  scientifically justified. Three failure locations: briefing defect (relevant
+  facts or uncertainties absent, wrong, or framed so an unsuitable action
+  looks informative), use defect (a relevant uncertainty is received but the
+  action does not address it), and handoff defect (reasoning collapses into a
+  preselected operation).
+- **Method:** five retrospective process traces (campaigns 06656182,
+  97633a56, b366ab54, ab62348f, 0284114e) at frozen commits, one `gpt-6-luna`
+  xhigh subsession each, then one `claude-opus-5.5` cross-campaign synthesis.
+  The five reports coded the briefing as indeterminate because
+  `campaigns/brief.md` is git-ignored. The synthesis corrected this: the
+  briefing is the "Decision-relevant synthesis" section of
+  `pi_workspace/scientific_model.md`, which the launcher pasted into the
+  startup prompt and which is saved at every cutoff.
+- **Findings:** all five startups named a real uncertainty and kept evidence,
+  alternatives, limits and conditional next steps in the handoff. The briefing
+  contained no missing or wrong facts. Its framing matched the startup method
+  in four of five campaigns. In ab62348f it said the dynamics question
+  "matters only if" something else, and startup trained first. In b366ab54 and
+  97633a56 the briefing pointed to measurement and startup measured first.
+  06656182 named a dynamics measurement as decisive, then trained because a
+  probe "would require tool construction". It is the only run under R8, which
+  had removed the PI-authority sentence. Both train-first runs used the same
+  recipe and seed and scored 99.5% and 73%.
+- **Confidence:** briefing defect weak as a defect and weak to moderate as a
+  mediator; use defect moderate; handoff defect contradictory. The required
+  handoff fields may hide a collapse.
+- **Limits:** n=5, one coder who knew the outcomes, no repeated startups with
+  identical inputs, encrypted model reasoning, and the campaigns that prompted
+  OI-001 (`2573991c`, `c7040992`) were not included.
+- **Diagnostic tests not yet run:** briefing-swap replay with the prompt held
+  fixed, startups with a ready-made lab tool, a training-ceiling cue
+  variation, repeated identical startups, and a free-form handoff.
+- **R8 correction (`adff08e`):** restored the launcher sentence that lets the
+  PI inspect, modify or replace PI-owned implementations before submitting an
+  operation. R8 had removed it as duplicated from `AGENTS.md`.
+- **Scientific-model prompt (`ef9516f`):** the phase now runs under a robotics
+  and simulation analyst persona. It builds the model from first principles
+  and the human-owned definitions of the robot, simulator and task. It has
+  three registers (Established facts, Physical consequences, Unknowns). The
+  "Decision-relevant synthesis" section is removed. The validator, brief and
+  contracts match. Startup reads the whole model and selects its own
+  direction. The reason is that a different persona ranking unknowns steered
+  the startup PI.
+- **Retained:** the per-item decision relevance inside the registers, and the
+  `campaigns/brief.md` pointers, which carry the legal operation list.
+- **Validation:** the PowerShell script parses and the touched Python modules
+  compile. Targeted tests show 11 failures, 6 known and 5 reproduced on the
+  untouched baseline.
+- **Not yet observed:** whether neutral models change startup action
+  selection. Compare the next campaigns against the five analyzed here.
+- **Boundary:** no campaign has been launched, resumed, reset, trained,
+  measured, or evaluated.
+- **Status:** OI-001 remains open and narrowed. The prompt change is
+  implemented and unmeasured.
