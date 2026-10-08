@@ -501,7 +501,7 @@
           <thead><tr><th scope="col">ID</th><th scope="col">Issue</th><th scope="col">Status</th></tr></thead>
           <tbody>
             <tr><td>OI-001</td><td>Startup method selection. The link from the scientific briefing to the first startup action and its handoff is not traceable. A five-campaign review found sound startups in four of five and no handoff collapse. R8 correction <code>adff08e</code> and the prompt changes <code>ef9516f</code>, <code>b3f4307</code>, <code>5437ff2</code> are in place. Their effect is not separable yet. Not the same as OI-006.</td><td><span class="tag">Open, narrowed</span></td></tr>
-            <tr><td>OI-002</td><td>Inquiry control. An inquiry can go on after its evidence answers the need. Questions and closure rules must allow positive, negative, limited, or inconclusive answers.</td><td><span class="tag">Open</span></td></tr>
+            <tr><td>OI-002</td><td>Inquiry control. The closure condition must define sufficient evidence for the inquiry boundary. The PI must compare accumulated evidence with that boundary before choosing more work. Several operations remain possible.</td><td><span class="tag">Implemented, unmeasured</span></td></tr>
             <tr><td>OI-003</td><td>Measurement evidence. The PI skipped advertised diagnostics, read partial files as complete, and lost counterevidence in its synthesis.</td><td><span class="tag">Open</span></td></tr>
             <tr><td>OI-004</td><td>Checkpoint nomination and progression. Training facts can nominate a checkpoint. They do not prove development performance.</td><td><span class="tag">Open, partly deferred behind OI-002</span></td></tr>
             <tr><td>OI-005</td><td>Counterevidence and readiness. The readiness guidance was withdrawn. Lost residual evidence and early readiness claims remain. Campaign <code>06656182</code> showed the open point: the PI did not weigh a 95% and a 98% result against one more inquiry.</td><td><span class="tag">Postponed</span></td></tr>
@@ -545,7 +545,13 @@
       <h2 id="changes-heading">Timeline, newest first</h2>
       <p>Commit ids show where a change is. They do not show that the change caused a campaign result.</p>
       <div class="card timeline">
-        <h3 style="margin-top: 0">8 October</h3>
+        <h3 style="margin-top: 0">9 October</h3>
+        <ul>
+          <li><code>01ccd51</code> Removed the context leak from handoffs and aligned the goal-review objective with the restored scientific state.</li>
+          <li>OI-002 wording was implemented. The program contract defines the closure boundary. The inquiry prompt checks the boundary before more work.</li>
+          <li>The maintainer stopped campaign <code>61f732e1</code> at T5. No campaign reset or restart was performed.</li>
+        </ul>
+        <h3>8 October</h3>
         <ul>
           <li><code>5437ff2</code> Restored the closing "Decision-relevant synthesis" section of the scientific model. It uses controlled English. The analyst persona stays.</li>
           <li><code>b3f4307</code> Fixed the heading bug. Each register is a <code>##</code> heading. Topics use <code>###</code>.</li>

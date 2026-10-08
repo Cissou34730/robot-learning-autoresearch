@@ -2626,3 +2626,33 @@ separate from harness changes so their outcomes are not conflated.
   contract text refers to the removed or changed sentences.
 - **Boundary:** no campaign was launched, resumed, reset or trained.
 - **Status:** implemented and unmeasured.
+
+## 2026-10-09: implement the OI-002 closure-boundary clarification
+
+- **RCA:** OI-002 is an insufficiently defined stopping boundary and an
+  insufficiently explicit check of that boundary. The exact handoff can
+  preserve a question that is too broad. Success was not the only existing
+  exit: redirection was also allowed. The prompt already asked the PI to
+  record when evidence resolves or redirects an inquiry, but it did not tell
+  the PI to compare accumulated evidence with the closure condition before
+  choosing more work. Full training allocation remains an amplifier, not an
+  established cause, and is unchanged.
+- **Implementation:** `contracts/program.md` now states that the closure
+  condition identifies sufficient evidence for the inquiry and permits
+  positive, negative, limited or inconclusive conclusions. Obtaining and
+  assessing that evidence can span several operations. The active-inquiry
+  objective in `run_research.ps1` now tells the PI to compare accumulated
+  evidence with the closure condition before choosing the next action and to
+  close when the condition is met.
+- **Boundary:** The change does not select methods, interventions,
+  measurements or their sequence. It does not add an operation count, a
+  successful-intervention requirement, Runner scientific judgment or automatic
+  closure. `contracts/instruments.md` remains unchanged because it describes
+  instrument mechanics, not scientific protocol.
+- **Campaign evidence:** The maintainer stopped campaign `61f732e1` at T5.
+  It was not reset or restarted. Its evidence remains read-only campaign
+  history and does not measure this implementation.
+- **Validation:** PowerShell parsing and the HTML housekeeping checks passed.
+  The change remains unmeasured until a maintainer-run campaign uses it.
+- **Status:** OI-002 implementation is complete and unmeasured. OI-002 must
+  be reviewed for both premature closure and indefinite continuation.

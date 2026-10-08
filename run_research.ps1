@@ -1200,7 +1200,9 @@ try {
             else {
                 (
                     "Advance $($state.active_inquiry.id) toward an evidence-supported " +
-                    "answer to its scientific question: $($state.active_inquiry.question)"
+                    "answer to its scientific question: $($state.active_inquiry.question) " +
+                    "Before choosing the next action, compare the accumulated evidence " +
+                    "with the closure condition. Close the inquiry when the condition is met."
                 )
             }
             $startArguments = @(

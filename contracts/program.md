@@ -73,6 +73,9 @@ Opening an inquiry records its question, connection to the human goal, closure
 condition, and rationale. The opening goal-review session then ends at a
 durable scientific session record, and a fresh inquiry session continues from
 that state.
+The closure condition states the evidence sufficient to end the inquiry. It
+permits closure with a positive, negative, limited or inconclusive conclusion.
+Obtaining and assessing this evidence can span several operations.
 Goal review permits measurement,
 model-role assignment, inquiry opening, campaign conclusion, and the checkpoint
 required after opening an inquiry. Measurements return to the same session.
