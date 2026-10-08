@@ -422,47 +422,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "open",
-        "inquiry": {
-          "closure_condition": "Close when a learned candidate has episode-level development evidence covering the official radius-angle distribution with first-reach, maximum-held-steps, hold interruptions, and geometry-stratified outcomes sufficient to classify the dominant failure mode as reach-limited, stabilization-limited, geometry-conditioned, or inconclusive.",
-          "goal_connection": "The campaign needs at least 196 of 200 episodes to complete an uninterrupted 100-step hold. This inquiry determines whether the next intervention should improve global trajectory generation and geometry coverage or terminal stabilization after reach.",
-          "handoff_conclusion": "Evidence: M1 compiled the authored MuJoCo model at 2 ms physics and 20 ms control intervals, with nonzero compiled body masses, 0.5 joint damping, 0.01 armature, gear-5 bounded motors, and the documented joint limits. Across 240 radius-angle/branch configurations, 224 were within joint limits and none of those valid configurations had active contacts; this removes folded-link self-contact as the leading explanation on the sampled official geometry, while retaining branch and limit conditioning as a reach concern. Across 1,344 matched near-target rollouts, both zero input and bounded local PD completed all 100-step holds for all three position/velocity perturbation classes, with mean maximum distances of about 1.65 mm and 1.41 mm respectively. Interpretation: the tested plant has more than enough local passive/active stabilization margin for the 1 cm sampled tolerance, so hold failure is not currently the most credible first bottleneck. The reset singularity, target-angle coverage, and joint-limit-valid branch selection remain untested at the learned-policy level; M1 does not prove that a policy can reach globally, and its local perturbations do not represent high-speed arrival from reset. The competing explanation that learned exploration/reward alignment, rather than plant authority, limits success is now the decision-relevant alternative.",
-          "handoff_question": "Can a first learned policy reliably reach and settle into valid target postures from the exact extended reset across the full official radius-angle distribution, or do failures concentrate in reset-opposed or joint-limit-conditioned geometry despite the demonstrated local hold margin?",
-          "handoff_source_session_id": "S1",
-          "id": "I1",
-          "opened_in_session": "S2",
-          "question": "Can a first learned policy reliably reach and settle into valid target postures from the exact extended reset across the full official radius-angle distribution, or do failures concentrate in reset-opposed or joint-limit-conditioned geometry despite the demonstrated local hold margin?",
-          "rationale": "M1 found substantial local passive and active hold margin and no sampled valid-posture self-contact, but no learned policy has been tested from the exact extended reset. The decisive unresolved distinction is therefore whether learning reliably escapes the reset singularity and selects valid joint-limit-compatible postures, or reaches broadly but arrives with residual motion that interrupts the hold.",
-          "reframes": []
-        }
-      },
-      "result": {
-        "action": "open",
-        "inquiry_id": "I1",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E2",
-    "inquiry_id": null,
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "open",
-        "closure_condition": "Close when a learned candidate has episode-level development evidence covering the official radius-angle distribution with first-reach, maximum-held-steps, hold interruptions, and geometry-stratified outcomes sufficient to classify the dominant failure mode as reach-limited, stabilization-limited, geometry-conditioned, or inconclusive.",
-        "goal_connection": "The campaign needs at least 196 of 200 episodes to complete an uninterrupted 100-step hold. This inquiry determines whether the next intervention should improve global trajectory generation and geometry coverage or terminal stabilization after reach.",
-        "question": "Can a first learned policy reliably reach and settle into valid target postures from the exact extended reset across the full official radius-angle distribution, or do failures concentrate in reset-opposed or joint-limit-conditioned geometry despite the demonstrated local hold margin?",
-        "rationale": "M1 found substantial local passive and active hold margin and no sampled valid-posture self-contact, but no learned policy has been tested from the exact extended reset. The decisive unresolved distinction is therefore whether learning reliably escapes the reset singularity and selects valid joint-limit-compatible postures, or reaches broadly but arrives with residual motion that interrupts the hold."
-      }
-    },
-    "request_fingerprint": "3ddaabc939814adef183a1a2152ca8d38aeb0077bb21866904e9015aae735985",
-    "session_id": "S2",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "No candidates have been trained, evaluated, or assigned a role. Working, best-known, and retained roles remain empty.",
     "completed_operations": [
