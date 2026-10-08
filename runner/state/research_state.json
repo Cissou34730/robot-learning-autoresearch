@@ -1647,7 +1647,7 @@
     }
   },
   "counters": {
-    "event": 8,
+    "event": 9,
     "inquiry": 2,
     "measurement": 3,
     "session": 5,
@@ -1656,7 +1656,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -3163,31 +3163,181 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-08T22:25:24Z",
+      "error": null,
+      "id": "E9",
+      "inquiry_id": "I2",
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "T2:checkpoint-120832 is the strongest development candidate supported by the completed matched evaluation M3, but no working, best-known, or retained model role has been assigned. T1:checkpoint-120832 remains the matched baseline reference.",
+        "completed_operations": [
+          "T2",
+          "M3",
+          "E8"
+        ],
+        "cumulative_resource_use": "One completed PI-owned measurement (M1), one baseline training run of 120000 requested steps completing at 120832 steps (T1), one 160-episode development evaluation (M2), closure of I1 (E4), checkpoint (E5), opening of I2 (E6), one full-radius training run of 120000 requested steps completing at 120832 steps (T2), one matched 160-episode paired evaluation (M3), and closure of I2 (E8).",
+        "current_goal_gap": "No official assessment exists. T2:checkpoint-120832 is the strongest measured development candidate at 150/160 successes (93.75%) on the fixed research panel, leaving 10 residual failures there: seven no-reach or non-convergent cases and three reached-but-interrupted cases. The protected 196/200 threshold remains untested.",
+        "current_synthesis": "M1 established that the compiled direct-torque system can generate fast motion and centimeter-scale post-release displacement, so stabilization remains physically plausible, while sampled M1 trials found no contacts. M2 showed that the outer-radius-trained T1 generalized poorly to the official distribution: it achieved 10/40 at 6-10 cm, 37/53 at 10-14 cm, 37/39 at 14-18 cm, and 26/28 at 18-20 cm; 42 of its 50 failures never reached the tolerance and all 50 truncated. T2 changed only the training radius distribution to the full 6-20 cm range. On the same 160 episode seeds, T2 achieved 150/160 versus T1's 110/160, reduced no-reach failures from 42 to 7, truncations from 50 to 10, and episodes with hold interruptions from 12 to 5. T2 improved the 6-10 cm stratum from 10/40 to 40/40 and the 10-14 cm stratum from 37/53 to 50/53 while preserving near-perfect outer-radius behavior. These matched behavioral results establish that omitted inner-radius exposure was a major candidate-specific cause and that exposure is necessary, but they do not establish that exposure alone can achieve the 98% goal. The remaining failures support two live mechanisms: angle- or branch-dependent slow convergence for the seven no-reach cases, and sampled-data overshoot or stabilization failure for the three reached-but-interrupted cases. The small residual count and concentration in difficult angle-radius cases mean branch preference and stabilization remain unresolved rather than disproven.",
+        "decision_frontier": "The next decision is whether the residual T2 failures are primarily caused by angle-dependent convergence or practical IK-branch selection, by post-entry sampled-data stabilization, or by both. Evidence that the seven no-reach cases cluster by branch error, elbow sign, or target angle and improve under branch-conditioned convergence would justify a branch-aware or convergence redesign. Evidence of early first reach followed by repeated tolerance exits, high hold interruptions, and preserved reach speed would instead elevate stabilization as the next bottleneck. A matched failure-focused panel must retain first-reach step, maximum held steps, hold interruptions, truncation, radius, angle, and branch/posture indicators; reward or aggregate success alone cannot discriminate these mechanisms.",
+        "evidence_references": [
+          "M1",
+          "T1",
+          "M2",
+          "E4",
+          "E6",
+          "T2",
+          "M3",
+          "E8"
+        ],
+        "human_goal_connection": "The human goal is at least 196 successful episodes out of the protected 200-episode official assessment, with every success requiring an uninterrupted 100-step hold. I2's best development candidate, T2:checkpoint-120832, reaches 150/160 on a matched full-distribution panel, so the goal remains unmet and no official assessment is justified yet.",
+        "next_direction_or_closure": "Checkpoint the resolved I2 result and return to goal review. Open the next inquiry with the question above, preserving full-radius exposure as the validated base recipe and treating branch-aware convergence versus stabilization as the next discriminating decision rather than assuming either intervention.",
+        "next_question": "Can an angle-conditioned, branch-aware convergence or stabilization redesign eliminate T2's residual failures and raise full-distribution success to the level required for at least 98% official success without sacrificing the hold behavior gained from full-radius exposure?"
+      },
+      "result": {
+        "session_id": "S5",
+        "status": "checkpointed"
+      },
+      "session_id": "S5",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "1932bdc15a5ba2136c9fb3cd5d5381617a9940a9",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "T2:checkpoint-120832 is the strongest development candidate supported by the completed matched evaluation M3, but no working, best-known, or retained model role has been assigned. T1:checkpoint-120832 remains the matched baseline reference.",
+        "completed_operations": [
+          "T2",
+          "M3",
+          "E8"
+        ],
+        "cumulative_resource_use": "One completed PI-owned measurement (M1), one baseline training run of 120000 requested steps completing at 120832 steps (T1), one 160-episode development evaluation (M2), closure of I1 (E4), checkpoint (E5), opening of I2 (E6), one full-radius training run of 120000 requested steps completing at 120832 steps (T2), one matched 160-episode paired evaluation (M3), and closure of I2 (E8).",
+        "current_goal_gap": "No official assessment exists. T2:checkpoint-120832 is the strongest measured development candidate at 150/160 successes (93.75%) on the fixed research panel, leaving 10 residual failures there: seven no-reach or non-convergent cases and three reached-but-interrupted cases. The protected 196/200 threshold remains untested.",
+        "current_synthesis": "M1 established that the compiled direct-torque system can generate fast motion and centimeter-scale post-release displacement, so stabilization remains physically plausible, while sampled M1 trials found no contacts. M2 showed that the outer-radius-trained T1 generalized poorly to the official distribution: it achieved 10/40 at 6-10 cm, 37/53 at 10-14 cm, 37/39 at 14-18 cm, and 26/28 at 18-20 cm; 42 of its 50 failures never reached the tolerance and all 50 truncated. T2 changed only the training radius distribution to the full 6-20 cm range. On the same 160 episode seeds, T2 achieved 150/160 versus T1's 110/160, reduced no-reach failures from 42 to 7, truncations from 50 to 10, and episodes with hold interruptions from 12 to 5. T2 improved the 6-10 cm stratum from 10/40 to 40/40 and the 10-14 cm stratum from 37/53 to 50/53 while preserving near-perfect outer-radius behavior. These matched behavioral results establish that omitted inner-radius exposure was a major candidate-specific cause and that exposure is necessary, but they do not establish that exposure alone can achieve the 98% goal. The remaining failures support two live mechanisms: angle- or branch-dependent slow convergence for the seven no-reach cases, and sampled-data overshoot or stabilization failure for the three reached-but-interrupted cases. The small residual count and concentration in difficult angle-radius cases mean branch preference and stabilization remain unresolved rather than disproven.",
+        "decision_frontier": "The next decision is whether the residual T2 failures are primarily caused by angle-dependent convergence or practical IK-branch selection, by post-entry sampled-data stabilization, or by both. Evidence that the seven no-reach cases cluster by branch error, elbow sign, or target angle and improve under branch-conditioned convergence would justify a branch-aware or convergence redesign. Evidence of early first reach followed by repeated tolerance exits, high hold interruptions, and preserved reach speed would instead elevate stabilization as the next bottleneck. A matched failure-focused panel must retain first-reach step, maximum held steps, hold interruptions, truncation, radius, angle, and branch/posture indicators; reward or aggregate success alone cannot discriminate these mechanisms.",
+        "evidence_references": [
+          "M1",
+          "T1",
+          "M2",
+          "E4",
+          "E6",
+          "T2",
+          "M3",
+          "E8"
+        ],
+        "human_goal_connection": "The human goal is at least 196 successful episodes out of the protected 200-episode official assessment, with every success requiring an uninterrupted 100-step hold. I2's best development candidate, T2:checkpoint-120832, reaches 150/160 on a matched full-distribution panel, so the goal remains unmet and no official assessment is justified yet.",
+        "inquiry_id": "I2",
+        "next_direction_or_closure": "Checkpoint the resolved I2 result and return to goal review. Open the next inquiry with the question above, preserving full-radius exposure as the validated base recipe and treating branch-aware convergence versus stabilization as the next discriminating decision rather than assuming either intervention.",
+        "next_question": "Can an angle-conditioned, branch-aware convergence or stabilization redesign eliminate T2's residual failures and raise full-distribution success to the level required for at least 98% official success without sacrificing the hold behavior gained from full-radius exposure?",
+        "session_id": "S5"
+      },
+      "presentation": {
+        "backend_session_id": "c6c81e43-dc8d-4b45-96f8-2760a340efc3",
+        "campaign_id": "61f732e1-95e6-417f-9d7d-2480fc22aab9",
+        "campaign_usage": "12m46s | 28.44 AIU | prompt 4.1m (85% cached) | output 51.5k",
+        "session_id": "S5",
+        "session_kind": "inquiry",
+        "session_usage": "3m04s | 7.49 AIU | prompt 1.4m (90% cached) | output 11.3k"
+      },
+      "result": {
+        "session_id": "S5",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "edaad5613d3ed79c02a0b3b935ba98cf03e855ea",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E9",
+    "inquiry_id": "I2",
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "T2:checkpoint-120832 is the strongest development candidate supported by the completed matched evaluation M3, but no working, best-known, or retained model role has been assigned. T1:checkpoint-120832 remains the matched baseline reference.",
+        "completed_operations": [
+          "T2",
+          "M3",
+          "E8"
+        ],
+        "cumulative_resource_use": "One completed PI-owned measurement (M1), one baseline training run of 120000 requested steps completing at 120832 steps (T1), one 160-episode development evaluation (M2), closure of I1 (E4), checkpoint (E5), opening of I2 (E6), one full-radius training run of 120000 requested steps completing at 120832 steps (T2), one matched 160-episode paired evaluation (M3), and closure of I2 (E8).",
+        "current_goal_gap": "No official assessment exists. T2:checkpoint-120832 is the strongest measured development candidate at 150/160 successes (93.75%) on the fixed research panel, leaving 10 residual failures there: seven no-reach or non-convergent cases and three reached-but-interrupted cases. The protected 196/200 threshold remains untested.",
+        "current_synthesis": "M1 established that the compiled direct-torque system can generate fast motion and centimeter-scale post-release displacement, so stabilization remains physically plausible, while sampled M1 trials found no contacts. M2 showed that the outer-radius-trained T1 generalized poorly to the official distribution: it achieved 10/40 at 6-10 cm, 37/53 at 10-14 cm, 37/39 at 14-18 cm, and 26/28 at 18-20 cm; 42 of its 50 failures never reached the tolerance and all 50 truncated. T2 changed only the training radius distribution to the full 6-20 cm range. On the same 160 episode seeds, T2 achieved 150/160 versus T1's 110/160, reduced no-reach failures from 42 to 7, truncations from 50 to 10, and episodes with hold interruptions from 12 to 5. T2 improved the 6-10 cm stratum from 10/40 to 40/40 and the 10-14 cm stratum from 37/53 to 50/53 while preserving near-perfect outer-radius behavior. These matched behavioral results establish that omitted inner-radius exposure was a major candidate-specific cause and that exposure is necessary, but they do not establish that exposure alone can achieve the 98% goal. The remaining failures support two live mechanisms: angle- or branch-dependent slow convergence for the seven no-reach cases, and sampled-data overshoot or stabilization failure for the three reached-but-interrupted cases. The small residual count and concentration in difficult angle-radius cases mean branch preference and stabilization remain unresolved rather than disproven.",
+        "decision_frontier": "The next decision is whether the residual T2 failures are primarily caused by angle-dependent convergence or practical IK-branch selection, by post-entry sampled-data stabilization, or by both. Evidence that the seven no-reach cases cluster by branch error, elbow sign, or target angle and improve under branch-conditioned convergence would justify a branch-aware or convergence redesign. Evidence of early first reach followed by repeated tolerance exits, high hold interruptions, and preserved reach speed would instead elevate stabilization as the next bottleneck. A matched failure-focused panel must retain first-reach step, maximum held steps, hold interruptions, truncation, radius, angle, and branch/posture indicators; reward or aggregate success alone cannot discriminate these mechanisms.",
+        "evidence_references": [
+          "M1",
+          "T1",
+          "M2",
+          "E4",
+          "E6",
+          "T2",
+          "M3",
+          "E8"
+        ],
+        "human_goal_connection": "The human goal is at least 196 successful episodes out of the protected 200-episode official assessment, with every success requiring an uninterrupted 100-step hold. I2's best development candidate, T2:checkpoint-120832, reaches 150/160 on a matched full-distribution panel, so the goal remains unmet and no official assessment is justified yet.",
+        "next_direction_or_closure": "Checkpoint the resolved I2 result and return to goal review. Open the next inquiry with the question above, preserving full-radius exposure as the validated base recipe and treating branch-aware convergence versus stabilization as the next discriminating decision rather than assuming either intervention.",
+        "next_question": "Can an angle-conditioned, branch-aware convergence or stabilization redesign eliminate T2's residual failures and raise full-distribution success to the level required for at least 98% official success without sacrificing the hold behavior gained from full-radius exposure?"
+      }
+    },
+    "request_fingerprint": "fc8a6baf96926dcc397f94efb62951345e139b352db50b722d9ca008f9215c60",
+    "session_id": "S5",
+    "supersedes": null
+  },
   "pi_checkpoint": {
-    "candidates_and_roles": "T1:checkpoint-120832 remains the only candidate with full-distribution development evidence and has no assigned working, best-known, or retained role. No model-role change was made in this goal-review session.",
+    "candidates_and_roles": "T2:checkpoint-120832 is the strongest development candidate supported by the completed matched evaluation M3, but no working, best-known, or retained model role has been assigned. T1:checkpoint-120832 remains the matched baseline reference.",
     "completed_operations": [
-      "E6"
+      "T2",
+      "M3",
+      "E8"
     ],
-    "cumulative_resource_use": "One completed PI-owned measurement (M1), one inquiry opening for I1 (E2), one baseline training run of 120000 requested steps completing at 120832 steps (T1), one 160-episode development evaluation (M2), one inquiry closure (E4), one checkpoint in I1 (E5), and one inquiry opening for I2 (E6). No training or measurement was performed in the current goal-review session.",
-    "current_goal_gap": "No official assessment exists. T1:checkpoint-120832 is the best evaluated development candidate at 110/160 successes (68.75%), with 42 failures never reaching the 1 cm tolerance and all 50 failures truncating at the 500-step horizon. The candidate remains 86 successes below the 196/200 official threshold.",
-    "current_synthesis": "M1 established that the compiled direct-torque system can generate fast motion and centimeter-scale post-release displacement, so stabilization remains a plausible physical constraint, but M1 found no contacts in sampled trials. T1 succeeded on the outer-radius baseline distribution, while M2 showed weak official-distribution generalization: success was 10/40 at 6-10 cm, 37/53 at 10-14 cm, 37/39 at 14-18 cm, and 26/28 at 18-20 cm. The 50 failures all truncated; 42 never reached the ball and 8 reached it before interruption. The evidence therefore supports inner-radius coverage coupled to slow or failed convergence as the leading explanation for this candidate, with post-entry stabilization secondary. This is a candidate-specific interpretation, not proof that distribution coverage alone is sufficient. The unresolved competing explanation is that inner targets require an additional convergence, representation, or branch-aware control change. E6 opened I2 to discriminate these explanations with a full-radius-trained candidate and matched diagnostics; no new behavioral evidence has yet changed the M1/M2 interpretation.",
-    "decision_frontier": "Determine whether full official-radius training exposure materially improves 6-14 cm first reach and removes 500-step truncations while preserving the near-perfect outer-radius hold behavior, or whether persistent inner-radius truncation indicates that convergence, representation, or branch-aware control must be changed. A matched fixed full-distribution panel with episode success, first-reach step, maximum held steps, hold interruptions, truncation, and radius/angle stratification will discriminate the routes. Increased reach accompanied by new post-entry interruptions would instead elevate stabilization as the next bottleneck.",
+    "cumulative_resource_use": "One completed PI-owned measurement (M1), one baseline training run of 120000 requested steps completing at 120832 steps (T1), one 160-episode development evaluation (M2), closure of I1 (E4), checkpoint (E5), opening of I2 (E6), one full-radius training run of 120000 requested steps completing at 120832 steps (T2), one matched 160-episode paired evaluation (M3), and closure of I2 (E8).",
+    "current_goal_gap": "No official assessment exists. T2:checkpoint-120832 is the strongest measured development candidate at 150/160 successes (93.75%) on the fixed research panel, leaving 10 residual failures there: seven no-reach or non-convergent cases and three reached-but-interrupted cases. The protected 196/200 threshold remains untested.",
+    "current_synthesis": "M1 established that the compiled direct-torque system can generate fast motion and centimeter-scale post-release displacement, so stabilization remains physically plausible, while sampled M1 trials found no contacts. M2 showed that the outer-radius-trained T1 generalized poorly to the official distribution: it achieved 10/40 at 6-10 cm, 37/53 at 10-14 cm, 37/39 at 14-18 cm, and 26/28 at 18-20 cm; 42 of its 50 failures never reached the tolerance and all 50 truncated. T2 changed only the training radius distribution to the full 6-20 cm range. On the same 160 episode seeds, T2 achieved 150/160 versus T1's 110/160, reduced no-reach failures from 42 to 7, truncations from 50 to 10, and episodes with hold interruptions from 12 to 5. T2 improved the 6-10 cm stratum from 10/40 to 40/40 and the 10-14 cm stratum from 37/53 to 50/53 while preserving near-perfect outer-radius behavior. These matched behavioral results establish that omitted inner-radius exposure was a major candidate-specific cause and that exposure is necessary, but they do not establish that exposure alone can achieve the 98% goal. The remaining failures support two live mechanisms: angle- or branch-dependent slow convergence for the seven no-reach cases, and sampled-data overshoot or stabilization failure for the three reached-but-interrupted cases. The small residual count and concentration in difficult angle-radius cases mean branch preference and stabilization remain unresolved rather than disproven.",
+    "decision_frontier": "The next decision is whether the residual T2 failures are primarily caused by angle-dependent convergence or practical IK-branch selection, by post-entry sampled-data stabilization, or by both. Evidence that the seven no-reach cases cluster by branch error, elbow sign, or target angle and improve under branch-conditioned convergence would justify a branch-aware or convergence redesign. Evidence of early first reach followed by repeated tolerance exits, high hold interruptions, and preserved reach speed would instead elevate stabilization as the next bottleneck. A matched failure-focused panel must retain first-reach step, maximum held steps, hold interruptions, truncation, radius, angle, and branch/posture indicators; reward or aggregate success alone cannot discriminate these mechanisms.",
     "evidence_references": [
       "M1",
       "T1",
       "M2",
       "E4",
-      "E6"
+      "E6",
+      "T2",
+      "M3",
+      "E8"
     ],
-    "human_goal_connection": "The human goal requires at least 196 of 200 official episodes to complete an uninterrupted two-second hold. The current development candidate succeeds on 110 of 160 full-distribution episodes, so the campaign must first determine whether training exposure to the official inner radii removes the dominant no-reach and horizon failures without sacrificing hold stability.",
-    "inquiry_id": null,
-    "next_direction_or_closure": "The goal review opens I2 and ends at this checkpoint. In the fresh inquiry session, produce a candidate trained with the full official radius distribution and compare it against T1:checkpoint-120832 on the fixed diagnostic panel specified by the inquiry closure condition. Use the result to choose distribution coverage as the primary redesign if inner reach and truncation improve without a hold deficit; otherwise redirect to convergence or branch-aware control, or to stabilization if new post-entry interruptions become dominant.",
-    "next_question": "Can training on the full official radius distribution eliminate the dominant inner-radius reach and horizon failures while preserving uninterrupted hold stability, or is an additional convergence or branch-aware control change required?",
-    "scientific_commit": "a1a368e627a9be11fe4e859f0cd79c5c0717eeb7",
-    "session_id": "S4"
+    "human_goal_connection": "The human goal is at least 196 successful episodes out of the protected 200-episode official assessment, with every success requiring an uninterrupted 100-step hold. I2's best development candidate, T2:checkpoint-120832, reaches 150/160 on a matched full-distribution panel, so the goal remains unmet and no official assessment is justified yet.",
+    "inquiry_id": "I2",
+    "next_direction_or_closure": "Checkpoint the resolved I2 result and return to goal review. Open the next inquiry with the question above, preserving full-radius exposure as the validated base recipe and treating branch-aware convergence versus stabilization as the next discriminating decision rather than assuming either intervention.",
+    "next_question": "Can an angle-conditioned, branch-aware convergence or stabilization redesign eliminate T2's residual failures and raise full-distribution success to the level required for at least 98% official success without sacrificing the hold behavior gained from full-radius exposure?",
+    "scientific_commit": "edaad5613d3ed79c02a0b3b935ba98cf03e855ea",
+    "session_id": "S5"
   },
   "schema_version": 6,
   "scientific_model": {
@@ -3195,23 +3345,6 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "c6c81e43-dc8d-4b45-96f8-2760a340efc3",
-    "id": "S5",
-    "inquiry_id": "I2",
-    "kind": "inquiry",
-    "objective": "Advance I2 toward an evidence-supported answer to its scientific question: Can training on the full official radius distribution eliminate the dominant inner-radius reach and horizon failures while preserving uninterrupted hold stability, or is an additional convergence or branch-aware control change required?",
-    "operation_ids": [
-      "T2",
-      "M3",
-      "E8"
-    ],
-    "scientific_parent_commit": "1932bdc15a5ba2136c9fb3cd5d5381617a9940a9"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
