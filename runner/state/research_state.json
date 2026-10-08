@@ -11,22 +11,999 @@
   "counters": {
     "event": 0,
     "inquiry": 0,
-    "measurement": 0,
-    "session": 0,
+    "measurement": 1,
+    "session": 1,
     "training": 0
   },
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "fresh campaign initialized; scientific model pending",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": null,
     "retained": {},
     "working": null
   },
   "official_assessment": null,
-  "operation_events": [],
-  "pending_operation": null,
+  "operation_events": [
+    {
+      "completed_at": "2026-10-08T23:49:33Z",
+      "error": null,
+      "id": "M1",
+      "inquiry_id": null,
+      "kind": "measurement",
+      "request": {
+        "description": "Characterize the compiled MuJoCo plant and local 100-step hold margin over a radius-angle grid. For every joint-limit-valid open and folded inverse-kinematic branch, inspect self-contact and roll out matched position, velocity, and combined perturbations under zero input and a bounded local PD controller.",
+        "measurements": [
+          {
+            "args": [
+              "--artifact",
+              "campaigns/evaluations/1ae27a27-6880-4ca6-9d50-e6498e771cb7/plant_margin.json"
+            ],
+            "artifact": "campaigns/evaluations/1ae27a27-6880-4ca6-9d50-e6498e771cb7/plant_margin.json",
+            "instrument": "python_module",
+            "label": "startup plant margin and branch characterization",
+            "module": "robot_learning.lab.plant_margin"
+          }
+        ],
+        "rationale": "The initial direction depends on whether failures are likely to be caused by global reach from the reset singularity or by inadequate local stabilization. Compiled mass, damping, actuator, and contact facts constrain that interpretation; paired zero-input versus local-PD retention exposes whether passive dynamics suffice or active velocity shaping is required. Branch- and geometry-conditioned contact records test whether self-contact invalidates the nominal branch model."
+      },
+      "result": {
+        "measurements": [
+          {
+            "args": [
+              "--artifact",
+              "campaigns/evaluations/1ae27a27-6880-4ca6-9d50-e6498e771cb7/plant_margin.json"
+            ],
+            "instrument": "python_module",
+            "label": "startup plant margin and branch characterization",
+            "metrics": {
+              "evaluation_artifact": "campaigns/evaluations/1ae27a27-6880-4ca6-9d50-e6498e771cb7/python-module-M1-1-plant_margin.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 9,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/measurement",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/control_interval",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/compiled_properties",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/joint_ranges_radians",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/grid",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/summary",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 240,
+                    "field_names": [
+                      "angle_degrees",
+                      "branch",
+                      "contact_count",
+                      "contacts",
+                      "qtarget_radians",
+                      "radius_m",
+                      "within_joint_limits"
+                    ],
+                    "path": "/branch_records",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 1344,
+                    "field_names": [
+                      "angle_degrees",
+                      "branch",
+                      "completed_hold",
+                      "controller",
+                      "final_distance_m",
+                      "hold_interruptions",
+                      "in_tolerance_steps",
+                      "initial_distance_m",
+                      "initial_qpos_offset_radians",
+                      "initial_qvel_radians_s",
+                      "max_consecutive_tolerance_steps",
+                      "maximum_distance_m",
+                      "minimum_distance_m",
+                      "perturbation",
+                      "radius_m"
+                    ],
+                    "path": "/rollout_records",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/control_interval/frame_skip",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/control_interval/control_steps",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/control_interval/success_threshold_m",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/compiled_properties/timestep_s",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/compiled_properties/integrator",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/compiled_properties/solver",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/compiled_properties/body_masses_kg",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/compiled_properties/dof_damping",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/compiled_properties/dof_armature",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/compiled_properties/actuator_gear",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/compiled_properties/actuator_ctrlrange",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 5,
+                    "field_names": [
+                      "conaffinity",
+                      "contype",
+                      "name"
+                    ],
+                    "path": "/compiled_properties/geoms",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/grid/radii_m",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 24,
+                    "path": "/grid/angles_degrees",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/summary/branch_configurations",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/valid_branch_configurations",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/contacting_valid_configurations",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/rollouts",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/summary/controllers",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/summary/controllers/zero",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/summary/controllers/local_pd",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/summary/controllers/zero/rollouts",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/controllers/zero/completed_holds",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/controllers/zero/completion_rate",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/controllers/zero/mean_max_consecutive_tolerance_steps",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/controllers/zero/mean_maximum_distance_m",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/controllers/local_pd/rollouts",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/controllers/local_pd/completed_holds",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/controllers/local_pd/completion_rate",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/controllers/local_pd/mean_max_consecutive_tolerance_steps",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/controllers/local_pd/mean_maximum_distance_m",
+                    "type": "number"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "5978ab6be4a5e8fffcc5130ff4ce17d893537fceda1b719fa0ac4ffb92613c16"
+            },
+            "module": "robot_learning.lab.plant_margin"
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": {
+          "campaign_lab_manifest": [
+            {
+              "fingerprint": "6fd6be6cec2b9ab4000129bc55647cfce26b073269a4c8b04ef312b23f33c51b",
+              "path": "robot_learning/lab/__init__.py"
+            },
+            {
+              "fingerprint": "fce927fbc614f129d2f46f55b64cbe6c1cf83c476c9475268ba16bb3fa4f55d8",
+              "path": "robot_learning/lab/plant_margin.py"
+            }
+          ],
+          "campaign_lab_publication": {
+            "commit": "8d15fb5166d022f6dbbcaa6a50117cde69744ea1",
+            "fingerprint": "a119d3abb6e4c9827946d1ce29d8462df8bcd052877b6791b5d06c8ed1165cff",
+            "manifest": [
+              {
+                "fingerprint": "6fd6be6cec2b9ab4000129bc55647cfce26b073269a4c8b04ef312b23f33c51b",
+                "path": "robot_learning/lab/__init__.py"
+              },
+              {
+                "fingerprint": "fce927fbc614f129d2f46f55b64cbe6c1cf83c476c9475268ba16bb3fa4f55d8",
+                "path": "robot_learning/lab/plant_margin.py"
+              }
+            ]
+          },
+          "code_parent_commit": "e54b9e543f78f706820d39461d0436c992acdd73",
+          "effective_parameters": {
+            "algorithm": {
+              "name": "ppo"
+            },
+            "policy": {
+              "activation": "tanh",
+              "net_arch": [
+                64,
+                64
+              ]
+            },
+            "ppo": {
+              "batch_size": 64,
+              "ent_coef": 0.01,
+              "gae_lambda": 0.95,
+              "gamma": 0.99,
+              "learning_rate": 0.0003,
+              "n_steps": 1024
+            },
+            "training": {
+              "checkpoint_every_steps": 5000,
+              "n_envs": 1
+            }
+          },
+          "module_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "fce927fbc614f129d2f46f55b64cbe6c1cf83c476c9475268ba16bb3fa4f55d8",
+              "path": "robot_learning/lab/plant_margin.py"
+            }
+          ],
+          "module_paths": [
+            "robot_learning/lab/plant_margin.py"
+          ],
+          "scientific_commit": null,
+          "scientific_manifest": [],
+          "scientific_paths": []
+        }
+      },
+      "session_id": "S1",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
+    }
+  ],
+  "pending_operation": {
+    "data": {
+      "evaluation_semantics": null,
+      "measurements": [
+        {
+          "args": [
+            "--artifact",
+            "campaigns/evaluations/1ae27a27-6880-4ca6-9d50-e6498e771cb7/plant_margin.json"
+          ],
+          "artifact": "campaigns/evaluations/1ae27a27-6880-4ca6-9d50-e6498e771cb7/plant_margin.json",
+          "instrument": "python_module",
+          "label": "startup plant margin and branch characterization",
+          "module": "robot_learning.lab.plant_margin"
+        }
+      ],
+      "module_provenance": {
+        "campaign_lab_manifest": [
+          {
+            "fingerprint": "6fd6be6cec2b9ab4000129bc55647cfce26b073269a4c8b04ef312b23f33c51b",
+            "path": "robot_learning/lab/__init__.py"
+          },
+          {
+            "fingerprint": "fce927fbc614f129d2f46f55b64cbe6c1cf83c476c9475268ba16bb3fa4f55d8",
+            "path": "robot_learning/lab/plant_margin.py"
+          }
+        ],
+        "campaign_lab_publication": {
+          "commit": "8d15fb5166d022f6dbbcaa6a50117cde69744ea1",
+          "fingerprint": "a119d3abb6e4c9827946d1ce29d8462df8bcd052877b6791b5d06c8ed1165cff",
+          "manifest": [
+            {
+              "fingerprint": "6fd6be6cec2b9ab4000129bc55647cfce26b073269a4c8b04ef312b23f33c51b",
+              "path": "robot_learning/lab/__init__.py"
+            },
+            {
+              "fingerprint": "fce927fbc614f129d2f46f55b64cbe6c1cf83c476c9475268ba16bb3fa4f55d8",
+              "path": "robot_learning/lab/plant_margin.py"
+            }
+          ]
+        },
+        "code_parent_commit": "e54b9e543f78f706820d39461d0436c992acdd73",
+        "effective_parameters": {
+          "algorithm": {
+            "name": "ppo"
+          },
+          "policy": {
+            "activation": "tanh",
+            "net_arch": [
+              64,
+              64
+            ]
+          },
+          "ppo": {
+            "batch_size": 64,
+            "ent_coef": 0.01,
+            "gae_lambda": 0.95,
+            "gamma": 0.99,
+            "learning_rate": 0.0003,
+            "n_steps": 1024
+          },
+          "training": {
+            "checkpoint_every_steps": 5000,
+            "n_envs": 1
+          }
+        },
+        "module_manifest": [
+          {
+            "exists": true,
+            "fingerprint": "fce927fbc614f129d2f46f55b64cbe6c1cf83c476c9475268ba16bb3fa4f55d8",
+            "path": "robot_learning/lab/plant_margin.py"
+          }
+        ],
+        "module_paths": [
+          "robot_learning/lab/plant_margin.py"
+        ],
+        "scientific_commit": null,
+        "scientific_manifest": [],
+        "scientific_paths": []
+      },
+      "paired_comparisons": [],
+      "partial_results": [
+        {
+          "args": [
+            "--artifact",
+            "campaigns/evaluations/1ae27a27-6880-4ca6-9d50-e6498e771cb7/plant_margin.json"
+          ],
+          "instrument": "python_module",
+          "label": "startup plant margin and branch characterization",
+          "metrics": {
+            "evaluation_artifact": "campaigns/evaluations/1ae27a27-6880-4ca6-9d50-e6498e771cb7/python-module-M1-1-plant_margin.json",
+            "evaluation_artifact_contents": {
+              "scope": "structure_only",
+              "sections": [
+                {
+                  "entries": 9,
+                  "path": "",
+                  "type": "object"
+                },
+                {
+                  "path": "/schema_version",
+                  "type": "number"
+                },
+                {
+                  "path": "/measurement",
+                  "type": "string"
+                },
+                {
+                  "entries": 3,
+                  "path": "/control_interval",
+                  "type": "object"
+                },
+                {
+                  "entries": 9,
+                  "path": "/compiled_properties",
+                  "type": "object"
+                },
+                {
+                  "entries": 2,
+                  "path": "/joint_ranges_radians",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/grid",
+                  "type": "object"
+                },
+                {
+                  "entries": 5,
+                  "path": "/summary",
+                  "type": "object"
+                },
+                {
+                  "entries": 240,
+                  "field_names": [
+                    "angle_degrees",
+                    "branch",
+                    "contact_count",
+                    "contacts",
+                    "qtarget_radians",
+                    "radius_m",
+                    "within_joint_limits"
+                  ],
+                  "path": "/branch_records",
+                  "type": "array"
+                },
+                {
+                  "entries": 1344,
+                  "field_names": [
+                    "angle_degrees",
+                    "branch",
+                    "completed_hold",
+                    "controller",
+                    "final_distance_m",
+                    "hold_interruptions",
+                    "in_tolerance_steps",
+                    "initial_distance_m",
+                    "initial_qpos_offset_radians",
+                    "initial_qvel_radians_s",
+                    "max_consecutive_tolerance_steps",
+                    "maximum_distance_m",
+                    "minimum_distance_m",
+                    "perturbation",
+                    "radius_m"
+                  ],
+                  "path": "/rollout_records",
+                  "type": "array"
+                },
+                {
+                  "path": "/control_interval/frame_skip",
+                  "type": "number"
+                },
+                {
+                  "path": "/control_interval/control_steps",
+                  "type": "number"
+                },
+                {
+                  "path": "/control_interval/success_threshold_m",
+                  "type": "number"
+                },
+                {
+                  "path": "/compiled_properties/timestep_s",
+                  "type": "number"
+                },
+                {
+                  "path": "/compiled_properties/integrator",
+                  "type": "number"
+                },
+                {
+                  "path": "/compiled_properties/solver",
+                  "type": "number"
+                },
+                {
+                  "entries": 5,
+                  "path": "/compiled_properties/body_masses_kg",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/compiled_properties/dof_damping",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/compiled_properties/dof_armature",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/compiled_properties/actuator_gear",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/compiled_properties/actuator_ctrlrange",
+                  "type": "array"
+                },
+                {
+                  "entries": 5,
+                  "field_names": [
+                    "conaffinity",
+                    "contype",
+                    "name"
+                  ],
+                  "path": "/compiled_properties/geoms",
+                  "type": "array"
+                },
+                {
+                  "entries": 5,
+                  "path": "/grid/radii_m",
+                  "type": "array"
+                },
+                {
+                  "entries": 24,
+                  "path": "/grid/angles_degrees",
+                  "type": "array"
+                },
+                {
+                  "path": "/summary/branch_configurations",
+                  "type": "number"
+                },
+                {
+                  "path": "/summary/valid_branch_configurations",
+                  "type": "number"
+                },
+                {
+                  "path": "/summary/contacting_valid_configurations",
+                  "type": "number"
+                },
+                {
+                  "path": "/summary/rollouts",
+                  "type": "number"
+                },
+                {
+                  "entries": 2,
+                  "path": "/summary/controllers",
+                  "type": "object"
+                },
+                {
+                  "entries": 5,
+                  "path": "/summary/controllers/zero",
+                  "type": "object"
+                },
+                {
+                  "entries": 5,
+                  "path": "/summary/controllers/local_pd",
+                  "type": "object"
+                },
+                {
+                  "path": "/summary/controllers/zero/rollouts",
+                  "type": "number"
+                },
+                {
+                  "path": "/summary/controllers/zero/completed_holds",
+                  "type": "number"
+                },
+                {
+                  "path": "/summary/controllers/zero/completion_rate",
+                  "type": "number"
+                },
+                {
+                  "path": "/summary/controllers/zero/mean_max_consecutive_tolerance_steps",
+                  "type": "number"
+                },
+                {
+                  "path": "/summary/controllers/zero/mean_maximum_distance_m",
+                  "type": "number"
+                },
+                {
+                  "path": "/summary/controllers/local_pd/rollouts",
+                  "type": "number"
+                },
+                {
+                  "path": "/summary/controllers/local_pd/completed_holds",
+                  "type": "number"
+                },
+                {
+                  "path": "/summary/controllers/local_pd/completion_rate",
+                  "type": "number"
+                },
+                {
+                  "path": "/summary/controllers/local_pd/mean_max_consecutive_tolerance_steps",
+                  "type": "number"
+                },
+                {
+                  "path": "/summary/controllers/local_pd/mean_maximum_distance_m",
+                  "type": "number"
+                }
+              ],
+              "truncated": false
+            },
+            "evaluation_artifact_fingerprint": "5978ab6be4a5e8fffcc5130ff4ce17d893537fceda1b719fa0ac4ffb92613c16"
+          },
+          "module": "robot_learning.lab.plant_margin"
+        }
+      ],
+      "result": {
+        "measurements": [
+          {
+            "args": [
+              "--artifact",
+              "campaigns/evaluations/1ae27a27-6880-4ca6-9d50-e6498e771cb7/plant_margin.json"
+            ],
+            "instrument": "python_module",
+            "label": "startup plant margin and branch characterization",
+            "metrics": {
+              "evaluation_artifact": "campaigns/evaluations/1ae27a27-6880-4ca6-9d50-e6498e771cb7/python-module-M1-1-plant_margin.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 9,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/measurement",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/control_interval",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 9,
+                    "path": "/compiled_properties",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/joint_ranges_radians",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/grid",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/summary",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 240,
+                    "field_names": [
+                      "angle_degrees",
+                      "branch",
+                      "contact_count",
+                      "contacts",
+                      "qtarget_radians",
+                      "radius_m",
+                      "within_joint_limits"
+                    ],
+                    "path": "/branch_records",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 1344,
+                    "field_names": [
+                      "angle_degrees",
+                      "branch",
+                      "completed_hold",
+                      "controller",
+                      "final_distance_m",
+                      "hold_interruptions",
+                      "in_tolerance_steps",
+                      "initial_distance_m",
+                      "initial_qpos_offset_radians",
+                      "initial_qvel_radians_s",
+                      "max_consecutive_tolerance_steps",
+                      "maximum_distance_m",
+                      "minimum_distance_m",
+                      "perturbation",
+                      "radius_m"
+                    ],
+                    "path": "/rollout_records",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/control_interval/frame_skip",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/control_interval/control_steps",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/control_interval/success_threshold_m",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/compiled_properties/timestep_s",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/compiled_properties/integrator",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/compiled_properties/solver",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/compiled_properties/body_masses_kg",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/compiled_properties/dof_damping",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/compiled_properties/dof_armature",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/compiled_properties/actuator_gear",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/compiled_properties/actuator_ctrlrange",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 5,
+                    "field_names": [
+                      "conaffinity",
+                      "contype",
+                      "name"
+                    ],
+                    "path": "/compiled_properties/geoms",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/grid/radii_m",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 24,
+                    "path": "/grid/angles_degrees",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/summary/branch_configurations",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/valid_branch_configurations",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/contacting_valid_configurations",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/rollouts",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/summary/controllers",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/summary/controllers/zero",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/summary/controllers/local_pd",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/summary/controllers/zero/rollouts",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/controllers/zero/completed_holds",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/controllers/zero/completion_rate",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/controllers/zero/mean_max_consecutive_tolerance_steps",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/controllers/zero/mean_maximum_distance_m",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/controllers/local_pd/rollouts",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/controllers/local_pd/completed_holds",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/controllers/local_pd/completion_rate",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/controllers/local_pd/mean_max_consecutive_tolerance_steps",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/controllers/local_pd/mean_maximum_distance_m",
+                    "type": "number"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "5978ab6be4a5e8fffcc5130ff4ce17d893537fceda1b719fa0ac4ffb92613c16"
+            },
+            "module": "robot_learning.lab.plant_margin"
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": {
+          "campaign_lab_manifest": [
+            {
+              "fingerprint": "6fd6be6cec2b9ab4000129bc55647cfce26b073269a4c8b04ef312b23f33c51b",
+              "path": "robot_learning/lab/__init__.py"
+            },
+            {
+              "fingerprint": "fce927fbc614f129d2f46f55b64cbe6c1cf83c476c9475268ba16bb3fa4f55d8",
+              "path": "robot_learning/lab/plant_margin.py"
+            }
+          ],
+          "campaign_lab_publication": {
+            "commit": "8d15fb5166d022f6dbbcaa6a50117cde69744ea1",
+            "fingerprint": "a119d3abb6e4c9827946d1ce29d8462df8bcd052877b6791b5d06c8ed1165cff",
+            "manifest": [
+              {
+                "fingerprint": "6fd6be6cec2b9ab4000129bc55647cfce26b073269a4c8b04ef312b23f33c51b",
+                "path": "robot_learning/lab/__init__.py"
+              },
+              {
+                "fingerprint": "fce927fbc614f129d2f46f55b64cbe6c1cf83c476c9475268ba16bb3fa4f55d8",
+                "path": "robot_learning/lab/plant_margin.py"
+              }
+            ]
+          },
+          "code_parent_commit": "e54b9e543f78f706820d39461d0436c992acdd73",
+          "effective_parameters": {
+            "algorithm": {
+              "name": "ppo"
+            },
+            "policy": {
+              "activation": "tanh",
+              "net_arch": [
+                64,
+                64
+              ]
+            },
+            "ppo": {
+              "batch_size": 64,
+              "ent_coef": 0.01,
+              "gae_lambda": 0.95,
+              "gamma": 0.99,
+              "learning_rate": 0.0003,
+              "n_steps": 1024
+            },
+            "training": {
+              "checkpoint_every_steps": 5000,
+              "n_envs": 1
+            }
+          },
+          "module_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "fce927fbc614f129d2f46f55b64cbe6c1cf83c476c9475268ba16bb3fa4f55d8",
+              "path": "robot_learning/lab/plant_margin.py"
+            }
+          ],
+          "module_paths": [
+            "robot_learning/lab/plant_margin.py"
+          ],
+          "scientific_commit": null,
+          "scientific_manifest": [],
+          "scientific_paths": []
+        }
+      },
+      "task_reference_contract": null
+    },
+    "failure": null,
+    "id": "M1",
+    "inquiry_id": null,
+    "kind": "measurement",
+    "progress": "completed",
+    "request": {
+      "measurement": {
+        "description": "Characterize the compiled MuJoCo plant and local 100-step hold margin over a radius-angle grid. For every joint-limit-valid open and folded inverse-kinematic branch, inspect self-contact and roll out matched position, velocity, and combined perturbations under zero input and a bounded local PD controller.",
+        "measurements": [
+          {
+            "args": [
+              "--artifact",
+              "campaigns/evaluations/1ae27a27-6880-4ca6-9d50-e6498e771cb7/plant_margin.json"
+            ],
+            "artifact": "campaigns/evaluations/1ae27a27-6880-4ca6-9d50-e6498e771cb7/plant_margin.json",
+            "instrument": "python_module",
+            "label": "startup plant margin and branch characterization",
+            "module": "robot_learning.lab.plant_margin"
+          }
+        ],
+        "rationale": "The initial direction depends on whether failures are likely to be caused by global reach from the reset singularity or by inadequate local stabilization. Compiled mass, damping, actuator, and contact facts constrain that interpretation; paired zero-input versus local-PD retention exposes whether passive dynamics suffice or active velocity shaping is required. Branch- and geometry-conditioned contact records test whether self-contact invalidates the nominal branch model."
+      }
+    },
+    "request_fingerprint": "67e4fda8b2479f9191439407dd63d26927ee1fcf85814b1749a874b34a46a623",
+    "session_id": "S1",
+    "supersedes": null
+  },
   "pi_checkpoint": null,
   "schema_version": 6,
   "scientific_model": {
@@ -34,6 +1011,21 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "60a9691e-fe7e-438f-b631-d98f05265586",
+    "id": "S1",
+    "inquiry_id": null,
+    "kind": "startup",
+    "objective": "Establish the most credible initial scientific direction toward the human goal from the scientific model and available evidence. Use scientific work in this session to establish or refine that direction, including building or adapting reusable scientific tools and PI-owned methods where needed. These capabilities can support subsequent inquiries. Choose the first useful scientific action and explain why it advances the direction. Preserve the work actually performed, resulting understanding, remaining uncertainties and chosen next action in the scientific session record.",
+    "operation_ids": [
+      "M1"
+    ],
+    "scientific_parent_commit": "e54b9e543f78f706820d39461d0436c992acdd73"
+  },
   "terminal_state": null
 }
