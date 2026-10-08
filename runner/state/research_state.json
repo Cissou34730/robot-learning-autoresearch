@@ -1,16 +1,5 @@
 {
-  "active_inquiry": {
-    "closure_condition": "Close when a candidate trained with full official-radius coverage has been compared with T1:checkpoint-120832 on a fixed full-distribution panel using episode success, first reach, maximum held steps, hold interruptions, truncation, and radius/angle stratification, and the result either materially removes inner-radius reach/truncation failures without a new hold deficit or shows persistent inner-radius failure requiring a convergence or branch-aware change.",
-    "goal_connection": "The current best development candidate succeeds on only 110 of 160 full-distribution episodes, with 42 of 50 failures never reaching the target and all failures truncating at the 500-step horizon. Resolving whether official-radius coverage is sufficient is necessary to select the smallest credible redesign toward at least 196 of 200 official successes while preserving the candidate's demonstrated hold behavior.",
-    "handoff_conclusion": "M1 established that the compiled direct-torque system can generate fast motion and centimeter-scale post-release displacement, making stabilization a plausible physical constraint, while finding no contacts in the sampled trials. T1 training succeeded on the outer-radius baseline distribution, but M2 showed that this did not generalize to the official distribution: success was 10/40 at 6-10 cm, 37/53 at 10-14 cm, 37/39 at 14-18 cm, and 26/28 at 18-20 cm. The observed failures were predominantly no-reach episodes ending at the horizon, not post-entry hold interruptions. Thus the initial model's stabilization consequence remains supported but is secondary for this candidate; the leading mechanism is omitted inner-radius coverage coupled to slow or failed convergence, with a smaller residual stabilization problem on difficult targets. This conclusion changed because M2 supplied the first learned-policy, target-conditioned hold and radius-stratified evidence that M1 lacked.",
-    "handoff_question": "Can training on the full official radius distribution eliminate the dominant inner-radius reach and horizon failures while preserving uninterrupted hold stability, or is an additional convergence or branch-aware control change required?",
-    "handoff_source_session_id": "S3",
-    "id": "I2",
-    "opened_in_session": "S4",
-    "question": "Can training on the full official radius distribution eliminate the dominant inner-radius reach and horizon failures while preserving uninterrupted hold stability, or is an additional convergence or branch-aware control change required?",
-    "rationale": "M2 identified omitted inner-radius coverage coupled to slow or failed convergence as the dominant failure mechanism, while post-entry interruption was secondary. The existing candidate was trained on the outer-radius baseline distribution, so its inner-radius failures cannot distinguish insufficient exposure from a need for new convergence or branch-aware control. A bounded full-distribution training and matched diagnostic comparison is the most direct evidence for the next goal-directed decision.",
-    "reframes": []
-  },
+  "active_inquiry": null,
   "campaign": {
     "base_commit": "f872074edbcc1d00b7139bcdf2c065d8811cfd7c",
     "id": "61f732e1-95e6-417f-9d7d-2480fc22aab9",
@@ -1658,7 +1647,7 @@
     }
   },
   "counters": {
-    "event": 7,
+    "event": 8,
     "inquiry": 2,
     "measurement": 3,
     "session": 5,
@@ -3151,9 +3140,63 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-08T22:24:28Z",
+      "error": null,
+      "id": "E8",
+      "inquiry_id": "I2",
+      "kind": "inquiry",
+      "request": {
+        "action": "close",
+        "outcome": "I2 establishes that full official-radius exposure materially removes the dominant inner-radius reach and horizon failures without a new hold deficit, but it does not by itself reach the human goal. On the matched 160-episode panel, T2 achieved 150/160 successes versus T1's 110/160; no-reach failures fell from 42 to 7, truncations from 50 to 10, and episodes with hold interruptions from 12 to 5. Radius-stratified success improved from 10/40 to 40/40 at 6-10 cm and from 37/53 to 50/53 at 10-14 cm, while outer-radius performance remained close to baseline. The residual T2 failures comprise seven no-reach episodes and three reached-but-interrupted episodes.",
+        "reason": "The closure condition is met: exposure-only training is supported as the smallest credible redesign for the candidate-specific coverage failure, and its improvement is behavioral rather than inferred from training statistics. The remaining failures are concentrated in a small set of difficult angle-radius cases and include both slow/non-convergent approaches and post-entry oscillatory interruptions, so I2 cannot justify claiming that coverage alone is sufficient for the 98% goal. The next scientific direction must discriminate residual angle-dependent convergence or branch selection from stabilization before selecting the next control or representation change."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I2",
+        "outcome": "I2 establishes that full official-radius exposure materially removes the dominant inner-radius reach and horizon failures without a new hold deficit, but it does not by itself reach the human goal. On the matched 160-episode panel, T2 achieved 150/160 successes versus T1's 110/160; no-reach failures fell from 42 to 7, truncations from 50 to 10, and episodes with hold interruptions from 12 to 5. Radius-stratified success improved from 10/40 to 40/40 at 6-10 cm and from 37/53 to 50/53 at 10-14 cm, while outer-radius performance remained close to baseline. The residual T2 failures comprise seven no-reach episodes and three reached-but-interrupted episodes.",
+        "reason": "The closure condition is met: exposure-only training is supported as the smallest credible redesign for the candidate-specific coverage failure, and its improvement is behavioral rather than inferred from training statistics. The remaining failures are concentrated in a small set of difficult angle-radius cases and include both slow/non-convergent approaches and post-entry oscillatory interruptions, so I2 cannot justify claiming that coverage alone is sufficient for the 98% goal. The next scientific direction must discriminate residual angle-dependent convergence or branch selection from stabilization before selecting the next control or representation change.",
+        "status": "completed"
+      },
+      "session_id": "S5",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "close",
+        "inquiry_id": "I2",
+        "outcome": "I2 establishes that full official-radius exposure materially removes the dominant inner-radius reach and horizon failures without a new hold deficit, but it does not by itself reach the human goal. On the matched 160-episode panel, T2 achieved 150/160 successes versus T1's 110/160; no-reach failures fell from 42 to 7, truncations from 50 to 10, and episodes with hold interruptions from 12 to 5. Radius-stratified success improved from 10/40 to 40/40 at 6-10 cm and from 37/53 to 50/53 at 10-14 cm, while outer-radius performance remained close to baseline. The residual T2 failures comprise seven no-reach episodes and three reached-but-interrupted episodes.",
+        "reason": "The closure condition is met: exposure-only training is supported as the smallest credible redesign for the candidate-specific coverage failure, and its improvement is behavioral rather than inferred from training statistics. The remaining failures are concentrated in a small set of difficult angle-radius cases and include both slow/non-convergent approaches and post-entry oscillatory interruptions, so I2 cannot justify claiming that coverage alone is sufficient for the 98% goal. The next scientific direction must discriminate residual angle-dependent convergence or branch selection from stabilization before selecting the next control or representation change."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I2",
+        "outcome": "I2 establishes that full official-radius exposure materially removes the dominant inner-radius reach and horizon failures without a new hold deficit, but it does not by itself reach the human goal. On the matched 160-episode panel, T2 achieved 150/160 successes versus T1's 110/160; no-reach failures fell from 42 to 7, truncations from 50 to 10, and episodes with hold interruptions from 12 to 5. Radius-stratified success improved from 10/40 to 40/40 at 6-10 cm and from 37/53 to 50/53 at 10-14 cm, while outer-radius performance remained close to baseline. The residual T2 failures comprise seven no-reach episodes and three reached-but-interrupted episodes.",
+        "reason": "The closure condition is met: exposure-only training is supported as the smallest credible redesign for the candidate-specific coverage failure, and its improvement is behavioral rather than inferred from training statistics. The remaining failures are concentrated in a small set of difficult angle-radius cases and include both slow/non-convergent approaches and post-entry oscillatory interruptions, so I2 cannot justify claiming that coverage alone is sufficient for the 98% goal. The next scientific direction must discriminate residual angle-dependent convergence or branch selection from stabilization before selecting the next control or representation change.",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E8",
+    "inquiry_id": "I2",
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "close",
+        "outcome": "I2 establishes that full official-radius exposure materially removes the dominant inner-radius reach and horizon failures without a new hold deficit, but it does not by itself reach the human goal. On the matched 160-episode panel, T2 achieved 150/160 successes versus T1's 110/160; no-reach failures fell from 42 to 7, truncations from 50 to 10, and episodes with hold interruptions from 12 to 5. Radius-stratified success improved from 10/40 to 40/40 at 6-10 cm and from 37/53 to 50/53 at 10-14 cm, while outer-radius performance remained close to baseline. The residual T2 failures comprise seven no-reach episodes and three reached-but-interrupted episodes.",
+        "reason": "The closure condition is met: exposure-only training is supported as the smallest credible redesign for the candidate-specific coverage failure, and its improvement is behavioral rather than inferred from training statistics. The remaining failures are concentrated in a small set of difficult angle-radius cases and include both slow/non-convergent approaches and post-entry oscillatory interruptions, so I2 cannot justify claiming that coverage alone is sufficient for the 98% goal. The next scientific direction must discriminate residual angle-dependent convergence or branch selection from stabilization before selecting the next control or representation change."
+      }
+    },
+    "request_fingerprint": "b48183afe706335093ba3246546c74e325b5700977cc7f6da9176c3d2f9e1ce7",
+    "session_id": "S5",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T1:checkpoint-120832 remains the only candidate with full-distribution development evidence and has no assigned working, best-known, or retained role. No model-role change was made in this goal-review session.",
     "completed_operations": [
@@ -3196,7 +3239,8 @@
     "objective": "Advance I2 toward an evidence-supported answer to its scientific question: Can training on the full official radius distribution eliminate the dominant inner-radius reach and horizon failures while preserving uninterrupted hold stability, or is an additional convergence or branch-aware control change required?",
     "operation_ids": [
       "T2",
-      "M3"
+      "M3",
+      "E8"
     ],
     "scientific_parent_commit": "1932bdc15a5ba2136c9fb3cd5d5381617a9940a9"
   },
