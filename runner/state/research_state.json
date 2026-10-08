@@ -1,11 +1,11 @@
 {
   "active_inquiry": null,
   "campaign": {
-    "base_commit": "269cebf1ae8d91b330e3ce81770870dcfd589dbd",
-    "id": "c150ad87-e99c-43ed-bb05-77acb7f1e960",
+    "base_commit": "4521496c4291c99a7376bd07efd7b6550695f7ff",
+    "id": "bd32cc79-767a-4599-92cd-d889f3ec396b",
     "max_inquiries": 15,
     "recipe_source_commit": "8256c8c7705a5080a722453b26eb13cd85b6e18f",
-    "started_at": "2026-10-08T18:49:54.393814+00:00"
+    "started_at": "2026-10-08T19:11:29.939015+00:00"
   },
   "candidates": {},
   "counters": {
