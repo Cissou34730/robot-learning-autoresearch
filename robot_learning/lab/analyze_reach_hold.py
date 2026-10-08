@@ -18,11 +18,84 @@ def _summary(values: list[float]) -> dict[str, float | None]:
     }
 
 
+def _condition_summary(rows: list[dict]) -> dict:
+    no_entry_failures = sum(
+        not row["_success"] and row["first_reach_step"] is None
+        for row in rows
+    )
+    return {
+        "episodes": len(rows),
+        "successes": sum(bool(row["_success"]) for row in rows),
+        "success_percent": (
+            100.0 * sum(bool(row["_success"]) for row in rows) / len(rows)
+            if rows
+            else None
+        ),
+        "no_entry_failures": no_entry_failures,
+        "entered_failures": sum(
+            not row["_success"] and row["first_reach_step"] is not None
+            for row in rows
+        ),
+        "minimum_distance_cm": _summary(
+            [row["min_distance_cm"] for row in rows]
+        ),
+        "maximum_ee_speed_m_s": _summary(
+            [row["max_ee_speed_m_s"] for row in rows]
+        ),
+        "action_saturation_steps": _summary(
+            [row["action_saturation_steps"] for row in rows]
+        ),
+        "first_entry_step": _summary(
+            [
+                row["first_reach_step"]
+                for row in rows
+                if row["first_reach_step"] is not None
+            ]
+        ),
+        "available_episode_steps": _summary(
+            [
+                500 - row["first_reach_step"]
+                for row in rows
+                if row["first_reach_step"] is not None
+            ]
+        ),
+    }
+
+
+def _radius_band(radius_cm: float) -> str:
+    if radius_cm < 10.0:
+        return "06-10cm"
+    if radius_cm < 14.0:
+        return "10-14cm"
+    if radius_cm < 18.0:
+        return "14-18cm"
+    return "18-20cm"
+
+
+def _angle_sector(angle_degrees: float) -> str:
+    normalized = (angle_degrees + 180.0) % 360.0 - 180.0
+    lower = int((normalized + 180.0) // 45.0) * 45 - 180
+    upper = lower + 45
+    return f"{lower:+03d}_to_{upper:+03d}deg"
+
+
+def _stratified(rows: list[dict], key) -> dict[str, dict]:
+    groups: dict[str, list[dict]] = {}
+    for row in rows:
+        groups.setdefault(key(row), []).append(row)
+    return {
+        label: _condition_summary(groups[label])
+        for label in sorted(groups)
+    }
+
+
 def analyze(source: dict) -> dict:
     outcomes = {
         row["episode"]: bool(row["success"]) for row in source["episode_results"]
     }
     diagnostics = source["research_evidence"]["episode_diagnostics"]
+    for row in diagnostics:
+        row["_success"] = outcomes[row["episode"]]
     failures = [row for row in diagnostics if not outcomes[row["episode"]]]
     no_entry = [row for row in failures if row["first_reach_step"] is None]
     entered_failures = [row for row in failures if row["first_reach_step"] is not None]
@@ -51,8 +124,8 @@ def analyze(source: dict) -> dict:
         ),
     }
 
-    return {
-        "schema_version": 1,
+    result = {
+        "schema_version": 2,
         "source_episodes": len(diagnostics),
         "successes": sum(outcomes.values()),
         "failures": len(failures),
@@ -96,6 +169,23 @@ def analyze(source: dict) -> dict:
             ),
         },
     }
+    result["stratified_diagnostics"] = {
+        "radius_bands_cm": _stratified(
+            diagnostics, lambda row: _radius_band(row["target_radius_cm"])
+        ),
+        "angle_sectors_degrees": _stratified(
+            diagnostics, lambda row: _angle_sector(row["target_angle_degrees"])
+        ),
+        "no_entry_failures_by_radius_band_cm": _stratified(
+            no_entry, lambda row: _radius_band(row["target_radius_cm"])
+        ),
+        "no_entry_failures_by_angle_sector_degrees": _stratified(
+            no_entry, lambda row: _angle_sector(row["target_angle_degrees"])
+        ),
+    }
+    for row in diagnostics:
+        del row["_success"]
+    return result
 
 
 def main() -> None:
