@@ -1,5 +1,16 @@
 {
-  "active_inquiry": null,
+  "active_inquiry": {
+    "closure_condition": "Close after one bounded reach-focused training intervention has an episode-level development evaluation against the current baseline, including full-distribution success, first-reach coverage, maximum held steps, hold interruptions, and radius-angle strata. A positive result requires improved difficult-geometry first reach and episode success with no material loss of complete holds; a negative or limited result is sufficient if reach does not improve or new hold interruptions become the dominant failure.",
+    "goal_connection": "The current learned candidate succeeds on 68.75% of development episodes, with most failures never entering tolerance and the largest deficits concentrated in short-radius and difficult-angle geometries. The human goal requires at least 196 of 200 complete uninterrupted holds, so the inquiry tests whether recovering global reach coverage can close the gap without trading it for hold failures.",
+    "handoff_conclusion": "M1 established nonzero compiled plant authority, no sampled self-contact in valid target branches, and complete local 100-step holds under zero input and bounded local PD. T1 trained a fresh baseline PPO policy, but its training-buffer success is not episode-level evidence. M2 evaluated its terminal candidate over 160 full-distribution episodes and found 110 successes (68.75%); 42 of 50 failures never entered tolerance, while only 8 entered tolerance without completing the hold. The outcomes were geometry-conditioned, with 59.3% success at 6-16 cm versus 91.5% at 16-20 cm and weak angle sectors below 65%. Therefore the tested recipe's dominant failure is global reach conditioned by target geometry, consistent with reset singularity and branch/joint-limit effects; terminal stabilization remains a secondary residual risk, not eliminated. E4 closes I1 as a limited actionable diagnosis. This result does not invalidate learning as a method or prove that every policy needs the same intervention.",
+    "handoff_question": "Can targeted training changes that improve reach coverage of short-radius and reset-opposed target geometries raise full-distribution first-reach and episode success toward the 98% goal without introducing terminal hold interruptions?",
+    "handoff_source_session_id": "S3",
+    "id": "I2",
+    "opened_in_session": "S4",
+    "question": "Can targeted training changes that improve reach coverage of short-radius and reset-opposed target geometries raise full-distribution first-reach and episode success toward the 98% goal without introducing terminal hold interruptions?",
+    "rationale": "M2 established that the tested baseline recipe is reach-limited and geometry-conditioned: 42 of 50 failures never entered tolerance, while only 8 entered tolerance without completing the hold. M1 established complete local holds under zero input and bounded local PD, but does not establish that a learned policy preserves that margin after a changed trajectory distribution. A fresh inquiry is therefore the highest-value next action: it permits a targeted learning change and requires the same episode-level diagnostics to distinguish genuine global coverage progress from reward or training-buffer improvement.",
+    "reframes": []
+  },
   "campaign": {
     "base_commit": "183ba7483c02b821a562dc3107d9c0100b10d3d9",
     "id": "1ae27a27-6880-4ca6-9d50-e6498e771cb7",
@@ -828,16 +839,16 @@
     }
   },
   "counters": {
-    "event": 5,
-    "inquiry": 1,
+    "event": 6,
+    "inquiry": 2,
     "measurement": 2,
-    "session": 3,
+    "session": 4,
     "training": 1
   },
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -1655,9 +1666,72 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-08T23:59:21Z",
+      "error": null,
+      "id": "E6",
+      "inquiry_id": "I2",
+      "kind": "inquiry",
+      "request": {
+        "action": "open",
+        "closure_condition": "Close after one bounded reach-focused training intervention has an episode-level development evaluation against the current baseline, including full-distribution success, first-reach coverage, maximum held steps, hold interruptions, and radius-angle strata. A positive result requires improved difficult-geometry first reach and episode success with no material loss of complete holds; a negative or limited result is sufficient if reach does not improve or new hold interruptions become the dominant failure.",
+        "goal_connection": "The current learned candidate succeeds on 68.75% of development episodes, with most failures never entering tolerance and the largest deficits concentrated in short-radius and difficult-angle geometries. The human goal requires at least 196 of 200 complete uninterrupted holds, so the inquiry tests whether recovering global reach coverage can close the gap without trading it for hold failures.",
+        "question": "Can targeted training changes that improve reach coverage of short-radius and reset-opposed target geometries raise full-distribution first-reach and episode success toward the 98% goal without introducing terminal hold interruptions?",
+        "rationale": "M2 established that the tested baseline recipe is reach-limited and geometry-conditioned: 42 of 50 failures never entered tolerance, while only 8 entered tolerance without completing the hold. M1 established complete local holds under zero input and bounded local PD, but does not establish that a learned policy preserves that margin after a changed trajectory distribution. A fresh inquiry is therefore the highest-value next action: it permits a targeted learning change and requires the same episode-level diagnostics to distinguish genuine global coverage progress from reward or training-buffer improvement."
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I2",
+        "status": "completed"
+      },
+      "session_id": "S4",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "open",
+        "inquiry": {
+          "closure_condition": "Close after one bounded reach-focused training intervention has an episode-level development evaluation against the current baseline, including full-distribution success, first-reach coverage, maximum held steps, hold interruptions, and radius-angle strata. A positive result requires improved difficult-geometry first reach and episode success with no material loss of complete holds; a negative or limited result is sufficient if reach does not improve or new hold interruptions become the dominant failure.",
+          "goal_connection": "The current learned candidate succeeds on 68.75% of development episodes, with most failures never entering tolerance and the largest deficits concentrated in short-radius and difficult-angle geometries. The human goal requires at least 196 of 200 complete uninterrupted holds, so the inquiry tests whether recovering global reach coverage can close the gap without trading it for hold failures.",
+          "handoff_conclusion": "M1 established nonzero compiled plant authority, no sampled self-contact in valid target branches, and complete local 100-step holds under zero input and bounded local PD. T1 trained a fresh baseline PPO policy, but its training-buffer success is not episode-level evidence. M2 evaluated its terminal candidate over 160 full-distribution episodes and found 110 successes (68.75%); 42 of 50 failures never entered tolerance, while only 8 entered tolerance without completing the hold. The outcomes were geometry-conditioned, with 59.3% success at 6-16 cm versus 91.5% at 16-20 cm and weak angle sectors below 65%. Therefore the tested recipe's dominant failure is global reach conditioned by target geometry, consistent with reset singularity and branch/joint-limit effects; terminal stabilization remains a secondary residual risk, not eliminated. E4 closes I1 as a limited actionable diagnosis. This result does not invalidate learning as a method or prove that every policy needs the same intervention.",
+          "handoff_question": "Can targeted training changes that improve reach coverage of short-radius and reset-opposed target geometries raise full-distribution first-reach and episode success toward the 98% goal without introducing terminal hold interruptions?",
+          "handoff_source_session_id": "S3",
+          "id": "I2",
+          "opened_in_session": "S4",
+          "question": "Can targeted training changes that improve reach coverage of short-radius and reset-opposed target geometries raise full-distribution first-reach and episode success toward the 98% goal without introducing terminal hold interruptions?",
+          "rationale": "M2 established that the tested baseline recipe is reach-limited and geometry-conditioned: 42 of 50 failures never entered tolerance, while only 8 entered tolerance without completing the hold. M1 established complete local holds under zero input and bounded local PD, but does not establish that a learned policy preserves that margin after a changed trajectory distribution. A fresh inquiry is therefore the highest-value next action: it permits a targeted learning change and requires the same episode-level diagnostics to distinguish genuine global coverage progress from reward or training-buffer improvement.",
+          "reframes": []
+        }
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I2",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E6",
+    "inquiry_id": null,
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "open",
+        "closure_condition": "Close after one bounded reach-focused training intervention has an episode-level development evaluation against the current baseline, including full-distribution success, first-reach coverage, maximum held steps, hold interruptions, and radius-angle strata. A positive result requires improved difficult-geometry first reach and episode success with no material loss of complete holds; a negative or limited result is sufficient if reach does not improve or new hold interruptions become the dominant failure.",
+        "goal_connection": "The current learned candidate succeeds on 68.75% of development episodes, with most failures never entering tolerance and the largest deficits concentrated in short-radius and difficult-angle geometries. The human goal requires at least 196 of 200 complete uninterrupted holds, so the inquiry tests whether recovering global reach coverage can close the gap without trading it for hold failures.",
+        "question": "Can targeted training changes that improve reach coverage of short-radius and reset-opposed target geometries raise full-distribution first-reach and episode success toward the 98% goal without introducing terminal hold interruptions?",
+        "rationale": "M2 established that the tested baseline recipe is reach-limited and geometry-conditioned: 42 of 50 failures never entered tolerance, while only 8 entered tolerance without completing the hold. M1 established complete local holds under zero input and bounded local PD, but does not establish that a learned policy preserves that margin after a changed trajectory distribution. A fresh inquiry is therefore the highest-value next action: it permits a targeted learning change and requires the same episode-level diagnostics to distinguish genuine global coverage progress from reward or training-buffer improvement."
+      }
+    },
+    "request_fingerprint": "2b59154f6f1d0b486e493bd154de259176ec0fa91af2ac0481316a5c401496bb",
+    "session_id": "S4",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T1:checkpoint-120832 is the strongest measured candidate at present, with 68.75% success on M2, but no working or best-known role has been assigned. All other T1 checkpoints remain unassigned; no candidates are retained.",
     "completed_operations": [
@@ -1688,6 +1762,21 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "a521e0d3-f579-42b0-8bf6-484c5114a36d",
+    "id": "S4",
+    "inquiry_id": null,
+    "kind": "goal_review",
+    "objective": "Use the completed evidence to update the scientific direction toward the human goal. Request measurements when they resolve an uncertainty or develop the method. Then choose one outcome: request the official assessment, or open one bounded goal-linked inquiry.",
+    "operation_ids": [
+      "E6"
+    ],
+    "scientific_parent_commit": "f9c5bc6b408a7becdd5273dc36ca7ac610553392"
+  },
   "terminal_state": null
 }
