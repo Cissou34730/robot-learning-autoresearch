@@ -23,6 +23,7 @@ HOLD_EXIT_FORFEIT_FRACTION = 0.0
 OUTSIDE_BAND_WIDTH = 0.01
 OUTSIDE_BAND_PENALTY = 0.1
 HOLD_COMPLETE_BONUS = 50.0
+BRANCH_ERROR_COEFFICIENT = 0.5
 
 
 @dataclass(frozen=True)
@@ -53,6 +54,8 @@ def reach_reward(
     previous_held_steps: int = 0,
     hold_steps_required: int = 100,
     penalize_outside: bool = False,
+    previous_branch_error: float | None = None,
+    current_branch_error: float | None = None,
 ) -> RewardResult:
     progress = PROGRESS_COEFFICIENT * (previous_distance - current_distance)
     reward = progress
@@ -73,6 +76,15 @@ def reach_reward(
     else:
         hold_progress = current_hold_capital - previous_hold_capital
     reward += hold_progress
+
+    branch_progress = 0.0
+    if (previous_branch_error is None) != (current_branch_error is None):
+        raise ValueError("branch errors must be provided together")
+    if previous_branch_error is not None and current_branch_error is not None:
+        branch_progress = BRANCH_ERROR_COEFFICIENT * (
+            previous_branch_error - current_branch_error
+        )
+        reward += branch_progress
 
     outside_band = 0.0
     if penalize_outside and current_distance > success_threshold:
@@ -101,6 +113,7 @@ def reach_reward(
             "progress": float(progress),
             "closeness": float(closeness),
             "hold_progress": float(hold_progress),
+            "branch_progress": float(branch_progress),
             "outside_band": float(outside_band),
             "hold_complete": float(hold_complete),
             "action_cost": float(action_cost),

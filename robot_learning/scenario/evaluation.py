@@ -55,6 +55,11 @@ def evaluate_research_model(
         in_tolerance_steps = 0
         hold_interruptions = 0
         was_in_tolerance = False
+        initial_branch_errors = np.asarray(obs[7:11], dtype=np.float64)
+        first_reach_elbow_angle_degrees: float | None = None
+        first_reach_branch: str | None = None
+        branch_switches = 0
+        previous_branch: str | None = None
         while not (terminated or truncated):
             action = runtime.predict(obs)
             obs, reward, terminated, truncated, info = env.step(action)
@@ -65,10 +70,24 @@ def evaluate_research_model(
             min_distance_cm = min(min_distance_cm, distance_cm)
             final_distance_cm = distance_cm
             max_held_steps = max(max_held_steps, held_steps)
+            branch_errors = np.asarray(obs[7:11], dtype=np.float64)
+            current_branch = (
+                "open"
+                if np.hypot(branch_errors[0], branch_errors[1])
+                <= np.hypot(branch_errors[2], branch_errors[3])
+                else "folded"
+            )
+            if previous_branch is not None and current_branch != previous_branch:
+                branch_switches += 1
+            previous_branch = current_branch
             if held_steps > 0:
                 in_tolerance_steps += 1
                 if first_reach_step is None:
                     first_reach_step = steps
+                    first_reach_elbow_angle_degrees = float(
+                        np.degrees(env.data.qpos[1])
+                    )
+                    first_reach_branch = current_branch
             elif was_in_tolerance:
                 hold_interruptions += 1
             was_in_tolerance = held_steps > 0
@@ -103,6 +122,17 @@ def evaluate_research_model(
                 "max_held_steps": max_held_steps,
                 "in_tolerance_steps": in_tolerance_steps,
                 "hold_interruptions": hold_interruptions,
+                "initial_open_branch_error_rad": float(
+                    np.hypot(initial_branch_errors[0], initial_branch_errors[1])
+                ),
+                "initial_folded_branch_error_rad": float(
+                    np.hypot(initial_branch_errors[2], initial_branch_errors[3])
+                ),
+                "first_reach_elbow_angle_degrees": first_reach_elbow_angle_degrees,
+                "first_reach_branch": first_reach_branch,
+                "final_elbow_angle_degrees": float(np.degrees(env.data.qpos[1])),
+                "final_branch": previous_branch,
+                "branch_switches": branch_switches,
             }
         )
         if progress_callback is not None:
@@ -110,7 +140,7 @@ def evaluate_research_model(
 
     successes = sum(episode["success"] for episode in episode_results)
     return {
-        "schema_version": 5,
+        "schema_version": 6,
         "model": str(model_path),
         "episodes": episodes,
         "seed": seed,
