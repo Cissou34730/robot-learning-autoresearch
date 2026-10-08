@@ -1,0 +1,802 @@
+{
+  "schema_version": 2,
+  "source_episodes": 160,
+  "successes": 110,
+  "failures": 50,
+  "failure_decomposition": {
+    "no_first_entry": 42,
+    "entered_but_hold_incomplete": 8,
+    "entered_failure_with_interruptions": 8
+  },
+  "no_entry_branch_status": {
+    "at_least_one_feasible_branch": 42,
+    "positive_branch_feasible": 31,
+    "negative_only_feasible": 11,
+    "neither_branch_feasible": 0
+  },
+  "first_entry_speed_m_s": {
+    "successful_episodes": {
+      "count": 110,
+      "mean": 0.7844210442232928,
+      "median": 0.78675984520838
+    },
+    "failed_episodes": {
+      "count": 8,
+      "mean": 0.5452189944057715,
+      "median": 0.5362284705977892
+    }
+  },
+  "hold_interruptions": {
+    "failed_episodes_total": 8,
+    "failed_episodes_with_entry": 8,
+    "total": 498
+  },
+  "entered_episode_limit_and_action": {
+    "successful_minimum_joint_limit_margin_degrees": {
+      "count": 110,
+      "mean": 52.31372502815744,
+      "median": 47.79118601584116
+    },
+    "failed_minimum_joint_limit_margin_degrees": {
+      "count": 8,
+      "mean": 36.8026264283687,
+      "median": 37.21295326174466
+    },
+    "successful_action_saturation_steps": {
+      "count": 110,
+      "mean": 111.95454545454545,
+      "median": 112.0
+    },
+    "failed_action_saturation_steps": {
+      "count": 8,
+      "mean": 498.25,
+      "median": 498.0
+    }
+  },
+  "stratified_diagnostics": {
+    "radius_bands_cm": {
+      "06-10cm": {
+        "episodes": 40,
+        "successes": 10,
+        "success_percent": 25.0,
+        "no_entry_failures": 23,
+        "entered_failures": 7,
+        "minimum_distance_cm": {
+          "count": 40,
+          "mean": 5.44439022819557,
+          "median": 1.3420974456784442
+        },
+        "maximum_ee_speed_m_s": {
+          "count": 40,
+          "mean": 2.3377997124573198,
+          "median": 2.8583052025924887
+        },
+        "action_saturation_steps": {
+          "count": 40,
+          "mean": 303.7,
+          "median": 497.0
+        },
+        "first_entry_step": {
+          "count": 17,
+          "mean": 17.529411764705884,
+          "median": 15.0
+        },
+        "available_episode_steps": {
+          "count": 17,
+          "mean": 482.47058823529414,
+          "median": 485.0
+        }
+      },
+      "10-14cm": {
+        "episodes": 53,
+        "successes": 37,
+        "success_percent": 69.81132075471699,
+        "no_entry_failures": 15,
+        "entered_failures": 1,
+        "minimum_distance_cm": {
+          "count": 53,
+          "mean": 3.3739044605992947,
+          "median": 0.5460224441081021
+        },
+        "maximum_ee_speed_m_s": {
+          "count": 53,
+          "mean": 2.4017245526866526,
+          "median": 2.819991947274914
+        },
+        "action_saturation_steps": {
+          "count": 53,
+          "mean": 174.03773584905662,
+          "median": 114.0
+        },
+        "first_entry_step": {
+          "count": 38,
+          "mean": 16.13157894736842,
+          "median": 16.0
+        },
+        "available_episode_steps": {
+          "count": 38,
+          "mean": 483.86842105263156,
+          "median": 484.0
+        }
+      },
+      "14-18cm": {
+        "episodes": 39,
+        "successes": 37,
+        "success_percent": 94.87179487179488,
+        "no_entry_failures": 2,
+        "entered_failures": 0,
+        "minimum_distance_cm": {
+          "count": 39,
+          "mean": 0.34135725295479014,
+          "median": 0.28026719167340436
+        },
+        "maximum_ee_speed_m_s": {
+          "count": 39,
+          "mean": 2.532982594788986,
+          "median": 2.773731009465449
+        },
+        "action_saturation_steps": {
+          "count": 39,
+          "mean": 131.97435897435898,
+          "median": 113.0
+        },
+        "first_entry_step": {
+          "count": 37,
+          "mean": 13.891891891891891,
+          "median": 14.0
+        },
+        "available_episode_steps": {
+          "count": 37,
+          "mean": 486.1081081081081,
+          "median": 486.0
+        }
+      },
+      "18-20cm": {
+        "episodes": 28,
+        "successes": 26,
+        "success_percent": 92.85714285714286,
+        "no_entry_failures": 2,
+        "entered_failures": 0,
+        "minimum_distance_cm": {
+          "count": 28,
+          "mean": 0.34348452060058876,
+          "median": 0.2734597224310292
+        },
+        "maximum_ee_speed_m_s": {
+          "count": 28,
+          "mean": 2.6553281394695865,
+          "median": 2.9308961639322053
+        },
+        "action_saturation_steps": {
+          "count": 28,
+          "mean": 136.71428571428572,
+          "median": 109.0
+        },
+        "first_entry_step": {
+          "count": 26,
+          "mean": 10.192307692307692,
+          "median": 9.5
+        },
+        "available_episode_steps": {
+          "count": 26,
+          "mean": 489.8076923076923,
+          "median": 490.5
+        }
+      }
+    },
+    "angle_sectors_degrees": {
+      "+00_to_+45deg": {
+        "episodes": 19,
+        "successes": 9,
+        "success_percent": 47.36842105263158,
+        "no_entry_failures": 9,
+        "entered_failures": 1,
+        "minimum_distance_cm": {
+          "count": 19,
+          "mean": 0.9255164340247178,
+          "median": 0.9869822538841855
+        },
+        "maximum_ee_speed_m_s": {
+          "count": 19,
+          "mean": 1.6631218114853696,
+          "median": 1.5275466617076723
+        },
+        "action_saturation_steps": {
+          "count": 19,
+          "mean": 312.89473684210526,
+          "median": 492.0
+        },
+        "first_entry_step": {
+          "count": 10,
+          "mean": 10.3,
+          "median": 9.5
+        },
+        "available_episode_steps": {
+          "count": 10,
+          "mean": 489.7,
+          "median": 490.5
+        }
+      },
+      "+135_to_+180deg": {
+        "episodes": 24,
+        "successes": 22,
+        "success_percent": 91.66666666666667,
+        "no_entry_failures": 2,
+        "entered_failures": 0,
+        "minimum_distance_cm": {
+          "count": 24,
+          "mean": 2.2831083872843814,
+          "median": 0.23221983098839172
+        },
+        "maximum_ee_speed_m_s": {
+          "count": 24,
+          "mean": 2.9786497483111245,
+          "median": 2.9886282977124097
+        },
+        "action_saturation_steps": {
+          "count": 24,
+          "mean": 103.25,
+          "median": 112.0
+        },
+        "first_entry_step": {
+          "count": 22,
+          "mean": 14.227272727272727,
+          "median": 14.0
+        },
+        "available_episode_steps": {
+          "count": 22,
+          "mean": 485.77272727272725,
+          "median": 486.0
+        }
+      },
+      "+45_to_+90deg": {
+        "episodes": 21,
+        "successes": 17,
+        "success_percent": 80.95238095238095,
+        "no_entry_failures": 1,
+        "entered_failures": 3,
+        "minimum_distance_cm": {
+          "count": 21,
+          "mean": 0.4797933090825081,
+          "median": 0.48475660478219296
+        },
+        "maximum_ee_speed_m_s": {
+          "count": 21,
+          "mean": 2.889016933907093,
+          "median": 2.9551464304342545
+        },
+        "action_saturation_steps": {
+          "count": 21,
+          "mean": 182.42857142857142,
+          "median": 109.0
+        },
+        "first_entry_step": {
+          "count": 20,
+          "mean": 10.9,
+          "median": 11.5
+        },
+        "available_episode_steps": {
+          "count": 20,
+          "mean": 489.1,
+          "median": 488.5
+        }
+      },
+      "+90_to_+135deg": {
+        "episodes": 14,
+        "successes": 12,
+        "success_percent": 85.71428571428571,
+        "no_entry_failures": 0,
+        "entered_failures": 2,
+        "minimum_distance_cm": {
+          "count": 14,
+          "mean": 0.36896659521985764,
+          "median": 0.33798636426363843
+        },
+        "maximum_ee_speed_m_s": {
+          "count": 14,
+          "mean": 2.9539533476677184,
+          "median": 2.9551464304342545
+        },
+        "action_saturation_steps": {
+          "count": 14,
+          "mean": 165.07142857142858,
+          "median": 110.0
+        },
+        "first_entry_step": {
+          "count": 14,
+          "mean": 11.285714285714286,
+          "median": 10.5
+        },
+        "available_episode_steps": {
+          "count": 14,
+          "mean": 488.7142857142857,
+          "median": 489.5
+        }
+      },
+      "-135_to_-90deg": {
+        "episodes": 26,
+        "successes": 19,
+        "success_percent": 73.07692307692308,
+        "no_entry_failures": 6,
+        "entered_failures": 1,
+        "minimum_distance_cm": {
+          "count": 26,
+          "mean": 4.004651714171591,
+          "median": 0.398496523745581
+        },
+        "maximum_ee_speed_m_s": {
+          "count": 26,
+          "mean": 2.557006762747614,
+          "median": 2.529947134849706
+        },
+        "action_saturation_steps": {
+          "count": 26,
+          "mean": 144.5,
+          "median": 117.0
+        },
+        "first_entry_step": {
+          "count": 20,
+          "mean": 18.75,
+          "median": 19.0
+        },
+        "available_episode_steps": {
+          "count": 20,
+          "mean": 481.25,
+          "median": 481.0
+        }
+      },
+      "-180_to_-135deg": {
+        "episodes": 25,
+        "successes": 13,
+        "success_percent": 52.0,
+        "no_entry_failures": 12,
+        "entered_failures": 0,
+        "minimum_distance_cm": {
+          "count": 25,
+          "mean": 8.050561931440143,
+          "median": 0.5445785824883966
+        },
+        "maximum_ee_speed_m_s": {
+          "count": 25,
+          "mean": 2.942771062509161,
+          "median": 2.9551464304342545
+        },
+        "action_saturation_steps": {
+          "count": 25,
+          "mean": 141.32,
+          "median": 114.0
+        },
+        "first_entry_step": {
+          "count": 13,
+          "mean": 19.692307692307693,
+          "median": 18.0
+        },
+        "available_episode_steps": {
+          "count": 13,
+          "mean": 480.3076923076923,
+          "median": 482.0
+        }
+      },
+      "-45_to_+00deg": {
+        "episodes": 12,
+        "successes": 7,
+        "success_percent": 58.333333333333336,
+        "no_entry_failures": 5,
+        "entered_failures": 0,
+        "minimum_distance_cm": {
+          "count": 12,
+          "mean": 0.880215683473671,
+          "median": 0.6455164463388018
+        },
+        "maximum_ee_speed_m_s": {
+          "count": 12,
+          "mean": 1.3391041219541029,
+          "median": 1.3131398864106125
+        },
+        "action_saturation_steps": {
+          "count": 12,
+          "mean": 270.4166666666667,
+          "median": 109.5
+        },
+        "first_entry_step": {
+          "count": 7,
+          "mean": 9.857142857142858,
+          "median": 10.0
+        },
+        "available_episode_steps": {
+          "count": 7,
+          "mean": 490.14285714285717,
+          "median": 490.0
+        }
+      },
+      "-90_to_-45deg": {
+        "episodes": 19,
+        "successes": 11,
+        "success_percent": 57.89473684210526,
+        "no_entry_failures": 7,
+        "entered_failures": 1,
+        "minimum_distance_cm": {
+          "count": 19,
+          "mean": 0.8397293979149619,
+          "median": 0.6200284045413378
+        },
+        "maximum_ee_speed_m_s": {
+          "count": 19,
+          "mean": 1.7213992725211589,
+          "median": 1.7275845209073653
+        },
+        "action_saturation_steps": {
+          "count": 19,
+          "mean": 276.1578947368421,
+          "median": 117.0
+        },
+        "first_entry_step": {
+          "count": 12,
+          "mean": 16.5,
+          "median": 16.0
+        },
+        "available_episode_steps": {
+          "count": 12,
+          "mean": 483.5,
+          "median": 484.0
+        }
+      }
+    },
+    "no_entry_failures_by_radius_band_cm": {
+      "06-10cm": {
+        "episodes": 23,
+        "successes": 0,
+        "success_percent": 0.0,
+        "no_entry_failures": 23,
+        "entered_failures": 0,
+        "minimum_distance_cm": {
+          "count": 23,
+          "mean": 9.013784955730705,
+          "median": 1.7072081133707178
+        },
+        "maximum_ee_speed_m_s": {
+          "count": 23,
+          "mean": 2.137594217945845,
+          "median": 2.139667388012805
+        },
+        "action_saturation_steps": {
+          "count": 23,
+          "mean": 326.7826086956522,
+          "median": 498.0
+        },
+        "first_entry_step": {
+          "count": 0,
+          "mean": null,
+          "median": null
+        },
+        "available_episode_steps": {
+          "count": 0,
+          "mean": null,
+          "median": null
+        }
+      },
+      "10-14cm": {
+        "episodes": 15,
+        "successes": 0,
+        "success_percent": 0.0,
+        "no_entry_failures": 15,
+        "entered_failures": 0,
+        "minimum_distance_cm": {
+          "count": 15,
+          "mean": 10.82347958426182,
+          "median": 1.296322045314025
+        },
+        "maximum_ee_speed_m_s": {
+          "count": 15,
+          "mean": 2.0483582880538767,
+          "median": 1.7817917836021306
+        },
+        "action_saturation_steps": {
+          "count": 15,
+          "mean": 302.0,
+          "median": 498.0
+        },
+        "first_entry_step": {
+          "count": 0,
+          "mean": null,
+          "median": null
+        },
+        "available_episode_steps": {
+          "count": 0,
+          "mean": null,
+          "median": null
+        }
+      },
+      "14-18cm": {
+        "episodes": 2,
+        "successes": 0,
+        "success_percent": 0.0,
+        "no_entry_failures": 2,
+        "entered_failures": 0,
+        "minimum_distance_cm": {
+          "count": 2,
+          "mean": 1.4097698762426276,
+          "median": 1.4097698762426276
+        },
+        "maximum_ee_speed_m_s": {
+          "count": 2,
+          "mean": 2.902094283999113,
+          "median": 2.902094283999113
+        },
+        "action_saturation_steps": {
+          "count": 2,
+          "mean": 500.0,
+          "median": 500.0
+        },
+        "first_entry_step": {
+          "count": 0,
+          "mean": null,
+          "median": null
+        },
+        "available_episode_steps": {
+          "count": 0,
+          "mean": null,
+          "median": null
+        }
+      },
+      "18-20cm": {
+        "episodes": 2,
+        "successes": 0,
+        "success_percent": 0.0,
+        "no_entry_failures": 2,
+        "entered_failures": 0,
+        "minimum_distance_cm": {
+          "count": 2,
+          "mean": 1.2365620316886345,
+          "median": 1.2365620316886345
+        },
+        "maximum_ee_speed_m_s": {
+          "count": 2,
+          "mean": 2.9813516523985655,
+          "median": 2.9813516523985655
+        },
+        "action_saturation_steps": {
+          "count": 2,
+          "mean": 500.0,
+          "median": 500.0
+        },
+        "first_entry_step": {
+          "count": 0,
+          "mean": null,
+          "median": null
+        },
+        "available_episode_steps": {
+          "count": 0,
+          "mean": null,
+          "median": null
+        }
+      }
+    },
+    "no_entry_failures_by_angle_sector_degrees": {
+      "+00_to_+45deg": {
+        "episodes": 9,
+        "successes": 0,
+        "success_percent": 0.0,
+        "no_entry_failures": 9,
+        "entered_failures": 0,
+        "minimum_distance_cm": {
+          "count": 9,
+          "mean": 1.330532164735897,
+          "median": 1.3391297991041369
+        },
+        "maximum_ee_speed_m_s": {
+          "count": 9,
+          "mean": 1.5695277302155393,
+          "median": 1.483128559883662
+        },
+        "action_saturation_steps": {
+          "count": 9,
+          "mean": 497.6666666666667,
+          "median": 498.0
+        },
+        "first_entry_step": {
+          "count": 0,
+          "mean": null,
+          "median": null
+        },
+        "available_episode_steps": {
+          "count": 0,
+          "mean": null,
+          "median": null
+        }
+      },
+      "+135_to_+180deg": {
+        "episodes": 2,
+        "successes": 0,
+        "success_percent": 0.0,
+        "no_entry_failures": 2,
+        "entered_failures": 0,
+        "minimum_distance_cm": {
+          "count": 2,
+          "mean": 24.58726460254274,
+          "median": 24.58726460254274
+        },
+        "maximum_ee_speed_m_s": {
+          "count": 2,
+          "mean": 2.8604787964347524,
+          "median": 2.8604787964347524
+        },
+        "action_saturation_steps": {
+          "count": 2,
+          "mean": 4.0,
+          "median": 4.0
+        },
+        "first_entry_step": {
+          "count": 0,
+          "mean": null,
+          "median": null
+        },
+        "available_episode_steps": {
+          "count": 0,
+          "mean": null,
+          "median": null
+        }
+      },
+      "+45_to_+90deg": {
+        "episodes": 1,
+        "successes": 0,
+        "success_percent": 0.0,
+        "no_entry_failures": 1,
+        "entered_failures": 0,
+        "minimum_distance_cm": {
+          "count": 1,
+          "mean": 1.1670207458176576,
+          "median": 1.1670207458176576
+        },
+        "maximum_ee_speed_m_s": {
+          "count": 1,
+          "mean": 2.8604787964347524,
+          "median": 2.8604787964347524
+        },
+        "action_saturation_steps": {
+          "count": 1,
+          "mean": 498.0,
+          "median": 498.0
+        },
+        "first_entry_step": {
+          "count": 0,
+          "mean": null,
+          "median": null
+        },
+        "available_episode_steps": {
+          "count": 0,
+          "mean": null,
+          "median": null
+        }
+      },
+      "-135_to_-90deg": {
+        "episodes": 6,
+        "successes": 0,
+        "success_percent": 0.0,
+        "no_entry_failures": 6,
+        "entered_failures": 0,
+        "minimum_distance_cm": {
+          "count": 6,
+          "mean": 16.10115063899275,
+          "median": 22.324573210421192
+        },
+        "maximum_ee_speed_m_s": {
+          "count": 6,
+          "mean": 2.746682556197992,
+          "median": 2.9551464304342545
+        },
+        "action_saturation_steps": {
+          "count": 6,
+          "mean": 171.33333333333334,
+          "median": 7.0
+        },
+        "first_entry_step": {
+          "count": 0,
+          "mean": null,
+          "median": null
+        },
+        "available_episode_steps": {
+          "count": 0,
+          "mean": null,
+          "median": null
+        }
+      },
+      "-180_to_-135deg": {
+        "episodes": 12,
+        "successes": 0,
+        "success_percent": 0.0,
+        "no_entry_failures": 12,
+        "entered_failures": 0,
+        "minimum_distance_cm": {
+          "count": 12,
+          "mean": 16.495553285583973,
+          "median": 22.652684773228692
+        },
+        "maximum_ee_speed_m_s": {
+          "count": 12,
+          "mean": 2.942782973522491,
+          "median": 2.9551464304342545
+        },
+        "action_saturation_steps": {
+          "count": 12,
+          "mean": 170.66666666666666,
+          "median": 7.0
+        },
+        "first_entry_step": {
+          "count": 0,
+          "mean": null,
+          "median": null
+        },
+        "available_episode_steps": {
+          "count": 0,
+          "mean": null,
+          "median": null
+        }
+      },
+      "-45_to_+00deg": {
+        "episodes": 5,
+        "successes": 0,
+        "success_percent": 0.0,
+        "no_entry_failures": 5,
+        "entered_failures": 0,
+        "minimum_distance_cm": {
+          "count": 5,
+          "mean": 1.551562356149484,
+          "median": 1.296322045314025
+        },
+        "maximum_ee_speed_m_s": {
+          "count": 5,
+          "mean": 1.243766989343827,
+          "median": 1.2123880018397533
+        },
+        "action_saturation_steps": {
+          "count": 5,
+          "mean": 498.4,
+          "median": 499.0
+        },
+        "first_entry_step": {
+          "count": 0,
+          "mean": null,
+          "median": null
+        },
+        "available_episode_steps": {
+          "count": 0,
+          "mean": null,
+          "median": null
+        }
+      },
+      "-90_to_-45deg": {
+        "episodes": 7,
+        "successes": 0,
+        "success_percent": 0.0,
+        "no_entry_failures": 7,
+        "entered_failures": 0,
+        "minimum_distance_cm": {
+          "count": 7,
+          "mean": 1.4763167266225996,
+          "median": 1.538961081648692
+        },
+        "maximum_ee_speed_m_s": {
+          "count": 7,
+          "mean": 1.562488754133836,
+          "median": 1.608486287782233
+        },
+        "action_saturation_steps": {
+          "count": 7,
+          "mean": 499.0,
+          "median": 499.0
+        },
+        "first_entry_step": {
+          "count": 0,
+          "mean": null,
+          "median": null
+        },
+        "available_episode_steps": {
+          "count": 0,
+          "mean": null,
+          "median": null
+        }
+      }
+    }
+  }
+}
