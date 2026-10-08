@@ -25,10 +25,7 @@ from contracts.task_spec import (
     SUCCESS_THRESHOLD,
     TARGET_RADIUS_RANGE,
 )
-from robot_learning.scenario.observations import (
-    OBSERVATION_SIZE,
-    preferred_branch_error,
-)
+from robot_learning.scenario.observations import OBSERVATION_SIZE
 from robot_learning.scenario.policy_io import make_policy_io
 from robot_learning.training.reward import reach_reward
 
@@ -74,7 +71,6 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
         self._previous_distance = 0.0
         self._held_steps = 0
         self._outside_after_hold = False
-        self._previous_branch_error = 0.0
 
     def _end_effector_position(self) -> np.ndarray:
         return self.data.site("end_effector").xpos.copy()
@@ -119,7 +115,6 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
 
         self._step_count = 0
         self._previous_distance = self._distance_to_target()
-        self._previous_branch_error = preferred_branch_error(self.data)
         self._held_steps = 0
         self._outside_after_hold = False
         return self._observation(), {}
@@ -137,7 +132,6 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
             mujoco.mj_step(self.model, self.data)
 
         distance = self._distance_to_target()
-        branch_error = preferred_branch_error(self.data)
 
         previous_held_steps = self._held_steps
         if distance <= self.success_threshold:
@@ -157,12 +151,8 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
             previous_held_steps=previous_held_steps,
             hold_steps_required=self.hold_steps_required,
             penalize_outside=self._outside_after_hold,
-            previous_branch_error=self._previous_branch_error,
-            current_branch_error=branch_error,
-            joint_velocity=self.data.qvel,
         )
         self._previous_distance = distance
-        self._previous_branch_error = branch_error
 
         self._step_count += 1
         terminated = self._held_steps >= self.hold_steps_required
