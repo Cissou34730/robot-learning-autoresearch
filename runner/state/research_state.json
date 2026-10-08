@@ -1658,7 +1658,7 @@
     }
   },
   "counters": {
-    "event": 13,
+    "event": 14,
     "inquiry": 3,
     "measurement": 6,
     "session": 8,
@@ -1667,7 +1667,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -4694,21 +4694,169 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-08T20:22:46Z",
+      "error": null,
+      "id": "E14",
+      "inquiry_id": null,
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "T2 produced the strongest evaluated candidate, T2:checkpoint-120832, with 150/160 paired development success, but no working, best-known, or retained model role is assigned. T1:checkpoint-120832 remains the paired baseline only. No candidate is evidence for official success.",
+        "completed_operations": [
+          "E13"
+        ],
+        "cumulative_resource_use": "M1 characterization completed; T1 requested 120,000 and completed 120,832 steps; M2 evaluated 160 episodes; M3 aggregated reach/hold behavior; M4 stratified radius and angle; E2 opened I1; E4 reframed I1; E7 closed I1; E9 opened I2; T2 requested 120,000 and completed 120,832 steps with full-range training; M5 evaluated paired T2/T1 panels of 160 episodes at seed 4200; M6 aggregated both diagnostic artifacts; E11 closed I2; E13 opened I3. No official assessment requested.",
+        "current_goal_gap": "The best evaluated candidate remains 150/160 on development evidence, equivalent to 12.5 failures per 200 rather than at most four. The residual gap is concentrated in saturated no-entry reach failures, including four in the trained 14-20 cm range, and entered episodes that still interrupt the hold. Development evidence does not establish the official 98% result.",
+        "current_synthesis": "Established observations: M1 found feasible analytic IK branches across the sampled official domain, non-singular feasible terminal postures, and substantial compiled actuator authority with free velocity decay. T1/M2 measured 110/160 under 14-20 cm training, with 42 no-entry failures and 8 entered-but-incomplete holds. M3/M4 established that 38/42 baseline no-entry failures were below the 14 cm training boundary, while the trained-range tail showed high saturation, fast motion, and negative-angle concentration; all no-entry targets nevertheless had a feasible branch. T2 changed only the training radius distribution to the full official 6-20 cm range and produced a fresh PPO candidate. In paired same-seed M5 evaluation, T2 achieved 150/160 (93.75%) versus T1's 110/160 (68.75%), with 43 candidate wins and 3 reference wins. M6 decomposed T2's 10 failures into 7 no-entry and 3 entered-but-hold-incomplete failures: T2 achieved 40/40 in 6-10 cm and reduced 10-14 cm no-entry failures to 3, demonstrating a major recipe-level reduction of the inner-radius distribution gap. T2's residual no-entry failures included 4 in 14-20 cm with approximately 496-498 saturated action steps, and its entered failures had 435 total hold interruptions. Failed-episode action saturation therefore remains a consequential control signature, while the hold tail remains a separate mechanism. Full-range exposure is supported as a useful but insufficient intervention; it does not establish coverage as causal for all failures, PPO as sufficient, or the official goal. E13 opened I3 to test whether explicit control-aware learning can resolve the remaining reach-braking, directional, and post-entry stabilization failures.",
+        "decision_frontier": "I3 begins from the unresolved, goal-critical distinction between sampled-data or directional reach-braking failures caused by late or saturated control, post-entry hold-stability failures caused by residual velocity and corrective action, and a coupled tail. The next discriminating evidence must compare a control-aware PPO intervention against T2 using synchronized first-entry velocity, saturation duration, action/velocity traces, no-entry radius-angle failure maps, hold interruptions, and complete success. Persistent saturation with no entry would favor reach-braking and directional control; low-speed entry followed by interruptions would favor stabilization. The inquiry closes if a candidate reaches at most four failures per 200 development episodes without regressing full-range coverage, or if evidence redirects the explanation or shows this route is not actionable.",
+        "evidence_references": [
+          "M1",
+          "T1",
+          "M2",
+          "M3",
+          "M4",
+          "E7",
+          "E9",
+          "T2",
+          "M5",
+          "M6",
+          "E11",
+          "E13"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 successes in the protected 200-episode assessment, with every success requiring an uninterrupted 2-second hold. The best development evidence remains 150/160 successes, so I3 directly targets the remaining gap rather than justifying official assessment.",
+        "next_direction_or_closure": "I3 is now open. In the fresh inquiry session, choose the operation that most directly implements and tests a control-aware PPO recipe while preserving full 6-20 cm exposure and collecting synchronized diagnostics that distinguish saturated no-entry control from post-entry hold interruption. Do not repeat radius coverage alone or request official assessment before the residual gap is resolved.",
+        "next_question": "Can a control-aware PPO intervention that explicitly improves sampled-data reach, braking, directional control, and uninterrupted post-entry stabilization reduce T2's residual saturated no-entry and hold-interruption failures to at most four failures per 200 development episodes without regressing its full-range coverage gains?"
+      },
+      "result": {
+        "session_id": "S8",
+        "status": "checkpointed"
+      },
+      "session_id": "S8",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "0497738d2c4149796a32afa3079e8d52af4389ad",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "T2 produced the strongest evaluated candidate, T2:checkpoint-120832, with 150/160 paired development success, but no working, best-known, or retained model role is assigned. T1:checkpoint-120832 remains the paired baseline only. No candidate is evidence for official success.",
+        "completed_operations": [
+          "E13"
+        ],
+        "cumulative_resource_use": "M1 characterization completed; T1 requested 120,000 and completed 120,832 steps; M2 evaluated 160 episodes; M3 aggregated reach/hold behavior; M4 stratified radius and angle; E2 opened I1; E4 reframed I1; E7 closed I1; E9 opened I2; T2 requested 120,000 and completed 120,832 steps with full-range training; M5 evaluated paired T2/T1 panels of 160 episodes at seed 4200; M6 aggregated both diagnostic artifacts; E11 closed I2; E13 opened I3. No official assessment requested.",
+        "current_goal_gap": "The best evaluated candidate remains 150/160 on development evidence, equivalent to 12.5 failures per 200 rather than at most four. The residual gap is concentrated in saturated no-entry reach failures, including four in the trained 14-20 cm range, and entered episodes that still interrupt the hold. Development evidence does not establish the official 98% result.",
+        "current_synthesis": "Established observations: M1 found feasible analytic IK branches across the sampled official domain, non-singular feasible terminal postures, and substantial compiled actuator authority with free velocity decay. T1/M2 measured 110/160 under 14-20 cm training, with 42 no-entry failures and 8 entered-but-incomplete holds. M3/M4 established that 38/42 baseline no-entry failures were below the 14 cm training boundary, while the trained-range tail showed high saturation, fast motion, and negative-angle concentration; all no-entry targets nevertheless had a feasible branch. T2 changed only the training radius distribution to the full official 6-20 cm range and produced a fresh PPO candidate. In paired same-seed M5 evaluation, T2 achieved 150/160 (93.75%) versus T1's 110/160 (68.75%), with 43 candidate wins and 3 reference wins. M6 decomposed T2's 10 failures into 7 no-entry and 3 entered-but-hold-incomplete failures: T2 achieved 40/40 in 6-10 cm and reduced 10-14 cm no-entry failures to 3, demonstrating a major recipe-level reduction of the inner-radius distribution gap. T2's residual no-entry failures included 4 in 14-20 cm with approximately 496-498 saturated action steps, and its entered failures had 435 total hold interruptions. Failed-episode action saturation therefore remains a consequential control signature, while the hold tail remains a separate mechanism. Full-range exposure is supported as a useful but insufficient intervention; it does not establish coverage as causal for all failures, PPO as sufficient, or the official goal. E13 opened I3 to test whether explicit control-aware learning can resolve the remaining reach-braking, directional, and post-entry stabilization failures.",
+        "decision_frontier": "I3 begins from the unresolved, goal-critical distinction between sampled-data or directional reach-braking failures caused by late or saturated control, post-entry hold-stability failures caused by residual velocity and corrective action, and a coupled tail. The next discriminating evidence must compare a control-aware PPO intervention against T2 using synchronized first-entry velocity, saturation duration, action/velocity traces, no-entry radius-angle failure maps, hold interruptions, and complete success. Persistent saturation with no entry would favor reach-braking and directional control; low-speed entry followed by interruptions would favor stabilization. The inquiry closes if a candidate reaches at most four failures per 200 development episodes without regressing full-range coverage, or if evidence redirects the explanation or shows this route is not actionable.",
+        "evidence_references": [
+          "M1",
+          "T1",
+          "M2",
+          "M3",
+          "M4",
+          "E7",
+          "E9",
+          "T2",
+          "M5",
+          "M6",
+          "E11",
+          "E13"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 successes in the protected 200-episode assessment, with every success requiring an uninterrupted 2-second hold. The best development evidence remains 150/160 successes, so I3 directly targets the remaining gap rather than justifying official assessment.",
+        "inquiry_id": null,
+        "next_direction_or_closure": "I3 is now open. In the fresh inquiry session, choose the operation that most directly implements and tests a control-aware PPO recipe while preserving full 6-20 cm exposure and collecting synchronized diagnostics that distinguish saturated no-entry control from post-entry hold interruption. Do not repeat radius coverage alone or request official assessment before the residual gap is resolved.",
+        "next_question": "Can a control-aware PPO intervention that explicitly improves sampled-data reach, braking, directional control, and uninterrupted post-entry stabilization reduce T2's residual saturated no-entry and hold-interruption failures to at most four failures per 200 development episodes without regressing its full-range coverage gains?",
+        "session_id": "S8"
+      },
+      "presentation": {
+        "backend_session_id": "4fa4e39f-b826-4829-bca0-f5e2cfe5d6f4",
+        "campaign_id": "bd32cc79-767a-4599-92cd-d889f3ec396b",
+        "campaign_usage": "21m30s | 52.52 AIU | prompt 6.6m (81% cached) | output 84.6k",
+        "session_id": "S8",
+        "session_kind": "goal_review",
+        "session_usage": "1m22s | 2.28 AIU | prompt 206.8k (73% cached) | output 4.9k"
+      },
+      "result": {
+        "session_id": "S8",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "fad7824172fc8a81d6cdca83a04790cdfd77e81e",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E14",
+    "inquiry_id": null,
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "T2 produced the strongest evaluated candidate, T2:checkpoint-120832, with 150/160 paired development success, but no working, best-known, or retained model role is assigned. T1:checkpoint-120832 remains the paired baseline only. No candidate is evidence for official success.",
+        "completed_operations": [
+          "E13"
+        ],
+        "cumulative_resource_use": "M1 characterization completed; T1 requested 120,000 and completed 120,832 steps; M2 evaluated 160 episodes; M3 aggregated reach/hold behavior; M4 stratified radius and angle; E2 opened I1; E4 reframed I1; E7 closed I1; E9 opened I2; T2 requested 120,000 and completed 120,832 steps with full-range training; M5 evaluated paired T2/T1 panels of 160 episodes at seed 4200; M6 aggregated both diagnostic artifacts; E11 closed I2; E13 opened I3. No official assessment requested.",
+        "current_goal_gap": "The best evaluated candidate remains 150/160 on development evidence, equivalent to 12.5 failures per 200 rather than at most four. The residual gap is concentrated in saturated no-entry reach failures, including four in the trained 14-20 cm range, and entered episodes that still interrupt the hold. Development evidence does not establish the official 98% result.",
+        "current_synthesis": "Established observations: M1 found feasible analytic IK branches across the sampled official domain, non-singular feasible terminal postures, and substantial compiled actuator authority with free velocity decay. T1/M2 measured 110/160 under 14-20 cm training, with 42 no-entry failures and 8 entered-but-incomplete holds. M3/M4 established that 38/42 baseline no-entry failures were below the 14 cm training boundary, while the trained-range tail showed high saturation, fast motion, and negative-angle concentration; all no-entry targets nevertheless had a feasible branch. T2 changed only the training radius distribution to the full official 6-20 cm range and produced a fresh PPO candidate. In paired same-seed M5 evaluation, T2 achieved 150/160 (93.75%) versus T1's 110/160 (68.75%), with 43 candidate wins and 3 reference wins. M6 decomposed T2's 10 failures into 7 no-entry and 3 entered-but-hold-incomplete failures: T2 achieved 40/40 in 6-10 cm and reduced 10-14 cm no-entry failures to 3, demonstrating a major recipe-level reduction of the inner-radius distribution gap. T2's residual no-entry failures included 4 in 14-20 cm with approximately 496-498 saturated action steps, and its entered failures had 435 total hold interruptions. Failed-episode action saturation therefore remains a consequential control signature, while the hold tail remains a separate mechanism. Full-range exposure is supported as a useful but insufficient intervention; it does not establish coverage as causal for all failures, PPO as sufficient, or the official goal. E13 opened I3 to test whether explicit control-aware learning can resolve the remaining reach-braking, directional, and post-entry stabilization failures.",
+        "decision_frontier": "I3 begins from the unresolved, goal-critical distinction between sampled-data or directional reach-braking failures caused by late or saturated control, post-entry hold-stability failures caused by residual velocity and corrective action, and a coupled tail. The next discriminating evidence must compare a control-aware PPO intervention against T2 using synchronized first-entry velocity, saturation duration, action/velocity traces, no-entry radius-angle failure maps, hold interruptions, and complete success. Persistent saturation with no entry would favor reach-braking and directional control; low-speed entry followed by interruptions would favor stabilization. The inquiry closes if a candidate reaches at most four failures per 200 development episodes without regressing full-range coverage, or if evidence redirects the explanation or shows this route is not actionable.",
+        "evidence_references": [
+          "M1",
+          "T1",
+          "M2",
+          "M3",
+          "M4",
+          "E7",
+          "E9",
+          "T2",
+          "M5",
+          "M6",
+          "E11",
+          "E13"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 successes in the protected 200-episode assessment, with every success requiring an uninterrupted 2-second hold. The best development evidence remains 150/160 successes, so I3 directly targets the remaining gap rather than justifying official assessment.",
+        "next_direction_or_closure": "I3 is now open. In the fresh inquiry session, choose the operation that most directly implements and tests a control-aware PPO recipe while preserving full 6-20 cm exposure and collecting synchronized diagnostics that distinguish saturated no-entry control from post-entry hold interruption. Do not repeat radius coverage alone or request official assessment before the residual gap is resolved.",
+        "next_question": "Can a control-aware PPO intervention that explicitly improves sampled-data reach, braking, directional control, and uninterrupted post-entry stabilization reduce T2's residual saturated no-entry and hold-interruption failures to at most four failures per 200 development episodes without regressing its full-range coverage gains?"
+      }
+    },
+    "request_fingerprint": "62cb2eb2bbec783d1ca9757f75e1372dc49781dc3a1b367867043e06f4be12fa",
+    "session_id": "S8",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T2 produced the strongest evaluated candidate, T2:checkpoint-120832, with 150/160 paired development success, but no working, best-known, or retained model role is assigned. T1:checkpoint-120832 remains the paired baseline only. No candidate is evidence for official success.",
     "completed_operations": [
-      "T2",
-      "M5",
-      "M6",
-      "E11"
+      "E13"
     ],
-    "cumulative_resource_use": "M1 characterization completed; T1 requested 120,000 and completed 120,832 steps; M2 evaluated 160 episodes; M3 aggregated reach/hold behavior; M4 stratified radius and angle; E2 opened I1; E4 reframed I1; E7 closed I1; E9 opened I2; T2 requested 120,000 and completed 120,832 steps with full-range training; M5 evaluated paired T2/T1 panels of 160 episodes at seed 4200; M6 aggregated both diagnostic artifacts; E11 closed I2. No official assessment requested.",
+    "cumulative_resource_use": "M1 characterization completed; T1 requested 120,000 and completed 120,832 steps; M2 evaluated 160 episodes; M3 aggregated reach/hold behavior; M4 stratified radius and angle; E2 opened I1; E4 reframed I1; E7 closed I1; E9 opened I2; T2 requested 120,000 and completed 120,832 steps with full-range training; M5 evaluated paired T2/T1 panels of 160 episodes at seed 4200; M6 aggregated both diagnostic artifacts; E11 closed I2; E13 opened I3. No official assessment requested.",
     "current_goal_gap": "The best evaluated candidate remains 150/160 on development evidence, equivalent to 12.5 failures per 200 rather than at most four. The residual gap is concentrated in saturated no-entry reach failures, including four in the trained 14-20 cm range, and entered episodes that still interrupt the hold. Development evidence does not establish the official 98% result.",
-    "current_synthesis": "Established observations: M1 found feasible analytic IK branches across the sampled official domain, non-singular feasible terminal postures, and substantial compiled actuator authority with free velocity decay. T1/M2 measured 110/160 under 14-20 cm training, with 42 no-entry failures and 8 entered-but-incomplete holds. M3/M4 established that 38/42 baseline no-entry failures were below the 14 cm training boundary, while the trained-range tail showed high saturation, fast motion, and negative-angle concentration; all no-entry targets nevertheless had a feasible branch. T2 changed only the training radius distribution to the full official 6-20 cm range and produced a fresh PPO candidate. In paired same-seed M5 evaluation, T2 achieved 150/160 (93.75%) versus T1's 110/160 (68.75%), with 43 candidate wins and 3 reference wins. M6 decomposed T2's 10 failures into 7 no-entry and 3 entered-but-hold-incomplete failures: T2 achieved 40/40 in 6-10 cm and reduced 10-14 cm no-entry failures to 3, demonstrating a major recipe-level reduction of the inner-radius distribution gap. T2's residual no-entry failures included 4 in 14-20 cm with approximately 496-498 saturated action steps, and its entered failures had 435 total hold interruptions. Failed-episode action saturation therefore remains a consequential control signature, while the hold tail remains a separate mechanism. Interpretation: full-range exposure is supported as a useful intervention for the dominant inner-radius coverage failure, but it does not establish that coverage alone is causal for all failures, does not establish the broader PPO method as sufficient, and does not establish the official goal.",
-    "decision_frontier": "I2 is closed with a supported-but-insufficient result. The dominant inner-radius distribution gap was substantially reduced by full-range training, so repeating the same radius-coverage intervention is lower priority. The unresolved, goal-critical distinction is whether the remaining failures are chiefly sampled-data/directional reach-braking failures caused by late or saturated control, chiefly post-entry hold-stability failures caused by residual velocity and corrective action, or a coupled tail. The next discriminating evidence must compare a control-aware intervention against the T2 recipe using synchronized first-entry velocity, saturation duration, action/velocity traces, no-entry radius-angle failure maps, hold interruptions, and complete success; persistent saturation with no entry would favor reach-braking/directional control, while low-speed entry followed by interruptions would favor stabilization.",
+    "current_synthesis": "Established observations: M1 found feasible analytic IK branches across the sampled official domain, non-singular feasible terminal postures, and substantial compiled actuator authority with free velocity decay. T1/M2 measured 110/160 under 14-20 cm training, with 42 no-entry failures and 8 entered-but-incomplete holds. M3/M4 established that 38/42 baseline no-entry failures were below the 14 cm training boundary, while the trained-range tail showed high saturation, fast motion, and negative-angle concentration; all no-entry targets nevertheless had a feasible branch. T2 changed only the training radius distribution to the full official 6-20 cm range and produced a fresh PPO candidate. In paired same-seed M5 evaluation, T2 achieved 150/160 (93.75%) versus T1's 110/160 (68.75%), with 43 candidate wins and 3 reference wins. M6 decomposed T2's 10 failures into 7 no-entry and 3 entered-but-hold-incomplete failures: T2 achieved 40/40 in 6-10 cm and reduced 10-14 cm no-entry failures to 3, demonstrating a major recipe-level reduction of the inner-radius distribution gap. T2's residual no-entry failures included 4 in 14-20 cm with approximately 496-498 saturated action steps, and its entered failures had 435 total hold interruptions. Failed-episode action saturation therefore remains a consequential control signature, while the hold tail remains a separate mechanism. Full-range exposure is supported as a useful but insufficient intervention; it does not establish coverage as causal for all failures, PPO as sufficient, or the official goal. E13 opened I3 to test whether explicit control-aware learning can resolve the remaining reach-braking, directional, and post-entry stabilization failures.",
+    "decision_frontier": "I3 begins from the unresolved, goal-critical distinction between sampled-data or directional reach-braking failures caused by late or saturated control, post-entry hold-stability failures caused by residual velocity and corrective action, and a coupled tail. The next discriminating evidence must compare a control-aware PPO intervention against T2 using synchronized first-entry velocity, saturation duration, action/velocity traces, no-entry radius-angle failure maps, hold interruptions, and complete success. Persistent saturation with no entry would favor reach-braking and directional control; low-speed entry followed by interruptions would favor stabilization. The inquiry closes if a candidate reaches at most four failures per 200 development episodes without regressing full-range coverage, or if evidence redirects the explanation or shows this route is not actionable.",
     "evidence_references": [
       "M1",
       "T1",
@@ -4720,14 +4868,15 @@
       "T2",
       "M5",
       "M6",
-      "E11"
+      "E11",
+      "E13"
     ],
-    "human_goal_connection": "The human goal is at least 196 successes in the protected 200-episode assessment, with every success requiring an uninterrupted 2-second hold. T2 raised paired development performance from 110/160 to 150/160, materially narrowing the gap but leaving 10 failures in 160 episodes and therefore not supporting an official assessment yet.",
-    "inquiry_id": "I2",
-    "next_direction_or_closure": "The close decision is complete. In the next fresh inquiry, prioritize the residual sampled-data/directional reach-braking and post-entry stabilization mechanisms rather than repeating radius coverage. Use the next operation to implement and test a control-aware PPO recipe only if it preserves full 6-20 cm exposure and enables synchronized diagnostics that distinguish saturated no-entry control from hold interruption.",
+    "human_goal_connection": "The human goal requires at least 196 successes in the protected 200-episode assessment, with every success requiring an uninterrupted 2-second hold. The best development evidence remains 150/160 successes, so I3 directly targets the remaining gap rather than justifying official assessment.",
+    "inquiry_id": null,
+    "next_direction_or_closure": "I3 is now open. In the fresh inquiry session, choose the operation that most directly implements and tests a control-aware PPO recipe while preserving full 6-20 cm exposure and collecting synchronized diagnostics that distinguish saturated no-entry control from post-entry hold interruption. Do not repeat radius coverage alone or request official assessment before the residual gap is resolved.",
     "next_question": "Can a control-aware PPO intervention that explicitly improves sampled-data reach, braking, directional control, and uninterrupted post-entry stabilization reduce T2's residual saturated no-entry and hold-interruption failures to at most four failures per 200 development episodes without regressing its full-range coverage gains?",
-    "scientific_commit": "f4eb17914987bbbc4535d56566621c427c992b43",
-    "session_id": "S7"
+    "scientific_commit": "fad7824172fc8a81d6cdca83a04790cdfd77e81e",
+    "session_id": "S8"
   },
   "schema_version": 6,
   "scientific_model": {
@@ -4735,21 +4884,6 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "4fa4e39f-b826-4829-bca0-f5e2cfe5d6f4",
-    "id": "S8",
-    "inquiry_id": null,
-    "kind": "goal_review",
-    "objective": "Reassess the scientific direction toward the human goal using completed evidence. You may request measurements to resolve an uncertainty or develop the method before committing to an inquiry. Decide whether to request official assessment or open one bounded goal-linked inquiry.",
-    "operation_ids": [
-      "E13"
-    ],
-    "scientific_parent_commit": "0497738d2c4149796a32afa3079e8d52af4389ad"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
