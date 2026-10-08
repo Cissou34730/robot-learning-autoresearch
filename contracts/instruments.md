@@ -388,6 +388,8 @@ No other campaign-conclusion action is supported.
 
 Before other campaign work, `pi_workspace/scientific_model.md` must contain
 substantive `Established facts`, `Physical consequences`, and `Unknowns` registers.
+Each register is a level-two heading (`##`) with its content under it. Topics
+inside a register use level-three headings (`###`).
 An analyst persona, not the PI, writes the model. The model states physical
 consequences and the evidence that discriminates between them. It selects no
 intervention. The PI reads the whole model at startup and selects the initial

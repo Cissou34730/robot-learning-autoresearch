@@ -928,7 +928,7 @@ function Invoke-ScientificModelPhase {
         "Human goal: $goal"
         "Current objective: $scientificModelPhaseObjective"
         "Base the model on contracts/scenario.md and on the human-owned definitions of the robot, the simulator, and the task."
-        "The document has three registers, with these headings: Established facts, Physical consequences, and Unknowns. Mark each statement as a repository fact, a reasoned implication, or an unresolved quantity. Keep source references for later verification."
+        "The document has three registers, with these headings: Established facts, Physical consequences, and Unknowns. Write each register as a level-two heading (##). Put all its content under that heading. Use level-three headings (###) for topics inside a register. Mark each statement as a repository fact, a reasoned implication, or an unresolved quantity. Keep source references for later verification."
         "Include only what is justified before campaign evidence exists. Write the result to pi_workspace/scientific_model.md."
     ) -join "`n`n"
 
@@ -943,7 +943,7 @@ function Invoke-ScientificModelPhase {
             $modelAnalystPersona
             "Human goal: $goal"
             "The scientific model could not be accepted: $script:ScientificModelValidationFeedback"
-            "Correct pi_workspace/scientific_model.md. Keep the valid content. Make all three required registers substantive and source-recoverable."
+            "Correct pi_workspace/scientific_model.md. Keep the valid content. Make all three required registers substantive and source-recoverable. Each register is a level-two heading (##) with its content directly under it. Move topic sections inside a register and change their headings to level three (###)."
         ) -join "`n`n"
         Invoke-PISession -Prompt $retry -Phase "scientific model" -Continue -Preliminary
         if (Test-StopAfterOperation $script:PIExitCode "PI session") {
