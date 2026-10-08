@@ -109,6 +109,8 @@ For each consequential physical implication and each unknown, state:
 
 The model states physical consequences and the evidence that discriminates between them. The principal investigator selects the interventions.
 
+Finish with a substantive section with the heading `## Decision-relevant synthesis`. Select only the physical consequences and unknowns that are most likely to change the first campaign decisions. For each selected item, keep these four points in compact form: its decision relevance, its assumptions, its source references, and its discriminating evidence. The principal investigator receives this section as the handoff into startup. The section states consequences and discriminating evidence. The principal investigator selects the interventions.
+
 The final output is a compact and substantive scientific model. It explains how the complete coupled system works physically and scientifically.
 '@
 
@@ -827,9 +829,22 @@ function New-ScientificSessionPrompt {
         @("Use only the operation kinds listed as available in campaigns/brief.md.")
     }
     $startupHandoffGuidance = if ($session.kind -eq "startup") {
+        $modelHandoff = "The decision-relevant synthesis is in campaigns/brief.md under 'Initial scientific model'."
+        $modelPath = Join-Path (Get-Location) "pi_workspace\scientific_model.md"
+        if (Test-Path -LiteralPath $modelPath -PathType Leaf) {
+            $modelText = Get-Content -LiteralPath $modelPath -Raw
+            $selectedSynthesis = [regex]::Match(
+                $modelText,
+                "(?ms)^## Decision-relevant synthesis\s+(.*?)(?=^## |\z)"
+            ).Groups[1].Value.Trim()
+            if ($selectedSynthesis) {
+                $modelHandoff = "Decision-relevant synthesis from the initial scientific model:`n$selectedSynthesis"
+            }
+        }
         @(
             "Before selecting the first action, read pi_workspace/scientific_model.md as the initial physical model and contracts/program.md as the lifecycle contract."
-            "From the model, select the scientific distinction or capability question that should determine the initial direction. State which findings would change that decision, and how the first action follows. Treat the model as revisable in light of evidence."
+            $modelHandoff
+            "From this synthesis, select the scientific distinction or capability question that should determine the initial direction. State which findings would change that decision, and how the first action follows. Treat the model as revisable in light of evidence. Do not require a measurement only to restate the model."
         )
     }
     else {
@@ -928,7 +943,7 @@ function Invoke-ScientificModelPhase {
         "Human goal: $goal"
         "Current objective: $scientificModelPhaseObjective"
         "Base the model on contracts/scenario.md and on the human-owned definitions of the robot, the simulator, and the task."
-        "The document has three registers, with these headings: Established facts, Physical consequences, and Unknowns. Write each register as a level-two heading (##). Put all its content under that heading. Use level-three headings (###) for topics inside a register. Mark each statement as a repository fact, a reasoned implication, or an unresolved quantity. Keep source references for later verification."
+        "The document has four registers, with these headings: Established facts, Physical consequences, Unknowns, and Decision-relevant synthesis. Write each register as a level-two heading (##). Put all its content under that heading. Use level-three headings (###) for topics inside a register. Mark each statement as a repository fact, a reasoned implication, or an unresolved quantity. Keep source references for later verification."
         "Include only what is justified before campaign evidence exists. Write the result to pi_workspace/scientific_model.md."
     ) -join "`n`n"
 
@@ -943,7 +958,7 @@ function Invoke-ScientificModelPhase {
             $modelAnalystPersona
             "Human goal: $goal"
             "The scientific model could not be accepted: $script:ScientificModelValidationFeedback"
-            "Correct pi_workspace/scientific_model.md. Keep the valid content. Make all three required registers substantive and source-recoverable. Each register is a level-two heading (##) with its content directly under it. Move topic sections inside a register and change their headings to level three (###)."
+            "Correct pi_workspace/scientific_model.md. Keep the valid content. Make all four required registers substantive and source-recoverable. Make the synthesis decision-relevant. Each register is a level-two heading (##) with its content directly under it. Move topic sections inside a register and change their headings to level three (###)."
         ) -join "`n`n"
         Invoke-PISession -Prompt $retry -Phase "scientific model" -Continue -Preliminary
         if (Test-StopAfterOperation $script:PIExitCode "PI session") {

@@ -55,6 +55,16 @@ def _scientific_model_lines(state: dict) -> list[str]:
         lines.append(f"- Published commit: `{commit}`.")
     if not model_file.is_file():
         lines.append("- Model content is not available in the current worktree.")
+        return lines
+    text = model_file.read_text(encoding="utf-8")
+    selected = _markdown_section(text, "Decision-relevant synthesis")
+    if selected:
+        lines.append(f"- **Decision-relevant synthesis:** {selected}")
+    else:
+        lines.append(
+            "- This historical model predates the required "
+            "decision-relevant synthesis."
+        )
     return lines
 
 

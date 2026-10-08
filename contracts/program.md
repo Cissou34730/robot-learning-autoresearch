@@ -39,9 +39,11 @@ constructs `pi_workspace/scientific_model.md` from `contracts/scenario.md` and
 other accessible contract sources describing the human-authored robot, physics,
 sensing, task, and assessment semantics. Protected evaluator implementation is
 not required. The model separates established facts, physical consequences, and
-unknowns. For each consequential item it preserves decision relevance,
-assumptions, source references, and evidence that could revise it. The model
-selects no intervention. The document then remains fixed as the
+unknowns. It ends with a decision-relevant synthesis. The synthesis selects the
+items most likely to change the initial campaign decisions. For each selected
+item it preserves decision relevance, assumptions, source references, and
+evidence that could revise it. The model selects no intervention. The document
+then remains fixed as the
 campaign's initial physical model. It is not passive background: later
 scientific sessions test its interpretation against observed behavior and
 carry forward what the campaign learns.

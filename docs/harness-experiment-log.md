@@ -445,7 +445,7 @@ Implementation checks and unassessed campaign effects are not separate issues.
 
 | ID | Issue | Status / boundary |
 |---|---|---|
-| OI-001 | Startup scientific-method selection | **Open, narrowed 2026-10-08.** Defined as a failure of traceable coupling from the PI-generated scientific briefing, through startup action selection, to the startup handoff. Three failure locations: briefing defect, use defect and handoff defect. A five-campaign retrospective found no handoff collapse and sound startups in four of five. It found one use defect (06656182) and a briefing that steered the method in four of five. R8 had removed the PI-authority sentence, now restored. The scientific-model prompt was rewritten without the synthesis section. Effect on startup selection is not yet observed. This is separate from the startup training budget. |
+| OI-001 | Startup scientific-method selection | **Open, narrowed 2026-10-08.** Defined as a failure of traceable coupling from the PI-generated scientific briefing, through startup action selection, to the startup handoff. Three failure locations: briefing defect, use defect and handoff defect. A five-campaign retrospective found no handoff collapse and sound startups in four of five. It found one use defect (06656182) and a briefing that steered the method in four of five. R8 had removed the PI-authority sentence, now restored. The scientific-model prompt (`ef9516f`) changed language, persona and closing section at once. The closing section is restored in controlled English; language and persona stay. Campaign bd32cc79 ran the bundled prompt without the synthesis. Effect on startup selection is not separable. This is separate from the startup training budget. |
 | OI-002 | Inquiry control and bounded closure | **Open.** An inquiry can continue after its evidence answers the decision need. Questions and closure conditions must permit positive, negative, limited or inconclusive conclusions without requiring a successful intervention. No design or runtime change is approved. |
 | OI-003 | Measurement-evidence inspection and interpretation | **Open.** The PI has overlooked advertised diagnostic strata, read partial artifacts as complete and lost consequential counterevidence in synthesis. Discoverability is retained, but decision-linked inspection remains unresolved. |
 | OI-004 | Checkpoint nomination, evidence selection and scientific progression | **Open; partly deferred behind OI-002.** Available training facts can nominate an artifact but do not prove development performance. The PI must select artifacts and subsequent operations from the learning trajectory, evidence need and remaining uncertainty rather than defaulting to another training recipe. |
@@ -2552,3 +2552,52 @@ separate from harness changes so their outcomes are not conflated.
   resumed, reset, trained, measured or evaluated.
 - **Status:** OI-014 is open and unimplemented. OI-002 and OI-005 remain open.
   The new scientific-model prompt is still untested by any campaign.
+
+## 2026-10-08: heading fix, campaign bd32cc79 observation, and closing-section restoration
+
+- **Bundled change in `ef9516f`:** the scientific-model rewrite changed four
+  things at once. It rewrote the language of the whole phase prompt. It
+  replaced the PI persona with an analyst persona. It removed the "Decision-
+  relevant synthesis" section. It set three registers. No campaign tested any
+  of these separately. This bundle breaks the single-change rule of OI-014.
+- **Heading failure (`b3f4307`):** the first campaign start after `ef9516f`
+  failed. The prompt required three `##` registers but did not say how to nest
+  topics. The analyst wrote topics as `##` sections, so `## Established facts`
+  was empty. The prompt, the retry text and `contracts/instruments.md` now say
+  that each register is a `##` heading and topics use `###`. The validator is
+  unchanged. This is a format repair, not a scientific change.
+- **Campaign bd32cc79 (read-only review):** it is the first campaign that used
+  the bundled prompt. All sessions exited 0 and handoffs held. The model was
+  rigorous and cited its sources. It stated the training-range mismatch (14-20
+  cm training, 6-20 cm official) twice, among about 20 items of equal weight.
+  Startup chose M1, a broad measurement that confirmed what the model already
+  stated. The mismatch was first tested after M1, T1, M2, M3, M4 and an
+  inquiry reframe. I2 then changed only the training range (T2). In the paired
+  M5 evaluation T2 scored 150/160 (93.75%) against 110/160 (68.75%) for T1.
+  I3 opened afterwards.
+- **Attribution limit:** the good results may come from the language, the
+  persona or the other model that ran this campaign. The slow route to the
+  mismatch fits the removed ranking, but the older campaigns also started
+  with a measurement in two of five cases. The data cannot separate these
+  causes.
+- **Closing section restored:** the model again ends with the `## Decision-
+  relevant synthesis` register. The analyst selects the consequences and
+  unknowns most likely to change the first campaign decisions. Each item keeps
+  decision relevance, assumptions, source references and discriminating
+  evidence. No item count is set. Startup receives the register, as before.
+  The text uses controlled English (ASD-STE100 style) and the analyst
+  persona. The old negative phrase "not an intervention plan" is replaced by
+  the positive statement that the section states consequences and
+  discriminating evidence, and that the PI selects the interventions. Files:
+  `run_research.ps1`, `runner/run_experiment.py` (four required headings),
+  `runner/build_brief.py`, `contracts/instruments.md`, `contracts/program.md`.
+- **Kept:** the new language and the analyst persona. Their effect on a
+  campaign stays unmeasured.
+- **Validation:** the PowerShell script parses with 0 errors and the two
+  touched Python modules compile.
+- **Boundary:** no campaign was launched, resumed, reset or trained. The
+  results above come from a read-only review of a campaign the maintainer
+  runs.
+- **Status:** OI-001 stays open. The next campaign tests the restored closing
+  section under the new language and persona. Reverting the language or the
+  persona would be a separate test.
