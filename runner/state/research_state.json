@@ -1,16 +1,5 @@
 {
-  "active_inquiry": {
-    "closure_condition": "Close when a learned candidate has episode-level development evidence covering the official radius-angle distribution with first-reach, maximum-held-steps, hold interruptions, and geometry-stratified outcomes sufficient to classify the dominant failure mode as reach-limited, stabilization-limited, geometry-conditioned, or inconclusive.",
-    "goal_connection": "The campaign needs at least 196 of 200 episodes to complete an uninterrupted 100-step hold. This inquiry determines whether the next intervention should improve global trajectory generation and geometry coverage or terminal stabilization after reach.",
-    "handoff_conclusion": "Evidence: M1 compiled the authored MuJoCo model at 2 ms physics and 20 ms control intervals, with nonzero compiled body masses, 0.5 joint damping, 0.01 armature, gear-5 bounded motors, and the documented joint limits. Across 240 radius-angle/branch configurations, 224 were within joint limits and none of those valid configurations had active contacts; this removes folded-link self-contact as the leading explanation on the sampled official geometry, while retaining branch and limit conditioning as a reach concern. Across 1,344 matched near-target rollouts, both zero input and bounded local PD completed all 100-step holds for all three position/velocity perturbation classes, with mean maximum distances of about 1.65 mm and 1.41 mm respectively. Interpretation: the tested plant has more than enough local passive/active stabilization margin for the 1 cm sampled tolerance, so hold failure is not currently the most credible first bottleneck. The reset singularity, target-angle coverage, and joint-limit-valid branch selection remain untested at the learned-policy level; M1 does not prove that a policy can reach globally, and its local perturbations do not represent high-speed arrival from reset. The competing explanation that learned exploration/reward alignment, rather than plant authority, limits success is now the decision-relevant alternative.",
-    "handoff_question": "Can a first learned policy reliably reach and settle into valid target postures from the exact extended reset across the full official radius-angle distribution, or do failures concentrate in reset-opposed or joint-limit-conditioned geometry despite the demonstrated local hold margin?",
-    "handoff_source_session_id": "S1",
-    "id": "I1",
-    "opened_in_session": "S2",
-    "question": "Can a first learned policy reliably reach and settle into valid target postures from the exact extended reset across the full official radius-angle distribution, or do failures concentrate in reset-opposed or joint-limit-conditioned geometry despite the demonstrated local hold margin?",
-    "rationale": "M1 found substantial local passive and active hold margin and no sampled valid-posture self-contact, but no learned policy has been tested from the exact extended reset. The decisive unresolved distinction is therefore whether learning reliably escapes the reset singularity and selects valid joint-limit-compatible postures, or reaches broadly but arrives with residual motion that interrupts the hold.",
-    "reframes": []
-  },
+  "active_inquiry": null,
   "campaign": {
     "base_commit": "183ba7483c02b821a562dc3107d9c0100b10d3d9",
     "id": "1ae27a27-6880-4ca6-9d50-e6498e771cb7",
@@ -839,7 +828,7 @@
     }
   },
   "counters": {
-    "event": 3,
+    "event": 4,
     "inquiry": 1,
     "measurement": 2,
     "session": 3,
@@ -1607,9 +1596,63 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-08T23:57:39Z",
+      "error": null,
+      "id": "E4",
+      "inquiry_id": "I1",
+      "kind": "inquiry",
+      "request": {
+        "action": "close",
+        "outcome": "I1 closes with a limited, actionable answer: the first learned policy is not reliable across the official distribution, and its dominant failure mode is reach-limited and geometry-conditioned rather than stabilization-limited. In M2, 42 of 50 failures never entered tolerance, only 8 failures entered tolerance without completing the hold, and success varied from 59.3% at 6-16 cm to 91.5% at 16-20 cm, with the weakest angle sectors below 65%.",
+        "reason": "M2 satisfies the closure condition with 160 episode-level outcomes containing first-reach step, maximum held steps, interruptions, and radius-angle diagnostics. Together with M1's complete local holds, the evidence shifts the next intervention toward global trajectory generation and coverage of difficult radius-angle geometry. The result diagnoses this PPO recipe and candidate; it does not invalidate learning or establish that terminal stabilization can never matter."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I1",
+        "outcome": "I1 closes with a limited, actionable answer: the first learned policy is not reliable across the official distribution, and its dominant failure mode is reach-limited and geometry-conditioned rather than stabilization-limited. In M2, 42 of 50 failures never entered tolerance, only 8 failures entered tolerance without completing the hold, and success varied from 59.3% at 6-16 cm to 91.5% at 16-20 cm, with the weakest angle sectors below 65%.",
+        "reason": "M2 satisfies the closure condition with 160 episode-level outcomes containing first-reach step, maximum held steps, interruptions, and radius-angle diagnostics. Together with M1's complete local holds, the evidence shifts the next intervention toward global trajectory generation and coverage of difficult radius-angle geometry. The result diagnoses this PPO recipe and candidate; it does not invalidate learning or establish that terminal stabilization can never matter.",
+        "status": "completed"
+      },
+      "session_id": "S3",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "close",
+        "inquiry_id": "I1",
+        "outcome": "I1 closes with a limited, actionable answer: the first learned policy is not reliable across the official distribution, and its dominant failure mode is reach-limited and geometry-conditioned rather than stabilization-limited. In M2, 42 of 50 failures never entered tolerance, only 8 failures entered tolerance without completing the hold, and success varied from 59.3% at 6-16 cm to 91.5% at 16-20 cm, with the weakest angle sectors below 65%.",
+        "reason": "M2 satisfies the closure condition with 160 episode-level outcomes containing first-reach step, maximum held steps, interruptions, and radius-angle diagnostics. Together with M1's complete local holds, the evidence shifts the next intervention toward global trajectory generation and coverage of difficult radius-angle geometry. The result diagnoses this PPO recipe and candidate; it does not invalidate learning or establish that terminal stabilization can never matter."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I1",
+        "outcome": "I1 closes with a limited, actionable answer: the first learned policy is not reliable across the official distribution, and its dominant failure mode is reach-limited and geometry-conditioned rather than stabilization-limited. In M2, 42 of 50 failures never entered tolerance, only 8 failures entered tolerance without completing the hold, and success varied from 59.3% at 6-16 cm to 91.5% at 16-20 cm, with the weakest angle sectors below 65%.",
+        "reason": "M2 satisfies the closure condition with 160 episode-level outcomes containing first-reach step, maximum held steps, interruptions, and radius-angle diagnostics. Together with M1's complete local holds, the evidence shifts the next intervention toward global trajectory generation and coverage of difficult radius-angle geometry. The result diagnoses this PPO recipe and candidate; it does not invalidate learning or establish that terminal stabilization can never matter.",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E4",
+    "inquiry_id": "I1",
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "close",
+        "outcome": "I1 closes with a limited, actionable answer: the first learned policy is not reliable across the official distribution, and its dominant failure mode is reach-limited and geometry-conditioned rather than stabilization-limited. In M2, 42 of 50 failures never entered tolerance, only 8 failures entered tolerance without completing the hold, and success varied from 59.3% at 6-16 cm to 91.5% at 16-20 cm, with the weakest angle sectors below 65%.",
+        "reason": "M2 satisfies the closure condition with 160 episode-level outcomes containing first-reach step, maximum held steps, interruptions, and radius-angle diagnostics. Together with M1's complete local holds, the evidence shifts the next intervention toward global trajectory generation and coverage of difficult radius-angle geometry. The result diagnoses this PPO recipe and candidate; it does not invalidate learning or establish that terminal stabilization can never matter."
+      }
+    },
+    "request_fingerprint": "428197daeb32e3ca198a4ac25e1778f5dc449223c3e11758ad0b7182292b545e",
+    "session_id": "S3",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No candidates have been trained, evaluated, or assigned a role. Working, best-known, and retained roles remain empty.",
     "completed_operations": [
@@ -1649,7 +1692,8 @@
     "objective": "Advance I1 toward an evidence-supported answer to its scientific question: Can a first learned policy reliably reach and settle into valid target postures from the exact extended reset across the full official radius-angle distribution, or do failures concentrate in reset-opposed or joint-limit-conditioned geometry despite the demonstrated local hold margin? Before choosing the next action, compare the accumulated evidence with the closure condition. Close the inquiry when the condition is met.",
     "operation_ids": [
       "T1",
-      "M2"
+      "M2",
+      "E4"
     ],
     "scientific_parent_commit": "94e734cec6fe306ef33454e202ba18559ad131c0"
   },
