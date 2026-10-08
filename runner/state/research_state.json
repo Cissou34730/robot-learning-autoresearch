@@ -841,7 +841,7 @@
   "counters": {
     "event": 3,
     "inquiry": 1,
-    "measurement": 2,
+    "measurement": 3,
     "session": 3,
     "training": 1
   },
@@ -1651,9 +1651,967 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-08T19:59:33Z",
+      "error": null,
+      "id": "M3",
+      "inquiry_id": "I1",
+      "kind": "measurement",
+      "request": {
+        "description": "Aggregate the completed M2 synchronized reach-and-hold diagnostics by entry status, branch feasibility, first-entry speed, interruptions, and action/limit margins.",
+        "measurements": [
+          {
+            "args": [
+              "--input",
+              "campaigns/evaluations/bd32cc79-767a-4599-92cd-d889f3ec396b/evaluation-bd32cc79-767a-4599-92cd-d889f3ec396b-m2-T1-checkpoint-120832-160ep-seed4200-f00e36286c7a.json",
+              "--artifact",
+              "campaigns/evaluations/bd32cc79-767a-4599-92cd-d889f3ec396b/python-module-M3-reach-hold-aggregation.json"
+            ],
+            "artifact": "campaigns/evaluations/bd32cc79-767a-4599-92cd-d889f3ec396b/python-module-M3-reach-hold-aggregation.json",
+            "instrument": "python_module",
+            "label": "M2 mechanism aggregation",
+            "module": "robot_learning.lab.analyze_reach_hold"
+          }
+        ],
+        "rationale": "M2 provides the required episode-level evidence, but aggregate counts are needed to distinguish failures before first entry from post-entry hold instability and to determine whether no-entry failures cluster with a feasible-branch deficit."
+      },
+      "result": {
+        "measurements": [
+          {
+            "args": [
+              "--input",
+              "campaigns/evaluations/bd32cc79-767a-4599-92cd-d889f3ec396b/evaluation-bd32cc79-767a-4599-92cd-d889f3ec396b-m2-T1-checkpoint-120832-160ep-seed4200-f00e36286c7a.json",
+              "--artifact",
+              "campaigns/evaluations/bd32cc79-767a-4599-92cd-d889f3ec396b/python-module-M3-reach-hold-aggregation.json"
+            ],
+            "instrument": "python_module",
+            "label": "M2 mechanism aggregation",
+            "metrics": {
+              "evaluation_artifact": "campaigns/evaluations/bd32cc79-767a-4599-92cd-d889f3ec396b/python-module-M3-1-python-module-M3-reach-hold-aggregation.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 9,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/source_episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/successes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/failures",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/failure_decomposition",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/no_entry_branch_status",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/first_entry_speed_m_s",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/hold_interruptions",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/entered_episode_limit_and_action",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/failure_decomposition/no_first_entry",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/failure_decomposition/entered_but_hold_incomplete",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/failure_decomposition/entered_failure_with_interruptions",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/no_entry_branch_status/at_least_one_feasible_branch",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/no_entry_branch_status/positive_branch_feasible",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/no_entry_branch_status/negative_only_feasible",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/no_entry_branch_status/neither_branch_feasible",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/first_entry_speed_m_s/successful_episodes",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/first_entry_speed_m_s/failed_episodes",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/hold_interruptions/failed_episodes_total",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/hold_interruptions/failed_episodes_with_entry",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/hold_interruptions/total",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/entered_episode_limit_and_action/successful_minimum_joint_limit_margin_degrees",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/entered_episode_limit_and_action/failed_minimum_joint_limit_margin_degrees",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/entered_episode_limit_and_action/successful_action_saturation_steps",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/entered_episode_limit_and_action/failed_action_saturation_steps",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/first_entry_speed_m_s/successful_episodes/count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/first_entry_speed_m_s/successful_episodes/mean",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/first_entry_speed_m_s/successful_episodes/median",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/first_entry_speed_m_s/failed_episodes/count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/first_entry_speed_m_s/failed_episodes/mean",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/first_entry_speed_m_s/failed_episodes/median",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/entered_episode_limit_and_action/successful_minimum_joint_limit_margin_degrees/count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/entered_episode_limit_and_action/successful_minimum_joint_limit_margin_degrees/mean",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/entered_episode_limit_and_action/successful_minimum_joint_limit_margin_degrees/median",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/entered_episode_limit_and_action/failed_minimum_joint_limit_margin_degrees/count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/entered_episode_limit_and_action/failed_minimum_joint_limit_margin_degrees/mean",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/entered_episode_limit_and_action/failed_minimum_joint_limit_margin_degrees/median",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/entered_episode_limit_and_action/successful_action_saturation_steps/count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/entered_episode_limit_and_action/successful_action_saturation_steps/mean",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/entered_episode_limit_and_action/successful_action_saturation_steps/median",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/entered_episode_limit_and_action/failed_action_saturation_steps/count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/entered_episode_limit_and_action/failed_action_saturation_steps/mean",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/entered_episode_limit_and_action/failed_action_saturation_steps/median",
+                    "type": "number"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "f60fcea239350f8fab085bb0ceafee9ee5fb8bb445b54958faf0a310e3b0fda8"
+            },
+            "module": "robot_learning.lab.analyze_reach_hold"
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": {
+          "campaign_lab_manifest": [
+            {
+              "fingerprint": "af534c4e6e994351ed9b87e4830b9460ccb82b1182319ba160beaf485634f47d",
+              "path": "robot_learning/lab/__init__.py"
+            },
+            {
+              "fingerprint": "7bdd9ec57e307d6a4ad2de67030fc558282029f3f4049726cdcfe9129d3500a1",
+              "path": "robot_learning/lab/analyze_reach_hold.py"
+            },
+            {
+              "fingerprint": "b718d7a61546a5775b4848cc4699c9c0d2889d4713b7992079be623b7572709b",
+              "path": "robot_learning/lab/characterize_arm.py"
+            }
+          ],
+          "campaign_lab_publication": {
+            "commit": "cc101d495c76b1f84e4414cab3f8109499fc662f",
+            "fingerprint": "879d81b14dbbcc226108a4af4a8d82ecaf636543ccfd1e3a7b31dbb4245cb057",
+            "manifest": [
+              {
+                "fingerprint": "af534c4e6e994351ed9b87e4830b9460ccb82b1182319ba160beaf485634f47d",
+                "path": "robot_learning/lab/__init__.py"
+              },
+              {
+                "fingerprint": "7bdd9ec57e307d6a4ad2de67030fc558282029f3f4049726cdcfe9129d3500a1",
+                "path": "robot_learning/lab/analyze_reach_hold.py"
+              },
+              {
+                "fingerprint": "b718d7a61546a5775b4848cc4699c9c0d2889d4713b7992079be623b7572709b",
+                "path": "robot_learning/lab/characterize_arm.py"
+              }
+            ]
+          },
+          "code_parent_commit": "be3c52ad10da5ad04a57b12ce7d428ecb9a62459",
+          "effective_parameters": {
+            "algorithm": {
+              "name": "ppo"
+            },
+            "policy": {
+              "activation": "tanh",
+              "net_arch": [
+                64,
+                64
+              ]
+            },
+            "ppo": {
+              "batch_size": 64,
+              "ent_coef": 0.01,
+              "gae_lambda": 0.95,
+              "gamma": 0.99,
+              "learning_rate": 0.0003,
+              "n_steps": 1024
+            },
+            "training": {
+              "checkpoint_every_steps": 5000,
+              "n_envs": 1
+            }
+          },
+          "module_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "7bdd9ec57e307d6a4ad2de67030fc558282029f3f4049726cdcfe9129d3500a1",
+              "path": "robot_learning/lab/analyze_reach_hold.py"
+            }
+          ],
+          "module_paths": [
+            "robot_learning/lab/analyze_reach_hold.py"
+          ],
+          "scientific_commit": "4d54a7668c699ef468dc853926298a1c2fd56384",
+          "scientific_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "f2ec28fa47e3339496545208d7ab828157033a76db5773911baf5ce9fe36413d",
+              "path": "robot_learning/scenario/evaluation.py"
+            }
+          ],
+          "scientific_paths": [
+            "robot_learning/scenario/evaluation.py"
+          ]
+        }
+      },
+      "session_id": "S3",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "evaluation_semantics": null,
+      "measurements": [
+        {
+          "args": [
+            "--input",
+            "campaigns/evaluations/bd32cc79-767a-4599-92cd-d889f3ec396b/evaluation-bd32cc79-767a-4599-92cd-d889f3ec396b-m2-T1-checkpoint-120832-160ep-seed4200-f00e36286c7a.json",
+            "--artifact",
+            "campaigns/evaluations/bd32cc79-767a-4599-92cd-d889f3ec396b/python-module-M3-reach-hold-aggregation.json"
+          ],
+          "artifact": "campaigns/evaluations/bd32cc79-767a-4599-92cd-d889f3ec396b/python-module-M3-reach-hold-aggregation.json",
+          "instrument": "python_module",
+          "label": "M2 mechanism aggregation",
+          "module": "robot_learning.lab.analyze_reach_hold"
+        }
+      ],
+      "module_provenance": {
+        "campaign_lab_manifest": [
+          {
+            "fingerprint": "af534c4e6e994351ed9b87e4830b9460ccb82b1182319ba160beaf485634f47d",
+            "path": "robot_learning/lab/__init__.py"
+          },
+          {
+            "fingerprint": "7bdd9ec57e307d6a4ad2de67030fc558282029f3f4049726cdcfe9129d3500a1",
+            "path": "robot_learning/lab/analyze_reach_hold.py"
+          },
+          {
+            "fingerprint": "b718d7a61546a5775b4848cc4699c9c0d2889d4713b7992079be623b7572709b",
+            "path": "robot_learning/lab/characterize_arm.py"
+          }
+        ],
+        "campaign_lab_publication": {
+          "commit": "cc101d495c76b1f84e4414cab3f8109499fc662f",
+          "fingerprint": "879d81b14dbbcc226108a4af4a8d82ecaf636543ccfd1e3a7b31dbb4245cb057",
+          "manifest": [
+            {
+              "fingerprint": "af534c4e6e994351ed9b87e4830b9460ccb82b1182319ba160beaf485634f47d",
+              "path": "robot_learning/lab/__init__.py"
+            },
+            {
+              "fingerprint": "7bdd9ec57e307d6a4ad2de67030fc558282029f3f4049726cdcfe9129d3500a1",
+              "path": "robot_learning/lab/analyze_reach_hold.py"
+            },
+            {
+              "fingerprint": "b718d7a61546a5775b4848cc4699c9c0d2889d4713b7992079be623b7572709b",
+              "path": "robot_learning/lab/characterize_arm.py"
+            }
+          ]
+        },
+        "code_parent_commit": "be3c52ad10da5ad04a57b12ce7d428ecb9a62459",
+        "effective_parameters": {
+          "algorithm": {
+            "name": "ppo"
+          },
+          "policy": {
+            "activation": "tanh",
+            "net_arch": [
+              64,
+              64
+            ]
+          },
+          "ppo": {
+            "batch_size": 64,
+            "ent_coef": 0.01,
+            "gae_lambda": 0.95,
+            "gamma": 0.99,
+            "learning_rate": 0.0003,
+            "n_steps": 1024
+          },
+          "training": {
+            "checkpoint_every_steps": 5000,
+            "n_envs": 1
+          }
+        },
+        "module_manifest": [
+          {
+            "exists": true,
+            "fingerprint": "7bdd9ec57e307d6a4ad2de67030fc558282029f3f4049726cdcfe9129d3500a1",
+            "path": "robot_learning/lab/analyze_reach_hold.py"
+          }
+        ],
+        "module_paths": [
+          "robot_learning/lab/analyze_reach_hold.py"
+        ],
+        "scientific_commit": "4d54a7668c699ef468dc853926298a1c2fd56384",
+        "scientific_manifest": [
+          {
+            "exists": true,
+            "fingerprint": "f2ec28fa47e3339496545208d7ab828157033a76db5773911baf5ce9fe36413d",
+            "path": "robot_learning/scenario/evaluation.py"
+          }
+        ],
+        "scientific_paths": [
+          "robot_learning/scenario/evaluation.py"
+        ]
+      },
+      "paired_comparisons": [],
+      "partial_results": [
+        {
+          "args": [
+            "--input",
+            "campaigns/evaluations/bd32cc79-767a-4599-92cd-d889f3ec396b/evaluation-bd32cc79-767a-4599-92cd-d889f3ec396b-m2-T1-checkpoint-120832-160ep-seed4200-f00e36286c7a.json",
+            "--artifact",
+            "campaigns/evaluations/bd32cc79-767a-4599-92cd-d889f3ec396b/python-module-M3-reach-hold-aggregation.json"
+          ],
+          "instrument": "python_module",
+          "label": "M2 mechanism aggregation",
+          "metrics": {
+            "evaluation_artifact": "campaigns/evaluations/bd32cc79-767a-4599-92cd-d889f3ec396b/python-module-M3-1-python-module-M3-reach-hold-aggregation.json",
+            "evaluation_artifact_contents": {
+              "scope": "structure_only",
+              "sections": [
+                {
+                  "entries": 9,
+                  "path": "",
+                  "type": "object"
+                },
+                {
+                  "path": "/schema_version",
+                  "type": "number"
+                },
+                {
+                  "path": "/source_episodes",
+                  "type": "number"
+                },
+                {
+                  "path": "/successes",
+                  "type": "number"
+                },
+                {
+                  "path": "/failures",
+                  "type": "number"
+                },
+                {
+                  "entries": 3,
+                  "path": "/failure_decomposition",
+                  "type": "object"
+                },
+                {
+                  "entries": 4,
+                  "path": "/no_entry_branch_status",
+                  "type": "object"
+                },
+                {
+                  "entries": 2,
+                  "path": "/first_entry_speed_m_s",
+                  "type": "object"
+                },
+                {
+                  "entries": 3,
+                  "path": "/hold_interruptions",
+                  "type": "object"
+                },
+                {
+                  "entries": 4,
+                  "path": "/entered_episode_limit_and_action",
+                  "type": "object"
+                },
+                {
+                  "path": "/failure_decomposition/no_first_entry",
+                  "type": "number"
+                },
+                {
+                  "path": "/failure_decomposition/entered_but_hold_incomplete",
+                  "type": "number"
+                },
+                {
+                  "path": "/failure_decomposition/entered_failure_with_interruptions",
+                  "type": "number"
+                },
+                {
+                  "path": "/no_entry_branch_status/at_least_one_feasible_branch",
+                  "type": "number"
+                },
+                {
+                  "path": "/no_entry_branch_status/positive_branch_feasible",
+                  "type": "number"
+                },
+                {
+                  "path": "/no_entry_branch_status/negative_only_feasible",
+                  "type": "number"
+                },
+                {
+                  "path": "/no_entry_branch_status/neither_branch_feasible",
+                  "type": "number"
+                },
+                {
+                  "entries": 3,
+                  "path": "/first_entry_speed_m_s/successful_episodes",
+                  "type": "object"
+                },
+                {
+                  "entries": 3,
+                  "path": "/first_entry_speed_m_s/failed_episodes",
+                  "type": "object"
+                },
+                {
+                  "path": "/hold_interruptions/failed_episodes_total",
+                  "type": "number"
+                },
+                {
+                  "path": "/hold_interruptions/failed_episodes_with_entry",
+                  "type": "number"
+                },
+                {
+                  "path": "/hold_interruptions/total",
+                  "type": "number"
+                },
+                {
+                  "entries": 3,
+                  "path": "/entered_episode_limit_and_action/successful_minimum_joint_limit_margin_degrees",
+                  "type": "object"
+                },
+                {
+                  "entries": 3,
+                  "path": "/entered_episode_limit_and_action/failed_minimum_joint_limit_margin_degrees",
+                  "type": "object"
+                },
+                {
+                  "entries": 3,
+                  "path": "/entered_episode_limit_and_action/successful_action_saturation_steps",
+                  "type": "object"
+                },
+                {
+                  "entries": 3,
+                  "path": "/entered_episode_limit_and_action/failed_action_saturation_steps",
+                  "type": "object"
+                },
+                {
+                  "path": "/first_entry_speed_m_s/successful_episodes/count",
+                  "type": "number"
+                },
+                {
+                  "path": "/first_entry_speed_m_s/successful_episodes/mean",
+                  "type": "number"
+                },
+                {
+                  "path": "/first_entry_speed_m_s/successful_episodes/median",
+                  "type": "number"
+                },
+                {
+                  "path": "/first_entry_speed_m_s/failed_episodes/count",
+                  "type": "number"
+                },
+                {
+                  "path": "/first_entry_speed_m_s/failed_episodes/mean",
+                  "type": "number"
+                },
+                {
+                  "path": "/first_entry_speed_m_s/failed_episodes/median",
+                  "type": "number"
+                },
+                {
+                  "path": "/entered_episode_limit_and_action/successful_minimum_joint_limit_margin_degrees/count",
+                  "type": "number"
+                },
+                {
+                  "path": "/entered_episode_limit_and_action/successful_minimum_joint_limit_margin_degrees/mean",
+                  "type": "number"
+                },
+                {
+                  "path": "/entered_episode_limit_and_action/successful_minimum_joint_limit_margin_degrees/median",
+                  "type": "number"
+                },
+                {
+                  "path": "/entered_episode_limit_and_action/failed_minimum_joint_limit_margin_degrees/count",
+                  "type": "number"
+                },
+                {
+                  "path": "/entered_episode_limit_and_action/failed_minimum_joint_limit_margin_degrees/mean",
+                  "type": "number"
+                },
+                {
+                  "path": "/entered_episode_limit_and_action/failed_minimum_joint_limit_margin_degrees/median",
+                  "type": "number"
+                },
+                {
+                  "path": "/entered_episode_limit_and_action/successful_action_saturation_steps/count",
+                  "type": "number"
+                },
+                {
+                  "path": "/entered_episode_limit_and_action/successful_action_saturation_steps/mean",
+                  "type": "number"
+                },
+                {
+                  "path": "/entered_episode_limit_and_action/successful_action_saturation_steps/median",
+                  "type": "number"
+                },
+                {
+                  "path": "/entered_episode_limit_and_action/failed_action_saturation_steps/count",
+                  "type": "number"
+                },
+                {
+                  "path": "/entered_episode_limit_and_action/failed_action_saturation_steps/mean",
+                  "type": "number"
+                },
+                {
+                  "path": "/entered_episode_limit_and_action/failed_action_saturation_steps/median",
+                  "type": "number"
+                }
+              ],
+              "truncated": false
+            },
+            "evaluation_artifact_fingerprint": "f60fcea239350f8fab085bb0ceafee9ee5fb8bb445b54958faf0a310e3b0fda8"
+          },
+          "module": "robot_learning.lab.analyze_reach_hold"
+        }
+      ],
+      "result": {
+        "measurements": [
+          {
+            "args": [
+              "--input",
+              "campaigns/evaluations/bd32cc79-767a-4599-92cd-d889f3ec396b/evaluation-bd32cc79-767a-4599-92cd-d889f3ec396b-m2-T1-checkpoint-120832-160ep-seed4200-f00e36286c7a.json",
+              "--artifact",
+              "campaigns/evaluations/bd32cc79-767a-4599-92cd-d889f3ec396b/python-module-M3-reach-hold-aggregation.json"
+            ],
+            "instrument": "python_module",
+            "label": "M2 mechanism aggregation",
+            "metrics": {
+              "evaluation_artifact": "campaigns/evaluations/bd32cc79-767a-4599-92cd-d889f3ec396b/python-module-M3-1-python-module-M3-reach-hold-aggregation.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 9,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/source_episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/successes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/failures",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/failure_decomposition",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/no_entry_branch_status",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/first_entry_speed_m_s",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/hold_interruptions",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/entered_episode_limit_and_action",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/failure_decomposition/no_first_entry",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/failure_decomposition/entered_but_hold_incomplete",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/failure_decomposition/entered_failure_with_interruptions",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/no_entry_branch_status/at_least_one_feasible_branch",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/no_entry_branch_status/positive_branch_feasible",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/no_entry_branch_status/negative_only_feasible",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/no_entry_branch_status/neither_branch_feasible",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/first_entry_speed_m_s/successful_episodes",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/first_entry_speed_m_s/failed_episodes",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/hold_interruptions/failed_episodes_total",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/hold_interruptions/failed_episodes_with_entry",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/hold_interruptions/total",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/entered_episode_limit_and_action/successful_minimum_joint_limit_margin_degrees",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/entered_episode_limit_and_action/failed_minimum_joint_limit_margin_degrees",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/entered_episode_limit_and_action/successful_action_saturation_steps",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/entered_episode_limit_and_action/failed_action_saturation_steps",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/first_entry_speed_m_s/successful_episodes/count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/first_entry_speed_m_s/successful_episodes/mean",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/first_entry_speed_m_s/successful_episodes/median",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/first_entry_speed_m_s/failed_episodes/count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/first_entry_speed_m_s/failed_episodes/mean",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/first_entry_speed_m_s/failed_episodes/median",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/entered_episode_limit_and_action/successful_minimum_joint_limit_margin_degrees/count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/entered_episode_limit_and_action/successful_minimum_joint_limit_margin_degrees/mean",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/entered_episode_limit_and_action/successful_minimum_joint_limit_margin_degrees/median",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/entered_episode_limit_and_action/failed_minimum_joint_limit_margin_degrees/count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/entered_episode_limit_and_action/failed_minimum_joint_limit_margin_degrees/mean",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/entered_episode_limit_and_action/failed_minimum_joint_limit_margin_degrees/median",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/entered_episode_limit_and_action/successful_action_saturation_steps/count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/entered_episode_limit_and_action/successful_action_saturation_steps/mean",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/entered_episode_limit_and_action/successful_action_saturation_steps/median",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/entered_episode_limit_and_action/failed_action_saturation_steps/count",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/entered_episode_limit_and_action/failed_action_saturation_steps/mean",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/entered_episode_limit_and_action/failed_action_saturation_steps/median",
+                    "type": "number"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "f60fcea239350f8fab085bb0ceafee9ee5fb8bb445b54958faf0a310e3b0fda8"
+            },
+            "module": "robot_learning.lab.analyze_reach_hold"
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": {
+          "campaign_lab_manifest": [
+            {
+              "fingerprint": "af534c4e6e994351ed9b87e4830b9460ccb82b1182319ba160beaf485634f47d",
+              "path": "robot_learning/lab/__init__.py"
+            },
+            {
+              "fingerprint": "7bdd9ec57e307d6a4ad2de67030fc558282029f3f4049726cdcfe9129d3500a1",
+              "path": "robot_learning/lab/analyze_reach_hold.py"
+            },
+            {
+              "fingerprint": "b718d7a61546a5775b4848cc4699c9c0d2889d4713b7992079be623b7572709b",
+              "path": "robot_learning/lab/characterize_arm.py"
+            }
+          ],
+          "campaign_lab_publication": {
+            "commit": "cc101d495c76b1f84e4414cab3f8109499fc662f",
+            "fingerprint": "879d81b14dbbcc226108a4af4a8d82ecaf636543ccfd1e3a7b31dbb4245cb057",
+            "manifest": [
+              {
+                "fingerprint": "af534c4e6e994351ed9b87e4830b9460ccb82b1182319ba160beaf485634f47d",
+                "path": "robot_learning/lab/__init__.py"
+              },
+              {
+                "fingerprint": "7bdd9ec57e307d6a4ad2de67030fc558282029f3f4049726cdcfe9129d3500a1",
+                "path": "robot_learning/lab/analyze_reach_hold.py"
+              },
+              {
+                "fingerprint": "b718d7a61546a5775b4848cc4699c9c0d2889d4713b7992079be623b7572709b",
+                "path": "robot_learning/lab/characterize_arm.py"
+              }
+            ]
+          },
+          "code_parent_commit": "be3c52ad10da5ad04a57b12ce7d428ecb9a62459",
+          "effective_parameters": {
+            "algorithm": {
+              "name": "ppo"
+            },
+            "policy": {
+              "activation": "tanh",
+              "net_arch": [
+                64,
+                64
+              ]
+            },
+            "ppo": {
+              "batch_size": 64,
+              "ent_coef": 0.01,
+              "gae_lambda": 0.95,
+              "gamma": 0.99,
+              "learning_rate": 0.0003,
+              "n_steps": 1024
+            },
+            "training": {
+              "checkpoint_every_steps": 5000,
+              "n_envs": 1
+            }
+          },
+          "module_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "7bdd9ec57e307d6a4ad2de67030fc558282029f3f4049726cdcfe9129d3500a1",
+              "path": "robot_learning/lab/analyze_reach_hold.py"
+            }
+          ],
+          "module_paths": [
+            "robot_learning/lab/analyze_reach_hold.py"
+          ],
+          "scientific_commit": "4d54a7668c699ef468dc853926298a1c2fd56384",
+          "scientific_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "f2ec28fa47e3339496545208d7ab828157033a76db5773911baf5ce9fe36413d",
+              "path": "robot_learning/scenario/evaluation.py"
+            }
+          ],
+          "scientific_paths": [
+            "robot_learning/scenario/evaluation.py"
+          ]
+        }
+      },
+      "task_reference_contract": null
+    },
+    "failure": null,
+    "id": "M3",
+    "inquiry_id": "I1",
+    "kind": "measurement",
+    "progress": "completed",
+    "request": {
+      "measurement": {
+        "description": "Aggregate the completed M2 synchronized reach-and-hold diagnostics by entry status, branch feasibility, first-entry speed, interruptions, and action/limit margins.",
+        "measurements": [
+          {
+            "args": [
+              "--input",
+              "campaigns/evaluations/bd32cc79-767a-4599-92cd-d889f3ec396b/evaluation-bd32cc79-767a-4599-92cd-d889f3ec396b-m2-T1-checkpoint-120832-160ep-seed4200-f00e36286c7a.json",
+              "--artifact",
+              "campaigns/evaluations/bd32cc79-767a-4599-92cd-d889f3ec396b/python-module-M3-reach-hold-aggregation.json"
+            ],
+            "artifact": "campaigns/evaluations/bd32cc79-767a-4599-92cd-d889f3ec396b/python-module-M3-reach-hold-aggregation.json",
+            "instrument": "python_module",
+            "label": "M2 mechanism aggregation",
+            "module": "robot_learning.lab.analyze_reach_hold"
+          }
+        ],
+        "rationale": "M2 provides the required episode-level evidence, but aggregate counts are needed to distinguish failures before first entry from post-entry hold instability and to determine whether no-entry failures cluster with a feasible-branch deficit."
+      }
+    },
+    "request_fingerprint": "126c722002d7a99b89040b96b49c6d355e96a6dc44b7b93b5fec9572b9a35722",
+    "session_id": "S3",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No candidates exist and no working, best-known, or retained model role is assigned.",
     "completed_operations": [
@@ -1693,9 +2651,10 @@
     "objective": "Advance I1 toward an evidence-supported answer to its scientific question: For a first learned candidate trained under the current recipe, are official-distribution failures dominated by branch/joint-limit coverage or by post-entry dynamic instability, as determined by target-conditioned first-entry velocity, hold interruptions, and complete uninterrupted success?",
     "operation_ids": [
       "T1",
-      "M2"
+      "M2",
+      "M3"
     ],
-    "scientific_parent_commit": "be3c52ad10da5ad04a57b12ce7d428ecb9a62459"
+    "scientific_parent_commit": "4d54a7668c699ef468dc853926298a1c2fd56384"
   },
   "terminal_state": null
 }
