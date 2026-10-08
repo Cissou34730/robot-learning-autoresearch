@@ -4618,38 +4618,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I2",
-        "outcome": "The full-range PPO recipe is supported as a major but insufficient intervention. T2 improved the paired development panel from 110/160 to 150/160 successes, eliminated all 23 baseline no-entry failures in 6-10 cm, reduced 10-14 cm no-entry failures from 15 to 3, and reduced entered failures from 8 to 3 without worsening the failed-episode action-saturation tail.",
-        "reason": "M5 and M6 establish the recipe outcome but not the 98% official goal or a universal causal claim. T2 still had 10 failures in 160 episodes, equivalent to 12.5 failures per 200, so the at-most-four-failure target was not reached. The remaining failures were 7 no-entry episodes, including 4 in the trained 14-20 cm range with approximately 496-498 saturated action steps, plus 3 entered-but-incomplete holds with 435 total interruptions. Full-range exposure therefore resolved the dominant inner-radius distribution gap, while the residual decision frontier moves to sampled-data/directional reach-braking control and hold stabilization."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I2",
-        "outcome": "The full-range PPO recipe is supported as a major but insufficient intervention. T2 improved the paired development panel from 110/160 to 150/160 successes, eliminated all 23 baseline no-entry failures in 6-10 cm, reduced 10-14 cm no-entry failures from 15 to 3, and reduced entered failures from 8 to 3 without worsening the failed-episode action-saturation tail.",
-        "reason": "M5 and M6 establish the recipe outcome but not the 98% official goal or a universal causal claim. T2 still had 10 failures in 160 episodes, equivalent to 12.5 failures per 200, so the at-most-four-failure target was not reached. The remaining failures were 7 no-entry episodes, including 4 in the trained 14-20 cm range with approximately 496-498 saturated action steps, plus 3 entered-but-incomplete holds with 435 total interruptions. Full-range exposure therefore resolved the dominant inner-radius distribution gap, while the residual decision frontier moves to sampled-data/directional reach-braking control and hold stabilization.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E11",
-    "inquiry_id": "I2",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "The full-range PPO recipe is supported as a major but insufficient intervention. T2 improved the paired development panel from 110/160 to 150/160 successes, eliminated all 23 baseline no-entry failures in 6-10 cm, reduced 10-14 cm no-entry failures from 15 to 3, and reduced entered failures from 8 to 3 without worsening the failed-episode action-saturation tail.",
-        "reason": "M5 and M6 establish the recipe outcome but not the 98% official goal or a universal causal claim. T2 still had 10 failures in 160 episodes, equivalent to 12.5 failures per 200, so the at-most-four-failure target was not reached. The remaining failures were 7 no-entry episodes, including 4 in the trained 14-20 cm range with approximately 496-498 saturated action steps, plus 3 entered-but-incomplete holds with 435 total interruptions. Full-range exposure therefore resolved the dominant inner-radius distribution gap, while the residual decision frontier moves to sampled-data/directional reach-braking control and hold stabilization."
-      }
-    },
-    "request_fingerprint": "86178444cef9cd519be1702916a277e54c30e2675cd26999940f95791eb90745",
-    "session_id": "S7",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T1 produced candidates through 120,832 completed steps, including T1:checkpoint-120832, but no working, best-known, or retained model role is assigned. The candidate remains a diagnostic baseline only; its 68.75% development-panel result is not official assessment evidence.",
     "completed_operations": [
