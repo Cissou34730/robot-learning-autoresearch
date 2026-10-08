@@ -1,5 +1,16 @@
 {
-  "active_inquiry": null,
+  "active_inquiry": {
+    "closure_condition": "Close the inquiry after a fresh full-range PPO candidate is evaluated on a synchronized development panel with radius-angle, reach/braking, action-saturation, first-entry, interruption, and complete-success diagnostics. Treat the intervention as supported if inner-radius no-entry failures fall sharply and total failures approach at most four per 200 episodes without worsening the trained-range saturation tail or entered-hold interruptions; redirect toward sampled-data braking or stabilization if inner-radius failures persist, trained-range saturation grows, or hold interruptions remain the limiting failure class.",
+    "goal_connection": "The human goal requires at least 196 of 200 official episodes to complete an uninterrupted 2-second hold. The baseline development panel achieved 110 of 160, with 38 of 42 no-entry failures below the 14 cm training boundary. Testing full official-radius coverage is the most direct route to reducing that dominant failure class while checking that trained-range control and post-entry hold behavior are not degraded.",
+    "handoff_conclusion": "Established observations: M1 found at least one joint-limit-feasible analytic IK branch for every sampled official target, feasible terminal postures were not intrinsically singular, and the compiled actuators had substantial authority with free velocity decay. T1/M2 measured 110/160 successes under training radii 14-20 cm. M3 found 42 no-entry failures and 8 entered-but-incomplete holds; every no-entry target had a feasible analytic branch, so branch feasibility is not the primary cause of the dominant failure class, while entered failures had hold interruptions and much higher action saturation. M4 found 23/23 no-entry failures in 6-10 cm, 15/15 in 10-14 cm, 2/39 in 14-18 cm, and 2/28 in 18-20 cm, so 38/42 no-entry failures were below the 14 cm training boundary. The four trained-range no-entry failures had approximately 1.2-1.4 cm minimum distances, 2.9 m/s maximum end-effector speed, 500 saturated action steps, and negative-angle concentration. Interpretation: inner-radius distribution shift is the primary pre-entry mechanism in this development panel, with a consequential secondary sampled-data reach/braking or directional-control tail; the eight entered failures remain consistent with a separate hold-stability mechanism. E7 closed I1 because M4 met its closure condition. Limits: all results are development evidence from 160 episodes; they do not establish intervention causality or the 98% official goal.",
+    "handoff_question": "Does a fresh PPO candidate trained over the full official 6-20 cm radius distribution, while retaining difficult-angle exposure and control-aware reach, braking, and uninterrupted-hold behavior, materially reduce inner-radius no-entry failures and the trained-range saturation tail toward at most four failures per 200 episodes?",
+    "handoff_source_session_id": "S5",
+    "id": "I2",
+    "opened_in_session": "S6",
+    "question": "Does a fresh PPO candidate trained over the full official 6-20 cm radius distribution, while retaining difficult-angle exposure and control-aware reach, braking, and uninterrupted-hold behavior, materially reduce inner-radius no-entry failures and the trained-range saturation tail toward at most four failures per 200 episodes?",
+    "rationale": "M4 established a dominant inner-radius association in the baseline but did not establish intervention causality. The competing explanations are a distribution-shift failure that full-range exposure can address, versus a control-bandwidth, braking, directional, or post-entry stability limitation that may persist despite coverage. A fresh candidate with the stated full-range and control-aware recipe, evaluated with the same synchronized diagnostics, gives the most useful next decision toward the 98% goal while preserving the distinction between recipe outcome and causal explanation.",
+    "reframes": []
+  },
   "campaign": {
     "base_commit": "4521496c4291c99a7376bd07efd7b6550695f7ff",
     "id": "bd32cc79-767a-4599-92cd-d889f3ec396b",
@@ -828,16 +839,16 @@
     }
   },
   "counters": {
-    "event": 8,
-    "inquiry": 1,
+    "event": 9,
+    "inquiry": 2,
     "measurement": 4,
-    "session": 5,
+    "session": 6,
     "training": 1
   },
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -2465,9 +2476,72 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-08T20:08:13Z",
+      "error": null,
+      "id": "E9",
+      "inquiry_id": "I2",
+      "kind": "inquiry",
+      "request": {
+        "action": "open",
+        "closure_condition": "Close the inquiry after a fresh full-range PPO candidate is evaluated on a synchronized development panel with radius-angle, reach/braking, action-saturation, first-entry, interruption, and complete-success diagnostics. Treat the intervention as supported if inner-radius no-entry failures fall sharply and total failures approach at most four per 200 episodes without worsening the trained-range saturation tail or entered-hold interruptions; redirect toward sampled-data braking or stabilization if inner-radius failures persist, trained-range saturation grows, or hold interruptions remain the limiting failure class.",
+        "goal_connection": "The human goal requires at least 196 of 200 official episodes to complete an uninterrupted 2-second hold. The baseline development panel achieved 110 of 160, with 38 of 42 no-entry failures below the 14 cm training boundary. Testing full official-radius coverage is the most direct route to reducing that dominant failure class while checking that trained-range control and post-entry hold behavior are not degraded.",
+        "question": "Does a fresh PPO candidate trained over the full official 6-20 cm radius distribution, while retaining difficult-angle exposure and control-aware reach, braking, and uninterrupted-hold behavior, materially reduce inner-radius no-entry failures and the trained-range saturation tail toward at most four failures per 200 episodes?",
+        "rationale": "M4 established a dominant inner-radius association in the baseline but did not establish intervention causality. The competing explanations are a distribution-shift failure that full-range exposure can address, versus a control-bandwidth, braking, directional, or post-entry stability limitation that may persist despite coverage. A fresh candidate with the stated full-range and control-aware recipe, evaluated with the same synchronized diagnostics, gives the most useful next decision toward the 98% goal while preserving the distinction between recipe outcome and causal explanation."
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I2",
+        "status": "completed"
+      },
+      "session_id": "S6",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "open",
+        "inquiry": {
+          "closure_condition": "Close the inquiry after a fresh full-range PPO candidate is evaluated on a synchronized development panel with radius-angle, reach/braking, action-saturation, first-entry, interruption, and complete-success diagnostics. Treat the intervention as supported if inner-radius no-entry failures fall sharply and total failures approach at most four per 200 episodes without worsening the trained-range saturation tail or entered-hold interruptions; redirect toward sampled-data braking or stabilization if inner-radius failures persist, trained-range saturation grows, or hold interruptions remain the limiting failure class.",
+          "goal_connection": "The human goal requires at least 196 of 200 official episodes to complete an uninterrupted 2-second hold. The baseline development panel achieved 110 of 160, with 38 of 42 no-entry failures below the 14 cm training boundary. Testing full official-radius coverage is the most direct route to reducing that dominant failure class while checking that trained-range control and post-entry hold behavior are not degraded.",
+          "handoff_conclusion": "Established observations: M1 found at least one joint-limit-feasible analytic IK branch for every sampled official target, feasible terminal postures were not intrinsically singular, and the compiled actuators had substantial authority with free velocity decay. T1/M2 measured 110/160 successes under training radii 14-20 cm. M3 found 42 no-entry failures and 8 entered-but-incomplete holds; every no-entry target had a feasible analytic branch, so branch feasibility is not the primary cause of the dominant failure class, while entered failures had hold interruptions and much higher action saturation. M4 found 23/23 no-entry failures in 6-10 cm, 15/15 in 10-14 cm, 2/39 in 14-18 cm, and 2/28 in 18-20 cm, so 38/42 no-entry failures were below the 14 cm training boundary. The four trained-range no-entry failures had approximately 1.2-1.4 cm minimum distances, 2.9 m/s maximum end-effector speed, 500 saturated action steps, and negative-angle concentration. Interpretation: inner-radius distribution shift is the primary pre-entry mechanism in this development panel, with a consequential secondary sampled-data reach/braking or directional-control tail; the eight entered failures remain consistent with a separate hold-stability mechanism. E7 closed I1 because M4 met its closure condition. Limits: all results are development evidence from 160 episodes; they do not establish intervention causality or the 98% official goal.",
+          "handoff_question": "Does a fresh PPO candidate trained over the full official 6-20 cm radius distribution, while retaining difficult-angle exposure and control-aware reach, braking, and uninterrupted-hold behavior, materially reduce inner-radius no-entry failures and the trained-range saturation tail toward at most four failures per 200 episodes?",
+          "handoff_source_session_id": "S5",
+          "id": "I2",
+          "opened_in_session": "S6",
+          "question": "Does a fresh PPO candidate trained over the full official 6-20 cm radius distribution, while retaining difficult-angle exposure and control-aware reach, braking, and uninterrupted-hold behavior, materially reduce inner-radius no-entry failures and the trained-range saturation tail toward at most four failures per 200 episodes?",
+          "rationale": "M4 established a dominant inner-radius association in the baseline but did not establish intervention causality. The competing explanations are a distribution-shift failure that full-range exposure can address, versus a control-bandwidth, braking, directional, or post-entry stability limitation that may persist despite coverage. A fresh candidate with the stated full-range and control-aware recipe, evaluated with the same synchronized diagnostics, gives the most useful next decision toward the 98% goal while preserving the distinction between recipe outcome and causal explanation.",
+          "reframes": []
+        }
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I2",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E9",
+    "inquiry_id": null,
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "open",
+        "closure_condition": "Close the inquiry after a fresh full-range PPO candidate is evaluated on a synchronized development panel with radius-angle, reach/braking, action-saturation, first-entry, interruption, and complete-success diagnostics. Treat the intervention as supported if inner-radius no-entry failures fall sharply and total failures approach at most four per 200 episodes without worsening the trained-range saturation tail or entered-hold interruptions; redirect toward sampled-data braking or stabilization if inner-radius failures persist, trained-range saturation grows, or hold interruptions remain the limiting failure class.",
+        "goal_connection": "The human goal requires at least 196 of 200 official episodes to complete an uninterrupted 2-second hold. The baseline development panel achieved 110 of 160, with 38 of 42 no-entry failures below the 14 cm training boundary. Testing full official-radius coverage is the most direct route to reducing that dominant failure class while checking that trained-range control and post-entry hold behavior are not degraded.",
+        "question": "Does a fresh PPO candidate trained over the full official 6-20 cm radius distribution, while retaining difficult-angle exposure and control-aware reach, braking, and uninterrupted-hold behavior, materially reduce inner-radius no-entry failures and the trained-range saturation tail toward at most four failures per 200 episodes?",
+        "rationale": "M4 established a dominant inner-radius association in the baseline but did not establish intervention causality. The competing explanations are a distribution-shift failure that full-range exposure can address, versus a control-bandwidth, braking, directional, or post-entry stability limitation that may persist despite coverage. A fresh candidate with the stated full-range and control-aware recipe, evaluated with the same synchronized diagnostics, gives the most useful next decision toward the 98% goal while preserving the distinction between recipe outcome and causal explanation."
+      }
+    },
+    "request_fingerprint": "c2dbca46c63baef9fcf3d6f0a5ccacdd6805b95f2a70c4a2ba29b4b856289f4b",
+    "session_id": "S6",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T1 produced candidates through 120,832 completed steps, including T1:checkpoint-120832, but no working, best-known, or retained model role is assigned. The candidate remains a diagnostic baseline only; its 68.75% development-panel result is not official assessment evidence.",
     "completed_operations": [
@@ -2500,6 +2574,21 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "b0bf30bc-363c-4016-9273-f6c525e1d790",
+    "id": "S6",
+    "inquiry_id": null,
+    "kind": "goal_review",
+    "objective": "Reassess the scientific direction toward the human goal using completed evidence. You may request measurements to resolve an uncertainty or develop the method before committing to an inquiry. Decide whether to request official assessment or open one bounded goal-linked inquiry.",
+    "operation_ids": [
+      "E9"
+    ],
+    "scientific_parent_commit": "9eeec47af1fa573478ad455bb14b5dfa54afe84c"
+  },
   "terminal_state": null
 }
