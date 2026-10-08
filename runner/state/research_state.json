@@ -1011,7 +1011,8 @@
     "T2:checkpoint-120832": {
       "artifact": "campaigns/checkpoints/candidates/61f732e1-95e6-417f-9d7d-2480fc22aab9/t2/checkpoint-120832",
       "evaluation_artifacts": [
-        "campaigns/evaluations/61f732e1-95e6-417f-9d7d-2480fc22aab9/evaluation-61f732e1-95e6-417f-9d7d-2480fc22aab9-m3-T2-checkpoint-120832-160ep-seed4200-604d52985c97.json"
+        "campaigns/evaluations/61f732e1-95e6-417f-9d7d-2480fc22aab9/evaluation-61f732e1-95e6-417f-9d7d-2480fc22aab9-m3-T2-checkpoint-120832-160ep-seed4200-604d52985c97.json",
+        "campaigns/evaluations/61f732e1-95e6-417f-9d7d-2480fc22aab9/evaluation-61f732e1-95e6-417f-9d7d-2480fc22aab9-m4-T2-checkpoint-120832-160ep-seed4200-18db4a10fe97.json"
       ],
       "fingerprint": "5c54fe8b75c7c24ce204dce3627dff5cb0b729bd1332d7d4ffc3b9d011b7f2f3",
       "id": "T2:checkpoint-120832",
@@ -1660,14 +1661,14 @@
   "counters": {
     "event": 11,
     "inquiry": 3,
-    "measurement": 3,
-    "session": 6,
+    "measurement": 4,
+    "session": 7,
     "training": 2
   },
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -3276,9 +3277,418 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-08T22:29:09Z",
+      "error": null,
+      "id": "M4",
+      "inquiry_id": "I3",
+      "kind": "measurement",
+      "request": {
+        "description": "Re-evaluate the full-radius base candidate T2 on the matched 160-episode development panel with failure-focused branch and posture diagnostics.",
+        "measurements": [
+          {
+            "candidate": "T2:checkpoint-120832",
+            "episodes": 160,
+            "instrument": "research_evaluation",
+            "label": "I3-T2-branch-posture-diagnostics",
+            "seed": 4200
+          }
+        ],
+        "rationale": "The remaining scientific distinction is between angle- or branch-dependent convergence failure and post-entry sampled-data stabilization failure. The existing T2 panel separates first reach, hold interruptions, truncation, radius, and angle, but does not identify the elbow posture or practical IK branch used at entry and termination. This matched measurement preserves the prior panel while adding branch errors, elbow posture, branch selection, and branch-switch counts. Clustering of no-reach failures by branch or posture would justify a branch-aware convergence redesign; early reach followed by interruptions with stable posture would prioritize stabilization. The T2 hold behavior is the base constraint for any subsequent candidate."
+      },
+      "result": {
+        "measurements": [
+          {
+            "candidate": "T2:checkpoint-120832",
+            "candidate_id": "T2:checkpoint-120832",
+            "instrument": "research_evaluation",
+            "label": "I3-T2-branch-posture-diagnostics",
+            "metrics": {
+              "episodes": 160,
+              "evaluation_artifact": "campaigns/evaluations/61f732e1-95e6-417f-9d7d-2480fc22aab9/evaluation-61f732e1-95e6-417f-9d7d-2480fc22aab9-m4-T2-checkpoint-120832-160ep-seed4200-18db4a10fe97.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 8,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/model",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/seed",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/official_benchmark",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 160,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "reward_total",
+                      "steps",
+                      "success",
+                      "terminated",
+                      "truncated"
+                    ],
+                    "path": "/episode_results",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 160,
+                    "field_names": [
+                      "branch_switches",
+                      "episode",
+                      "episode_seed",
+                      "final_branch",
+                      "final_distance_cm",
+                      "final_elbow_angle_degrees",
+                      "first_reach_branch",
+                      "first_reach_elbow_angle_degrees",
+                      "first_reach_step",
+                      "hold_interruptions",
+                      "in_tolerance_steps",
+                      "initial_folded_branch_error_rad",
+                      "initial_open_branch_error_rad",
+                      "max_held_steps",
+                      "min_distance_cm",
+                      "target_angle_degrees",
+                      "target_radius_cm"
+                    ],
+                    "path": "/research_evidence/episode_diagnostics",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence/units",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/research_evidence/units/distance",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/time",
+                    "type": "string"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "bc18b065329247924f084413e0b8a2351bc7b6be32c00d933f8f0b5aa6aaa78d",
+              "evaluation_semantics": "18db4a10fe97",
+              "model_fingerprint": "5c54fe8b75c7c24ce204dce3627dff5cb0b729bd1332d7d4ffc3b9d011b7f2f3",
+              "official_benchmark": false,
+              "schema_version": 6,
+              "seed": 4200,
+              "success_percent": 93.75,
+              "successes": 150
+            }
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": null
+      },
+      "session_id": "S7",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "evaluation_semantics": "18db4a10fe97",
+      "measurements": [
+        {
+          "artifact": "campaigns/checkpoints/candidates/61f732e1-95e6-417f-9d7d-2480fc22aab9/t2/checkpoint-120832",
+          "candidate": "T2:checkpoint-120832",
+          "candidate_id": "T2:checkpoint-120832",
+          "episodes": 160,
+          "instrument": "research_evaluation",
+          "label": "I3-T2-branch-posture-diagnostics",
+          "model_fingerprint": "5c54fe8b75c7c24ce204dce3627dff5cb0b729bd1332d7d4ffc3b9d011b7f2f3",
+          "seed": 4200
+        }
+      ],
+      "module_provenance": null,
+      "paired_comparisons": [],
+      "partial_results": [
+        {
+          "candidate": "T2:checkpoint-120832",
+          "candidate_id": "T2:checkpoint-120832",
+          "instrument": "research_evaluation",
+          "label": "I3-T2-branch-posture-diagnostics",
+          "metrics": {
+            "episodes": 160,
+            "evaluation_artifact": "campaigns/evaluations/61f732e1-95e6-417f-9d7d-2480fc22aab9/evaluation-61f732e1-95e6-417f-9d7d-2480fc22aab9-m4-T2-checkpoint-120832-160ep-seed4200-18db4a10fe97.json",
+            "evaluation_artifact_contents": {
+              "scope": "structure_only",
+              "sections": [
+                {
+                  "entries": 8,
+                  "path": "",
+                  "type": "object"
+                },
+                {
+                  "path": "/schema_version",
+                  "type": "number"
+                },
+                {
+                  "path": "/model",
+                  "type": "string"
+                },
+                {
+                  "path": "/episodes",
+                  "type": "number"
+                },
+                {
+                  "path": "/seed",
+                  "type": "number"
+                },
+                {
+                  "path": "/official_benchmark",
+                  "type": "boolean"
+                },
+                {
+                  "path": "/success_percent",
+                  "type": "number"
+                },
+                {
+                  "entries": 160,
+                  "field_names": [
+                    "episode",
+                    "episode_seed",
+                    "reward_total",
+                    "steps",
+                    "success",
+                    "terminated",
+                    "truncated"
+                  ],
+                  "path": "/episode_results",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/research_evidence",
+                  "type": "object"
+                },
+                {
+                  "entries": 160,
+                  "field_names": [
+                    "branch_switches",
+                    "episode",
+                    "episode_seed",
+                    "final_branch",
+                    "final_distance_cm",
+                    "final_elbow_angle_degrees",
+                    "first_reach_branch",
+                    "first_reach_elbow_angle_degrees",
+                    "first_reach_step",
+                    "hold_interruptions",
+                    "in_tolerance_steps",
+                    "initial_folded_branch_error_rad",
+                    "initial_open_branch_error_rad",
+                    "max_held_steps",
+                    "min_distance_cm",
+                    "target_angle_degrees",
+                    "target_radius_cm"
+                  ],
+                  "path": "/research_evidence/episode_diagnostics",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/research_evidence/units",
+                  "type": "object"
+                },
+                {
+                  "path": "/research_evidence/units/distance",
+                  "type": "string"
+                },
+                {
+                  "path": "/research_evidence/units/time",
+                  "type": "string"
+                }
+              ],
+              "truncated": false
+            },
+            "evaluation_artifact_fingerprint": "bc18b065329247924f084413e0b8a2351bc7b6be32c00d933f8f0b5aa6aaa78d",
+            "evaluation_semantics": "18db4a10fe97",
+            "model_fingerprint": "5c54fe8b75c7c24ce204dce3627dff5cb0b729bd1332d7d4ffc3b9d011b7f2f3",
+            "official_benchmark": false,
+            "schema_version": 6,
+            "seed": 4200,
+            "success_percent": 93.75,
+            "successes": 150
+          }
+        }
+      ],
+      "result": {
+        "measurements": [
+          {
+            "candidate": "T2:checkpoint-120832",
+            "candidate_id": "T2:checkpoint-120832",
+            "instrument": "research_evaluation",
+            "label": "I3-T2-branch-posture-diagnostics",
+            "metrics": {
+              "episodes": 160,
+              "evaluation_artifact": "campaigns/evaluations/61f732e1-95e6-417f-9d7d-2480fc22aab9/evaluation-61f732e1-95e6-417f-9d7d-2480fc22aab9-m4-T2-checkpoint-120832-160ep-seed4200-18db4a10fe97.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 8,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/model",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/seed",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/official_benchmark",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 160,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "reward_total",
+                      "steps",
+                      "success",
+                      "terminated",
+                      "truncated"
+                    ],
+                    "path": "/episode_results",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 160,
+                    "field_names": [
+                      "branch_switches",
+                      "episode",
+                      "episode_seed",
+                      "final_branch",
+                      "final_distance_cm",
+                      "final_elbow_angle_degrees",
+                      "first_reach_branch",
+                      "first_reach_elbow_angle_degrees",
+                      "first_reach_step",
+                      "hold_interruptions",
+                      "in_tolerance_steps",
+                      "initial_folded_branch_error_rad",
+                      "initial_open_branch_error_rad",
+                      "max_held_steps",
+                      "min_distance_cm",
+                      "target_angle_degrees",
+                      "target_radius_cm"
+                    ],
+                    "path": "/research_evidence/episode_diagnostics",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence/units",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/research_evidence/units/distance",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/time",
+                    "type": "string"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "bc18b065329247924f084413e0b8a2351bc7b6be32c00d933f8f0b5aa6aaa78d",
+              "evaluation_semantics": "18db4a10fe97",
+              "model_fingerprint": "5c54fe8b75c7c24ce204dce3627dff5cb0b729bd1332d7d4ffc3b9d011b7f2f3",
+              "official_benchmark": false,
+              "schema_version": 6,
+              "seed": 4200,
+              "success_percent": 93.75,
+              "successes": 150
+            }
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": null
+      },
+      "task_reference_contract": null
+    },
+    "failure": null,
+    "id": "M4",
+    "inquiry_id": "I3",
+    "kind": "measurement",
+    "progress": "completed",
+    "request": {
+      "measurement": {
+        "description": "Re-evaluate the full-radius base candidate T2 on the matched 160-episode development panel with failure-focused branch and posture diagnostics.",
+        "measurements": [
+          {
+            "candidate": "T2:checkpoint-120832",
+            "episodes": 160,
+            "instrument": "research_evaluation",
+            "label": "I3-T2-branch-posture-diagnostics",
+            "seed": 4200
+          }
+        ],
+        "rationale": "The remaining scientific distinction is between angle- or branch-dependent convergence failure and post-entry sampled-data stabilization failure. The existing T2 panel separates first reach, hold interruptions, truncation, radius, and angle, but does not identify the elbow posture or practical IK branch used at entry and termination. This matched measurement preserves the prior panel while adding branch errors, elbow posture, branch selection, and branch-switch counts. Clustering of no-reach failures by branch or posture would justify a branch-aware convergence redesign; early reach followed by interruptions with stable posture would prioritize stabilization. The T2 hold behavior is the base constraint for any subsequent candidate."
+      }
+    },
+    "request_fingerprint": "37e63862a814c7912b83dd540b3b81bd803e8dfec0871e48123ab759a0eefe77",
+    "session_id": "S7",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T2:checkpoint-120832 is the strongest development candidate supported by the completed matched evaluation M3, but no working, best-known, or retained model role has been assigned. T1:checkpoint-120832 remains the matched baseline reference. I3 has just opened; no candidate or role changed in this goal-review session.",
     "completed_operations": [
@@ -3312,6 +3722,21 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "732ddd9a-1c5c-4e21-9de5-619222cba9b8",
+    "id": "S7",
+    "inquiry_id": "I3",
+    "kind": "inquiry",
+    "objective": "Advance I3 toward an evidence-supported answer to its scientific question: Can an angle-conditioned, branch-aware convergence or stabilization redesign eliminate T2's residual failures and raise full-distribution success to the level required for at least 98% official success without sacrificing the hold behavior gained from full-radius exposure?",
+    "operation_ids": [
+      "M4"
+    ],
+    "scientific_parent_commit": "50958bbd110c6ec273cc4743323cbd8c91d197b7"
+  },
   "terminal_state": null
 }
