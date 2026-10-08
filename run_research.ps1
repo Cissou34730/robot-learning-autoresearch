@@ -792,6 +792,7 @@ function New-ScientificSessionPrompt {
             elseif ($session.kind -eq "inquiry" -and $State.active_inquiry) {
                 "While the inquiry remains active, next_question must exactly match its current question."
             }
+            "Existing PI-owned implementations have no privileged status; inspect, modify, or replace them when that is the most credible scientific action before submitting an operation."
             if ($session.kind -ne "startup") {
                 "When evidence resolves or redirects the active inquiry, record that decision explicitly rather than drifting to another question."
             }
