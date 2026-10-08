@@ -17,3 +17,4 @@
 | E8 | checkpoint | I1 | checkpointed |
 | E9 | inquiry | I2 | completed |
 | E10 | checkpoint | - | checkpointed |
+| T2 | training | I2 | completed |
