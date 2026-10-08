@@ -159,6 +159,7 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
             penalize_outside=self._outside_after_hold,
             previous_branch_error=self._previous_branch_error,
             current_branch_error=branch_error,
+            joint_velocity=self.data.qvel,
         )
         self._previous_distance = distance
         self._previous_branch_error = branch_error

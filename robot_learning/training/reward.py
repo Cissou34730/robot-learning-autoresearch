@@ -24,6 +24,7 @@ OUTSIDE_BAND_WIDTH = 0.01
 OUTSIDE_BAND_PENALTY = 0.1
 HOLD_COMPLETE_BONUS = 50.0
 BRANCH_ERROR_COEFFICIENT = 0.5
+IN_TOLERANCE_VELOCITY_PENALTY = 0.05
 
 
 @dataclass(frozen=True)
@@ -56,6 +57,7 @@ def reach_reward(
     penalize_outside: bool = False,
     previous_branch_error: float | None = None,
     current_branch_error: float | None = None,
+    joint_velocity: np.ndarray | None = None,
 ) -> RewardResult:
     progress = PROGRESS_COEFFICIENT * (previous_distance - current_distance)
     reward = progress
@@ -86,6 +88,13 @@ def reach_reward(
         )
         reward += branch_progress
 
+    settling = 0.0
+    if joint_velocity is not None and current_distance <= success_threshold:
+        settling = -IN_TOLERANCE_VELOCITY_PENALTY * float(
+            np.sum(np.square(joint_velocity))
+        )
+        reward += settling
+
     outside_band = 0.0
     if penalize_outside and current_distance > success_threshold:
         if OUTSIDE_BAND_WIDTH <= 0:
@@ -114,6 +123,7 @@ def reach_reward(
             "closeness": float(closeness),
             "hold_progress": float(hold_progress),
             "branch_progress": float(branch_progress),
+            "settling": float(settling),
             "outside_band": float(outside_band),
             "hold_complete": float(hold_complete),
             "action_cost": float(action_cost),
