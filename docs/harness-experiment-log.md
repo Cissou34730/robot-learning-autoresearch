@@ -2601,3 +2601,28 @@ separate from harness changes so their outcomes are not conflated.
 - **Status:** OI-001 stays open. The next campaign tests the restored closing
   section under the new language and persona. Reverting the language or the
   persona would be a separate test.
+
+## 2026-10-09: remove the context leak from handoffs and align the goal-review objective
+
+- **Observation:** campaign 61f732e1 was the first run with the restored
+  synthesis. It reached the full-range inquiry at E6, three events earlier
+  than bd32cc79. The synthesis still ranked nothing. Inquiry I3 ran T3, T4
+  and a pending T5 (150, 152, then 153 of 160), so it did not close. This is
+  OI-002 evidence. The maintainer stopped the campaign at T5. One campaign
+  cannot separate the synthesis from run-to-run noise.
+- **Leak removed:** the goal-review and inquiry handoffs said "Do not replace
+  or reinterpret it because the model context is fresh". That sentence
+  explained a harness design reason to the PI, who does not need it. Both
+  handoffs now say "Continue from this state" and keep the rule that new
+  evidence, an implementation finding, or a concrete dead end can change the
+  state, with a record of what changed and why.
+- **Goal-review objective:** "Reassess the scientific direction ... using
+  completed evidence" became "Use the completed evidence to update the
+  scientific direction toward the human goal." The verb now matches the
+  restored handoff. The objective keeps the optional measurements and the
+  choice between official assessment and one bounded inquiry. A single
+  purpose per prompt stays an open design question for goal review.
+- **Validation:** the PowerShell script parses with 0 errors. No test or
+  contract text refers to the removed or changed sentences.
+- **Boundary:** no campaign was launched, resumed, reset or trained.
+- **Status:** implemented and unmeasured.

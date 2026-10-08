@@ -763,7 +763,7 @@ function New-ScientificSessionPrompt {
             "Restored scientific handoff from the same PI's previous session. This is current scientific state, not another PI's opinion."
             "Previous session conclusion, verbatim:`n$([string]$checkpoint.current_synthesis)"
             "Question selected for the next inquiry, verbatim:`n$([string]$checkpoint.next_question)"
-            "Continue from this restored state. Do not replace or reinterpret it because the model context is fresh. Change it only when new evidence, an implementation finding, or a concrete dead end changes the scientific situation. Record what changed and why."
+            "Continue from this state. Change it when new evidence, an implementation finding, or a concrete dead end changes the scientific situation. Record what changed and why."
             "A useful policy does not establish its proposed cause. A negative recipe result does not by itself invalidate the broader method. Distinguish the tested recipe's outcome from what it establishes about the explanation or method it was intended to investigate."
         )
     }
@@ -772,7 +772,7 @@ function New-ScientificSessionPrompt {
             "Restored scientific handoff from the same PI's source session. This is current scientific state, not another PI's opinion."
             "Source session conclusion, verbatim:`n$([string]$State.active_inquiry.handoff_conclusion)"
             "Question selected by that session, verbatim:`n$([string]$State.active_inquiry.handoff_question)"
-            "Continue from this restored state while solving the active inquiry. Do not replace or reinterpret it because the model context is fresh. Change it only when new evidence, an implementation finding, or a concrete dead end changes the scientific situation. Record what changed and why."
+            "Continue from this state while you solve the active inquiry. Change it when new evidence, an implementation finding, or a concrete dead end changes the scientific situation. Record what changed and why."
             "A useful policy does not establish its proposed cause. A negative recipe result does not by itself invalidate the broader method. Distinguish the tested recipe's outcome from what it establishes about the explanation or method it was intended to investigate."
         )
     }
@@ -1195,7 +1195,7 @@ try {
                 $startupPhaseObjective
             }
             elseif ($kind -eq "goal_review") {
-                "Reassess the scientific direction toward the human goal using completed evidence. You may request measurements to resolve an uncertainty or develop the method before committing to an inquiry. Decide whether to request official assessment or open one bounded goal-linked inquiry."
+                "Use the completed evidence to update the scientific direction toward the human goal. Request measurements when they resolve an uncertainty or develop the method. Then choose one outcome: request the official assessment, or open one bounded goal-linked inquiry."
             }
             else {
                 (
