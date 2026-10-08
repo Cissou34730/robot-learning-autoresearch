@@ -1,16 +1,5 @@
 {
-  "active_inquiry": {
-    "closure_condition": "Close the inquiry after a fresh full-range PPO candidate is evaluated on a synchronized development panel with radius-angle, reach/braking, action-saturation, first-entry, interruption, and complete-success diagnostics. Treat the intervention as supported if inner-radius no-entry failures fall sharply and total failures approach at most four per 200 episodes without worsening the trained-range saturation tail or entered-hold interruptions; redirect toward sampled-data braking or stabilization if inner-radius failures persist, trained-range saturation grows, or hold interruptions remain the limiting failure class.",
-    "goal_connection": "The human goal requires at least 196 of 200 official episodes to complete an uninterrupted 2-second hold. The baseline development panel achieved 110 of 160, with 38 of 42 no-entry failures below the 14 cm training boundary. Testing full official-radius coverage is the most direct route to reducing that dominant failure class while checking that trained-range control and post-entry hold behavior are not degraded.",
-    "handoff_conclusion": "Established observations: M1 found at least one joint-limit-feasible analytic IK branch for every sampled official target, feasible terminal postures were not intrinsically singular, and the compiled actuators had substantial authority with free velocity decay. T1/M2 measured 110/160 successes under training radii 14-20 cm. M3 found 42 no-entry failures and 8 entered-but-incomplete holds; every no-entry target had a feasible analytic branch, so branch feasibility is not the primary cause of the dominant failure class, while entered failures had hold interruptions and much higher action saturation. M4 found 23/23 no-entry failures in 6-10 cm, 15/15 in 10-14 cm, 2/39 in 14-18 cm, and 2/28 in 18-20 cm, so 38/42 no-entry failures were below the 14 cm training boundary. The four trained-range no-entry failures had approximately 1.2-1.4 cm minimum distances, 2.9 m/s maximum end-effector speed, 500 saturated action steps, and negative-angle concentration. Interpretation: inner-radius distribution shift is the primary pre-entry mechanism in this development panel, with a consequential secondary sampled-data reach/braking or directional-control tail; the eight entered failures remain consistent with a separate hold-stability mechanism. E7 closed I1 because M4 met its closure condition. Limits: all results are development evidence from 160 episodes; they do not establish intervention causality or the 98% official goal.",
-    "handoff_question": "Does a fresh PPO candidate trained over the full official 6-20 cm radius distribution, while retaining difficult-angle exposure and control-aware reach, braking, and uninterrupted-hold behavior, materially reduce inner-radius no-entry failures and the trained-range saturation tail toward at most four failures per 200 episodes?",
-    "handoff_source_session_id": "S5",
-    "id": "I2",
-    "opened_in_session": "S6",
-    "question": "Does a fresh PPO candidate trained over the full official 6-20 cm radius distribution, while retaining difficult-angle exposure and control-aware reach, braking, and uninterrupted-hold behavior, materially reduce inner-radius no-entry failures and the trained-range saturation tail toward at most four failures per 200 episodes?",
-    "rationale": "M4 established a dominant inner-radius association in the baseline but did not establish intervention causality. The competing explanations are a distribution-shift failure that full-range exposure can address, versus a control-bandwidth, braking, directional, or post-entry stability limitation that may persist despite coverage. A fresh candidate with the stated full-range and control-aware recipe, evaluated with the same synchronized diagnostics, gives the most useful next decision toward the 98% goal while preserving the distinction between recipe outcome and causal explanation.",
-    "reframes": []
-  },
+  "active_inquiry": null,
   "campaign": {
     "base_commit": "4521496c4291c99a7376bd07efd7b6550695f7ff",
     "id": "bd32cc79-767a-4599-92cd-d889f3ec396b",
@@ -1658,7 +1647,7 @@
     }
   },
   "counters": {
-    "event": 10,
+    "event": 11,
     "inquiry": 2,
     "measurement": 6,
     "session": 7,
@@ -4604,9 +4593,63 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-08T20:19:38Z",
+      "error": null,
+      "id": "E11",
+      "inquiry_id": "I2",
+      "kind": "inquiry",
+      "request": {
+        "action": "close",
+        "outcome": "The full-range PPO recipe is supported as a major but insufficient intervention. T2 improved the paired development panel from 110/160 to 150/160 successes, eliminated all 23 baseline no-entry failures in 6-10 cm, reduced 10-14 cm no-entry failures from 15 to 3, and reduced entered failures from 8 to 3 without worsening the failed-episode action-saturation tail.",
+        "reason": "M5 and M6 establish the recipe outcome but not the 98% official goal or a universal causal claim. T2 still had 10 failures in 160 episodes, equivalent to 12.5 failures per 200, so the at-most-four-failure target was not reached. The remaining failures were 7 no-entry episodes, including 4 in the trained 14-20 cm range with approximately 496-498 saturated action steps, plus 3 entered-but-incomplete holds with 435 total interruptions. Full-range exposure therefore resolved the dominant inner-radius distribution gap, while the residual decision frontier moves to sampled-data/directional reach-braking control and hold stabilization."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I2",
+        "outcome": "The full-range PPO recipe is supported as a major but insufficient intervention. T2 improved the paired development panel from 110/160 to 150/160 successes, eliminated all 23 baseline no-entry failures in 6-10 cm, reduced 10-14 cm no-entry failures from 15 to 3, and reduced entered failures from 8 to 3 without worsening the failed-episode action-saturation tail.",
+        "reason": "M5 and M6 establish the recipe outcome but not the 98% official goal or a universal causal claim. T2 still had 10 failures in 160 episodes, equivalent to 12.5 failures per 200, so the at-most-four-failure target was not reached. The remaining failures were 7 no-entry episodes, including 4 in the trained 14-20 cm range with approximately 496-498 saturated action steps, plus 3 entered-but-incomplete holds with 435 total interruptions. Full-range exposure therefore resolved the dominant inner-radius distribution gap, while the residual decision frontier moves to sampled-data/directional reach-braking control and hold stabilization.",
+        "status": "completed"
+      },
+      "session_id": "S7",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "close",
+        "inquiry_id": "I2",
+        "outcome": "The full-range PPO recipe is supported as a major but insufficient intervention. T2 improved the paired development panel from 110/160 to 150/160 successes, eliminated all 23 baseline no-entry failures in 6-10 cm, reduced 10-14 cm no-entry failures from 15 to 3, and reduced entered failures from 8 to 3 without worsening the failed-episode action-saturation tail.",
+        "reason": "M5 and M6 establish the recipe outcome but not the 98% official goal or a universal causal claim. T2 still had 10 failures in 160 episodes, equivalent to 12.5 failures per 200, so the at-most-four-failure target was not reached. The remaining failures were 7 no-entry episodes, including 4 in the trained 14-20 cm range with approximately 496-498 saturated action steps, plus 3 entered-but-incomplete holds with 435 total interruptions. Full-range exposure therefore resolved the dominant inner-radius distribution gap, while the residual decision frontier moves to sampled-data/directional reach-braking control and hold stabilization."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I2",
+        "outcome": "The full-range PPO recipe is supported as a major but insufficient intervention. T2 improved the paired development panel from 110/160 to 150/160 successes, eliminated all 23 baseline no-entry failures in 6-10 cm, reduced 10-14 cm no-entry failures from 15 to 3, and reduced entered failures from 8 to 3 without worsening the failed-episode action-saturation tail.",
+        "reason": "M5 and M6 establish the recipe outcome but not the 98% official goal or a universal causal claim. T2 still had 10 failures in 160 episodes, equivalent to 12.5 failures per 200, so the at-most-four-failure target was not reached. The remaining failures were 7 no-entry episodes, including 4 in the trained 14-20 cm range with approximately 496-498 saturated action steps, plus 3 entered-but-incomplete holds with 435 total interruptions. Full-range exposure therefore resolved the dominant inner-radius distribution gap, while the residual decision frontier moves to sampled-data/directional reach-braking control and hold stabilization.",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E11",
+    "inquiry_id": "I2",
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "close",
+        "outcome": "The full-range PPO recipe is supported as a major but insufficient intervention. T2 improved the paired development panel from 110/160 to 150/160 successes, eliminated all 23 baseline no-entry failures in 6-10 cm, reduced 10-14 cm no-entry failures from 15 to 3, and reduced entered failures from 8 to 3 without worsening the failed-episode action-saturation tail.",
+        "reason": "M5 and M6 establish the recipe outcome but not the 98% official goal or a universal causal claim. T2 still had 10 failures in 160 episodes, equivalent to 12.5 failures per 200, so the at-most-four-failure target was not reached. The remaining failures were 7 no-entry episodes, including 4 in the trained 14-20 cm range with approximately 496-498 saturated action steps, plus 3 entered-but-incomplete holds with 435 total interruptions. Full-range exposure therefore resolved the dominant inner-radius distribution gap, while the residual decision frontier moves to sampled-data/directional reach-braking control and hold stabilization."
+      }
+    },
+    "request_fingerprint": "86178444cef9cd519be1702916a277e54c30e2675cd26999940f95791eb90745",
+    "session_id": "S7",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T1 produced candidates through 120,832 completed steps, including T1:checkpoint-120832, but no working, best-known, or retained model role is assigned. The candidate remains a diagnostic baseline only; its 68.75% development-panel result is not official assessment evidence.",
     "completed_operations": [
@@ -4654,7 +4697,8 @@
     "operation_ids": [
       "T2",
       "M5",
-      "M6"
+      "M6",
+      "E11"
     ],
     "scientific_parent_commit": "d516ae57b65dbc013d4e2dbfeb39c1def64407f8"
   },

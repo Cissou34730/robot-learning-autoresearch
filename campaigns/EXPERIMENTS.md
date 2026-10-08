@@ -20,3 +20,4 @@
 | T2 | training | I2 | completed |
 | M5 | measurement | I2 | completed |
 | M6 | measurement | I2 | completed |
+| E11 | inquiry | I2 | completed |
