@@ -2008,43 +2008,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "reframe",
-        "inquiry_id": "I1",
-        "reframe": {
-          "closure_condition": "Close when synchronized baseline diagnostics show whether no-entry failures cluster with the inner radii absent from training or instead occur across the trained radius range with reach-time, minimum-distance, speed, saturation, or episode-horizon signatures of sampled-data reach and braking, and the result selects the next bounded intervention.",
-          "goal_connection": "The baseline missed the 98% goal by 50 failures, with 42 occurring before first entry despite every such target having at least one feasible analytic branch. Identifying the dominant pre-entry mechanism directs the next intervention toward closing the largest failure class and reducing the official tail to four or fewer.",
-          "question": "For the baseline candidate's 42 no-entry failures, are pre-entry failures primarily caused by inner-radius distribution shift or by sampled-data reach and braking limitations, as determined by target-radius and angle-conditioned minimum distance, maximum end-effector speed, action saturation, and available episode time?",
-          "rationale": "M3 resolves the original branch-versus-post-entry distinction as incomplete: all 42 no-entry failures retained a feasible analytic branch, ruling out branch feasibility as their primary cause, while only 8 failures entered and then interrupted the hold. The dominant unresolved mechanism is therefore pre-entry control. The training distribution begins at 14 cm while the official distribution begins at 6 cm, making inner-radius generalization a competing explanation against sampled-data reach and braking. Target-conditioned no-entry diagnostics can discriminate these explanations before changing the recipe.",
-          "session_id": "S3"
-        }
-      },
-      "result": {
-        "action": "reframe",
-        "inquiry_id": "I1",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E4",
-    "inquiry_id": "I1",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "reframe",
-        "closure_condition": "Close when synchronized baseline diagnostics show whether no-entry failures cluster with the inner radii absent from training or instead occur across the trained radius range with reach-time, minimum-distance, speed, saturation, or episode-horizon signatures of sampled-data reach and braking, and the result selects the next bounded intervention.",
-        "goal_connection": "The baseline missed the 98% goal by 50 failures, with 42 occurring before first entry despite every such target having at least one feasible analytic branch. Identifying the dominant pre-entry mechanism directs the next intervention toward closing the largest failure class and reducing the official tail to four or fewer.",
-        "question": "For the baseline candidate's 42 no-entry failures, are pre-entry failures primarily caused by inner-radius distribution shift or by sampled-data reach and braking limitations, as determined by target-radius and angle-conditioned minimum distance, maximum end-effector speed, action saturation, and available episode time?",
-        "rationale": "M3 resolves the original branch-versus-post-entry distinction as incomplete: all 42 no-entry failures retained a feasible analytic branch, ruling out branch feasibility as their primary cause, while only 8 failures entered and then interrupted the hold. The dominant unresolved mechanism is therefore pre-entry control. The training distribution begins at 14 cm while the official distribution begins at 6 cm, making inner-radius generalization a competing explanation against sampled-data reach and braking. Target-conditioned no-entry diagnostics can discriminate these explanations before changing the recipe."
-      }
-    },
-    "request_fingerprint": "d542d6c30b9f2a79ffa173478c79875d9fa7e129bb5c69e4cb04627cef789d18",
-    "session_id": "S3",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "No candidates exist and no working, best-known, or retained model role is assigned.",
     "completed_operations": [
