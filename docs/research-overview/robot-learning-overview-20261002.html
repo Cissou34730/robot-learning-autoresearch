@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Robot AutoResearch reference for the current harness, two-joint-arm scenario, actor boundaries, process, evidence, history, and open work.">
-  <title>Robot AutoResearch process reference</title>
+  <meta name="description" content="Robot AutoResearch overview: what the harness does, the current status, open issues, recent changes, and history.">
+  <title>Robot AutoResearch overview</title>
   <script>
     (() => {
       const param = new URLSearchParams(window.location.search).get("scoutTheme");
@@ -67,6 +67,7 @@
       --cp-highlight: rgba(253, 142, 161, 0.12);
     }
     * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; scroll-padding-top: 64px; }
     body {
       margin: 0;
       background: var(--cp-bg);
@@ -92,7 +93,7 @@
     :focus-visible { outline: 3px solid var(--cp-accent); outline-offset: 4px; }
     .topline { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 20px; }
     .eyebrow { color: var(--cp-accent); font-size: .8rem; font-weight: 700; letter-spacing: .09em; text-transform: uppercase; }
-    .intro { max-width: 760px; margin-top: 20px; font-size: 1.1rem; }
+    .intro { max-width: 800px; margin-top: 20px; font-size: 1.1rem; }
     .muted { color: var(--cp-text-muted); }
     .small { font-size: .85rem; }
     .snapshot { margin-top: 12px; color: var(--cp-text-muted); font-size: .85rem; }
@@ -105,17 +106,20 @@
       border-radius: 16px; padding: 24px;
       box-shadow: 0 0 2px var(--cp-border), 0 1px 2px var(--cp-highlight);
     }
-    .overview { margin-top: 28px; }
-    .overview .card { border-top: 4px solid var(--cp-border-strong); }
-    .page-nav { display: flex; flex-wrap: wrap; gap: 8px 20px; margin-top: 20px; }
-    .section { margin-top: 32px; }
-    .section > p { margin-bottom: 20px; }
+    .status-grid .card { border-top: 4px solid var(--cp-border-strong); }
+    .status-grid .card.hot { border-top-color: var(--cp-accent); }
+    .status-grid ul { margin: 8px 0 0; padding-left: 20px; }
+    .page-nav {
+      position: sticky; top: 0; z-index: 5; display: flex; flex-wrap: wrap; gap: 6px 18px;
+      margin: 20px -8px 0; padding: 10px 8px; background: var(--cp-bg); border-bottom: 1px solid var(--cp-border);
+    }
+    .section { margin-top: 40px; }
+    .section > p { margin-bottom: 16px; }
     .section-label { color: var(--cp-text-muted); font-size: .8rem; font-weight: 700; margin-bottom: 4px; }
     .metric { font-size: 1.9rem; font-weight: 700; line-height: 1.2; }
     .metric-label { font-size: .85rem; color: var(--cp-text-muted); margin-top: 8px; }
     .metric-card { padding: 20px; }
     .note { padding: 16px 20px; border-left: 4px solid var(--cp-accent); background: var(--cp-accent-soft); border-radius: .625rem; }
-    .note + .note { margin-top: 12px; }
     .tag {
       display: inline-block; border: 1px solid var(--cp-border); padding: 3px 9px;
       border-radius: .625rem; font-size: .75rem; font-weight: 700; white-space: nowrap;
@@ -141,57 +145,44 @@
     .table-wrap { overflow-x: auto; }
     table { width: 100%; border-collapse: collapse; font-size: .9rem; }
     th { text-align: left; font-size: .78rem; color: var(--cp-text-muted); background: var(--cp-surface-soft); }
-    th, td { padding: 14px 16px; vertical-align: top; border-bottom: 1px solid var(--cp-border); }
+    th, td { padding: 12px 14px; vertical-align: top; border-bottom: 1px solid var(--cp-border); }
     tbody tr:last-child td { border-bottom: 0; }
     td:first-child { font-weight: 600; }
-    .changes { padding: 0; overflow: hidden; }
-    .changes table { min-width: 730px; }
-    .commit { display: block; font-size: .77rem; color: var(--cp-text-muted); margin-top: 4px; font-weight: 400; }
-    .chart-row { margin-top: 20px; }
-    .chart-label { display: flex; justify-content: space-between; gap: 16px; margin-bottom: 6px; font-size: .9rem; }
-    .bar { height: 24px; background: var(--cp-surface-soft); border: 1px solid var(--cp-border); border-radius: .625rem; overflow: hidden; }
-    .fill { height: 100%; background: var(--cp-accent); }
-    .fill.failure { background: var(--cp-text-muted); }
-    .scale { display: flex; justify-content: space-between; font-size: .75rem; color: var(--cp-text-muted); margin-top: 8px; }
-    .steps { counter-reset: roadmap; display: grid; gap: 12px; }
-    .step { display: grid; grid-template-columns: 36px 1fr auto; gap: 16px; align-items: start; }
-    .step::before {
-      counter-increment: roadmap; content: counter(roadmap);
-      color: var(--cp-accent); background: var(--cp-accent-soft); border-radius: .625rem;
-      width: 36px; height: 36px; text-align: center; font-weight: 700; line-height: 36px;
-    }
+    .wide table { min-width: 640px; }
+    .group-row td { background: var(--cp-surface-soft); font-weight: 700; color: var(--cp-text-muted); font-size: .8rem; }
+    .timeline h3 { margin-top: 20px; }
+    .timeline ul { margin: 0; padding-left: 20px; }
+    .timeline li + li { margin-top: 6px; }
+    .steps-list { margin: 8px 0 0; padding-left: 22px; }
     details { border: 1px solid var(--cp-border); border-radius: .625rem; background: var(--cp-surface); padding: 16px 20px; }
     details + details { margin-top: 12px; }
     summary { font-weight: 600; }
     .details-body { margin-top: 16px; }
-    .definitions { display: grid; grid-template-columns: 180px 1fr; gap: 12px 20px; margin: 0; }
+    .details-body ul { margin: 8px 0; padding-left: 22px; }
+    .definitions { display: grid; grid-template-columns: 200px 1fr; gap: 12px 20px; margin: 0; }
     dt { font-weight: 700; }
     dd { margin: 0; }
     .sources { margin: 12px 0 0; padding-left: 24px; }
     .sources li + li { margin-top: 8px; }
-    .process-flow { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin: 16px 0; }
-    .process-node { background: var(--cp-surface); border: 1px solid var(--cp-border-strong); border-radius: .625rem; padding: 12px 16px; }
-    .process-arrow { color: var(--cp-accent); font-weight: 700; }
-    footer { margin-top: 32px; padding-top: 20px; border-top: 1px solid var(--cp-border); color: var(--cp-text-muted); font-size: .8rem; }
+    footer { margin-top: 40px; padding-top: 20px; border-top: 1px solid var(--cp-border); color: var(--cp-text-muted); font-size: .8rem; }
     @media (max-width: 760px) {
       main { padding: 24px 16px 40px; }
       .three, .two { grid-template-columns: 1fr; }
       .four { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .card { padding: 20px; }
-      .changes { padding: 0; }
-      .step { grid-template-columns: 36px 1fr; gap: 12px; }
-      .step > .tag { grid-column: 2; justify-self: start; }
       .definitions { grid-template-columns: 1fr; gap: 4px; }
       dd { margin-bottom: 12px; }
+      .page-nav { position: static; }
     }
     @media print {
       main { max-width: none; padding: 0; }
       body { font-size: 11pt; }
       button { display: none; }
+      .page-nav { position: static; }
       .card { box-shadow: none; }
-      .card, figure, .step, tr { break-inside: avoid; }
+      .card, figure, tr { break-inside: avoid; }
       .diagram, .table-wrap { overflow: visible; }
-      .loop svg, .changes table { min-width: 0; }
+      .loop svg, .wide table { min-width: 0; }
       .section { margin-top: 24px; }
     }
   </style>
@@ -200,107 +191,134 @@
   <main>
     <header>
       <div class="topline">
-        <span class="eyebrow">Robot AutoResearch / process reference</span>
+        <span class="eyebrow">Robot AutoResearch / overview</span>
         <button id="theme-toggle" type="button">Change theme</button>
       </div>
       <h1>Robot AutoResearch</h1>
-      <p class="intro">Robot AutoResearch is a harness for an independent Principal Investigator (PI).</p>
-      <p class="intro">The human owns the goal. The PI owns the science and training. The Runner gates and executes operations.</p>
-      <p class="intro">The two-joint arm is the current reference scenario. This page presents current status, the scenario, the process, its boundaries, and its history.</p>
-      <p class="snapshot">
-        Documentation reviewed: <time datetime="2026-10-08">8 October 2026</time>.
-        This page does not update itself.
-      </p>
-      <p class="snapshot">The latest completed campaign is <code>06656182</code>. It passed the official assessment with 98.0% on 200 episodes. The goal is 98%, so it passed exactly at the threshold. This is one run. It is not proof of a margin.</p>
-      <p class="snapshot">R1 to R8 are handled. R1, R5-1, R5-2, R6, R7, and R8 are implemented. R2 is partly implemented and paused. R3 and R4 are discarded. R8 removed the PI-authority sentence. Commit <code>adff08e</code> restored it. Commit <code>ef9516f</code> rewrote the scientific-model phase. Implementation is not evidence of scientific effect.</p>
-      <p class="snapshot">The outstanding issues are now numbered OI-001 to OI-014. See the maintainer backlog section.</p>
+      <p class="intro">Robot AutoResearch is a harness. It lets an independent AI agent, the Principal Investigator (PI), train a robot.</p>
+      <p class="intro">The human owns the goal. The PI owns the science and the training. The Runner is the gatekeeper. It checks and runs every operation.</p>
+      <p class="intro">The working example is a two-joint arm that must reach a target and hold still. Work is organized in campaigns. A campaign is split into inquiries. An inquiry is one scientific question.</p>
+      <p class="snapshot">Last updated <time datetime="2026-10-08">2026-10-08</time>. This page is a snapshot. It does not update itself. The log <a href="../harness-experiment-log.md"><code>docs\harness-experiment-log.md</code></a> is the source of truth. If the two differ, the log is right.</p>
       <nav class="page-nav" aria-label="Page navigation">
-        <a href="#status-heading">Reading guide</a>
-        <a href="#task-heading">Current scenario</a>
-        <a href="#loop-heading">Current process</a>
-        <a href="#roles-heading">Ownership</a>
-        <a href="#operation-heading">Operations</a>
-        <a href="#evidence-heading">Evidence</a>
-        <a href="#changes-heading">Implementation</a>
-        <a href="#history-heading">Decisions and history</a>
-        <a href="#roadmap-heading">Open work</a>
-        <a href="#campaigns-heading">Campaign reports</a>
-        <a href="#terms-heading">Terms and sources</a>
+        <a href="#status">1 Status</a>
+        <a href="#roles">2 Roles</a>
+        <a href="#task">3 Task</a>
+        <a href="#lifecycle">4 Campaign lifecycle</a>
+        <a href="#issues">5 Open issues</a>
+        <a href="#changes">6 Recent changes</a>
+        <a href="#harness">7 Harness behavior</a>
+        <a href="#evidence">8 Evidence and terms</a>
+        <a href="#reports">9 Campaign reports</a>
+        <a href="#archive">10 Archive</a>
       </nav>
     </header>
 
-    <section class="section" aria-labelledby="status-heading">
-      <p class="section-label">READING GUIDE / SCOPE AND STATUS</p>
-      <h2 id="status-heading">Current process, history, and evidence are different</h2>
-      <p>This is a maintainer reference, not a PI instruction source. Current contracts define behavior. Historical reports preserve earlier evidence and decisions.</p>
-      <div class="card">
-        <dl class="definitions">
-          <dt>Implemented</dt><dd>Present in the inspected source. This includes an implemented removal or restriction. It does not mean scientifically effective.</dd>
-          <dt>Historical</dt><dd>An earlier change, source revision, or campaign record. It is not current guidance.</dd>
-          <dt>Withdrawn</dt><dd>A change was removed or reverted. Its rationale and observations remain in the history.</dd>
-          <dt>Decision</dt><dd>An explicit maintainer choice. The text states its scope and implementation separately.</dd>
-          <dt>Observation</dt><dd>A recorded result in the named campaign or engineering comparison. The stated limits apply.</dd>
-          <dt>Open</dt><dd>An unresolved question or requested review. No solution or causal explanation is established.</dd>
-          <dt>Proposal</dt><dd>Suggested work that is not approved or implemented.</dd>
-          <dt>Deferred</dt><dd>Work set aside for later. It is not an active requirement.</dd>
-        </dl>
-        <p class="small muted" style="margin-top: 16px">All status labels use the same neutral colors. Text, not color, states implementation and outcome. Rose marks emphasis and diagram flow, not scientific success or failure. Blue marks links.</p>
-        <p class="small muted">Scientific effect is stated separately: unassessed, observed in a named campaign, or not causally established. A retained change is not automatically a successful experiment.</p>
+    <section class="section" aria-labelledby="status-heading" id="status">
+      <p class="section-label">1 / STATUS DASHBOARD</p>
+      <h2 id="status-heading">Where the project stands</h2>
+      <div class="grid two status-grid">
+        <article class="card hot">
+          <span class="tag">Running</span>
+          <h3 style="margin-top: 12px">Campaign <code>bd32cc79</code></h3>
+          <ul>
+            <li>The maintainer runs it.</li>
+            <li>It is the first campaign with the bundled scientific-model prompt.</li>
+            <li>Through inquiry I2, the paired evaluation M5 gave T2 150/160 and T1 110/160.</li>
+            <li>T2 changed only the training range.</li>
+            <li>Inquiry I3 is open.</li>
+          </ul>
+          <p class="small muted" style="margin-top: 8px">No report exists yet. We cannot say which prompt change caused the good result. See OI-001 and OI-014.</p>
+        </article>
+        <article class="card">
+          <span class="tag">Latest finished result</span>
+          <h3 style="margin-top: 12px">Campaign <code>06656182</code> passed</h3>
+          <ul>
+            <li>Official assessment: 196 of 200 episodes, which is 98.0%.</li>
+            <li>The goal is 98%. The result is exactly at the threshold.</li>
+            <li>6 training runs, 9 measurements, 5 of 15 inquiries.</li>
+            <li>Assessed checkpoint: <code>T5:checkpoint-120832</code>.</li>
+            <li>It is one run. No repeat run exists.</li>
+          </ul>
+          <p class="small"><a href="robot-campaign-06656182-final-analysis-20261008.html">Read the final analysis</a></p>
+        </article>
+        <article class="card">
+          <span class="tag">Open</span>
+          <h3 style="margin-top: 12px">14 issues, OI-001 to OI-014</h3>
+          <ul>
+            <li>Active: OI-001, OI-002, OI-003, OI-004, OI-014.</li>
+            <li>Postponed, paused, or waiting for a decision: OI-005, OI-006, OI-007, OI-011, OI-013.</li>
+            <li>Not approved: OI-008, OI-009, OI-010, OI-012.</li>
+          </ul>
+          <p class="small"><a href="#issues">See the full table</a></p>
+        </article>
+        <article class="card">
+          <span class="tag">Changed last</span>
+          <h3 style="margin-top: 12px">8 October 2026</h3>
+          <ul>
+            <li><code>5437ff2</code> restored the closing section "Decision-relevant synthesis" of the scientific model, in controlled English.</li>
+            <li><code>b3f4307</code> fixed a heading-layout bug in the same prompt.</li>
+            <li><code>adff08e</code> (R8 correction) restored the PI-authority sentence.</li>
+            <li><code>ef9516f</code> rewrote the scientific-model prompt. It changed language, persona, and closing section at once.</li>
+          </ul>
+          <p class="small muted" style="margin-top: 8px">Language and analyst persona are kept. Their separate effect is not measured.</p>
+        </article>
+      </div>
+      <p class="small muted" style="margin-top: 12px">Prompt-stack review items R1, R5-1, R5-2, R6, R7, and R8 are implemented. R2 is partly implemented and paused. R3 and R4 are discarded. Implemented does not mean effective. Scientific effect is stated separately in each item.</p>
+    </section>
+
+    <section class="section" aria-labelledby="roles-heading" id="roles">
+      <p class="section-label">2 / ROLES AND BOUNDARIES</p>
+      <h2 id="roles-heading">Who owns what</h2>
+      <div class="grid three">
+        <article class="card role">
+          <h3>Human</h3>
+          <p>Defines the goal, the robot, the protected task, and the success rule.</p>
+          <p>Maintains the harness and sets limits.</p>
+          <p>Starts, stops, and resets campaigns.</p>
+        </article>
+        <article class="card role pi">
+          <h3>Principal Investigator (PI)</h3>
+          <p>Chooses questions, methods, and tools.</p>
+          <p>Changes PI-owned research code.</p>
+          <p>Interprets completed evidence.</p>
+          <p>Decides whether to request the official assessment.</p>
+        </article>
+        <article class="card role">
+          <h3>Runner</h3>
+          <p>Checks contracts and file ownership.</p>
+          <p>Runs accepted operations.</p>
+          <p>Records outcomes and files.</p>
+          <p>Does not judge scientific readiness.</p>
+        </article>
+      </div>
+      <p class="small muted" style="margin-top: 12px">The maintainer is the human acting as engineer. It is not a fourth role in a campaign.</p>
+      <div class="card table-wrap" style="margin-top: 16px">
+        <table>
+          <thead><tr><th scope="col">Area</th><th scope="col">Owner</th><th scope="col">Note</th></tr></thead>
+          <tbody>
+            <tr><td><code>robot_learning\scenario\</code> (except protected files), <code>robot_learning\training\</code>, <code>train.py</code>, <code>evaluate.py</code>, <code>play.py</code>, <code>robot_learning\lab\</code></td><td>PI</td><td>This includes both environment files, <code>environment.py</code> and <code>training_environment.py</code>.</td></tr>
+            <tr><td><code>contracts\</code>, <code>campaigns\</code></td><td>Human</td><td>The PI can read them. The PI cannot write them.</td></tr>
+            <tr><td><code>benchmark\</code>, <code>runner\</code>, <code>tests\</code>, <code>docs\</code>, <code>tools\</code></td><td>Human</td><td>Protected. A protected path wins over a PI-owned folder.</td></tr>
+            <tr><td><code>pyproject.toml</code>, <code>uv.lock</code>, official robot files</td><td>Human</td><td>The PI cannot install packages or change the robot.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="note" style="margin-top: 16px">
+        <p>The PI can replace its methods, tools, reward, observations, and training code.</p>
+        <p>The PI cannot change the official robot, task, success rule, harness, tests, or dependencies.</p>
+        <p>All Python runs through <code>uv run</code>. The PI asks the Runner for training and protected evaluation.</p>
+        <p class="small muted">The read limits are tool controls. They are not an operating-system sandbox.</p>
       </div>
     </section>
 
-    <div class="grid three overview" aria-label="Current implementation and three campaign observations">
-      <article class="card">
-        <span class="tag">Implemented</span>
-        <h3 style="margin-top: 12px">Startup direction and instruction delivery</h3>
-        <p>Startup establishes or refines the initial scientific direction through scientific work. It can build or adapt reusable tools and PI-owned methods.</p>
-        <p>The PI chooses the first useful scientific action, explains how it advances that direction, and records the work result and uncertainty.</p>
-        <p>The scientific-model phase now uses a robotics and simulation analyst persona. The PI builds the model from the human-owned definitions of the robot, simulator, and task.</p>
-        <p>The model has three registers: Established facts, Physical consequences, and Unknowns. It has no synthesis section. Startup reads the whole model and selects its own direction.</p>
-        <p>Other phase prompts remain persona-first. They present scientific framing and state before operational options.</p>
-        <p class="small muted">The cue-removal experiment <code>371bae1</code> produced no observed improvement and was withdrawn in <code>efc3be7</code>. The scoped goal-first model ordering in <code>756ae4b</code> was retained after one useful startup, without causal proof.</p>
-        <p class="small muted">R1 (<code>8c0a25b</code>) added a PI-selected synthesis handoff. Commit <code>ef9516f</code> removed that synthesis section on 8 October. The effect on startup selection is not yet observed.</p>
-        <p class="small muted">R2 is partially implemented in <code>fb9b10d</code>. It removes the generic policy destination. It also puts scientific context before operational options.</p>
-        <p class="small muted">R2 is not complete because ordinary sessions remain persona-first. The review recommended the human goal before the PI role.</p>
-        <p class="small muted">The project discards R3 because it made the inquiry question too important. It discards R4 because later recovery work supplies its useful behavior. R5-1, R5-2, R6, R7, and R8 are implemented.</p>
-        <p class="small"><a href="#startup-current">Read the current startup behavior</a></p>
-      </article>
-      <article class="card">
-        <span class="tag">Observation</span>
-        <h3 style="margin-top: 12px">Recorded no-credible-route conclusion</h3>
-        <p><code>E19</code> records <code>no_credible_route</code> from session <code>S10</code>.</p>
-        <p>The maintainer rejects this as a valid campaign outcome. The historical record remains unchanged.</p>
-        <p>Ordinary T1 scored <strong>151 / 160</strong>. Frozen reflection-wrapped M7 scored <strong>160 / 160</strong> on the reused development panel.</p>
-        <p class="small muted">Campaign <code>3ac5a413</code>. No official assessment occurred. The official 98% goal is not proven.</p>
-        <p class="small"><a href="robot-campaign-3ac5a413-20261003.html">Read the 3 October campaign report</a></p>
-      </article>
-      <article class="card">
-        <span class="tag">Observation</span>
-        <h3 style="margin-top: 12px">Official assessment failed</h3>
-        <p><strong>194 of 200</strong> episodes succeeded. The goal required 196.</p>
-        <p>Three training runs completed. Assessment used the unchanged startup policy T1.</p>
-        <p class="small muted">Campaign <code>d7080d95</code>. Readiness guidance was absent during this campaign.</p>
-        <p class="small"><a href="robot-campaign-d7080d95-20261002.html">Read the d7080d95 campaign report</a></p>
-      </article>
-      <article class="card">
-        <span class="tag">Observation</span>
-        <h3 style="margin-top: 12px">Latest campaign: official assessment passed</h3>
-        <p><strong>98.0%</strong> on the 200-episode official assessment. The goal is 98%, so the result is exactly at the threshold.</p>
-        <p>Six training runs and five inquiries. The assessed checkpoint is T5:checkpoint-120832.</p>
-        <p class="small muted">Campaign <code>06656182</code>, 7 October 2026. One official run only. No repeat run exists.</p>
-        <p class="small"><a href="robot-campaign-06656182-final-analysis-20261008.html">Read the 06656182 final analysis</a></p>
-      </article>
-    </div>
-
-    <section class="section" aria-labelledby="task-heading">
-      <p class="section-label">01 / CURRENT REFERENCE SCENARIO / THE HUMAN GOAL</p>
+    <section class="section" aria-labelledby="task-heading" id="task">
+      <p class="section-label">3 / THE TASK</p>
       <h2 id="task-heading">Reach the target. Then stay there.</h2>
-      <p>The two-joint arm is the working example used to develop and examine the harness.</p>
-      <p>The human fixes the robot, the official task, and the success rule. The PI cannot change them.</p>
+      <p>The two-joint arm is the working example. The human fixes the robot, the task, and the success rule. The PI cannot change them.</p>
       <div class="grid four">
-        <div class="card metric-card"><div class="metric">6&ndash;20 cm</div><p class="metric-label">Target distance from the base.<br>Targets cover the full angle range.</p></div>
+        <div class="card metric-card"><div class="metric">6&ndash;20 cm</div><p class="metric-label">Target distance from the base.<br>Targets cover all angles.</p></div>
         <div class="card metric-card"><div class="metric">1 cm</div><p class="metric-label">Maximum distance from the target during the hold.</p></div>
-        <div class="card metric-card"><div class="metric">2 seconds</div><p class="metric-label">Continuous hold.<br>Leaving the area interrupts the hold.</p></div>
+        <div class="card metric-card"><div class="metric">2 seconds</div><p class="metric-label">Continuous hold.<br>Leaving the area breaks the hold.</p></div>
         <div class="card metric-card"><div class="metric">196 / 200</div><p class="metric-label">Minimum official successes.<br>This equals 98%.</p></div>
       </div>
       <figure class="card" style="margin-top: 16px">
@@ -333,10 +351,10 @@
       </figure>
     </section>
 
-    <section class="section" aria-labelledby="loop-heading">
-      <p class="section-label">02 / IMPLEMENTED PROCESS / THE CAMPAIGN LOOP</p>
-      <h2 id="loop-heading">Current runtime and scientific-session boundaries</h2>
-      <p>A campaign can contain several inquiries. An inquiry can contain several training runs and measurements.</p>
+    <section class="section" aria-labelledby="lifecycle-heading" id="lifecycle">
+      <p class="section-label">4 / HOW A CAMPAIGN RUNS</p>
+      <h2 id="lifecycle-heading">The campaign lifecycle</h2>
+      <p>A campaign is one attempt to reach the goal. It can hold several inquiries. An inquiry can hold several training runs and measurements.</p>
       <figure class="card">
         <div class="diagram loop" tabindex="0" aria-label="Scrollable campaign loop diagram">
           <svg viewBox="0 0 1000 680" role="img" aria-labelledby="loop-title loop-description">
@@ -394,550 +412,486 @@
             <text x="737" y="638" text-anchor="middle" class="caption">Official result: pass or fail</text>
           </svg>
         </div>
-        <figcaption>Arrows describe implemented runtime, not live activity or a required instrument sequence. The <code>checkpoint</code> operation saves the session record. The launcher checks the cap outside scientific decisions.</figcaption>
+        <figcaption>The arrows show the implemented runtime. They are not a required order of instruments. The <code>checkpoint</code> operation saves the session record. The launcher checks the inquiry cap outside scientific decisions.</figcaption>
       </figure>
-      <div class="grid two" style="margin-top: 16px">
-        <div class="note">
-          <h3>Startup does not require training</h3>
-          <p>The PI can build tools, change its method, or measure before training.</p>
-          <p>A startup training request can be shorter than the maintainer's allocation. It cannot be larger.</p>
-          <p class="small muted">Inquiry training still uses the full allocation. Completed steps can round up at a rollout boundary.</p>
-        </div>
-        <div class="note">
-          <h3>Current goal-review behavior</h3>
-          <p>Closing an inquiry does not mean campaign success.</p>
-          <p>A development score above the goal does not automatically justify assessment.</p>
-          <p>The PI decides whether evidence justifies assessment. The Runner checks the operational contract, not scientific adequacy.</p>
-          <p>Goal review can measure. Its permissions do not depend on the inquiry count. It does not train.</p>
-          <p>The temporary inquiry cap does not establish scientific exhaustion.</p>
-          <p class="small muted">An official failure ends the campaign. It does not automatically return to another inquiry.</p>
-          <p class="small muted">The additional readiness prompt from <code>e4736da</code> is withdrawn. Its former guidance appears only in the history below.</p>
-        </div>
-      </div>
-        <div class="card table-wrap" style="margin-top: 16px">
-          <h3>Current runtime phase behavior</h3>
-          <table>
-            <thead><tr><th scope="col">Phase</th><th scope="col">Purpose and permitted work</th><th scope="col">How it ends</th></tr></thead>
-            <tbody>
-              <tr><td>Preliminary scientific model</td><td>Read the robot and task contracts. Write established facts, physical consequences, and unknowns before campaign evidence exists.</td><td>The model document is accepted and published. It then remains fixed for this campaign.</td></tr>
-              <tr><td>Startup</td><td>Establish the first research direction. Build reusable tools, change PI-owned code, measure, train, assign roles, or restore a recipe.</td><td>A scientific session record preserves the direction and actual work. A fresh goal-review session follows.</td></tr>
-              <tr><td>Goal review</td><td>Review the remaining goal gap. Measure, assign model roles, open an inquiry, or request assessment. Training is not permitted.</td><td>After inquiry opening, save the scientific session record before further work. The only campaign-conclusion request is official assessment.</td></tr>
-              <tr><td>Inquiry</td><td>Investigate the active question. Build or change methods, measure, train, assign roles, or restore a recipe. Continue, reframe, or close the question.</td><td>Save the scientific session record to continue in a fresh session. Reframe or close also requires this record.</td></tr>
-              <tr><td>Terminal state</td><td>Official assessment records pass or fail. Historical <code>no_credible_route</code> records remain readable, but that action cannot be requested again.</td><td>The campaign ends. A maintainer stop is a separate execution event.</td></tr>
-            </tbody>
-          </table>
-        </div>
-        <details style="margin-top: 16px">
-          <summary>Goal, campaign, inquiry, session, operation, and AI invocation are different units</summary>
-          <div class="details-body">
-            <dl class="definitions">
-              <dt>Human goal</dt><dd>The fixed task and success criterion. Lower-level milestones do not replace it.</dd>
-              <dt>Campaign</dt><dd>One attempt to reach the goal. It starts with independent records and a new scientific model.</dd>
-              <dt>Inquiry</dt><dd>A temporary question that can change the route to the goal. It has a question, goal connection, and closure condition.</dd>
-              <dt>Scientific session</dt><dd>Work on one coherent objective. It can include several operations. A scientific session record or terminal goal-level decision ends it.</dd>
-              <dt>Operation</dt><dd>One accepted request, such as measurement, training, or publication of the scientific session record through <code>checkpoint</code>.</dd>
-              <dt>PI invocation</dt><dd>One call to the AI backend. Several invocations can belong to the same scientific session.</dd>
-            </dl>
-            <p class="small muted" style="margin-top: 16px">A completed training run is not automatically a completed session, inquiry, or campaign.</p>
-          </div>
-        </details>
-        <details>
-          <summary>Continuation, reframing, closure, and the inquiry limit</summary>
-          <div class="details-body">
-            <p><strong>Continue:</strong> keep the inquiry open and save the scientific session record. A fresh session continues the same question.</p>
-            <p><strong>Reframe:</strong> change the active question and its connection to the goal. Save the scientific session record before further work.</p>
-            <p><strong>Close:</strong> record the outcome and reason. After the scientific session record is saved, return to goal review.</p>
-            <p>Inquiry closure can follow a useful answer, a changed direction, or rejection of that inquiry's route. It does not establish campaign exhaustion.</p>
-            <p>The current 15-inquiry cap is a temporary execution limit, not a scientific decision signal.</p>
-            <p>After the final permitted inquiry closes and saves its scientific session record, the launcher pauses without a terminal state. Active work finishes normally.</p>
-            <p>The maintainer can resume by an explicit increase of <code>-MaxInquiries</code> at that paused boundary. Measurements and model-role permissions do not change. Assessment still requires an explicit best-known candidate.</p>
-            <p class="small muted">Later cap removal is a deferred maintainer decision, not part of the current runtime. See the backlog.</p>
-          </div>
-        </details>
-    </section>
-
-    <section class="section" aria-labelledby="roles-heading">
-      <p class="section-label">03 / CURRENT CONTRACT / RESPONSIBILITY AND OWNERSHIP</p>
-      <h2 id="roles-heading">The human owns the goal. The PI owns the science. The Runner operates the process.</h2>
-      <div class="grid three">
-        <article class="card role">
-          <h3>Human</h3>
-          <p>Defines the goal, robot, protected task, and success rule.</p>
-          <p>Maintains the harness and sets operational limits.</p>
-          <p>Starts, stops, and resets campaigns.</p>
-        </article>
-        <article class="card role pi">
-          <h3>Principal Investigator / PI</h3>
-          <p>Chooses questions, methods, and tools.</p>
-          <p>Changes PI-owned research code.</p>
-          <p>Interprets completed evidence.</p>
-          <p>Decides whether to request assessment.</p>
-        </article>
-        <article class="card role">
-          <h3>Runner</h3>
-          <p>Checks contracts and file ownership.</p>
-          <p>Executes accepted operations.</p>
-          <p>Records outcomes and artifacts.</p>
-          <p>Does not judge scientific readiness.</p>
-        </article>
-      </div>
-      <p class="small muted" style="margin-top: 12px">The human can also maintain the harness. Maintainer is an engineering function, not a fourth campaign actor.</p>
-      <div class="card table-wrap" style="margin-top: 16px">
-        <h3>The two environment files are both PI-owned</h3>
-        <p class="small muted" style="margin-bottom: 12px">The split separates shared research mechanics from training-specific code. It is not a human/PI ownership split.</p>
+      <div class="card table-wrap wide" style="margin-top: 16px">
         <table>
-          <thead><tr><th scope="col">File or area</th><th scope="col">Purpose</th><th scope="col">Owner</th></tr></thead>
+          <thead><tr><th scope="col">Phase</th><th scope="col">What happens</th><th scope="col">How it ends</th></tr></thead>
           <tbody>
-            <tr><td><code>scenario\environment.py</code></td><td>Shared research environment</td><td>PI</td></tr>
-            <tr><td><code>scenario\training_environment.py</code></td><td>Training-specific environment</td><td>PI</td></tr>
-            <tr><td><code>benchmark\</code></td><td>Protected task and assessment implementations</td><td>Human</td></tr>
-            <tr><td>Official robot, harness, tests, dependencies</td><td>Protected operational and task boundaries</td><td>Human</td></tr>
+            <tr><td>Scientific model</td><td>The PI reads the robot and task contracts. It writes a model with four headings: Established facts, Physical consequences, Unknowns, and Decision-relevant synthesis.</td><td>The Runner accepts and publishes the model. It stays fixed for the campaign.</td></tr>
+            <tr><td>Startup</td><td>The PI picks the first scientific direction. It can build tools, change PI-owned code, measure, train, assign roles, or restore a recipe.</td><td>A session record saves the direction and the work. A fresh goal-review session follows.</td></tr>
+            <tr><td>Goal review</td><td>The PI reviews the gap to the goal. It can measure, assign model roles, open an inquiry, or request the official assessment. It cannot train.</td><td>Opening an inquiry needs a saved session record. Official assessment is the only way to end the campaign.</td></tr>
+            <tr><td>Inquiry</td><td>The PI works on one question. It can build, measure, train, assign roles, or restore a recipe. It can continue, reframe, or close the question.</td><td>The PI saves a session record. Then a fresh session continues, or goal review starts after a close.</td></tr>
+            <tr><td>End</td><td>The official assessment records a pass or a fail.</td><td>The campaign ends. A maintainer stop is a different event and gives no result.</td></tr>
           </tbody>
         </table>
-        <p class="small muted" style="margin-top: 12px">These code paths are under <code>robot_learning\</code>. Protected exceptions take precedence over PI-owned directories.</p>
       </div>
-      <div class="note" style="margin-top: 16px">
-        <h3>PI freedom remains inside the scientific boundary</h3>
-        <p>The PI can replace its methods, tools, reward, observations, and training implementation.</p>
-        <p>It cannot change the official robot, task, success rule, harness, tests, or dependency manifests.</p>
-        <p>All Python execution uses <code>uv run</code>. The PI uses Runner requests for training and protected evaluation.</p>
+      <div class="grid two" style="margin-top: 16px">
+        <div class="note">
+          <h3>Rules for goal review</h3>
+          <p>Closing an inquiry does not mean success.</p>
+          <p>A development score above the goal does not force an assessment.</p>
+          <p>The PI decides if the evidence justifies an assessment. The Runner checks only the operational contract.</p>
+          <p>An official failure ends the campaign. It does not return to another inquiry.</p>
+        </div>
+        <div class="note">
+          <h3>Rules for the inquiry cap</h3>
+          <p>The cap is 15 inquiries. It is a temporary execution limit.</p>
+          <p>After the last allowed inquiry is saved, the launcher pauses. A pause is not a conclusion.</p>
+          <p>Only the maintainer can resume, with a higher <code>-MaxInquiries</code>. Removing the cap is OI-013.</p>
+        </div>
       </div>
+      <details style="margin-top: 16px">
+        <summary>From a PI request to a recorded result</summary>
+        <div class="details-body">
+          <ol class="steps-list">
+            <li>The PI picks an action and writes one request to <code>pi_workspace\operation_request.json</code>.</li>
+            <li>The Runner checks the shape, the phase, the file ownership, and the allocation.</li>
+            <li>The Runner accepts the request and gives it an id. M# is a measurement, T# is training, E# is another event.</li>
+            <li>The Runner runs it and saves the result, the files, and the history.</li>
+            <li>The launcher rebuilds the brief and resumes the PI.</li>
+          </ol>
+          <p class="small muted" style="margin-top: 8px">Only completed operations count as evidence. A valid request is not a scientific endorsement.</p>
+          <div class="table-wrap" style="margin-top: 12px">
+            <table>
+              <thead><tr><th scope="col">Situation</th><th scope="col">Response</th></tr></thead>
+              <tbody>
+                <tr><td>Invalid request</td><td>The Runner returns the reason. One retry is allowed. Then the launcher stops.</td></tr>
+                <tr><td>Error in PI code</td><td>The error goes back to the same PI session. It is execution history, not a scientific result.</td></tr>
+                <tr><td>Publication failure after a run</td><td>The result is kept. The launcher stops for repair. It resumes publication and does not retrain.</td></tr>
+                <tr><td>Maintainer stop</td><td>State is kept. It is not a pass, a fail, or a conclusion.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </details>
+      <details>
+        <summary>Training allocation</summary>
+        <div class="details-body">
+          <ul>
+            <li>The maintainer sets a per-run allocation. The default is 120,000 requested steps.</li>
+            <li>In startup, the PI can request any positive number of steps up to the allocation.</li>
+            <li>In an inquiry, a training request must use the full allocation.</li>
+            <li>Training is optional in both phases.</li>
+            <li>Completed steps can round up to a rollout boundary.</li>
+          </ul>
+        </div>
+      </details>
+      <details>
+        <summary>Units: goal, campaign, inquiry, session, operation</summary>
+        <div class="details-body">
+          <dl class="definitions">
+            <dt>Human goal</dt><dd>The fixed task and success rule.</dd>
+            <dt>Campaign</dt><dd>One attempt to reach the goal. It starts with a new scientific model.</dd>
+            <dt>Inquiry</dt><dd>A temporary question that can change the route to the goal. It has a goal link and a closure condition.</dd>
+            <dt>Scientific session</dt><dd>Work on one coherent objective. A saved session record ends it.</dd>
+            <dt>Operation</dt><dd>One accepted request, for example a measurement, a training run, or a session record.</dd>
+            <dt>PI invocation</dt><dd>One call to the AI backend. A session can have several.</dd>
+          </dl>
+        </div>
+      </details>
     </section>
 
-    <section class="section" aria-labelledby="operation-heading">
-      <p class="section-label">04 / IMPLEMENTED PROCESS / THE OPERATION LOOP</p>
-      <h2 id="operation-heading">From a PI request to a recorded result</h2>
-      <p>The launcher resumes pending work before it asks for another action. The Runner executes requests. The PI interprets the results.</p>
-      <figure class="card">
-        <div class="process-flow" aria-label="Operation sequence">
-          <span class="process-node">PI chooses action</span><span class="process-arrow" aria-hidden="true">&rarr;</span>
-          <span class="process-node">Request file</span><span class="process-arrow" aria-hidden="true">&rarr;</span>
-          <span class="process-node">Runner validates</span><span class="process-arrow" aria-hidden="true">&rarr;</span>
-          <span class="process-node">Execute + record</span><span class="process-arrow" aria-hidden="true">&rarr;</span>
-          <span class="process-node">Update brief</span><span class="process-arrow" aria-hidden="true">&rarr;</span>
-          <span class="process-node">Resume PI</span>
-        </div>
-        <figcaption>Measurement and training normally return to the same scientific session. Saving the scientific session record ends it instead.</figcaption>
-      </figure>
-      <div class="card table-wrap" style="margin-top: 16px">
+    <section class="section" aria-labelledby="issues-heading" id="issues">
+      <p class="section-label">5 / WHAT STILL NEEDS WORK</p>
+      <h2 id="issues-heading">Open issues OI-001 to OI-014</h2>
+      <p>This list matches the outstanding issue register in the log. Issue ids are never reused. No issue below has an approved fix, unless stated.</p>
+      <div class="card table-wrap wide">
         <table>
-          <thead><tr><th scope="col">Step</th><th scope="col">Action</th><th scope="col">Record or boundary</th></tr></thead>
+          <thead><tr><th scope="col">ID</th><th scope="col">Issue</th><th scope="col">Status</th></tr></thead>
           <tbody>
-            <tr><td>1. Prepare</td><td>The PI chooses an action and states its scientific reason. It can change PI-owned code or build a tool.</td><td>Changes must remain within the owned surface.</td></tr>
-            <tr><td>2. Submit</td><td>The PI writes one operation to <code>research\operation_request.json</code>.</td><td>The request has one top-level operation kind.</td></tr>
-            <tr><td>3. Validate</td><td>The Runner checks shape, phase permissions, ownership, allocation, and instrument-specific conditions.</td><td>A structurally valid request is not a scientific endorsement.</td></tr>
-            <tr><td>4. Accept</td><td>The Runner saves the accepted request as a pending operation and assigns its identity.</td><td>Accepted request identity is fixed during execution. M# means measurement, T# training, and E# another event.</td></tr>
-            <tr><td>5. Execute</td><td>The Runner executes the instrument or requested state transition.</td><td>Training produces candidates. Measurement produces factual outputs and detailed artifacts.</td></tr>
-            <tr><td>6. Publish</td><td>The Runner saves outcomes, provenance, artifacts, and operation history.</td><td>Use only completed operations as scientific evidence.</td></tr>
-            <tr><td>7. Return</td><td>The launcher regenerates the brief and returns feedback to the PI.</td><td>The PI inspects evidence and decides the next action in the same session.</td></tr>
+            <tr><td>OI-001</td><td>Startup method selection. The link from the scientific briefing to the first startup action and its handoff is not traceable. A five-campaign review found sound startups in four of five and no handoff collapse. R8 correction <code>adff08e</code> and the prompt changes <code>ef9516f</code>, <code>b3f4307</code>, <code>5437ff2</code> are in place. Their effect is not separable yet. Not the same as OI-006.</td><td><span class="tag">Open, narrowed</span></td></tr>
+            <tr><td>OI-002</td><td>Inquiry control. An inquiry can go on after its evidence answers the need. Questions and closure rules must allow positive, negative, limited, or inconclusive answers.</td><td><span class="tag">Open</span></td></tr>
+            <tr><td>OI-003</td><td>Measurement evidence. The PI skipped advertised diagnostics, read partial files as complete, and lost counterevidence in its synthesis.</td><td><span class="tag">Open</span></td></tr>
+            <tr><td>OI-004</td><td>Checkpoint nomination and progression. Training facts can nominate a checkpoint. They do not prove development performance.</td><td><span class="tag">Open, partly deferred behind OI-002</span></td></tr>
+            <tr><td>OI-005</td><td>Counterevidence and readiness. The readiness guidance was withdrawn. Lost residual evidence and early readiness claims remain. Campaign <code>06656182</code> showed the open point: the PI did not weigh a 95% and a 98% result against one more inquiry.</td><td><span class="tag">Postponed</span></td></tr>
+            <tr><td>OI-006</td><td>Full review of the 120,000-step startup budget.</td><td><span class="tag">Pending</span></td></tr>
+            <tr><td>OI-007</td><td>Prompt review item R2. Ordinary sessions still put the PI role before the human goal.</td><td><span class="tag">Paused</span></td></tr>
+            <tr><td>OI-008</td><td>Context flooding. Brief compaction is done. Prompt replay and SDK output handling remain possible causes.</td><td><span class="tag">Possible work, not approved</span></td></tr>
+            <tr><td>OI-009</td><td>Clearer handoff for operation submission.</td><td><span class="tag">Unimplemented</span></td></tr>
+            <tr><td>OI-010</td><td>Explicit protection of the old protocol log.</td><td><span class="tag">Unimplemented</span></td></tr>
+            <tr><td>OI-011</td><td>Console clarity and more maintainer-file read controls. Phase-specific source-read controls are done.</td><td><span class="tag">Deferred</span></td></tr>
+            <tr><td>OI-012</td><td>Publish a frozen policy independent of training. Campaign recovery is not authorized.</td><td><span class="tag">Proposal only</span></td></tr>
+            <tr><td>OI-013</td><td>Remove the temporary 15-inquiry cap. The value is unchanged.</td><td><span class="tag">Pending</span></td></tr>
+            <tr><td>OI-014</td><td>Single-change attribution. One intervention can change several factors and get a one-cause explanation. That explanation then steers later inquiries. A bundled change is valid if its candidate gets a direct paired evaluation and the open attribution stays visible.</td><td><span class="tag">Open</span></td></tr>
           </tbody>
         </table>
       </div>
       <details style="margin-top: 16px">
-        <summary>What happens when the operation does not complete normally</summary>
-        <div class="details-body table-wrap">
-          <table>
-            <thead><tr><th scope="col">Situation</th><th scope="col">Process response</th><th scope="col">Scientific meaning</th></tr></thead>
-            <tbody>
-              <tr><td>Invalid request</td><td>Return the validation reason. The launcher permits one correction retry, then stops if the request remains invalid.</td><td>No accepted scientific result exists.</td></tr>
-              <tr><td>Scientific-code execution error</td><td>Preserve pending state and return the error to the same PI session. The PI can repair the implementation or explicitly replace the failed operation.</td><td>The exception is execution history, not a measurement against the method.</td></tr>
-              <tr><td>Publication failure after execution</td><td>Preserve the result and pending transaction. Stop for publication repair. Resume publication rather than retraining.</td><td>Do not confuse a produced result with a new training request.</td></tr>
-              <tr><td>Maintainer stop</td><td>End the launcher activity while preserving durable state. The maintainer decides whether to resume or reset.</td><td>A stop is not an official pass, official fail, or scientific conclusion.</td></tr>
-            </tbody>
-          </table>
-          <p style="margin-top: 12px">A completed method can perform poorly and still provide useful evidence. A code exception is a different situation.</p>
-        </div>
-      </details>
-      <details>
-        <summary>Startup allocation and inquiry allocation</summary>
+        <summary>Prompt-stack review R1 to R8</summary>
         <div class="details-body">
-          <p>The maintainer supplies a per-run training allocation. The default is 120,000 requested steps.</p>
-          <p>During startup, the PI can request any positive step count up to that allocation.</p>
-          <p>During an inquiry, a training request must use the full allocation.</p>
-          <p>Neither phase requires training. Neither the PI nor the Runner can raise the maintainer's allocation.</p>
-          <p>Completed steps can round up to a learning rollout boundary. The ceiling controls the request, not strict executed-step stopping.</p>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th scope="col">Item</th><th scope="col">Status</th><th scope="col">Note</th></tr></thead>
+              <tbody>
+                <tr><td>R1</td><td>Implemented</td><td>The PI writes a scientific model and startup reads it (<code>8c0a25b</code>).</td></tr>
+                <tr><td>R2</td><td>Partly implemented, paused (OI-007)</td><td>Scientific context comes before operation options (<code>fb9b10d</code>). Ordinary sessions are still persona-first.</td></tr>
+                <tr><td>R3</td><td>Discarded</td><td>It made the inquiry question too important.</td></tr>
+                <tr><td>R4</td><td>Discarded</td><td>Later recovery work covers its useful part.</td></tr>
+                <tr><td>R5-1, R5-2</td><td>Implemented</td><td>Controlled-English instrument contract. Candidate-free capability visibility.</td></tr>
+                <tr><td>R6</td><td>Implemented</td><td>Clearer retention and replacement rules (<code>fa5bd6b</code>).</td></tr>
+                <tr><td>R7</td><td>Implemented</td><td>Contract paths, protected paths, and policy routing agree (<code>80e4add</code>).</td></tr>
+                <tr><td>R8</td><td>Implemented, corrected</td><td>Each instruction has one owner (<code>8166e2f</code>). It removed the PI-authority sentence by mistake. <code>adff08e</code> restored it.</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="small muted" style="margin-top: 8px">None of these is a campaign operation or a Runner scientific gate.</p>
         </div>
       </details>
     </section>
 
-    <section class="section" aria-labelledby="evidence-heading">
-      <p class="section-label">05 / CURRENT CONTRACT / EVIDENCE, CONTEXT, AND CANDIDATES</p>
+    <section class="section" aria-labelledby="changes-heading" id="changes">
+      <p class="section-label">6 / RECENT CHANGES</p>
+      <h2 id="changes-heading">Timeline, newest first</h2>
+      <p>Commit ids show where a change is. They do not show that the change caused a campaign result.</p>
+      <div class="card timeline">
+        <h3 style="margin-top: 0">8 October</h3>
+        <ul>
+          <li><code>5437ff2</code> Restored the closing "Decision-relevant synthesis" section of the scientific model. It uses controlled English. The analyst persona stays.</li>
+          <li><code>b3f4307</code> Fixed the heading bug. Each register is a <code>##</code> heading. Topics use <code>###</code>.</li>
+          <li>Campaign <code>bd32cc79</code> started (maintainer-run). It is the first campaign with the bundled prompt.</li>
+          <li><code>2393b14</code> Reviewed campaign <code>06656182</code> and added OI-014.</li>
+          <li><code>5f58dd5</code> Added the <code>06656182</code> report.</li>
+          <li><code>ac9e344</code> Recorded the OI-001 five-campaign review.</li>
+          <li><code>ef9516f</code> Rewrote the scientific-model prompt. It changed language, persona, and closing section at once.</li>
+          <li><code>adff08e</code> R8 correction. Restored the PI-authority sentence.</li>
+        </ul>
+        <h3>7 October</h3>
+        <ul>
+          <li>Campaign <code>06656182</code> passed the official assessment (98.0%). It ran without the PI-authority sentence.</li>
+          <li><code>f1fb68d</code> Numbered the outstanding issues.</li>
+          <li><code>8166e2f</code> R8: one owner for each instruction.</li>
+          <li><code>80e4add</code> R7: aligned contract and policy paths.</li>
+          <li><code>fa5bd6b</code> R6: clearer retention and replacement rules.</li>
+          <li><code>9f81838</code> The Runner keeps the exact conclusion and next question across inquiries.</li>
+          <li>Campaign <code>b366ab54</code> failed the official assessment (194/200). It showed OI-002.</li>
+        </ul>
+        <h3>6 October</h3>
+        <ul>
+          <li>R5-1 and R5-2 implemented. R3 and R4 discarded.</li>
+          <li><code>fb9b10d</code> R2 partly implemented. <code>8c0a25b</code> R1 completed.</li>
+          <li><code>f953039</code> PI style findings no longer fail an operation.</li>
+          <li><code>48bffca</code> Runner transactions no longer block protected-runtime checks.</li>
+        </ul>
+        <h3>5 October</h3>
+        <ul>
+          <li><code>756ae4b</code> Restored the goal-first model prompt order. <code>efc3be7</code> withdrew the cue-removal test.</li>
+          <li><code>2971ccb</code> Robotics-first PI persona. <code>ea35499</code> restored the previous persona for a three-run trial.</li>
+          <li><code>81df335</code> Repository ownership boundaries restructured.</li>
+        </ul>
+        <h3>3 and 4 October</h3>
+        <ul>
+          <li><code>7f86168</code> Startup purpose and instruction delivery clarified (4 October).</li>
+          <li><code>95d0ff5</code> Two historical scientific passages restored (4 October).</li>
+          <li>The invented ending <code>no_credible_route</code> was rejected. The inquiry cap now pauses and gives no conclusion (3 October).</li>
+          <li>The readiness guidance <code>e4736da</code> was withdrawn (3 October).</li>
+        </ul>
+        <p class="small muted" style="margin-top: 12px">Older entries are in <a href="../harness-experiment-log.md">the log</a>.</p>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="harness-heading" id="harness">
+      <p class="section-label">7 / WHAT THE HARNESS DOES NOW</p>
+      <h2 id="harness-heading">Implemented harness behavior</h2>
+      <p>One line per item: what it does, why, and the status. "Implemented" means present in the code. It does not mean scientifically effective. Unless stated, the scientific effect is not assessed.</p>
+      <div class="card table-wrap wide">
+        <table>
+          <thead><tr><th scope="col" style="width: 28%">What</th><th scope="col" style="width: 40%">Why</th><th scope="col">Status</th></tr></thead>
+          <tbody>
+            <tr class="group-row"><td colspan="3">Prompts</td></tr>
+            <tr><td>Scientific-model phase: analyst persona, four headings</td><td>The PI builds a physical reference from the human-owned robot, simulator, and task. The closing section picks the items that most affect the first decisions.</td><td>Implemented <code>ef9516f</code>, <code>b3f4307</code>, <code>5437ff2</code>. Effect unmeasured.</td></tr>
+            <tr><td>Startup reads the whole model</td><td>Startup picks its own direction from the model, the program, and the goal.</td><td>Implemented.</td></tr>
+            <tr><td>Startup picks a first useful scientific action</td><td>Startup must not be a fixed measure-first or train-first rule.</td><td>Implemented <code>7f86168</code>. Trials showed varied openings.</td></tr>
+            <tr><td>Ordinary prompts stay persona-first</td><td>Science comes before operation options. The human goal before the PI role is still missing.</td><td>R2 partly done. See OI-007.</td></tr>
+            <tr><td>PI persona: robotics-first</td><td>It frames the PI as a robotics scientist and does not name a method.</td><td>Implemented. The scientific-model phase uses its own analyst persona.</td></tr>
+            <tr><td>Inquiry objective is the scientific question</td><td>A fresh inquiry session works on the question. The closure condition stays separate.</td><td>Implemented <code>6d60f1f</code>. It did not stop inquiry rushing alone.</td></tr>
+            <tr><td>Exact conclusion and next question handoff</td><td>The Runner copies the source conclusion and question into the inquiry state.</td><td>Implemented <code>9f81838</code>. It works. The preserved question was too broad (OI-002).</td></tr>
+            <tr><td>PI authority sentence in decision guidance</td><td>The PI can inspect, change, or replace PI-owned code before it submits an operation.</td><td>Restored <code>adff08e</code>.</td></tr>
+            <tr><td>One owner per instruction (R8)</td><td>Remove repeated text between contracts and launcher.</td><td>Implemented <code>8166e2f</code>.</td></tr>
+            <tr><td>No readiness prompt</td><td>The earlier readiness guidance was withdrawn.</td><td>No replacement exists (OI-005).</td></tr>
+            <tr class="group-row"><td colspan="3">Phases and operations</td></tr>
+            <tr><td>Startup does not require training</td><td>The PI can build tools or measure first.</td><td>Implemented.</td></tr>
+            <tr><td>Shorter startup training requests</td><td>Startup can ask for fewer steps than the allocation, never more.</td><td>Implemented <code>1a15091</code>. Budget review is OI-006.</td></tr>
+            <tr><td>Goal-review measurements</td><td>The PI can measure in goal review. The inquiry count does not change this.</td><td>Implemented <code>c68627d</code>.</td></tr>
+            <tr><td>Best-known role without an assessment</td><td>The PI can mark the best candidate before it asks for the assessment.</td><td>Implemented <code>eabb35c</code>. It does not declare readiness.</td></tr>
+            <tr><td>No <code>no_credible_route</code> ending</td><td>The maintainer rejects scientific exhaustion as an outcome. New requests are rejected.</td><td>Implemented. Old records are unchanged.</td></tr>
+            <tr><td>Temporary 15-inquiry cap pauses the launcher</td><td>The cap is only an execution limit.</td><td>Implemented. Removal is OI-013.</td></tr>
+            <tr class="group-row"><td colspan="3">Evidence and context</td></tr>
+            <tr><td>Artifact inventories and references</td><td>They help the PI find the detailed evidence.</td><td>Implemented <code>f986a2c</code>, <code>97a12ba</code>. Partial reading is still possible (OI-003).</td></tr>
+            <tr><td>Compact research brief</td><td>Less repeated text. A replay went from 109,508 to 46,656 bytes (57.39% smaller).</td><td>Implemented <code>3825d2e</code>. Better decisions are not shown.</td></tr>
+            <tr><td>Candidate-free capability visibility (R5-2)</td><td>The PI can see what it can do without a candidate.</td><td>Implemented.</td></tr>
+            <tr class="group-row"><td colspan="3">Runner and tool repairs</td></tr>
+            <tr><td>Large Git publication and recovery</td><td>Repair publication and recovery of completed operations.</td><td>Implemented <code>b7727d1</code>.</td></tr>
+            <tr><td>Runner state ignored in protected checks</td><td>Only registered Runner state is ignored. Dirty protected sources are still rejected.</td><td>Implemented <code>48bffca</code>.</td></tr>
+            <tr><td>Style findings do not fail an operation</td><td>Ruff findings no longer use up a scientific operation. Syntax and behavior failures still block.</td><td>Implemented <code>f953039</code>.</td></tr>
+            <tr><td>Bounded Copilot shutdown</td><td>Session disconnect and client shutdown cannot hang.</td><td>Implemented <code>2e897c7</code>.</td></tr>
+            <tr><td>Copilot adapter without scientific text</td><td>The adapter handles runtime and permissions. Prompts and the program carry the science.</td><td>Implemented <code>7f86168</code>.</td></tr>
+            <tr><td>Phase-specific reserved reads</td><td>The scientific-model phase can read the benchmark code. Later phases cannot. Maintainer files are reserved in all phases.</td><td>Implemented. This is a tool control, not a sandbox.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="evidence-heading" id="evidence">
+      <p class="section-label">8 / EVIDENCE, MODEL ROLES, AND TERMS</p>
       <h2 id="evidence-heading">Evidence records and model roles</h2>
-      <div class="card table-wrap">
+      <div class="card table-wrap wide">
         <table>
           <thead><tr><th scope="col">Record</th><th scope="col">Purpose</th><th scope="col">Limit</th></tr></thead>
           <tbody>
-            <tr><td><code>research\scientific_model.md</code></td><td>The campaign's initial physical reference. It separates facts, consequences, and unknowns.</td><td>It remains fixed. Later evidence can correct its interpretation in the scientific session record.</td></tr>
-            <tr><td><code>research\research_state.json</code></td><td>Current inquiry, session, pending operation, candidates, roles, and scientific session record.</td><td>A pending operation is not completed evidence. This file changes with campaigns and is not a permanent source for an older report.</td></tr>
-            <tr><td><code>research\results.jsonl</code></td><td>Authoritative operation history.</td><td>Completed records support evidence claims. Failed attempts remain execution history.</td></tr>
-            <tr><td><code>research\evaluations\</code></td><td>Detailed measurement artifacts referenced by completed operations.</td><td>Find and inspect the data needed for the decision. A summary is not the full artifact.</td></tr>
-            <tr><td><code>research\brief.md</code></td><td>Generated compact context with summaries and source references.</td><td>It does not replace detailed measurements.</td></tr>
-            <tr><td>Scientific session record</td><td>Preserves synthesis, evidence, remaining gap, unresolved distinctions, and next direction.</td><td>Interpretations can be wrong. Preserve contradictory observations and claim limits. The stored field remains <code>pi_checkpoint</code>.</td></tr>
+            <tr><td><code>pi_workspace\scientific_model.md</code></td><td>The physical reference of the campaign.</td><td>Fixed. Later evidence can correct it only in a session record.</td></tr>
+            <tr><td><code>runner\state\research_state.json</code></td><td>Current inquiry, session, pending operation, candidates, and roles.</td><td>A pending operation is not evidence. It changes with each campaign.</td></tr>
+            <tr><td><code>campaigns\results.jsonl</code></td><td>The authoritative history of operations.</td><td>Failed attempts are execution history, not evidence.</td></tr>
+            <tr><td><code>campaigns\evaluations\</code></td><td>Detailed measurement files.</td><td>A summary is not the full file.</td></tr>
+            <tr><td><code>campaigns\brief.md</code></td><td>Generated short context with source references.</td><td>It does not replace the detailed measurements.</td></tr>
+            <tr><td>Session record</td><td>Saves the synthesis, the evidence, the remaining gap, and the next direction. The stored field is <code>pi_checkpoint</code>.</td><td>It can be wrong. It must keep contradictory evidence.</td></tr>
           </tbody>
         </table>
       </div>
       <div class="grid two" style="margin-top: 16px">
         <div class="card">
-          <h3>Candidate and recipe are different</h3>
-          <p>Standard candidate publication depends on training. Training produces registered learned-policy candidates.</p>
-          <p>A controller artifact created during measurement is not automatically a registered candidate.</p>
-          <p>A recipe is the scientific code and configuration associated with that candidate.</p>
-          <p>Recipe restoration changes the PI-owned recipe. It does not assign a model role.</p>
-          <p class="small muted">Training statistics can identify candidates worth inspecting. They do not establish development or official performance.</p>
+          <h3>Model roles need an explicit assignment</h3>
+          <p><strong>Working:</strong> the candidate in use now.</p>
+          <p><strong>Best-known:</strong> the strongest candidate that completed evidence supports.</p>
+          <p><strong>Retained:</strong> a candidate archived under a label.</p>
+          <p class="small muted">Training never assigns a role. Best-known does not need an official assessment.</p>
         </div>
         <div class="card">
-          <h3>Model roles require explicit assignment</h3>
-          <p><strong>Working:</strong> the candidate selected for current work.</p>
-          <p><strong>Best-known:</strong> the strongest available candidate supported by completed evidence.</p>
-          <p><strong>Retained:</strong> a candidate archived under an explicit label.</p>
-          <p class="small muted">Training does not assign these roles automatically. Best-known assignment does not require official assessment.</p>
+          <h3>Development and official results</h3>
+          <p>Development measurements inform the PI. They do not declare the goal reached.</p>
+          <p>Matched comparisons use the same episode seeds.</p>
+          <p>The official panel is separate. Never mix its result with development scores.</p>
+          <p>The official assessment needs goal review, no active inquiry, and an assigned best-known candidate.</p>
         </div>
       </div>
-      <details style="margin-top: 16px">
-        <summary>What the scientific session record must preserve</summary>
-        <div class="details-body">
-          <p>The scientific session record states the connection to the human goal and the remaining gap.</p>
-          <p>Its synthesis distinguishes measurements from explanations. It retains supporting and contradictory evidence.</p>
-          <p>Its decision frontier states the unresolved distinction and the evidence that can resolve or redirect it.</p>
-          <p>Its next direction states the selected action or closure and the reason.</p>
-          <p>It also records completed operations, candidate roles, evidence references, and cumulative resource use.</p>
-          <p>A new session receives this durable context. It does not depend only on the previous conversation.</p>
-        </div>
-      </details>
-      <details>
-        <summary>Development measurement and official assessment</summary>
-        <div class="details-body">
-          <p>Development measurements inform the PI's judgment. They do not declare the official goal reached.</p>
-          <p>Matched comparisons use the same episode seeds for the compared candidates.</p>
-          <p>The protected official panel is separate. Do not combine its result with development scores.</p>
-          <p>Official assessment requires goal review, no active inquiry, and an explicitly assigned best-known candidate.</p>
-          <p>The PI decides whether to request it. The Runner checks the operational contract and executes it.</p>
-          <p>Either official pass or official fail ends the campaign.</p>
-        </div>
-      </details>
+      <div class="card" style="margin-top: 16px">
+        <h3>Terms</h3>
+        <dl class="definitions">
+          <dt>Scientific model</dt><dd>A document about the robot and task. It separates facts, consequences, and unknowns.</dd>
+          <dt>Learned policy</dt><dd>The controller that learning produced. It picks actions from observations.</dd>
+          <dt>Policy checkpoint</dt><dd>Saved model weights from a training run. It is not a scientific conclusion.</dd>
+          <dt>Session record</dt><dd>A written record of work, evidence, open questions, and the next direction. The <code>checkpoint</code> operation saves it.</dd>
+          <dt>Candidate and recipe</dt><dd>A candidate is a registered learned policy. The recipe is the code and settings that produced it.</dd>
+          <dt>Best-known policy</dt><dd>See model roles. It is not automatically ready for assessment.</dd>
+          <dt>Harness</dt><dd>The launcher, the Runner, the contracts, and the context that support the process.</dd>
+          <dt>Status words</dt><dd>Implemented: in the code. Observation: a result in a named campaign. Open: not solved. Proposal: not approved. Deferred: set aside. Withdrawn: removed. Historical: old, not current.</dd>
+        </dl>
+      </div>
     </section>
 
-    <section class="section" aria-labelledby="changes-heading">
-      <p class="section-label">06 / IMPLEMENTED BEHAVIOR / WORKING-TREE INVENTORY</p>
-      <h2 id="changes-heading">Implemented harness behavior</h2>
-      <p>Every row describes behavior present in the inspected working tree. Commit IDs identify earlier changes, not the scientific cause of a campaign result.</p>
-      <p>The 4 October startup batch is published as <code>7f86168</code>. Commit <code>efc3be7</code> restored the first-action semantics. Commit <code>756ae4b</code> changed the scientific-model prompt order. Commit <code>8c0a25b</code> completed R1. Commit <code>fb9b10d</code> partially implemented R2. Commits <code>fa5bd6b</code> (R6), <code>80e4add</code> (R7), and <code>8166e2f</code> (R8) followed. Commits <code>adff08e</code> and <code>ef9516f</code> are from 8 October. The backlog contains the missing R2 order and other open work.</p>
-      <div class="card changes">
-        <div class="table-wrap" tabindex="0" aria-label="Scrollable implementation inventory">
+    <section class="section" aria-labelledby="reports-heading" id="reports">
+      <p class="section-label">9 / CAMPAIGN REPORT INDEX</p>
+      <h2 id="reports-heading">Campaigns, newest first</h2>
+      <p>Stopped or replaced runs are not official failures. The runs are separate records. They are not a controlled comparison of harness changes.</p>
+      <div class="card table-wrap wide">
+        <table>
+          <thead><tr><th scope="col">Campaign</th><th scope="col">Start</th><th scope="col">Outcome</th><th scope="col">Report</th></tr></thead>
+          <tbody>
+            <tr><td><code>bd32cc79</code></td><td>8 Oct</td><td>Running (maintainer-run). Through I2: T2 150/160, T1 110/160 on paired M5. I3 open.</td><td>None yet</td></tr>
+            <tr><td><code>06656182</code></td><td>7 Oct, 21:45 CEST</td><td>Official pass: 98.0% (196/200).</td><td><a href="robot-campaign-06656182-final-analysis-20261008.html">Final analysis</a></td></tr>
+            <tr><td><code>b366ab54</code></td><td>7 Oct</td><td>Official fail: 194/200 with T1. No tested change beat T1 on paired evidence.</td><td><a href="robot-campaign-b366ab54-final-analysis-20261007.html">Final analysis</a></td></tr>
+            <tr><td><code>97633a56</code>, <code>ab62348f</code>, <code>0284114e</code></td><td>Not recorded here</td><td>Analyzed only in the OI-001 review. No separate report.</td><td>See the log</td></tr>
+            <tr><td><code>3ac5a413</code></td><td>3 Oct</td><td>The PI asked for <code>no_credible_route</code> (rejected as an outcome). No official assessment.</td><td><a href="robot-campaign-3ac5a413-20261003.html">Report</a></td></tr>
+            <tr><td><code>d7080d95</code></td><td>2 Oct, 21:57</td><td>Official fail: 194/200 with the unchanged startup policy.</td><td><a href="robot-campaign-d7080d95-20261002.html">Report</a></td></tr>
+            <tr><td><code>2381bcbf</code></td><td>2 Oct, 13:54</td><td>Official fail: 195/200.</td><td><a href="robot-campaign-2381bcbf-20261002.html">Report</a></td></tr>
+            <tr><td><code>48993cfd</code></td><td>2 Oct, 09:37</td><td>Stopped without assessment. Last development result 178/200.</td><td><a href="robot-campaign-48993cfd-20261002.html">Report</a></td></tr>
+            <tr><td><code>a6def80f</code></td><td>2 Oct, 08:44</td><td>Replaced after training, before development measurement.</td><td><a href="robot-campaign-a6def80f-20261002.html">Report</a></td></tr>
+            <tr><td><code>010714c2</code></td><td>1 Oct, 22:29</td><td>Official fail: 189/200.</td><td><a href="robot-campaign-010714c2-20261002.html">Report</a></td></tr>
+            <tr><td><code>6350d383</code></td><td>1 Oct, 21:51</td><td>Replaced without completed training or measurement.</td><td><a href="robot-campaign-6350d383-20261002.html">Report</a></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="small muted" style="margin-top: 12px">A history reference also exists for campaign <a href="robot-campaign-1d55787c-r3-history-20261006.html">1d55787c</a>.</p>
+    </section>
+
+    <section class="section" aria-labelledby="archive-heading" id="archive">
+      <p class="section-label">10 / ARCHIVE</p>
+      <h2 id="archive-heading">Old detail, withdrawn revisions, and old decisions</h2>
+      <p>Everything here is history. It does not describe the current runtime. Open an item to read it.</p>
+
+      <details>
+        <summary>Old decisions of 3 October</summary>
+        <div class="details-body">
+          <h3>Reject the invented ending</h3>
+          <ul>
+            <li>The human asked for research toward the goal. The assistant added a second aim: show that no credible route remains.</li>
+            <li>The old contracts offered that choice. The Runner accepted it as <code>E19</code> in campaign <code>3ac5a413</code>.</li>
+            <li>The PI treated an unregistered artifact (M7) and one failed recipe as reasons to stop. Neither proved the goal unreachable.</li>
+            <li>The maintainer rejected the ending. Old records stay unchanged.</li>
+          </ul>
+          <h3>Keep execution limits separate</h3>
+          <ul>
+            <li>The old runtime blocked goal-review measurements and forced a terminal choice at the cap.</li>
+            <li>E19 happened at 4 of 15 inquiries. The cap did not cause it.</li>
+            <li>Now the cap only pauses the launcher. The maintainer plans to remove it later (OI-013).</li>
+          </ul>
+        </div>
+      </details>
+
+      <details>
+        <summary>Withdrawn prompt revisions</summary>
+        <div class="details-body table-wrap">
           <table>
-            <thead><tr><th scope="col" style="width: 27%">Implemented item / source</th><th scope="col" style="width: 43%">Current function</th><th scope="col">Evidence or limit</th></tr></thead>
+            <thead><tr><th scope="col">Revision</th><th scope="col">Note</th></tr></thead>
             <tbody>
-              <tr><td>Preliminary scientific model</td><td>The PI writes a physical reference before campaign evidence. The document then stays fixed.</td><td>The reference does not guarantee correct later interpretation or good decisions.</td></tr>
-              <tr><td>Robotics-first PI persona<span class="commit">5 October</span></td><td>The PI is identified with embodied robotics. Reinforcement learning appears once among the available disciplines. The human defines the goal and protected boundary. The PI owns everything else.</td><td>This changes the shared persona but does not prescribe a startup action or method. Scientific effect is unassessed.</td></tr>
-              <tr><td>Previous-persona stochasticity trial<span class="commit">5 October: <code>ea35499</code></span></td><td>Three sequential fresh campaigns used the restored previous persona. Startup selected training first twice and physical characterization first once.</td><td>Trial 1 crossed the stop boundary and Trial 2 changed PI-owned code. Trial 3 stopped before inquiry training acceptance. The report demonstrates qualitative variance, not a clean causal estimate.</td></tr>
-              <tr><td>Question-based inquiry objective<span class="commit"><code>6d60f1f</code></span></td><td>A fresh inquiry session uses the scientific question as its objective. The closure condition remains separate.</td><td>In <code>edc16754</code>, the closure condition itself precommitted a full training run. A question-based objective alone did not prevent inquiry rushing.</td></tr>
-              <tr><td>Startup purpose and prompt ordering<span class="commit"><code>7f86168</code>, <code>efc3be7</code>, <code>756ae4b</code>, <code>8c0a25b</code>, <code>fb9b10d</code></span></td><td>Startup chooses and records a first useful scientific action. R2 removes the generic policy destination and places scientific context before operational options. Startup reads the whole scientific model. The model has no synthesis section since <code>ef9516f</code>. Ordinary phase prompts remain persona-first.</td><td>Campaign <code>edc16754</code> supplied one positive local observation for the scoped scientific-model ordering, not causal proof. Ordinary-session persona-first ordering is an approved structure, not a demonstrated quality improvement. The persona trials showed stochastic variation.</td></tr>
-              <tr><td>Scientific-model phase rewrite<span class="commit">8 October: <code>ef9516f</code></span></td><td>The phase uses a robotics and simulation analyst persona. The PI builds the model from first principles and the human-owned definitions of the robot, simulator, and task. The model has three registers: Established facts, Physical consequences, and Unknowns. The synthesis section is removed. The validator, brief, and contracts match. Startup reads the whole model.</td><td>A different persona that ranked unknowns steered the startup PI. The change is implemented and unmeasured. The effect on startup action selection is not yet observed.</td></tr>
-              <tr><td>Exact conclusion handoff<span class="commit">7 October</span></td><td>Every session record has a <code>next_question</code> field. When goal review opens an inquiry, the Runner copies the source conclusion and question into the inquiry state.</td><td>Campaign <code>b366ab54</code> showed that the handoff works. The preserved question was too broad (OI-002).</td></tr>
-              <tr><td>R6, R7, and R8<span class="commit">7 October: <code>fa5bd6b</code>, <code>80e4add</code>, <code>8166e2f</code></span></td><td>R6 clarifies retention and replacement neutrality. R7 aligns contract paths, protected paths, and policy routing. R8 gives each instruction type one owner and removes launcher repetition.</td><td>Campaign <code>06656182</code> ran under R8. Scientific effect is unassessed.</td></tr>
-              <tr><td>R8 correction<span class="commit">8 October: <code>adff08e</code></span></td><td>R8 had removed the launcher sentence that lets the PI inspect, modify, or replace PI-owned implementations before it submits an operation. This commit restored the sentence.</td><td>Campaign <code>06656182</code> ran without the sentence.</td></tr>
-              <tr><td>Copilot adapter instructions<span class="commit">4 October: <code>7f86168</code></span></td><td>The redundant scientific instruction block is removed. The adapter handles runtime and permissions. Phase prompts and the program supply scientific instructions.</td><td>This removal is implemented, not a scientific result.</td></tr>
-              <tr><td>Two restored scientific passages<span class="commit">4 October restoration</span></td><td>The original operation-selection and measurement-purpose paragraphs are present verbatim under Inquiry work.</td><td>The restoration itself added no startup rule or launcher change. The later startup batch is separate. Behavioral effect remains unassessed.</td></tr>
-              <tr><td>Goal-review measurements<span class="commit"><code>c68627d</code>, later cap repair</span></td><td>Measurements return to the same session. The inquiry count no longer changes their permission.</td><td>Permission is not a prescribed measurement or an assessment-readiness gate.</td></tr>
-              <tr><td>Artifact inventories and references<span class="commit"><code>f986a2c</code>, <code>97a12ba</code></span></td><td>Structural inventories and references help locate detailed evidence. The artifact stays unchanged.</td><td>Partial reading and incorrect interpretation remain unresolved.</td></tr>
-              <tr><td>Compact research brief<span class="commit"><code>3825d2e</code></span></td><td>Duplicate presentation is reduced. Candidates and inventory references remain available.</td><td>A recorded replay reduced 109,508 to 46,656 UTF-8 bytes: 57.39%. Lower PI cost or better decisions are not established.</td></tr>
-              <tr><td>Shorter startup training<span class="commit"><code>1a15091</code></span></td><td>Positive startup requests can use up to the maintainer's allocation. Inquiry requests use the full allocation. Rollout rounding remains.</td><td>Training remains optional. Scientific benefit of shorter requests is unassessed.</td></tr>
-              <tr><td>Goal-review model-role availability<span class="commit"><code>eabb35c</code></span></td><td>The PI can assign the best-known role without requesting official assessment.</td><td>Role assignment does not declare success or establish readiness.</td></tr>
-              <tr><td>Large Git publication and recovery<span class="commit"><code>b7727d1</code></span></td><td>Operation publication and completed-operation recovery are repaired.</td><td>This is an operational repair, not a controller-performance improvement.</td></tr>
-              <tr><td>Runner transaction trust during protected checks<span class="commit">6 October</span></td><td>Protected-runtime checks ignore only explicitly registered Runner transaction state and artifacts. The checks continue to reject dirty protected sources.</td><td>Repairs the M4 replacement deadlock in campaign <code>3d0d131d</code>. It does not resume, publish, or scientifically interpret that operation.</td></tr>
-              <tr><td>Nonblocking PI style validation<span class="commit">6 October</span></td><td>PI-owned Python changes must compile, but Ruff style findings no longer fail or consume a scientific operation. Existing behavioral validation still runs where required.</td><td>Corrects the T2 failure mode from campaign <code>3d0d131d</code>. Invalid syntax, malformed JSON, runtime failures and behavioral-check failures remain blocking.</td></tr>
-              <tr><td>Bounded Copilot shutdown<span class="commit"><code>2e897c7</code></span></td><td>Session disconnection and client shutdown are bounded. This repair remains separate from readiness withdrawal.</td><td>Provisionally retained operational repair. Campaign-level benefit remains unassessed.</td></tr>
-              <tr><td>Rejection of the invented ending</td><td>Future <code>no_credible_route</code> requests and obsolete pending execution are rejected. The instructions no longer offer this ending.</td><td>Historical records remain readable and unchanged. This is not evidence of improved scientific decisions.</td></tr>
-              <tr><td>Temporary 15-inquiry cap</td><td>The value remains. The launcher pauses after active work and the session record finish, without a scientific conclusion.</td><td>Only an explicit maintainer increase at that boundary resumes execution. Later removal is not implemented.</td></tr>
-              <tr><td>Phase-specific reserved reads<span class="commit">Includes 4 October: <code>7f86168</code></span></td><td>Preliminary can inspect protected benchmark code. Later phases retain reserved-read restrictions. All phases keep maintainer files reserved.</td><td>PI-owned scientific files remain readable. Write and direct-execution restrictions are unchanged. This is not an OS sandbox or a scientific remedy.</td></tr>
+              <tr><td>Startup clarification <code>c2ec8f7</code></td><td>Withdrawn. <code>eb1118e</code> restored older wording. The 4 October startup batch later replaced that.</td></tr>
+              <tr><td>Readiness guidance <code>e4736da</code></td><td>Added 3 October. Removed by the maintainer. The rollback is in <code>b275861</code>. Shutdown repair <code>2e897c7</code> stays. No replacement exists.</td></tr>
+              <tr><td>Closure and handoff prompts <code>b4f1cdf</code>, <code>c0cfcb6</code></td><td>Reverted.</td></tr>
+              <tr><td>Startup cue removal <code>371bae1</code></td><td>No improvement seen. Withdrawn in <code>efc3be7</code>.</td></tr>
+              <tr><td>R3 inquiry semantics <code>9c5ef61</code></td><td>Discarded. It made the inquiry question too important.</td></tr>
+              <tr><td>R4</td><td>Discarded. Later recovery work covers it.</td></tr>
             </tbody>
           </table>
         </div>
-      </div>
-      <div class="card" id="startup-current" style="margin-top: 16px">
-        <h3>Current startup purpose and instruction delivery</h3>
-        <p><strong>Startup establishes or refines a credible initial scientific direction through scientific work.</strong> The direction comes from the human goal, physical model, and available evidence.</p>
-        <p>Startup can build or adapt reusable scientific tools and PI-owned methods. Subsequent inquiries can use these tools and methods. The PI can also use current tools that fit the chosen direction.</p>
-        <p>The PI chooses the first useful scientific action and explains why it advances the direction. The scientific session record preserves the work and its result.</p>
-        <p>The record also preserves remaining uncertainty and the selected next action.</p>
-        <p><strong>The scientific-model phase runs under a robotics and simulation analyst persona.</strong> The 5 October goal-first order and robotics-first persona are historical. Commit <code>ef9516f</code> replaced them on 8 October.</p>
-        <p>Ordinary phase prompts deliberately remain persona-first. Their shared persona directs science toward the scenario goal. It does not make a learned policy the generic role identity. It does not imply a research method.</p>
-        <p>Ordinary prompts present information in this order:</p>
-        <ol>
-          <li>The human task and protected boundary.</li>
-          <li>The physical and scientific synthesis.</li>
-          <li>Completed evidence and its limits.</li>
-          <li>The goal gap and decision frontier.</li>
-          <li>The active inquiry and objective.</li>
-          <li>Decision guidance.</li>
-          <li>Legal operations and applicable resources.</li>
-          <li>Source routing and submission mechanics.</li>
-        </ol>
-        <p>The independent R2 review recommended the human goal and task conditions before the PI role. Commit <code>fb9b10d</code> kept persona-first ordinary sessions.</p>
-        <p>Thus R2 is partially implemented. Goal-first ordinary sessions are the missing part.</p>
-        <p>The scientific-model phase uses a robotics and simulation analyst persona. The model has three registers and no synthesis section. Startup reads the whole model.</p>
-        <p>Startup reads <code>pi_workspace\scientific_model.md</code> and <code>contracts\program.md</code>. It selects its own direction from the model, the program, and the human goal.</p>
-        <p>This direction remains revisable. It is not a first-measurement rule or a procedural question-first rule. The adapter supplies no scientific instruction block.</p>
-        <p><strong>A scientific session record is not a policy checkpoint.</strong> The record preserves actual work, results, remaining uncertainties, and the next action. A policy checkpoint contains saved model weights. The current <code>checkpoint</code> operation and fields remain unchanged.</p>
-        <p>The preliminary phase can read all scientific sources under <code>robot_learning\</code>. These sources include the protected benchmark implementation. SDK reads and explicit shell reads use this phase distinction. Later phases retain reserved-read restrictions.</p>
-        <p>Maintainer documents and harness scripts stay reserved in every phase. Read access does not change write authority or direct-execution restrictions. These are tool controls, not OS isolation.</p>
-        <p>The startup prompt displays the maintainer's requested-step training allocation as a ceiling. It does not require training, measurement, or any other operation, and it adds no scientific-adequacy gate.</p>
-        <p class="small muted">The cue-removal experiment in <code>371bae1</code> produced no observed improvement and was withdrawn. Campaign <code>edc16754</code> then produced useful startup measurement <code>M2</code> under the retained goal-first model ordering.</p>
-        <p class="small muted">Its checkpoint and goal review then rushed into a precommitted baseline inquiry. A three-run previous-persona trial later showed variable startup openings.</p>
-        <p class="small muted">See <a href="../persona-stochasticity-report-20261005.md">the stochasticity report</a>. Neither observation establishes a single prompt cause.</p>
-        <p class="small"><a href="../../contracts/program.md">Program</a> &middot; <a href="../../contracts/instruments.md">Instruments</a> &middot; <a href="../../AGENTS.md">Ownership and commands</a> &middot; <a href="../harness-experiment-log.md">Tracking entries</a></p>
-      </div>
-    </section>
+      </details>
 
-    <section class="section" aria-labelledby="history-heading">
-      <p class="section-label">07 / MAINTAINER DECISIONS AND HISTORICAL RECORD</p>
-      <h2 id="history-heading">Decisions, withdrawn revisions, and their evidence</h2>
-      <p>The 3&ndash;4 October tracking entries supply these decisions and observations. Historical instructions and line references below do not describe the current runtime.</p>
-      <div class="grid two">
-        <div class="card">
-          <span class="tag">Decision</span>
-          <h3 style="margin-top: 12px">3 October: reject the invented terminal outcome</h3>
-          <p>Scientific exhaustion is not an accepted campaign outcome. The maintainer rejects retention of that endpoint under another name.</p>
-          <p>The human requested research toward the goal. The assistant added a second objective: establish that no credible route remains. The old contracts offered that choice, and the Runner accepted E19.</p>
-          <p>In <code>3ac5a413</code>, the PI treated the unregistered M7 artifact and one failed learning recipe as reasons to abandon the campaign. Neither established that the goal was impossible to reach.</p>
-          <p><strong>Disposition:</strong> rejection is implemented. Historical E19 and campaign evidence remain unchanged. Scientific benefit remains unassessed.</p>
-        </div>
-        <div class="card">
-          <span class="tag">Decision</span>
-          <h3 style="margin-top: 12px">3 October: keep execution limits separate</h3>
-          <p>The earlier runtime blocked goal-review measurements and forced a terminal choice at the cap. A temporary execution limit must not change scientific choices.</p>
-          <p>E19 occurred at <strong>4 / 15</strong> inquiries. The cap did not cause that stop.</p>
-          <p><strong>Disposition:</strong> the cap now pauses execution without a scientific conclusion. Its value remains unchanged. The maintainer intends later removal when the scientist is ready.</p>
-          <p>Independent frozen-policy publication remains a separate proposal. This review does not authorize campaign recovery. The requested read-control check is implemented at the tool boundary, not as OS isolation.</p>
-        </div>
-      </div>
-      <div class="card table-wrap" style="margin-top: 16px">
-        <h3>Withdrawn prompt revisions</h3>
-        <table>
-          <thead><tr><th scope="col">Revision</th><th scope="col">Disposition</th><th scope="col">Historical purpose and limit</th></tr></thead>
-          <tbody>
-            <tr><td>Earlier startup clarification<br><code>c2ec8f7</code></td><td><span class="tag">Withdrawn</span></td><td>Commit <code>eb1118e</code> restored older startup wording. The separate 4 October startup-purpose batch now supersedes that restoration. The current correction is not another rollback.</td></tr>
-            <tr><td>Readiness and residual-failure guidance<br><code>e4736da</code></td><td><span class="tag">Withdrawn</span></td><td>Added on 3 October, then removed by maintainer decision. The rollback is recorded as published in repair commit <code>b275861</code>. Shutdown repair <code>2e897c7</code> remains. No replacement readiness prompt is implemented.</td></tr>
-            <tr><td>Broader closure and handoff prompts<br><code>b4f1cdf</code>, <code>c0cfcb6</code></td><td><span class="tag">Withdrawn</span></td><td>These experiments were reverted and are not part of the active harness. The startup correction does not silently restore them.</td></tr>
-          </tbody>
-        </table>
-      </div>
-      <div class="card" style="margin-top: 16px">
-        <span class="tag">Observation</span>
-        <h3 style="margin-top: 12px">5 October: useful startup, then inquiry rush</h3>
-        <p>Campaign <code>edc16754-3f16-45b9-bd0b-faea041c3db5</code> used the restored goal-first scientific-model ordering. Startup built and completed candidate-free dynamics and hold measurement <code>M2</code> before any training.</p>
-        <p><code>M2</code> established stable static holds and tolerance to the tested initial velocities, while full one-interval motor impulses caused rapid exits with larger excursions at larger radii.</p>
-        <p>The startup checkpoint then selected a baseline as the next action. Goal review opened <code>I1</code> with one 120,000-step run embedded in its closure condition, and the fresh inquiry executed that preselected run as <code>T1</code>.</p>
-        <p><code>I1</code> and <code>T1</code> described training on the full official target distribution. But the unchanged training environment sampled radii from 0.14 to 0.20 m.</p>
-        <p>The official range was 0.06 to 0.20 m. Thus, the operation did not accurately match the claim.</p>
-        <p><code>T1</code> completed 120,832 steps. Development measurement <code>M3</code> scored both evaluated checkpoints at 151 / 160 successes (94.375%). The maintainer then stopped the campaign before inquiry synthesis or official assessment.</p>
-        <p><strong>Disposition:</strong> retain <code>756ae4b</code> provisionally. The useful startup is one positive observation, not causal proof. Inquiry continuity and request-to-recipe consistency remain open.</p>
-      </div>
-      <details style="margin-top: 16px">
-        <summary>Historical readiness guidance: purpose, withdrawal, and causal uncertainty</summary>
+      <details>
+        <summary>Readiness guidance: purpose and withdrawal</summary>
         <div class="details-body">
-          <p><span class="tag">Historical</span> <strong>Superseded guidance, not current instructions.</strong> The three-sentence block addressed premature assessment after narrow above-target development results.</p>
-          <p>The block distinguished best-known from readiness. It asked the PI to consider residual failures, regressions, and uncertainty. It rejected automatic readiness from inquiry closure or an above-target score.</p>
-          <p>The coordinator confirmed removal of the exact nine-line block and its prompt inclusion from <code>run_research.ps1</code>. The first withdrawal entry described an uncommitted rollback. The later backlog records publication in <code>b275861</code>.</p>
-          <p>The candidate registry and conclusion mechanisms predate <code>e4736da</code>. The block neither introduced nor removed <code>no_credible_route</code>.</p>
-          <p><strong>Uncertainty:</strong> E19 does not establish that this guidance caused the ending. Withdrawal is a maintainer decision, not experimental disproof. Scientific effectiveness remains unassessed.</p>
-          <p>Counterevidence and assessment calibration remain open. Replacement guidance and independent publication are not approved or implemented.</p>
+          <ul>
+            <li>The three-sentence block aimed to stop early assessment after narrow above-target development results.</li>
+            <li>It asked the PI to weigh residual failures, regressions, and uncertainty.</li>
+            <li>It did not add or remove <code>no_credible_route</code>.</li>
+            <li>E19 does not show that this guidance caused the ending.</li>
+            <li>The withdrawal is a maintainer decision. It is not experimental proof.</li>
+          </ul>
         </div>
       </details>
+
+      <details>
+        <summary>5 October: campaign <code>edc16754</code>, useful startup then inquiry rush</summary>
+        <div class="details-body">
+          <ul>
+            <li>It used the goal-first scientific-model order (<code>756ae4b</code>).</li>
+            <li>Startup built and ran a candidate-free dynamics and hold measurement, <code>M2</code>, before any training.</li>
+            <li>M2 showed stable static holds. Full one-interval motor impulses caused quick exits, with larger excursions at larger radii.</li>
+            <li>The startup record chose a baseline. Goal review opened I1 with one 120,000-step run written into its closure condition. The run was T1.</li>
+            <li>I1 and T1 claimed training on the full official target range. The training environment sampled radii of 0.14 to 0.20 m. The official range is 0.06 to 0.20 m.</li>
+            <li>T1 ran 120,832 steps. Both checkpoints scored 151/160 (94.375%) in M3. The maintainer stopped the campaign.</li>
+            <li>Result: <code>756ae4b</code> was kept for now. One useful startup is not proof of cause.</li>
+          </ul>
+        </div>
+      </details>
+
       <details id="startup-history">
-        <summary>Historical startup trials and the two-paragraph restoration</summary>
+        <summary>Startup trials and the two-paragraph restoration</summary>
         <div class="details-body">
-          <p><span class="tag">Observation</span> <strong>Trial <code>2573991c</code>:</strong> <code>eb1118e</code> restored the successful reference's startup wording. The fresh campaign loaded it, then requested an unchanged-recipe baseline before empirical investigation.</p>
-          <p>The PI named competing mechanisms. It stated that training tested the recipe, not either mechanism separately. The successful reference first used a candidate-free physical probe to distinguish stabilization capability from learning and coverage.</p>
-          <p><strong>Recorded Opus 5.5 review:</strong> the same public startup wording produced different openings. <code>6d6d41e</code> removed the non-default-operation statement and measurement-purpose passage. <code>7cff9f6</code> did not restore them.</p>
-          <p>Both passages were already absent at the successful startup base. Their absence alone does not establish the cause of the drift.</p>
-          <p><strong>Recorded Sonnet 5.5 Meta-Prompting review:</strong> the relevant successful startup base is <code>e26fbc4</code>, not the winning campaign's final tree. Equal phase prompts do not mean equal full inputs. The physical model and available reads differed.</p>
-          <p>Later read restrictions cannot explain the earlier training-first drift. The separate owned-read correction is not a demonstrated startup repair.</p>
-          <p><span class="tag">Historical</span> <strong>4 October restoration scope:</strong> only the two paragraphs from <code>6d6d41e^</code>, lines 144-147 and 177-178, were restored verbatim in <code>research\program.md</code>, under Inquiry work.</p>
-          <p>Those paragraphs originally governed inquiries after a forced baseline. That restoration added no candidate-absence sentence, startup prompt, or enforcement. It did not establish a startup repair. The later startup-purpose batch is separate.</p>
-          <p><span class="tag">Observation</span> <strong>Trial <code>c7040992</code>:</strong> startup read context, named explanations, and submitted a session record. Its shell action validated checkpoint JSON. Goal review then opened a baseline inquiry, followed by training and measurement.</p>
-          <p>The record distinguished absent policy artifacts from its session summary. The observed problem was a planning-only interpretation, not demonstrated confusion between saved weights and a scientific record.</p>
-          <p><span class="tag">Historical</span> <strong>Superseded wording:</strong> <code>cd579a6</code> added the checkpoint-before-goal-review text. <code>eb1118e</code> restored it. The 4 October batch removes that handoff framing and corrects persona delivery.</p>
-          <p class="small muted">These trials and reviews are not a controlled causal comparison. The current correction is implemented for observation. No campaign was executed to assess its effectiveness.</p>
+          <ul>
+            <li><strong>Trial <code>2573991c</code>:</strong> <code>eb1118e</code> restored the reference startup wording. The PI still trained first. The successful reference measured first.</li>
+            <li><strong>Reviews:</strong> the same wording gave different openings. Two passages had been removed in <code>6d6d41e</code>. Both were already missing at the successful base <code>e26fbc4</code>. Their absence alone does not explain the drift.</li>
+            <li><strong>4 October restoration:</strong> only two paragraphs from <code>6d6d41e^</code> were put back, under Inquiry work. This added no startup rule.</li>
+            <li><strong>Trial <code>c7040992</code>:</strong> startup only planned and saved a record. Goal review then opened a baseline inquiry.</li>
+            <li><strong>Persona trial (5 October):</strong> three fresh campaigns with the previous persona. Startup trained first twice and characterized the physics first once. This shows variance. It is not a causal estimate. See <a href="../persona-stochasticity-report-20261005.md">the report</a>.</li>
+            <li><strong>Superseded wording:</strong> <code>cd579a6</code> added checkpoint-before-goal-review text. The 4 October batch removed that framing.</li>
+          </ul>
+          <p class="small muted">These are not controlled comparisons.</p>
         </div>
       </details>
+
       <details>
-        <summary>Historical root-cause references for the rejected ending and cap</summary>
+        <summary>Scientific-model prompt history</summary>
         <div class="details-body">
-          <p><span class="tag">Historical</span> <strong>Pre-repair source locations.</strong> The bounded code and instruction analysis is complete. These line numbers refer to the failed contract before repair, not current files.</p>
-          <p>The tracking record cites original local conversation turn 264: fifteen inquiries were only for test safety. The assistant added this alternative to avoid endless inquiry: &quot;campaign exists only to produce policy satisfying human goal&mdash;or establish no credible route remains&quot;.</p>
-          <p>Core <code>034daed</code> and lifecycle <code>6d6d41e</code> implemented the unrequested alternative objective.</p>
-          <p><code>research\program.md:19-21,63</code>, <code>research\instruments.md:313-318</code>, and <code>run_research.ps1:1099</code> instructed it.</p>
-          <p><code>research\runner_protocol.py:779-805</code> accepted the action with a non-empty reason. <code>research\run_experiment.py:774-788</code> wrote <code>terminal_state</code>. <code>run_research.ps1:1058-1073</code> stopped the launcher loop.</p>
-          <p>The separate cap defect used <code>research\runner_protocol.py:837-844</code> to block goal-review measurements and <code>run_research.ps1:759-769</code> to force a terminal decision.</p>
-          <p>The overview and campaign explanation were updated before the approved runtime edits. The repair removes the invented action and places the cap check outside scientific choices.</p>
+          <ul>
+            <li>5 October: goal-first order and robotics-first persona.</li>
+            <li>6 October (R1, <code>8c0a25b</code>): the PI-written model carried a synthesis handoff.</li>
+            <li>8 October (<code>ef9516f</code>): analyst persona, new language, three registers, and the synthesis section removed. All four changes came in one commit.</li>
+            <li>The first start after it failed on heading levels. <code>b3f4307</code> fixed it.</li>
+            <li>A read-only review of campaign <code>bd32cc79</code> found the model rigorous. It listed about 20 items of equal weight, including the training-range mismatch (14&ndash;20 cm training, 6&ndash;20 cm official). The PI tested the mismatch after five operations and an inquiry reframe.</li>
+            <li><code>5437ff2</code> restored the closing section in controlled English. Language and persona were kept.</li>
+            <li>The effects of language, persona, and the other model in that campaign cannot be separated. Reverting any of them would be a separate test.</li>
+          </ul>
         </div>
       </details>
+
       <details>
-        <summary>Recorded engineering checks: historical results, not scientific validation</summary>
+        <summary>OI-001 five-campaign review (8 October)</summary>
         <div class="details-body">
-          <p><span class="tag">Historical</span> These are results from earlier implementation batches, not checks rerun by this documentation review.</p>
-          <p>The 3 October contract/read-control repair passed 209 targeted tests. Thirteen unrelated cases were excluded: twelve temporary Git-init permission failures and one malformed existing training fixture.</p>
-          <p>That record also reports touched-file Ruff, launcher parsing, HTML structure, theme, and local-link checks. Campaign state and results hashes remained unchanged.</p>
-          <p>The later owned-read correction passed 144 adapter cases. The 4 October startup batch passed 171 directly affected cases, with 36 unrelated phase cases deselected.</p>
-          <p>Its offline rendering covered initial and retry prompts. It also covered the preliminary flow. At that point the full persona remained unchanged.</p>
-          <p>The later robotics-first persona change is recorded separately. Campaign hashes remained unchanged. The operation request remained absent.</p>
-          <p class="small muted">Implementation checks establish neither scientific effectiveness nor OS isolation. Full results and limits remain in <a href="../harness-experiment-log.md">the tracking log</a>.</p>
+          <ul>
+            <li>Campaigns: <code>06656182</code>, <code>97633a56</code>, <code>b366ab54</code>, <code>ab62348f</code>, <code>0284114e</code>.</li>
+            <li>All five startups named a real unknown and kept evidence and next steps in the handoff.</li>
+            <li>The briefing was the "Decision-relevant synthesis" section of the scientific model. It had no wrong facts. Its framing matched the startup method in four of five.</li>
+            <li>In <code>06656182</code> the briefing named a dynamics measurement as decisive. The PI trained instead, because a probe "would require tool construction". That run lacked the PI-authority sentence.</li>
+            <li>Both train-first runs used the same recipe and seed. They scored 99.5% and 73%.</li>
+            <li>Limits: five campaigns, one reviewer who knew the outcomes, no repeated startups, and encrypted model reasoning.</li>
+            <li>Tests not yet run: briefing swap, a ready-made lab tool, a training-ceiling cue, repeated identical startups, and a free-form handoff.</li>
+          </ul>
+        </div>
+      </details>
+
+      <details>
+        <summary>Campaign <code>3ac5a413</code> details</summary>
+        <div class="details-body">
+          <ul>
+            <li>4 of 15 inquiries, 10 sessions, 8 measurements, 2 training runs (241,664 completed steps).</li>
+            <li>Ordinary T1 scored 151/160. Frozen reflection-wrapped M7 scored 160/160 on the reused development panel. No official assessment took place.</li>
+            <li>M7 was not a registered candidate. The PI turned a publication block into a claim that no route remained.</li>
+            <li>M8 checked registry and role binding. It did not rule out every route.</li>
+            <li>Recorded cost: 94.40 AIU over 34 invocation rows. Accounting can miss the stranded S6 invocation.</li>
+            <li>Hashes and paths are in <a href="robot-campaign-3ac5a413-20261003.html#sources">the report sources</a>.</li>
+          </ul>
+        </div>
+      </details>
+
+      <details>
+        <summary>Root-cause references for the rejected ending</summary>
+        <div class="details-body">
+          <ul>
+            <li>These line numbers refer to the old contract before repair. They are not current files.</li>
+            <li>Core <code>034daed</code> and lifecycle <code>6d6d41e</code> added the unrequested alternative aim.</li>
+            <li>The old program, the old instruments file, and the launcher told the PI about it. The old protocol code accepted the action with any reason and wrote the terminal state.</li>
+            <li>A separate cap defect blocked goal-review measurements and forced a terminal choice.</li>
+            <li>The repair removed the invented action and moved the cap check outside scientific choices.</li>
+          </ul>
+        </div>
+      </details>
+
+      <details>
+        <summary>Engineering checks recorded in earlier batches</summary>
+        <div class="details-body">
+          <ul>
+            <li>These results are old. They were not run again for this page.</li>
+            <li>3 October repair: 209 targeted tests passed. 13 unrelated cases were excluded.</li>
+            <li>Owned-read correction: 144 adapter cases passed.</li>
+            <li>4 October startup batch: 171 affected cases passed. 36 unrelated cases were deselected.</li>
+            <li>8 October prompt work: the launcher script parses and the touched Python modules compile. Full results are in the log.</li>
+            <li>Engineering checks do not show scientific effect.</li>
+          </ul>
+        </div>
+      </details>
+
+      <details>
+        <summary>Startup prompt order and sources</summary>
+        <div class="details-body">
+          <p>Ordinary prompts show information in this order:</p>
+          <ol class="steps-list">
+            <li>The human task and protected boundary.</li>
+            <li>The physical and scientific synthesis.</li>
+            <li>Completed evidence and its limits.</li>
+            <li>The goal gap and the decision frontier.</li>
+            <li>The active inquiry and its objective.</li>
+            <li>Decision guidance.</li>
+            <li>Legal operations and resources.</li>
+            <li>Source routing and submission steps.</li>
+          </ol>
+          <h3 style="margin-top: 16px">Sources</h3>
+          <ul class="sources">
+            <li><a href="../../contracts/scenario.md"><code>contracts\scenario.md</code></a>: the fixed goal and success rule.</li>
+            <li><a href="../../contracts/program.md"><code>contracts\program.md</code></a>: phases, sessions, evidence, and PI decisions.</li>
+            <li><a href="../../contracts/instruments.md"><code>contracts\instruments.md</code></a>: operation shapes and phase permissions.</li>
+            <li><a href="../../AGENTS.md"><code>AGENTS.md</code></a>: ownership and commands.</li>
+            <li><a href="../../run_research.ps1"><code>run_research.ps1</code></a> and <a href="../../runner/copilot_adapter.py"><code>runner\copilot_adapter.py</code></a>: prompt delivery, launcher flow, and permission controls.</li>
+            <li><a href="../harness-experiment-log.md"><code>docs\harness-experiment-log.md</code></a>: history, decisions, observations, and the issue register.</li>
+            <li><a href="../inquiry-centered-lifecycle-redesign.md"><code>docs\inquiry-centered-lifecycle-redesign.md</code></a>: old design context. Its scientific-exhaustion option is superseded.</li>
+            <li><code>runner\state\research_state.json</code> and <code>campaigns\brief.md</code>: working campaign files. They change with each campaign.</li>
+          </ul>
+          <p class="small muted" style="margin-top: 12px">This page is one offline file. It does not start training or change campaign files. Git shows code history. It is not scientific evidence.</p>
         </div>
       </details>
     </section>
 
-    <section class="section" aria-labelledby="roadmap-heading">
-      <p class="section-label">08 / OPEN QUESTIONS, PROPOSALS, AND DEFERRED WORK</p>
-      <h2 id="roadmap-heading">Maintainer backlog</h2>
-      <p>This is not a list of required PI actions. Completed repairs appear in the implementation inventory, not as future tasks.</p>
-      <div class="card table-wrap" style="margin-bottom: 16px">
-        <table>
-          <thead><tr><th scope="col">Topic</th><th scope="col">Status</th><th scope="col">Remaining question or scope</th></tr></thead>
-          <tbody>
-            <tr><td>OI-001 Startup scientific-method selection</td><td><span class="tag">Open, narrowed</span></td><td>A failure of traceable coupling from the PI-generated briefing, through startup action selection, to the startup handoff. A five-campaign retrospective (<code>06656182</code>, <code>97633a56</code>, <code>b366ab54</code>, <code>ab62348f</code>, <code>0284114e</code>) found no handoff collapse. Four of five startups were sound. It found one use defect (<code>06656182</code>) and a briefing that steered the method in four of five. R8 had removed the PI-authority sentence, and <code>adff08e</code> restored it. The scientific-model prompt was rewritten without the synthesis section. The effect on startup selection is not yet observed. This issue is separate from the startup training budget (OI-006).</td></tr>
-            <tr><td>OI-002 Inquiry control and bounded closure</td><td><span class="tag">Open</span></td><td>An inquiry can continue after its evidence answers the decision need. Questions and closure conditions must permit positive, negative, limited, or inconclusive conclusions. No design or runtime change is approved.</td></tr>
-            <tr><td>OI-003 Measurement-evidence inspection and interpretation</td><td><span class="tag">Open</span></td><td>The PI has missed advertised diagnostic strata, read partial artifacts as complete, and lost consequential counterevidence in synthesis. Decision-linked inspection is unresolved.</td></tr>
-            <tr><td>OI-004 Checkpoint nomination, evidence selection, and scientific progression</td><td><span class="tag">Open, partly deferred</span></td><td>Training facts can nominate an artifact. They do not prove development performance. Work on this issue waits behind OI-002.</td></tr>
-            <tr><td>OI-005 Counterevidence preservation and assessment readiness</td><td><span class="tag">Postponed</span></td><td>The narrow readiness guidance was withdrawn. Loss of residual evidence and premature readiness conclusions remain unresolved. No replacement prompt is approved.</td></tr>
-            <tr><td>OI-006 Full startup-budget review</td><td><span class="tag">Pending</span></td><td>Shorter startup requests are permitted. The 120,000-step ceiling has not received its planned review. This question is not the cause or solution for OI-001.</td></tr>
-            <tr><td>OI-007 Complete prompt-stack review item R2</td><td><span class="tag">Paused</span></td><td>Ordinary sessions still put the PI role before the human goal. The remaining ordering change is not approved.</td></tr>
-            <tr><td>OI-008 Residual context-delivery work</td><td><span class="tag">Possible work</span></td><td>Brief compaction is implemented. Prompt replay and SDK output handling remain possible causes of context flooding. No work is approved.</td></tr>
-            <tr><td>OI-009 Operation-submission handoff clarification</td><td><span class="tag">Unimplemented</span></td><td>No change is approved.</td></tr>
-            <tr><td>OI-010 Explicit protection of the old protocol log</td><td><span class="tag">Unimplemented</span></td><td>Read-access policy is a separate decision.</td></tr>
-            <tr><td>OI-011 Console clarity and maintainer-file read controls</td><td><span class="tag">Deferred</span></td><td>Phase-specific source-read controls are implemented. Console presentation and further maintainer-file controls are separate work.</td></tr>
-            <tr><td>OI-012 Independent frozen-policy publication</td><td><span class="tag">Proposal</span></td><td>Publication independent of training is not approved or implemented. Campaign recovery is not authorized.</td></tr>
-            <tr><td>OI-013 Remove the temporary 15-inquiry cap</td><td><span class="tag">Pending</span></td><td>The cap pauses at a checkpointed boundary. It does not represent scientific exhaustion. Its value is unchanged. Removal is a later maintainer decision.</td></tr>
-            <tr><td>OI-014 Single-change attribution in an intervention</td><td><span class="tag">Open</span></td><td>One intervention can change several factors and then receive a single-cause explanation. That explanation directs the next inquiries, so a wrong attribution can send later work along the wrong route. A bundled change stays valid when its candidate receives direct paired evaluation and the open attribution stays visible. No change is approved.</td></tr>
-            <tr><td>Prompt-stack review R1 to R8</td><td><span class="tag">Implemented, except R2</span></td><td>R1, R5-1, R5-2, R6, R7, and R8 are implemented. R2 is partly implemented and paused (OI-007). R3 and R4 are discarded for different reasons. R3 made the inquiry question too important. R4 became redundant after later recovery work. None of them is a campaign operation or a Runner scientific gate.</td></tr>
-          </tbody>
-        </table>
-      </div>
-      <p class="small muted">Superseded proposal: distinguish operational-block and scientific-exhaustion endpoints. The maintainer rejected scientific exhaustion as an endpoint. This proposal is not an active backlog item.</p>
-      <p class="small muted">The five-campaign OI-001 retrospective is n=5 with one coder who knew the outcomes. Its diagnostic tests are not yet run. This record does not authorize a campaign operation.</p>
-    </section>
-
-    <section class="section" aria-labelledby="campaigns-heading">
-      <p class="section-label">09 / HISTORICAL CAMPAIGN OBSERVATIONS</p>
-      <h2 id="campaigns-heading">Historical campaign report index</h2>
-      <p>The newest linked report covers <code>06656182</code> on 7 October. This index is not a complete list of all campaigns or a view of current activity.</p>
-      <p>Each completed report contains the sequence of work, results, evidence limits, lessons, and recorded resource use.</p>
-      <article class="card" style="margin-bottom: 16px">
-        <span class="tag">Observation</span>
-        <h3 style="margin-top: 12px">Campaign <code>06656182-d7f0-4011-898d-2b870e8a2a54</code></h3>
-        <p>The official assessment passed with 98.0% on 200 episodes. The goal is 196 of 200, so the result is exactly at the threshold.</p>
-        <p>The campaign used 6 training runs, 9 measurements, and 5 of 15 inquiries. The assessed checkpoint is T5:checkpoint-120832. The run lasted about 85 minutes.</p>
-        <p>The campaign ran under the R8 instruction stack without the PI-authority sentence. It is one run with no repeat.</p>
-        <p><a href="robot-campaign-06656182-final-analysis-20261008.html">Open the 06656182 final analysis</a>.</p>
-      </article>
-      <article class="card" style="margin-bottom: 16px">
-        <span class="tag">Observation</span>
-        <h3 style="margin-top: 12px">Campaign <code>b366ab54-1218-4ab4-9bf1-3fd6a19c86bb</code></h3>
-        <p>The official assessment failed. T1 scored 194 of 200. The goal is 196. No tested intervention beat T1 on paired evidence.</p>
-        <p>The exact handoff preserved the I2 question across sessions. The question was too broad (OI-002).</p>
-        <p><a href="robot-campaign-b366ab54-final-analysis-20261007.html">Open the b366ab54 final analysis</a>.</p>
-      </article>
-      <article class="card" style="margin-bottom: 16px">
-        <span class="tag">Observation</span>
-        <h3 style="margin-top: 12px">Campaigns <code>97633a56</code>, <code>ab62348f</code>, and <code>0284114e</code></h3>
-        <p>These campaigns have no separate report. The OI-001 retrospective of 8 October analyzed their startups.</p>
-        <p>In <code>97633a56</code>, the briefing pointed to measurement and startup measured first. In <code>ab62348f</code>, startup trained first.</p>
-        <p>The retrospective found sound startups in four of five campaigns. See the tracking log entry for 8 October.</p>
-      </article>
-      <article class="card" style="margin-bottom: 16px">
-        <span class="tag">Observation</span>
-        <h3 style="margin-top: 12px">Campaign <code>3ac5a413-ac79-4850-9c3a-83a3f0b41457</code></h3>
-        <p>The PI requested terminal <code>no_credible_route</code> in <code>E19</code> from <code>S10</code>.</p>
-        <p>This is a historical runtime outcome, not an accepted future endpoint. The maintainer rejects scientific exhaustion as a valid campaign outcome.</p>
-        <p><a href="robot-campaign-3ac5a413-20261003.html">Open the separate campaign report</a>.</p>
-        <div class="grid four" style="margin-top: 16px">
-          <div><div class="metric">4 / 15</div><p class="metric-label">Inquiries used</p></div>
-          <div><div class="metric">10</div><p class="metric-label">Scientific sessions</p></div>
-          <div><div class="metric">8</div><p class="metric-label">Measurement operations</p></div>
-          <div><div class="metric">2</div><p class="metric-label">Training runs<br>241,664 completed steps</p></div>
-        </div>
-        <p style="margin-top: 16px">Ordinary T1 scored 151 / 160 (94.375%). Frozen reflection-wrapped M7 scored 160 / 160 on the reused 160-episode development panel.</p>
-        <p>These development results do not prove the official 98% goal. No official assessment occurred.</p>
-        <p>M7 was unregistered. The terminal reasoning generalized a mechanical publication block into scientific route exhaustion.</p>
-        <p>M8 checked registry and role binding. It did not disprove every producer route.</p>
-        <p>Zero-completed-step schemas expose an untested, undocumented possibility. They do not validate an export-only solution.</p>
-        <p>The report recorded retained M7 files at <code>models\candidates\i3-reflection-wrapped-t1</code>. The path and measured hashes are historical references, not a claim that these files remain in the current campaign.</p>
-        <p class="small muted">Recorded model SHA-256: <code>9eca03f678652077a9342d36728ec2b7b6d7740585d2fa30b2b3b3133f6a3502</code>.</p>
-        <p class="small muted">Recorded runtime SHA-256: <code>7b6290a3a07726e92e757026701631101d330a71e59e8e88f86053bbca0632cc</code>.</p>
-        <p>Recorded cost is <strong>94.40 AIU</strong> across 34 invocation rows. The exact recorded total is 94.397128 AIU.</p>
-        <p class="small muted">The accounting can omit the stranded S6 invocation. The timestamp discrepancy remains unresolved. Console elapsed time is not a verified duration.</p>
-      </article>
-      <div class="card table-wrap">
-        <table>
-          <thead><tr><th scope="col">Campaign</th><th scope="col">Start (CEST)</th><th scope="col">Recorded outcome</th><th scope="col">Report</th></tr></thead>
-          <tbody>
-            <tr><td><code>06656182</code></td><td>7 Oct, 21:45 (19:45 UTC)</td><td>Official pass: 98.0% (196 / 200 required).</td><td><a href="robot-campaign-06656182-final-analysis-20261008.html">Read final analysis</a></td></tr>
-            <tr><td><code>b366ab54</code></td><td>7 Oct</td><td>Official failure: 194 / 200 with T1.</td><td><a href="robot-campaign-b366ab54-final-analysis-20261007.html">Read final analysis</a></td></tr>
-            <tr><td><code>97633a56</code>, <code>ab62348f</code>, <code>0284114e</code></td><td>Not recorded here</td><td>Analyzed in the OI-001 retrospective. No separate report.</td><td>See the tracking log</td></tr>
-            <tr><td><code>3ac5a413</code></td><td>3 Oct, timing under review</td><td>Historical PI conclusion: <code>no_credible_route</code>. No official assessment.</td><td><a href="robot-campaign-3ac5a413-20261003.html">Read report</a></td></tr>
-            <tr><td><code>d7080d95</code></td><td>2 Oct, 21:57</td><td>Official failure: 194 / 200 with the unchanged startup policy.</td><td><a href="robot-campaign-d7080d95-20261002.html">Read completed report</a></td></tr>
-            <tr><td><code>2381bcbf</code></td><td>2 Oct, 13:54</td><td>Official failure: 195 / 200</td><td><a href="robot-campaign-2381bcbf-20261002.html">Read report</a></td></tr>
-            <tr><td><code>48993cfd</code></td><td>2 Oct, 09:37</td><td>Stopped without assessment. Last development result: 178 / 200.</td><td><a href="robot-campaign-48993cfd-20261002.html">Read report</a></td></tr>
-            <tr><td><code>a6def80f</code></td><td>2 Oct, 08:44</td><td>Replaced after training, before development measurement</td><td><a href="robot-campaign-a6def80f-20261002.html">Read report</a></td></tr>
-            <tr><td><code>010714c2</code></td><td>1 Oct, 22:29</td><td>Official failure: 189 / 200</td><td><a href="robot-campaign-010714c2-20261002.html">Read report</a></td></tr>
-            <tr><td><code>6350d383</code></td><td>1 Oct, 21:51</td><td>Replaced without completed training or measurement.</td><td><a href="robot-campaign-6350d383-20261002.html">Read report</a></td></tr>
-          </tbody>
-        </table>
-      </div>
-      <p class="small muted" style="margin-top: 12px">These are separate records, not a controlled comparison of harness changes. Stopped or replaced runs are not official failures.</p>
-    </section>
-
-    <section class="section" aria-labelledby="terms-heading">
-      <p class="section-label">10 / CURRENT TERMS AND SOURCE APPLICABILITY</p>
-      <h2 id="terms-heading">Model and checkpoint terminology</h2>
-      <div class="card">
-        <dl class="definitions">
-          <dt>Scientific model</dt><dd>A document about the robot and task. It separates established facts, physical consequences, and unknowns.</dd>
-          <dt>Learned policy</dt><dd>The controller produced by learning. It chooses actions from observations.</dd>
-          <dt>Policy checkpoint</dt><dd>Saved model weights from a training run. They are not a scientific conclusion.</dd>
-          <dt>Scientific session record</dt><dd>A written record of actual work, evidence, interpretation, remaining questions, and next direction. The <code>checkpoint</code> operation saves this record.</dd>
-          <dt>Best-known policy</dt><dd>The strongest available candidate supported by completed evidence. It is not automatically ready for assessment.</dd>
-          <dt>Harness</dt><dd>The launcher, Runner, contracts, and context that support the research process.</dd>
-          <dt>Inquiry</dt><dd>A temporary question that can change the route to the human goal. It is not one training run.</dd>
-        </dl>
-      </div>
-      <details style="margin-top: 16px">
-        <summary>Sources and the scope of this page</summary>
-        <div class="details-body">
-          <p>This is one offline HTML file. It does not send requests, start training, or change campaign files.</p>
-          <h3 style="margin-top: 16px">Current behavior and ownership</h3>
-          <ul class="sources">
-            <li><a href="../../contracts/scenario.md"><code>contracts\scenario.md</code></a>: fixed human goal and official success rule.</li>
-            <li><a href="../../contracts/program.md"><code>contracts\program.md</code></a>: current phases, scientific sessions, evidence, and PI decisions.</li>
-            <li><a href="../../contracts/instruments.md"><code>contracts\instruments.md</code></a>: current operation shapes, acceptance conditions, and phase permissions.</li>
-            <li><a href="../../AGENTS.md"><code>AGENTS.md</code></a>: ownership, commands, and operational boundaries.</li>
-            <li><a href="../../run_research.ps1"><code>run_research.ps1</code></a> and             <a href="../../runner/copilot_adapter.py"><code>runner\copilot_adapter.py</code></a>: current prompt delivery, launcher flow, and Copilot permission controls. <code>runner\run_experiment.py</code> handles Runner requests and recovery.</li>
-                        <li><code>runner\state\research_state.json</code> and <code>campaigns\brief.md</code>: mutable working-campaign context. They change with each campaign. At the last review they recorded campaign <code>06656182</code> with a passed official assessment. Later maintainer or Runner activity can replace these contents.</li>
-          </ul>
-          <h3 style="margin-top: 20px">Historical evidence, decisions, and design context</h3>
-          <ul class="sources">
-            <li><a href="../harness-experiment-log.md"><code>docs\harness-experiment-log.md</code></a>: implementation chronology, maintainer decisions, recorded observations, and their limits. Later entries can supersede earlier pending-work notes.</li>
-            <li><a href="robot-campaign-3ac5a413-20261003.html#sources">3ac5a413 report sources</a>: campaign-scoped measurements, completed-operation references, M7 paths and hashes, E19 in S10, and usage accounting. Its links to mutable root files reflect the report's original inspection, not guaranteed current contents.</li>
-            <li>The other linked reports cite their own campaign records and historical source snapshots. Git identifies code provenance. It is not scientific evidence.</li>
-            <li>The earlier coordinator confirmation established readiness-block removal and retained <code>2e897c7</code>. The later log records the rollback in <code>b275861</code>. The maintainer confirmed publication of the 4 October startup source batch as <code>7f86168</code>.</li>
-            <li><a href="../inquiry-centered-lifecycle-redesign.md"><code>docs\inquiry-centered-lifecycle-redesign.md</code></a>: historical design context for establishing or refining the initial direction through scientific work. Its scientific-exhaustion option is superseded, not current policy.</li>
-            <li><code>.github\skills\simplified-languages</code>: local writing guidance used for this polish. The user-added skill files were read, not modified or registered.</li>
-          </ul>
-          <h3 style="margin-top: 20px">Applicability and review boundaries</h3>
-          <ul class="sources">
-            <li>Independent frozen-policy publication is a proposal. Replacement readiness design and startup-budget review remain unresolved. Later cap removal is not implemented.</li>
-            <li>This documentation update does not authorize campaign recovery, restart, reset, or execution.</li>
-            <li>The campaign reports are separate sibling HTML files. Their recorded cost totals supply accounting evidence. They do not necessarily supply complete billing or verified elapsed duration.</li>
-          </ul>
-          <p class="small muted" style="margin-top: 16px">The overview and linked HTML reports belong under <code>docs\research-overview</code>, outside the PI-owned write surface. Direct read/view requests and explicit shell-reader targets are also restricted. No OS sandbox is claimed.</p>
-          <p class="small muted"><strong>Superseded note:</strong> &quot;The move does not restrict read access&quot; described document relocation before the read controls. Relocation itself did not impose a restriction. The later tool policy does.</p>
-          <p class="small muted">These are maintainer explanations, not PI guidance or cross-campaign scientific memory. Historical reports do not replace the current contracts.</p>
-        </div>
-      </details>
-    </section>
     <footer>
-      <p>Writing uses direct statements, short sentences, and consistent technical terms. Formal ASD-STE100 compliance has not been verified.</p>
-      <p>Snapshot, not live status. Implementation status and scientific effect are deliberately separate.</p>
+      <p>Snapshot of 2026-10-08, not live status. Implementation status and scientific effect are kept apart.</p>
+      <p>Formal ASD-STE100 compliance has not been checked.</p>
     </footer>
   </main>
   <script>
