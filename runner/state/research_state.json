@@ -847,7 +847,7 @@
     }
   },
   "counters": {
-    "event": 5,
+    "event": 6,
     "inquiry": 1,
     "measurement": 4,
     "session": 4,
@@ -856,7 +856,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -2386,35 +2386,169 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-08T20:05:17Z",
+      "error": null,
+      "id": "E6",
+      "inquiry_id": "I1",
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "T1 produced candidates through 120,832 completed steps, including T1:checkpoint-120832, but no working, best-known, or retained model role is assigned. The candidate remains a diagnostic baseline only; its 68.75% development-panel result is not official assessment evidence.",
+        "completed_operations": [
+          "M4"
+        ],
+        "cumulative_resource_use": "M1 characterization completed; T1 requested 120,000 training steps and completed 120,832; M2 evaluated 160 development episodes; M3 aggregated M2; E2 opened I1 and E4 reframed I1; M4 stratified M2 by radius and angle. No official assessment requested.",
+        "current_goal_gap": "No policy is near the 98% goal. T1's 68.75% development success comprised 42 no-entry failures and 8 entered-but-incomplete holds. M4 is development evidence only and does not establish official success; the remaining gap is to train and evaluate a policy with official-radius coverage while addressing the smaller high-saturation, difficult-angle reach/braking tail and the entered-hold instability.",
+        "current_synthesis": "Established observations: M1 found at least one joint-limit-feasible analytic IK branch for every sampled official target, feasible terminal postures were not intrinsically singular, and the compiled actuators had substantial authority with free velocity decay. T1/M2 measured 110/160 successes under training radii 14-20 cm. M3 found 42 no-entry failures and 8 entered-but-incomplete holds; every no-entry target had a feasible analytic branch, so branch feasibility is not the primary cause of the dominant failure class, while entered failures had hold interruptions and much higher action saturation. M4 stratified the synchronized baseline by target radius and angle: 23/23 no-entry failures were in 6-10 cm, 15/15 in 10-14 cm, 2/39 episodes in 14-18 cm, and 2/28 in 18-20 cm, so 38/42 no-entry failures were below the 14 cm training boundary. The four trained-range no-entry failures had approximately 1.2-1.4 cm minimum distance, 2.9 m/s maximum end-effector speed, and 500 saturated action steps; failures also concentrated in negative-angle sectors. Interpretation: inner-radius distribution shift is the dominant pre-entry mechanism, but a consequential secondary sampled-data reach/braking or directional-control tail remains. Limits: all results are development evidence from 160 episodes; M4 does not test a changed recipe, establish causality of the intervention, or establish the 98% official goal.",
+        "decision_frontier": "The original I1 distinction is resolved enough to choose direction: radius-distribution mismatch dominates because 38/42 no-entry failures lie below the 14 cm training boundary, while the residual trained-range failures carry saturation, speed, distance, and angle signatures of a secondary sampled-data control limitation. The next decision is whether a bounded intervention that covers the full official radius range and retains control-aware reach/braking and difficult-angle exposure materially reduces both failure classes toward four or fewer. A changed-candidate evaluation with the same synchronized diagnostics would revise this interpretation if inner-radius failures persist at comparable rates, if the trained-range saturation tail grows, or if hold interruptions remain dominant.",
+        "evidence_references": [
+          "M1",
+          "E2",
+          "T1",
+          "M2",
+          "M3",
+          "E4",
+          "M4"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 of 200 official episodes to complete an uninterrupted 2-second Cartesian hold. The baseline achieved 110/160 on development evidence, leaving 50 failures; M4 identifies the dominant 42-failure pre-entry mechanism and therefore selects the intervention needed to reduce the failure tail before any official assessment.",
+        "next_direction_or_closure": "In the next fresh session, close I1 using M4's actionable result, then return to goal review and open a bounded intervention inquiry or request the next permitted training action: expand training coverage to the official 6-20 cm radius distribution while preserving explicit attention to difficult negative-angle directions, sampled-data reach/braking, and uninterrupted hold stability. Do not assign a role or request official assessment from the baseline.",
+        "next_question": "For the baseline candidate's 42 no-entry failures, are pre-entry failures primarily caused by inner-radius distribution shift or by sampled-data reach and braking limitations, as determined by target-radius and angle-conditioned minimum distance, maximum end-effector speed, action saturation, and available episode time?"
+      },
+      "result": {
+        "session_id": "S4",
+        "status": "checkpointed"
+      },
+      "session_id": "S4",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "43ddaec1d02f5004bde97342476a0d967b485718",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "T1 produced candidates through 120,832 completed steps, including T1:checkpoint-120832, but no working, best-known, or retained model role is assigned. The candidate remains a diagnostic baseline only; its 68.75% development-panel result is not official assessment evidence.",
+        "completed_operations": [
+          "M4"
+        ],
+        "cumulative_resource_use": "M1 characterization completed; T1 requested 120,000 training steps and completed 120,832; M2 evaluated 160 development episodes; M3 aggregated M2; E2 opened I1 and E4 reframed I1; M4 stratified M2 by radius and angle. No official assessment requested.",
+        "current_goal_gap": "No policy is near the 98% goal. T1's 68.75% development success comprised 42 no-entry failures and 8 entered-but-incomplete holds. M4 is development evidence only and does not establish official success; the remaining gap is to train and evaluate a policy with official-radius coverage while addressing the smaller high-saturation, difficult-angle reach/braking tail and the entered-hold instability.",
+        "current_synthesis": "Established observations: M1 found at least one joint-limit-feasible analytic IK branch for every sampled official target, feasible terminal postures were not intrinsically singular, and the compiled actuators had substantial authority with free velocity decay. T1/M2 measured 110/160 successes under training radii 14-20 cm. M3 found 42 no-entry failures and 8 entered-but-incomplete holds; every no-entry target had a feasible analytic branch, so branch feasibility is not the primary cause of the dominant failure class, while entered failures had hold interruptions and much higher action saturation. M4 stratified the synchronized baseline by target radius and angle: 23/23 no-entry failures were in 6-10 cm, 15/15 in 10-14 cm, 2/39 episodes in 14-18 cm, and 2/28 in 18-20 cm, so 38/42 no-entry failures were below the 14 cm training boundary. The four trained-range no-entry failures had approximately 1.2-1.4 cm minimum distance, 2.9 m/s maximum end-effector speed, and 500 saturated action steps; failures also concentrated in negative-angle sectors. Interpretation: inner-radius distribution shift is the dominant pre-entry mechanism, but a consequential secondary sampled-data reach/braking or directional-control tail remains. Limits: all results are development evidence from 160 episodes; M4 does not test a changed recipe, establish causality of the intervention, or establish the 98% official goal.",
+        "decision_frontier": "The original I1 distinction is resolved enough to choose direction: radius-distribution mismatch dominates because 38/42 no-entry failures lie below the 14 cm training boundary, while the residual trained-range failures carry saturation, speed, distance, and angle signatures of a secondary sampled-data control limitation. The next decision is whether a bounded intervention that covers the full official radius range and retains control-aware reach/braking and difficult-angle exposure materially reduces both failure classes toward four or fewer. A changed-candidate evaluation with the same synchronized diagnostics would revise this interpretation if inner-radius failures persist at comparable rates, if the trained-range saturation tail grows, or if hold interruptions remain dominant.",
+        "evidence_references": [
+          "M1",
+          "E2",
+          "T1",
+          "M2",
+          "M3",
+          "E4",
+          "M4"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 of 200 official episodes to complete an uninterrupted 2-second Cartesian hold. The baseline achieved 110/160 on development evidence, leaving 50 failures; M4 identifies the dominant 42-failure pre-entry mechanism and therefore selects the intervention needed to reduce the failure tail before any official assessment.",
+        "inquiry_id": "I1",
+        "next_direction_or_closure": "In the next fresh session, close I1 using M4's actionable result, then return to goal review and open a bounded intervention inquiry or request the next permitted training action: expand training coverage to the official 6-20 cm radius distribution while preserving explicit attention to difficult negative-angle directions, sampled-data reach/braking, and uninterrupted hold stability. Do not assign a role or request official assessment from the baseline.",
+        "next_question": "For the baseline candidate's 42 no-entry failures, are pre-entry failures primarily caused by inner-radius distribution shift or by sampled-data reach and braking limitations, as determined by target-radius and angle-conditioned minimum distance, maximum end-effector speed, action saturation, and available episode time?",
+        "session_id": "S4"
+      },
+      "presentation": {
+        "backend_session_id": "313326d9-a683-4dcf-891e-04a834f010e5",
+        "campaign_id": "bd32cc79-767a-4599-92cd-d889f3ec396b",
+        "campaign_usage": "14m46s | 37.17 AIU | prompt 4.4m (80% cached) | output 64.8k",
+        "session_id": "S4",
+        "session_kind": "inquiry",
+        "session_usage": "2m48s | 13.08 AIU | prompt 2m (83% cached) | output 10.9k"
+      },
+      "result": {
+        "session_id": "S4",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "ef3a93ce1b2f6a8cb20d3760177412922d2b0e65",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E6",
+    "inquiry_id": "I1",
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "T1 produced candidates through 120,832 completed steps, including T1:checkpoint-120832, but no working, best-known, or retained model role is assigned. The candidate remains a diagnostic baseline only; its 68.75% development-panel result is not official assessment evidence.",
+        "completed_operations": [
+          "M4"
+        ],
+        "cumulative_resource_use": "M1 characterization completed; T1 requested 120,000 training steps and completed 120,832; M2 evaluated 160 development episodes; M3 aggregated M2; E2 opened I1 and E4 reframed I1; M4 stratified M2 by radius and angle. No official assessment requested.",
+        "current_goal_gap": "No policy is near the 98% goal. T1's 68.75% development success comprised 42 no-entry failures and 8 entered-but-incomplete holds. M4 is development evidence only and does not establish official success; the remaining gap is to train and evaluate a policy with official-radius coverage while addressing the smaller high-saturation, difficult-angle reach/braking tail and the entered-hold instability.",
+        "current_synthesis": "Established observations: M1 found at least one joint-limit-feasible analytic IK branch for every sampled official target, feasible terminal postures were not intrinsically singular, and the compiled actuators had substantial authority with free velocity decay. T1/M2 measured 110/160 successes under training radii 14-20 cm. M3 found 42 no-entry failures and 8 entered-but-incomplete holds; every no-entry target had a feasible analytic branch, so branch feasibility is not the primary cause of the dominant failure class, while entered failures had hold interruptions and much higher action saturation. M4 stratified the synchronized baseline by target radius and angle: 23/23 no-entry failures were in 6-10 cm, 15/15 in 10-14 cm, 2/39 episodes in 14-18 cm, and 2/28 in 18-20 cm, so 38/42 no-entry failures were below the 14 cm training boundary. The four trained-range no-entry failures had approximately 1.2-1.4 cm minimum distance, 2.9 m/s maximum end-effector speed, and 500 saturated action steps; failures also concentrated in negative-angle sectors. Interpretation: inner-radius distribution shift is the dominant pre-entry mechanism, but a consequential secondary sampled-data reach/braking or directional-control tail remains. Limits: all results are development evidence from 160 episodes; M4 does not test a changed recipe, establish causality of the intervention, or establish the 98% official goal.",
+        "decision_frontier": "The original I1 distinction is resolved enough to choose direction: radius-distribution mismatch dominates because 38/42 no-entry failures lie below the 14 cm training boundary, while the residual trained-range failures carry saturation, speed, distance, and angle signatures of a secondary sampled-data control limitation. The next decision is whether a bounded intervention that covers the full official radius range and retains control-aware reach/braking and difficult-angle exposure materially reduces both failure classes toward four or fewer. A changed-candidate evaluation with the same synchronized diagnostics would revise this interpretation if inner-radius failures persist at comparable rates, if the trained-range saturation tail grows, or if hold interruptions remain dominant.",
+        "evidence_references": [
+          "M1",
+          "E2",
+          "T1",
+          "M2",
+          "M3",
+          "E4",
+          "M4"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 of 200 official episodes to complete an uninterrupted 2-second Cartesian hold. The baseline achieved 110/160 on development evidence, leaving 50 failures; M4 identifies the dominant 42-failure pre-entry mechanism and therefore selects the intervention needed to reduce the failure tail before any official assessment.",
+        "next_direction_or_closure": "In the next fresh session, close I1 using M4's actionable result, then return to goal review and open a bounded intervention inquiry or request the next permitted training action: expand training coverage to the official 6-20 cm radius distribution while preserving explicit attention to difficult negative-angle directions, sampled-data reach/braking, and uninterrupted hold stability. Do not assign a role or request official assessment from the baseline.",
+        "next_question": "For the baseline candidate's 42 no-entry failures, are pre-entry failures primarily caused by inner-radius distribution shift or by sampled-data reach and braking limitations, as determined by target-radius and angle-conditioned minimum distance, maximum end-effector speed, action saturation, and available episode time?"
+      }
+    },
+    "request_fingerprint": "89aae096b7e57b89673c542d5375c437702a8a9f76ca45f6f1a3521e2bc940bc",
+    "session_id": "S4",
+    "supersedes": null
+  },
   "pi_checkpoint": {
-    "candidates_and_roles": "T1 produced candidates through 120,832 completed steps, including T1:checkpoint-120832, but no working, best-known, or retained model role is assigned. The candidate is a diagnostic baseline only; its 68.75% development-panel result is not official assessment evidence.",
+    "candidates_and_roles": "T1 produced candidates through 120,832 completed steps, including T1:checkpoint-120832, but no working, best-known, or retained model role is assigned. The candidate remains a diagnostic baseline only; its 68.75% development-panel result is not official assessment evidence.",
     "completed_operations": [
-      "T1",
-      "M2",
-      "M3",
-      "E4"
+      "M4"
     ],
-    "cumulative_resource_use": "M1 characterization completed; T1 requested 120,000 training steps and completed 120,832; M2 evaluated 160 development episodes; M3 aggregated M2; E2 opened I1 and E4 reframed I1. No official assessment requested.",
-    "current_goal_gap": "No policy is near the 98% goal. T1 provides development evidence at 68.75% success, with 42 no-entry failures and 8 entered-but-incomplete holds. The next gap is to determine whether the dominant pre-entry failures arise from the 14-20 cm training-distribution boundary versus sampled-data reach and braking, then target the responsible mechanism.",
-    "current_synthesis": "M1 established that all sampled official targets have at least one joint-limit-feasible analytic IK branch, that feasible terminal postures are not intrinsically singular, and that the actuators have substantial authority with free velocity decay. T1/M2 measured 110/160 successes under the current recipe. M3 decomposed the 50 failures: 42 never entered tolerance and 8 entered but failed the hold. Every one of the 42 no-entry targets had at least one feasible analytic branch, so branch feasibility is not the primary explanation for the dominant failure class. The 8 entered failures all had hold interruptions and much higher action saturation than successful entered episodes, supporting a real post-entry instability mechanism, but it accounts for only 8/50 failures. The dominant unresolved explanation is therefore pre-entry control: inner-radius distribution shift remains plausible because training begins at 14 cm while the official task begins at 6 cm, while sampled-data reach and braking remain plausible because high actuator authority and finite control intervals can prevent timely, stable entry. M3 does not distinguish those two pre-entry mechanisms because it did not aggregate no-entry failures by target radius, angle, minimum distance, speed, saturation, or time-to-horizon. T1/M2/M3 are development evidence, not official benchmark evidence, and do not establish that the human goal is met.",
-    "decision_frontier": "For the 42 no-entry failures, determine whether failure probability is concentrated at official inner radii absent from T1 training, which would direct radius-coverage and distribution-shift work, or persists across the trained radius range with minimum-distance, speed, saturation, and near-horizon signatures, which would direct sampled-data reach/braking and control-aware learning. A target-radius and angle-conditioned aggregation of the existing synchronized M2 trajectories would discriminate these explanations; evidence of a mixed pattern would require a bounded intervention that addresses both mechanisms.",
+    "cumulative_resource_use": "M1 characterization completed; T1 requested 120,000 training steps and completed 120,832; M2 evaluated 160 development episodes; M3 aggregated M2; E2 opened I1 and E4 reframed I1; M4 stratified M2 by radius and angle. No official assessment requested.",
+    "current_goal_gap": "No policy is near the 98% goal. T1's 68.75% development success comprised 42 no-entry failures and 8 entered-but-incomplete holds. M4 is development evidence only and does not establish official success; the remaining gap is to train and evaluate a policy with official-radius coverage while addressing the smaller high-saturation, difficult-angle reach/braking tail and the entered-hold instability.",
+    "current_synthesis": "Established observations: M1 found at least one joint-limit-feasible analytic IK branch for every sampled official target, feasible terminal postures were not intrinsically singular, and the compiled actuators had substantial authority with free velocity decay. T1/M2 measured 110/160 successes under training radii 14-20 cm. M3 found 42 no-entry failures and 8 entered-but-incomplete holds; every no-entry target had a feasible analytic branch, so branch feasibility is not the primary cause of the dominant failure class, while entered failures had hold interruptions and much higher action saturation. M4 stratified the synchronized baseline by target radius and angle: 23/23 no-entry failures were in 6-10 cm, 15/15 in 10-14 cm, 2/39 episodes in 14-18 cm, and 2/28 in 18-20 cm, so 38/42 no-entry failures were below the 14 cm training boundary. The four trained-range no-entry failures had approximately 1.2-1.4 cm minimum distance, 2.9 m/s maximum end-effector speed, and 500 saturated action steps; failures also concentrated in negative-angle sectors. Interpretation: inner-radius distribution shift is the dominant pre-entry mechanism, but a consequential secondary sampled-data reach/braking or directional-control tail remains. Limits: all results are development evidence from 160 episodes; M4 does not test a changed recipe, establish causality of the intervention, or establish the 98% official goal.",
+    "decision_frontier": "The original I1 distinction is resolved enough to choose direction: radius-distribution mismatch dominates because 38/42 no-entry failures lie below the 14 cm training boundary, while the residual trained-range failures carry saturation, speed, distance, and angle signatures of a secondary sampled-data control limitation. The next decision is whether a bounded intervention that covers the full official radius range and retains control-aware reach/braking and difficult-angle exposure materially reduces both failure classes toward four or fewer. A changed-candidate evaluation with the same synchronized diagnostics would revise this interpretation if inner-radius failures persist at comparable rates, if the trained-range saturation tail grows, or if hold interruptions remain dominant.",
     "evidence_references": [
       "M1",
       "E2",
       "T1",
       "M2",
       "M3",
-      "E4"
+      "E4",
+      "M4"
     ],
-    "human_goal_connection": "The human goal requires at least 196 of 200 official episodes to complete an uninterrupted 2-second Cartesian hold. T1 reached 110/160 successes on the development panel, leaving 50 failures; identifying the dominant pre-entry mechanism is necessary to reduce that tail to four or fewer before assigning a candidate role or requesting official assessment.",
+    "human_goal_connection": "The human goal requires at least 196 of 200 official episodes to complete an uninterrupted 2-second Cartesian hold. The baseline achieved 110/160 on development evidence, leaving 50 failures; M4 identifies the dominant 42-failure pre-entry mechanism and therefore selects the intervention needed to reduce the failure tail before any official assessment.",
     "inquiry_id": "I1",
-    "next_direction_or_closure": "Continue I1 in a fresh session by aggregating M2's no-entry failures by target radius and angle together with minimum distance, maximum end-effector speed, action saturation, first-entry timing, and the 500-step horizon. Use that result to choose either inner-radius coverage intervention or sampled-data reach/braking intervention, while retaining hold stabilization as a secondary mechanism.",
+    "next_direction_or_closure": "In the next fresh session, close I1 using M4's actionable result, then return to goal review and open a bounded intervention inquiry or request the next permitted training action: expand training coverage to the official 6-20 cm radius distribution while preserving explicit attention to difficult negative-angle directions, sampled-data reach/braking, and uninterrupted hold stability. Do not assign a role or request official assessment from the baseline.",
     "next_question": "For the baseline candidate's 42 no-entry failures, are pre-entry failures primarily caused by inner-radius distribution shift or by sampled-data reach and braking limitations, as determined by target-radius and angle-conditioned minimum distance, maximum end-effector speed, action saturation, and available episode time?",
-    "scientific_commit": "6b9a1a746b3511343d01be07c6ec1a1d47225926",
-    "session_id": "S3"
+    "scientific_commit": "ef3a93ce1b2f6a8cb20d3760177412922d2b0e65",
+    "session_id": "S4"
   },
   "schema_version": 6,
   "scientific_model": {
@@ -2422,21 +2556,6 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "313326d9-a683-4dcf-891e-04a834f010e5",
-    "id": "S4",
-    "inquiry_id": "I1",
-    "kind": "inquiry",
-    "objective": "Advance I1 toward an evidence-supported answer to its scientific question: For the baseline candidate's 42 no-entry failures, are pre-entry failures primarily caused by inner-radius distribution shift or by sampled-data reach and braking limitations, as determined by target-radius and angle-conditioned minimum distance, maximum end-effector speed, action saturation, and available episode time?",
-    "operation_ids": [
-      "M4"
-    ],
-    "scientific_parent_commit": "43ddaec1d02f5004bde97342476a0d967b485718"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
