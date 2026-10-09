@@ -51,3 +51,4 @@
 | E30 | inquiry | I8 | completed |
 | E31 | checkpoint | - | checkpointed |
 | M9 | measurement | I8 | failed |
+| M10 | measurement | I8 | completed |
