@@ -30,15 +30,15 @@ def parse_args() -> argparse.Namespace:
 
 
 def body_name(model: mujoco.MjModel, index: int) -> str:
-    return mujoco.mj_id2name(mujoco.mjtObj.mjOBJ_BODY, index) or str(index)
+    return mujoco.mj_id2name(model, mujoco.mjtObj.mjOBJ_BODY, index) or str(index)
 
 
 def joint_name(model: mujoco.MjModel, index: int) -> str:
-    return mujoco.mj_id2name(mujoco.mjtObj.mjOBJ_JOINT, index) or str(index)
+    return mujoco.mj_id2name(model, mujoco.mjtObj.mjOBJ_JOINT, index) or str(index)
 
 
 def actuator_name(model: mujoco.MjModel, index: int) -> str:
-    return mujoco.mj_id2name(mujoco.mjtObj.mjOBJ_ACTUATOR, index) or str(index)
+    return mujoco.mj_id2name(model, mujoco.mjtObj.mjOBJ_ACTUATOR, index) or str(index)
 
 
 def set_configuration(
