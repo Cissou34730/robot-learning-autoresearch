@@ -1647,7 +1647,7 @@
     }
   },
   "counters": {
-    "event": 8,
+    "event": 9,
     "inquiry": 2,
     "measurement": 3,
     "session": 5,
@@ -1656,7 +1656,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -3149,32 +3149,177 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-09T22:51:39Z",
+      "error": null,
+      "id": "E9",
+      "inquiry_id": "I2",
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "T2:checkpoint-120832 is the strongest development-evaluated candidate at 150/160 successes, but working, best-known, and retained roles remain empty because no role assignment has been made. T1:checkpoint-120832 remains the matched reference at 110/160. Training statistics nominate candidates but do not establish performance.",
+        "completed_operations": [
+          "T2",
+          "M3",
+          "E8"
+        ],
+        "cumulative_resource_use": "One candidate-free dynamics measurement (M1), the prior I1 inquiry and checkpoints (E2 and E3), one 120000-step baseline training request producing 120832 completed steps and archived candidates (T1), one 160-episode development evaluation (M2), one limited I1 closure (E4), one I2 opening (E6), one fresh 120000-step inner-radius training request producing 120832 completed steps and archived candidates (T2), one matched two-candidate 160-episode development evaluation (M3), and one limited I2 closure (E8). No official assessment was requested.",
+        "current_goal_gap": "The best development evidence is T2:checkpoint-120832 at 150/160 successes (93.75%) on a non-official panel after inner-radius coverage expansion. The 98% official criterion remains unmet and unmeasured, and no best-known candidate is assigned. T2 had ten development failures, including eight acquisition failures and two hold interruptions.",
+        "current_synthesis": "M1 established high actuation authority and substantial residual-motion risk but did not establish the learned-policy bottleneck. M2 showed T1 success of 110/160 (68.75%) with the largest observed deficit in inner-radius acquisition, while lacking branch or terminal geometry. T2 changed only the training radius range to the official 0.06-0.20 m interval. Matched M3 evidence on identical seeds improved complete-hold success to 150/160 (93.75%), with 43 paired wins versus 3 and the required radius, angle, acquisition, hold, timeout, terminal-joint, and IK-branch diagnostics. This establishes that broader radius coverage materially improves the compared recipe, but not that coverage alone reaches the human goal. T2's remaining failures span approximately 10.7-18.8 cm rather than isolating the former inner-radius regime. The recorded terminal branch diagnostics do not establish branch selection as the sole cause, so angle-dependent trajectory acquisition and stabilization remain competing explanations.",
+        "decision_frontier": "Determine which intervention can reduce T2's residual acquisition and hold failures toward the 98% goal: angle-/trajectory-specific control and braking, IK-branch-aware behavior, or their interaction. Discriminating development evidence should preserve the official radius range and report success, first_reach_step, max_held_steps, hold_interruptions, timeout status, target angle, and branch or terminal geometry; broad improvement across failure angles supports a general stabilization intervention, while persistent angle- or branch-stratified failures support targeted trajectory or branch control.",
+        "evidence_references": [
+          "M1",
+          "T1",
+          "M2",
+          "E6",
+          "T2",
+          "M3",
+          "E8"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 of 200 official-distribution episodes to complete an uninterrupted 100-step hold. I2 tested whether missing inner-radius training coverage was the main route to that goal.",
+        "next_direction_or_closure": "I2 is closed with a limited result recorded by E8. The coverage route should be retained as a component of future recipes, while the next goal review should decide whether to open a fresh inquiry on angle-/trajectory-specific acquisition and stabilization with branch geometry as an attribution variable. Official assessment is not justified because the 98% goal is unmet and no best-known candidate is assigned.",
+        "next_question": "Can angle- and trajectory-specific acquisition or stabilization control reduce the residual failures of the inner-radius-trained policy toward the 98% complete-hold goal, and are those failures caused by target angle, IK branch, or their interaction?"
+      },
+      "result": {
+        "session_id": "S5",
+        "status": "checkpointed"
+      },
+      "session_id": "S5",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "b8ade19bbf0639a2b400a0833af5638a0aafbdc4",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "T2:checkpoint-120832 is the strongest development-evaluated candidate at 150/160 successes, but working, best-known, and retained roles remain empty because no role assignment has been made. T1:checkpoint-120832 remains the matched reference at 110/160. Training statistics nominate candidates but do not establish performance.",
+        "completed_operations": [
+          "T2",
+          "M3",
+          "E8"
+        ],
+        "cumulative_resource_use": "One candidate-free dynamics measurement (M1), the prior I1 inquiry and checkpoints (E2 and E3), one 120000-step baseline training request producing 120832 completed steps and archived candidates (T1), one 160-episode development evaluation (M2), one limited I1 closure (E4), one I2 opening (E6), one fresh 120000-step inner-radius training request producing 120832 completed steps and archived candidates (T2), one matched two-candidate 160-episode development evaluation (M3), and one limited I2 closure (E8). No official assessment was requested.",
+        "current_goal_gap": "The best development evidence is T2:checkpoint-120832 at 150/160 successes (93.75%) on a non-official panel after inner-radius coverage expansion. The 98% official criterion remains unmet and unmeasured, and no best-known candidate is assigned. T2 had ten development failures, including eight acquisition failures and two hold interruptions.",
+        "current_synthesis": "M1 established high actuation authority and substantial residual-motion risk but did not establish the learned-policy bottleneck. M2 showed T1 success of 110/160 (68.75%) with the largest observed deficit in inner-radius acquisition, while lacking branch or terminal geometry. T2 changed only the training radius range to the official 0.06-0.20 m interval. Matched M3 evidence on identical seeds improved complete-hold success to 150/160 (93.75%), with 43 paired wins versus 3 and the required radius, angle, acquisition, hold, timeout, terminal-joint, and IK-branch diagnostics. This establishes that broader radius coverage materially improves the compared recipe, but not that coverage alone reaches the human goal. T2's remaining failures span approximately 10.7-18.8 cm rather than isolating the former inner-radius regime. The recorded terminal branch diagnostics do not establish branch selection as the sole cause, so angle-dependent trajectory acquisition and stabilization remain competing explanations.",
+        "decision_frontier": "Determine which intervention can reduce T2's residual acquisition and hold failures toward the 98% goal: angle-/trajectory-specific control and braking, IK-branch-aware behavior, or their interaction. Discriminating development evidence should preserve the official radius range and report success, first_reach_step, max_held_steps, hold_interruptions, timeout status, target angle, and branch or terminal geometry; broad improvement across failure angles supports a general stabilization intervention, while persistent angle- or branch-stratified failures support targeted trajectory or branch control.",
+        "evidence_references": [
+          "M1",
+          "T1",
+          "M2",
+          "E6",
+          "T2",
+          "M3",
+          "E8"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 of 200 official-distribution episodes to complete an uninterrupted 100-step hold. I2 tested whether missing inner-radius training coverage was the main route to that goal.",
+        "inquiry_id": "I2",
+        "next_direction_or_closure": "I2 is closed with a limited result recorded by E8. The coverage route should be retained as a component of future recipes, while the next goal review should decide whether to open a fresh inquiry on angle-/trajectory-specific acquisition and stabilization with branch geometry as an attribution variable. Official assessment is not justified because the 98% goal is unmet and no best-known candidate is assigned.",
+        "next_question": "Can angle- and trajectory-specific acquisition or stabilization control reduce the residual failures of the inner-radius-trained policy toward the 98% complete-hold goal, and are those failures caused by target angle, IK branch, or their interaction?",
+        "session_id": "S5"
+      },
+      "presentation": {
+        "backend_session_id": "88e24795-4e74-4280-83aa-fa327080055d",
+        "campaign_id": "339736e0-5583-4bc4-8729-5023fc3077b7",
+        "campaign_usage": "12m40s | 31.59 AIU | prompt 4.5m (84% cached) | output 52.2k",
+        "session_id": "S5",
+        "session_kind": "inquiry",
+        "session_usage": "2m58s | 10.81 AIU | prompt 1.7m (85% cached) | output 10.1k"
+      },
+      "result": {
+        "session_id": "S5",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "fe347cbbfc3bf4b3c46d3d496be4b36b5fddb115",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E9",
+    "inquiry_id": "I2",
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "T2:checkpoint-120832 is the strongest development-evaluated candidate at 150/160 successes, but working, best-known, and retained roles remain empty because no role assignment has been made. T1:checkpoint-120832 remains the matched reference at 110/160. Training statistics nominate candidates but do not establish performance.",
+        "completed_operations": [
+          "T2",
+          "M3",
+          "E8"
+        ],
+        "cumulative_resource_use": "One candidate-free dynamics measurement (M1), the prior I1 inquiry and checkpoints (E2 and E3), one 120000-step baseline training request producing 120832 completed steps and archived candidates (T1), one 160-episode development evaluation (M2), one limited I1 closure (E4), one I2 opening (E6), one fresh 120000-step inner-radius training request producing 120832 completed steps and archived candidates (T2), one matched two-candidate 160-episode development evaluation (M3), and one limited I2 closure (E8). No official assessment was requested.",
+        "current_goal_gap": "The best development evidence is T2:checkpoint-120832 at 150/160 successes (93.75%) on a non-official panel after inner-radius coverage expansion. The 98% official criterion remains unmet and unmeasured, and no best-known candidate is assigned. T2 had ten development failures, including eight acquisition failures and two hold interruptions.",
+        "current_synthesis": "M1 established high actuation authority and substantial residual-motion risk but did not establish the learned-policy bottleneck. M2 showed T1 success of 110/160 (68.75%) with the largest observed deficit in inner-radius acquisition, while lacking branch or terminal geometry. T2 changed only the training radius range to the official 0.06-0.20 m interval. Matched M3 evidence on identical seeds improved complete-hold success to 150/160 (93.75%), with 43 paired wins versus 3 and the required radius, angle, acquisition, hold, timeout, terminal-joint, and IK-branch diagnostics. This establishes that broader radius coverage materially improves the compared recipe, but not that coverage alone reaches the human goal. T2's remaining failures span approximately 10.7-18.8 cm rather than isolating the former inner-radius regime. The recorded terminal branch diagnostics do not establish branch selection as the sole cause, so angle-dependent trajectory acquisition and stabilization remain competing explanations.",
+        "decision_frontier": "Determine which intervention can reduce T2's residual acquisition and hold failures toward the 98% goal: angle-/trajectory-specific control and braking, IK-branch-aware behavior, or their interaction. Discriminating development evidence should preserve the official radius range and report success, first_reach_step, max_held_steps, hold_interruptions, timeout status, target angle, and branch or terminal geometry; broad improvement across failure angles supports a general stabilization intervention, while persistent angle- or branch-stratified failures support targeted trajectory or branch control.",
+        "evidence_references": [
+          "M1",
+          "T1",
+          "M2",
+          "E6",
+          "T2",
+          "M3",
+          "E8"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 of 200 official-distribution episodes to complete an uninterrupted 100-step hold. I2 tested whether missing inner-radius training coverage was the main route to that goal.",
+        "next_direction_or_closure": "I2 is closed with a limited result recorded by E8. The coverage route should be retained as a component of future recipes, while the next goal review should decide whether to open a fresh inquiry on angle-/trajectory-specific acquisition and stabilization with branch geometry as an attribution variable. Official assessment is not justified because the 98% goal is unmet and no best-known candidate is assigned.",
+        "next_question": "Can angle- and trajectory-specific acquisition or stabilization control reduce the residual failures of the inner-radius-trained policy toward the 98% complete-hold goal, and are those failures caused by target angle, IK branch, or their interaction?"
+      }
+    },
+    "request_fingerprint": "bd8b99ab232c39e3c136613d4ec0bda660a103dbd28c856555c9dddbac88517c",
+    "session_id": "S5",
+    "supersedes": null
+  },
   "pi_checkpoint": {
-    "candidates_and_roles": "T1 produced archived candidates, and T1:checkpoint-120832 is the only candidate with completed development evaluation. Its 68.75% development result is evidence-bearing but does not establish official performance. Working, best-known, and retained roles remain empty because no candidate has yet been justified for those roles.",
+    "candidates_and_roles": "T2:checkpoint-120832 is the strongest development-evaluated candidate at 150/160 successes, but working, best-known, and retained roles remain empty because no role assignment has been made. T1:checkpoint-120832 remains the matched reference at 110/160. Training statistics nominate candidates but do not establish performance.",
     "completed_operations": [
-      "E6"
+      "T2",
+      "M3",
+      "E8"
     ],
-    "cumulative_resource_use": "One candidate-free dynamics measurement (M1), the prior inquiry I1 with its checkpoints (E2 and E3), one fresh 120000-step training request producing 120832 completed steps and archived candidates (T1), one 160-episode research evaluation (M2), one limited I1 closure (E4), and one I2 opening (E6) completed. No official assessment was requested.",
-    "current_goal_gap": "The only development-evaluated candidate, T1:checkpoint-120832, achieved 110 of 160 successes (68.75%) on a non-official panel. The 98% official criterion remains unmet and unmeasured; no best-known candidate is assigned. Inner-radius acquisition is the leading observed gap, but its causal mechanism is unresolved.",
-    "current_synthesis": "M1 established high actuation authority and substantial residual-motion risk in bounded plant probes, but did not establish the first learned-policy bottleneck. T1 training produced candidates, while its learning statistics are not development evidence. M2 evaluated T1:checkpoint-120832 over 160 development episodes: 118 first reached tolerance, 110 completed the hold, and 8 reached tolerance but failed the complete hold. Success was 10/40 at 6-10 cm, 37/53 at 10-14 cm, 37/39 at 14-18 cm, and 26/28 at 18-20 cm. This supports inner-radius acquisition as the leading route hypothesis, not as a proven cause, because radius composition was uncontrolled and M2 recorded no elbow-branch, terminal-joint, or equivalent geometry. The hold-specific failures were fewer than acquisition failures, but this limited attribution does not reject stabilization as a future requirement. E6 opened I2 to test the coverage hypothesis while preserving branch- and angle-dependent trajectory failure as a competing explanation.",
-    "decision_frontier": "Whether an inner-radius training intervention materially improves complete-hold success toward 98%, or whether failures persist because of trajectory or IK-branch mechanisms. The discriminating evidence is matched development evaluation with radius-controlled success, first_reach_step, max_held_steps, hold_interruptions, timeout status, target angle, and branch or terminal geometry. A result showing broad inner-radius improvement supports continuing coverage expansion; persistent geometry-stratified failures redirect development toward branch- or angle-specific trajectory control; missing diagnostics leave the distinction unresolved.",
+    "cumulative_resource_use": "One candidate-free dynamics measurement (M1), the prior I1 inquiry and checkpoints (E2 and E3), one 120000-step baseline training request producing 120832 completed steps and archived candidates (T1), one 160-episode development evaluation (M2), one limited I1 closure (E4), one I2 opening (E6), one fresh 120000-step inner-radius training request producing 120832 completed steps and archived candidates (T2), one matched two-candidate 160-episode development evaluation (M3), and one limited I2 closure (E8). No official assessment was requested.",
+    "current_goal_gap": "The best development evidence is T2:checkpoint-120832 at 150/160 successes (93.75%) on a non-official panel after inner-radius coverage expansion. The 98% official criterion remains unmet and unmeasured, and no best-known candidate is assigned. T2 had ten development failures, including eight acquisition failures and two hold interruptions.",
+    "current_synthesis": "M1 established high actuation authority and substantial residual-motion risk but did not establish the learned-policy bottleneck. M2 showed T1 success of 110/160 (68.75%) with the largest observed deficit in inner-radius acquisition, while lacking branch or terminal geometry. T2 changed only the training radius range to the official 0.06-0.20 m interval. Matched M3 evidence on identical seeds improved complete-hold success to 150/160 (93.75%), with 43 paired wins versus 3 and the required radius, angle, acquisition, hold, timeout, terminal-joint, and IK-branch diagnostics. This establishes that broader radius coverage materially improves the compared recipe, but not that coverage alone reaches the human goal. T2's remaining failures span approximately 10.7-18.8 cm rather than isolating the former inner-radius regime. The recorded terminal branch diagnostics do not establish branch selection as the sole cause, so angle-dependent trajectory acquisition and stabilization remain competing explanations.",
+    "decision_frontier": "Determine which intervention can reduce T2's residual acquisition and hold failures toward the 98% goal: angle-/trajectory-specific control and braking, IK-branch-aware behavior, or their interaction. Discriminating development evidence should preserve the official radius range and report success, first_reach_step, max_held_steps, hold_interruptions, timeout status, target angle, and branch or terminal geometry; broad improvement across failure angles supports a general stabilization intervention, while persistent angle- or branch-stratified failures support targeted trajectory or branch control.",
     "evidence_references": [
       "M1",
-      "E2",
       "T1",
       "M2",
-      "E4",
-      "E6"
+      "E6",
+      "T2",
+      "M3",
+      "E8"
     ],
-    "human_goal_connection": "The human goal requires at least 196 of 200 official-distribution episodes to complete an uninterrupted 100-step hold. I2 was opened to determine whether extending training to the official inner-radius regime improves complete-hold success and whether residual acquisition failures are branch- or angle-dependent.",
-    "inquiry_id": null,
-    "next_direction_or_closure": "The goal-review transition opens I2 and ends this session. In the fresh inquiry session, first obtain the evidence that most directly tests inner-radius coverage while preserving branch and angle attribution; do not request official assessment because the goal is unmet, performance is only 68.75% on development evidence, and no best-known candidate is assigned.",
-    "next_question": "Can expanding training to the official inner-radius regime raise complete-hold success toward the 98% goal, and do the remaining failures reveal a branch- or angle-dependent acquisition mechanism?",
-    "scientific_commit": "d8174ea2570652d87a31a0771b4c6c91cac8752e",
-    "session_id": "S4"
+    "human_goal_connection": "The human goal requires at least 196 of 200 official-distribution episodes to complete an uninterrupted 100-step hold. I2 tested whether missing inner-radius training coverage was the main route to that goal.",
+    "inquiry_id": "I2",
+    "next_direction_or_closure": "I2 is closed with a limited result recorded by E8. The coverage route should be retained as a component of future recipes, while the next goal review should decide whether to open a fresh inquiry on angle-/trajectory-specific acquisition and stabilization with branch geometry as an attribution variable. Official assessment is not justified because the 98% goal is unmet and no best-known candidate is assigned.",
+    "next_question": "Can angle- and trajectory-specific acquisition or stabilization control reduce the residual failures of the inner-radius-trained policy toward the 98% complete-hold goal, and are those failures caused by target angle, IK branch, or their interaction?",
+    "scientific_commit": "fe347cbbfc3bf4b3c46d3d496be4b36b5fddb115",
+    "session_id": "S5"
   },
   "schema_version": 6,
   "scientific_model": {
@@ -3182,23 +3327,6 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "88e24795-4e74-4280-83aa-fa327080055d",
-    "id": "S5",
-    "inquiry_id": "I2",
-    "kind": "inquiry",
-    "objective": "Advance I2 toward an evidence-supported answer to its scientific question: Can expanding training to the official inner-radius regime raise complete-hold success toward the 98% goal, and do the remaining failures reveal a branch- or angle-dependent acquisition mechanism? Before choosing the next action, compare the accumulated evidence with the closure condition. Choose the supported operation that best advances the bounded work; no operation is the default. Close the inquiry when the condition is met.",
-    "operation_ids": [
-      "T2",
-      "M3",
-      "E8"
-    ],
-    "scientific_parent_commit": "b8ade19bbf0639a2b400a0833af5638a0aafbdc4"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
