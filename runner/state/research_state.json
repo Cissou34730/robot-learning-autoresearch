@@ -1648,7 +1648,7 @@
     }
   },
   "counters": {
-    "event": 4,
+    "event": 5,
     "inquiry": 1,
     "measurement": 3,
     "session": 3,
@@ -1657,7 +1657,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -2903,30 +2903,177 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-09T10:05:20Z",
+      "error": null,
+      "id": "E5",
+      "inquiry_id": "I1",
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "T1 and T2 produced archived candidate checkpoints. T1:checkpoint-115712 remains the strongest development-measured candidate, with 71.0% on M1, 78.5% on M2, and 75.0% on the matched M3 panel. T2:checkpoint-120832 was measured at 36.0% on M3. No candidate has been assigned working, best-known, or retained status because none meets the current development objective or the 98% human goal.",
+        "completed_operations": [
+          "T2",
+          "M3",
+          "E4"
+        ],
+        "cumulative_resource_use": "Two fresh 120000-step training runs completed, each rounded to 120832 simulator steps: T1 on 0.14-0.20 m and T2 on 0.06-0.20 m. Three 200-episode development measurements completed for T1/T2: M1 fixed task-reference, M2 seed-17300 research diagnostics, and M3 matched seed-27300 diagnostics for both candidates. Two inquiry-boundary operations completed: E2 opened I1 and E4 closed I1 with a limited negative result. No official assessment was requested.",
+        "current_goal_gap": "Development performance remains far below the 98% target: T1 measured 71.0% on the fixed task-reference panel, 78.5% on the seed-17300 research panel, and 75.0% on the matched seed-27300 panel. T2 measured 36.0% on the matched panel. These are development results, not official assessment results.",
+        "current_synthesis": "Observed: T1 was trained only on 0.14-0.20 m radii. M1 measured 71.0%, M2 measured 78.5%, and M2 diagnostics showed 39.1% success at 6-10 cm, 75.0% at 10-14 cm, and 97.2% at 14-20 cm; 35 of 43 failures never reached tolerance, while all eight reached-but-failed episodes were below 14 cm. This supported testing official-radius coverage. T2 was then trained fresh with the 0.06-0.20 m distribution, but its training success remained zero and its reward statistics do not establish development behavior. M3 measured T2 and T1 on identical seeds: T2 achieved 36.0% versus T1's 75.0%, with T2 success of 36.4%, 32.8%, and 38.2% in the 6-10, 10-14, and 14-20 cm bins, compared with T1's 48.5%, 79.3%, and 94.7%. T2 had 120 of 128 failures never reaching tolerance and eight reached-but-failed outer-bin episodes; T1 had substantially better outer complete-hold behavior. Interpretation: the negative result establishes that fresh PPO plus uniform full-radius exposure did not remove the inner deficit and materially degraded the outer range. It does not invalidate coverage generally. The broad T2 reach deficit is consistent with a learning/distribution interaction or geometry-dependent control failure, but the available diagnostics do not yet distinguish optimization and reward credit assignment from branch-, bearing-, or dynamics-limited control.",
+        "decision_frontier": "I1 is closed with a limited negative result. The unresolved distinction is why exposing the official inner region caused the fresh PPO candidate to fail broadly, including degradation at 0.14-0.20 m: (1) the mixed-radius distribution may have created an optimization or shaped-reward credit-assignment failure that prevented acquisition of a stable reach policy, or (2) the expanded geometry may expose branch-, bearing-, action-authority, or settling limits that require a different controller or representation. The current evidence favors neither mechanism decisively: T2's 120 never-reached failures suggest an approach/control deficit, while its eight outer reached-but-failed episodes preserve a stabilization component. The next inquiry should use checkpoint- and geometry-conditioned reach, branch, and hold diagnostics to determine which mechanism can change the route toward 98%; evidence of learning collapse with competent local mechanics would favor a training/distribution redesign, whereas persistent bearing/branch-specific reach or post-reach failures across competent training would redirect toward dynamics, action authority, observation, or stabilization.",
+        "evidence_references": [
+          "T1",
+          "M1",
+          "M2",
+          "E2",
+          "T2",
+          "M3",
+          "E4"
+        ],
+        "human_goal_connection": "The campaign remains 20 percentage points below the 98% complete-hold objective on the strongest matched development result: T1 achieved 75.0% on the seed-27300 panel and 78.5% on the earlier research panel, while T2 achieved only 36.0%. No candidate is ready for official assessment. The closed I1 inquiry established that the tested full-radius training recipe is not a viable direct route to the human goal.",
+        "next_direction_or_closure": "I1 is closed, and the inquiry-session summary is complete. The next fresh session should enter goal review and open an inquiry with the exact next question recorded here. It should first discriminate learning/distribution failure from geometry-dependent reach and stabilization using the available T2 and T1 checkpoint trajectories and branch-, bearing-, radius-, first-reach-, hold-, and interruption-conditioned evidence before selecting another coverage, reward, or control intervention. Official assessment remains inappropriate until a candidate is developmentally near the 98% criterion.",
+        "next_question": "Why did fresh PPO training on the official 0.06-0.20 m radius distribution fail to acquire a policy that reaches and holds both inner and outer targets, and is the limiting mechanism learning/distribution credit assignment or geometry-dependent control and stabilization?"
+      },
+      "result": {
+        "session_id": "S3",
+        "status": "checkpointed"
+      },
+      "session_id": "S3",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "2781bccc48f43a4642a390ae33631a73dbb34386",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "T1 and T2 produced archived candidate checkpoints. T1:checkpoint-115712 remains the strongest development-measured candidate, with 71.0% on M1, 78.5% on M2, and 75.0% on the matched M3 panel. T2:checkpoint-120832 was measured at 36.0% on M3. No candidate has been assigned working, best-known, or retained status because none meets the current development objective or the 98% human goal.",
+        "completed_operations": [
+          "T2",
+          "M3",
+          "E4"
+        ],
+        "cumulative_resource_use": "Two fresh 120000-step training runs completed, each rounded to 120832 simulator steps: T1 on 0.14-0.20 m and T2 on 0.06-0.20 m. Three 200-episode development measurements completed for T1/T2: M1 fixed task-reference, M2 seed-17300 research diagnostics, and M3 matched seed-27300 diagnostics for both candidates. Two inquiry-boundary operations completed: E2 opened I1 and E4 closed I1 with a limited negative result. No official assessment was requested.",
+        "current_goal_gap": "Development performance remains far below the 98% target: T1 measured 71.0% on the fixed task-reference panel, 78.5% on the seed-17300 research panel, and 75.0% on the matched seed-27300 panel. T2 measured 36.0% on the matched panel. These are development results, not official assessment results.",
+        "current_synthesis": "Observed: T1 was trained only on 0.14-0.20 m radii. M1 measured 71.0%, M2 measured 78.5%, and M2 diagnostics showed 39.1% success at 6-10 cm, 75.0% at 10-14 cm, and 97.2% at 14-20 cm; 35 of 43 failures never reached tolerance, while all eight reached-but-failed episodes were below 14 cm. This supported testing official-radius coverage. T2 was then trained fresh with the 0.06-0.20 m distribution, but its training success remained zero and its reward statistics do not establish development behavior. M3 measured T2 and T1 on identical seeds: T2 achieved 36.0% versus T1's 75.0%, with T2 success of 36.4%, 32.8%, and 38.2% in the 6-10, 10-14, and 14-20 cm bins, compared with T1's 48.5%, 79.3%, and 94.7%. T2 had 120 of 128 failures never reaching tolerance and eight reached-but-failed outer-bin episodes; T1 had substantially better outer complete-hold behavior. Interpretation: the negative result establishes that fresh PPO plus uniform full-radius exposure did not remove the inner deficit and materially degraded the outer range. It does not invalidate coverage generally. The broad T2 reach deficit is consistent with a learning/distribution interaction or geometry-dependent control failure, but the available diagnostics do not yet distinguish optimization and reward credit assignment from branch-, bearing-, or dynamics-limited control.",
+        "decision_frontier": "I1 is closed with a limited negative result. The unresolved distinction is why exposing the official inner region caused the fresh PPO candidate to fail broadly, including degradation at 0.14-0.20 m: (1) the mixed-radius distribution may have created an optimization or shaped-reward credit-assignment failure that prevented acquisition of a stable reach policy, or (2) the expanded geometry may expose branch-, bearing-, action-authority, or settling limits that require a different controller or representation. The current evidence favors neither mechanism decisively: T2's 120 never-reached failures suggest an approach/control deficit, while its eight outer reached-but-failed episodes preserve a stabilization component. The next inquiry should use checkpoint- and geometry-conditioned reach, branch, and hold diagnostics to determine which mechanism can change the route toward 98%; evidence of learning collapse with competent local mechanics would favor a training/distribution redesign, whereas persistent bearing/branch-specific reach or post-reach failures across competent training would redirect toward dynamics, action authority, observation, or stabilization.",
+        "evidence_references": [
+          "T1",
+          "M1",
+          "M2",
+          "E2",
+          "T2",
+          "M3",
+          "E4"
+        ],
+        "human_goal_connection": "The campaign remains 20 percentage points below the 98% complete-hold objective on the strongest matched development result: T1 achieved 75.0% on the seed-27300 panel and 78.5% on the earlier research panel, while T2 achieved only 36.0%. No candidate is ready for official assessment. The closed I1 inquiry established that the tested full-radius training recipe is not a viable direct route to the human goal.",
+        "inquiry_id": "I1",
+        "next_direction_or_closure": "I1 is closed, and the inquiry-session summary is complete. The next fresh session should enter goal review and open an inquiry with the exact next question recorded here. It should first discriminate learning/distribution failure from geometry-dependent reach and stabilization using the available T2 and T1 checkpoint trajectories and branch-, bearing-, radius-, first-reach-, hold-, and interruption-conditioned evidence before selecting another coverage, reward, or control intervention. Official assessment remains inappropriate until a candidate is developmentally near the 98% criterion.",
+        "next_question": "Why did fresh PPO training on the official 0.06-0.20 m radius distribution fail to acquire a policy that reaches and holds both inner and outer targets, and is the limiting mechanism learning/distribution credit assignment or geometry-dependent control and stabilization?",
+        "session_id": "S3"
+      },
+      "presentation": {
+        "backend_session_id": "c327462a-a8a4-48fd-a58e-6c6374c1310d",
+        "campaign_id": "896c230a-0ff1-4105-8ab7-1691a09c5482",
+        "campaign_usage": "10m00s | 26.98 AIU | prompt 4.4m (87% cached) | output 37.6k",
+        "session_id": "S3",
+        "session_kind": "inquiry",
+        "session_usage": "3m14s | 12.84 AIU | prompt 2.6m (90% cached) | output 10.4k"
+      },
+      "result": {
+        "session_id": "S3",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "33df3c95aa87b62a73feebed10a8ebc90528bbf6",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E5",
+    "inquiry_id": "I1",
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "T1 and T2 produced archived candidate checkpoints. T1:checkpoint-115712 remains the strongest development-measured candidate, with 71.0% on M1, 78.5% on M2, and 75.0% on the matched M3 panel. T2:checkpoint-120832 was measured at 36.0% on M3. No candidate has been assigned working, best-known, or retained status because none meets the current development objective or the 98% human goal.",
+        "completed_operations": [
+          "T2",
+          "M3",
+          "E4"
+        ],
+        "cumulative_resource_use": "Two fresh 120000-step training runs completed, each rounded to 120832 simulator steps: T1 on 0.14-0.20 m and T2 on 0.06-0.20 m. Three 200-episode development measurements completed for T1/T2: M1 fixed task-reference, M2 seed-17300 research diagnostics, and M3 matched seed-27300 diagnostics for both candidates. Two inquiry-boundary operations completed: E2 opened I1 and E4 closed I1 with a limited negative result. No official assessment was requested.",
+        "current_goal_gap": "Development performance remains far below the 98% target: T1 measured 71.0% on the fixed task-reference panel, 78.5% on the seed-17300 research panel, and 75.0% on the matched seed-27300 panel. T2 measured 36.0% on the matched panel. These are development results, not official assessment results.",
+        "current_synthesis": "Observed: T1 was trained only on 0.14-0.20 m radii. M1 measured 71.0%, M2 measured 78.5%, and M2 diagnostics showed 39.1% success at 6-10 cm, 75.0% at 10-14 cm, and 97.2% at 14-20 cm; 35 of 43 failures never reached tolerance, while all eight reached-but-failed episodes were below 14 cm. This supported testing official-radius coverage. T2 was then trained fresh with the 0.06-0.20 m distribution, but its training success remained zero and its reward statistics do not establish development behavior. M3 measured T2 and T1 on identical seeds: T2 achieved 36.0% versus T1's 75.0%, with T2 success of 36.4%, 32.8%, and 38.2% in the 6-10, 10-14, and 14-20 cm bins, compared with T1's 48.5%, 79.3%, and 94.7%. T2 had 120 of 128 failures never reaching tolerance and eight reached-but-failed outer-bin episodes; T1 had substantially better outer complete-hold behavior. Interpretation: the negative result establishes that fresh PPO plus uniform full-radius exposure did not remove the inner deficit and materially degraded the outer range. It does not invalidate coverage generally. The broad T2 reach deficit is consistent with a learning/distribution interaction or geometry-dependent control failure, but the available diagnostics do not yet distinguish optimization and reward credit assignment from branch-, bearing-, or dynamics-limited control.",
+        "decision_frontier": "I1 is closed with a limited negative result. The unresolved distinction is why exposing the official inner region caused the fresh PPO candidate to fail broadly, including degradation at 0.14-0.20 m: (1) the mixed-radius distribution may have created an optimization or shaped-reward credit-assignment failure that prevented acquisition of a stable reach policy, or (2) the expanded geometry may expose branch-, bearing-, action-authority, or settling limits that require a different controller or representation. The current evidence favors neither mechanism decisively: T2's 120 never-reached failures suggest an approach/control deficit, while its eight outer reached-but-failed episodes preserve a stabilization component. The next inquiry should use checkpoint- and geometry-conditioned reach, branch, and hold diagnostics to determine which mechanism can change the route toward 98%; evidence of learning collapse with competent local mechanics would favor a training/distribution redesign, whereas persistent bearing/branch-specific reach or post-reach failures across competent training would redirect toward dynamics, action authority, observation, or stabilization.",
+        "evidence_references": [
+          "T1",
+          "M1",
+          "M2",
+          "E2",
+          "T2",
+          "M3",
+          "E4"
+        ],
+        "human_goal_connection": "The campaign remains 20 percentage points below the 98% complete-hold objective on the strongest matched development result: T1 achieved 75.0% on the seed-27300 panel and 78.5% on the earlier research panel, while T2 achieved only 36.0%. No candidate is ready for official assessment. The closed I1 inquiry established that the tested full-radius training recipe is not a viable direct route to the human goal.",
+        "next_direction_or_closure": "I1 is closed, and the inquiry-session summary is complete. The next fresh session should enter goal review and open an inquiry with the exact next question recorded here. It should first discriminate learning/distribution failure from geometry-dependent reach and stabilization using the available T2 and T1 checkpoint trajectories and branch-, bearing-, radius-, first-reach-, hold-, and interruption-conditioned evidence before selecting another coverage, reward, or control intervention. Official assessment remains inappropriate until a candidate is developmentally near the 98% criterion.",
+        "next_question": "Why did fresh PPO training on the official 0.06-0.20 m radius distribution fail to acquire a policy that reaches and holds both inner and outer targets, and is the limiting mechanism learning/distribution credit assignment or geometry-dependent control and stabilization?"
+      }
+    },
+    "request_fingerprint": "5ed926ecbb5401fccab66fcf3ae5f14b42940e6841ccb8ce7a7733c781e2365f",
+    "session_id": "S3",
+    "supersedes": null
+  },
   "pi_checkpoint": {
-    "candidates_and_roles": "T1 produced archived candidates, including T1:checkpoint-115712 used by M1 and M2. No candidate has been assigned working, best-known, or retained status because no candidate yet meets the current development objective and the next inquiry must first test full-radius coverage.",
+    "candidates_and_roles": "T1 and T2 produced archived candidate checkpoints. T1:checkpoint-115712 remains the strongest development-measured candidate, with 71.0% on M1, 78.5% on M2, and 75.0% on the matched M3 panel. T2:checkpoint-120832 was measured at 36.0% on M3. No candidate has been assigned working, best-known, or retained status because none meets the current development objective or the 98% human goal.",
     "completed_operations": [
-      "E2"
+      "T2",
+      "M3",
+      "E4"
     ],
-    "cumulative_resource_use": "One fresh training run requested 120000 steps and completed 120832 simulator steps through PPO rollout-boundary rounding. Two 200-episode development measurements completed: M1 fixed task-reference panel and M2 separate research diagnostic panel. E2 opened inquiry I1. No official assessment requested and no new training or measurement resource has been consumed in the goal-review transition.",
-    "current_goal_gap": "Baseline development performance is 71.0% on the fixed task-reference panel and 78.5% on a separate 200-episode research panel, leaving a 19.5 percentage-point gap to the 98% goal. These are development results, not official assessment results.",
-    "current_synthesis": "Observed: T1 was trained only on 0.14-0.20 m radii. M1 measured 71.0% on the fixed task-reference panel and M2 measured 78.5% on a separate 200-episode research panel. The M2 diagnostics show 39.1% success at 6-10 cm, 75.0% at 10-14 cm, and 97.2% at 14-20 cm; 35 of 43 failures never reached tolerance, while all eight reached-but-failed episodes were below 14 cm and the outer-range failures were never-reached cases. This supports changing the training distribution toward official-radius coverage rather than treating post-reach stabilization across the trained outer range as the primary baseline deficit. The evidence is recipe-specific: it establishes where this baseline fails, not that full-coverage training will solve the task or preserve outer-range behavior. Inquiry I1 was opened to test that causal route.",
-    "decision_frontier": "The baseline coverage-versus-stabilization distinction is resolved in favor of an omitted-inner-radius deficit for this candidate, but the intervention question remains open: can training on the official 0.06-0.20 m radius distribution eliminate inner-radius reach failures without degrading complete-hold performance at 0.14-0.20 m? A full-coverage candidate measured on a non-overlapping diagnostic panel will support continuing the coverage route if inner-bin success and aggregate performance approach the 98% goal while outer performance is preserved; persistent inner failures or outer degradation will redirect the inquiry toward the observed limiting mechanism, including stabilization, dynamics, action authority, or reward/control design.",
+    "cumulative_resource_use": "Two fresh 120000-step training runs completed, each rounded to 120832 simulator steps: T1 on 0.14-0.20 m and T2 on 0.06-0.20 m. Three 200-episode development measurements completed for T1/T2: M1 fixed task-reference, M2 seed-17300 research diagnostics, and M3 matched seed-27300 diagnostics for both candidates. Two inquiry-boundary operations completed: E2 opened I1 and E4 closed I1 with a limited negative result. No official assessment was requested.",
+    "current_goal_gap": "Development performance remains far below the 98% target: T1 measured 71.0% on the fixed task-reference panel, 78.5% on the seed-17300 research panel, and 75.0% on the matched seed-27300 panel. T2 measured 36.0% on the matched panel. These are development results, not official assessment results.",
+    "current_synthesis": "Observed: T1 was trained only on 0.14-0.20 m radii. M1 measured 71.0%, M2 measured 78.5%, and M2 diagnostics showed 39.1% success at 6-10 cm, 75.0% at 10-14 cm, and 97.2% at 14-20 cm; 35 of 43 failures never reached tolerance, while all eight reached-but-failed episodes were below 14 cm. This supported testing official-radius coverage. T2 was then trained fresh with the 0.06-0.20 m distribution, but its training success remained zero and its reward statistics do not establish development behavior. M3 measured T2 and T1 on identical seeds: T2 achieved 36.0% versus T1's 75.0%, with T2 success of 36.4%, 32.8%, and 38.2% in the 6-10, 10-14, and 14-20 cm bins, compared with T1's 48.5%, 79.3%, and 94.7%. T2 had 120 of 128 failures never reaching tolerance and eight reached-but-failed outer-bin episodes; T1 had substantially better outer complete-hold behavior. Interpretation: the negative result establishes that fresh PPO plus uniform full-radius exposure did not remove the inner deficit and materially degraded the outer range. It does not invalidate coverage generally. The broad T2 reach deficit is consistent with a learning/distribution interaction or geometry-dependent control failure, but the available diagnostics do not yet distinguish optimization and reward credit assignment from branch-, bearing-, or dynamics-limited control.",
+    "decision_frontier": "I1 is closed with a limited negative result. The unresolved distinction is why exposing the official inner region caused the fresh PPO candidate to fail broadly, including degradation at 0.14-0.20 m: (1) the mixed-radius distribution may have created an optimization or shaped-reward credit-assignment failure that prevented acquisition of a stable reach policy, or (2) the expanded geometry may expose branch-, bearing-, action-authority, or settling limits that require a different controller or representation. The current evidence favors neither mechanism decisively: T2's 120 never-reached failures suggest an approach/control deficit, while its eight outer reached-but-failed episodes preserve a stabilization component. The next inquiry should use checkpoint- and geometry-conditioned reach, branch, and hold diagnostics to determine which mechanism can change the route toward 98%; evidence of learning collapse with competent local mechanics would favor a training/distribution redesign, whereas persistent bearing/branch-specific reach or post-reach failures across competent training would redirect toward dynamics, action authority, observation, or stabilization.",
     "evidence_references": [
       "T1",
       "M1",
       "M2",
-      "E2"
+      "E2",
+      "T2",
+      "M3",
+      "E4"
     ],
-    "human_goal_connection": "The baseline candidate remains substantially below the 98% complete-hold objective: 71.0% on the fixed task-reference panel and 78.5% on the separate research panel. The completed diagnostic evidence supports testing official-radius training coverage as the next goal-directed route.",
-    "inquiry_id": null,
-    "next_direction_or_closure": "End the goal-review session and continue in inquiry I1. The next scientific action should train a candidate with the official 0.06-0.20 m radius coverage, then measure it on a non-overlapping diagnostic panel with radius-binned complete-hold and reach/stabilization diagnostics. Do not request official assessment before this inquiry produces evidence against its closure condition.",
-    "next_question": "Can expanding training coverage to the official 0.06-0.20 m radius distribution eliminate the baseline candidate's inner-radius reach deficit while preserving complete-hold performance across 0.14-0.20 m?",
-    "scientific_commit": "edd7576567b43bcde9d01769a0ba219959016339",
-    "session_id": "S2"
+    "human_goal_connection": "The campaign remains 20 percentage points below the 98% complete-hold objective on the strongest matched development result: T1 achieved 75.0% on the seed-27300 panel and 78.5% on the earlier research panel, while T2 achieved only 36.0%. No candidate is ready for official assessment. The closed I1 inquiry established that the tested full-radius training recipe is not a viable direct route to the human goal.",
+    "inquiry_id": "I1",
+    "next_direction_or_closure": "I1 is closed, and the inquiry-session summary is complete. The next fresh session should enter goal review and open an inquiry with the exact next question recorded here. It should first discriminate learning/distribution failure from geometry-dependent reach and stabilization using the available T2 and T1 checkpoint trajectories and branch-, bearing-, radius-, first-reach-, hold-, and interruption-conditioned evidence before selecting another coverage, reward, or control intervention. Official assessment remains inappropriate until a candidate is developmentally near the 98% criterion.",
+    "next_question": "Why did fresh PPO training on the official 0.06-0.20 m radius distribution fail to acquire a policy that reaches and holds both inner and outer targets, and is the limiting mechanism learning/distribution credit assignment or geometry-dependent control and stabilization?",
+    "scientific_commit": "33df3c95aa87b62a73feebed10a8ebc90528bbf6",
+    "session_id": "S3"
   },
   "schema_version": 6,
   "scientific_model": {
@@ -2934,23 +3081,6 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "c327462a-a8a4-48fd-a58e-6c6374c1310d",
-    "id": "S3",
-    "inquiry_id": "I1",
-    "kind": "inquiry",
-    "objective": "Advance I1 toward an evidence-supported answer to its scientific question: Can expanding training coverage to the official 0.06-0.20 m radius distribution eliminate the baseline candidate's inner-radius reach deficit while preserving complete-hold performance across 0.14-0.20 m? Before choosing the next action, compare the accumulated evidence with the closure condition. Close the inquiry when the condition is met.",
-    "operation_ids": [
-      "T2",
-      "M3",
-      "E4"
-    ],
-    "scientific_parent_commit": "2781bccc48f43a4642a390ae33631a73dbb34386"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
