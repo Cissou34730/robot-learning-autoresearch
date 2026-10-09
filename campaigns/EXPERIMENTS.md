@@ -58,3 +58,4 @@
 | T8 | training | I8 | completed |
 | M12 | measurement | I8 | completed |
 | M13 | measurement | I8 | completed |
+| T9 | training | I8 | completed |
