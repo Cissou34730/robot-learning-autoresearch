@@ -23943,47 +23943,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "open",
-        "inquiry": {
-          "closure_condition": "Close when completed uniform-panel evidence from a less-coupled branch- or limit-conditioned trajectory design establishes whether it can reach at least 196/200-equivalent successes, preserve 40/40 inner-band success, and reduce non-reaching failures with complete first-reach, post-reach, velocity, branch or limit, and hold-interruption diagnostics. A positive result supports continued policy development and candidate selection; persistent positive-margin non-reaching failures redirect toward learned acquisition or controller imitation, branch- or limit-aligned failures support explicit branch-conditioned design, and adequate-margin high-velocity post-reach interruptions elevate hold stabilization. Incomplete diagnostics preserve the distinction.",
-          "goal_connection": "The human goal requires at least 196 successful episodes out of 200 under the official target distribution, with every success requiring an uninterrupted 100-step hold. The strongest learned candidates remain at 153/160, while M17 established 160/160 same-interface computed-torque controllability. Resolving whether separating branch or limit conditioning from trajectory acquisition can recover learned target acquisition without sacrificing inner-band coverage is the most direct remaining route toward the goal.",
-          "handoff_conclusion": "M1 established substantial transient actuation authority and at least one feasible analytic IK branch for every sampled official target, with 64 of 576 grid targets having only one feasible branch. T1 measured 150/160 with 40/40 inner-band success, seven pre-reach failures and three post-reach failures; T8 and T9 improved the unchanged direct-action route to 153/160 while preserving 40/40 inner-band success, with residual hold interruptions and shifted reach-versus-hold splits. M17 then established that the unchanged bounded action interface is controllable: computed-torque control achieved 160/160 for each of three gain settings, including 93/93 inner-band successes, with no reach or hold interruptions. M18 showed that the tested controller-derived PPO action prior did not transfer that capability: early and terminal T10 checkpoints both measured 153/160 and failed on the same seven seeds, although their failure splits traded pre-reach against post-reach interruptions. T11 implemented explicit phase, a smooth trajectory reference and previous-action history, but its learning trajectory recorded zero success and M19 measured 0/160. M20 diagnosed 150/160 failures without first tolerance entry and only 10 after first reach; those 10 accumulated 134 interruptions. T11 also had 0/40 inner-band success, and all 160 terminal or first-reach nearest-branch margin observations were nonnegative. Thus the tested phase/history/trajectory contract caused a broad acquisition or trajectory-contract failure rather than demonstrating transfer, while post-reach instability remains a secondary mechanism. E44 closed I10 with a limited negative for this implementation and recipe, not for policy methods generally. The leading route now changes toward a less-coupled branch- or limit-conditioned trajectory design that preserves uniform target acquisition and inner-band behavior, while retaining hold stabilization as a secondary discriminator.",
-          "handoff_question": "Can a less-coupled branch- or limit-conditioned trajectory design, while preserving uniform official target coverage and the 40/40 inner-band behavior, raise learned-policy success to at least 196/200-equivalent uninterrupted-hold successes and reduce the dominant non-reaching failures?",
-          "handoff_source_session_id": "S21",
-          "id": "I11",
-          "opened_in_session": "S22",
-          "question": "Can a less-coupled branch- or limit-conditioned trajectory design, while preserving uniform official target coverage and the 40/40 inner-band behavior, raise learned-policy success to at least 196/200-equivalent uninterrupted-hold successes and reduce the dominant non-reaching failures?",
-          "rationale": "M1 established at least one feasible analytic IK branch for every sampled official target, and M17 showed that the unchanged bounded action interface is controllable with 160/160 computed-torque success, including 93/93 inner-band success and no reach or hold interruptions. T1, T8, and T9 provide the learned reference behavior at 150/160 to 153/160 while preserving 40/40 inner-band success. In contrast, T11's explicitly coupled phase/history/trajectory recipe measured 0/160, lost the inner-band behavior, and M20 found 150 failures without first tolerance entry; its nonnegative nearest-branch margins do not support a simple unreachable-limit explanation. This is a limited negative for that recipe, not for policy methods generally. The next decision therefore requires testing the broader less-coupled capability need under preserved uniform coverage, without selecting a particular operation in the inquiry itself.",
-          "reframes": []
-        }
-      },
-      "result": {
-        "action": "open",
-        "inquiry_id": "I11",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E46",
-    "inquiry_id": null,
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "open",
-        "closure_condition": "Close when completed uniform-panel evidence from a less-coupled branch- or limit-conditioned trajectory design establishes whether it can reach at least 196/200-equivalent successes, preserve 40/40 inner-band success, and reduce non-reaching failures with complete first-reach, post-reach, velocity, branch or limit, and hold-interruption diagnostics. A positive result supports continued policy development and candidate selection; persistent positive-margin non-reaching failures redirect toward learned acquisition or controller imitation, branch- or limit-aligned failures support explicit branch-conditioned design, and adequate-margin high-velocity post-reach interruptions elevate hold stabilization. Incomplete diagnostics preserve the distinction.",
-        "goal_connection": "The human goal requires at least 196 successful episodes out of 200 under the official target distribution, with every success requiring an uninterrupted 100-step hold. The strongest learned candidates remain at 153/160, while M17 established 160/160 same-interface computed-torque controllability. Resolving whether separating branch or limit conditioning from trajectory acquisition can recover learned target acquisition without sacrificing inner-band coverage is the most direct remaining route toward the goal.",
-        "question": "Can a less-coupled branch- or limit-conditioned trajectory design, while preserving uniform official target coverage and the 40/40 inner-band behavior, raise learned-policy success to at least 196/200-equivalent uninterrupted-hold successes and reduce the dominant non-reaching failures?",
-        "rationale": "M1 established at least one feasible analytic IK branch for every sampled official target, and M17 showed that the unchanged bounded action interface is controllable with 160/160 computed-torque success, including 93/93 inner-band success and no reach or hold interruptions. T1, T8, and T9 provide the learned reference behavior at 150/160 to 153/160 while preserving 40/40 inner-band success. In contrast, T11's explicitly coupled phase/history/trajectory recipe measured 0/160, lost the inner-band behavior, and M20 found 150 failures without first tolerance entry; its nonnegative nearest-branch margins do not support a simple unreachable-limit explanation. This is a limited negative for that recipe, not for policy methods generally. The next decision therefore requires testing the broader less-coupled capability need under preserved uniform coverage, without selecting a particular operation in the inquiry itself."
-      }
-    },
-    "request_fingerprint": "f209e5068f546e03cf2fe42b8c20345e6b00ef47da70bcb0b57b9c70e87439f1",
-    "session_id": "S22",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T8:checkpoint-60416 and T9:checkpoint-20480 remain the strongest measured learned candidates at 153/160 but have no protected working, best-known or retained role. T10:checkpoint-10240 and T10:checkpoint-120832 also measured 153/160 and are not promoted. T11:checkpoint-120832 is rejected as a viable candidate after its 0/160 result and 0/40 inner-band success. The M17 computed-torque controller is evidence of same-interface capability, not a learned candidate for the human goal. No candidate has an evidence-backed protected role.",
     "completed_operations": [
