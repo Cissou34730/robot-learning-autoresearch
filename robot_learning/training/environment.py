@@ -1,4 +1,4 @@
-"""Training-only environment construction for the baseline recipe.
+"""Training-only environment construction for incremental transfer training.
 
 Only the target distribution the policy trains on lives here. Task mechanics,
 success semantics and evaluation behavior stay in
@@ -12,46 +12,38 @@ import numpy as np
 
 from robot_learning.scenario.environment import TwoJointArmReachEnv
 
-TRAINING_TARGET_RADIUS_RANGE = (0.06, 0.20)
-HARD_TARGET_RADIUS_RANGE = (0.06, 0.14)
-HARD_TARGET_PROBABILITY = 0.5
+BASELINE_TARGET_RADIUS_RANGE = (0.14, 0.20)
+OFFICIAL_TARGET_RADIUS_RANGE = (0.06, 0.20)
+CURRICULUM_EPISODES = 300
 
 
-class ReachFocusedTrainingEnv(TwoJointArmReachEnv):
-    """Expose the policy to difficult inward and reset-opposed targets."""
+class IncrementalRadiusTrainingEnv(TwoJointArmReachEnv):
+    """Broaden inward reach coverage while retaining uniform angle coverage."""
+
+    def __init__(self) -> None:
+        super().__init__(target_radius_range=BASELINE_TARGET_RADIUS_RANGE)
+        self._episodes_seen = 0
 
     def _sample_target_position(self) -> None:
-        if self.np_random.random() < HARD_TARGET_PROBABILITY:
-            radius = float(
-                self.np_random.uniform(
-                    HARD_TARGET_RADIUS_RANGE[0], HARD_TARGET_RADIUS_RANGE[1]
-                )
-            )
-            angle = float(
-                self.np_random.choice(
-                    (
-                        self.np_random.uniform(-np.pi, -np.pi / 2.0),
-                        self.np_random.uniform(np.pi / 2.0, np.pi),
-                    )
-                )
-            )
-        else:
-            radius = float(
-                self.np_random.uniform(
-                    TRAINING_TARGET_RADIUS_RANGE[0],
-                    TRAINING_TARGET_RADIUS_RANGE[1],
-                )
-            )
-            angle = float(self.np_random.uniform(-np.pi, np.pi))
-
+        progress = min(self._episodes_seen / CURRICULUM_EPISODES, 1.0)
+        minimum_radius = float(
+            BASELINE_TARGET_RADIUS_RANGE[0]
+            + progress
+            * (OFFICIAL_TARGET_RADIUS_RANGE[0] - BASELINE_TARGET_RADIUS_RANGE[0])
+        )
+        radius = float(
+            self.np_random.uniform(minimum_radius, OFFICIAL_TARGET_RADIUS_RANGE[1])
+        )
+        angle = float(self.np_random.uniform(-np.pi, np.pi))
         target_z = float(self._end_effector_position()[2])
         self.data.mocap_pos[0] = [
             radius * np.cos(angle),
             radius * np.sin(angle),
             target_z,
         ]
+        self._episodes_seen += 1
 
 
 def make_training_env() -> gym.Env:
     """Build the Gymnasium environment used for training this scenario."""
-    return ReachFocusedTrainingEnv(target_radius_range=TRAINING_TARGET_RADIUS_RANGE)
+    return IncrementalRadiusTrainingEnv()
