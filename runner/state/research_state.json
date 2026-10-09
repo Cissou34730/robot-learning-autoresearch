@@ -18981,47 +18981,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "open",
-        "inquiry": {
-          "closure_condition": "Close after a matched T3-controlled evaluation of one bounded pre-arrival velocity-shaping design. Positive evidence requires at least 157 of 160 first reaches, at least 157 of 160 complete holds, no added terminal hold interruptions, and improved negative-angle arrival speed or one-interval retention margin relative to T3. Reduced first-reach coverage, broader route degradation, added terminal interruptions, or unchanged negative-angle margin closes the inquiry negatively or with a limited result.",
-          "goal_connection": "T3 reaches 157 of 160 development targets but completes only 153 holds, leaving the campaign below the 196 of 200 official-success goal. The remaining failures are concentrated near negative angles, and the latest radial action injection reduced first-reach coverage and hold reliability. A pre-arrival-only design could address the velocity margin while preserving T3's terminal hold regime.",
-          "handoff_conclusion": "Established observations: T3's incremental-radius transfer preserves broad route coverage but leaves seven negative-angle failures. M10 found high-speed residual arrivals and generally negative one-interval retention margins, supporting a policy-reachable braking-margin bottleneck but not proving that any particular controller can repair it. T13's route-conditioned joint damping changed no paired outcomes. T14 tested a different plant-level task-space radial braking layer, but M16 measured 149/160 successes versus T3's 153/160, and M18 measured only 156/160 first reaches, 11 residual cases, and 71 hold interruptions versus T3's 157 first reaches, 7 residual cases, and 4 interruptions. Representative T14 opposing-action probes also produced negative speed reductions, indicating that the radial correction can add transient motion in this nonlinear, sampled plant. Thus I12's tested design traded away route and hold reliability rather than improving the demonstrated policy-reachable margin. This is negative evidence against the radial action recipe, not against every plant-level or pre-arrival velocity-shaping design. The leading mechanism remains insufficiently shaped velocity before the discrete tolerance boundary; the next decision must distinguish pre-arrival braking from terminal action injection.",
-          "handoff_question": "Can a route-preserving pre-arrival velocity-shaping design improve negative-angle sampled braking margin without adding terminal hold interruptions or reducing T3's first-reach coverage?",
-          "handoff_source_session_id": "S25",
-          "id": "I13",
-          "opened_in_session": "S26",
-          "question": "Can a route-preserving pre-arrival velocity-shaping design improve negative-angle sampled braking margin without adding terminal hold interruptions or reducing T3's first-reach coverage?",
-          "rationale": "The unresolved distinction is whether the residual failures arise from velocity carried into the sampled tolerance boundary, which can be shaped before entry, or from a broader lack of stabilizing authority that makes any added braking trade route coverage for hold continuity. M10 supports the first mechanism but does not identify a safe controller, while T14 directly shows that radial terminal-region action injection can add transient motion. This inquiry therefore isolates pre-arrival shaping, retains T3 as the same-seed control, and excludes action changes after tolerance entry so the result discriminates pre-arrival braking from terminal action injection.",
-          "reframes": []
-        }
-      },
-      "result": {
-        "action": "open",
-        "inquiry_id": "I13",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E52",
-    "inquiry_id": null,
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "open",
-        "closure_condition": "Close after a matched T3-controlled evaluation of one bounded pre-arrival velocity-shaping design. Positive evidence requires at least 157 of 160 first reaches, at least 157 of 160 complete holds, no added terminal hold interruptions, and improved negative-angle arrival speed or one-interval retention margin relative to T3. Reduced first-reach coverage, broader route degradation, added terminal interruptions, or unchanged negative-angle margin closes the inquiry negatively or with a limited result.",
-        "goal_connection": "T3 reaches 157 of 160 development targets but completes only 153 holds, leaving the campaign below the 196 of 200 official-success goal. The remaining failures are concentrated near negative angles, and the latest radial action injection reduced first-reach coverage and hold reliability. A pre-arrival-only design could address the velocity margin while preserving T3's terminal hold regime.",
-        "question": "Can a route-preserving pre-arrival velocity-shaping design improve negative-angle sampled braking margin without adding terminal hold interruptions or reducing T3's first-reach coverage?",
-        "rationale": "The unresolved distinction is whether the residual failures arise from velocity carried into the sampled tolerance boundary, which can be shaped before entry, or from a broader lack of stabilizing authority that makes any added braking trade route coverage for hold continuity. M10 supports the first mechanism but does not identify a safe controller, while T14 directly shows that radial terminal-region action injection can add transient motion. This inquiry therefore isolates pre-arrival shaping, retains T3 as the same-seed control, and excludes action changes after tolerance entry so the result discriminates pre-arrival braking from terminal action injection."
-      }
-    },
-    "request_fingerprint": "b83e249f3162336e096902e49955560ccc30fa38e8378279ed440e06d599702d",
-    "session_id": "S26",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T3:checkpoint-120832 remains the strongest evidence-backed development candidate at 153/160 successes, 157 first reaches, and four hold interruptions. T14:checkpoint-120832 is an intervention candidate rejected for the tested radial braking recipe at 149/160 successes. No working, best-known, or retained role is assigned.",
     "completed_operations": [
