@@ -9839,8 +9839,8 @@
   "counters": {
     "event": 56,
     "inquiry": 13,
-    "measurement": 23,
-    "session": 27,
+    "measurement": 25,
+    "session": 28,
     "training": 15
   },
   "human_goal": {
@@ -21337,9 +21337,159 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-09T02:05:20Z",
+      "error": "robot_learning.lab.residual_margin failed:\n\nTraceback (most recent call last):\n  File \"<frozen runpy>\", line 203, in _run_module_as_main\n  File \"<frozen runpy>\", line 88, in _run_code\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\residual_margin.py\", line 485, in <module>\n    main()\n    ~~~~^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\residual_margin.py\", line 479, in main\n    json.dumps(measure(args.candidate, args.episodes, args.seed), indent=2) + \"\\n\",\n               ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\residual_margin.py\", line 286, in measure\n    data.site_xvelp[site_id, :2].copy(),\n    ^^^^^^^^^^^^^^^\nAttributeError: 'mujoco._structs.MjData' object has no attribute 'site_xvelp'\n",
+      "id": "M24",
+      "inquiry_id": null,
+      "kind": "measurement",
+      "request": {
+        "description": "Branch- and trajectory-stratified T3 arrival-state and zero-action retention analysis on the matched 160-episode development panel.",
+        "measurements": [
+          {
+            "args": [
+              "--candidate",
+              "campaigns/checkpoints/candidates/1ae27a27-6880-4ca6-9d50-e6498e771cb7/t3/checkpoint-120832/model.zip",
+              "--episodes",
+              "160",
+              "--seed",
+              "4200",
+              "--artifact",
+              "campaigns/evaluations/1ae27a27-6880-4ca6-9d50-e6498e771cb7/python-module-M24-1-i13-t3-arrival-strata.json"
+            ],
+            "artifact": "campaigns/evaluations/1ae27a27-6880-4ca6-9d50-e6498e771cb7/python-module-M24-1-i13-t3-arrival-strata.json",
+            "instrument": "python_module",
+            "label": "T3 branch- and trajectory-stratified arrival margin",
+            "module": "robot_learning.lab.residual_margin"
+          }
+        ],
+        "rationale": "The current frontier is whether T3's negative-angle failures are a distinct branch- and phase-conditioned arrival-state problem or reflect a broadly inadequate sampled plant margin. M23 characterized only the seven residual cases, so it cannot establish whether their high speed and negative retention margin distinguish failures from successful arrivals. This measurement records branch assignment, first-reach or closest-approach phase, signed radial and tangential end-effector velocity, joint speed, and zero-action 100-step retention for every T3 episode. A negative-angle stratum with materially worse arrival velocity and retention than successful T3 arrivals would justify a narrowly branch- and trajectory-conditioned intervention; similar margins across outcomes would redirect away from another shaping recipe toward a different control or representation mechanism."
+      },
+      "result": {
+        "error": "robot_learning.lab.residual_margin failed:\n\nTraceback (most recent call last):\n  File \"<frozen runpy>\", line 203, in _run_module_as_main\n  File \"<frozen runpy>\", line 88, in _run_code\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\residual_margin.py\", line 485, in <module>\n    main()\n    ~~~~^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\residual_margin.py\", line 479, in main\n    json.dumps(measure(args.candidate, args.episodes, args.seed), indent=2) + \"\\n\",\n               ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\residual_margin.py\", line 286, in measure\n    data.site_xvelp[site_id, :2].copy(),\n    ^^^^^^^^^^^^^^^\nAttributeError: 'mujoco._structs.MjData' object has no attribute 'site_xvelp'\n",
+        "status": "failed"
+      },
+      "session_id": "S28",
+      "status": "failed",
+      "superseded_by": "M25",
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "evaluation_semantics": null,
+      "measurements": [
+        {
+          "args": [
+            "--candidate",
+            "campaigns/checkpoints/candidates/1ae27a27-6880-4ca6-9d50-e6498e771cb7/t3/checkpoint-120832/model.zip",
+            "--episodes",
+            "160",
+            "--seed",
+            "4200",
+            "--artifact",
+            "campaigns/evaluations/1ae27a27-6880-4ca6-9d50-e6498e771cb7/python-module-M25-1-i13-t3-arrival-strata.json"
+          ],
+          "artifact": "campaigns/evaluations/1ae27a27-6880-4ca6-9d50-e6498e771cb7/python-module-M25-1-i13-t3-arrival-strata.json",
+          "instrument": "python_module",
+          "label": "T3 branch- and trajectory-stratified arrival margin",
+          "module": "robot_learning.lab.residual_margin"
+        }
+      ],
+      "module_provenance": {
+        "campaign_lab_manifest": [
+          {
+            "fingerprint": "6fd6be6cec2b9ab4000129bc55647cfce26b073269a4c8b04ef312b23f33c51b",
+            "path": "robot_learning/lab/__init__.py"
+          },
+          {
+            "fingerprint": "fce927fbc614f129d2f46f55b64cbe6c1cf83c476c9475268ba16bb3fa4f55d8",
+            "path": "robot_learning/lab/plant_margin.py"
+          },
+          {
+            "fingerprint": "14bf403fc94915a1b6d62e34c51a26a53e6375fa8c2e376f29e45edba794e4fb",
+            "path": "robot_learning/lab/residual_margin.py"
+          }
+        ],
+        "campaign_lab_publication": null,
+        "code_parent_commit": "730e56eff5b9d9feee88796225a30f655a5784ba",
+        "effective_parameters": {
+          "algorithm": {
+            "name": "ppo"
+          },
+          "policy": {
+            "activation": "tanh",
+            "net_arch": [
+              64,
+              64
+            ]
+          },
+          "ppo": {
+            "batch_size": 64,
+            "ent_coef": 0.01,
+            "gae_lambda": 0.95,
+            "gamma": 0.99,
+            "learning_rate": 0.0003,
+            "n_steps": 1024
+          },
+          "training": {
+            "checkpoint_every_steps": 5000,
+            "n_envs": 1
+          }
+        },
+        "module_manifest": [
+          {
+            "exists": true,
+            "fingerprint": "14bf403fc94915a1b6d62e34c51a26a53e6375fa8c2e376f29e45edba794e4fb",
+            "path": "robot_learning/lab/residual_margin.py"
+          }
+        ],
+        "module_paths": [
+          "robot_learning/lab/residual_margin.py"
+        ],
+        "scientific_commit": null,
+        "scientific_manifest": [],
+        "scientific_paths": []
+      },
+      "paired_comparisons": [],
+      "partial_results": [],
+      "result": null,
+      "task_reference_contract": null
+    },
+    "failure": null,
+    "id": "M25",
+    "inquiry_id": null,
+    "kind": "measurement",
+    "progress": "accepted",
+    "request": {
+      "measurement": {
+        "description": "Branch- and trajectory-stratified T3 arrival-state and zero-action retention analysis on the matched 160-episode development panel.",
+        "measurements": [
+          {
+            "args": [
+              "--candidate",
+              "campaigns/checkpoints/candidates/1ae27a27-6880-4ca6-9d50-e6498e771cb7/t3/checkpoint-120832/model.zip",
+              "--episodes",
+              "160",
+              "--seed",
+              "4200",
+              "--artifact",
+              "campaigns/evaluations/1ae27a27-6880-4ca6-9d50-e6498e771cb7/python-module-M25-1-i13-t3-arrival-strata.json"
+            ],
+            "artifact": "campaigns/evaluations/1ae27a27-6880-4ca6-9d50-e6498e771cb7/python-module-M25-1-i13-t3-arrival-strata.json",
+            "instrument": "python_module",
+            "label": "T3 branch- and trajectory-stratified arrival margin",
+            "module": "robot_learning.lab.residual_margin"
+          }
+        ],
+        "rationale": "M24 failed because the MuJoCo binding does not expose MjData.site_xvelp; it produced no scientific result. The implementation now derives end-effector velocity from the native site Jacobian and joint velocity. Re-run the unchanged discriminating measurement: determine whether T3's negative-angle failures are a distinct branch- and phase-conditioned arrival-state problem or reflect a broadly inadequate sampled plant margin. The result records branch assignment, first-reach or closest-approach phase, signed radial and tangential end-effector velocity, joint speed, and zero-action 100-step retention for every T3 episode. A negative-angle stratum with materially worse arrival velocity and retention than successful T3 arrivals would justify a narrowly branch- and trajectory-conditioned intervention; similar margins across outcomes would redirect away from another shaping recipe toward a different control or representation mechanism."
+      }
+    },
+    "request_fingerprint": "43cc924e5e09b0232d597ff0bafcc3d0030ecabef4b1acf367d2bc7538f69e49",
+    "session_id": "S28",
+    "supersedes": "M24"
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T3:checkpoint-120832 remains the strongest evidence-backed development candidate at 153/160 successes, 157 first reaches, and four hold interruptions. T15:checkpoint-120832 is rejected for the tested bounded radial pre-arrival recipe because it retained 153/160 successes, added interruptions, and did not improve the measured zero-action retention margin. No working, best-known, or retained role is assigned.",
     "completed_operations": [
@@ -21373,6 +21523,19 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "31872fe1-8c9e-4d9f-bf15-4c1047936869",
+    "id": "S28",
+    "inquiry_id": null,
+    "kind": "goal_review",
+    "objective": "Use the completed evidence to update the scientific direction toward the human goal. Request measurements when they resolve an uncertainty or develop the method. Then choose one outcome: request the official assessment, or open one bounded goal-linked inquiry.",
+    "operation_ids": [],
+    "scientific_parent_commit": "730e56eff5b9d9feee88796225a30f655a5784ba"
+  },
   "terminal_state": null
 }
