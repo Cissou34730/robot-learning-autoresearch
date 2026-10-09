@@ -5755,8 +5755,8 @@
   "counters": {
     "event": 31,
     "inquiry": 8,
-    "measurement": 8,
-    "session": 16,
+    "measurement": 10,
+    "session": 17,
     "training": 9
   },
   "human_goal": {
@@ -11300,9 +11300,157 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-09T01:00:58Z",
+      "error": "robot_learning.lab.residual_margin failed:\n\nusage: residual_margin.py [-h] --candidate CANDIDATE [--episodes EPISODES]\n                          [--seed SEED] --artifact ARTIFACT\nresidual_margin.py: error: the following arguments are required: --artifact\n",
+      "id": "M9",
+      "inquiry_id": "I8",
+      "kind": "measurement",
+      "request": {
+        "description": "Replay T3 on its matched 160-episode development panel, capture every residual failure's first-in-tolerance or closest-approach plant state, and replay each matched state for 100 sampled control steps under zero input, nominal local PD, and stronger local PD. Record compiled MuJoCo dynamics, branch and target geometry, joint speed and braking response, retention margin, final distance, sampled boundary crossings, and control saturation.",
+        "measurements": [
+          {
+            "args": [
+              "--candidate",
+              "campaigns/checkpoints/candidates/1ae27a27-6880-4ca6-9d50-e6498e771cb7/t3/checkpoint-120832/model.zip",
+              "--episodes",
+              "160",
+              "--seed",
+              "4200"
+            ],
+            "artifact": "campaigns/evaluations/1ae27a27-6880-4ca6-9d50-e6498e771cb7/i8-residual-margin.json",
+            "instrument": "python_module",
+            "label": "I8 matched residual arrival and local feedback margin",
+            "module": "robot_learning.lab.residual_margin"
+          }
+        ],
+        "rationale": "I8's unresolved distinction is insufficient discrete-time or plant control margin versus a policy-reachable arrival-state limitation. T3's residual failures are localized and prior reward, representation, and action-mapping interventions did not change them, so another policy recipe would not discriminate the mechanisms. If strong local state feedback cannot retain the captured residual states, repeated sampled exits, weak braking response, or negative retention margins would support a plant/control-robustness route. If local feedback retains the same states while T3 fails from learned arrivals, the plant has usable margin and the next route should return to policy learning or arrival-state shaping. The matched target angle/radius and branch fields test whether either conclusion is confined to the residual geometry."
+      },
+      "result": {
+        "error": "robot_learning.lab.residual_margin failed:\n\nusage: residual_margin.py [-h] --candidate CANDIDATE [--episodes EPISODES]\n                          [--seed SEED] --artifact ARTIFACT\nresidual_margin.py: error: the following arguments are required: --artifact\n",
+        "status": "failed"
+      },
+      "session_id": "S17",
+      "status": "failed",
+      "superseded_by": "M10",
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "evaluation_semantics": null,
+      "measurements": [
+        {
+          "args": [
+            "--candidate",
+            "campaigns/checkpoints/candidates/1ae27a27-6880-4ca6-9d50-e6498e771cb7/t3/checkpoint-120832/model.zip",
+            "--episodes",
+            "160",
+            "--seed",
+            "4200",
+            "--artifact",
+            "campaigns/evaluations/1ae27a27-6880-4ca6-9d50-e6498e771cb7/i8-residual-margin.json"
+          ],
+          "artifact": "campaigns/evaluations/1ae27a27-6880-4ca6-9d50-e6498e771cb7/i8-residual-margin.json",
+          "instrument": "python_module",
+          "label": "I8 matched residual arrival and local feedback margin",
+          "module": "robot_learning.lab.residual_margin"
+        }
+      ],
+      "module_provenance": {
+        "campaign_lab_manifest": [
+          {
+            "fingerprint": "6fd6be6cec2b9ab4000129bc55647cfce26b073269a4c8b04ef312b23f33c51b",
+            "path": "robot_learning/lab/__init__.py"
+          },
+          {
+            "fingerprint": "fce927fbc614f129d2f46f55b64cbe6c1cf83c476c9475268ba16bb3fa4f55d8",
+            "path": "robot_learning/lab/plant_margin.py"
+          },
+          {
+            "fingerprint": "ee9ac0e22d59dcfb7765da0a57ed3a610a888a6a47137eb87f21669df5048d90",
+            "path": "robot_learning/lab/residual_margin.py"
+          }
+        ],
+        "campaign_lab_publication": null,
+        "code_parent_commit": "a89452faa8d8a2d305cbb94d9d7c491ad802c5db",
+        "effective_parameters": {
+          "algorithm": {
+            "name": "ppo"
+          },
+          "policy": {
+            "activation": "tanh",
+            "net_arch": [
+              64,
+              64
+            ]
+          },
+          "ppo": {
+            "batch_size": 64,
+            "ent_coef": 0.01,
+            "gae_lambda": 0.95,
+            "gamma": 0.99,
+            "learning_rate": 0.0003,
+            "n_steps": 1024
+          },
+          "training": {
+            "checkpoint_every_steps": 5000,
+            "n_envs": 1
+          }
+        },
+        "module_manifest": [
+          {
+            "exists": true,
+            "fingerprint": "ee9ac0e22d59dcfb7765da0a57ed3a610a888a6a47137eb87f21669df5048d90",
+            "path": "robot_learning/lab/residual_margin.py"
+          }
+        ],
+        "module_paths": [
+          "robot_learning/lab/residual_margin.py"
+        ],
+        "scientific_commit": null,
+        "scientific_manifest": [],
+        "scientific_paths": []
+      },
+      "paired_comparisons": [],
+      "partial_results": [],
+      "result": null,
+      "task_reference_contract": null
+    },
+    "failure": null,
+    "id": "M10",
+    "inquiry_id": "I8",
+    "kind": "measurement",
+    "progress": "accepted",
+    "request": {
+      "measurement": {
+        "description": "Replay T3 on its matched 160-episode development panel, capture every residual failure's first-in-tolerance or closest-approach plant state, and replay each matched state for 100 sampled control steps under zero input, nominal local PD, and stronger local PD. Record compiled MuJoCo dynamics, branch and target geometry, joint speed and braking response, retention margin, final distance, sampled boundary crossings, and control saturation.",
+        "measurements": [
+          {
+            "args": [
+              "--candidate",
+              "campaigns/checkpoints/candidates/1ae27a27-6880-4ca6-9d50-e6498e771cb7/t3/checkpoint-120832/model.zip",
+              "--episodes",
+              "160",
+              "--seed",
+              "4200",
+              "--artifact",
+              "campaigns/evaluations/1ae27a27-6880-4ca6-9d50-e6498e771cb7/i8-residual-margin.json"
+            ],
+            "artifact": "campaigns/evaluations/1ae27a27-6880-4ca6-9d50-e6498e771cb7/i8-residual-margin.json",
+            "instrument": "python_module",
+            "label": "I8 matched residual arrival and local feedback margin",
+            "module": "robot_learning.lab.residual_margin"
+          }
+        ],
+        "rationale": "M9 was an execution failure because the module's required --artifact argument was omitted; it is not evidence about the mechanisms. I8's unresolved distinction remains insufficient discrete-time or plant control margin versus a policy-reachable arrival-state limitation. T3's residual failures are localized and prior reward, representation, and action-mapping interventions did not change them, so another policy recipe would not discriminate the mechanisms. If strong local state feedback cannot retain the captured residual states, repeated sampled exits, weak braking response, or negative retention margins would support a plant/control-robustness route. If local feedback retains the same states while T3 fails from learned arrivals, the plant has usable margin and the next route should return to policy learning or arrival-state shaping. The matched target angle/radius and branch fields test whether either conclusion is confined to the residual geometry."
+      }
+    },
+    "request_fingerprint": "b64a427fc54fc0260a5d8b9e868c54d890a1e002d81508b0aeb659185e7b83f8",
+    "session_id": "S17",
+    "supersedes": "M9"
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T3:checkpoint-120832 remains the strongest measured development candidate at 95.625 percent on M4, M6, and M8, with 157/160 first reaches and 4 hold interruptions in the corresponding matched development evidence. T9:checkpoint-120832 is an intervention-limited null matching T3 at 95.625 percent with zero discordant episodes. T7 remains a negative representation intervention at 95.0 percent with reduced first reach and increased interruptions. No candidate has a working, best-known, or retained role.",
     "completed_operations": [
@@ -11343,6 +11491,19 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "12879cc7-9e22-4535-a819-b1969299f41b",
+    "id": "S17",
+    "inquiry_id": "I8",
+    "kind": "inquiry",
+    "objective": "Advance I8 toward an evidence-supported answer to its scientific question: Can targeted plant-state and numerical-margin measurements determine whether T3's residual radius-angle failures are caused by insufficient discrete-time control margin or by a policy-reachable state limitation, and thereby identify the next credible route to 98%? Before choosing the next action, compare the accumulated evidence with the closure condition. Close the inquiry when the condition is met.",
+    "operation_ids": [],
+    "scientific_parent_commit": "a89452faa8d8a2d305cbb94d9d7c491ad802c5db"
+  },
   "terminal_state": null
 }
