@@ -73,6 +73,11 @@ Opening an inquiry records its question, connection to the human goal, closure
 condition, and rationale. The opening goal-review session then ends at a
 durable scientific session record, and a fresh inquiry session continues from
 that state.
+The inquiry question describes an unresolved scientific distinction, obstacle,
+or capability need. It must not merely name a training run, measurement,
+implementation, or recipe that has already been selected. Opening an inquiry
+does not commit the PI to an instrument; the first operation is chosen in the
+fresh inquiry session from the accumulated evidence and decision frontier.
 The closure condition states the evidence sufficient to end the inquiry. It
 permits closure with a positive, negative, limited or inconclusive conclusion.
 Obtaining and assessing this evidence can span several operations.
@@ -110,6 +115,12 @@ discriminating evidence already recorded in `current_synthesis` and
 inquiry; no operation is the default. The launcher states which operations are
 legal from the current state; each is a valid scientific choice when the
 evidence supports it.
+Before selecting the first operation, restate the unresolved distinction and
+why the selected operation is the most decision-relevant available action.
+Treat a proposed training recipe, measurement, or implementation as one
+possible response to the question, not as the question itself or as a required
+first step. This does not require measurement before training or prescribe any
+instrument sequence.
 
 Measurement and training are peer instruments. Either returns factual results
 to the same active bounded session without implying a required successor
@@ -163,11 +174,12 @@ reframe, the PI checkpoints before any further operation and resumes the
 reframed inquiry in a fresh bounded session.
 
 An inquiry closes when its closure condition is met, evidence redirects the
-campaign, the question is no longer a credible route, or it has produced the
-actionable result for which it was opened. The PI may close an inquiry with a
-limited or inconclusive result while the human goal remains unmet. Inquiry
-closure does not require a complete answer to its question. After the closing
-session checkpoints its decision, the campaign returns to goal review.
+campaign, the question is no longer a credible route, or completed evidence
+supplies the bounded answer for which it was opened. The PI may close an
+inquiry with a limited or inconclusive result while the human goal remains
+unmet. Inquiry closure does not require a complete answer to its question.
+After the closing session checkpoints its decision, the campaign returns to
+goal review.
 
 ## Bounded scientific sessions
 

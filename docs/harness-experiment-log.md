@@ -460,6 +460,7 @@ Implementation checks and unassessed campaign effects are not separate issues.
 | OI-013 | Remove the temporary fifteen-inquiry cap | **Pending.** The cap now pauses at a checkpointed boundary and no longer represents scientific exhaustion. Its value is unchanged. Removal remains a later maintainer decision. |
 | OI-014 | Single-change attribution in an intervention | **Open.** An intervention can change several factors at once and then receive a single-cause explanation. The explanation directs the following inquiries, so a wrong attribution can send later work along the wrong route. The requirement is attribution that matches the change, not a repeatable campaign. A bundled change stays valid when its candidate receives direct paired evaluation and the unresolved attribution stays visible. No design or runtime change is approved. |
 | OI-015 | Intended intervention versus effective experiment | **Implemented 2026-10-09; campaign effect unmeasured.** Candidate archival now preserves the existing complete-artifact integrity fingerprint and separately fingerprints identifiable learned-state components. Completed training reports exact component matches across corresponding earlier checkpoints, with executable-runtime equality kept separate. Immediate feedback and the durable brief state that serialized equality does not determine realization of the intended intervention. The PI contract requires uncertainty to remain visible until completed evidence establishes that the intended distinction was exercised. |
+| OI-016 | Operation-shaped inquiry formation and first-action precommitment | **Implemented 2026-10-09; campaign effect unmeasured.** The latest three campaigns show training-first ordering in nearly every inquiry, while older campaigns demonstrate measurement-only, tool-building, physical-probe and multi-operation inquiries. The inquiry contract and handoff now state that a question is an unresolved distinction, obstacle, or capability need—not a preselected operation or recipe—and that opening an inquiry does not commit the PI to an instrument. The first operation remains a PI choice; no measurement-first sequence or Runner judgment is imposed. |
 
 ### Detailed backlog and status context
 
@@ -2905,3 +2906,40 @@ separate from harness changes so their outcomes are not conflated.
   acceptance rule or model-role behavior changed.
 - **Status:** OI-015 implementation is complete. Its effect on PI behavior is
   unmeasured, so the issue is not yet closed.
+
+## 2026-10-09: implement the OI-016 inquiry-boundary repair
+
+- **RCA basis:** the historical review found stronger inquiry behavior in
+  campaigns `3ac5a413`, `2381bcbf`, `48993cfd`, `010714c2` and `77a975a5`,
+  including measurement-only inquiries, physical probes, reusable tool work,
+  evidence before a later intervention, and reframing. The three latest
+  campaigns instead began nearly every inquiry with a preselected training
+  recipe. The primary regression is the loss of the stronger inquiry semantics
+  from `9c5ef61` in `ac6c3e4`: the contract stopped explicitly separating an
+  unresolved question from an operation.
+- **Contract correction:** `contracts/program.md` now states that an inquiry
+  question describes an unresolved distinction, obstacle or capability need.
+  It must not merely name a training run, measurement, implementation or
+  recipe. Opening an inquiry does not commit the PI to an instrument. Closure
+  still permits positive, negative, limited and inconclusive outcomes, but
+  requires completed evidence to supply the bounded answer or redirect the
+  question.
+- **Prompt correction:** the goal-review and inquiry handoff prompts repeat that
+  the selected question is not a commitment to training, measurement,
+  implementation or a recipe. The inquiry prompt requires the PI to restate the
+  unresolved distinction and explain why the selected first operation is the
+  most decision-relevant available action. Training, measurement and
+  implementation remain peer options; no measurement-first sequence is
+  prescribed.
+- **Preserved behavior:** OI-001 startup coupling, OI-002 bounded closure,
+  OI-003 evidence interpretation, OI-004 progression and OI-015 component
+  observability are unchanged. Measurement permissions, inquiry permissions,
+  closure categories, training allocation, operation schemas and Runner
+  responsibilities are unchanged.
+- **Boundary:** this is a prompt/contract correction only. It adds no Runner
+  scientific gate, does not require measurement before training, does not make
+  inquiries the campaign objective, and does not alter the stopped campaign's
+  state. No campaign was launched, resumed, reset, trained, measured or
+  evaluated.
+- **Status:** OI-016 implementation is complete. Its effect on inquiry
+  instrument selection is unmeasured.

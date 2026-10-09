@@ -791,6 +791,7 @@ function New-ScientificSessionPrompt {
             "Previous session conclusion, verbatim:`n$([string]$checkpoint.current_synthesis)"
             "Question selected for the next inquiry, verbatim:`n$([string]$checkpoint.next_question)"
             "Continue from this state. Change it when new evidence, an implementation finding, or a concrete dead end changes the scientific situation. Record what changed and why."
+            "The selected question is not a commitment to training, measurement, implementation, or a recipe. In the fresh inquiry session, restate the unresolved distinction and choose the first operation from the evidence and decision frontier."
             "A useful policy does not establish its proposed cause. A negative recipe result does not by itself invalidate the broader method. Distinguish the tested recipe's outcome from what it establishes about the explanation or method it was intended to investigate."
         )
     }
@@ -800,6 +801,7 @@ function New-ScientificSessionPrompt {
             "Source session conclusion, verbatim:`n$([string]$State.active_inquiry.handoff_conclusion)"
             "Question selected by that session, verbatim:`n$([string]$State.active_inquiry.handoff_question)"
             "Continue from this state while you solve the active inquiry. Change it when new evidence, an implementation finding, or a concrete dead end changes the scientific situation. Record what changed and why."
+            "The selected question is not a commitment to training, measurement, implementation, or a recipe. Choose the next operation from the evidence and decision frontier; do not treat a proposed intervention as the required first step."
             "A useful policy does not establish its proposed cause. A negative recipe result does not by itself invalidate the broader method. Distinguish the tested recipe's outcome from what it establishes about the explanation or method it was intended to investigate."
         )
     }
@@ -824,6 +826,9 @@ function New-ScientificSessionPrompt {
     else {
         @(
             "State the unresolved scientific distinction before selecting an operation."
+            if ($session.kind -eq "inquiry" -and $State.active_inquiry) {
+                "The active inquiry question is an unresolved distinction, obstacle, or capability need, not an operation plan. Before the first operation, explain why the selected operation is the most decision-relevant available action. Training, measurement, and implementation remain peer options; none is required by the question."
+            }
             "Review completed evidence, the relevant learning trajectory, and unmeasured candidate artifacts. Training facts can nominate checkpoints for development measurement, but they do not establish development performance. The terminal checkpoint has no privileged status."
             "When interpreting a completed measurement, compare its aggregate outcome with the completed diagnostics relevant to the stated discriminator. Equal success labels do not establish preserved behavior when those diagnostics differ. Record consequential agreement, contradiction or tradeoff; if the relevant evidence is absent, failed or unavailable, keep the mechanism claim unresolved. Exhaustive inspection of unrelated artifact fields is not required."
             "Choose the artifact and operation whose result would most improve the next decision toward the human goal. Evaluation of every checkpoint is not required."
@@ -1227,14 +1232,16 @@ try {
                 $startupPhaseObjective
             }
             elseif ($kind -eq "goal_review") {
-                "Use the completed evidence to update the scientific direction toward the human goal. Request measurements when they resolve an uncertainty or develop the method. Then choose one outcome: request the official assessment, or open one bounded goal-linked inquiry."
+                "Use the completed evidence to update the scientific direction toward the human goal. Request measurements when they resolve an uncertainty or develop the method. Then choose one outcome: request the official assessment, or open one bounded goal-linked inquiry. Frame the inquiry as an unresolved distinction, obstacle, or capability need; do not encode a selected training run, measurement, implementation, or recipe as the question."
             }
             else {
                 (
                     "Advance $($state.active_inquiry.id) toward an evidence-supported " +
                     "answer to its scientific question: $($state.active_inquiry.question) " +
                     "Before choosing the next action, compare the accumulated evidence " +
-                    "with the closure condition. Close the inquiry when the condition is met."
+                    "with the closure condition. Restate the unresolved distinction and " +
+                    "choose the most decision-relevant available operation; no operation " +
+                    "is the default. Close the inquiry when the condition is met."
                 )
             }
             $startArguments = @(
