@@ -5496,38 +5496,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I3",
-        "outcome": "resolved_limited",
-        "reason": "M4 closes I3 with a limited negative result for the tested stabilization recipe. T3 applied a full forfeiture of accumulated hold-progress credit after exiting the tolerance band while retaining T2's balanced radius exposure and branch guidance. Its strongest training-signal checkpoint achieved only 3/160 successes and its terminal checkpoint 45/160, versus T2:checkpoint-120832 at 126/160 on the same panel; paired comparisons favored T2 by 123 and 81 discordant episodes respectively. The intervention therefore failed the closure criteria for retaining inner-radius and no-entry coverage, recovering outer-radius performance, or improving overall success. Because the aggregate result and available record do not establish that interruptions fell, this is a recipe-specific learning-collapse result, not evidence against the broader stabilization hypothesis or the learning method. The full hold-credit forfeiture is too destructive to continue. The next direction should test a gentler coverage-versus-braking or action-smoothness intervention while preserving T2's successful radius and branch recipe, with the same diagnostics required to determine whether stabilization improves without sacrificing coverage."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I3",
-        "outcome": "resolved_limited",
-        "reason": "M4 closes I3 with a limited negative result for the tested stabilization recipe. T3 applied a full forfeiture of accumulated hold-progress credit after exiting the tolerance band while retaining T2's balanced radius exposure and branch guidance. Its strongest training-signal checkpoint achieved only 3/160 successes and its terminal checkpoint 45/160, versus T2:checkpoint-120832 at 126/160 on the same panel; paired comparisons favored T2 by 123 and 81 discordant episodes respectively. The intervention therefore failed the closure criteria for retaining inner-radius and no-entry coverage, recovering outer-radius performance, or improving overall success. Because the aggregate result and available record do not establish that interruptions fell, this is a recipe-specific learning-collapse result, not evidence against the broader stabilization hypothesis or the learning method. The full hold-credit forfeiture is too destructive to continue. The next direction should test a gentler coverage-versus-braking or action-smoothness intervention while preserving T2's successful radius and branch recipe, with the same diagnostics required to determine whether stabilization improves without sacrificing coverage.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E12",
-    "inquiry_id": "I3",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "resolved_limited",
-        "reason": "M4 closes I3 with a limited negative result for the tested stabilization recipe. T3 applied a full forfeiture of accumulated hold-progress credit after exiting the tolerance band while retaining T2's balanced radius exposure and branch guidance. Its strongest training-signal checkpoint achieved only 3/160 successes and its terminal checkpoint 45/160, versus T2:checkpoint-120832 at 126/160 on the same panel; paired comparisons favored T2 by 123 and 81 discordant episodes respectively. The intervention therefore failed the closure criteria for retaining inner-radius and no-entry coverage, recovering outer-radius performance, or improving overall success. Because the aggregate result and available record do not establish that interruptions fell, this is a recipe-specific learning-collapse result, not evidence against the broader stabilization hypothesis or the learning method. The full hold-credit forfeiture is too destructive to continue. The next direction should test a gentler coverage-versus-braking or action-smoothness intervention while preserving T2's successful radius and branch recipe, with the same diagnostics required to determine whether stabilization improves without sacrificing coverage."
-      }
-    },
-    "request_fingerprint": "b95529cbe4631fe7136b7da429843539679f8b9db56dd08ad2d88e1934413ba6",
-    "session_id": "S7",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T2:checkpoint-120832 remains the strongest measured development candidate at 126/160 and is the reference for I3, but no candidate has a working, best-known, or retained role because development evidence remains below the human goal. T1:checkpoint-120832 remains the paired baseline at 110/160.",
     "completed_operations": [
