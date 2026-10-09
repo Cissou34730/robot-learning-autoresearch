@@ -1649,7 +1649,7 @@
     }
   },
   "counters": {
-    "event": 10,
+    "event": 11,
     "inquiry": 2,
     "measurement": 9,
     "session": 6,
@@ -1658,7 +1658,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "assigned",
+  "last_verdict": "official_assessment_requested",
   "model_roles": {
     "best_known": "T2:checkpoint-110592",
     "retained": {},
@@ -4936,9 +4936,62 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-09T08:51:38Z",
+      "error": null,
+      "id": "E11",
+      "inquiry_id": null,
+      "kind": "campaign_conclusion",
+      "request": {
+        "action": "request_official_assessment",
+        "reason": "Request the protected official assessment for the explicitly assigned best-known candidate T2:checkpoint-110592. M9 provides the strongest available development evidence: 153/160 complete-hold successes versus 150/160 for T1, improved capture timing and coverage in the previously identified failure geometries, and only 3 recorded hold interruptions versus 438. This supports continuing the capture-improved route, but the 98% human goal remains unestablished until the frozen candidate is evaluated on the protected 200-episode official distribution."
+      },
+      "result": {
+        "model": "T2:checkpoint-110592",
+        "status": "official_assessment_requested"
+      },
+      "session_id": "S6",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "model": "T2:checkpoint-110592",
+        "reason": "Request the protected official assessment for the explicitly assigned best-known candidate T2:checkpoint-110592. M9 provides the strongest available development evidence: 153/160 complete-hold successes versus 150/160 for T1, improved capture timing and coverage in the previously identified failure geometries, and only 3 recorded hold interruptions versus 438. This supports continuing the capture-improved route, but the 98% human goal remains unestablished until the frozen candidate is evaluated on the protected 200-episode official distribution.",
+        "status": "official_assessment_requested"
+      },
+      "presentation": {
+        "backend_session_id": "21a9363a-c1c2-4721-b83f-b11809d41c90",
+        "campaign_id": "58dcd817-4fed-42e6-854b-58f20408e6a1",
+        "campaign_usage": "18m55s | 45.74 AIU | prompt 7.6m (88% cached) | output 72.9k",
+        "session_id": "S6",
+        "session_kind": "goal_review",
+        "session_usage": "1m10s | 3.28 AIU | prompt 422.6k (78% cached) | output 2.4k"
+      },
+      "result": {
+        "model": "T2:checkpoint-110592",
+        "status": "official_assessment_requested"
+      }
+    },
+    "failure": null,
+    "id": "E11",
+    "inquiry_id": null,
+    "kind": "campaign_conclusion",
+    "progress": "completed",
+    "request": {
+      "campaign_conclusion": {
+        "action": "request_official_assessment",
+        "reason": "Request the protected official assessment for the explicitly assigned best-known candidate T2:checkpoint-110592. M9 provides the strongest available development evidence: 153/160 complete-hold successes versus 150/160 for T1, improved capture timing and coverage in the previously identified failure geometries, and only 3 recorded hold interruptions versus 438. This supports continuing the capture-improved route, but the 98% human goal remains unestablished until the frozen candidate is evaluated on the protected 200-episode official distribution."
+      }
+    },
+    "request_fingerprint": "1f357973bc98c2aa8a0d711802842a5576c9a4c930389f04ae5a443a89eb514c",
+    "session_id": "S6",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No formal model role has been assigned. T2:checkpoint-110592 is the strongest measured development candidate at 153/160 and is supported by M9's matched capture and hold diagnostics. T1:checkpoint-120832 remains the matched baseline at 150/160. Neither has protected official assessment evidence.",
     "completed_operations": [
@@ -4974,21 +5027,10 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "21a9363a-c1c2-4721-b83f-b11809d41c90",
-    "id": "S6",
-    "inquiry_id": null,
-    "kind": "goal_review",
-    "objective": "Use the completed evidence to update the scientific direction toward the human goal. Request measurements when they resolve an uncertainty or develop the method. Then choose one outcome: request the official assessment, or open one bounded goal-linked inquiry.",
-    "operation_ids": [
-      "E10"
-    ],
-    "scientific_parent_commit": "889e909b48391c3077c23c39268294f460e79f34"
-  },
-  "terminal_state": null
+  "scientific_session": null,
+  "terminal_state": {
+    "model": "T2:checkpoint-110592",
+    "reason": "Request the protected official assessment for the explicitly assigned best-known candidate T2:checkpoint-110592. M9 provides the strongest available development evidence: 153/160 complete-hold successes versus 150/160 for T1, improved capture timing and coverage in the previously identified failure geometries, and only 3 recorded hold interruptions versus 438. This supports continuing the capture-improved route, but the 98% human goal remains unestablished until the frozen candidate is evaluated on the protected 200-episode official distribution.",
+    "status": "official_assessment_requested"
+  }
 }
