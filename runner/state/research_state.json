@@ -26431,47 +26431,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "open",
-        "inquiry": {
-          "closure_condition": "Close when completed uniform-distribution evidence under the unchanged bounded direct-action interface includes the required inner-band, first-reach, post-reach, velocity, branch/limit-margin and hold-interruption diagnostics, and either demonstrates a learned candidate at or above the 196/200-equivalent threshold while preserving 40/40 inner-band success, or shows persistent adequate-margin pre-reach failure after a controlled representation-versus-PPO comparison sufficient for a limited or inconclusive conclusion.",
-          "goal_connection": "The human goal requires at least 196 uninterrupted-hold successes in the protected 200-episode assessment. The strongest learned candidates remain at 153/160 despite same-interface computed-torque capability at 160/160, so resolving whether learning can acquire the available capability is the shortest credible route to the remaining four-success development gap.",
-          "handoff_conclusion": "M1 established substantial transient actuation authority and at least one feasible analytic IK branch for every sampled official target, with 64 of 576 grid targets having only one feasible branch. T1, T8 and T9 established that the unchanged direct-action route can reach 153/160 while preserving 40/40 inner-band behavior. M17 established same-interface computed-torque controllability at 160/160 across gain settings, including 93/93 inner-band success and no reach or hold interruptions. M18 and M22 showed that the tested controller-derived PPO action-prior recipe remained at 153/160; its seven failures included four before first reach and three post-reach hold interruptions, all with nonpositive nearest-branch limit margins, so this is a recipe-specific negative rather than a method-level rejection. T11's smooth trajectory-conditioned phase/history route achieved 0/160. T12's static max-margin branch/limit route achieved 44/160 and only 20/40 inner-band success; 103 failures were before first reach, including 95 with positive nearest-analytic-branch limit margin. E56 therefore closed I13 as a limited negative for the tested explicit trajectory and branch/limit routes. The leading interpretation is now a broader learned-acquisition or representation limitation, while the evidence does not distinguish observation aliasing, action-interface representation, and PPO optimization failure and does not invalidate learned policies generally.",
-          "handoff_question": "Can a learned policy overcome the persistent adequate-margin pre-reach failures through a broader acquisition/representation redesign while preserving the direct-action interface and 40/40 inner-band behavior, and do controlled evidence distinguish observation/action representation limits from PPO optimization failure?",
-          "handoff_source_session_id": "S27",
-          "id": "I14",
-          "opened_in_session": "S28",
-          "question": "Can a learned policy overcome the persistent adequate-margin pre-reach failures through a broader acquisition/representation redesign while preserving the direct-action interface and 40/40 inner-band behavior, and do controlled evidence distinguish observation/action representation limits from PPO optimization failure?",
-          "rationale": "M17 establishes that the interface and compiled dynamics admit 160/160 computed-torque behavior, while T10 and M22 show that the tested controller-derived PPO recipe remains at 153/160 and T11/T12 show recipe-specific failures for phase/history and static branch/limit routes. Those results support continuing learned acquisition but do not distinguish observation or action representation limits from PPO optimization and credit assignment. A bounded inquiry is therefore more decision-relevant than official assessment of a candidate below threshold or another unpaired intervention.",
-          "reframes": []
-        }
-      },
-      "result": {
-        "action": "open",
-        "inquiry_id": "I14",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E58",
-    "inquiry_id": null,
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "open",
-        "closure_condition": "Close when completed uniform-distribution evidence under the unchanged bounded direct-action interface includes the required inner-band, first-reach, post-reach, velocity, branch/limit-margin and hold-interruption diagnostics, and either demonstrates a learned candidate at or above the 196/200-equivalent threshold while preserving 40/40 inner-band success, or shows persistent adequate-margin pre-reach failure after a controlled representation-versus-PPO comparison sufficient for a limited or inconclusive conclusion.",
-        "goal_connection": "The human goal requires at least 196 uninterrupted-hold successes in the protected 200-episode assessment. The strongest learned candidates remain at 153/160 despite same-interface computed-torque capability at 160/160, so resolving whether learning can acquire the available capability is the shortest credible route to the remaining four-success development gap.",
-        "question": "Can a learned policy overcome the persistent adequate-margin pre-reach failures through a broader acquisition/representation redesign while preserving the direct-action interface and 40/40 inner-band behavior, and do controlled evidence distinguish observation/action representation limits from PPO optimization failure?",
-        "rationale": "M17 establishes that the interface and compiled dynamics admit 160/160 computed-torque behavior, while T10 and M22 show that the tested controller-derived PPO recipe remains at 153/160 and T11/T12 show recipe-specific failures for phase/history and static branch/limit routes. Those results support continuing learned acquisition but do not distinguish observation or action representation limits from PPO optimization and credit assignment. A bounded inquiry is therefore more decision-relevant than official assessment of a candidate below threshold or another unpaired intervention."
-      }
-    },
-    "request_fingerprint": "f3545934e451dbfdef10ce8e5dc520c51d96a206978cd6ddd46037ff253d77e3",
-    "session_id": "S28",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T8:checkpoint-60416 and T9:checkpoint-20480 remain the strongest measured learned candidates at 153/160; T10:checkpoint-10240 and T10:checkpoint-120832 also measured 153/160. None has a protected working, best-known or retained role. T11:checkpoint-120832 is rejected at 0/160, and T12:checkpoint-120832 is rejected at 44/160 with 20/40 inner-band success. M17 is evidence of same-interface model-based capability, not a learned candidate. No candidate has an evidence-backed protected role.",
     "completed_operations": [
