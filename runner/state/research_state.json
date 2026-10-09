@@ -5690,38 +5690,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I3",
-        "outcome": "limited negative",
-        "reason": "M6 established that the tested explicit branch-limit observation representation did not improve the goal-relevant candidate under preserved uniform official target coverage: T3 achieved 30/160 successes (18.75%) versus T1's 150/160 (93.75%) on identical seeds, with 120 reference wins and no candidate wins. T3 also lost the inner-band behavior, achieving 23/40 successes in the 6-10 cm bin versus T1's 40/40. The diagnostic discriminator classifies the collapse: T3 had 130 failures, including 129 without first tolerance entry; 113 of those non-reaching failures had positive terminal nearest-branch limit margin and 16 had negative margin. The only post-reach failure had positive margin, 5.52 rad/s first-reach joint-speed norm, and one hold interruption. Therefore this explicit feature encoding does not correct T1's branch/limit failures and instead causes a broad positive-margin learnability or representation collapse; it rejects this intervention under the current PPO, reward, and training allocation, not explicit representation as a general method. The single post-reach failure preserves approach velocity as a possible secondary mechanism but does not make it the dominant T3 failure cause. I3 is closed with a limited-negative answer and the campaign should redirect toward a more learnable phase/history or stabilization route rather than repeat this representation or aggressive sampler."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I3",
-        "outcome": "limited negative",
-        "reason": "M6 established that the tested explicit branch-limit observation representation did not improve the goal-relevant candidate under preserved uniform official target coverage: T3 achieved 30/160 successes (18.75%) versus T1's 150/160 (93.75%) on identical seeds, with 120 reference wins and no candidate wins. T3 also lost the inner-band behavior, achieving 23/40 successes in the 6-10 cm bin versus T1's 40/40. The diagnostic discriminator classifies the collapse: T3 had 130 failures, including 129 without first tolerance entry; 113 of those non-reaching failures had positive terminal nearest-branch limit margin and 16 had negative margin. The only post-reach failure had positive margin, 5.52 rad/s first-reach joint-speed norm, and one hold interruption. Therefore this explicit feature encoding does not correct T1's branch/limit failures and instead causes a broad positive-margin learnability or representation collapse; it rejects this intervention under the current PPO, reward, and training allocation, not explicit representation as a general method. The single post-reach failure preserves approach velocity as a possible secondary mechanism but does not make it the dominant T3 failure cause. I3 is closed with a limited-negative answer and the campaign should redirect toward a more learnable phase/history or stabilization route rather than repeat this representation or aggressive sampler.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E12",
-    "inquiry_id": "I3",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "limited negative",
-        "reason": "M6 established that the tested explicit branch-limit observation representation did not improve the goal-relevant candidate under preserved uniform official target coverage: T3 achieved 30/160 successes (18.75%) versus T1's 150/160 (93.75%) on identical seeds, with 120 reference wins and no candidate wins. T3 also lost the inner-band behavior, achieving 23/40 successes in the 6-10 cm bin versus T1's 40/40. The diagnostic discriminator classifies the collapse: T3 had 130 failures, including 129 without first tolerance entry; 113 of those non-reaching failures had positive terminal nearest-branch limit margin and 16 had negative margin. The only post-reach failure had positive margin, 5.52 rad/s first-reach joint-speed norm, and one hold interruption. Therefore this explicit feature encoding does not correct T1's branch/limit failures and instead causes a broad positive-margin learnability or representation collapse; it rejects this intervention under the current PPO, reward, and training allocation, not explicit representation as a general method. The single post-reach failure preserves approach velocity as a possible secondary mechanism but does not make it the dominant T3 failure cause. I3 is closed with a limited-negative answer and the campaign should redirect toward a more learnable phase/history or stabilization route rather than repeat this representation or aggressive sampler."
-      }
-    },
-    "request_fingerprint": "d7d89fc04d3a516ba8b10383764df81a8917dfcd30e8e5d8dfae5f80eca56f55",
-    "session_id": "S7",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T1:checkpoint-120832 remains the strongest measured development candidate at 93.75% but has no working, best-known, or retained role because it is below the goal and lacks a protected assessment. T2:checkpoint-120832 is rejected as a viable candidate after its 32.5% paired development result and has no role. No candidate is assigned a role.",
     "completed_operations": [
