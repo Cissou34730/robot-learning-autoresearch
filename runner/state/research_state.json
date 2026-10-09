@@ -1,16 +1,5 @@
 {
-  "active_inquiry": {
-    "closure_condition": "Close positively only if a bounded arrival-state-conditioned representation or route-conditioned control intervention reaches at least 98% on the matched 160-episode development panel while preserving T3's broad first reach and approximately four or fewer hold interruptions, with residual arrival-speed or braking-margin diagnostics improved in the negative-angle cluster. Close negatively or redirect if the intervention leaves the localized failures and braking deficit unchanged despite preserved T3 behavior, or if it broadly degrades reach or hold completion; that result would favor a different state abstraction, action design, or plant-level control direction rather than establish that control-aware learning is impossible.",
-    "goal_connection": "T3 achieves 153/160 development successes with 157 first reaches and only four hold interruptions, but remains below the 98% development target needed before official assessment. M10 localizes the residual failures to negative-angle arrivals with high joint speed and insufficient one-interval retention margin, while M11 rejects only the tested global near-target speed-penalty recipe because it degraded the broad regime. This inquiry targets the remaining seven failures without sacrificing T3's demonstrated reach coverage or uninterrupted-hold behavior.",
-    "handoff_conclusion": "Established evidence: M1 found nonzero compiled plant authority, no sampled self-contact in valid target branches, and complete 100-step local holds from low-velocity perturbations. M4 showed that T3 improved the matched panel to 153/160 successes and 157/160 first reaches, with four hold interruptions through incremental radius transfer. M6, M7, and M8 showed that hold-exit reward forfeiture, an explicit branch-feasibility feature, and a serialized damped action mapper did not repair the residual failures. M10 replayed the T3 panel and localized all seven failures to the negative-angle cluster: four entered tolerance and later interrupted, while three never first reached. Their residual arrival states had 5.24-7.56 rad/s joint speed, and opposing-action probes generally left a negative 1 cm retention margin; zero input, nominal local PD, and stronger local PD produced no completed holds from those exact states. This supports insufficient discrete-time braking margin from a policy-reachable route as the immediate bottleneck, while M1 limits the claim by showing that low-velocity local retention is feasible. I9 tested one causal intervention rather than proving the mechanism: T10 added a localized near-target joint-speed penalty to a T3 transfer, but M11 measured only 142/160 successes versus 153/160 for T3, with 11 paired losses and broad degradation. The available M11 summary and structure-only inventory do not establish that arrival speed fell in the residual geometry, so the result rejects this reward recipe but does not reject the control-aware explanation. Competing explanations remain: the penalty distorted global reach and learning dynamics before producing usable braking behavior, or the policy representation cannot select a low-speed route in the negative-angle geometry; M10's matched-state plant evidence keeps broad plant uncontrollability less likely but does not establish that every policy representation must fail.",
-    "handoff_question": "Can an arrival-state-conditioned policy representation or route-conditioned control strategy improve discrete-time braking margin in the residual negative-angle geometry while preserving T3's reach regime and reaching at least 98% development success?",
-    "handoff_source_session_id": "S19",
-    "id": "I10",
-    "opened_in_session": "S20",
-    "question": "Can an arrival-state-conditioned policy representation or route-conditioned control strategy improve discrete-time braking margin in the residual negative-angle geometry while preserving T3's reach regime and reaching at least 98% development success?",
-    "rationale": "The unresolved distinction is whether M10's discrete-time braking deficit is addressable by giving the policy a route- or arrival-state-dependent control representation, or whether the policy representation cannot select a safe low-speed route in the negative-angle geometry. M1 shows that low-velocity local holds are feasible, and T3 shows that incremental transfer can preserve learning dynamics and broad reach; therefore a global speed penalty is not the next decisive test. The inquiry will use one bounded PI-owned intervention followed by paired full-distribution evaluation against T3, including success, first reach, hold interruptions, maximum held steps, radius-angle strata, arrival joint speed, and sampled retention margin.",
-    "reframes": []
-  },
+  "active_inquiry": null,
   "campaign": {
     "base_commit": "183ba7483c02b821a562dc3107d9c0100b10d3d9",
     "id": "1ae27a27-6880-4ca6-9d50-e6498e771cb7",
@@ -7391,7 +7380,7 @@
     }
   },
   "counters": {
-    "event": 40,
+    "event": 41,
     "inquiry": 10,
     "measurement": 12,
     "session": 21,
@@ -14930,9 +14919,63 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-09T01:22:53Z",
+      "error": null,
+      "id": "E41",
+      "inquiry_id": "I10",
+      "kind": "inquiry",
+      "request": {
+        "action": "close",
+        "outcome": "negative",
+        "reason": "T12 tested one transfer-compatible arrival-state representation by replacing T3's branch-status feature with predicted one-interval radial displacement. On the matched 160-episode panel it achieved 151/160 successes versus T3's 153/160, reduced first reaches from 157 to 154, and increased hold interruptions from 4 to 5. In the negative-angle cluster it reached only 11/17 targets versus T3's 14/17, so the intervention degraded route/branch coverage rather than improving the residual braking margin. This closes I10 negatively for this representation recipe and redirects the campaign toward a different action design or plant-level control strategy; it does not establish that arrival-state conditioning or the broader control-aware explanation is impossible."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I10",
+        "outcome": "negative",
+        "reason": "T12 tested one transfer-compatible arrival-state representation by replacing T3's branch-status feature with predicted one-interval radial displacement. On the matched 160-episode panel it achieved 151/160 successes versus T3's 153/160, reduced first reaches from 157 to 154, and increased hold interruptions from 4 to 5. In the negative-angle cluster it reached only 11/17 targets versus T3's 14/17, so the intervention degraded route/branch coverage rather than improving the residual braking margin. This closes I10 negatively for this representation recipe and redirects the campaign toward a different action design or plant-level control strategy; it does not establish that arrival-state conditioning or the broader control-aware explanation is impossible.",
+        "status": "completed"
+      },
+      "session_id": "S21",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "close",
+        "inquiry_id": "I10",
+        "outcome": "negative",
+        "reason": "T12 tested one transfer-compatible arrival-state representation by replacing T3's branch-status feature with predicted one-interval radial displacement. On the matched 160-episode panel it achieved 151/160 successes versus T3's 153/160, reduced first reaches from 157 to 154, and increased hold interruptions from 4 to 5. In the negative-angle cluster it reached only 11/17 targets versus T3's 14/17, so the intervention degraded route/branch coverage rather than improving the residual braking margin. This closes I10 negatively for this representation recipe and redirects the campaign toward a different action design or plant-level control strategy; it does not establish that arrival-state conditioning or the broader control-aware explanation is impossible."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I10",
+        "outcome": "negative",
+        "reason": "T12 tested one transfer-compatible arrival-state representation by replacing T3's branch-status feature with predicted one-interval radial displacement. On the matched 160-episode panel it achieved 151/160 successes versus T3's 153/160, reduced first reaches from 157 to 154, and increased hold interruptions from 4 to 5. In the negative-angle cluster it reached only 11/17 targets versus T3's 14/17, so the intervention degraded route/branch coverage rather than improving the residual braking margin. This closes I10 negatively for this representation recipe and redirects the campaign toward a different action design or plant-level control strategy; it does not establish that arrival-state conditioning or the broader control-aware explanation is impossible.",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E41",
+    "inquiry_id": "I10",
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "close",
+        "outcome": "negative",
+        "reason": "T12 tested one transfer-compatible arrival-state representation by replacing T3's branch-status feature with predicted one-interval radial displacement. On the matched 160-episode panel it achieved 151/160 successes versus T3's 153/160, reduced first reaches from 157 to 154, and increased hold interruptions from 4 to 5. In the negative-angle cluster it reached only 11/17 targets versus T3's 14/17, so the intervention degraded route/branch coverage rather than improving the residual braking margin. This closes I10 negatively for this representation recipe and redirects the campaign toward a different action design or plant-level control strategy; it does not establish that arrival-state conditioning or the broader control-aware explanation is impossible."
+      }
+    },
+    "request_fingerprint": "5105b02b1b99ee4c9268037d59a5f381a091739d83605a280f3555e4d8cbe0a9",
+    "session_id": "S21",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T3:checkpoint-120832 remains the strongest measured development candidate at 153/160 (95.625%) and has no assigned working, best-known, or retained role. T10:checkpoint-120832 is intervention-limited at 142/160 and has no role. No candidate role change is requested.",
     "completed_operations": [
@@ -14983,7 +15026,8 @@
     "operation_ids": [
       "E40",
       "T12",
-      "M12"
+      "M12",
+      "E41"
     ],
     "scientific_parent_commit": "501d8679e4878260d76edf09873e8795a433192c"
   },
