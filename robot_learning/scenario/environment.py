@@ -11,7 +11,6 @@ different distribution, tolerance or horizon. The human-defined task is
 enforced only by the protected benchmark in `benchmark/`.
 """
 
-import inspect
 from typing import Any, ClassVar
 
 import gymnasium as gym
@@ -27,7 +26,6 @@ from contracts.task_spec import (
     TARGET_RADIUS_RANGE,
 )
 from robot_learning.scenario.observations import OBSERVATION_SIZE
-from robot_learning.scenario.model_based_control import model_based_action
 from robot_learning.scenario.policy_io import make_policy_io
 from robot_learning.training.reward import reach_reward
 
@@ -50,12 +48,6 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
         self.frame_skip = frame_skip
         self.target_radius_range = target_radius_range
         self.policy_io = policy_runtime.io if policy_runtime else make_policy_io()
-        self._observation_has_context = {
-            "step_count",
-            "held_steps",
-            "hold_steps_required",
-            "previous_action",
-        }.issubset(inspect.signature(self.policy_io.observe).parameters)
 
         self.model = mujoco.MjModel.from_xml_path(str(TWO_JOINT_ARM_XML_PATH))
         self.data = mujoco.MjData(self.model)
@@ -79,7 +71,6 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
         self._previous_distance = 0.0
         self._held_steps = 0
         self._outside_after_hold = False
-        self._previous_action = np.zeros(2, dtype=np.float64)
 
     def _end_effector_position(self) -> np.ndarray:
         return self.data.site("end_effector").xpos.copy()
@@ -106,14 +97,6 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
         ]
 
     def _observation(self) -> np.ndarray:
-        if self._observation_has_context:
-            return self.policy_io.observe(
-                self.data,
-                step_count=self._step_count,
-                held_steps=self._held_steps,
-                hold_steps_required=self.hold_steps_required,
-                previous_action=self._previous_action,
-            )
         return self.policy_io.observe(self.data)
 
     def reset(
@@ -134,7 +117,6 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
         self._previous_distance = self._distance_to_target()
         self._held_steps = 0
         self._outside_after_hold = False
-        self._previous_action = np.zeros(2, dtype=np.float64)
         return self._observation(), {}
 
     def step(
@@ -144,12 +126,6 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
             np.asarray(self.policy_io.action(action), dtype=np.float64),
             self.action_space.low,
             self.action_space.high,
-        )
-        self._previous_action = action.copy()
-        expert_action = model_based_action(
-            self.model,
-            self.data,
-            np.asarray(self.data.mocap_pos[0][:2], dtype=np.float64),
         )
         self.data.ctrl[:] = action
         for _ in range(self.frame_skip):
@@ -175,9 +151,6 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
             previous_held_steps=previous_held_steps,
             hold_steps_required=self.hold_steps_required,
             penalize_outside=self._outside_after_hold,
-            qpos=self.data.qpos[:2],
-            qvel=self.data.qvel[:2],
-            expert_action=expert_action,
         )
         self._previous_distance = distance
 
@@ -188,7 +161,6 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
             "distance": distance,
             "is_success": terminated,
             "held_steps": self._held_steps,
-            "joint_velocity_norm": float(np.linalg.norm(self.data.qvel[:2])),
             # Arbitrary scenario-owned attribution; the RL algorithm still only
             # ever sees `reward.total`.
             "reward_components": reward.components,

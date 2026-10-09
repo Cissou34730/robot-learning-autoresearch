@@ -7,10 +7,6 @@ observation space declared by the scenario environment.
 import numpy as np
 
 from contracts.robots.two_joint_arm import FOREARM_LENGTH, UPPER_ARM_LENGTH
-from robot_learning.scenario.model_based_control import (
-    JOINT_LIMIT_RAD,
-    select_ik_solution,
-)
 
 OBSERVATION_SIZE = 16
 
@@ -38,6 +34,8 @@ def reach_observation(data) -> np.ndarray:
     elbow_folded = -elbow_open
     shoulder_folded = shoulder_for_elbow(elbow_folded)
     end_effector = data.site("end_effector").xpos.copy()
+    target_radius = float(np.hypot(target_x, target_y))
+    target_angle = float(np.arctan2(target_y, target_x))
     return np.concatenate(
         [
             data.qpos,
@@ -49,25 +47,12 @@ def reach_observation(data) -> np.ndarray:
                 wrap_to_pi(shoulder_folded - float(data.qpos[0])),
                 wrap_to_pi(elbow_folded - float(data.qpos[1])),
             ],
-        ]
-    ).astype(np.float32)
-
-
-def branch_limit_conditioned_observation(data) -> np.ndarray:
-    """Add a static, limit-aware joint target without phase or action history."""
-    base = reach_observation(data)
-    target_xy = np.asarray(data.mocap_pos[0][:2], dtype=np.float64)
-    branch, target_qpos, limit_margin = select_ik_solution(target_xy)
-    branch_indicator = (
-        np.array([1.0, 0.0], dtype=np.float64)
-        if branch == "positive_elbow"
-        else np.array([0.0, 1.0], dtype=np.float64)
-    )
-    return np.concatenate(
-        [
-            base,
-            target_qpos,
-            branch_indicator,
-            [np.clip(limit_margin / JOINT_LIMIT_RAD, 0.0, 1.0)],
+            [
+                target_x,
+                target_y,
+                target_radius,
+                np.sin(target_angle),
+                np.cos(target_angle),
+            ],
         ]
     ).astype(np.float32)
