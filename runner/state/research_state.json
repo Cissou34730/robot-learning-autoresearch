@@ -1893,38 +1893,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I1",
-        "outcome": "resolved_limited",
-        "reason": "M2 resolves I1's mechanism distinction for the fresh baseline. T1:checkpoint-115712 succeeded on 105/160 episodes (65.625%) and T1:checkpoint-120832 on 110/160 (68.75%), so neither approaches the 98% human goal. The decisive diagnostic is failure timing: 49/55 and 42/50 failures, respectively, never entered the 1 cm band, while only 6 and 8 failures entered and then failed the hold; success conditional on entry was 94.6% and 93.2%. Failures are strongly concentrated at inner radii (22.5% and 25.0% success versus 91.5% at outer radii), while entered episodes show approximately 0.10 rad nearest-branch error and broad approximately 0.65-0.97 rad minimum joint-limit margins. This supports changing direction toward inner-radius reach/workspace and branch coverage rather than making stabilization the primary intervention. Stabilization remains a secondary contributor because some entered episodes interrupt, and the modest checkpoint tradeoff (120832 improves overall success and pre-entry failures but lowers conditional hold success) means the result is recipe-specific, not proof that stabilization is solved or that the broader method is invalid. M1 and T1 support the route; M2 supplies the closure evidence. The next campaign action should develop and measure a targeted reach/coverage intervention while retaining hold diagnostics."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I1",
-        "outcome": "resolved_limited",
-        "reason": "M2 resolves I1's mechanism distinction for the fresh baseline. T1:checkpoint-115712 succeeded on 105/160 episodes (65.625%) and T1:checkpoint-120832 on 110/160 (68.75%), so neither approaches the 98% human goal. The decisive diagnostic is failure timing: 49/55 and 42/50 failures, respectively, never entered the 1 cm band, while only 6 and 8 failures entered and then failed the hold; success conditional on entry was 94.6% and 93.2%. Failures are strongly concentrated at inner radii (22.5% and 25.0% success versus 91.5% at outer radii), while entered episodes show approximately 0.10 rad nearest-branch error and broad approximately 0.65-0.97 rad minimum joint-limit margins. This supports changing direction toward inner-radius reach/workspace and branch coverage rather than making stabilization the primary intervention. Stabilization remains a secondary contributor because some entered episodes interrupt, and the modest checkpoint tradeoff (120832 improves overall success and pre-entry failures but lowers conditional hold success) means the result is recipe-specific, not proof that stabilization is solved or that the broader method is invalid. M1 and T1 support the route; M2 supplies the closure evidence. The next campaign action should develop and measure a targeted reach/coverage intervention while retaining hold diagnostics.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E4",
-    "inquiry_id": "I1",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "resolved_limited",
-        "reason": "M2 resolves I1's mechanism distinction for the fresh baseline. T1:checkpoint-115712 succeeded on 105/160 episodes (65.625%) and T1:checkpoint-120832 on 110/160 (68.75%), so neither approaches the 98% human goal. The decisive diagnostic is failure timing: 49/55 and 42/50 failures, respectively, never entered the 1 cm band, while only 6 and 8 failures entered and then failed the hold; success conditional on entry was 94.6% and 93.2%. Failures are strongly concentrated at inner radii (22.5% and 25.0% success versus 91.5% at outer radii), while entered episodes show approximately 0.10 rad nearest-branch error and broad approximately 0.65-0.97 rad minimum joint-limit margins. This supports changing direction toward inner-radius reach/workspace and branch coverage rather than making stabilization the primary intervention. Stabilization remains a secondary contributor because some entered episodes interrupt, and the modest checkpoint tradeoff (120832 improves overall success and pre-entry failures but lowers conditional hold success) means the result is recipe-specific, not proof that stabilization is solved or that the broader method is invalid. M1 and T1 support the route; M2 supplies the closure evidence. The next campaign action should develop and measure a targeted reach/coverage intervention while retaining hold diagnostics."
-      }
-    },
-    "request_fingerprint": "7806bf1e1e2d92e0b89a941c09275bfd7d9853bd7e9d63ae76ab2e9f9f259566",
-    "session_id": "S3",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "No candidates exist; working, best-known, and retained roles are empty.",
     "completed_operations": [
