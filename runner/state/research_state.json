@@ -1,5 +1,16 @@
 {
-  "active_inquiry": null,
+  "active_inquiry": {
+    "closure_condition": "Close when completed evidence either shows a policy-side candidate improving full-distribution pre-reach success to the development threshold while preserving inner-band success, first-reach dynamics, and uninterrupted hold behavior, or shows that bounded policy-side attempts cannot improve the residual failures without renewed inner-band or hold degradation, leaving an action-interface limitation as the better-supported direction.",
+    "goal_connection": "T1 reaches 150/160 development successes with 40/40 inner-band successes, but remains below the 98% objective. Resolving whether the seven pre-reach failures are policy-side limitations or action-interface limitations determines whether the campaign should continue improving the direct-action route toward 196/200 official successes or redirect to a different interface.",
+    "handoff_conclusion": "M1 established substantial transient actuation authority and at least one feasible analytic IK solution for every sampled official target, with 64 of 576 grid targets having only one feasible branch. T1 remains the strongest measured policy: M2, M9 and M11 give 150/160 successes, 40/40 inner-band successes, seven failures without first reach, and three failures after first reach. M3 and M9 support branch-, limit- and trajectory-sensitive non-reaching as the dominant residual class, with approach velocity and hold interruptions secondary. T2, T3, T4 and T5 reject their tested sampling or representation recipes through broad performance collapse, while T6 rejects the tested global action slew interface. T7 tested a different selective action interface, but its zero-success training trajectory agreed with its 30/160 M11 development result; it lost inner-band performance (29/93 versus T1's 90/93), won zero paired episodes, and had 119/130 failures without first reach. Every T7 pre-reach failure had at least one nonnegative-margin analytic IK branch, so the guard did not reduce the targeted positive-margin non-reaching mechanism. E31 closes I7 as a limited negative for the tested 15-degree outward joint-limit attenuation only. The aggregate and diagnostic evidence agree that this interface is not a viable route, but they do not establish that all policy-side methods or all action interfaces fail.",
+    "handoff_question": "Can a policy-side method improve T1's seven pre-reach failures under uniform official coverage while preserving its 40/40 inner-band behavior and uninterrupted hold, or is the remaining gap intrinsically coupled to the action interface?",
+    "handoff_source_session_id": "S15",
+    "id": "I8",
+    "opened_in_session": "S16",
+    "question": "Can a policy-side method improve T1's seven pre-reach failures under uniform official coverage while preserving its 40/40 inner-band behavior and uninterrupted hold, or is the remaining gap intrinsically coupled to the action interface?",
+    "rationale": "The unresolved distinction is trajectory or branch-selection capability within T1's direct action interface versus an intrinsic action-interface bottleneck. M1 established feasible kinematic solutions and transient actuation authority; M2, M9 and M11 localize the residual mainly to seven non-reaching episodes, with only three post-reach failures. The tested representations, sampling, global slew limit, and selective joint-limit guard are recipe-specific negatives and do not resolve the broader policy-side question. Opening this inquiry preserves the strongest known behavior and makes the decisive outcome a joint test of pre-reach improvement, uniform coverage, inner-band preservation, and uninterrupted hold rather than aggregate success alone.",
+    "reframes": []
+  },
   "campaign": {
     "base_commit": "4e87f6053469bb6648d355bc03a7a70faa91f33f",
     "id": "79395c88-afcd-40f0-a644-16ca95368c28",
@@ -5746,16 +5757,16 @@
     }
   },
   "counters": {
-    "event": 32,
-    "inquiry": 7,
+    "event": 33,
+    "inquiry": 8,
     "measurement": 11,
-    "session": 15,
+    "session": 16,
     "training": 7
   },
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -14777,9 +14788,72 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-09T15:10:25Z",
+      "error": null,
+      "id": "E33",
+      "inquiry_id": "I8",
+      "kind": "inquiry",
+      "request": {
+        "action": "open",
+        "closure_condition": "Close when completed evidence either shows a policy-side candidate improving full-distribution pre-reach success to the development threshold while preserving inner-band success, first-reach dynamics, and uninterrupted hold behavior, or shows that bounded policy-side attempts cannot improve the residual failures without renewed inner-band or hold degradation, leaving an action-interface limitation as the better-supported direction.",
+        "goal_connection": "T1 reaches 150/160 development successes with 40/40 inner-band successes, but remains below the 98% objective. Resolving whether the seven pre-reach failures are policy-side limitations or action-interface limitations determines whether the campaign should continue improving the direct-action route toward 196/200 official successes or redirect to a different interface.",
+        "question": "Can a policy-side method improve T1's seven pre-reach failures under uniform official coverage while preserving its 40/40 inner-band behavior and uninterrupted hold, or is the remaining gap intrinsically coupled to the action interface?",
+        "rationale": "The unresolved distinction is trajectory or branch-selection capability within T1's direct action interface versus an intrinsic action-interface bottleneck. M1 established feasible kinematic solutions and transient actuation authority; M2, M9 and M11 localize the residual mainly to seven non-reaching episodes, with only three post-reach failures. The tested representations, sampling, global slew limit, and selective joint-limit guard are recipe-specific negatives and do not resolve the broader policy-side question. Opening this inquiry preserves the strongest known behavior and makes the decisive outcome a joint test of pre-reach improvement, uniform coverage, inner-band preservation, and uninterrupted hold rather than aggregate success alone."
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I8",
+        "status": "completed"
+      },
+      "session_id": "S16",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "open",
+        "inquiry": {
+          "closure_condition": "Close when completed evidence either shows a policy-side candidate improving full-distribution pre-reach success to the development threshold while preserving inner-band success, first-reach dynamics, and uninterrupted hold behavior, or shows that bounded policy-side attempts cannot improve the residual failures without renewed inner-band or hold degradation, leaving an action-interface limitation as the better-supported direction.",
+          "goal_connection": "T1 reaches 150/160 development successes with 40/40 inner-band successes, but remains below the 98% objective. Resolving whether the seven pre-reach failures are policy-side limitations or action-interface limitations determines whether the campaign should continue improving the direct-action route toward 196/200 official successes or redirect to a different interface.",
+          "handoff_conclusion": "M1 established substantial transient actuation authority and at least one feasible analytic IK solution for every sampled official target, with 64 of 576 grid targets having only one feasible branch. T1 remains the strongest measured policy: M2, M9 and M11 give 150/160 successes, 40/40 inner-band successes, seven failures without first reach, and three failures after first reach. M3 and M9 support branch-, limit- and trajectory-sensitive non-reaching as the dominant residual class, with approach velocity and hold interruptions secondary. T2, T3, T4 and T5 reject their tested sampling or representation recipes through broad performance collapse, while T6 rejects the tested global action slew interface. T7 tested a different selective action interface, but its zero-success training trajectory agreed with its 30/160 M11 development result; it lost inner-band performance (29/93 versus T1's 90/93), won zero paired episodes, and had 119/130 failures without first reach. Every T7 pre-reach failure had at least one nonnegative-margin analytic IK branch, so the guard did not reduce the targeted positive-margin non-reaching mechanism. E31 closes I7 as a limited negative for the tested 15-degree outward joint-limit attenuation only. The aggregate and diagnostic evidence agree that this interface is not a viable route, but they do not establish that all policy-side methods or all action interfaces fail.",
+          "handoff_question": "Can a policy-side method improve T1's seven pre-reach failures under uniform official coverage while preserving its 40/40 inner-band behavior and uninterrupted hold, or is the remaining gap intrinsically coupled to the action interface?",
+          "handoff_source_session_id": "S15",
+          "id": "I8",
+          "opened_in_session": "S16",
+          "question": "Can a policy-side method improve T1's seven pre-reach failures under uniform official coverage while preserving its 40/40 inner-band behavior and uninterrupted hold, or is the remaining gap intrinsically coupled to the action interface?",
+          "rationale": "The unresolved distinction is trajectory or branch-selection capability within T1's direct action interface versus an intrinsic action-interface bottleneck. M1 established feasible kinematic solutions and transient actuation authority; M2, M9 and M11 localize the residual mainly to seven non-reaching episodes, with only three post-reach failures. The tested representations, sampling, global slew limit, and selective joint-limit guard are recipe-specific negatives and do not resolve the broader policy-side question. Opening this inquiry preserves the strongest known behavior and makes the decisive outcome a joint test of pre-reach improvement, uniform coverage, inner-band preservation, and uninterrupted hold rather than aggregate success alone.",
+          "reframes": []
+        }
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I8",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E33",
+    "inquiry_id": null,
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "open",
+        "closure_condition": "Close when completed evidence either shows a policy-side candidate improving full-distribution pre-reach success to the development threshold while preserving inner-band success, first-reach dynamics, and uninterrupted hold behavior, or shows that bounded policy-side attempts cannot improve the residual failures without renewed inner-band or hold degradation, leaving an action-interface limitation as the better-supported direction.",
+        "goal_connection": "T1 reaches 150/160 development successes with 40/40 inner-band successes, but remains below the 98% objective. Resolving whether the seven pre-reach failures are policy-side limitations or action-interface limitations determines whether the campaign should continue improving the direct-action route toward 196/200 official successes or redirect to a different interface.",
+        "question": "Can a policy-side method improve T1's seven pre-reach failures under uniform official coverage while preserving its 40/40 inner-band behavior and uninterrupted hold, or is the remaining gap intrinsically coupled to the action interface?",
+        "rationale": "The unresolved distinction is trajectory or branch-selection capability within T1's direct action interface versus an intrinsic action-interface bottleneck. M1 established feasible kinematic solutions and transient actuation authority; M2, M9 and M11 localize the residual mainly to seven non-reaching episodes, with only three post-reach failures. The tested representations, sampling, global slew limit, and selective joint-limit guard are recipe-specific negatives and do not resolve the broader policy-side question. Opening this inquiry preserves the strongest known behavior and makes the decisive outcome a joint test of pre-reach improvement, uniform coverage, inner-band preservation, and uninterrupted hold rather than aggregate success alone."
+      }
+    },
+    "request_fingerprint": "d035482523459f4eb5bf8ec35a683be7739a6d1e51f22aa31f396fb646340f6a",
+    "session_id": "S16",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T1:checkpoint-120832 remains the strongest evidence-backed development candidate at 150/160 successes with 40/40 inner-band successes. T7:checkpoint-120832 is rejected for I7 based on M11. T2, T3, T4, T5 and T6 remain rejected as recipe-specific negative routes. No candidate has an assigned working, best-known or retained role because none has met the development threshold or received a protected assessment.",
     "completed_operations": [
@@ -14818,6 +14892,21 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "480d0b55-acc2-4f1c-be04-afd1e1f67572",
+    "id": "S16",
+    "inquiry_id": null,
+    "kind": "goal_review",
+    "objective": "Use the completed evidence to update the scientific direction toward the human goal. Request measurements when they resolve an uncertainty or develop the method. Then choose one outcome: request the official assessment, or open one bounded goal-linked inquiry. Frame the inquiry as an unresolved distinction, obstacle, or capability need; do not encode a selected training run, measurement, implementation, or recipe as the question.",
+    "operation_ids": [
+      "E33"
+    ],
+    "scientific_parent_commit": "aab8450944b45d5d884dcac66720303a14396cac"
+  },
   "terminal_state": null
 }
