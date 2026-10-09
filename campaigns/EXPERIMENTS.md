@@ -67,3 +67,4 @@
 | T12 | training | I10 | completed |
 | M12 | measurement | I10 | completed |
 | E41 | inquiry | I10 | completed |
+| E42 | checkpoint | I10 | checkpointed |
