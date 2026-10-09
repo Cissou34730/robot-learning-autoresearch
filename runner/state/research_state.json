@@ -1,5 +1,16 @@
 {
-  "active_inquiry": null,
+  "active_inquiry": {
+    "closure_condition": "Close when a T3-derived representation or action intervention is evaluated on the same 160-seed development panel with success, first-reach coverage, maximum held steps, hold interruptions, final distance, and radius-angle strata: either it reaches at least 98 percent with broad first reach and approximately four interruptions, or persistent localized failures, preserved transfer behavior, or broad interruption regression establishes that this tested redesign is insufficient and redirects the next inquiry.",
+    "goal_connection": "The human goal requires at least 196 of 200 official episodes to complete an uninterrupted 100-step hold. T3 reaches 153 of 160 development episodes, leaving seven localized failures. Resolving whether explicit branch conditioning or a different action structure removes those failures is the most direct remaining route before official assessment.",
+    "handoff_conclusion": "M1 established nonzero compiled plant authority, no sampled self-contact in valid target branches, and complete local 100-step holds under zero input and bounded local PD. T1 established a reach-limited, geometry-conditioned baseline at 68.75 percent. T2 rejected an abrupt hard-distribution recipe without rejecting learning generally. T3's incremental radius transfer improved success to 95.625 percent, first reach to 157/160, and reduced hold interruptions to 4, supporting distribution-shift sensitivity as the leading explanation for the earlier reach deficit. M5 showed that T5's 70 percent residual-angle oversampling and 30 percent uniform exposure reached 93.125 percent with 158 first reaches but 511 interruptions; this rejects that oversampling recipe, not incremental transfer generally. T6 continued from T3 with the same incremental radius curriculum and uniform angle exposure while changing only the reward to forfeit the full accumulated hold-progress credit on interruption. M6 evaluated T6 and T3 on the same 160 seeds: both achieved 95.625 percent (153/160), with zero discordant episodes. Thus the tested hold-exit-forfeiture signal neither repaired the residual failures nor changed the learned outcomes. This is a negative, intervention-limited result: it rejects that reward-only terminal-control intervention as sufficient, but does not establish that terminal control, action margin, or learning generally are incapable of improvement. The plant remains locally holdable, and preserved transfer behavior with persistent localized failures now makes explicit policy representation, branch conditioning, or action structure the leading unresolved direction.",
+    "handoff_question": "Can an explicit branch-conditioned policy representation or action structure built on T3 eliminate the residual radius-angle completion failures while preserving broad first reach and approximately four hold interruptions?",
+    "handoff_source_session_id": "S11",
+    "id": "I6",
+    "opened_in_session": "S12",
+    "question": "Can an explicit branch-conditioned policy representation or action structure built on T3 eliminate the residual radius-angle completion failures while preserving broad first reach and approximately four hold interruptions?",
+    "rationale": "T6 changed only hold-exit reward handling and matched T3 exactly at 95.625 percent with zero discordant episodes, so repeating reward-only terminal shaping is not a credible next step. T3's broad reach and low interruption count, together with persistent localized failures, make branch ambiguity, insufficient conditioning, and action representation the leading unresolved mechanisms.",
+    "reframes": []
+  },
   "campaign": {
     "base_commit": "183ba7483c02b821a562dc3107d9c0100b10d3d9",
     "id": "1ae27a27-6880-4ca6-9d50-e6498e771cb7",
@@ -4104,16 +4115,16 @@
     }
   },
   "counters": {
-    "event": 21,
-    "inquiry": 5,
+    "event": 22,
+    "inquiry": 6,
     "measurement": 6,
-    "session": 11,
+    "session": 12,
     "training": 6
   },
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -8023,9 +8034,72 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-09T00:36:49Z",
+      "error": null,
+      "id": "E22",
+      "inquiry_id": "I6",
+      "kind": "inquiry",
+      "request": {
+        "action": "open",
+        "closure_condition": "Close when a T3-derived representation or action intervention is evaluated on the same 160-seed development panel with success, first-reach coverage, maximum held steps, hold interruptions, final distance, and radius-angle strata: either it reaches at least 98 percent with broad first reach and approximately four interruptions, or persistent localized failures, preserved transfer behavior, or broad interruption regression establishes that this tested redesign is insufficient and redirects the next inquiry.",
+        "goal_connection": "The human goal requires at least 196 of 200 official episodes to complete an uninterrupted 100-step hold. T3 reaches 153 of 160 development episodes, leaving seven localized failures. Resolving whether explicit branch conditioning or a different action structure removes those failures is the most direct remaining route before official assessment.",
+        "question": "Can an explicit branch-conditioned policy representation or action structure built on T3 eliminate the residual radius-angle completion failures while preserving broad first reach and approximately four hold interruptions?",
+        "rationale": "T6 changed only hold-exit reward handling and matched T3 exactly at 95.625 percent with zero discordant episodes, so repeating reward-only terminal shaping is not a credible next step. T3's broad reach and low interruption count, together with persistent localized failures, make branch ambiguity, insufficient conditioning, and action representation the leading unresolved mechanisms."
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I6",
+        "status": "completed"
+      },
+      "session_id": "S12",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "open",
+        "inquiry": {
+          "closure_condition": "Close when a T3-derived representation or action intervention is evaluated on the same 160-seed development panel with success, first-reach coverage, maximum held steps, hold interruptions, final distance, and radius-angle strata: either it reaches at least 98 percent with broad first reach and approximately four interruptions, or persistent localized failures, preserved transfer behavior, or broad interruption regression establishes that this tested redesign is insufficient and redirects the next inquiry.",
+          "goal_connection": "The human goal requires at least 196 of 200 official episodes to complete an uninterrupted 100-step hold. T3 reaches 153 of 160 development episodes, leaving seven localized failures. Resolving whether explicit branch conditioning or a different action structure removes those failures is the most direct remaining route before official assessment.",
+          "handoff_conclusion": "M1 established nonzero compiled plant authority, no sampled self-contact in valid target branches, and complete local 100-step holds under zero input and bounded local PD. T1 established a reach-limited, geometry-conditioned baseline at 68.75 percent. T2 rejected an abrupt hard-distribution recipe without rejecting learning generally. T3's incremental radius transfer improved success to 95.625 percent, first reach to 157/160, and reduced hold interruptions to 4, supporting distribution-shift sensitivity as the leading explanation for the earlier reach deficit. M5 showed that T5's 70 percent residual-angle oversampling and 30 percent uniform exposure reached 93.125 percent with 158 first reaches but 511 interruptions; this rejects that oversampling recipe, not incremental transfer generally. T6 continued from T3 with the same incremental radius curriculum and uniform angle exposure while changing only the reward to forfeit the full accumulated hold-progress credit on interruption. M6 evaluated T6 and T3 on the same 160 seeds: both achieved 95.625 percent (153/160), with zero discordant episodes. Thus the tested hold-exit-forfeiture signal neither repaired the residual failures nor changed the learned outcomes. This is a negative, intervention-limited result: it rejects that reward-only terminal-control intervention as sufficient, but does not establish that terminal control, action margin, or learning generally are incapable of improvement. The plant remains locally holdable, and preserved transfer behavior with persistent localized failures now makes explicit policy representation, branch conditioning, or action structure the leading unresolved direction.",
+          "handoff_question": "Can an explicit branch-conditioned policy representation or action structure built on T3 eliminate the residual radius-angle completion failures while preserving broad first reach and approximately four hold interruptions?",
+          "handoff_source_session_id": "S11",
+          "id": "I6",
+          "opened_in_session": "S12",
+          "question": "Can an explicit branch-conditioned policy representation or action structure built on T3 eliminate the residual radius-angle completion failures while preserving broad first reach and approximately four hold interruptions?",
+          "rationale": "T6 changed only hold-exit reward handling and matched T3 exactly at 95.625 percent with zero discordant episodes, so repeating reward-only terminal shaping is not a credible next step. T3's broad reach and low interruption count, together with persistent localized failures, make branch ambiguity, insufficient conditioning, and action representation the leading unresolved mechanisms.",
+          "reframes": []
+        }
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I6",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E22",
+    "inquiry_id": null,
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "open",
+        "closure_condition": "Close when a T3-derived representation or action intervention is evaluated on the same 160-seed development panel with success, first-reach coverage, maximum held steps, hold interruptions, final distance, and radius-angle strata: either it reaches at least 98 percent with broad first reach and approximately four interruptions, or persistent localized failures, preserved transfer behavior, or broad interruption regression establishes that this tested redesign is insufficient and redirects the next inquiry.",
+        "goal_connection": "The human goal requires at least 196 of 200 official episodes to complete an uninterrupted 100-step hold. T3 reaches 153 of 160 development episodes, leaving seven localized failures. Resolving whether explicit branch conditioning or a different action structure removes those failures is the most direct remaining route before official assessment.",
+        "question": "Can an explicit branch-conditioned policy representation or action structure built on T3 eliminate the residual radius-angle completion failures while preserving broad first reach and approximately four hold interruptions?",
+        "rationale": "T6 changed only hold-exit reward handling and matched T3 exactly at 95.625 percent with zero discordant episodes, so repeating reward-only terminal shaping is not a credible next step. T3's broad reach and low interruption count, together with persistent localized failures, make branch ambiguity, insufficient conditioning, and action representation the leading unresolved mechanisms."
+      }
+    },
+    "request_fingerprint": "ca21c00e5ff03724a92ec14e3ff992cdae473223d905c24edada832ede916dd8",
+    "session_id": "S12",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T3:checkpoint-120832 remains the strongest measured development candidate at 95.625 percent on M4 and M6 and receives no working, best-known, or retained role. T6:checkpoint-120832 is a null, intervention-limited continuation at 95.625 percent with zero discordant episodes against T3 and receives no role. T5:checkpoint-120832 remains a negative oversampling continuation at 93.125 percent with 511 hold interruptions. T1:checkpoint-120832 remains the 68.75 percent baseline reference; T2:checkpoint-120832 remains the 1.25 percent negative recipe result.",
     "completed_operations": [
@@ -8067,6 +8141,21 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "bdee9284-893e-4fdf-8b2e-3926aad74a6c",
+    "id": "S12",
+    "inquiry_id": null,
+    "kind": "goal_review",
+    "objective": "Use the completed evidence to update the scientific direction toward the human goal. Request measurements when they resolve an uncertainty or develop the method. Then choose one outcome: request the official assessment, or open one bounded goal-linked inquiry.",
+    "operation_ids": [
+      "E22"
+    ],
+    "scientific_parent_commit": "fd98511f16654e5c433ff7f1f95a68b486d2c886"
+  },
   "terminal_state": null
 }
