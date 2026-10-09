@@ -82,3 +82,4 @@
 | T14 | training | I12 | completed |
 | M16 | measurement | I12 | completed |
 | M17 | measurement | I12 | failed |
+| M18 | measurement | I12 | completed |
