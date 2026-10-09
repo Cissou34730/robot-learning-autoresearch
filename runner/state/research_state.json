@@ -21930,38 +21930,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I9",
-        "outcome": "limited negative",
-        "reason": "M17 established that the unchanged bounded direct-action interface is sufficient for stable control: three computed-torque gain settings each achieved 160/160 uniform-panel successes, including 93/93 episodes below 14 cm, with zero pre-reach failures, zero post-reach failures, and zero hold interruptions. M18 then tested a policy-side controller-derived action-prior recipe by transferring from T8 and measuring both the highest-training-success checkpoint and the terminal checkpoint under the same panel. Both learned checkpoints achieved 153/160, preserved T1/T8's 40/40 episodes below 10 cm, and failed on exactly the same seven episode seeds, so the prior recovered none of the residual episodes. The early checkpoint had one pre-reach and six post-reach failures with six interruptions; the terminal checkpoint shifted this to four pre-reach and three post-reach failures with three interruptions, which is a failure-mode tradeoff rather than improvement. This closes I9 with a recipe-specific limited negative: the tested PPO action prior did not transfer the demonstrated controllability into a learned policy at the 98% development target, while the broader question of whether another policy-side method can do so remains unresolved."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I9",
-        "outcome": "limited negative",
-        "reason": "M17 established that the unchanged bounded direct-action interface is sufficient for stable control: three computed-torque gain settings each achieved 160/160 uniform-panel successes, including 93/93 episodes below 14 cm, with zero pre-reach failures, zero post-reach failures, and zero hold interruptions. M18 then tested a policy-side controller-derived action-prior recipe by transferring from T8 and measuring both the highest-training-success checkpoint and the terminal checkpoint under the same panel. Both learned checkpoints achieved 153/160, preserved T1/T8's 40/40 episodes below 10 cm, and failed on exactly the same seven episode seeds, so the prior recovered none of the residual episodes. The early checkpoint had one pre-reach and six post-reach failures with six interruptions; the terminal checkpoint shifted this to four pre-reach and three post-reach failures with three interruptions, which is a failure-mode tradeoff rather than improvement. This closes I9 with a recipe-specific limited negative: the tested PPO action prior did not transfer the demonstrated controllability into a learned policy at the 98% development target, while the broader question of whether another policy-side method can do so remains unresolved.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E40",
-    "inquiry_id": "I9",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "limited negative",
-        "reason": "M17 established that the unchanged bounded direct-action interface is sufficient for stable control: three computed-torque gain settings each achieved 160/160 uniform-panel successes, including 93/93 episodes below 14 cm, with zero pre-reach failures, zero post-reach failures, and zero hold interruptions. M18 then tested a policy-side controller-derived action-prior recipe by transferring from T8 and measuring both the highest-training-success checkpoint and the terminal checkpoint under the same panel. Both learned checkpoints achieved 153/160, preserved T1/T8's 40/40 episodes below 10 cm, and failed on exactly the same seven episode seeds, so the prior recovered none of the residual episodes. The early checkpoint had one pre-reach and six post-reach failures with six interruptions; the terminal checkpoint shifted this to four pre-reach and three post-reach failures with three interruptions, which is a failure-mode tradeoff rather than improvement. This closes I9 with a recipe-specific limited negative: the tested PPO action prior did not transfer the demonstrated controllability into a learned policy at the 98% development target, while the broader question of whether another policy-side method can do so remains unresolved."
-      }
-    },
-    "request_fingerprint": "2a5f629c7aea9da6f01acf8d312af6053f6a694894a8c1a7ae7d726004a23dc4",
-    "session_id": "S19",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T1:checkpoint-120832 remains the strongest original evidence-backed baseline at 150/160 with 40/40 inner-band successes. T8:checkpoint-60416 and T9:checkpoint-20480 are the strongest measured I8 candidates at 153/160, but neither meets the development threshold or has a protected assessment or durable working, best-known, or retained role. T2-T7 remain rejected as recipe-specific negative routes.",
     "completed_operations": [
