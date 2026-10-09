@@ -86,3 +86,4 @@
 | E49 | checkpoint | I11 | checkpointed |
 | E50 | inquiry | I12 | completed |
 | E51 | checkpoint | - | checkpointed |
+| M22 | measurement | I12 | completed |
