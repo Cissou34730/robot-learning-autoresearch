@@ -6386,38 +6386,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I4",
-        "outcome": "negative, recipe-limited result with redirection",
-        "reason": "M5 completed the bounded targeted continuation and rejects this oversampling recipe as a route to the 98 percent goal. T5 achieved 93.125 percent success (149/160), below T3's 95.625 percent, despite first reaching 158 versus 157 episodes. Its 11 failures included four severe late-hold failures and two unreached targets, and total hold interruptions rose to 511 versus T3's 4. The paired result was zero T5 wins and four T3 wins on the discordant episodes. Thus the observed angle-focused continuation did not remove the residual radius-angle cases; it caused broad terminal-control degradation consistent with catastrophic forgetting or unstable fine-tuning. This is evidence against the tested oversampling recipe, not against incremental transfer generally. I4 closes because its stated redirect condition\u2014persistent residual failures despite transfer behavior, here accompanied by a large interruption regression\u2014is met. The campaign should redirect toward a targeted representation, action, or terminal-control change while retaining T3 as the strongest measured candidate."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I4",
-        "outcome": "negative, recipe-limited result with redirection",
-        "reason": "M5 completed the bounded targeted continuation and rejects this oversampling recipe as a route to the 98 percent goal. T5 achieved 93.125 percent success (149/160), below T3's 95.625 percent, despite first reaching 158 versus 157 episodes. Its 11 failures included four severe late-hold failures and two unreached targets, and total hold interruptions rose to 511 versus T3's 4. The paired result was zero T5 wins and four T3 wins on the discordant episodes. Thus the observed angle-focused continuation did not remove the residual radius-angle cases; it caused broad terminal-control degradation consistent with catastrophic forgetting or unstable fine-tuning. This is evidence against the tested oversampling recipe, not against incremental transfer generally. I4 closes because its stated redirect condition\u2014persistent residual failures despite transfer behavior, here accompanied by a large interruption regression\u2014is met. The campaign should redirect toward a targeted representation, action, or terminal-control change while retaining T3 as the strongest measured candidate.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E16",
-    "inquiry_id": "I4",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "negative, recipe-limited result with redirection",
-        "reason": "M5 completed the bounded targeted continuation and rejects this oversampling recipe as a route to the 98 percent goal. T5 achieved 93.125 percent success (149/160), below T3's 95.625 percent, despite first reaching 158 versus 157 episodes. Its 11 failures included four severe late-hold failures and two unreached targets, and total hold interruptions rose to 511 versus T3's 4. The paired result was zero T5 wins and four T3 wins on the discordant episodes. Thus the observed angle-focused continuation did not remove the residual radius-angle cases; it caused broad terminal-control degradation consistent with catastrophic forgetting or unstable fine-tuning. This is evidence against the tested oversampling recipe, not against incremental transfer generally. I4 closes because its stated redirect condition\u2014persistent residual failures despite transfer behavior, here accompanied by a large interruption regression\u2014is met. The campaign should redirect toward a targeted representation, action, or terminal-control change while retaining T3 as the strongest measured candidate."
-      }
-    },
-    "request_fingerprint": "980ed0d64a554c2b4a2e294b06bcee9abcd342e6c0de25cc2434d302b1804984",
-    "session_id": "S9",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T3:checkpoint-120832 remains the strongest measured development candidate at 95.625% on M4 and has the leading evidence-backed transfer recipe, but no working, best-known, or retained role is assigned in this session. T1:checkpoint-120832 remains the baseline reference at 68.75%. T2:checkpoint-120832 remains a negative recipe result at 1.25% and receives no role.",
     "completed_operations": [
