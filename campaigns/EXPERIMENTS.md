@@ -99,3 +99,4 @@
 | M24 | measurement | - | failed |
 | M25 | measurement | - | completed |
 | E57 | inquiry | I14 | completed |
+| E58 | checkpoint | - | checkpointed |
