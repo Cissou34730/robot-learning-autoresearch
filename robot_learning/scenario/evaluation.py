@@ -19,6 +19,7 @@ from benchmark.paired_evidence import episode_outcomes
 from contracts.policy_runtime import load_runtime
 from robot_learning.scenario.environment import make_evaluation_env
 from robot_learning.lab.diagnose_policy import _state_diagnostics
+from robot_learning.training.algorithms import infer_algorithm
 
 # Bumped when the meaning of a scenario evaluation summary changes.
 RESEARCH_EVALUATION_SUMMARY_VERSION = 4
@@ -35,7 +36,10 @@ def evaluate_research_model(
     """Measure a deterministic panel with episode seeds starting at ``seed``."""
     if episodes < 1:
         raise ValueError("an evaluation panel requires at least one episode")
-    runtime = load_runtime(model_path, algorithm)
+    runtime = load_runtime(
+        model_path,
+        infer_algorithm(model_path) if algorithm is None else algorithm,
+    )
     env = make_evaluation_env(policy_runtime=runtime)
 
     episode_results: list[dict] = []
