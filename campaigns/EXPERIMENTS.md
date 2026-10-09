@@ -23,4 +23,4 @@
 | E8 | inquiry | I2 | completed |
 | E9 | checkpoint | I2 | checkpointed |
 | E10 | model_role | - | assigned |
-| E11 | campaign_conclusion | - | official_assessment_requested |
+| E11 | campaign_conclusion | - | official_assessment_failed |

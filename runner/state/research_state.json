@@ -1658,13 +1658,20 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "official_assessment_requested",
+  "last_verdict": "official assessment goal not reached; success 97.5%; 200 episodes",
   "model_roles": {
     "best_known": "T2:checkpoint-110592",
     "retained": {},
     "working": null
   },
-  "official_assessment": null,
+  "official_assessment": {
+    "artifact": "campaigns/checkpoints/retained/58dcd817-4fed-42e6-854b-58f20408e6a1/t2-c720dc389-93dd43ab9738d28cbb57e976683412376ef8e0baa2796190823591174ccdb9b1",
+    "completed_at": "2026-10-09T08:52:17Z",
+    "fingerprint": "93dd43ab9738d28cbb57e976683412376ef8e0baa2796190823591174ccdb9b1",
+    "model": "T2:checkpoint-110592",
+    "status": "failed",
+    "summary": "goal not reached; success 97.5%; 200 episodes"
+  },
   "operation_events": [
     {
       "completed_at": "2026-10-09T08:20:25Z",
@@ -4938,7 +4945,7 @@
       "supersedes": null
     },
     {
-      "completed_at": "2026-10-09T08:51:38Z",
+      "completed_at": "2026-10-09T08:52:17Z",
       "error": null,
       "id": "E11",
       "inquiry_id": null,
@@ -4949,7 +4956,7 @@
       },
       "result": {
         "model": "T2:checkpoint-110592",
-        "status": "official_assessment_requested"
+        "status": "official_assessment_failed"
       },
       "session_id": "S6",
       "status": "completed",
@@ -4997,6 +5004,6 @@
   "terminal_state": {
     "model": "T2:checkpoint-110592",
     "reason": "Request the protected official assessment for the explicitly assigned best-known candidate T2:checkpoint-110592. M9 provides the strongest available development evidence: 153/160 complete-hold successes versus 150/160 for T1, improved capture timing and coverage in the previously identified failure geometries, and only 3 recorded hold interruptions versus 438. This supports continuing the capture-improved route, but the 98% human goal remains unestablished until the frozen candidate is evaluated on the protected 200-episode official distribution.",
-    "status": "official_assessment_requested"
+    "status": "official_assessment_failed"
   }
 }
