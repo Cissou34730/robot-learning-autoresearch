@@ -76,3 +76,4 @@
 | T11 | training | I10 | completed |
 | M19 | measurement | I10 | completed |
 | M20 | measurement | I10 | completed |
+| E44 | inquiry | I10 | completed |
