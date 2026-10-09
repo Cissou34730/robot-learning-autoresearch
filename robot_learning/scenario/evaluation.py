@@ -20,7 +20,7 @@ from contracts.policy_runtime import load_runtime
 from robot_learning.scenario.environment import make_evaluation_env
 
 # Bumped when the meaning of a scenario evaluation summary changes.
-RESEARCH_EVALUATION_SUMMARY_VERSION = 4
+RESEARCH_EVALUATION_SUMMARY_VERSION = 5
 
 
 def evaluate_research_model(
@@ -55,6 +55,12 @@ def evaluate_research_model(
         in_tolerance_steps = 0
         hold_interruptions = 0
         was_in_tolerance = False
+        first_entry_speed_cm_per_step: float | None = None
+        first_entry_joint_speed_radians_per_step: float | None = None
+        first_entry_branch_error_radians: list[float] | None = None
+        first_entry_joint_limit_margin_radians: list[float] | None = None
+        post_entry_max_distance_cm: float | None = None
+        previous_end_effector = env.data.site("end_effector").xpos.copy()
         while not (terminated or truncated):
             action = runtime.predict(obs)
             obs, reward, terminated, truncated, info = env.step(action)
@@ -62,6 +68,14 @@ def evaluate_research_model(
             reward_total += float(reward)
             distance_cm = 100.0 * float(info["distance"])
             held_steps = int(info.get("held_steps", 0))
+            end_effector = env.data.site("end_effector").xpos.copy()
+            entry_speed_cm_per_step = (
+                100.0
+                * float(
+                    np.linalg.norm(end_effector - previous_end_effector)
+                )
+            )
+            previous_end_effector = end_effector
             min_distance_cm = min(min_distance_cm, distance_cm)
             final_distance_cm = distance_cm
             max_held_steps = max(max_held_steps, held_steps)
@@ -69,6 +83,31 @@ def evaluate_research_model(
                 in_tolerance_steps += 1
                 if first_reach_step is None:
                     first_reach_step = steps
+                    first_entry_speed_cm_per_step = entry_speed_cm_per_step
+                    first_entry_joint_speed_radians_per_step = float(
+                        np.linalg.norm(env.data.qvel)
+                    )
+                    first_entry_branch_error_radians = [
+                        float(value) for value in obs[7:11]
+                    ]
+                    first_entry_joint_limit_margin_radians = [
+                        float(
+                            min(
+                                qpos - lower,
+                                upper - qpos,
+                            )
+                        )
+                        for qpos, (lower, upper) in zip(
+                            env.data.qpos,
+                            env.model.jnt_range[:2],
+                        )
+                    ]
+                if post_entry_max_distance_cm is None:
+                    post_entry_max_distance_cm = distance_cm
+                else:
+                    post_entry_max_distance_cm = max(
+                        post_entry_max_distance_cm, distance_cm
+                    )
             elif was_in_tolerance:
                 hold_interruptions += 1
             was_in_tolerance = held_steps > 0
@@ -100,6 +139,15 @@ def evaluate_research_model(
                 "min_distance_cm": min_distance_cm,
                 "final_distance_cm": final_distance_cm,
                 "first_reach_step": first_reach_step,
+                "first_entry_speed_cm_per_step": first_entry_speed_cm_per_step,
+                "first_entry_joint_speed_radians_per_step": (
+                    first_entry_joint_speed_radians_per_step
+                ),
+                "first_entry_branch_error_radians": first_entry_branch_error_radians,
+                "first_entry_joint_limit_margin_radians": (
+                    first_entry_joint_limit_margin_radians
+                ),
+                "post_entry_max_distance_cm": post_entry_max_distance_cm,
                 "max_held_steps": max_held_steps,
                 "in_tolerance_steps": in_tolerance_steps,
                 "hold_interruptions": hold_interruptions,
