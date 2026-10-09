@@ -3531,38 +3531,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I2",
-        "outcome": "resolved_limited",
-        "reason": "M3 provides the paired evidence required for I2. Relative to T1:checkpoint-120832 on the same 160 episodes, T2:checkpoint-120832 improves overall success from 68.75% (110/160) to 78.75% (126/160), improves inner-radius success from 50.54% (47/93) to 72.04% (67/93), and reduces inner-radius no-entry failures from 38 to 23. Conditional success after first entry is preserved and improves overall from 93.22% (110/118) to 96.18% (126/131), and for inner targets from 85.45% (47/55) to 95.71% (67/70). The result is limited rather than a clean success: repeated hold interruptions rise from 502 to 789 overall, outer-radius success falls from 94.03% to 88.06%, and the policy remains far below the 98% goal. Thus the targeted coverage route is supported, but branch/inner-radius shaping introduced a reach-versus-stability tradeoff. The next method decision should target stabilization and outer-radius preservation while retaining the demonstrated coverage gain."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I2",
-        "outcome": "resolved_limited",
-        "reason": "M3 provides the paired evidence required for I2. Relative to T1:checkpoint-120832 on the same 160 episodes, T2:checkpoint-120832 improves overall success from 68.75% (110/160) to 78.75% (126/160), improves inner-radius success from 50.54% (47/93) to 72.04% (67/93), and reduces inner-radius no-entry failures from 38 to 23. Conditional success after first entry is preserved and improves overall from 93.22% (110/118) to 96.18% (126/131), and for inner targets from 85.45% (47/55) to 95.71% (67/70). The result is limited rather than a clean success: repeated hold interruptions rise from 502 to 789 overall, outer-radius success falls from 94.03% to 88.06%, and the policy remains far below the 98% goal. Thus the targeted coverage route is supported, but branch/inner-radius shaping introduced a reach-versus-stability tradeoff. The next method decision should target stabilization and outer-radius preservation while retaining the demonstrated coverage gain.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E8",
-    "inquiry_id": "I2",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "resolved_limited",
-        "reason": "M3 provides the paired evidence required for I2. Relative to T1:checkpoint-120832 on the same 160 episodes, T2:checkpoint-120832 improves overall success from 68.75% (110/160) to 78.75% (126/160), improves inner-radius success from 50.54% (47/93) to 72.04% (67/93), and reduces inner-radius no-entry failures from 38 to 23. Conditional success after first entry is preserved and improves overall from 93.22% (110/118) to 96.18% (126/131), and for inner targets from 85.45% (47/55) to 95.71% (67/70). The result is limited rather than a clean success: repeated hold interruptions rise from 502 to 789 overall, outer-radius success falls from 94.03% to 88.06%, and the policy remains far below the 98% goal. Thus the targeted coverage route is supported, but branch/inner-radius shaping introduced a reach-versus-stability tradeoff. The next method decision should target stabilization and outer-radius preservation while retaining the demonstrated coverage gain."
-      }
-    },
-    "request_fingerprint": "03935397f8fe4d9b180e90cae256ce5f52734b1e0a3adaa91a3c3ec242995e69",
-    "session_id": "S5",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "Available candidates remain T1:checkpoint-100352, T1:checkpoint-10240, T1:checkpoint-105472, T1:checkpoint-110592, T1:checkpoint-115712, T1:checkpoint-120832, T1:checkpoint-15360, T1:checkpoint-20480, T1:checkpoint-25600, T1:checkpoint-30720, T1:checkpoint-35840, T1:checkpoint-40960, T1:checkpoint-45056, T1:checkpoint-50176, T1:checkpoint-5120, T1:checkpoint-55296, T1:checkpoint-60416, T1:checkpoint-65536, T1:checkpoint-70656, T1:checkpoint-75776, T1:checkpoint-80896, T1:checkpoint-86016, T1:checkpoint-90112, and T1:checkpoint-95232. No working, best-known, or retained role is assigned because development evidence is below the human goal and I2 has not yet produced intervention evidence.",
     "completed_operations": [
