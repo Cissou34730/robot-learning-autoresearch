@@ -161,7 +161,8 @@
         "campaigns/evaluations/896c230a-0ff1-4105-8ab7-1691a09c5482/task-reference-896c230a-0ff1-4105-8ab7-1691a09c5482-m1-T1-checkpoint-115712-task-reference-v1.json",
         "campaigns/evaluations/896c230a-0ff1-4105-8ab7-1691a09c5482/evaluation-896c230a-0ff1-4105-8ab7-1691a09c5482-m2-T1-checkpoint-115712-200ep-seed17300-604d52985c97.json",
         "campaigns/evaluations/896c230a-0ff1-4105-8ab7-1691a09c5482/evaluation-896c230a-0ff1-4105-8ab7-1691a09c5482-m3-T1-checkpoint-115712-200ep-seed27300-604d52985c97.json",
-        "campaigns/evaluations/896c230a-0ff1-4105-8ab7-1691a09c5482/evaluation-896c230a-0ff1-4105-8ab7-1691a09c5482-m4-T1-checkpoint-115712-128ep-seed37300-56c22f7cceb7.json"
+        "campaigns/evaluations/896c230a-0ff1-4105-8ab7-1691a09c5482/evaluation-896c230a-0ff1-4105-8ab7-1691a09c5482-m4-T1-checkpoint-115712-128ep-seed37300-56c22f7cceb7.json",
+        "campaigns/evaluations/896c230a-0ff1-4105-8ab7-1691a09c5482/evaluation-896c230a-0ff1-4105-8ab7-1691a09c5482-m5-T1-checkpoint-115712-128ep-seed47300-56c22f7cceb7.json"
       ],
       "fingerprint": "1f2f6a56b3ceb26ec73a8ab6ef5208096e740f66bd5af1ea46a2ef0ef2bc20d8",
       "id": "T1:checkpoint-115712",
@@ -1835,7 +1836,9 @@
     },
     "T3:checkpoint-120832": {
       "artifact": "campaigns/checkpoints/candidates/896c230a-0ff1-4105-8ab7-1691a09c5482/t3/checkpoint-120832",
-      "evaluation_artifacts": [],
+      "evaluation_artifacts": [
+        "campaigns/evaluations/896c230a-0ff1-4105-8ab7-1691a09c5482/evaluation-896c230a-0ff1-4105-8ab7-1691a09c5482-m5-T3-checkpoint-120832-128ep-seed47300-56c22f7cceb7.json"
+      ],
       "fingerprint": "4548db92f6fd7376a7ab754637e286d07c53f311a36b35666d67e0aa8e1e894a",
       "id": "T3:checkpoint-120832",
       "name": "checkpoint-120832",
@@ -2483,7 +2486,7 @@
   "counters": {
     "event": 11,
     "inquiry": 3,
-    "measurement": 4,
+    "measurement": 5,
     "session": 7,
     "training": 3
   },
@@ -4980,9 +4983,1242 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-09T10:26:03Z",
+      "error": null,
+      "id": "M5",
+      "inquiry_id": "I3",
+      "kind": "measurement",
+      "request": {
+        "description": "Evaluate the late geometry-conditioned candidate T3:checkpoint-120832 and the late baseline reference T1:checkpoint-115712 on a fresh matched 128-episode research panel with complete reach, hold, geometry, branch, velocity, and action diagnostics.",
+        "measurements": [
+          {
+            "candidate": "T3:checkpoint-120832",
+            "episodes": 128,
+            "instrument": "research_evaluation",
+            "label": "t3-late-geometry-conditioned-panel",
+            "seed": 47300
+          },
+          {
+            "candidate": "T1:checkpoint-115712",
+            "episodes": 128,
+            "instrument": "research_evaluation",
+            "label": "t1-late-matched-reference-panel",
+            "seed": 47300
+          }
+        ],
+        "paired_comparisons": [
+          {
+            "candidate": "T3:checkpoint-120832",
+            "reference": "T1:checkpoint-115712"
+          }
+        ],
+        "rationale": "T3 is the direct I3 representation intervention, but its training trajectory remains much weaker than T1's: terminal training success is 0.11 and reward is 96.36, so those learning statistics cannot establish whether explicit bearing, radius, and branch-proximity features changed the measured failure mechanism. The terminal T3 checkpoint is selected as the strongest trajectory-nominated artifact, not as privileged evidence. A matched evaluation against T1 on new seeds tests the closure condition directly. Reduced left/back never-reached failures, improved first reach, and preserved complete 100-step holds across the official radius range would support continuing the geometry-conditioned route despite slower acquisition. Unchanged left/back failure, persistent action saturation, or a hold tradeoff would close I3 with a recipe-specific negative or limited result and redirect toward PPO credit assignment or stabilization rather than claiming that geometry conditioning is ineffective in general."
+      },
+      "result": {
+        "measurements": [
+          {
+            "candidate": "T3:checkpoint-120832",
+            "candidate_id": "T3:checkpoint-120832",
+            "instrument": "research_evaluation",
+            "label": "t3-late-geometry-conditioned-panel",
+            "metrics": {
+              "episodes": 128,
+              "evaluation_artifact": "campaigns/evaluations/896c230a-0ff1-4105-8ab7-1691a09c5482/evaluation-896c230a-0ff1-4105-8ab7-1691a09c5482-m5-T3-checkpoint-120832-128ep-seed47300-56c22f7cceb7.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 8,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/model",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/seed",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/official_benchmark",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 128,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "reward_total",
+                      "steps",
+                      "success",
+                      "terminated",
+                      "truncated"
+                    ],
+                    "path": "/episode_results",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 128,
+                    "field_names": [
+                      "branch_switches",
+                      "episode",
+                      "episode_seed",
+                      "final_action",
+                      "final_distance_cm",
+                      "final_qpos",
+                      "final_qvel",
+                      "first_reach_action",
+                      "first_reach_branch",
+                      "first_reach_qpos",
+                      "first_reach_qvel",
+                      "first_reach_step",
+                      "hold_interruptions",
+                      "in_tolerance_steps",
+                      "max_abs_action",
+                      "max_abs_qvel",
+                      "max_abs_qvel_during_hold",
+                      "max_held_steps",
+                      "min_distance_cm",
+                      "target_angle_degrees",
+                      "target_radius_cm"
+                    ],
+                    "path": "/research_evidence/episode_diagnostics",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence/units",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/research_evidence/units/distance",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/time",
+                    "type": "string"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "7a70c3a16bb780e84dbf92e993c0751be5baf9a765cb66cb053dd703e1781a5d",
+              "evaluation_semantics": "56c22f7cceb7",
+              "model_fingerprint": "4548db92f6fd7376a7ab754637e286d07c53f311a36b35666d67e0aa8e1e894a",
+              "official_benchmark": false,
+              "schema_version": 6,
+              "seed": 47300,
+              "success_percent": 53.125,
+              "successes": 68
+            }
+          },
+          {
+            "candidate": "T1:checkpoint-115712",
+            "candidate_id": "T1:checkpoint-115712",
+            "instrument": "research_evaluation",
+            "label": "t1-late-matched-reference-panel",
+            "metrics": {
+              "episodes": 128,
+              "evaluation_artifact": "campaigns/evaluations/896c230a-0ff1-4105-8ab7-1691a09c5482/evaluation-896c230a-0ff1-4105-8ab7-1691a09c5482-m5-T1-checkpoint-115712-128ep-seed47300-56c22f7cceb7.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 8,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/model",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/seed",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/official_benchmark",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 128,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "reward_total",
+                      "steps",
+                      "success",
+                      "terminated",
+                      "truncated"
+                    ],
+                    "path": "/episode_results",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 128,
+                    "field_names": [
+                      "branch_switches",
+                      "episode",
+                      "episode_seed",
+                      "final_action",
+                      "final_distance_cm",
+                      "final_qpos",
+                      "final_qvel",
+                      "first_reach_action",
+                      "first_reach_branch",
+                      "first_reach_qpos",
+                      "first_reach_qvel",
+                      "first_reach_step",
+                      "hold_interruptions",
+                      "in_tolerance_steps",
+                      "max_abs_action",
+                      "max_abs_qvel",
+                      "max_abs_qvel_during_hold",
+                      "max_held_steps",
+                      "min_distance_cm",
+                      "target_angle_degrees",
+                      "target_radius_cm"
+                    ],
+                    "path": "/research_evidence/episode_diagnostics",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence/units",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/research_evidence/units/distance",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/time",
+                    "type": "string"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "d77610cd790447040aed795472fb7dc6fbecb4d8e0d17adfcb6347498f61d665",
+              "evaluation_semantics": "56c22f7cceb7",
+              "model_fingerprint": "1f2f6a56b3ceb26ec73a8ab6ef5208096e740f66bd5af1ea46a2ef0ef2bc20d8",
+              "official_benchmark": false,
+              "schema_version": 6,
+              "seed": 47300,
+              "success_percent": 64.84375,
+              "successes": 83
+            }
+          }
+        ],
+        "paired_comparisons": [
+          {
+            "candidate": "T3:checkpoint-120832",
+            "candidate_model_fingerprint": "4548db92f6fd7376a7ab754637e286d07c53f311a36b35666d67e0aa8e1e894a",
+            "candidate_wins": 36,
+            "discordant_episodes": 87,
+            "episodes": 128,
+            "net_wins": -15,
+            "reference": "T1:checkpoint-115712",
+            "reference_model_fingerprint": "1f2f6a56b3ceb26ec73a8ab6ef5208096e740f66bd5af1ea46a2ef0ef2bc20d8",
+            "reference_wins": 51,
+            "shared_episode_seeds": [
+              47300,
+              47301,
+              47302,
+              47303,
+              47304,
+              47305,
+              47306,
+              47307,
+              47308,
+              47309,
+              47310,
+              47311,
+              47312,
+              47313,
+              47314,
+              47315,
+              47316,
+              47317,
+              47318,
+              47319,
+              47320,
+              47321,
+              47322,
+              47323,
+              47324,
+              47325,
+              47326,
+              47327,
+              47328,
+              47329,
+              47330,
+              47331,
+              47332,
+              47333,
+              47334,
+              47335,
+              47336,
+              47337,
+              47338,
+              47339,
+              47340,
+              47341,
+              47342,
+              47343,
+              47344,
+              47345,
+              47346,
+              47347,
+              47348,
+              47349,
+              47350,
+              47351,
+              47352,
+              47353,
+              47354,
+              47355,
+              47356,
+              47357,
+              47358,
+              47359,
+              47360,
+              47361,
+              47362,
+              47363,
+              47364,
+              47365,
+              47366,
+              47367,
+              47368,
+              47369,
+              47370,
+              47371,
+              47372,
+              47373,
+              47374,
+              47375,
+              47376,
+              47377,
+              47378,
+              47379,
+              47380,
+              47381,
+              47382,
+              47383,
+              47384,
+              47385,
+              47386,
+              47387,
+              47388,
+              47389,
+              47390,
+              47391,
+              47392,
+              47393,
+              47394,
+              47395,
+              47396,
+              47397,
+              47398,
+              47399,
+              47400,
+              47401,
+              47402,
+              47403,
+              47404,
+              47405,
+              47406,
+              47407,
+              47408,
+              47409,
+              47410,
+              47411,
+              47412,
+              47413,
+              47414,
+              47415,
+              47416,
+              47417,
+              47418,
+              47419,
+              47420,
+              47421,
+              47422,
+              47423,
+              47424,
+              47425,
+              47426,
+              47427
+            ],
+            "source_artifacts": [
+              "campaigns/evaluations/896c230a-0ff1-4105-8ab7-1691a09c5482/evaluation-896c230a-0ff1-4105-8ab7-1691a09c5482-m5-T3-checkpoint-120832-128ep-seed47300-56c22f7cceb7.json",
+              "campaigns/evaluations/896c230a-0ff1-4105-8ab7-1691a09c5482/evaluation-896c230a-0ff1-4105-8ab7-1691a09c5482-m5-T1-checkpoint-115712-128ep-seed47300-56c22f7cceb7.json"
+            ],
+            "success_delta_percent": -11.71875
+          }
+        ],
+        "status": "completed",
+        "tool_provenance": null
+      },
+      "session_id": "S7",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "evaluation_semantics": "56c22f7cceb7",
+      "measurements": [
+        {
+          "artifact": "campaigns/checkpoints/candidates/896c230a-0ff1-4105-8ab7-1691a09c5482/t3/checkpoint-120832",
+          "candidate": "T3:checkpoint-120832",
+          "candidate_id": "T3:checkpoint-120832",
+          "episodes": 128,
+          "instrument": "research_evaluation",
+          "label": "t3-late-geometry-conditioned-panel",
+          "model_fingerprint": "4548db92f6fd7376a7ab754637e286d07c53f311a36b35666d67e0aa8e1e894a",
+          "seed": 47300
+        },
+        {
+          "artifact": "campaigns/checkpoints/candidates/896c230a-0ff1-4105-8ab7-1691a09c5482/t1/checkpoint-115712",
+          "candidate": "T1:checkpoint-115712",
+          "candidate_id": "T1:checkpoint-115712",
+          "episodes": 128,
+          "instrument": "research_evaluation",
+          "label": "t1-late-matched-reference-panel",
+          "model_fingerprint": "1f2f6a56b3ceb26ec73a8ab6ef5208096e740f66bd5af1ea46a2ef0ef2bc20d8",
+          "seed": 47300
+        }
+      ],
+      "module_provenance": null,
+      "paired_comparisons": [
+        {
+          "candidate": "T3:checkpoint-120832",
+          "candidate_measurement_indexes": [
+            0
+          ],
+          "candidate_model_fingerprint": "4548db92f6fd7376a7ab754637e286d07c53f311a36b35666d67e0aa8e1e894a",
+          "reference": "T1:checkpoint-115712",
+          "reference_measurement_indexes": [
+            1
+          ],
+          "reference_model_fingerprint": "1f2f6a56b3ceb26ec73a8ab6ef5208096e740f66bd5af1ea46a2ef0ef2bc20d8",
+          "shared_episode_seeds": [
+            47300,
+            47301,
+            47302,
+            47303,
+            47304,
+            47305,
+            47306,
+            47307,
+            47308,
+            47309,
+            47310,
+            47311,
+            47312,
+            47313,
+            47314,
+            47315,
+            47316,
+            47317,
+            47318,
+            47319,
+            47320,
+            47321,
+            47322,
+            47323,
+            47324,
+            47325,
+            47326,
+            47327,
+            47328,
+            47329,
+            47330,
+            47331,
+            47332,
+            47333,
+            47334,
+            47335,
+            47336,
+            47337,
+            47338,
+            47339,
+            47340,
+            47341,
+            47342,
+            47343,
+            47344,
+            47345,
+            47346,
+            47347,
+            47348,
+            47349,
+            47350,
+            47351,
+            47352,
+            47353,
+            47354,
+            47355,
+            47356,
+            47357,
+            47358,
+            47359,
+            47360,
+            47361,
+            47362,
+            47363,
+            47364,
+            47365,
+            47366,
+            47367,
+            47368,
+            47369,
+            47370,
+            47371,
+            47372,
+            47373,
+            47374,
+            47375,
+            47376,
+            47377,
+            47378,
+            47379,
+            47380,
+            47381,
+            47382,
+            47383,
+            47384,
+            47385,
+            47386,
+            47387,
+            47388,
+            47389,
+            47390,
+            47391,
+            47392,
+            47393,
+            47394,
+            47395,
+            47396,
+            47397,
+            47398,
+            47399,
+            47400,
+            47401,
+            47402,
+            47403,
+            47404,
+            47405,
+            47406,
+            47407,
+            47408,
+            47409,
+            47410,
+            47411,
+            47412,
+            47413,
+            47414,
+            47415,
+            47416,
+            47417,
+            47418,
+            47419,
+            47420,
+            47421,
+            47422,
+            47423,
+            47424,
+            47425,
+            47426,
+            47427
+          ]
+        }
+      ],
+      "partial_results": [
+        {
+          "candidate": "T3:checkpoint-120832",
+          "candidate_id": "T3:checkpoint-120832",
+          "instrument": "research_evaluation",
+          "label": "t3-late-geometry-conditioned-panel",
+          "metrics": {
+            "episodes": 128,
+            "evaluation_artifact": "campaigns/evaluations/896c230a-0ff1-4105-8ab7-1691a09c5482/evaluation-896c230a-0ff1-4105-8ab7-1691a09c5482-m5-T3-checkpoint-120832-128ep-seed47300-56c22f7cceb7.json",
+            "evaluation_artifact_contents": {
+              "scope": "structure_only",
+              "sections": [
+                {
+                  "entries": 8,
+                  "path": "",
+                  "type": "object"
+                },
+                {
+                  "path": "/schema_version",
+                  "type": "number"
+                },
+                {
+                  "path": "/model",
+                  "type": "string"
+                },
+                {
+                  "path": "/episodes",
+                  "type": "number"
+                },
+                {
+                  "path": "/seed",
+                  "type": "number"
+                },
+                {
+                  "path": "/official_benchmark",
+                  "type": "boolean"
+                },
+                {
+                  "path": "/success_percent",
+                  "type": "number"
+                },
+                {
+                  "entries": 128,
+                  "field_names": [
+                    "episode",
+                    "episode_seed",
+                    "reward_total",
+                    "steps",
+                    "success",
+                    "terminated",
+                    "truncated"
+                  ],
+                  "path": "/episode_results",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/research_evidence",
+                  "type": "object"
+                },
+                {
+                  "entries": 128,
+                  "field_names": [
+                    "branch_switches",
+                    "episode",
+                    "episode_seed",
+                    "final_action",
+                    "final_distance_cm",
+                    "final_qpos",
+                    "final_qvel",
+                    "first_reach_action",
+                    "first_reach_branch",
+                    "first_reach_qpos",
+                    "first_reach_qvel",
+                    "first_reach_step",
+                    "hold_interruptions",
+                    "in_tolerance_steps",
+                    "max_abs_action",
+                    "max_abs_qvel",
+                    "max_abs_qvel_during_hold",
+                    "max_held_steps",
+                    "min_distance_cm",
+                    "target_angle_degrees",
+                    "target_radius_cm"
+                  ],
+                  "path": "/research_evidence/episode_diagnostics",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/research_evidence/units",
+                  "type": "object"
+                },
+                {
+                  "path": "/research_evidence/units/distance",
+                  "type": "string"
+                },
+                {
+                  "path": "/research_evidence/units/time",
+                  "type": "string"
+                }
+              ],
+              "truncated": false
+            },
+            "evaluation_artifact_fingerprint": "7a70c3a16bb780e84dbf92e993c0751be5baf9a765cb66cb053dd703e1781a5d",
+            "evaluation_semantics": "56c22f7cceb7",
+            "model_fingerprint": "4548db92f6fd7376a7ab754637e286d07c53f311a36b35666d67e0aa8e1e894a",
+            "official_benchmark": false,
+            "schema_version": 6,
+            "seed": 47300,
+            "success_percent": 53.125,
+            "successes": 68
+          }
+        },
+        {
+          "candidate": "T1:checkpoint-115712",
+          "candidate_id": "T1:checkpoint-115712",
+          "instrument": "research_evaluation",
+          "label": "t1-late-matched-reference-panel",
+          "metrics": {
+            "episodes": 128,
+            "evaluation_artifact": "campaigns/evaluations/896c230a-0ff1-4105-8ab7-1691a09c5482/evaluation-896c230a-0ff1-4105-8ab7-1691a09c5482-m5-T1-checkpoint-115712-128ep-seed47300-56c22f7cceb7.json",
+            "evaluation_artifact_contents": {
+              "scope": "structure_only",
+              "sections": [
+                {
+                  "entries": 8,
+                  "path": "",
+                  "type": "object"
+                },
+                {
+                  "path": "/schema_version",
+                  "type": "number"
+                },
+                {
+                  "path": "/model",
+                  "type": "string"
+                },
+                {
+                  "path": "/episodes",
+                  "type": "number"
+                },
+                {
+                  "path": "/seed",
+                  "type": "number"
+                },
+                {
+                  "path": "/official_benchmark",
+                  "type": "boolean"
+                },
+                {
+                  "path": "/success_percent",
+                  "type": "number"
+                },
+                {
+                  "entries": 128,
+                  "field_names": [
+                    "episode",
+                    "episode_seed",
+                    "reward_total",
+                    "steps",
+                    "success",
+                    "terminated",
+                    "truncated"
+                  ],
+                  "path": "/episode_results",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/research_evidence",
+                  "type": "object"
+                },
+                {
+                  "entries": 128,
+                  "field_names": [
+                    "branch_switches",
+                    "episode",
+                    "episode_seed",
+                    "final_action",
+                    "final_distance_cm",
+                    "final_qpos",
+                    "final_qvel",
+                    "first_reach_action",
+                    "first_reach_branch",
+                    "first_reach_qpos",
+                    "first_reach_qvel",
+                    "first_reach_step",
+                    "hold_interruptions",
+                    "in_tolerance_steps",
+                    "max_abs_action",
+                    "max_abs_qvel",
+                    "max_abs_qvel_during_hold",
+                    "max_held_steps",
+                    "min_distance_cm",
+                    "target_angle_degrees",
+                    "target_radius_cm"
+                  ],
+                  "path": "/research_evidence/episode_diagnostics",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/research_evidence/units",
+                  "type": "object"
+                },
+                {
+                  "path": "/research_evidence/units/distance",
+                  "type": "string"
+                },
+                {
+                  "path": "/research_evidence/units/time",
+                  "type": "string"
+                }
+              ],
+              "truncated": false
+            },
+            "evaluation_artifact_fingerprint": "d77610cd790447040aed795472fb7dc6fbecb4d8e0d17adfcb6347498f61d665",
+            "evaluation_semantics": "56c22f7cceb7",
+            "model_fingerprint": "1f2f6a56b3ceb26ec73a8ab6ef5208096e740f66bd5af1ea46a2ef0ef2bc20d8",
+            "official_benchmark": false,
+            "schema_version": 6,
+            "seed": 47300,
+            "success_percent": 64.84375,
+            "successes": 83
+          }
+        }
+      ],
+      "result": {
+        "measurements": [
+          {
+            "candidate": "T3:checkpoint-120832",
+            "candidate_id": "T3:checkpoint-120832",
+            "instrument": "research_evaluation",
+            "label": "t3-late-geometry-conditioned-panel",
+            "metrics": {
+              "episodes": 128,
+              "evaluation_artifact": "campaigns/evaluations/896c230a-0ff1-4105-8ab7-1691a09c5482/evaluation-896c230a-0ff1-4105-8ab7-1691a09c5482-m5-T3-checkpoint-120832-128ep-seed47300-56c22f7cceb7.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 8,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/model",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/seed",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/official_benchmark",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 128,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "reward_total",
+                      "steps",
+                      "success",
+                      "terminated",
+                      "truncated"
+                    ],
+                    "path": "/episode_results",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 128,
+                    "field_names": [
+                      "branch_switches",
+                      "episode",
+                      "episode_seed",
+                      "final_action",
+                      "final_distance_cm",
+                      "final_qpos",
+                      "final_qvel",
+                      "first_reach_action",
+                      "first_reach_branch",
+                      "first_reach_qpos",
+                      "first_reach_qvel",
+                      "first_reach_step",
+                      "hold_interruptions",
+                      "in_tolerance_steps",
+                      "max_abs_action",
+                      "max_abs_qvel",
+                      "max_abs_qvel_during_hold",
+                      "max_held_steps",
+                      "min_distance_cm",
+                      "target_angle_degrees",
+                      "target_radius_cm"
+                    ],
+                    "path": "/research_evidence/episode_diagnostics",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence/units",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/research_evidence/units/distance",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/time",
+                    "type": "string"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "7a70c3a16bb780e84dbf92e993c0751be5baf9a765cb66cb053dd703e1781a5d",
+              "evaluation_semantics": "56c22f7cceb7",
+              "model_fingerprint": "4548db92f6fd7376a7ab754637e286d07c53f311a36b35666d67e0aa8e1e894a",
+              "official_benchmark": false,
+              "schema_version": 6,
+              "seed": 47300,
+              "success_percent": 53.125,
+              "successes": 68
+            }
+          },
+          {
+            "candidate": "T1:checkpoint-115712",
+            "candidate_id": "T1:checkpoint-115712",
+            "instrument": "research_evaluation",
+            "label": "t1-late-matched-reference-panel",
+            "metrics": {
+              "episodes": 128,
+              "evaluation_artifact": "campaigns/evaluations/896c230a-0ff1-4105-8ab7-1691a09c5482/evaluation-896c230a-0ff1-4105-8ab7-1691a09c5482-m5-T1-checkpoint-115712-128ep-seed47300-56c22f7cceb7.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 8,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/model",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/seed",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/official_benchmark",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 128,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "reward_total",
+                      "steps",
+                      "success",
+                      "terminated",
+                      "truncated"
+                    ],
+                    "path": "/episode_results",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 128,
+                    "field_names": [
+                      "branch_switches",
+                      "episode",
+                      "episode_seed",
+                      "final_action",
+                      "final_distance_cm",
+                      "final_qpos",
+                      "final_qvel",
+                      "first_reach_action",
+                      "first_reach_branch",
+                      "first_reach_qpos",
+                      "first_reach_qvel",
+                      "first_reach_step",
+                      "hold_interruptions",
+                      "in_tolerance_steps",
+                      "max_abs_action",
+                      "max_abs_qvel",
+                      "max_abs_qvel_during_hold",
+                      "max_held_steps",
+                      "min_distance_cm",
+                      "target_angle_degrees",
+                      "target_radius_cm"
+                    ],
+                    "path": "/research_evidence/episode_diagnostics",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence/units",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/research_evidence/units/distance",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/time",
+                    "type": "string"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "d77610cd790447040aed795472fb7dc6fbecb4d8e0d17adfcb6347498f61d665",
+              "evaluation_semantics": "56c22f7cceb7",
+              "model_fingerprint": "1f2f6a56b3ceb26ec73a8ab6ef5208096e740f66bd5af1ea46a2ef0ef2bc20d8",
+              "official_benchmark": false,
+              "schema_version": 6,
+              "seed": 47300,
+              "success_percent": 64.84375,
+              "successes": 83
+            }
+          }
+        ],
+        "paired_comparisons": [
+          {
+            "candidate": "T3:checkpoint-120832",
+            "candidate_model_fingerprint": "4548db92f6fd7376a7ab754637e286d07c53f311a36b35666d67e0aa8e1e894a",
+            "candidate_wins": 36,
+            "discordant_episodes": 87,
+            "episodes": 128,
+            "net_wins": -15,
+            "reference": "T1:checkpoint-115712",
+            "reference_model_fingerprint": "1f2f6a56b3ceb26ec73a8ab6ef5208096e740f66bd5af1ea46a2ef0ef2bc20d8",
+            "reference_wins": 51,
+            "shared_episode_seeds": [
+              47300,
+              47301,
+              47302,
+              47303,
+              47304,
+              47305,
+              47306,
+              47307,
+              47308,
+              47309,
+              47310,
+              47311,
+              47312,
+              47313,
+              47314,
+              47315,
+              47316,
+              47317,
+              47318,
+              47319,
+              47320,
+              47321,
+              47322,
+              47323,
+              47324,
+              47325,
+              47326,
+              47327,
+              47328,
+              47329,
+              47330,
+              47331,
+              47332,
+              47333,
+              47334,
+              47335,
+              47336,
+              47337,
+              47338,
+              47339,
+              47340,
+              47341,
+              47342,
+              47343,
+              47344,
+              47345,
+              47346,
+              47347,
+              47348,
+              47349,
+              47350,
+              47351,
+              47352,
+              47353,
+              47354,
+              47355,
+              47356,
+              47357,
+              47358,
+              47359,
+              47360,
+              47361,
+              47362,
+              47363,
+              47364,
+              47365,
+              47366,
+              47367,
+              47368,
+              47369,
+              47370,
+              47371,
+              47372,
+              47373,
+              47374,
+              47375,
+              47376,
+              47377,
+              47378,
+              47379,
+              47380,
+              47381,
+              47382,
+              47383,
+              47384,
+              47385,
+              47386,
+              47387,
+              47388,
+              47389,
+              47390,
+              47391,
+              47392,
+              47393,
+              47394,
+              47395,
+              47396,
+              47397,
+              47398,
+              47399,
+              47400,
+              47401,
+              47402,
+              47403,
+              47404,
+              47405,
+              47406,
+              47407,
+              47408,
+              47409,
+              47410,
+              47411,
+              47412,
+              47413,
+              47414,
+              47415,
+              47416,
+              47417,
+              47418,
+              47419,
+              47420,
+              47421,
+              47422,
+              47423,
+              47424,
+              47425,
+              47426,
+              47427
+            ],
+            "source_artifacts": [
+              "campaigns/evaluations/896c230a-0ff1-4105-8ab7-1691a09c5482/evaluation-896c230a-0ff1-4105-8ab7-1691a09c5482-m5-T3-checkpoint-120832-128ep-seed47300-56c22f7cceb7.json",
+              "campaigns/evaluations/896c230a-0ff1-4105-8ab7-1691a09c5482/evaluation-896c230a-0ff1-4105-8ab7-1691a09c5482-m5-T1-checkpoint-115712-128ep-seed47300-56c22f7cceb7.json"
+            ],
+            "success_delta_percent": -11.71875
+          }
+        ],
+        "status": "completed",
+        "tool_provenance": null
+      },
+      "task_reference_contract": null
+    },
+    "failure": null,
+    "id": "M5",
+    "inquiry_id": "I3",
+    "kind": "measurement",
+    "progress": "completed",
+    "request": {
+      "measurement": {
+        "description": "Evaluate the late geometry-conditioned candidate T3:checkpoint-120832 and the late baseline reference T1:checkpoint-115712 on a fresh matched 128-episode research panel with complete reach, hold, geometry, branch, velocity, and action diagnostics.",
+        "measurements": [
+          {
+            "candidate": "T3:checkpoint-120832",
+            "episodes": 128,
+            "instrument": "research_evaluation",
+            "label": "t3-late-geometry-conditioned-panel",
+            "seed": 47300
+          },
+          {
+            "candidate": "T1:checkpoint-115712",
+            "episodes": 128,
+            "instrument": "research_evaluation",
+            "label": "t1-late-matched-reference-panel",
+            "seed": 47300
+          }
+        ],
+        "paired_comparisons": [
+          {
+            "candidate": "T3:checkpoint-120832",
+            "reference": "T1:checkpoint-115712"
+          }
+        ],
+        "rationale": "T3 is the direct I3 representation intervention, but its training trajectory remains much weaker than T1's: terminal training success is 0.11 and reward is 96.36, so those learning statistics cannot establish whether explicit bearing, radius, and branch-proximity features changed the measured failure mechanism. The terminal T3 checkpoint is selected as the strongest trajectory-nominated artifact, not as privileged evidence. A matched evaluation against T1 on new seeds tests the closure condition directly. Reduced left/back never-reached failures, improved first reach, and preserved complete 100-step holds across the official radius range would support continuing the geometry-conditioned route despite slower acquisition. Unchanged left/back failure, persistent action saturation, or a hold tradeoff would close I3 with a recipe-specific negative or limited result and redirect toward PPO credit assignment or stabilization rather than claiming that geometry conditioning is ineffective in general."
+      }
+    },
+    "request_fingerprint": "1f289f6692ce386ff3594dc9463157d721dc702f3738eb858a3826faeb5dc2fb",
+    "session_id": "S7",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T1:checkpoint-115712 remains the strongest development-measured candidate at 67.97% on the latest matched panel; T2:checkpoint-120832 measures 37.50%. No candidate has a working, best-known, or retained role.",
     "completed_operations": [
@@ -5030,7 +6266,8 @@
     "kind": "inquiry",
     "objective": "Advance I3 toward an evidence-supported answer to its scientific question: Can a geometry-conditioned control or observation representation eliminate the learned policy's persistent left/back bearing reach deficit while preserving complete uninterrupted holds across the official 0.06-0.20 m radius range? Before choosing the next action, compare the accumulated evidence with the closure condition. Close the inquiry when the condition is met.",
     "operation_ids": [
-      "T3"
+      "T3",
+      "M5"
     ],
     "scientific_parent_commit": "73a696fe4888b4b9f6de945e058cc607804189b4"
   },
