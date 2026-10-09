@@ -6463,47 +6463,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "open",
-        "inquiry": {
-          "closure_condition": "Close after a bounded terminal-control or action-margin intervention built on T3 is evaluated on the full-distribution development panel with success, first-reach coverage, maximum held steps, hold interruptions, final distance, and radius-angle strata. A positive result requires at least 98% success with broad first reach and approximately T3's four interruptions; persistent localized failures with preserved transfer behavior redirect toward targeted representation or branch-conditioned action redesign, while broad interruption regression rejects the tested intervention.",
-          "goal_connection": "The human goal requires at least 196 of 200 episodes to complete an uninterrupted 100-step hold. T3 reaches 95.625% on development evidence, while the T5 angle-oversampling continuation raised first reach but degraded hold integrity to 511 interruptions. This inquiry targets the remaining completion gap while preserving T3's broad first reach and four-interruption terminal behavior.",
-          "handoff_conclusion": "Established physical evidence remains M1's nonzero compiled plant authority, absence of sampled self-contact in valid target branches, and complete local 100-step holds under zero input and bounded local PD. T1 established a reach-limited, geometry-conditioned baseline at 68.75 percent, while T2 rejected an abrupt hard-distribution recipe without rejecting learning generally. T3's incremental radius transfer improved success to 95.625 percent, first reach to 157/160, and reduced hold interruptions to 4, supporting distribution-shift sensitivity as the leading explanation for the earlier reach deficit. M5 is new evidence: T5 continued from T3 with 70 percent sampling in the observed failure-angle band and 30 percent uniform exposure, but achieved only 93.125 percent, first reached 158/160, and accumulated 511 hold interruptions; paired comparison gave T5 zero wins and T3 four wins on four discordant episodes. The targeted oversampling recipe therefore failed to repair the residual stratum and produced broad terminal-control degradation consistent with catastrophic forgetting or unstable fine-tuning. This rejects the tested recipe, not incremental transfer generally, and leaves T3 as the strongest measured candidate. The physical plant still appears locally holdable, so the remaining decision is policy representation/action or learned terminal-control robustness rather than established mechanical infeasibility.",
-          "handoff_question": "Can a targeted terminal-control or action-margin intervention built on T3 eliminate its residual radius-angle completion failures, reaching at least 98% development success while preserving T3's broad first reach and approximately four hold interruptions?",
-          "handoff_source_session_id": "S9",
-          "id": "I5",
-          "opened_in_session": "S10",
-          "question": "Can a targeted terminal-control or action-margin intervention built on T3 eliminate its residual radius-angle completion failures, reaching at least 98% development success while preserving T3's broad first reach and approximately four hold interruptions?",
-          "rationale": "M5 shows that naive residual-angle oversampling did not remove the gap and caused broad terminal-control degradation, so the tested recipe is rejected without establishing that terminal control or action margin is incapable of improvement. M1 establishes that the plant is locally holdable, and M4 shows that T3's incremental transfer preserves a strong learned reach regime. The decisive next test is a bounded intervention that changes terminal control or action margin while retaining T3's learned distribution-transfer mechanism, then uses paired full-distribution diagnostics to separate reduced hold exits from reach or forgetting regression.",
-          "reframes": []
-        }
-      },
-      "result": {
-        "action": "open",
-        "inquiry_id": "I5",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E18",
-    "inquiry_id": null,
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "open",
-        "closure_condition": "Close after a bounded terminal-control or action-margin intervention built on T3 is evaluated on the full-distribution development panel with success, first-reach coverage, maximum held steps, hold interruptions, final distance, and radius-angle strata. A positive result requires at least 98% success with broad first reach and approximately T3's four interruptions; persistent localized failures with preserved transfer behavior redirect toward targeted representation or branch-conditioned action redesign, while broad interruption regression rejects the tested intervention.",
-        "goal_connection": "The human goal requires at least 196 of 200 episodes to complete an uninterrupted 100-step hold. T3 reaches 95.625% on development evidence, while the T5 angle-oversampling continuation raised first reach but degraded hold integrity to 511 interruptions. This inquiry targets the remaining completion gap while preserving T3's broad first reach and four-interruption terminal behavior.",
-        "question": "Can a targeted terminal-control or action-margin intervention built on T3 eliminate its residual radius-angle completion failures, reaching at least 98% development success while preserving T3's broad first reach and approximately four hold interruptions?",
-        "rationale": "M5 shows that naive residual-angle oversampling did not remove the gap and caused broad terminal-control degradation, so the tested recipe is rejected without establishing that terminal control or action margin is incapable of improvement. M1 establishes that the plant is locally holdable, and M4 shows that T3's incremental transfer preserves a strong learned reach regime. The decisive next test is a bounded intervention that changes terminal control or action margin while retaining T3's learned distribution-transfer mechanism, then uses paired full-distribution diagnostics to separate reduced hold exits from reach or forgetting regression."
-      }
-    },
-    "request_fingerprint": "a83a1868647d01e31357436d783a54434e010bafa67b70bb913d6bbd633a4310",
-    "session_id": "S10",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T3:checkpoint-120832 remains the strongest measured development candidate at 95.625 percent on M4 and the reference in M5, but no working, best-known, or retained role is assigned. T5:checkpoint-120832 is a negative, recipe-limited continuation at 93.125 percent and receives no role. T1:checkpoint-120832 remains the 68.75 percent baseline reference; T2:checkpoint-120832 remains the 1.25 percent negative recipe result.",
     "completed_operations": [
