@@ -2480,8 +2480,8 @@
     "event": 15,
     "inquiry": 4,
     "measurement": 4,
-    "session": 8,
-    "training": 3
+    "session": 9,
+    "training": 5
   },
   "human_goal": {
     "source": "contracts/scenario.md"
@@ -4893,9 +4893,123 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-09T00:21:41Z",
+      "error": "pytest failed:\n...............F...                                                      [100%]\n================================== FAILURES ===================================\n_______ test_missing_runtime_or_stats_and_wrong_weights_fail_explicitly _______\n\nmonkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001EE6C52B710>\ntmp_path = WindowsPath('C:/Users/cyril.beurier/code/robot-learning-inquiry-centered-lifecycle/.pytest-run-temp/test_missing_runtime_or_stats_0')\n\n    def test_missing_runtime_or_stats_and_wrong_weights_fail_explicitly(\n        monkeypatch, tmp_path\n    ):\n        module = scientific_module(monkeypatch, 3)\n        path = artifact(tmp_path, module)\n        stats = tmp_path / \"vecnormalize.pkl\"\n        stats.write_bytes(b\"statistics\")\n>       save_runtime(\n            path,\n            policy_io=PolicyIO(module.observe, module.action),\n            loader=module.load,\n            normalizer=None,\n            stats_path=stats,\n        )\n\ntests\\autoresearch\\test_policy_runtime.py:293: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _\ncontracts\\policy_runtime.py:87: in save_runtime\n    temporary.replace(destination)\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _\n\nself = WindowsPath('C:/Users/cyril.beurier/code/robot-learning-inquiry-centered-lifecycle/.pytest-run-temp/test_missing_runtime_or_stats_0/policy_runtime.tmp')\ntarget = WindowsPath('C:/Users/cyril.beurier/code/robot-learning-inquiry-centered-lifecycle/.pytest-run-temp/test_missing_runtime_or_stats_0/policy_runtime.pkl')\n\n    def replace(self, target):\n        \"\"\"\n        Rename this path to the target path, overwriting if that path exists.\n    \n        The target path may be absolute or relative. Relative paths are\n        interpreted relative to the current working directory, *not* the\n        directory of the Path object.\n    \n        Returns the new Path instance pointing to the target path.\n        \"\"\"\n>       os.replace(self, target)\nE       PermissionError: [WinError 5] Access is denied: 'C:\\\\Users\\\\cyril.beurier\\\\code\\\\robot-learning-inquiry-centered-lifecycle\\\\.pytest-run-temp\\\\test_missing_runtime_or_stats_0\\\\policy_runtime.tmp' -> 'C:\\\\Users\\\\cyril.beurier\\\\code\\\\robot-learning-inquiry-centered-lifecycle\\\\.pytest-run-temp\\\\test_missing_runtime_or_stats_0\\\\policy_runtime.pkl'\n\n..\\..\\AppData\\Roaming\\uv\\python\\cpython-3.13-windows-x86_64-none\\Lib\\pathlib\\_local.py:780: PermissionError\n=========================== short test summary info ===========================\nFAILED tests/autoresearch/test_policy_runtime.py::test_missing_runtime_or_stats_and_wrong_weights_fail_explicitly\n1 failed, 18 passed in 3.97s\n\n",
+      "id": "T4",
+      "inquiry_id": "I4",
+      "kind": "training",
+      "request": {
+        "description": "Targeted incremental-transfer continuation from T3: retain T3's inward radius curriculum and oversample the residual failure angle band centered at -140 degrees with a 60-degree width, while retaining 30 percent uniform full-angle exposure.",
+        "initialization": "transfer",
+        "parent": "T3:checkpoint-120832",
+        "rationale": "I4 remains unresolved because T3 achieved 95.625 percent development success, below the 98 percent closure threshold. M4 localizes all seven failures to an angle band from about -151 to -130 degrees across mid and high radii; four are hold interruptions after first reach and three never reach tolerance. This transfer continuation tests whether those radius-angle strata are refinable without changing task mechanics, observations, actions, reward, PPO settings, or the incremental radius broadening that produced T3's broad first reach and only four interruptions. The uniform-angle component protects against forgetting the already successful sectors. Evaluate the resulting candidate on the full-distribution development panel with success, first reach, maximum held steps, hold interruptions, and radius-angle strata; at least 98 percent with preserved diagnostics closes I4 positively, while persistent failures redirects toward a targeted representation, action, or terminal-control change.",
+        "seed": 0,
+        "steps": 120000
+      },
+      "result": {
+        "error": "pytest failed:\n...............F...                                                      [100%]\n================================== FAILURES ===================================\n_______ test_missing_runtime_or_stats_and_wrong_weights_fail_explicitly _______\n\nmonkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001EE6C52B710>\ntmp_path = WindowsPath('C:/Users/cyril.beurier/code/robot-learning-inquiry-centered-lifecycle/.pytest-run-temp/test_missing_runtime_or_stats_0')\n\n    def test_missing_runtime_or_stats_and_wrong_weights_fail_explicitly(\n        monkeypatch, tmp_path\n    ):\n        module = scientific_module(monkeypatch, 3)\n        path = artifact(tmp_path, module)\n        stats = tmp_path / \"vecnormalize.pkl\"\n        stats.write_bytes(b\"statistics\")\n>       save_runtime(\n            path,\n            policy_io=PolicyIO(module.observe, module.action),\n            loader=module.load,\n            normalizer=None,\n            stats_path=stats,\n        )\n\ntests\\autoresearch\\test_policy_runtime.py:293: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _\ncontracts\\policy_runtime.py:87: in save_runtime\n    temporary.replace(destination)\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _\n\nself = WindowsPath('C:/Users/cyril.beurier/code/robot-learning-inquiry-centered-lifecycle/.pytest-run-temp/test_missing_runtime_or_stats_0/policy_runtime.tmp')\ntarget = WindowsPath('C:/Users/cyril.beurier/code/robot-learning-inquiry-centered-lifecycle/.pytest-run-temp/test_missing_runtime_or_stats_0/policy_runtime.pkl')\n\n    def replace(self, target):\n        \"\"\"\n        Rename this path to the target path, overwriting if that path exists.\n    \n        The target path may be absolute or relative. Relative paths are\n        interpreted relative to the current working directory, *not* the\n        directory of the Path object.\n    \n        Returns the new Path instance pointing to the target path.\n        \"\"\"\n>       os.replace(self, target)\nE       PermissionError: [WinError 5] Access is denied: 'C:\\\\Users\\\\cyril.beurier\\\\code\\\\robot-learning-inquiry-centered-lifecycle\\\\.pytest-run-temp\\\\test_missing_runtime_or_stats_0\\\\policy_runtime.tmp' -> 'C:\\\\Users\\\\cyril.beurier\\\\code\\\\robot-learning-inquiry-centered-lifecycle\\\\.pytest-run-temp\\\\test_missing_runtime_or_stats_0\\\\policy_runtime.pkl'\n\n..\\..\\AppData\\Roaming\\uv\\python\\cpython-3.13-windows-x86_64-none\\Lib\\pathlib\\_local.py:780: PermissionError\n=========================== short test summary info ===========================\nFAILED tests/autoresearch/test_policy_runtime.py::test_missing_runtime_or_stats_and_wrong_weights_fail_explicitly\n1 failed, 18 passed in 3.97s\n\n",
+        "status": "failed"
+      },
+      "session_id": "S9",
+      "status": "failed",
+      "superseded_by": "T5",
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "archived_candidates": null,
+      "candidate_dir": null,
+      "code_parent_commit": "4f2cbfe5bfb532bdf1e435c2b5fb1e52b26d3468",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "parent": {
+        "artifact": "campaigns/checkpoints/candidates/1ae27a27-6880-4ca6-9d50-e6498e771cb7/t3/checkpoint-120832",
+        "fingerprint": "b7e19a6bacfecbcd4bae2bed3afe7d01df9193de0399b3a887a91a2c073688da",
+        "id": "T3:checkpoint-120832",
+        "parameters": {
+          "algorithm": {
+            "name": "ppo"
+          },
+          "policy": {
+            "activation": "tanh",
+            "net_arch": [
+              64,
+              64
+            ]
+          },
+          "ppo": {
+            "batch_size": 64,
+            "ent_coef": 0.01,
+            "gae_lambda": 0.95,
+            "gamma": 0.99,
+            "learning_rate": 0.0003,
+            "n_steps": 1024
+          },
+          "training": {
+            "checkpoint_every_steps": 5000,
+            "n_envs": 1
+          }
+        },
+        "scientific_commit": "ac80177d270a56c270c2c7ddd930bba9699430be",
+        "training_steps": 120832
+      },
+      "result": null,
+      "scientific_commit": null,
+      "scientific_manifest": [
+        {
+          "exists": true,
+          "fingerprint": "e9780f64b1e8cce25e0117aff2ec868f956be0b2acb3a51d1fb3ce6b2cc77f3d",
+          "path": "robot_learning/training/environment.py"
+        }
+      ],
+      "scientific_paths": [
+        "robot_learning/training/environment.py"
+      ]
+    },
+    "failure": null,
+    "id": "T5",
+    "inquiry_id": "I4",
+    "kind": "training",
+    "progress": "accepted",
+    "request": {
+      "training": {
+        "description": "Targeted incremental-transfer continuation from T3: retain T3's inward radius curriculum and oversample the residual failure angle band centered at -140 degrees with a 60-degree width, while retaining 30 percent uniform full-angle exposure.",
+        "initialization": "transfer",
+        "parent": "T3:checkpoint-120832",
+        "rationale": "I4 remains unresolved because T3 achieved 95.625 percent development success, below the 98 percent closure threshold. M4 localizes all seven failures to an angle band from about -151 to -130 degrees across mid and high radii; four are hold interruptions after first reach and three never reach tolerance. This transfer continuation tests whether those radius-angle strata are refinable without changing task mechanics, observations, actions, reward, PPO settings, or the incremental radius broadening that produced T3's broad first reach and only four interruptions. The uniform-angle component protects against forgetting the already successful sectors. Evaluate the resulting candidate on the full-distribution development panel with success, first reach, maximum held steps, hold interruptions, and radius-angle strata; at least 98 percent with preserved diagnostics closes I4 positively, while persistent failures redirects toward a targeted representation, action, or terminal-control change.",
+        "seed": 0,
+        "steps": 120000
+      }
+    },
+    "request_fingerprint": "1a738ad6ac62ae760c677bfb79278242b81e03a8bd816cc83f404cfd736f19a8",
+    "session_id": "S9",
+    "supersedes": "T4"
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T3:checkpoint-120832 remains the strongest measured development candidate at 95.625% on M4 and has the leading evidence-backed transfer recipe, but no working, best-known, or retained role is assigned in this session. T1:checkpoint-120832 remains the baseline reference at 68.75%. T2:checkpoint-120832 remains a negative recipe result at 1.25% and receives no role.",
     "completed_operations": [
@@ -4933,6 +5047,19 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "8fe99611-0ce1-4112-9bb7-414b045e5956",
+    "id": "S9",
+    "inquiry_id": "I4",
+    "kind": "inquiry",
+    "objective": "Advance I4 toward an evidence-supported answer to its scientific question: Can targeted continuation of the incremental-transfer regime, focused on T3's remaining radius-angle failure strata, raise full-distribution episode success from 95.625% to at least 98% while preserving its low hold-interruption and broad first-reach behavior? Before choosing the next action, compare the accumulated evidence with the closure condition. Close the inquiry when the condition is met.",
+    "operation_ids": [],
+    "scientific_parent_commit": "4f2cbfe5bfb532bdf1e435c2b5fb1e52b26d3468"
+  },
   "terminal_state": null
 }
