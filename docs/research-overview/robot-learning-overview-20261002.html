@@ -218,19 +218,19 @@
       <h2 id="status-heading">Where the project stands</h2>
       <div class="grid two status-grid">
         <article class="card hot">
-          <span class="tag">Paused</span>
-          <h3 style="margin-top: 12px">Campaign <code>1ae27a27</code></h3>
+          <span class="tag">Completed</span>
+          <h3 style="margin-top: 12px">Campaign <code>58dcd817</code></h3>
           <ul>
-            <li>It reached the temporary 15-inquiry cap.</li>
-            <li>T3 was strongest at 153/160, or 95.625%.</li>
-            <li>Fourteen of fifteen inquiries contained one training run and a matched evaluation.</li>
-            <li>Only I8 was measurement-only.</li>
-            <li>No official assessment was requested.</li>
+            <li>OI-004 is closed as effective.</li>
+            <li>T2 used non-terminal <code>checkpoint-110592</code> and beat T1 by 153/160 to 150/160.</li>
+            <li>The failed M8 request was treated as no scientific result; corrected M9 completed before closure.</li>
+            <li>Official assessment: 195/200, or 97.5%.</li>
+            <li>The scientific goal remained unmet by one episode.</li>
           </ul>
-          <p class="small muted" style="margin-top: 8px">OI-002 produced bounded closure as intended. Inquiry granularity and later scientific progression remain separate questions. <a href="robot-campaign-1ae27a27-oi002-review-20261009.html">Read the campaign review</a>.</p>
+          <p class="small muted" style="margin-top: 8px">The benchmark failure does not negate the process improvement. <a href="robot-campaign-58dcd817-oi004-outcome-20261009.html">Read the campaign report</a>.</p>
         </article>
         <article class="card">
-          <span class="tag">Latest finished result</span>
+          <span class="tag">Latest passing result</span>
           <h3 style="margin-top: 12px">Campaign <code>06656182</code> passed</h3>
           <ul>
             <li>Official assessment: 196 of 200 episodes, which is 98.0%.</li>
@@ -259,7 +259,7 @@
             <li>OI-004 is closed as effective after campaign <code>58dcd817</code> exercised trajectory-based candidate nomination, missing-evidence repair, and frontier-led progression.</li>
             <li>OI-003 and OI-015 retain the remaining evidence-inspection and effective-experiment findings from the comprehensive RCA.</li>
           </ul>
-          <p class="small muted" style="margin-top: 8px">The protected result was 195/200: the progression behavior improved, while the scientific goal remained unmet.</p>
+          <p class="small muted" style="margin-top: 8px">The official result was 195/200: the progression behavior improved, while the scientific goal remained unmet.</p>
         </article>
       </div>
       <p class="small muted" style="margin-top: 12px">Prompt-stack review items R1, R5-1, R5-2, R6, R7, and R8 are implemented. R2 is partly implemented and paused. R3 and R4 are discarded. Implemented does not mean effective. Scientific effect is stated separately in each item.</p>
@@ -547,6 +547,8 @@
       <div class="card timeline">
         <h3 style="margin-top: 0">9 October</h3>
         <ul>
+          <li>Campaign <code>58dcd817</code> completed at 195/200. It missed the scientific goal by one episode, while providing the live-campaign evidence needed to close OI-004 as effective.</li>
+          <li>OI-004 is closed. The campaign nominated non-terminal checkpoints from training trajectories, repaired missing evidence before conclusion, and followed the failure diagnosis into one bounded capture-focused intervention.</li>
           <li><code>01ccd51</code> Removed the context leak from handoffs and aligned the goal-review objective with the restored scientific state.</li>
           <li>OI-002 wording was implemented. The program contract defines the closure boundary. The inquiry prompt checks the boundary before more work.</li>
           <li>The maintainer stopped campaign <code>61f732e1</code> at T5. No campaign reset or restart was performed.</li>
@@ -693,6 +695,7 @@
         <table>
           <thead><tr><th scope="col">Campaign</th><th scope="col">Start</th><th scope="col">Outcome</th><th scope="col">Report</th></tr></thead>
           <tbody>
+            <tr><td><code>58dcd817</code></td><td>9 Oct</td><td>Official fail: 195/200 (97.5%). OI-004 closed as effective after non-terminal checkpoint nomination, explicit missing-evidence repair, and frontier-led progression produced T2 at 153/160 versus T1 at 150/160.</td><td><a href="robot-campaign-58dcd817-oi004-outcome-20261009.html">OI-004 outcome</a></td></tr>
             <tr><td><code>1ae27a27</code></td><td>8 Oct</td><td>Paused at 15 inquiries. T3 reached 153/160. OI-002 produced bounded closure. Inquiry granularity, scientific progression, and the cap interaction remain distinct findings.</td><td><a href="robot-campaign-1ae27a27-oi002-review-20261009.html">Campaign review</a></td></tr>
             <tr><td><code>bd32cc79</code></td><td>8 Oct</td><td>Earlier maintainer-run campaign. Through I2: T2 150/160, T1 110/160 on paired M5.</td><td>Read the log</td></tr>
             <tr><td><code>06656182</code></td><td>7 Oct, 21:45 CEST</td><td>Official pass: 98.0% (196/200).</td><td><a href="robot-campaign-06656182-final-analysis-20261008.html">Final analysis</a></td></tr>
@@ -897,7 +900,7 @@
     </section>
 
     <footer>
-      <p>Snapshot of 2026-10-08, not live status. Implementation status and scientific effect are kept apart.</p>
+      <p>Snapshot of 2026-10-09, not live status. Implementation status and scientific effect are kept apart.</p>
       <p>Formal ASD-STE100 compliance has not been checked.</p>
     </footer>
   </main>

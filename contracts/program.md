@@ -129,6 +129,15 @@ unresolved part of the decision frontier. Base mechanism conclusions and
 redirects on completed evidence, and preserve the limits of a recipe-specific
 result.
 
+When a completed measurement is intended to discriminate a mechanism, interpret
+the completed evidence for that discriminator rather than relying on the
+aggregate task outcome alone. Equal aggregate outcomes do not establish
+preserved behavior when decision-relevant diagnostics differ. Record
+consequential agreement, contradiction or tradeoff between the aggregate
+outcome and mechanism evidence in `current_synthesis`. If the relevant evidence
+is absent, failed or unavailable, keep the mechanism claim unresolved. This
+does not require exhaustive inspection of unrelated artifact fields.
+
 After each completed result, the selected next direction states which evidence
 supports continuing the current route, changing it, or obtaining missing
 evidence. The selected artifact and operation follow the remaining uncertainty

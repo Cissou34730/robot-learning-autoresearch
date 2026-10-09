@@ -447,7 +447,7 @@ Implementation checks and unassessed campaign effects are not separate issues.
 |---|---|---|
 | OI-001 | Startup scientific-method selection | **Open, narrowed 2026-10-08.** Defined as a failure of traceable coupling from the PI-generated scientific briefing, through startup action selection, to the startup handoff. Three failure locations: briefing defect, use defect and handoff defect. A five-campaign retrospective found no handoff collapse and sound startups in four of five. It found one use defect (06656182) and a briefing that steered the method in four of five. R8 had removed the PI-authority sentence, now restored. The scientific-model prompt (`ef9516f`) changed language, persona and closing section at once. The closing section is restored in controlled English; language and persona stay. Campaign bd32cc79 ran the bundled prompt without the synthesis. Effect on startup selection is not separable. This is separate from the startup training budget. |
 | OI-002 | Inquiry control and bounded closure | **Closed 2026-10-09; bounded closure observed.** The contract and inquiry reminder permit positive, negative, limited and inconclusive closure. Campaign `1ae27a27` closed all inquiries at their declared evidence boundaries, including negative and limited results. The campaign does not isolate causality, but the original indefinite-continuation symptom did not recur. Inquiry granularity and later progression belong to OI-004; the temporary cap remains OI-013. |
-| OI-003 | Measurement-evidence inspection and interpretation | **Open; expanded 2026-10-09.** The PI has overlooked advertised diagnostic strata, read partial artifacts as complete and lost consequential counterevidence in synthesis. In campaign `1ae27a27`, I9 said arrival-speed change was unestablished although completed M11 artifacts contained the relevant speed diagnostics. I11 treated equal success labels as preserved behavior although M13 showed fewer first reaches and more interruptions. Discoverability is retained, but decision-linked inspection and aggregate-versus-mechanism interpretation remain unresolved. |
+| OI-003 | Measurement-evidence inspection and interpretation | **Implemented 2026-10-09; campaign effect unmeasured.** In campaign `1ae27a27`, I9 said arrival-speed change was unestablished although completed M11 artifacts contained the relevant speed diagnostics. I11 treated equal success labels as preserved behavior although M13 showed fewer first reaches and more interruptions. The program and ordinary-session prompt now require interpretation of completed evidence for the stated discriminator, prohibit inferring preserved behavior from equal aggregate outcomes when relevant diagnostics differ, and preserve absent evidence as unresolved. Consequential agreement, contradiction or tradeoff must enter `current_synthesis`; exhaustive inspection of unrelated fields is not required. No Runner gate or mandatory diagnostic sequence was added. |
 | OI-004 | Checkpoint nomination, evidence selection and scientific progression | **Closed effective 2026-10-09.** The bounded repair gives terminal checkpoints no privileged status, preserves failed or unavailable discriminating evidence as unresolved, and requires the next direction to follow completed evidence and the recorded frontier. Post-change campaign `58dcd817` exercised all three behaviors: M6 compared a nominated non-terminal checkpoint with the terminal checkpoint; M9 evaluated non-terminal `T2:checkpoint-110592` after terminal performance declined; failed M8 was explicitly treated as no scientific result and repaired before I2 closed; and the sequence M6-M7-T2-M9 followed the recorded capture frontier. The protected assessment reached 195/200, so the scientific goal remained unmet, but the progression behavior was effective. No Runner gate or required operation sequence was added. |
 | OI-005 | Counterevidence preservation and official-assessment readiness | **Postponed.** The narrow readiness guidance was withdrawn. Residual-evidence loss and premature readiness conclusions remain unresolved. No replacement readiness prompt is approved. |
 | OI-006 | Full startup-budget review | **Pending.** Shorter startup requests are permitted, but the maintainer-owned 120,000-step ceiling and its scientific effect have not received the planned full review. This budget question is not the cause or solution for OI-001. |
@@ -2794,3 +2794,39 @@ separate from harness changes so their outcomes are not conflated.
 - **Boundary:** OI-003 still owns inspection and interpretation of completed
   measurement evidence. OI-015 still owns whether an intended intervention
   became a distinct effective experiment. Neither is closed by OI-004.
+
+## 2026-10-09: implement the bounded OI-003 interpretation repair
+
+- **Approved diagnosis:** the defect is not general artifact discoverability or
+  insufficient measurement. It is the substitution of an aggregate task
+  outcome for completed evidence about the mechanism that the measurement was
+  intended to discriminate.
+- **I9 evidence:** M11 contained first-reach and closest-approach joint-speed
+  diagnostics, but the synthesis described arrival-speed change as
+  unestablished. The available evidence supported a more specific tradeoff:
+  lower closest-approach speed accompanied a substantial reach loss.
+- **I11 evidence:** T13 and T3 had equal complete-success labels, but M13
+  recorded fewer first reaches and more interruptions for T13. Equal binary
+  outcomes therefore did not establish preserved reach and hold behavior.
+- **Program contract:** when a completed measurement is intended to
+  discriminate a mechanism, the PI interprets the completed evidence for that
+  discriminator rather than relying on aggregate outcome alone. Material
+  agreement, contradiction or tradeoff enters `current_synthesis`. Relevant
+  absent, failed or unavailable evidence remains unresolved.
+- **Ordinary-session prompt:** the decision guidance now states that equal
+  success labels do not establish preserved behavior when relevant diagnostics
+  differ and explicitly rejects exhaustive inspection of unrelated fields.
+- **Expected behavioral gain:** mixed results should be represented as
+  mechanism-level tradeoffs rather than flattened into unchanged, preserved or
+  failed aggregate outcomes. This should prevent unsupported mechanism claims
+  from determining the next scientific direction while retaining PI authority
+  over which evidence is decision-relevant.
+- **Boundary:** the repair does not require reading every artifact field,
+  prescribe a diagnostic, add a Runner scientific gate, or decide whether an
+  intervention should continue. OI-004 remains closed; OI-015 remains separate.
+- **Validation:** `run_research.ps1` parses with zero PowerShell errors. Targeted
+  wording checks confirm that the contract and prompt use the stated
+  discriminator, reject aggregate equality as proof of preserved behavior,
+  retain contradictions and tradeoffs, preserve missing mechanism evidence as
+  unresolved, and exclude exhaustive inspection of unrelated fields.
+- **Status:** implementation complete and campaign effect unmeasured.
