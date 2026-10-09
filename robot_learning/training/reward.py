@@ -25,6 +25,7 @@ OUTSIDE_BAND_PENALTY = 0.1
 HOLD_COMPLETE_BONUS = 50.0
 NEAR_TARGET_VELOCITY_PENALTY = 0.02
 NEAR_TARGET_LIMIT_PENALTY = 0.1
+EXPERT_ACTION_MATCH_COEFFICIENT = 0.1
 JOINT_LIMIT_RAD = float(np.deg2rad(170.0))
 NEAR_TARGET_LIMIT_MARGIN_RAD = float(np.deg2rad(15.0))
 
@@ -59,6 +60,7 @@ def reach_reward(
     penalize_outside: bool = False,
     qpos: np.ndarray | None = None,
     qvel: np.ndarray | None = None,
+    expert_action: np.ndarray | None = None,
 ) -> RewardResult:
     progress = PROGRESS_COEFFICIENT * (previous_distance - current_distance)
     reward = progress
@@ -115,6 +117,13 @@ def reach_reward(
         action_cost = -(ACTION_COST_COEFFICIENT * float(np.sum(np.square(action))))
     reward += action_cost
 
+    expert_action_match = 0.0
+    if action is not None and expert_action is not None:
+        expert_action_match = -EXPERT_ACTION_MATCH_COEFFICIENT * float(
+            np.sum(np.square(action - expert_action))
+        )
+    reward += expert_action_match
+
     return RewardResult(
         total=float(reward),
         components={
@@ -125,5 +134,6 @@ def reach_reward(
             "hold_complete": float(hold_complete),
             "stabilization": float(stabilization),
             "action_cost": float(action_cost),
+            "expert_action_match": float(expert_action_match),
         },
     )

@@ -26,6 +26,7 @@ from contracts.task_spec import (
     TARGET_RADIUS_RANGE,
 )
 from robot_learning.scenario.observations import OBSERVATION_SIZE
+from robot_learning.scenario.model_based_control import model_based_action
 from robot_learning.scenario.policy_io import make_policy_io
 from robot_learning.training.reward import reach_reward
 
@@ -127,6 +128,11 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
             self.action_space.low,
             self.action_space.high,
         )
+        expert_action = model_based_action(
+            self.model,
+            self.data,
+            np.asarray(self.data.mocap_pos[0][:2], dtype=np.float64),
+        )
         self.data.ctrl[:] = action
         for _ in range(self.frame_skip):
             mujoco.mj_step(self.model, self.data)
@@ -153,6 +159,7 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
             penalize_outside=self._outside_after_hold,
             qpos=self.data.qpos[:2],
             qvel=self.data.qvel[:2],
+            expert_action=expert_action,
         )
         self._previous_distance = distance
 
