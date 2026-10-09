@@ -313,47 +313,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "open",
-        "inquiry": {
-          "closure_condition": "Close this inquiry when completed development evidence from a learned candidate, using the official radius and angle range, reports episode success together with first_reach_step, max_held_steps, hold_interruptions, timeout status, target radius and angle, and branch or terminal geometry sufficient to support a positive, negative, limited, or inconclusive attribution among the stated mechanisms and select the next goal-directed route.",
-          "goal_connection": "The official goal requires at least 196 of 200 episodes to complete an uninterrupted 100-step hold. Identifying whether the first policy fails during acquisition, in sustained holding, or in specific inner-radius, angular, or IK-branch regimes determines whether the next development route should emphasize stabilization, distribution coverage, or trajectory and branch control.",
-          "handoff_conclusion": "Evidence: M1 measured the compiled native MuJoCo model and 24 bounded joint-control trials. The compiled arm has 0.01 armature and 0.5 damping per joint; initial accelerations were approximately 393-512 rad/s^2 for combined or single-joint commands, and peak joint speeds reached approximately 10 rad/s within ten 20 ms control intervals. Reversing the command for the next ten intervals produced speeds near 10 rad/s in the opposite direction rather than a settled low-speed state. Interpretation: the plant has ample acquisition authority but also a substantial braking and residual-motion problem; the first policy direction should therefore prioritize anticipatory braking and local stabilization, not maximum command duration. This is evidence about the plant, not learned-policy success, and the probe did not measure target-directed trajectories, tolerance entry, or hold outcomes. The high-speed response may also be configuration-dependent beyond the four tested starts and six action patterns.",
-          "handoff_question": "Which failure mechanism limits the first learned policy under the official distribution: residual-motion and hold instability, inner-radius coverage, or branch- and angle-dependent acquisition?",
-          "handoff_source_session_id": "S1",
-          "id": "I1",
-          "opened_in_session": "S2",
-          "question": "Which failure mechanism limits the first learned policy under the official distribution: residual-motion and hold instability, inner-radius coverage, or branch- and angle-dependent acquisition?",
-          "rationale": "M1 established high actuation authority and substantial residual-motion risk in bounded plant probes, but it did not measure target-directed trajectories, tolerance entry, hold completion, inner-radius generalization, or branch and angle effects. Therefore M1 supports testing stabilization as a live explanation but cannot justify treating it as the first learned-policy bottleneck. No candidate exists for official assessment; a bounded first-candidate inquiry is the most decision-relevant next step.",
-          "reframes": []
-        }
-      },
-      "result": {
-        "action": "open",
-        "inquiry_id": "I1",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E2",
-    "inquiry_id": null,
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "open",
-        "closure_condition": "Close this inquiry when completed development evidence from a learned candidate, using the official radius and angle range, reports episode success together with first_reach_step, max_held_steps, hold_interruptions, timeout status, target radius and angle, and branch or terminal geometry sufficient to support a positive, negative, limited, or inconclusive attribution among the stated mechanisms and select the next goal-directed route.",
-        "goal_connection": "The official goal requires at least 196 of 200 episodes to complete an uninterrupted 100-step hold. Identifying whether the first policy fails during acquisition, in sustained holding, or in specific inner-radius, angular, or IK-branch regimes determines whether the next development route should emphasize stabilization, distribution coverage, or trajectory and branch control.",
-        "question": "Which failure mechanism limits the first learned policy under the official distribution: residual-motion and hold instability, inner-radius coverage, or branch- and angle-dependent acquisition?",
-        "rationale": "M1 established high actuation authority and substantial residual-motion risk in bounded plant probes, but it did not measure target-directed trajectories, tolerance entry, hold completion, inner-radius generalization, or branch and angle effects. Therefore M1 supports testing stabilization as a live explanation but cannot justify treating it as the first learned-policy bottleneck. No candidate exists for official assessment; a bounded first-candidate inquiry is the most decision-relevant next step."
-      }
-    },
-    "request_fingerprint": "893e2605f170fe5beeaead0f15c9f2b4b75fc43df71347806106f3f7b9c04e90",
-    "session_id": "S2",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "No candidates exist. Working, best-known, and retained roles are empty.",
     "completed_operations": [
