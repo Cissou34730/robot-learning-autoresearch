@@ -4852,47 +4852,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "open",
-        "inquiry": {
-          "closure_condition": "Close after one bounded targeted continuation of T3's incremental-transfer regime has been evaluated on a full-distribution development panel with success, first-reach coverage, maximum held steps, hold interruptions, and radius-angle strata. A positive result requires at least 98% episode success with preserved low interruptions and broad first reach; persistent residual failures despite preserved transfer behavior redirect the campaign toward a targeted representation, action, or terminal-control change.",
-          "goal_connection": "The human goal requires at least 196 of 200 episodes to complete an uninterrupted 100-step hold. T3 reaches 95.625% on development evidence, so this inquiry targets the remaining radius-angle and terminal-arrival failures while protecting its four hold interruptions and 157/160 first-reach behavior.",
-          "handoff_conclusion": "Established physical evidence remains M1's nonzero compiled plant authority, absence of sampled self-contact in valid target branches, and complete local 100-step holds under zero input and bounded local PD. T1 episode evidence established a reach-limited, geometry-conditioned baseline at 68.75% success, with most failures never entering tolerance. T2's fresh abrupt hard-distribution recipe collapsed to 1.25%, rejecting that recipe but not learning generally or the physical reach hypothesis. T3 transferred from T1 and linearly broadened only the radius distribution while preserving uniform angle coverage, reward, observation-control representation, PPO settings, and hold semantics. M4 evaluated T3 and T1 on the same 160 seeds: T3 achieved 95.625% versus 68.75%, first reached 157 versus 118 episodes, improved low-radius success from 59.29% to 97.35%, left high-radius success at 91.49%, and reduced total hold interruptions from 502 to 4; the paired result was 43 T3 wins and zero T1 wins. T3's non-collapsed transfer learning dynamics and these episode diagnostics support intervention sensitivity to distribution shift as the leading explanation for T2's collapse, while making a broad observation-control representation failure less likely. The claim remains candidate- and panel-limited, and T3 has not yet established the official 98% result.",
-          "handoff_question": "Can targeted continuation of the incremental-transfer regime, focused on T3's remaining radius-angle failure strata, raise full-distribution episode success from 95.625% to at least 98% while preserving its low hold-interruption and broad first-reach behavior?",
-          "handoff_source_session_id": "S7",
-          "id": "I4",
-          "opened_in_session": "S8",
-          "question": "Can targeted continuation of the incremental-transfer regime, focused on T3's remaining radius-angle failure strata, raise full-distribution episode success from 95.625% to at least 98% while preserving its low hold-interruption and broad first-reach behavior?",
-          "rationale": "M4 and E12 show that incremental radius broadening from T1 materially improved difficult-geometry reach without a hold-interruption tradeoff, but T3 remains below the 98% objective and has not received official assessment. The unresolved distinction is whether its seven remaining development failures are a small refinable set of radius-angle or terminal-arrival cases, or evidence of a residual policy/control limitation. Targeted continuation is the highest-value bounded test because it preserves the mechanism already supported by T3 while directly testing whether the remaining gap can be removed.",
-          "reframes": []
-        }
-      },
-      "result": {
-        "action": "open",
-        "inquiry_id": "I4",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E14",
-    "inquiry_id": null,
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "open",
-        "closure_condition": "Close after one bounded targeted continuation of T3's incremental-transfer regime has been evaluated on a full-distribution development panel with success, first-reach coverage, maximum held steps, hold interruptions, and radius-angle strata. A positive result requires at least 98% episode success with preserved low interruptions and broad first reach; persistent residual failures despite preserved transfer behavior redirect the campaign toward a targeted representation, action, or terminal-control change.",
-        "goal_connection": "The human goal requires at least 196 of 200 episodes to complete an uninterrupted 100-step hold. T3 reaches 95.625% on development evidence, so this inquiry targets the remaining radius-angle and terminal-arrival failures while protecting its four hold interruptions and 157/160 first-reach behavior.",
-        "question": "Can targeted continuation of the incremental-transfer regime, focused on T3's remaining radius-angle failure strata, raise full-distribution episode success from 95.625% to at least 98% while preserving its low hold-interruption and broad first-reach behavior?",
-        "rationale": "M4 and E12 show that incremental radius broadening from T1 materially improved difficult-geometry reach without a hold-interruption tradeoff, but T3 remains below the 98% objective and has not received official assessment. The unresolved distinction is whether its seven remaining development failures are a small refinable set of radius-angle or terminal-arrival cases, or evidence of a residual policy/control limitation. Targeted continuation is the highest-value bounded test because it preserves the mechanism already supported by T3 while directly testing whether the remaining gap can be removed."
-      }
-    },
-    "request_fingerprint": "76179c9391324d5ee85885dca47a08b05b5bf2de5f53e9a33b48961712153988",
-    "session_id": "S8",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T3:checkpoint-120832 is the strongest measured development candidate at 95.625% on M4 and has the leading evidence-backed transfer recipe, but no working, best-known, or retained role is assigned. T1:checkpoint-120832 remains the baseline reference at 68.75%. T2:checkpoint-120832 remains a negative recipe result at 1.25% and receives no role.",
     "completed_operations": [
