@@ -2011,47 +2011,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "open",
-        "inquiry": {
-          "closure_condition": "Close when completed candidate evidence under the exact official target distribution and uninterrupted 100-step hold semantics establishes whether branch/limit-aware coverage reaches at least 98% with no material inner-band regression and classifies the remaining failures by limit margin, approach velocity, and hold interruption; persistent negative-margin or one-branch failures redirect toward explicit branch/limit or trajectory representation, while adequate-margin post-reach interruptions redirect toward velocity shaping or phase/history representation.",
-          "goal_connection": "The current best-evaluated candidate reaches 93.75% on a held-out official-distribution panel, below the 98% objective. Seven of its ten failures align with negative nearest-branch limit margin, while two post-reach failures show high approach speed and repeated hold interruptions. Resolving whether branch/limit-aware coverage removes the dominant failures without sacrificing the inner radial band determines whether the campaign can reach the goal through coverage-aware learning or must shift to explicit trajectory and stabilization mechanisms.",
-          "handoff_conclusion": "M1 established substantial transient actuation authority and at least one feasible analytic IK solution for every sampled official target, with 64 of 576 grid targets having only one feasible branch. T1 trained a fresh PPO policy on the full official radius range; its learning trajectory reached 0.58 training success at checkpoint-120832, but training statistics did not establish development performance. M2 evaluated that checkpoint on 160 held-out official-distribution episodes and measured 150 successes (93.75%), including 40 of 40 successes in the 6-10 cm bin. Of 10 failures, 7 never entered tolerance and 3 entered tolerance but failed the uninterrupted hold. M3 replayed the same panel with joint and IK diagnostics: 7 failures had negative nearest-branch limit margin, supporting branch/limit-aligned failure as the dominant mechanism; 2 post-reach failures had high first-reach joint speed (4.17 and 5.99 rad/s) and 242 and 192 interruptions, supporting a secondary velocity/hold-stabilization mechanism; one additional failure had positive margin but did not reach. Thus the tested full-distribution recipe has a limited negative result, not a negative result for learning in general. M1's global reachability interpretation remains supported because failures align with policy branch/limit selection and transient dynamics rather than absent geometric solutions.",
-          "handoff_question": "Under the exact official target distribution and uninterrupted endpoint-hold semantics, can branch/limit-aware coverage raise learned-policy success to at least 98% without losing inner-band performance, and are the residual failures then dominated by approach velocity/oscillation despite adequate limit margin?",
-          "handoff_source_session_id": "S3",
-          "id": "I2",
-          "opened_in_session": "S4",
-          "question": "Under the exact official target distribution and uninterrupted endpoint-hold semantics, can branch/limit-aware coverage raise learned-policy success to at least 98% without losing inner-band performance, and are the residual failures then dominated by approach velocity/oscillation despite adequate limit margin?",
-          "rationale": "M1 established feasible analytic IK solutions across the sampled official geometry, and M2/M3 showed that the tested full-distribution recipe is insufficient but not a method-level negative result. The dominant observed failure class is branch/limit aligned, yet no branch/limit-aware candidate has been trained or measured, so the causal distinction remains unresolved. This bounded inquiry is the most direct route to an evidence-backed candidate decision before requesting protected official assessment.",
-          "reframes": []
-        }
-      },
-      "result": {
-        "action": "open",
-        "inquiry_id": "I2",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E6",
-    "inquiry_id": null,
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "open",
-        "closure_condition": "Close when completed candidate evidence under the exact official target distribution and uninterrupted 100-step hold semantics establishes whether branch/limit-aware coverage reaches at least 98% with no material inner-band regression and classifies the remaining failures by limit margin, approach velocity, and hold interruption; persistent negative-margin or one-branch failures redirect toward explicit branch/limit or trajectory representation, while adequate-margin post-reach interruptions redirect toward velocity shaping or phase/history representation.",
-        "goal_connection": "The current best-evaluated candidate reaches 93.75% on a held-out official-distribution panel, below the 98% objective. Seven of its ten failures align with negative nearest-branch limit margin, while two post-reach failures show high approach speed and repeated hold interruptions. Resolving whether branch/limit-aware coverage removes the dominant failures without sacrificing the inner radial band determines whether the campaign can reach the goal through coverage-aware learning or must shift to explicit trajectory and stabilization mechanisms.",
-        "question": "Under the exact official target distribution and uninterrupted endpoint-hold semantics, can branch/limit-aware coverage raise learned-policy success to at least 98% without losing inner-band performance, and are the residual failures then dominated by approach velocity/oscillation despite adequate limit margin?",
-        "rationale": "M1 established feasible analytic IK solutions across the sampled official geometry, and M2/M3 showed that the tested full-distribution recipe is insufficient but not a method-level negative result. The dominant observed failure class is branch/limit aligned, yet no branch/limit-aware candidate has been trained or measured, so the causal distinction remains unresolved. This bounded inquiry is the most direct route to an evidence-backed candidate decision before requesting protected official assessment."
-      }
-    },
-    "request_fingerprint": "acfbd515e0714090540cc4d1e36875e15bae7de68bdced94183eb044e48354f7",
-    "session_id": "S4",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T1:checkpoint-120832 is the only candidate with completed development evaluation and achieved 93.75% on the 160-episode panel; no working, best-known, or retained role has been assigned. Other T1 checkpoints remain unmeasured and have no evidence-backed role.",
     "completed_operations": [
