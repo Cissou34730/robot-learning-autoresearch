@@ -18,8 +18,6 @@ import numpy as np
 from benchmark.paired_evidence import episode_outcomes
 from contracts.policy_runtime import load_runtime
 from robot_learning.scenario.environment import make_evaluation_env
-from robot_learning.lab.diagnose_policy import _state_diagnostics
-from robot_learning.training.algorithms import infer_algorithm
 
 # Bumped when the meaning of a scenario evaluation summary changes.
 RESEARCH_EVALUATION_SUMMARY_VERSION = 4
@@ -36,10 +34,7 @@ def evaluate_research_model(
     """Measure a deterministic panel with episode seeds starting at ``seed``."""
     if episodes < 1:
         raise ValueError("an evaluation panel requires at least one episode")
-    runtime = load_runtime(
-        model_path,
-        infer_algorithm(model_path) if algorithm is None else algorithm,
-    )
+    runtime = load_runtime(model_path, algorithm)
     env = make_evaluation_env(policy_runtime=runtime)
 
     episode_results: list[dict] = []
@@ -60,8 +55,6 @@ def evaluate_research_model(
         in_tolerance_steps = 0
         hold_interruptions = 0
         was_in_tolerance = False
-        first_reach_state = None
-        max_qvel_norm_rad_per_s = 0.0
         while not (terminated or truncated):
             action = runtime.predict(obs)
             obs, reward, terminated, truncated, info = env.step(action)
@@ -72,17 +65,10 @@ def evaluate_research_model(
             min_distance_cm = min(min_distance_cm, distance_cm)
             final_distance_cm = distance_cm
             max_held_steps = max(max_held_steps, held_steps)
-            max_qvel_norm_rad_per_s = max(
-                max_qvel_norm_rad_per_s,
-                float(np.linalg.norm(env.data.qvel[:2])),
-            )
             if held_steps > 0:
                 in_tolerance_steps += 1
                 if first_reach_step is None:
                     first_reach_step = steps
-                    first_reach_state = _state_diagnostics(
-                        env.data, target_position[:2]
-                    )
             elif was_in_tolerance:
                 hold_interruptions += 1
             was_in_tolerance = held_steps > 0
@@ -117,11 +103,6 @@ def evaluate_research_model(
                 "max_held_steps": max_held_steps,
                 "in_tolerance_steps": in_tolerance_steps,
                 "hold_interruptions": hold_interruptions,
-                "max_qvel_norm_rad_per_s": max_qvel_norm_rad_per_s,
-                "first_reach_state": first_reach_state,
-                "terminal_state": _state_diagnostics(
-                    env.data, target_position[:2]
-                ),
             }
         )
         if progress_callback is not None:

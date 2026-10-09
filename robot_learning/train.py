@@ -5,7 +5,7 @@ import shutil
 from pathlib import Path
 
 import torch
-from stable_baselines3 import PPO, SAC
+from stable_baselines3 import PPO
 from stable_baselines3.common.callbacks import BaseCallback
 from stable_baselines3.common.env_util import make_vec_env
 from stable_baselines3.common.vec_env import DummyVecEnv, SubprocVecEnv, VecNormalize
@@ -19,10 +19,8 @@ from robot_learning.training.checkpoint import export_runtime
 from robot_learning.training.environment import make_training_env
 from robot_learning.training.research_config import load_experiment_config
 
-ALGORITHM_CLASSES = {
-    "ppo": PPO,
-    "sac": SAC,
-}
+# The current learning method. Replacing it is a normal research change.
+ALGORITHM_NAME = "ppo"
 
 ACTIVATION_FUNCTIONS = {
     "tanh": torch.nn.Tanh,
@@ -73,19 +71,11 @@ def parallel_ppo_params(ppo_params: dict, n_envs: int) -> dict:
 
 def effective_training_config(config: dict) -> dict:
     """Describe the concrete runtime configuration used by this trainer."""
-    algorithm_name = str(config["algorithm"]["name"]).lower()
     n_envs = int(config["training"]["n_envs"])
-    if algorithm_name == "ppo":
-        model_parameters = parallel_ppo_params(config["ppo"], n_envs)
-    elif algorithm_name == "sac":
-        model_parameters = copy.deepcopy(config["sac"])
-    else:
-        raise ValueError(f"unsupported algorithm: {algorithm_name}")
     return {
         "runtime_config": copy.deepcopy(config),
-        "algorithm": algorithm_name,
         "n_envs": n_envs,
-        "model_parameters": model_parameters,
+        "model_parameters": parallel_ppo_params(config["ppo"], n_envs),
         "policy": copy.deepcopy(config["policy"]),
     }
 
@@ -94,15 +84,12 @@ def main() -> None:
     args = parse_args()
     config = load_experiment_config()
     effective_config = effective_training_config(config)
-    algorithm_name = effective_config["algorithm"]
-    algorithm_class = ALGORITHM_CLASSES[algorithm_name]
     n_envs = args.n_envs or effective_config["n_envs"]
     if args.n_envs is not None:
         effective_config["n_envs"] = n_envs
-        if algorithm_name == "ppo":
-            effective_config["model_parameters"] = parallel_ppo_params(
-                config["ppo"], n_envs
-            )
+        effective_config["model_parameters"] = parallel_ppo_params(
+            config["ppo"], n_envs
+        )
 
     args.output_dir.mkdir(parents=True, exist_ok=False)
     vec_env_cls = DummyVecEnv if n_envs == 1 else SubprocVecEnv
@@ -130,7 +117,7 @@ def main() -> None:
 
     tensorboard_log = str(args.output_dir / "tensorboard")
     if args.resume is not None:
-        model = algorithm_class.load(
+        model = PPO.load(
             args.resume,
             env=venv,
             seed=args.seed,
@@ -138,7 +125,7 @@ def main() -> None:
             **params,
         )
     else:
-        model = algorithm_class(
+        model = PPO(
             "MlpPolicy",
             venv,
             seed=args.seed,
@@ -174,7 +161,7 @@ def main() -> None:
         checkpoint_callback.save_terminal_checkpoint()
         artifact = {
             "schema_version": 1,
-            "algorithm": algorithm_name,
+            "algorithm": ALGORITHM_NAME,
             "seed": args.seed,
             "timesteps": int(model.num_timesteps),
             "requested_timesteps": args.target_timesteps or args.timesteps,
