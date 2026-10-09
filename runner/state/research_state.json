@@ -3296,16 +3296,16 @@
     }
   },
   "counters": {
-    "event": 20,
+    "event": 21,
     "inquiry": 5,
     "measurement": 7,
-    "session": 10,
+    "session": 11,
     "training": 4
   },
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "restored",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -7776,9 +7776,105 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-09T14:23:04Z",
+      "error": null,
+      "id": "E21",
+      "inquiry_id": "I5",
+      "kind": "restore_recipe",
+      "request": {
+        "candidate": "T1:checkpoint-120832",
+        "reason": "Restore T1's uniform official target coverage and baseline observation, reward, and PPO recipe before testing a less disruptive trajectory representation. The current workspace is the rejected T4 previous-action recipe, so training without restoration would confound the I5 comparison."
+      },
+      "result": {
+        "candidate": "T1:checkpoint-120832",
+        "restored_paths": [
+          "robot_learning/scenario/observations.py",
+          "robot_learning/scenario/policy_io.py"
+        ],
+        "scientific_commit": "704bda91e822fc41c3c76dd2479310938b417fdb",
+        "status": "restored"
+      },
+      "session_id": "S11",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "candidate_id": "T1:checkpoint-120832",
+        "parameters": {
+          "algorithm": {
+            "name": "ppo"
+          },
+          "policy": {
+            "activation": "tanh",
+            "net_arch": [
+              64,
+              64
+            ]
+          },
+          "ppo": {
+            "batch_size": 64,
+            "ent_coef": 0.01,
+            "gae_lambda": 0.95,
+            "gamma": 0.99,
+            "learning_rate": 0.0003,
+            "n_steps": 1024
+          },
+          "training": {
+            "checkpoint_every_steps": 5000,
+            "n_envs": 1
+          }
+        },
+        "parent": "704bda91e822fc41c3c76dd2479310938b417fdb",
+        "remove_created": [],
+        "restore": [
+          "robot_learning/scenario/observations.py",
+          "robot_learning/scenario/policy_io.py"
+        ],
+        "session_id": "S11"
+      },
+      "pre_restore_manifest": [
+        {
+          "exists": true,
+          "fingerprint": "91a4412fc51054d048b16b05321b22c102a43cda9df7816b29cfdbd5b89f32c2",
+          "path": "robot_learning/scenario/observations.py"
+        },
+        {
+          "exists": true,
+          "fingerprint": "fc387855a13c67cd030814bf26b276172e75550618e501287bf2be7fc434b628",
+          "path": "robot_learning/scenario/policy_io.py"
+        }
+      ],
+      "result": {
+        "candidate": "T1:checkpoint-120832",
+        "restored_paths": [
+          "robot_learning/scenario/observations.py",
+          "robot_learning/scenario/policy_io.py"
+        ],
+        "scientific_commit": "704bda91e822fc41c3c76dd2479310938b417fdb",
+        "status": "restored"
+      }
+    },
+    "failure": null,
+    "id": "E21",
+    "inquiry_id": "I5",
+    "kind": "restore_recipe",
+    "progress": "completed",
+    "request": {
+      "restore_recipe": {
+        "candidate": "T1:checkpoint-120832",
+        "reason": "Restore T1's uniform official target coverage and baseline observation, reward, and PPO recipe before testing a less disruptive trajectory representation. The current workspace is the rejected T4 previous-action recipe, so training without restoration would confound the I5 comparison."
+      }
+    },
+    "request_fingerprint": "9d30148e9a5423e63ca04ada116341868821e58a88a2303e9f434d96bdbacb20",
+    "session_id": "S11",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T1:checkpoint-120832 remains the strongest measured development candidate at 93.75% with 40/40 inner-band successes, but has no assigned working, best-known, or retained role because it is below the goal and lacks a protected assessment. T2:checkpoint-120832, T3:checkpoint-120832, and T4:checkpoint-120832 remain rejected as viable routes based on their paired development results and diagnostics. No candidate has a role.",
     "completed_operations": [
@@ -7816,6 +7912,21 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "b7ef6e94-e097-4506-9930-fc02952ea2bf",
+    "id": "S11",
+    "inquiry_id": "I5",
+    "kind": "inquiry",
+    "objective": "Advance I5 toward an evidence-supported answer to its scientific question: Can a less disruptive branch/trajectory representation, while preserving T1's uniform official target coverage, raise learned-policy success to at least 98% without losing inner-band performance, and are residual failures then dominated by approach velocity/hold-phase instability? Before choosing the next action, compare the accumulated evidence with the closure condition. Restate the unresolved distinction and choose the most decision-relevant available operation; no operation is the default. Close the inquiry when the condition is met.",
+    "operation_ids": [
+      "E21"
+    ],
+    "scientific_parent_commit": "704bda91e822fc41c3c76dd2479310938b417fdb"
+  },
   "terminal_state": null
 }
