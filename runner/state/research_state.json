@@ -14944,38 +14944,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I10",
-        "outcome": "negative",
-        "reason": "T12 tested one transfer-compatible arrival-state representation by replacing T3's branch-status feature with predicted one-interval radial displacement. On the matched 160-episode panel it achieved 151/160 successes versus T3's 153/160, reduced first reaches from 157 to 154, and increased hold interruptions from 4 to 5. In the negative-angle cluster it reached only 11/17 targets versus T3's 14/17, so the intervention degraded route/branch coverage rather than improving the residual braking margin. This closes I10 negatively for this representation recipe and redirects the campaign toward a different action design or plant-level control strategy; it does not establish that arrival-state conditioning or the broader control-aware explanation is impossible."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I10",
-        "outcome": "negative",
-        "reason": "T12 tested one transfer-compatible arrival-state representation by replacing T3's branch-status feature with predicted one-interval radial displacement. On the matched 160-episode panel it achieved 151/160 successes versus T3's 153/160, reduced first reaches from 157 to 154, and increased hold interruptions from 4 to 5. In the negative-angle cluster it reached only 11/17 targets versus T3's 14/17, so the intervention degraded route/branch coverage rather than improving the residual braking margin. This closes I10 negatively for this representation recipe and redirects the campaign toward a different action design or plant-level control strategy; it does not establish that arrival-state conditioning or the broader control-aware explanation is impossible.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E41",
-    "inquiry_id": "I10",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "negative",
-        "reason": "T12 tested one transfer-compatible arrival-state representation by replacing T3's branch-status feature with predicted one-interval radial displacement. On the matched 160-episode panel it achieved 151/160 successes versus T3's 153/160, reduced first reaches from 157 to 154, and increased hold interruptions from 4 to 5. In the negative-angle cluster it reached only 11/17 targets versus T3's 14/17, so the intervention degraded route/branch coverage rather than improving the residual braking margin. This closes I10 negatively for this representation recipe and redirects the campaign toward a different action design or plant-level control strategy; it does not establish that arrival-state conditioning or the broader control-aware explanation is impossible."
-      }
-    },
-    "request_fingerprint": "5105b02b1b99ee4c9268037d59a5f381a091739d83605a280f3555e4d8cbe0a9",
-    "session_id": "S21",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T3:checkpoint-120832 remains the strongest measured development candidate at 153/160 (95.625%) and has no assigned working, best-known, or retained role. T10:checkpoint-120832 is intervention-limited at 142/160 and has no role. No candidate role change is requested.",
     "completed_operations": [
