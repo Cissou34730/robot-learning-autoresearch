@@ -8,8 +8,9 @@ import numpy as np
 import mujoco
 
 from contracts.robots.two_joint_arm import FOREARM_LENGTH, UPPER_ARM_LENGTH
+from contracts.task_spec import FRAME_SKIP
 
-OBSERVATION_SIZE = 13
+OBSERVATION_SIZE = 11
 
 
 def reach_observation(data) -> np.ndarray:
@@ -43,20 +44,15 @@ def reach_observation(data) -> np.ndarray:
     error_norm = float(np.linalg.norm(position_error))
     if error_norm > 0.0:
         radial_axis = position_error / error_norm
-        tangential_axis = np.array([-radial_axis[1], radial_axis[0]])
         radial_velocity = float(np.dot(end_effector_velocity[:2], radial_axis))
-        tangential_velocity = float(
-            np.dot(end_effector_velocity[:2], tangential_axis)
-        )
     else:
         radial_velocity = 0.0
-        tangential_velocity = 0.0
+    radial_step = radial_velocity * data.model.opt.timestep * FRAME_SKIP
     return np.concatenate(
         [
             data.qpos,
             data.qvel,
-            end_effector - data.mocap_pos[0],
-            [radial_velocity, tangential_velocity],
+            [end_effector[0] - target_x, end_effector[1] - target_y, radial_step],
             [
                 wrap_to_pi(shoulder_open - float(data.qpos[0])),
                 wrap_to_pi(elbow_open - float(data.qpos[1])),
