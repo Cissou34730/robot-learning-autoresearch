@@ -1,16 +1,5 @@
 {
-  "active_inquiry": {
-    "closure_condition": "Close when a matched candidate comparison on the established 160-episode development panel preserves complete-hold success, first_reach_step, max_held_steps, hold_interruptions, timeout status, target angle, and terminal joint/branch geometry, and either rescues the recurring angular failures with no material regression elsewhere or shows another null result sufficient to redirect toward a different control or learning method.",
-    "goal_connection": "The current best development result is 153/160 successes, below the required 196/200 official successes, with the remaining failures concentrated in a narrow angular regime. A bounded test of explicit trajectory realization could determine whether that regime is recoverable without changing the complete-hold task.",
-    "handoff_conclusion": "T2 established that broader radius coverage improved matched development success from 110/160 to 150/160. T3's near-target joint-velocity penalty improved the result to 153/160 with paired acquisition and hold rescues. M4 localized the remaining failures to approximately -130 to -151 degrees, with near-limit terminal shoulder positions, small open-branch errors, and large alternate-branch errors. M5 evaluated one branch-validity and shoulder-limit-aware reward implementation and matched T3 at 153/160 with zero discordant episodes; this is a negative result for that reward implementation, not proof that branch geometry is causal or that explicit path selection is ineffective. M6 likewise found that the tested angle-dependent braking implementation matched T3 at 153/160 with zero discordant episodes while preserving first_reach_step, max_held_steps, hold_interruptions, timeout status, target angle, and terminal joint/branch geometry. That result is limited to the tested implementation and does not invalidate general trajectory control. The goal-review correction is therefore to treat explicit trajectory realization as unresolved rather than as already tested by the reward interventions. E22 opened I6 to test that unresolved distinction.",
-    "handoff_question": "Can explicit branch-constrained trajectory selection with limit-aware control rescue the persistent -130 to -151 degree failures toward the 98% complete-hold goal, or do matched failures persist and require a different control or learning method?",
-    "handoff_source_session_id": "S12",
-    "id": "I6",
-    "opened_in_session": "S12",
-    "question": "Can explicit branch-constrained trajectory selection with limit-aware control rescue the persistent -130 to -151 degree failures toward the 98% complete-hold goal, or do matched failures persist and require a different control or learning method?",
-    "rationale": "M4 associated the failures with near-limit terminal shoulder positions and branch errors, but that association does not establish endpoint geometry as the cause. M5 tested branch-validity and shoulder-limit-aware reward shaping and matched T3; M6 tested angle-dependent braking and also matched T3. Those results reject the tested reward implementations, not explicit path selection or the broader trajectory-control route. The inquiry therefore tests the still-unexercised causal distinction while preserving the episode-level and trajectory diagnostics needed to judge a real rescue.",
-    "reframes": []
-  },
+  "active_inquiry": null,
   "campaign": {
     "base_commit": "5a0ec158aa0741306d5f825a3ec7db8176a3ff13",
     "id": "339736e0-5583-4bc4-8729-5023fc3077b7",
@@ -5750,7 +5739,7 @@
     }
   },
   "counters": {
-    "event": 23,
+    "event": 24,
     "inquiry": 6,
     "measurement": 7,
     "session": 13,
@@ -11335,9 +11324,63 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-09T23:48:52Z",
+      "error": null,
+      "id": "E24",
+      "inquiry_id": "I6",
+      "kind": "inquiry",
+      "request": {
+        "action": "close",
+        "outcome": "limited negative",
+        "reason": "M7 closes I6 with a matched null result. T9:checkpoint-105472, which recovered training performance after the T8 implementation collapse, achieved 153/160 development successes, exactly matching T3:checkpoint-120832 with zero discordant episodes. The same seven episode seeds remained failures in both artifacts, including the recurring approximately -130 to -151 degree regime; both artifacts recorded the required complete-hold outcome, first_reach_step, max_held_steps, hold_interruptions, timeout fields, target angle, and terminal joint/branch diagnostics. Inspected recurring failures show no rescue: for example, seed 4201 remains an interrupted hold and seed 4208 remains a no-first-reach failure, with near-limit shoulder and large alternate-branch errors. This is evidence against the tested explicit branch-constrained acquisition plus weak limit-braking implementation as a rescue for this failure set, not proof that all trajectory control is ineffective. The inquiry is therefore redirected toward a different control or learning method while retaining T3 as the strongest development-evaluated candidate; the human goal remains unmet and official performance remains unmeasured."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I6",
+        "outcome": "limited negative",
+        "reason": "M7 closes I6 with a matched null result. T9:checkpoint-105472, which recovered training performance after the T8 implementation collapse, achieved 153/160 development successes, exactly matching T3:checkpoint-120832 with zero discordant episodes. The same seven episode seeds remained failures in both artifacts, including the recurring approximately -130 to -151 degree regime; both artifacts recorded the required complete-hold outcome, first_reach_step, max_held_steps, hold_interruptions, timeout fields, target angle, and terminal joint/branch diagnostics. Inspected recurring failures show no rescue: for example, seed 4201 remains an interrupted hold and seed 4208 remains a no-first-reach failure, with near-limit shoulder and large alternate-branch errors. This is evidence against the tested explicit branch-constrained acquisition plus weak limit-braking implementation as a rescue for this failure set, not proof that all trajectory control is ineffective. The inquiry is therefore redirected toward a different control or learning method while retaining T3 as the strongest development-evaluated candidate; the human goal remains unmet and official performance remains unmeasured.",
+        "status": "completed"
+      },
+      "session_id": "S13",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "close",
+        "inquiry_id": "I6",
+        "outcome": "limited negative",
+        "reason": "M7 closes I6 with a matched null result. T9:checkpoint-105472, which recovered training performance after the T8 implementation collapse, achieved 153/160 development successes, exactly matching T3:checkpoint-120832 with zero discordant episodes. The same seven episode seeds remained failures in both artifacts, including the recurring approximately -130 to -151 degree regime; both artifacts recorded the required complete-hold outcome, first_reach_step, max_held_steps, hold_interruptions, timeout fields, target angle, and terminal joint/branch diagnostics. Inspected recurring failures show no rescue: for example, seed 4201 remains an interrupted hold and seed 4208 remains a no-first-reach failure, with near-limit shoulder and large alternate-branch errors. This is evidence against the tested explicit branch-constrained acquisition plus weak limit-braking implementation as a rescue for this failure set, not proof that all trajectory control is ineffective. The inquiry is therefore redirected toward a different control or learning method while retaining T3 as the strongest development-evaluated candidate; the human goal remains unmet and official performance remains unmeasured."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I6",
+        "outcome": "limited negative",
+        "reason": "M7 closes I6 with a matched null result. T9:checkpoint-105472, which recovered training performance after the T8 implementation collapse, achieved 153/160 development successes, exactly matching T3:checkpoint-120832 with zero discordant episodes. The same seven episode seeds remained failures in both artifacts, including the recurring approximately -130 to -151 degree regime; both artifacts recorded the required complete-hold outcome, first_reach_step, max_held_steps, hold_interruptions, timeout fields, target angle, and terminal joint/branch diagnostics. Inspected recurring failures show no rescue: for example, seed 4201 remains an interrupted hold and seed 4208 remains a no-first-reach failure, with near-limit shoulder and large alternate-branch errors. This is evidence against the tested explicit branch-constrained acquisition plus weak limit-braking implementation as a rescue for this failure set, not proof that all trajectory control is ineffective. The inquiry is therefore redirected toward a different control or learning method while retaining T3 as the strongest development-evaluated candidate; the human goal remains unmet and official performance remains unmeasured.",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E24",
+    "inquiry_id": "I6",
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "close",
+        "outcome": "limited negative",
+        "reason": "M7 closes I6 with a matched null result. T9:checkpoint-105472, which recovered training performance after the T8 implementation collapse, achieved 153/160 development successes, exactly matching T3:checkpoint-120832 with zero discordant episodes. The same seven episode seeds remained failures in both artifacts, including the recurring approximately -130 to -151 degree regime; both artifacts recorded the required complete-hold outcome, first_reach_step, max_held_steps, hold_interruptions, timeout fields, target angle, and terminal joint/branch diagnostics. Inspected recurring failures show no rescue: for example, seed 4201 remains an interrupted hold and seed 4208 remains a no-first-reach failure, with near-limit shoulder and large alternate-branch errors. This is evidence against the tested explicit branch-constrained acquisition plus weak limit-braking implementation as a rescue for this failure set, not proof that all trajectory control is ineffective. The inquiry is therefore redirected toward a different control or learning method while retaining T3 as the strongest development-evaluated candidate; the human goal remains unmet and official performance remains unmeasured."
+      }
+    },
+    "request_fingerprint": "2d1270cb81d63e2148fb51490cebd41941f74874c7699fd4445f076bd91f8503",
+    "session_id": "S13",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T3:checkpoint-120832 remains the strongest development-evaluated candidate at 153/160. T5:checkpoint-100352 and T6:checkpoint-105472 matched T3 in their paired measurements. No candidate has a working, best-known, or retained role assigned in this session.",
     "completed_operations": [
@@ -11387,7 +11430,8 @@
     "operation_ids": [
       "T8",
       "T9",
-      "M7"
+      "M7",
+      "E24"
     ],
     "scientific_parent_commit": "e41a12818ca3627f11a93d1cd2ac4aad119cab36"
   },
