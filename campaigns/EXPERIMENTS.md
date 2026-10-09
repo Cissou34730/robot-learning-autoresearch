@@ -95,3 +95,4 @@
 | E57 | checkpoint | I13 | checkpointed |
 | E58 | inquiry | I14 | completed |
 | E59 | checkpoint | - | checkpointed |
+| E60 | restore_recipe | I14 | restored |

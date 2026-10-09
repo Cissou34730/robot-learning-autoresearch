@@ -9855,16 +9855,16 @@
     }
   },
   "counters": {
-    "event": 59,
+    "event": 60,
     "inquiry": 14,
     "measurement": 22,
-    "session": 28,
+    "session": 29,
     "training": 12
   },
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "restored",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -26474,9 +26474,138 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-09T16:42:14Z",
+      "error": null,
+      "id": "E60",
+      "inquiry_id": "I14",
+      "kind": "restore_recipe",
+      "request": {
+        "candidate": "T1:checkpoint-120832",
+        "reason": "The active checkout is the T12 static branch-limit recipe, whose 44/160 result and loss of inner-band behavior cannot provide a clean control for I14. Restore the measured T1 direct-action baseline before selecting a controlled PPO/acquisition redesign, so subsequent evidence can distinguish learning optimization from observation/action representation while preserving the known 153/160 and 40/40 reference behavior."
+      },
+      "result": {
+        "candidate": "T1:checkpoint-120832",
+        "restored_paths": [
+          "robot_learning/scenario/environment.py",
+          "robot_learning/scenario/evaluation.py",
+          "robot_learning/scenario/observations.py",
+          "robot_learning/scenario/policy_io.py",
+          "robot_learning/training/reward.py",
+          "robot_learning/scenario/model_based_control.py"
+        ],
+        "scientific_commit": "704bda91e822fc41c3c76dd2479310938b417fdb",
+        "status": "restored"
+      },
+      "session_id": "S29",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "candidate_id": "T1:checkpoint-120832",
+        "parameters": {
+          "algorithm": {
+            "name": "ppo"
+          },
+          "policy": {
+            "activation": "tanh",
+            "net_arch": [
+              64,
+              64
+            ]
+          },
+          "ppo": {
+            "batch_size": 64,
+            "ent_coef": 0.01,
+            "gae_lambda": 0.95,
+            "gamma": 0.99,
+            "learning_rate": 0.0003,
+            "n_steps": 1024
+          },
+          "training": {
+            "checkpoint_every_steps": 5000,
+            "n_envs": 1
+          }
+        },
+        "parent": "704bda91e822fc41c3c76dd2479310938b417fdb",
+        "remove_created": [
+          "robot_learning/scenario/model_based_control.py"
+        ],
+        "restore": [
+          "robot_learning/scenario/environment.py",
+          "robot_learning/scenario/evaluation.py",
+          "robot_learning/scenario/observations.py",
+          "robot_learning/scenario/policy_io.py",
+          "robot_learning/training/reward.py"
+        ],
+        "session_id": "S29"
+      },
+      "pre_restore_manifest": [
+        {
+          "exists": true,
+          "fingerprint": "18deeacce33187efa0e09e44d6dbae985f4769296b2e2b486baeea8061d2a602",
+          "path": "robot_learning/scenario/environment.py"
+        },
+        {
+          "exists": true,
+          "fingerprint": "7a5003bd99be1add8e30380f096937a6c1e7137d24265c308b7681df2e795981",
+          "path": "robot_learning/scenario/evaluation.py"
+        },
+        {
+          "exists": true,
+          "fingerprint": "e2c33c6f524f7b630320557b84ac2bef4fd055474da3043fd8e037d966c2a4bb",
+          "path": "robot_learning/scenario/model_based_control.py"
+        },
+        {
+          "exists": true,
+          "fingerprint": "58f46131ea6fcf4880cf96e9c9a536ca12174afefc335f9ab5dda2acd2615318",
+          "path": "robot_learning/scenario/observations.py"
+        },
+        {
+          "exists": true,
+          "fingerprint": "61c42a9d257a265935f3e9af2d73fa16dfbd997682517c939610c3d83867c1e9",
+          "path": "robot_learning/scenario/policy_io.py"
+        },
+        {
+          "exists": true,
+          "fingerprint": "234cf1fdbe739b4df98cd316b80502c3f81ef8853d24f3558927af97f565f360",
+          "path": "robot_learning/training/reward.py"
+        }
+      ],
+      "result": {
+        "candidate": "T1:checkpoint-120832",
+        "restored_paths": [
+          "robot_learning/scenario/environment.py",
+          "robot_learning/scenario/evaluation.py",
+          "robot_learning/scenario/observations.py",
+          "robot_learning/scenario/policy_io.py",
+          "robot_learning/training/reward.py",
+          "robot_learning/scenario/model_based_control.py"
+        ],
+        "scientific_commit": "704bda91e822fc41c3c76dd2479310938b417fdb",
+        "status": "restored"
+      }
+    },
+    "failure": null,
+    "id": "E60",
+    "inquiry_id": "I14",
+    "kind": "restore_recipe",
+    "progress": "completed",
+    "request": {
+      "restore_recipe": {
+        "candidate": "T1:checkpoint-120832",
+        "reason": "The active checkout is the T12 static branch-limit recipe, whose 44/160 result and loss of inner-band behavior cannot provide a clean control for I14. Restore the measured T1 direct-action baseline before selecting a controlled PPO/acquisition redesign, so subsequent evidence can distinguish learning optimization from observation/action representation while preserving the known 153/160 and 40/40 reference behavior."
+      }
+    },
+    "request_fingerprint": "74d9d3b9ba8960843b52bceed658fc5aab5651afa8d472c5e27b03b37af621f0",
+    "session_id": "S29",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No learned candidate has an evidence-backed working, best-known or retained role. T8:checkpoint-60416 and T9:checkpoint-20480 remain the strongest measured learned candidates at 153/160; T10:checkpoint-10240 and T10:checkpoint-120832 also measured 153/160. T11:checkpoint-120832 and T12:checkpoint-120832 are rejected for this route by their completed measurements. M17 is model-based capability evidence, not a learned candidate role.",
     "completed_operations": [
@@ -26516,6 +26645,21 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "825fcb4f-a6e9-4b4d-b565-35bf636820e7",
+    "id": "S29",
+    "inquiry_id": "I14",
+    "kind": "inquiry",
+    "objective": "Advance I14 toward an evidence-supported answer to its scientific question: Can a learned policy overcome the persistent adequate-margin pre-reach failures through a broader acquisition/representation redesign while preserving the direct-action interface and 40/40 inner-band behavior, and do controlled evidence distinguish observation/action representation limits from PPO optimization failure? Before choosing the next action, compare the accumulated evidence with the closure condition. Restate the unresolved distinction and choose the most decision-relevant available operation; no operation is the default. Close the inquiry when the condition is met.",
+    "operation_ids": [
+      "E60"
+    ],
+    "scientific_parent_commit": "704bda91e822fc41c3c76dd2479310938b417fdb"
+  },
   "terminal_state": null
 }
