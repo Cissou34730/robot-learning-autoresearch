@@ -78,3 +78,4 @@
 | M20 | measurement | I10 | completed |
 | E44 | inquiry | I10 | completed |
 | E45 | checkpoint | I10 | checkpointed |
+| E46 | inquiry | I11 | completed |
