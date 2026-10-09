@@ -2905,38 +2905,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I1",
-        "outcome": "limited negative result",
-        "reason": "M3 completed the required non-overlapping diagnostic measurement and rejects the tested full-coverage recipe as a solution to I1. On the matched seed-27300 panel, T2 achieved 36.0% aggregate success versus 75.0% for T1, with paired comparison net wins of -78 for T2. T2 success was 36.4% at 6-10 cm, 32.8% at 10-14 cm, and 38.2% at 14-20 cm. Of its 128 failures, 120 never reached tolerance and eight reached tolerance but failed the uninterrupted hold, all in the outer bin. T1 on the same panel achieved 48.5%, 79.3%, and 94.7% in those bins, respectively. Thus official-radius exposure did not eliminate the inner-radius reach deficit and materially degraded outer-range complete-hold performance. This establishes a negative result for the tested fresh PPO plus uniform full-radius recipe, not for coverage as a general method. I1 should redirect the campaign toward identifying why the intervention destabilized learning and toward reach/control mechanisms, using branch-, bearing-, and hold-conditioned evidence before another coverage or reward intervention."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I1",
-        "outcome": "limited negative result",
-        "reason": "M3 completed the required non-overlapping diagnostic measurement and rejects the tested full-coverage recipe as a solution to I1. On the matched seed-27300 panel, T2 achieved 36.0% aggregate success versus 75.0% for T1, with paired comparison net wins of -78 for T2. T2 success was 36.4% at 6-10 cm, 32.8% at 10-14 cm, and 38.2% at 14-20 cm. Of its 128 failures, 120 never reached tolerance and eight reached tolerance but failed the uninterrupted hold, all in the outer bin. T1 on the same panel achieved 48.5%, 79.3%, and 94.7% in those bins, respectively. Thus official-radius exposure did not eliminate the inner-radius reach deficit and materially degraded outer-range complete-hold performance. This establishes a negative result for the tested fresh PPO plus uniform full-radius recipe, not for coverage as a general method. I1 should redirect the campaign toward identifying why the intervention destabilized learning and toward reach/control mechanisms, using branch-, bearing-, and hold-conditioned evidence before another coverage or reward intervention.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E4",
-    "inquiry_id": "I1",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "limited negative result",
-        "reason": "M3 completed the required non-overlapping diagnostic measurement and rejects the tested full-coverage recipe as a solution to I1. On the matched seed-27300 panel, T2 achieved 36.0% aggregate success versus 75.0% for T1, with paired comparison net wins of -78 for T2. T2 success was 36.4% at 6-10 cm, 32.8% at 10-14 cm, and 38.2% at 14-20 cm. Of its 128 failures, 120 never reached tolerance and eight reached tolerance but failed the uninterrupted hold, all in the outer bin. T1 on the same panel achieved 48.5%, 79.3%, and 94.7% in those bins, respectively. Thus official-radius exposure did not eliminate the inner-radius reach deficit and materially degraded outer-range complete-hold performance. This establishes a negative result for the tested fresh PPO plus uniform full-radius recipe, not for coverage as a general method. I1 should redirect the campaign toward identifying why the intervention destabilized learning and toward reach/control mechanisms, using branch-, bearing-, and hold-conditioned evidence before another coverage or reward intervention."
-      }
-    },
-    "request_fingerprint": "05ad1a047d7e827766c3a6ccaa59317f6f471a61e61d2d4bf69315e7370abfd7",
-    "session_id": "S3",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T1 produced archived candidates, including T1:checkpoint-115712 used by M1 and M2. No candidate has been assigned working, best-known, or retained status because no candidate yet meets the current development objective and the next inquiry must first test full-radius coverage.",
     "completed_operations": [
