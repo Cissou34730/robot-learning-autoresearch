@@ -6576,7 +6576,7 @@
     "inquiry": 10,
     "measurement": 11,
     "session": 21,
-    "training": 10
+    "training": 12
   },
   "human_goal": {
     "source": "contracts/scenario.md"
@@ -13451,9 +13451,123 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-09T01:17:42Z",
+      "error": "training failed:\n\n=== training T11 ===\nTraceback (most recent call last):\n  File \"<frozen runpy>\", line 203, in _run_module_as_main\n  File \"<frozen runpy>\", line 88, in _run_code\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\train.py\", line 235, in <module>\n    main()\n    ~~~~^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\train.py\", line 109, in main\n    venv = VecNormalize.load(str(stats_path), venv)\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\.venv\\Lib\\site-packages\\stable_baselines3\\common\\vec_env\\vec_normalize.py\", line 321, in load\n    vec_normalize.set_venv(venv)\n    ~~~~~~~~~~~~~~~~~~~~~~^^^^^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\.venv\\Lib\\site-packages\\stable_baselines3\\common\\vec_env\\vec_normalize.py\", line 171, in set_venv\n    utils.check_shape_equal(self.observation_space, venv.observation_space)\n    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\.venv\\Lib\\site-packages\\stable_baselines3\\common\\utils.py\", line 337, in check_shape_equal\n    assert space1.shape == space2.shape, f\"spaces must have the same shape: {space1.shape} != {space2.shape}\"\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: spaces must have the same shape: (11,) != (13,)\n",
+      "id": "T11",
+      "inquiry_id": "I10",
+      "kind": "training",
+      "request": {
+        "description": "T11 arrival-state-conditioned transfer: augment the restored T3 observation with end-effector radial and tangential velocity relative to the target, computed from the site Jacobian, while leaving the T3 incremental-radius curriculum, reward, plant timing, and direct action mapping unchanged.",
+        "initialization": "transfer",
+        "parent": "T3:checkpoint-120832",
+        "rationale": "M10 identifies high-speed sampled arrivals and negative retention margins as the immediate residual mechanism, but the original joint velocities and Cartesian error require the policy to infer the relevant projections. This bounded representation intervention exposes the two velocity components that determine radial overshoot and tangential sweep at the tolerance boundary without applying the globally degrading M11 speed penalty. A matched evaluation can therefore test whether explicit arrival-state conditioning preserves T3's 157 first reaches and four interruptions while reducing the seven negative-angle failures; broad degradation would reject this representation recipe without rejecting the local braking-margin explanation.",
+        "seed": 0,
+        "steps": 120000
+      },
+      "result": {
+        "error": "training failed:\n\n=== training T11 ===\nTraceback (most recent call last):\n  File \"<frozen runpy>\", line 203, in _run_module_as_main\n  File \"<frozen runpy>\", line 88, in _run_code\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\train.py\", line 235, in <module>\n    main()\n    ~~~~^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\train.py\", line 109, in main\n    venv = VecNormalize.load(str(stats_path), venv)\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\.venv\\Lib\\site-packages\\stable_baselines3\\common\\vec_env\\vec_normalize.py\", line 321, in load\n    vec_normalize.set_venv(venv)\n    ~~~~~~~~~~~~~~~~~~~~~~^^^^^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\.venv\\Lib\\site-packages\\stable_baselines3\\common\\vec_env\\vec_normalize.py\", line 171, in set_venv\n    utils.check_shape_equal(self.observation_space, venv.observation_space)\n    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\.venv\\Lib\\site-packages\\stable_baselines3\\common\\utils.py\", line 337, in check_shape_equal\n    assert space1.shape == space2.shape, f\"spaces must have the same shape: {space1.shape} != {space2.shape}\"\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: spaces must have the same shape: (11,) != (13,)\n",
+        "status": "failed"
+      },
+      "session_id": "S21",
+      "status": "failed",
+      "superseded_by": "T12",
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "archived_candidates": null,
+      "candidate_dir": null,
+      "code_parent_commit": "ac80177d270a56c270c2c7ddd930bba9699430be",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "parent": {
+        "artifact": "campaigns/checkpoints/candidates/1ae27a27-6880-4ca6-9d50-e6498e771cb7/t3/checkpoint-120832",
+        "fingerprint": "b7e19a6bacfecbcd4bae2bed3afe7d01df9193de0399b3a887a91a2c073688da",
+        "id": "T3:checkpoint-120832",
+        "parameters": {
+          "algorithm": {
+            "name": "ppo"
+          },
+          "policy": {
+            "activation": "tanh",
+            "net_arch": [
+              64,
+              64
+            ]
+          },
+          "ppo": {
+            "batch_size": 64,
+            "ent_coef": 0.01,
+            "gae_lambda": 0.95,
+            "gamma": 0.99,
+            "learning_rate": 0.0003,
+            "n_steps": 1024
+          },
+          "training": {
+            "checkpoint_every_steps": 5000,
+            "n_envs": 1
+          }
+        },
+        "scientific_commit": "ac80177d270a56c270c2c7ddd930bba9699430be",
+        "training_steps": 120832
+      },
+      "result": null,
+      "scientific_commit": null,
+      "scientific_manifest": [
+        {
+          "exists": true,
+          "fingerprint": "b43962e3aae2a3746b3eae46ce81284c40af0dcd609f096bc47ee61a7cc31050",
+          "path": "robot_learning/scenario/observations.py"
+        }
+      ],
+      "scientific_paths": [
+        "robot_learning/scenario/observations.py"
+      ]
+    },
+    "failure": null,
+    "id": "T12",
+    "inquiry_id": "I10",
+    "kind": "training",
+    "progress": "accepted",
+    "request": {
+      "training": {
+        "description": "T12 transfer-compatible arrival-state representation: retain T3's 11-dimensional observation contract while replacing its always-zero planar z-error component with predicted end-effector radial displacement over one 20 ms control interval. Leave T3's incremental-radius curriculum, reward, plant timing, and direct action mapping unchanged.",
+        "initialization": "transfer",
+        "parent": "T3:checkpoint-120832",
+        "rationale": "T11 failed before training because appending two velocity features changed the observation shape from T3's saved (11,) normalization contract to (13,); this is an implementation failure and provides no evidence about arrival-state conditioning. The corrected intervention preserves the transfer-compatible 11-dimensional policy and normalization shape while exposing a physically scaled displacement component directly tied to one-interval radial overshoot at the sampled tolerance boundary. Matched evaluation against T3 will test whether this representation preserves T3's 157 first reaches and four interruptions while reducing the negative-angle braking failures; broad degradation will reject this recipe without rejecting M10's local braking-margin mechanism.",
+        "seed": 0,
+        "steps": 120000
+      }
+    },
+    "request_fingerprint": "a32eb1d88efa93d884689d7f0cbdb6c8a36de97af749cd9bb11604109ad2b7da",
+    "session_id": "S21",
+    "supersedes": "T11"
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T3:checkpoint-120832 remains the strongest measured development candidate at 153/160 (95.625%) and has no assigned working, best-known, or retained role. T10:checkpoint-120832 is intervention-limited at 142/160 and has no role. No candidate role change is requested.",
     "completed_operations": [

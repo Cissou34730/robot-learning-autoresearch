@@ -63,3 +63,4 @@
 | E38 | inquiry | I10 | completed |
 | E39 | checkpoint | - | checkpointed |
 | E40 | restore_recipe | I10 | restored |
+| T11 | training | I10 | failed |
