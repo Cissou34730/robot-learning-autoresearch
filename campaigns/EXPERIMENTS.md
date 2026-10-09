@@ -93,3 +93,4 @@
 | E55 | checkpoint | - | checkpointed |
 | E56 | inquiry | I13 | completed |
 | E57 | checkpoint | I13 | checkpointed |
+| E58 | inquiry | I14 | completed |
