@@ -3425,7 +3425,7 @@
       "training_steps": 110592
     },
     "T5:checkpoint-115712": {
-      "artifact": "campaigns/checkpoints/candidates/896c230a-0ff1-4105-8ab7-1691a09c5482/t5/checkpoint-115712",
+      "artifact": "campaigns/checkpoints/retained/896c230a-0ff1-4105-8ab7-1691a09c5482/t5-cfbc9e22f-a9b510f768f0e221ce3bed5fa35f256808ea6a6a8aa56e91373490e4cd93f71b",
       "evaluation_artifacts": [
         "campaigns/evaluations/896c230a-0ff1-4105-8ab7-1691a09c5482/evaluation-896c230a-0ff1-4105-8ab7-1691a09c5482-m6-T5-checkpoint-115712-128ep-seed57300-56c22f7cceb7.json"
       ],
@@ -4108,18 +4108,18 @@
     }
   },
   "counters": {
-    "event": 17,
+    "event": 18,
     "inquiry": 4,
     "measurement": 6,
-    "session": 9,
+    "session": 10,
     "training": 5
   },
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "assigned",
   "model_roles": {
-    "best_known": null,
+    "best_known": "T5:checkpoint-115712",
     "retained": {},
     "working": null
   },
@@ -8031,9 +8031,83 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-09T10:46:35Z",
+      "error": null,
+      "id": "E18",
+      "inquiry_id": null,
+      "kind": "model_role",
+      "request": {
+        "action": "set_best_known",
+        "candidate": "T5:checkpoint-115712",
+        "evidence": [
+          "M6",
+          "E16"
+        ],
+        "reason": "M6 is the strongest completed development measurement: T5 achieved 125/128 complete uninterrupted holds versus 92/128 for the matched T1 reference, with fewer never-reached failures and reduced hold interruptions. The diagnostics support selecting T5 as the best-known candidate while preserving the unresolved distinction that only the protected official assessment can establish at least 196/200 successes."
+      },
+      "result": {
+        "action": "set_best_known",
+        "candidate": "T5:checkpoint-115712",
+        "evidence": [
+          "M6",
+          "E16"
+        ],
+        "status": "assigned"
+      },
+      "session_id": "S10",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "set_best_known",
+        "candidate_id": "T5:checkpoint-115712",
+        "evidence": [
+          "M6",
+          "E16"
+        ],
+        "reason": "M6 is the strongest completed development measurement: T5 achieved 125/128 complete uninterrupted holds versus 92/128 for the matched T1 reference, with fewer never-reached failures and reduced hold interruptions. The diagnostics support selecting T5 as the best-known candidate while preserving the unresolved distinction that only the protected official assessment can establish at least 196/200 successes."
+      },
+      "publication": {
+        "destination": "campaigns/checkpoints/retained/896c230a-0ff1-4105-8ab7-1691a09c5482/t5-cfbc9e22f-a9b510f768f0e221ce3bed5fa35f256808ea6a6a8aa56e91373490e4cd93f71b",
+        "fingerprint": "a9b510f768f0e221ce3bed5fa35f256808ea6a6a8aa56e91373490e4cd93f71b",
+        "source": "campaigns/checkpoints/candidates/896c230a-0ff1-4105-8ab7-1691a09c5482/t5/checkpoint-115712"
+      },
+      "result": {
+        "action": "set_best_known",
+        "candidate": "T5:checkpoint-115712",
+        "evidence": [
+          "M6",
+          "E16"
+        ],
+        "status": "assigned"
+      }
+    },
+    "failure": null,
+    "id": "E18",
+    "inquiry_id": null,
+    "kind": "model_role",
+    "progress": "completed",
+    "request": {
+      "model_role": {
+        "action": "set_best_known",
+        "candidate": "T5:checkpoint-115712",
+        "evidence": [
+          "M6",
+          "E16"
+        ],
+        "reason": "M6 is the strongest completed development measurement: T5 achieved 125/128 complete uninterrupted holds versus 92/128 for the matched T1 reference, with fewer never-reached failures and reduced hold interruptions. The diagnostics support selecting T5 as the best-known candidate while preserving the unresolved distinction that only the protected official assessment can establish at least 196/200 successes."
+      }
+    },
+    "request_fingerprint": "480d93675f6918ef2327e8b3ce514dcb9dcf5308689da95033d3e86c48ebdf5a",
+    "session_id": "S10",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T5:checkpoint-115712 is the strongest development-measured candidate at 125/128 complete holds (97.65625%) on M6. T1:checkpoint-115712 remains the matched reference at 92/128, while T4 was inadequate and unmeasured for development performance. No working, best-known, or retained role is assigned in this inquiry-closing session; the fresh goal-review session should explicitly decide whether M6 supports assigning T5 as best-known before any protected official assessment.",
     "completed_operations": [
@@ -8065,6 +8139,21 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "63a8483a-f629-47ec-99cc-ca921ac8fb5a",
+    "id": "S10",
+    "inquiry_id": null,
+    "kind": "goal_review",
+    "objective": "Use the completed evidence to update the scientific direction toward the human goal. Request measurements when they resolve an uncertainty or develop the method. Then choose one outcome: request the official assessment, or open one bounded goal-linked inquiry.",
+    "operation_ids": [
+      "E18"
+    ],
+    "scientific_parent_commit": "e2387140e533c8852062e84bd7e41f20e5d5bee4"
+  },
   "terminal_state": null
 }
