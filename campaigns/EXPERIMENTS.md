@@ -73,3 +73,4 @@
 | E41 | checkpoint | I9 | checkpointed |
 | E42 | inquiry | I10 | completed |
 | E43 | checkpoint | - | checkpointed |
+| T11 | training | I10 | completed |
