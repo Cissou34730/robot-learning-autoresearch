@@ -35299,38 +35299,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I14",
-        "outcome": "limited_negative",
-        "reason": "I14 is resolved as a limited negative for the tested PPO direct-action acquisition route, not for learned policies generally. M23/M24 showed the smooth target-geometry representation was substantially worse than T1; M25 showed that extending its PPO horizon improved but did not solve that route. M26 showed that restoring the original 11-value observation with the 2048-step horizon reached 156/160, but M27 exposed a tradeoff at 190/200 with only 107/113 inner-band successes. T16 then replicated the original observation with the 1024-step horizon: M28 reached 192/200, narrowly exceeded T1 by one paired success, but still had 7 pre-reach failures including 2 with positive nearest-branch limit margin and achieved only 110/113 inner-band successes, while T1 had 113/113 inner-band successes. Across T15 and T16, positive-margin pre-reach failures persisted despite the controlled representation and horizon comparisons. The evidence therefore does not establish a physical or bounded-action limitation, nor does it reject PPO or learned control generally; it establishes that the tested PPO observation/horizon recipes do not meet the 196/200 goal threshold while preserving the required inner-band behavior."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I14",
-        "outcome": "limited_negative",
-        "reason": "I14 is resolved as a limited negative for the tested PPO direct-action acquisition route, not for learned policies generally. M23/M24 showed the smooth target-geometry representation was substantially worse than T1; M25 showed that extending its PPO horizon improved but did not solve that route. M26 showed that restoring the original 11-value observation with the 2048-step horizon reached 156/160, but M27 exposed a tradeoff at 190/200 with only 107/113 inner-band successes. T16 then replicated the original observation with the 1024-step horizon: M28 reached 192/200, narrowly exceeded T1 by one paired success, but still had 7 pre-reach failures including 2 with positive nearest-branch limit margin and achieved only 110/113 inner-band successes, while T1 had 113/113 inner-band successes. Across T15 and T16, positive-margin pre-reach failures persisted despite the controlled representation and horizon comparisons. The evidence therefore does not establish a physical or bounded-action limitation, nor does it reject PPO or learned control generally; it establishes that the tested PPO observation/horizon recipes do not meet the 196/200 goal threshold while preserving the required inner-band behavior.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E62",
-    "inquiry_id": "I14",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "limited_negative",
-        "reason": "I14 is resolved as a limited negative for the tested PPO direct-action acquisition route, not for learned policies generally. M23/M24 showed the smooth target-geometry representation was substantially worse than T1; M25 showed that extending its PPO horizon improved but did not solve that route. M26 showed that restoring the original 11-value observation with the 2048-step horizon reached 156/160, but M27 exposed a tradeoff at 190/200 with only 107/113 inner-band successes. T16 then replicated the original observation with the 1024-step horizon: M28 reached 192/200, narrowly exceeded T1 by one paired success, but still had 7 pre-reach failures including 2 with positive nearest-branch limit margin and achieved only 110/113 inner-band successes, while T1 had 113/113 inner-band successes. Across T15 and T16, positive-margin pre-reach failures persisted despite the controlled representation and horizon comparisons. The evidence therefore does not establish a physical or bounded-action limitation, nor does it reject PPO or learned control generally; it establishes that the tested PPO observation/horizon recipes do not meet the 196/200 goal threshold while preserving the required inner-band behavior."
-      }
-    },
-    "request_fingerprint": "305954e7eb23836363256d77e58d4585157f0a57ba5dabfb47c4319890d01654",
-    "session_id": "S30",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "No learned candidate has an evidence-backed working, best-known, or retained role. T1 remains the measured direct-action reference; T14 is an unassigned experimental candidate with 38.75% development success; M17 is model-based capability evidence rather than a learned candidate role.",
     "completed_operations": [
