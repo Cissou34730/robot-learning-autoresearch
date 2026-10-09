@@ -3151,38 +3151,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I2",
-        "outcome": "limited",
-        "reason": "M3 closes I2 with a limited result. Matched development evidence showed the inner-radius training intervention improved complete-hold success from 110/160 (68.75%) for T1 to 150/160 (93.75%) for T2, with 43 paired wins versus 3 and the required radius, angle, acquisition, hold, timeout, terminal-joint, and IK-branch diagnostics recorded. T2's ten failures comprised eight episodes that never reached tolerance and two episodes that reached tolerance but could not sustain the hold; their target radii ranged across approximately 10.7-18.8 cm rather than isolating the former inner-radius deficit. This supports continuing coverage as a beneficial component but does not establish that coverage alone reaches the 98% goal. Terminal branch diagnostics were available, but the endpoint snapshots do not establish branch selection as the sole mechanism. The remaining goal-relevant route is angle- and trajectory-specific acquisition and stabilization, with branch geometry retained as an attribution variable rather than a proven cause."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I2",
-        "outcome": "limited",
-        "reason": "M3 closes I2 with a limited result. Matched development evidence showed the inner-radius training intervention improved complete-hold success from 110/160 (68.75%) for T1 to 150/160 (93.75%) for T2, with 43 paired wins versus 3 and the required radius, angle, acquisition, hold, timeout, terminal-joint, and IK-branch diagnostics recorded. T2's ten failures comprised eight episodes that never reached tolerance and two episodes that reached tolerance but could not sustain the hold; their target radii ranged across approximately 10.7-18.8 cm rather than isolating the former inner-radius deficit. This supports continuing coverage as a beneficial component but does not establish that coverage alone reaches the 98% goal. Terminal branch diagnostics were available, but the endpoint snapshots do not establish branch selection as the sole mechanism. The remaining goal-relevant route is angle- and trajectory-specific acquisition and stabilization, with branch geometry retained as an attribution variable rather than a proven cause.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E8",
-    "inquiry_id": "I2",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "limited",
-        "reason": "M3 closes I2 with a limited result. Matched development evidence showed the inner-radius training intervention improved complete-hold success from 110/160 (68.75%) for T1 to 150/160 (93.75%) for T2, with 43 paired wins versus 3 and the required radius, angle, acquisition, hold, timeout, terminal-joint, and IK-branch diagnostics recorded. T2's ten failures comprised eight episodes that never reached tolerance and two episodes that reached tolerance but could not sustain the hold; their target radii ranged across approximately 10.7-18.8 cm rather than isolating the former inner-radius deficit. This supports continuing coverage as a beneficial component but does not establish that coverage alone reaches the 98% goal. Terminal branch diagnostics were available, but the endpoint snapshots do not establish branch selection as the sole mechanism. The remaining goal-relevant route is angle- and trajectory-specific acquisition and stabilization, with branch geometry retained as an attribution variable rather than a proven cause."
-      }
-    },
-    "request_fingerprint": "68e04b390718bfa6ff16401869b859ce8dc99bbe781ffdc2682c153fda611a0c",
-    "session_id": "S5",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T1 produced archived candidates, and T1:checkpoint-120832 is the only candidate with completed development evaluation. Its 68.75% development result is evidence-bearing but does not establish official performance. Working, best-known, and retained roles remain empty because no candidate has yet been justified for those roles.",
     "completed_operations": [
