@@ -1,5 +1,16 @@
 {
-  "active_inquiry": null,
+  "active_inquiry": {
+    "closure_condition": "Close when matched development evidence from an inner-radius training intervention is available with radius-controlled success, first_reach_step, max_held_steps, hold_interruptions, timeout status, target angle, and branch or terminal geometry, and that evidence establishes whether coverage materially improves complete-hold success or whether persistent failures redirect the route toward branch- or angle-specific trajectory control. A limited or inconclusive result is sufficient if the diagnostics do not discriminate these alternatives.",
+    "goal_connection": "The human goal requires at least 196 of 200 official-distribution episodes to complete an uninterrupted 100-step hold. The only evaluated candidate achieved 110 of 160 development successes, with failures concentrated in the inner-radius bins, so resolving whether coverage expansion improves acquisition is necessary before selecting a candidate for official assessment.",
+    "handoff_conclusion": "M1 established high actuation authority and substantial residual-motion risk in bounded plant probes, but did not establish the first learned-policy bottleneck. T1 training produced candidates but its learning statistics are not development evidence. M2 evaluated T1:checkpoint-120832 over 160 development episodes: 118 episodes first reached tolerance, 110 completed the hold, and 8 reached tolerance but failed the complete hold. The dominant failures were acquisition failures in the inner workspace: success was 10/40 at 6-10 cm, 37/53 at 10-14 cm, 37/39 at 14-18 cm, and 26/28 at 18-20 cm. This supports changing direction toward inner-radius coverage and acquisition rather than treating hold instability as the leading first-policy bottleneck. Angle-stratified success varied, but radius composition was not controlled; M2 recorded no elbow-branch, terminal-joint, or equivalent geometry. Therefore branch- and angle-dependent acquisition remains unresolved, and the limited attribution does not reject stabilization as a future requirement.",
+    "handoff_question": "Can expanding training to the official inner-radius regime raise complete-hold success toward the 98% goal, and do the remaining failures reveal a branch- or angle-dependent acquisition mechanism?",
+    "handoff_source_session_id": "S3",
+    "id": "I2",
+    "opened_in_session": "S4",
+    "question": "Can expanding training to the official inner-radius regime raise complete-hold success toward the 98% goal, and do the remaining failures reveal a branch- or angle-dependent acquisition mechanism?",
+    "rationale": "M2 supports inner-radius acquisition as the leading observed failure pattern, but its radius composition was uncontrolled and it recorded no elbow-branch, terminal-joint, or equivalent geometry. Therefore the inherited interpretation should remain a route hypothesis rather than a causal conclusion: this inquiry tests the coverage change while preserving branch- and angle-dependent acquisition as a competing explanation.",
+    "reframes": []
+  },
   "campaign": {
     "base_commit": "5a0ec158aa0741306d5f825a3ec7db8176a3ff13",
     "id": "339736e0-5583-4bc4-8729-5023fc3077b7",
@@ -828,16 +839,16 @@
     }
   },
   "counters": {
-    "event": 5,
-    "inquiry": 1,
+    "event": 6,
+    "inquiry": 2,
     "measurement": 2,
-    "session": 3,
+    "session": 4,
     "training": 1
   },
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -1557,9 +1568,72 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-09T22:40:24Z",
+      "error": null,
+      "id": "E6",
+      "inquiry_id": "I2",
+      "kind": "inquiry",
+      "request": {
+        "action": "open",
+        "closure_condition": "Close when matched development evidence from an inner-radius training intervention is available with radius-controlled success, first_reach_step, max_held_steps, hold_interruptions, timeout status, target angle, and branch or terminal geometry, and that evidence establishes whether coverage materially improves complete-hold success or whether persistent failures redirect the route toward branch- or angle-specific trajectory control. A limited or inconclusive result is sufficient if the diagnostics do not discriminate these alternatives.",
+        "goal_connection": "The human goal requires at least 196 of 200 official-distribution episodes to complete an uninterrupted 100-step hold. The only evaluated candidate achieved 110 of 160 development successes, with failures concentrated in the inner-radius bins, so resolving whether coverage expansion improves acquisition is necessary before selecting a candidate for official assessment.",
+        "question": "Can expanding training to the official inner-radius regime raise complete-hold success toward the 98% goal, and do the remaining failures reveal a branch- or angle-dependent acquisition mechanism?",
+        "rationale": "M2 supports inner-radius acquisition as the leading observed failure pattern, but its radius composition was uncontrolled and it recorded no elbow-branch, terminal-joint, or equivalent geometry. Therefore the inherited interpretation should remain a route hypothesis rather than a causal conclusion: this inquiry tests the coverage change while preserving branch- and angle-dependent acquisition as a competing explanation."
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I2",
+        "status": "completed"
+      },
+      "session_id": "S4",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "open",
+        "inquiry": {
+          "closure_condition": "Close when matched development evidence from an inner-radius training intervention is available with radius-controlled success, first_reach_step, max_held_steps, hold_interruptions, timeout status, target angle, and branch or terminal geometry, and that evidence establishes whether coverage materially improves complete-hold success or whether persistent failures redirect the route toward branch- or angle-specific trajectory control. A limited or inconclusive result is sufficient if the diagnostics do not discriminate these alternatives.",
+          "goal_connection": "The human goal requires at least 196 of 200 official-distribution episodes to complete an uninterrupted 100-step hold. The only evaluated candidate achieved 110 of 160 development successes, with failures concentrated in the inner-radius bins, so resolving whether coverage expansion improves acquisition is necessary before selecting a candidate for official assessment.",
+          "handoff_conclusion": "M1 established high actuation authority and substantial residual-motion risk in bounded plant probes, but did not establish the first learned-policy bottleneck. T1 training produced candidates but its learning statistics are not development evidence. M2 evaluated T1:checkpoint-120832 over 160 development episodes: 118 episodes first reached tolerance, 110 completed the hold, and 8 reached tolerance but failed the complete hold. The dominant failures were acquisition failures in the inner workspace: success was 10/40 at 6-10 cm, 37/53 at 10-14 cm, 37/39 at 14-18 cm, and 26/28 at 18-20 cm. This supports changing direction toward inner-radius coverage and acquisition rather than treating hold instability as the leading first-policy bottleneck. Angle-stratified success varied, but radius composition was not controlled; M2 recorded no elbow-branch, terminal-joint, or equivalent geometry. Therefore branch- and angle-dependent acquisition remains unresolved, and the limited attribution does not reject stabilization as a future requirement.",
+          "handoff_question": "Can expanding training to the official inner-radius regime raise complete-hold success toward the 98% goal, and do the remaining failures reveal a branch- or angle-dependent acquisition mechanism?",
+          "handoff_source_session_id": "S3",
+          "id": "I2",
+          "opened_in_session": "S4",
+          "question": "Can expanding training to the official inner-radius regime raise complete-hold success toward the 98% goal, and do the remaining failures reveal a branch- or angle-dependent acquisition mechanism?",
+          "rationale": "M2 supports inner-radius acquisition as the leading observed failure pattern, but its radius composition was uncontrolled and it recorded no elbow-branch, terminal-joint, or equivalent geometry. Therefore the inherited interpretation should remain a route hypothesis rather than a causal conclusion: this inquiry tests the coverage change while preserving branch- and angle-dependent acquisition as a competing explanation.",
+          "reframes": []
+        }
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I2",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E6",
+    "inquiry_id": null,
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "open",
+        "closure_condition": "Close when matched development evidence from an inner-radius training intervention is available with radius-controlled success, first_reach_step, max_held_steps, hold_interruptions, timeout status, target angle, and branch or terminal geometry, and that evidence establishes whether coverage materially improves complete-hold success or whether persistent failures redirect the route toward branch- or angle-specific trajectory control. A limited or inconclusive result is sufficient if the diagnostics do not discriminate these alternatives.",
+        "goal_connection": "The human goal requires at least 196 of 200 official-distribution episodes to complete an uninterrupted 100-step hold. The only evaluated candidate achieved 110 of 160 development successes, with failures concentrated in the inner-radius bins, so resolving whether coverage expansion improves acquisition is necessary before selecting a candidate for official assessment.",
+        "question": "Can expanding training to the official inner-radius regime raise complete-hold success toward the 98% goal, and do the remaining failures reveal a branch- or angle-dependent acquisition mechanism?",
+        "rationale": "M2 supports inner-radius acquisition as the leading observed failure pattern, but its radius composition was uncontrolled and it recorded no elbow-branch, terminal-joint, or equivalent geometry. Therefore the inherited interpretation should remain a route hypothesis rather than a causal conclusion: this inquiry tests the coverage change while preserving branch- and angle-dependent acquisition as a competing explanation."
+      }
+    },
+    "request_fingerprint": "2c1ebbde9973dcca0fc3902b66af979d3c635edc0f9b71f2092f4b1409260b32",
+    "session_id": "S4",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T1 produced archived candidates, and T1:checkpoint-120832 is the only candidate with completed development evaluation. Its 68.75% result makes it an evidence-bearing development candidate but does not establish official performance; working, best-known, and retained roles remain empty because no role assignment was requested or justified by the limited inquiry result.",
     "completed_operations": [
@@ -1591,6 +1665,21 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "02f3ed1f-fd07-47b0-a025-dcfc42a2b97e",
+    "id": "S4",
+    "inquiry_id": null,
+    "kind": "goal_review",
+    "objective": "Use the completed evidence to update the scientific direction toward the human goal. Correct inherited interpretations, constraints or proposed questions when existing evidence warrants it. Request measurements when they resolve an uncertainty or develop the method. Then choose one outcome: request the official assessment, or open one bounded goal-linked inquiry.",
+    "operation_ids": [
+      "E6"
+    ],
+    "scientific_parent_commit": "2656eecbe29e4e97c35a78e31e30498bc3cd8288"
+  },
   "terminal_state": null
 }
