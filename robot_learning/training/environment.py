@@ -8,12 +8,50 @@ excluded from the research-evaluation semantics fingerprint.
 """
 
 import gymnasium as gym
+import numpy as np
 
 from robot_learning.scenario.environment import TwoJointArmReachEnv
 
-TRAINING_TARGET_RADIUS_RANGE = (0.14, 0.20)
+TRAINING_TARGET_RADIUS_RANGE = (0.06, 0.20)
+HARD_TARGET_RADIUS_RANGE = (0.06, 0.14)
+HARD_TARGET_PROBABILITY = 0.5
+
+
+class ReachFocusedTrainingEnv(TwoJointArmReachEnv):
+    """Expose the policy to difficult inward and reset-opposed targets."""
+
+    def _sample_target_position(self) -> None:
+        if self.np_random.random() < HARD_TARGET_PROBABILITY:
+            radius = float(
+                self.np_random.uniform(
+                    HARD_TARGET_RADIUS_RANGE[0], HARD_TARGET_RADIUS_RANGE[1]
+                )
+            )
+            angle = float(
+                self.np_random.choice(
+                    (
+                        self.np_random.uniform(-np.pi, -np.pi / 2.0),
+                        self.np_random.uniform(np.pi / 2.0, np.pi),
+                    )
+                )
+            )
+        else:
+            radius = float(
+                self.np_random.uniform(
+                    TRAINING_TARGET_RADIUS_RANGE[0],
+                    TRAINING_TARGET_RADIUS_RANGE[1],
+                )
+            )
+            angle = float(self.np_random.uniform(-np.pi, np.pi))
+
+        target_z = float(self._end_effector_position()[2])
+        self.data.mocap_pos[0] = [
+            radius * np.cos(angle),
+            radius * np.sin(angle),
+            target_z,
+        ]
 
 
 def make_training_env() -> gym.Env:
     """Build the Gymnasium environment used for training this scenario."""
-    return TwoJointArmReachEnv(target_radius_range=TRAINING_TARGET_RADIUS_RANGE)
+    return ReachFocusedTrainingEnv(target_radius_range=TRAINING_TARGET_RADIUS_RANGE)
