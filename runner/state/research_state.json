@@ -3296,7 +3296,7 @@
     }
   },
   "counters": {
-    "event": 19,
+    "event": 20,
     "inquiry": 5,
     "measurement": 7,
     "session": 10,
@@ -3305,7 +3305,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -7733,48 +7733,193 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-09T14:21:18Z",
+      "error": null,
+      "id": "E20",
+      "inquiry_id": null,
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "T1:checkpoint-120832 remains the strongest measured development candidate at 93.75% with 40/40 inner-band successes, but has no assigned working, best-known, or retained role because it is below the goal and lacks a protected assessment. T2:checkpoint-120832, T3:checkpoint-120832, and T4:checkpoint-120832 remain rejected as viable routes based on their paired development results and diagnostics. No candidate has a role.",
+        "completed_operations": [
+          "E19"
+        ],
+        "cumulative_resource_use": "The campaign has used M1 characterization, four 120000-step fresh training allocations T1-T4 (120832 completed simulator steps each), development and diagnostic measurements M2-M7, and inquiry and checkpoint events E1-E19, including restoration E16 and the opening of I5 at E19. T4 used one additional 120000-step allocation and M7 used paired development evaluation plus T4 diagnostics. No candidate meets the development threshold.",
+        "current_goal_gap": "No candidate has reached the 98% development threshold. T1 has seven branch/limit-aligned non-reaching failures, two high first-reach-velocity post-reach hold failures, and one additional positive-margin non-reaching failure. T4 has 87 failures, 86 without first reach, 76 with positive terminal nearest-branch margin, one post-reach failure, and only 23/40 inner-band successes.",
+        "current_synthesis": "M1 established substantial transient actuation authority and at least one feasible analytic IK solution for every sampled official target; 64 of 576 grid targets had only one feasible branch. T1's uniform official coverage and M2's 150/160 result establish the strongest measured baseline, while M3 supports branch/limit-sensitive non-reaching as the dominant observed T1 failure class and high approach velocity with hold interruptions as a secondary class. T2's aggressive branch/limit-aware sampling and T3's explicit feasibility features each caused broad recipe-specific learnability collapse; these results do not invalidate branch or representation methods generally. I4's T4 previous-action history recipe is a bounded negative result: under preserved coverage, reward, PPO, and hold semantics it fell to 73/160, with 86/87 failures before first reach and loss of inner-band behavior. The unresolved representation mechanism therefore remains open, while the tested history recipe is rejected as a route to improvement.",
+        "decision_frontier": "The unresolved distinction is whether a less disruptive branch or trajectory representation can expose useful terminal-configuration or path information without the learnability collapse seen in T2, T3, and T4, while preserving T1's uniform official target coverage. A successful route must reach at least 98% development success, preserve radius and angle coverage and 40/40 inner-band behavior, and reduce negative-margin failures. Its residual failures must then be separated by first-reach velocity, approach dynamics, and hold interruptions. Broad positive-margin non-reaching or renewed inner-band loss would reject this representation route and redirect the campaign; adequate-margin post-reach failures would shift emphasis toward velocity shaping or hold-phase stabilization.",
+        "evidence_references": [
+          "M1",
+          "T1",
+          "M2",
+          "M3",
+          "T2",
+          "M4",
+          "M5",
+          "T3",
+          "M6",
+          "T4",
+          "M7",
+          "E17",
+          "E19"
+        ],
+        "human_goal_connection": "The campaign remains 6.25 percentage points below the 98% development target: T1 measured 150/160 successes (93.75%) with 40/40 inner-band successes, while T4 measured 73/160 (45.625%) and lost inner-band performance. Opening I5 keeps the work directly focused on reaching at least 196/200 official successes without sacrificing the difficult inner targets or uninterrupted hold behavior.",
+        "next_direction_or_closure": "I5 has been opened as a bounded goal-linked inquiry and this checkpoint closes the goal-review session. The fresh inquiry must choose its first operation from the evidence and decision frontier; it should preserve T1's uniform official coverage and discriminate whether less disruptive branch/trajectory information improves reachability without sacrificing inner-band performance, then determine whether residual failures are approach-velocity or hold-phase failures.",
+        "next_question": "Can a less disruptive branch/trajectory representation, while preserving T1's uniform official target coverage, raise learned-policy success to at least 98% without losing inner-band performance, and are residual failures then dominated by approach velocity/hold-phase instability?"
+      },
+      "result": {
+        "session_id": "S10",
+        "status": "checkpointed"
+      },
+      "session_id": "S10",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "232ba9f35ae6b98da4ce09e2b84f7d47247cd3c1",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "T1:checkpoint-120832 remains the strongest measured development candidate at 93.75% with 40/40 inner-band successes, but has no assigned working, best-known, or retained role because it is below the goal and lacks a protected assessment. T2:checkpoint-120832, T3:checkpoint-120832, and T4:checkpoint-120832 remain rejected as viable routes based on their paired development results and diagnostics. No candidate has a role.",
+        "completed_operations": [
+          "E19"
+        ],
+        "cumulative_resource_use": "The campaign has used M1 characterization, four 120000-step fresh training allocations T1-T4 (120832 completed simulator steps each), development and diagnostic measurements M2-M7, and inquiry and checkpoint events E1-E19, including restoration E16 and the opening of I5 at E19. T4 used one additional 120000-step allocation and M7 used paired development evaluation plus T4 diagnostics. No candidate meets the development threshold.",
+        "current_goal_gap": "No candidate has reached the 98% development threshold. T1 has seven branch/limit-aligned non-reaching failures, two high first-reach-velocity post-reach hold failures, and one additional positive-margin non-reaching failure. T4 has 87 failures, 86 without first reach, 76 with positive terminal nearest-branch margin, one post-reach failure, and only 23/40 inner-band successes.",
+        "current_synthesis": "M1 established substantial transient actuation authority and at least one feasible analytic IK solution for every sampled official target; 64 of 576 grid targets had only one feasible branch. T1's uniform official coverage and M2's 150/160 result establish the strongest measured baseline, while M3 supports branch/limit-sensitive non-reaching as the dominant observed T1 failure class and high approach velocity with hold interruptions as a secondary class. T2's aggressive branch/limit-aware sampling and T3's explicit feasibility features each caused broad recipe-specific learnability collapse; these results do not invalidate branch or representation methods generally. I4's T4 previous-action history recipe is a bounded negative result: under preserved coverage, reward, PPO, and hold semantics it fell to 73/160, with 86/87 failures before first reach and loss of inner-band behavior. The unresolved representation mechanism therefore remains open, while the tested history recipe is rejected as a route to improvement.",
+        "decision_frontier": "The unresolved distinction is whether a less disruptive branch or trajectory representation can expose useful terminal-configuration or path information without the learnability collapse seen in T2, T3, and T4, while preserving T1's uniform official target coverage. A successful route must reach at least 98% development success, preserve radius and angle coverage and 40/40 inner-band behavior, and reduce negative-margin failures. Its residual failures must then be separated by first-reach velocity, approach dynamics, and hold interruptions. Broad positive-margin non-reaching or renewed inner-band loss would reject this representation route and redirect the campaign; adequate-margin post-reach failures would shift emphasis toward velocity shaping or hold-phase stabilization.",
+        "evidence_references": [
+          "M1",
+          "T1",
+          "M2",
+          "M3",
+          "T2",
+          "M4",
+          "M5",
+          "T3",
+          "M6",
+          "T4",
+          "M7",
+          "E17",
+          "E19"
+        ],
+        "human_goal_connection": "The campaign remains 6.25 percentage points below the 98% development target: T1 measured 150/160 successes (93.75%) with 40/40 inner-band successes, while T4 measured 73/160 (45.625%) and lost inner-band performance. Opening I5 keeps the work directly focused on reaching at least 196/200 official successes without sacrificing the difficult inner targets or uninterrupted hold behavior.",
+        "inquiry_id": null,
+        "next_direction_or_closure": "I5 has been opened as a bounded goal-linked inquiry and this checkpoint closes the goal-review session. The fresh inquiry must choose its first operation from the evidence and decision frontier; it should preserve T1's uniform official coverage and discriminate whether less disruptive branch/trajectory information improves reachability without sacrificing inner-band performance, then determine whether residual failures are approach-velocity or hold-phase failures.",
+        "next_question": "Can a less disruptive branch/trajectory representation, while preserving T1's uniform official target coverage, raise learned-policy success to at least 98% without losing inner-band performance, and are residual failures then dominated by approach velocity/hold-phase instability?",
+        "session_id": "S10"
+      },
+      "presentation": {
+        "backend_session_id": "984e3052-d022-4cdb-9f0c-eb8d15d36057",
+        "campaign_id": "79395c88-afcd-40f0-a644-16ca95368c28",
+        "campaign_usage": "29m04s | 86.53 AIU | prompt 14.5m (87% cached) | output 115.2k",
+        "session_id": "S10",
+        "session_kind": "goal_review",
+        "session_usage": "1m23s | 3.29 AIU | prompt 358.8k (76% cached) | output 5.2k"
+      },
+      "result": {
+        "session_id": "S10",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "c1529d79ff244da747e441aec7cc9559e6500359",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E20",
+    "inquiry_id": null,
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "T1:checkpoint-120832 remains the strongest measured development candidate at 93.75% with 40/40 inner-band successes, but has no assigned working, best-known, or retained role because it is below the goal and lacks a protected assessment. T2:checkpoint-120832, T3:checkpoint-120832, and T4:checkpoint-120832 remain rejected as viable routes based on their paired development results and diagnostics. No candidate has a role.",
+        "completed_operations": [
+          "E19"
+        ],
+        "cumulative_resource_use": "The campaign has used M1 characterization, four 120000-step fresh training allocations T1-T4 (120832 completed simulator steps each), development and diagnostic measurements M2-M7, and inquiry and checkpoint events E1-E19, including restoration E16 and the opening of I5 at E19. T4 used one additional 120000-step allocation and M7 used paired development evaluation plus T4 diagnostics. No candidate meets the development threshold.",
+        "current_goal_gap": "No candidate has reached the 98% development threshold. T1 has seven branch/limit-aligned non-reaching failures, two high first-reach-velocity post-reach hold failures, and one additional positive-margin non-reaching failure. T4 has 87 failures, 86 without first reach, 76 with positive terminal nearest-branch margin, one post-reach failure, and only 23/40 inner-band successes.",
+        "current_synthesis": "M1 established substantial transient actuation authority and at least one feasible analytic IK solution for every sampled official target; 64 of 576 grid targets had only one feasible branch. T1's uniform official coverage and M2's 150/160 result establish the strongest measured baseline, while M3 supports branch/limit-sensitive non-reaching as the dominant observed T1 failure class and high approach velocity with hold interruptions as a secondary class. T2's aggressive branch/limit-aware sampling and T3's explicit feasibility features each caused broad recipe-specific learnability collapse; these results do not invalidate branch or representation methods generally. I4's T4 previous-action history recipe is a bounded negative result: under preserved coverage, reward, PPO, and hold semantics it fell to 73/160, with 86/87 failures before first reach and loss of inner-band behavior. The unresolved representation mechanism therefore remains open, while the tested history recipe is rejected as a route to improvement.",
+        "decision_frontier": "The unresolved distinction is whether a less disruptive branch or trajectory representation can expose useful terminal-configuration or path information without the learnability collapse seen in T2, T3, and T4, while preserving T1's uniform official target coverage. A successful route must reach at least 98% development success, preserve radius and angle coverage and 40/40 inner-band behavior, and reduce negative-margin failures. Its residual failures must then be separated by first-reach velocity, approach dynamics, and hold interruptions. Broad positive-margin non-reaching or renewed inner-band loss would reject this representation route and redirect the campaign; adequate-margin post-reach failures would shift emphasis toward velocity shaping or hold-phase stabilization.",
+        "evidence_references": [
+          "M1",
+          "T1",
+          "M2",
+          "M3",
+          "T2",
+          "M4",
+          "M5",
+          "T3",
+          "M6",
+          "T4",
+          "M7",
+          "E17",
+          "E19"
+        ],
+        "human_goal_connection": "The campaign remains 6.25 percentage points below the 98% development target: T1 measured 150/160 successes (93.75%) with 40/40 inner-band successes, while T4 measured 73/160 (45.625%) and lost inner-band performance. Opening I5 keeps the work directly focused on reaching at least 196/200 official successes without sacrificing the difficult inner targets or uninterrupted hold behavior.",
+        "next_direction_or_closure": "I5 has been opened as a bounded goal-linked inquiry and this checkpoint closes the goal-review session. The fresh inquiry must choose its first operation from the evidence and decision frontier; it should preserve T1's uniform official coverage and discriminate whether less disruptive branch/trajectory information improves reachability without sacrificing inner-band performance, then determine whether residual failures are approach-velocity or hold-phase failures.",
+        "next_question": "Can a less disruptive branch/trajectory representation, while preserving T1's uniform official target coverage, raise learned-policy success to at least 98% without losing inner-band performance, and are residual failures then dominated by approach velocity/hold-phase instability?"
+      }
+    },
+    "request_fingerprint": "6afba0e510b6eca790a6952be9799e07b00775db15040aa453bfa91cd2ced399",
+    "session_id": "S10",
+    "supersedes": null
+  },
   "pi_checkpoint": {
-    "candidates_and_roles": "T1:checkpoint-120832 remains the strongest measured development candidate at 93.75% with 40/40 inner-band successes, but no working, best-known, or retained role is assigned because it is below the goal and lacks a protected assessment. T2:checkpoint-120832, T3:checkpoint-120832, and T4:checkpoint-120832 are rejected as viable routes based on their paired development results and diagnostics. No candidate has a role.",
+    "candidates_and_roles": "T1:checkpoint-120832 remains the strongest measured development candidate at 93.75% with 40/40 inner-band successes, but has no assigned working, best-known, or retained role because it is below the goal and lacks a protected assessment. T2:checkpoint-120832, T3:checkpoint-120832, and T4:checkpoint-120832 remain rejected as viable routes based on their paired development results and diagnostics. No candidate has a role.",
     "completed_operations": [
-      "E16",
-      "T4",
-      "M7",
-      "E17"
+      "E19"
     ],
-    "cumulative_resource_use": "The campaign has used M1 characterization, four 120000-step fresh training allocations T1-T4 (120832 completed simulator steps each), development and diagnostic measurements M2-M7, inquiry and checkpoint events E1-E17, and restoration E16. T4 used one additional 120000-step allocation and M7 used paired development evaluation plus T4 diagnostics. I4 closed as limited negative; no candidate meets the development threshold.",
-    "current_goal_gap": "The strongest measured candidate remains 6.25 percentage points below the 98% development target. T1 has seven branch/limit-aligned non-reaching failures, two high-velocity post-reach hold failures, and one additional positive-margin non-reaching failure. T4 does not close the gap: it has 87 failures, 86 without first reach, 76 with positive terminal nearest-branch margin, and only 23/40 inner-band successes.",
-    "current_synthesis": "M1 established substantial transient actuation authority and at least one feasible analytic IK solution for every sampled official target; 64 of 576 grid targets had only one feasible branch. T1 trained on the full official radius range and M2 measured 150/160 successes (93.75%), including 40/40 in the 6-10 cm bin. M3 diagnosed seven T1 failures with negative nearest-branch limit margin, supporting branch/limit-sensitive non-reaching as the dominant observed class, and two post-reach failures with high first-reach speed and repeated hold interruptions, supporting a secondary stabilization mechanism. T2's aggressive branch/limit-aware sampler and T3's explicit margin/feasibility features both caused broad recipe-specific learnability collapse; neither result invalidates branch or representation methods generally. I4 tested a minimal previous-action history representation under preserved T1 coverage, reward, PPO, and hold semantics. M7 measured 73/160 successes versus T1's 150/160 on identical seeds, with zero candidate wins across 77 discordant episodes. T4 diagnostics found 86/87 failures without first reach, 76 positive-margin failures, one post-reach failure, and 23/40 inner-band successes. This rejects the tested history recipe as a route to stabilization or reachability improvement, while leaving other velocity-shaping designs unresolved.",
-    "decision_frontier": "The previous-action history test establishes a bounded negative result for that representation recipe, not for phase/history methods in general. The leading route now returns to less disruptive branch/trajectory reachability representation because T1's dominant observed failures were negative-margin non-reaching, while T4 introduced broad positive-margin non-reaching failures and lost inner-band coverage. The remaining uncertainty is whether a representation can expose branch or trajectory choices without the learnability collapse caused by T3, and whether any resulting residual failures are adequate-margin approach-velocity or hold-phase failures. A candidate with at least 98% development success, preserved radius and angle coverage, preserved 40/40 inner-band behavior, and fewer negative-margin failures would support that route and justify official consideration. Broad positive-margin non-reaching failures or renewed inner-band loss would reject the representation recipe and keep velocity shaping unresolved.",
+    "cumulative_resource_use": "The campaign has used M1 characterization, four 120000-step fresh training allocations T1-T4 (120832 completed simulator steps each), development and diagnostic measurements M2-M7, and inquiry and checkpoint events E1-E19, including restoration E16 and the opening of I5 at E19. T4 used one additional 120000-step allocation and M7 used paired development evaluation plus T4 diagnostics. No candidate meets the development threshold.",
+    "current_goal_gap": "No candidate has reached the 98% development threshold. T1 has seven branch/limit-aligned non-reaching failures, two high first-reach-velocity post-reach hold failures, and one additional positive-margin non-reaching failure. T4 has 87 failures, 86 without first reach, 76 with positive terminal nearest-branch margin, one post-reach failure, and only 23/40 inner-band successes.",
+    "current_synthesis": "M1 established substantial transient actuation authority and at least one feasible analytic IK solution for every sampled official target; 64 of 576 grid targets had only one feasible branch. T1's uniform official coverage and M2's 150/160 result establish the strongest measured baseline, while M3 supports branch/limit-sensitive non-reaching as the dominant observed T1 failure class and high approach velocity with hold interruptions as a secondary class. T2's aggressive branch/limit-aware sampling and T3's explicit feasibility features each caused broad recipe-specific learnability collapse; these results do not invalidate branch or representation methods generally. I4's T4 previous-action history recipe is a bounded negative result: under preserved coverage, reward, PPO, and hold semantics it fell to 73/160, with 86/87 failures before first reach and loss of inner-band behavior. The unresolved representation mechanism therefore remains open, while the tested history recipe is rejected as a route to improvement.",
+    "decision_frontier": "The unresolved distinction is whether a less disruptive branch or trajectory representation can expose useful terminal-configuration or path information without the learnability collapse seen in T2, T3, and T4, while preserving T1's uniform official target coverage. A successful route must reach at least 98% development success, preserve radius and angle coverage and 40/40 inner-band behavior, and reduce negative-margin failures. Its residual failures must then be separated by first-reach velocity, approach dynamics, and hold interruptions. Broad positive-margin non-reaching or renewed inner-band loss would reject this representation route and redirect the campaign; adequate-margin post-reach failures would shift emphasis toward velocity shaping or hold-phase stabilization.",
     "evidence_references": [
       "M1",
       "T1",
       "M2",
       "M3",
-      "E4",
-      "E6",
       "T2",
       "M4",
       "M5",
-      "E8",
-      "E10",
       "T3",
       "M6",
-      "E12",
-      "E14",
-      "E16",
       "T4",
       "M7",
-      "E17"
+      "E17",
+      "E19"
     ],
-    "human_goal_connection": "The human goal requires at least 196 of 200 official episodes to complete the uninterrupted 100-step endpoint hold. T1 remains below that requirement at 150/160 successes (93.75%), while the tested phase/history candidate T4 fell to 73/160 (45.625%) and lost the established inner-band behavior.",
-    "inquiry_id": "I4",
-    "next_direction_or_closure": "I4 is closed as a limited negative inquiry. Checkpoint this transition and carry the exact next question into a fresh inquiry focused on a less disruptive branch/trajectory representation. Preserve T1's uniform official coverage and use development evidence that jointly measures success, radius and angle coverage, inner-band performance, limit-margin failure class, first-reach velocity, and hold interruptions. Do not request official assessment until a candidate reaches at least 98% with consistent geometry and uninterrupted-hold diagnostics.",
+    "human_goal_connection": "The campaign remains 6.25 percentage points below the 98% development target: T1 measured 150/160 successes (93.75%) with 40/40 inner-band successes, while T4 measured 73/160 (45.625%) and lost inner-band performance. Opening I5 keeps the work directly focused on reaching at least 196/200 official successes without sacrificing the difficult inner targets or uninterrupted hold behavior.",
+    "inquiry_id": null,
+    "next_direction_or_closure": "I5 has been opened as a bounded goal-linked inquiry and this checkpoint closes the goal-review session. The fresh inquiry must choose its first operation from the evidence and decision frontier; it should preserve T1's uniform official coverage and discriminate whether less disruptive branch/trajectory information improves reachability without sacrificing inner-band performance, then determine whether residual failures are approach-velocity or hold-phase failures.",
     "next_question": "Can a less disruptive branch/trajectory representation, while preserving T1's uniform official target coverage, raise learned-policy success to at least 98% without losing inner-band performance, and are residual failures then dominated by approach velocity/hold-phase instability?",
-    "scientific_commit": "aab72ffcb0594f4140dbfa431c59c52f7c7b60d4",
-    "session_id": "S9"
+    "scientific_commit": "c1529d79ff244da747e441aec7cc9559e6500359",
+    "session_id": "S10"
   },
   "schema_version": 6,
   "scientific_model": {
@@ -7782,21 +7927,6 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "984e3052-d022-4cdb-9f0c-eb8d15d36057",
-    "id": "S10",
-    "inquiry_id": null,
-    "kind": "goal_review",
-    "objective": "Use the completed evidence to update the scientific direction toward the human goal. Request measurements when they resolve an uncertainty or develop the method. Then choose one outcome: request the official assessment, or open one bounded goal-linked inquiry. Frame the inquiry as an unresolved distinction, obstacle, or capability need; do not encode a selected training run, measurement, implementation, or recipe as the question.",
-    "operation_ids": [
-      "E19"
-    ],
-    "scientific_parent_commit": "232ba9f35ae6b98da4ce09e2b84f7d47247cd3c1"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
