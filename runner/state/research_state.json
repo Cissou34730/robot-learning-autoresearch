@@ -2470,7 +2470,7 @@
     }
   },
   "counters": {
-    "event": 12,
+    "event": 13,
     "inquiry": 3,
     "measurement": 4,
     "session": 7,
@@ -2479,7 +2479,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -5494,31 +5494,181 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-09T12:45:44Z",
+      "error": null,
+      "id": "E13",
+      "inquiry_id": "I3",
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "T2:checkpoint-120832 remains the strongest measured development candidate at 126/160 and the reference for the next inquiry, but no candidate has a working, best-known, or retained role because development evidence remains below the human goal. T3:checkpoint-70656 and T3:checkpoint-120832 were measured but are not role candidates after their severe losses against T2. T1:checkpoint-120832 remains the earlier paired baseline at 110/160.",
+        "completed_operations": [
+          "T3",
+          "M4",
+          "E12"
+        ],
+        "cumulative_resource_use": "M1 compiled-dynamics measurement completed; T1 fresh baseline training requested for 120000 steps and completed at 120832 rollout-rounded steps; M2 paired 160-episode T1 evaluation completed; E4 closed I1 as resolved_limited; E6 opened I2; T2 fresh intervention training requested for 120000 steps and completed at 120832 rollout-rounded steps; M3 paired 160-episode T2 evaluation against T1 completed; E8 closed I2 as resolved_limited; E10 opened I3; T3 fresh stabilization-reward training requested for 120000 steps and completed at 120832 rollout-rounded steps; M4 paired 160-episode evaluations of two T3 checkpoints against T2 completed; E12 closed I3 as resolved_limited. No official assessment has been requested.",
+        "current_goal_gap": "The strongest measured development candidate remains T2:checkpoint-120832 at 126/160 (78.75%), below the 196/200 official threshold. Simultaneous full-radius and branch coverage, preserved outer-radius performance, and reliable uninterrupted holds remain unresolved. No candidate has a working, best-known, or retained role, and no official assessment is justified.",
+        "current_synthesis": "M1 established substantial nominal actuation and rapid reversal authority with real joint-limit reactions, so generic weak actuation is not the leading explanation. M2 showed that T1 failures were dominated by no entry and inner-radius targets while entered-episode success was 93.22%. M3 showed that T2's balanced inner/outer exposure and nearest-branch guidance improved overall success from 110/160 to 126/160, inner-radius success from 47/93 to 67/93, inner no-entry failures from 38 to 23, and entered-episode success to 126/131, but reduced outer-radius success from 63/67 to 59/67 and increased interruptions from 502 to 789. E8 therefore established a recipe-specific reach-versus-stability tradeoff and supported the causal value of T2's coverage recipe without establishing the cause of its interruptions. T3 applied a full forfeiture of accumulated hold-progress credit after exits while retaining T2's coverage and branch guidance. M4 found only 3/160 successes at T3:checkpoint-70656 and 45/160 at T3:checkpoint-120832 versus 126/160 for T2, with paired losses of 123 and 81 episodes. Thus the tested discontinuous hold penalty caused learning collapse and did not satisfy the I3 closure criteria. It is evidence against this reward realization, not against stabilization as a mechanism, action-smoothness methods, target-conditioned control, or the broader learning method. Interruption reduction itself remains unestablished because the available M4 summary does not provide the detailed comparison values.",
+        "decision_frontier": "The next unresolved method-development question is whether a gentler braking or action-smoothness intervention can preserve T2's inner-radius and inverse-kinematic branch coverage while reducing post-entry hold interruptions and recovering outer-radius success. The T3 result rules out the tested full hold-credit forfeiture as a viable recipe but does not distinguish whether interruptions arise from reward-induced reach bias, insufficient braking or action smoothness, or target-conditioned control. The next discriminating paired development evidence must compare against T2:checkpoint-120832 on the same 160-episode panel and retain inner-radius success, no-entry failures, outer-radius success, branch and joint-limit diagnostics, entry motion, conditional hold success, and interruption burden. Joint improvement supports continuing a gentle stabilization route; coverage loss with fewer interruptions requires redesigning the coverage-versus-braking balance; no improvement redirects toward target-conditioned policy representation or action smoothness rather than generic actuation.",
+        "evidence_references": [
+          "M1",
+          "M2",
+          "M3",
+          "E8",
+          "E10",
+          "T3",
+          "M4",
+          "E12"
+        ],
+        "human_goal_connection": "The official objective requires at least 196 of 200 episodes to complete an uninterrupted 2 second hold. T2:checkpoint-120832 remains the strongest measured development candidate at 126/160, with improved inner-radius coverage but reduced outer-radius success and increased hold interruptions. I3 tested whether a stabilization reward intervention could remove that tradeoff without giving back coverage.",
+        "next_direction_or_closure": "I3 is closed as resolved_limited. The full hold-credit forfeiture is rejected as a destructive recipe because it collapsed learning and did not preserve T2's coverage. In the fresh goal-review session, open the exact next question recorded here and select one gentler braking or action-smoothness intervention that leaves T2's balanced radius exposure and branch guidance intact, then obtain the paired 160-episode diagnostic comparison against T2 before deciding whether to continue stabilization or redirect to target-conditioned policy representation.",
+        "next_question": "Can a gentler braking or action-smoothness intervention preserve T2's inner-radius and inverse-kinematic branch-coverage gains while reducing post-entry hold interruptions and recovering outer-radius success?"
+      },
+      "result": {
+        "session_id": "S7",
+        "status": "checkpointed"
+      },
+      "session_id": "S7",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "96aefaa93192773b2efa7a1d96d4a604f928ec40",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "T2:checkpoint-120832 remains the strongest measured development candidate at 126/160 and the reference for the next inquiry, but no candidate has a working, best-known, or retained role because development evidence remains below the human goal. T3:checkpoint-70656 and T3:checkpoint-120832 were measured but are not role candidates after their severe losses against T2. T1:checkpoint-120832 remains the earlier paired baseline at 110/160.",
+        "completed_operations": [
+          "T3",
+          "M4",
+          "E12"
+        ],
+        "cumulative_resource_use": "M1 compiled-dynamics measurement completed; T1 fresh baseline training requested for 120000 steps and completed at 120832 rollout-rounded steps; M2 paired 160-episode T1 evaluation completed; E4 closed I1 as resolved_limited; E6 opened I2; T2 fresh intervention training requested for 120000 steps and completed at 120832 rollout-rounded steps; M3 paired 160-episode T2 evaluation against T1 completed; E8 closed I2 as resolved_limited; E10 opened I3; T3 fresh stabilization-reward training requested for 120000 steps and completed at 120832 rollout-rounded steps; M4 paired 160-episode evaluations of two T3 checkpoints against T2 completed; E12 closed I3 as resolved_limited. No official assessment has been requested.",
+        "current_goal_gap": "The strongest measured development candidate remains T2:checkpoint-120832 at 126/160 (78.75%), below the 196/200 official threshold. Simultaneous full-radius and branch coverage, preserved outer-radius performance, and reliable uninterrupted holds remain unresolved. No candidate has a working, best-known, or retained role, and no official assessment is justified.",
+        "current_synthesis": "M1 established substantial nominal actuation and rapid reversal authority with real joint-limit reactions, so generic weak actuation is not the leading explanation. M2 showed that T1 failures were dominated by no entry and inner-radius targets while entered-episode success was 93.22%. M3 showed that T2's balanced inner/outer exposure and nearest-branch guidance improved overall success from 110/160 to 126/160, inner-radius success from 47/93 to 67/93, inner no-entry failures from 38 to 23, and entered-episode success to 126/131, but reduced outer-radius success from 63/67 to 59/67 and increased interruptions from 502 to 789. E8 therefore established a recipe-specific reach-versus-stability tradeoff and supported the causal value of T2's coverage recipe without establishing the cause of its interruptions. T3 applied a full forfeiture of accumulated hold-progress credit after exits while retaining T2's coverage and branch guidance. M4 found only 3/160 successes at T3:checkpoint-70656 and 45/160 at T3:checkpoint-120832 versus 126/160 for T2, with paired losses of 123 and 81 episodes. Thus the tested discontinuous hold penalty caused learning collapse and did not satisfy the I3 closure criteria. It is evidence against this reward realization, not against stabilization as a mechanism, action-smoothness methods, target-conditioned control, or the broader learning method. Interruption reduction itself remains unestablished because the available M4 summary does not provide the detailed comparison values.",
+        "decision_frontier": "The next unresolved method-development question is whether a gentler braking or action-smoothness intervention can preserve T2's inner-radius and inverse-kinematic branch coverage while reducing post-entry hold interruptions and recovering outer-radius success. The T3 result rules out the tested full hold-credit forfeiture as a viable recipe but does not distinguish whether interruptions arise from reward-induced reach bias, insufficient braking or action smoothness, or target-conditioned control. The next discriminating paired development evidence must compare against T2:checkpoint-120832 on the same 160-episode panel and retain inner-radius success, no-entry failures, outer-radius success, branch and joint-limit diagnostics, entry motion, conditional hold success, and interruption burden. Joint improvement supports continuing a gentle stabilization route; coverage loss with fewer interruptions requires redesigning the coverage-versus-braking balance; no improvement redirects toward target-conditioned policy representation or action smoothness rather than generic actuation.",
+        "evidence_references": [
+          "M1",
+          "M2",
+          "M3",
+          "E8",
+          "E10",
+          "T3",
+          "M4",
+          "E12"
+        ],
+        "human_goal_connection": "The official objective requires at least 196 of 200 episodes to complete an uninterrupted 2 second hold. T2:checkpoint-120832 remains the strongest measured development candidate at 126/160, with improved inner-radius coverage but reduced outer-radius success and increased hold interruptions. I3 tested whether a stabilization reward intervention could remove that tradeoff without giving back coverage.",
+        "inquiry_id": "I3",
+        "next_direction_or_closure": "I3 is closed as resolved_limited. The full hold-credit forfeiture is rejected as a destructive recipe because it collapsed learning and did not preserve T2's coverage. In the fresh goal-review session, open the exact next question recorded here and select one gentler braking or action-smoothness intervention that leaves T2's balanced radius exposure and branch guidance intact, then obtain the paired 160-episode diagnostic comparison against T2 before deciding whether to continue stabilization or redirect to target-conditioned policy representation.",
+        "next_question": "Can a gentler braking or action-smoothness intervention preserve T2's inner-radius and inverse-kinematic branch-coverage gains while reducing post-entry hold interruptions and recovering outer-radius success?",
+        "session_id": "S7"
+      },
+      "presentation": {
+        "backend_session_id": "48b1fd66-83c4-43c6-949f-8a39d3bd2170",
+        "campaign_id": "81a5458d-ce8f-4c03-b9d2-8ce4f1ff9e9e",
+        "campaign_usage": "19m17s | 40.18 AIU | prompt 6m (86% cached) | output 71.5k",
+        "session_id": "S7",
+        "session_kind": "inquiry",
+        "session_usage": "2m47s | 9.57 AIU | prompt 1.8m (88% cached) | output 9.2k"
+      },
+      "result": {
+        "session_id": "S7",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "6764e2b364a6dad371ee11d42eef32b8522361b2",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E13",
+    "inquiry_id": "I3",
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "T2:checkpoint-120832 remains the strongest measured development candidate at 126/160 and the reference for the next inquiry, but no candidate has a working, best-known, or retained role because development evidence remains below the human goal. T3:checkpoint-70656 and T3:checkpoint-120832 were measured but are not role candidates after their severe losses against T2. T1:checkpoint-120832 remains the earlier paired baseline at 110/160.",
+        "completed_operations": [
+          "T3",
+          "M4",
+          "E12"
+        ],
+        "cumulative_resource_use": "M1 compiled-dynamics measurement completed; T1 fresh baseline training requested for 120000 steps and completed at 120832 rollout-rounded steps; M2 paired 160-episode T1 evaluation completed; E4 closed I1 as resolved_limited; E6 opened I2; T2 fresh intervention training requested for 120000 steps and completed at 120832 rollout-rounded steps; M3 paired 160-episode T2 evaluation against T1 completed; E8 closed I2 as resolved_limited; E10 opened I3; T3 fresh stabilization-reward training requested for 120000 steps and completed at 120832 rollout-rounded steps; M4 paired 160-episode evaluations of two T3 checkpoints against T2 completed; E12 closed I3 as resolved_limited. No official assessment has been requested.",
+        "current_goal_gap": "The strongest measured development candidate remains T2:checkpoint-120832 at 126/160 (78.75%), below the 196/200 official threshold. Simultaneous full-radius and branch coverage, preserved outer-radius performance, and reliable uninterrupted holds remain unresolved. No candidate has a working, best-known, or retained role, and no official assessment is justified.",
+        "current_synthesis": "M1 established substantial nominal actuation and rapid reversal authority with real joint-limit reactions, so generic weak actuation is not the leading explanation. M2 showed that T1 failures were dominated by no entry and inner-radius targets while entered-episode success was 93.22%. M3 showed that T2's balanced inner/outer exposure and nearest-branch guidance improved overall success from 110/160 to 126/160, inner-radius success from 47/93 to 67/93, inner no-entry failures from 38 to 23, and entered-episode success to 126/131, but reduced outer-radius success from 63/67 to 59/67 and increased interruptions from 502 to 789. E8 therefore established a recipe-specific reach-versus-stability tradeoff and supported the causal value of T2's coverage recipe without establishing the cause of its interruptions. T3 applied a full forfeiture of accumulated hold-progress credit after exits while retaining T2's coverage and branch guidance. M4 found only 3/160 successes at T3:checkpoint-70656 and 45/160 at T3:checkpoint-120832 versus 126/160 for T2, with paired losses of 123 and 81 episodes. Thus the tested discontinuous hold penalty caused learning collapse and did not satisfy the I3 closure criteria. It is evidence against this reward realization, not against stabilization as a mechanism, action-smoothness methods, target-conditioned control, or the broader learning method. Interruption reduction itself remains unestablished because the available M4 summary does not provide the detailed comparison values.",
+        "decision_frontier": "The next unresolved method-development question is whether a gentler braking or action-smoothness intervention can preserve T2's inner-radius and inverse-kinematic branch coverage while reducing post-entry hold interruptions and recovering outer-radius success. The T3 result rules out the tested full hold-credit forfeiture as a viable recipe but does not distinguish whether interruptions arise from reward-induced reach bias, insufficient braking or action smoothness, or target-conditioned control. The next discriminating paired development evidence must compare against T2:checkpoint-120832 on the same 160-episode panel and retain inner-radius success, no-entry failures, outer-radius success, branch and joint-limit diagnostics, entry motion, conditional hold success, and interruption burden. Joint improvement supports continuing a gentle stabilization route; coverage loss with fewer interruptions requires redesigning the coverage-versus-braking balance; no improvement redirects toward target-conditioned policy representation or action smoothness rather than generic actuation.",
+        "evidence_references": [
+          "M1",
+          "M2",
+          "M3",
+          "E8",
+          "E10",
+          "T3",
+          "M4",
+          "E12"
+        ],
+        "human_goal_connection": "The official objective requires at least 196 of 200 episodes to complete an uninterrupted 2 second hold. T2:checkpoint-120832 remains the strongest measured development candidate at 126/160, with improved inner-radius coverage but reduced outer-radius success and increased hold interruptions. I3 tested whether a stabilization reward intervention could remove that tradeoff without giving back coverage.",
+        "next_direction_or_closure": "I3 is closed as resolved_limited. The full hold-credit forfeiture is rejected as a destructive recipe because it collapsed learning and did not preserve T2's coverage. In the fresh goal-review session, open the exact next question recorded here and select one gentler braking or action-smoothness intervention that leaves T2's balanced radius exposure and branch guidance intact, then obtain the paired 160-episode diagnostic comparison against T2 before deciding whether to continue stabilization or redirect to target-conditioned policy representation.",
+        "next_question": "Can a gentler braking or action-smoothness intervention preserve T2's inner-radius and inverse-kinematic branch-coverage gains while reducing post-entry hold interruptions and recovering outer-radius success?"
+      }
+    },
+    "request_fingerprint": "f3be49a565a444372406b0710bd59af32e8c458abf4919b54cfb82d21a959101",
+    "session_id": "S7",
+    "supersedes": null
+  },
   "pi_checkpoint": {
-    "candidates_and_roles": "T2:checkpoint-120832 remains the strongest measured development candidate at 126/160 and is the reference for I3, but no candidate has a working, best-known, or retained role because development evidence remains below the human goal. T1:checkpoint-120832 remains the paired baseline at 110/160.",
+    "candidates_and_roles": "T2:checkpoint-120832 remains the strongest measured development candidate at 126/160 and the reference for the next inquiry, but no candidate has a working, best-known, or retained role because development evidence remains below the human goal. T3:checkpoint-70656 and T3:checkpoint-120832 were measured but are not role candidates after their severe losses against T2. T1:checkpoint-120832 remains the earlier paired baseline at 110/160.",
     "completed_operations": [
-      "E10"
+      "T3",
+      "M4",
+      "E12"
     ],
-    "cumulative_resource_use": "M1 compiled-dynamics measurement completed; T1 fresh baseline training requested for 120000 steps and completed at 120832 rollout-rounded steps; M2 paired 160-episode T1 evaluation completed; E4 closed I1 as resolved_limited; E6 opened I2; T2 fresh intervention training requested for 120000 steps and completed at 120832 rollout-rounded steps; M3 paired 160-episode evaluation of T2 against T1 completed; E8 closed I2 as resolved_limited; E10 opened I3. No official assessment has been requested.",
-    "current_goal_gap": "The strongest measured development candidate remains T2:checkpoint-120832 at 126/160 (78.75%), below the 196/200 official threshold. Simultaneous full-radius and branch coverage, preserved outer-radius performance, and reliable uninterrupted holds remain unresolved; no candidate has a working or best-known role and no official assessment is justified.",
-    "current_synthesis": "M1 established substantial nominal actuation and rapid reversal authority with real joint-limit reactions, so generic weak actuation is not the leading explanation. T1 training statistics nominated checkpoints but did not establish development behavior. M2 measured T1:checkpoint-120832 at 110/160, with failures dominated by no entry and inner-radius targets, while entered-episode success was 93.22%. M3 measured T2:checkpoint-120832 against T1 on the same 160-episode panel: T2 improved overall success to 126/160, inner-radius success from 47/93 to 67/93, inner no-entry failures from 38 to 23, and entered-episode success to 126/131, but outer-radius success fell from 63/67 to 59/67 and total hold interruptions rose from 502 to 789. E8 therefore closed I2 as resolved_limited. The evidence supports a recipe-specific reach-versus-stability tradeoff and the causal value of targeted coverage and branch guidance, but does not distinguish reward-induced reach bias, insufficient braking or action smoothness, or target-conditioned control as the cause of the interruptions. Because aggregate success and interruption changes are not sufficient to establish preserved behavior, I3 will retain the paired radius, branch, entry, joint-limit, and hold diagnostics while testing one stabilization-preserving intervention against T2.",
-    "decision_frontier": "The unresolved method-development question is whether stabilization can be improved without surrendering T2's inner-radius and inverse-kinematic branch-coverage gains. The decisive evidence is a paired development comparison against T2:checkpoint-120832 on the same 160-episode panel showing inner-radius and no-entry performance retained, outer-radius recovery, lower post-entry interruption burden, and conditional hold success at least as high as T2. If these improve together, continue the route toward the human goal; if interruptions fall only by losing inner-radius coverage, redesign the balance between coverage and braking or hold control; if both remain poor, investigate target-conditioned policy representation or action smoothness rather than generic actuation.",
+    "cumulative_resource_use": "M1 compiled-dynamics measurement completed; T1 fresh baseline training requested for 120000 steps and completed at 120832 rollout-rounded steps; M2 paired 160-episode T1 evaluation completed; E4 closed I1 as resolved_limited; E6 opened I2; T2 fresh intervention training requested for 120000 steps and completed at 120832 rollout-rounded steps; M3 paired 160-episode T2 evaluation against T1 completed; E8 closed I2 as resolved_limited; E10 opened I3; T3 fresh stabilization-reward training requested for 120000 steps and completed at 120832 rollout-rounded steps; M4 paired 160-episode evaluations of two T3 checkpoints against T2 completed; E12 closed I3 as resolved_limited. No official assessment has been requested.",
+    "current_goal_gap": "The strongest measured development candidate remains T2:checkpoint-120832 at 126/160 (78.75%), below the 196/200 official threshold. Simultaneous full-radius and branch coverage, preserved outer-radius performance, and reliable uninterrupted holds remain unresolved. No candidate has a working, best-known, or retained role, and no official assessment is justified.",
+    "current_synthesis": "M1 established substantial nominal actuation and rapid reversal authority with real joint-limit reactions, so generic weak actuation is not the leading explanation. M2 showed that T1 failures were dominated by no entry and inner-radius targets while entered-episode success was 93.22%. M3 showed that T2's balanced inner/outer exposure and nearest-branch guidance improved overall success from 110/160 to 126/160, inner-radius success from 47/93 to 67/93, inner no-entry failures from 38 to 23, and entered-episode success to 126/131, but reduced outer-radius success from 63/67 to 59/67 and increased interruptions from 502 to 789. E8 therefore established a recipe-specific reach-versus-stability tradeoff and supported the causal value of T2's coverage recipe without establishing the cause of its interruptions. T3 applied a full forfeiture of accumulated hold-progress credit after exits while retaining T2's coverage and branch guidance. M4 found only 3/160 successes at T3:checkpoint-70656 and 45/160 at T3:checkpoint-120832 versus 126/160 for T2, with paired losses of 123 and 81 episodes. Thus the tested discontinuous hold penalty caused learning collapse and did not satisfy the I3 closure criteria. It is evidence against this reward realization, not against stabilization as a mechanism, action-smoothness methods, target-conditioned control, or the broader learning method. Interruption reduction itself remains unestablished because the available M4 summary does not provide the detailed comparison values.",
+    "decision_frontier": "The next unresolved method-development question is whether a gentler braking or action-smoothness intervention can preserve T2's inner-radius and inverse-kinematic branch coverage while reducing post-entry hold interruptions and recovering outer-radius success. The T3 result rules out the tested full hold-credit forfeiture as a viable recipe but does not distinguish whether interruptions arise from reward-induced reach bias, insufficient braking or action smoothness, or target-conditioned control. The next discriminating paired development evidence must compare against T2:checkpoint-120832 on the same 160-episode panel and retain inner-radius success, no-entry failures, outer-radius success, branch and joint-limit diagnostics, entry motion, conditional hold success, and interruption burden. Joint improvement supports continuing a gentle stabilization route; coverage loss with fewer interruptions requires redesigning the coverage-versus-braking balance; no improvement redirects toward target-conditioned policy representation or action smoothness rather than generic actuation.",
     "evidence_references": [
       "M1",
       "M2",
       "M3",
       "E8",
-      "E10"
+      "E10",
+      "T3",
+      "M4",
+      "E12"
     ],
-    "human_goal_connection": "The official objective requires at least 196 of 200 episodes to complete an uninterrupted 2 second hold. T2 improved measured development success from 110/160 to 126/160 and improved inner-radius coverage, but its outer-radius success fell and hold interruptions increased. I3 directly tests whether stabilization can be added without surrendering the coverage needed for the human goal.",
-    "inquiry_id": null,
-    "next_direction_or_closure": "I3 is opened by E10 and this checkpoint ends the goal-review session. In the fresh inquiry session, implement or select one stabilization-preserving training intervention, train within the available allocation, and obtain the paired 160-episode comparison against T2:checkpoint-120832 with the existing coverage and uninterrupted-hold diagnostics. Continue only if interruption burden and outer-radius loss improve without giving back the inner-radius coverage gain.",
-    "next_question": "Can a stabilization-preserving training intervention retain T2's inner-radius and inverse-kinematic branch-coverage gains while reducing post-entry hold interruptions and recovering outer-radius success?",
-    "scientific_commit": "20d9aac5e3cb6b6cbe0cdb3908323d2d5179508e",
-    "session_id": "S6"
+    "human_goal_connection": "The official objective requires at least 196 of 200 episodes to complete an uninterrupted 2 second hold. T2:checkpoint-120832 remains the strongest measured development candidate at 126/160, with improved inner-radius coverage but reduced outer-radius success and increased hold interruptions. I3 tested whether a stabilization reward intervention could remove that tradeoff without giving back coverage.",
+    "inquiry_id": "I3",
+    "next_direction_or_closure": "I3 is closed as resolved_limited. The full hold-credit forfeiture is rejected as a destructive recipe because it collapsed learning and did not preserve T2's coverage. In the fresh goal-review session, open the exact next question recorded here and select one gentler braking or action-smoothness intervention that leaves T2's balanced radius exposure and branch guidance intact, then obtain the paired 160-episode diagnostic comparison against T2 before deciding whether to continue stabilization or redirect to target-conditioned policy representation.",
+    "next_question": "Can a gentler braking or action-smoothness intervention preserve T2's inner-radius and inverse-kinematic branch-coverage gains while reducing post-entry hold interruptions and recovering outer-radius success?",
+    "scientific_commit": "6764e2b364a6dad371ee11d42eef32b8522361b2",
+    "session_id": "S7"
   },
   "schema_version": 6,
   "scientific_model": {
@@ -5526,23 +5676,6 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "48b1fd66-83c4-43c6-949f-8a39d3bd2170",
-    "id": "S7",
-    "inquiry_id": "I3",
-    "kind": "inquiry",
-    "objective": "Advance I3 toward an evidence-supported answer to its scientific question: Can a stabilization-preserving training intervention retain T2's inner-radius and inverse-kinematic branch-coverage gains while reducing post-entry hold interruptions and recovering outer-radius success? Before choosing the next action, compare the accumulated evidence with the closure condition. Close the inquiry when the condition is met.",
-    "operation_ids": [
-      "T3",
-      "M4",
-      "E12"
-    ],
-    "scientific_parent_commit": "96aefaa93192773b2efa7a1d96d4a604f928ec40"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
