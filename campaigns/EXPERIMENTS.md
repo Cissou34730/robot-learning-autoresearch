@@ -97,3 +97,4 @@
 | E55 | inquiry | I13 | completed |
 | E56 | checkpoint | I13 | checkpointed |
 | M24 | measurement | - | failed |
+| M25 | measurement | - | completed |
