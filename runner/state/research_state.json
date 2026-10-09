@@ -9031,7 +9031,7 @@
   "counters": {
     "event": 49,
     "inquiry": 12,
-    "measurement": 16,
+    "measurement": 18,
     "session": 25,
     "training": 14
   },
@@ -18209,9 +18209,203 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-09T01:45:16Z",
+      "error": "robot_learning.lab.residual_margin failed:\n\nusage: residual_margin.py [-h] --candidate CANDIDATE [--episodes EPISODES]\n                          [--seed SEED] --artifact ARTIFACT\nresidual_margin.py: error: the following arguments are required: --artifact\n",
+      "id": "M17",
+      "inquiry_id": "I12",
+      "kind": "measurement",
+      "request": {
+        "description": "Matched residual-arrival and local plant-margin analysis for T14:checkpoint-120832 and T3:checkpoint-120832 on the 160-episode development panel.",
+        "measurements": [
+          {
+            "args": [
+              "--candidate",
+              "campaigns\\checkpoints\\candidates\\1ae27a27-6880-4ca6-9d50-e6498e771cb7\\t14\\checkpoint-120832\\model.zip",
+              "--episodes",
+              "160",
+              "--seed",
+              "4200"
+            ],
+            "artifact": "campaigns/evaluations/1ae27a27-6880-4ca6-9d50-e6498e771cb7/python-module-M17-1-i12-t14-residual-margin.json",
+            "instrument": "python_module",
+            "label": "I12 T14 residual margin",
+            "module": "robot_learning.lab.residual_margin"
+          },
+          {
+            "args": [
+              "--candidate",
+              "campaigns\\checkpoints\\candidates\\1ae27a27-6880-4ca6-9d50-e6498e771cb7\\t3\\checkpoint-120832\\model.zip",
+              "--episodes",
+              "160",
+              "--seed",
+              "4200"
+            ],
+            "artifact": "campaigns/evaluations/1ae27a27-6880-4ca6-9d50-e6498e771cb7/python-module-M17-2-i12-t3-residual-margin.json",
+            "instrument": "python_module",
+            "label": "I12 T3 residual margin control",
+            "module": "robot_learning.lab.residual_margin"
+          }
+        ],
+        "rationale": "M16 shows that T14 loses four paired episodes and finishes at 149/160, but its compact evaluation summary does not identify whether the loss is reach coverage or terminal stabilization. The residual-margin instrument records first reaches, failure class, arrival joint speed, one-step opposing braking response, and 100-step local retention margins for the residual cases. Comparing T14 with T3 will determine whether the task-space braking layer improved the proposed mechanism or merely caused route degradation; that distinction determines whether I12 closes negatively or whether a narrower redesign remains scientifically justified."
+      },
+      "result": {
+        "error": "robot_learning.lab.residual_margin failed:\n\nusage: residual_margin.py [-h] --candidate CANDIDATE [--episodes EPISODES]\n                          [--seed SEED] --artifact ARTIFACT\nresidual_margin.py: error: the following arguments are required: --artifact\n",
+        "status": "failed"
+      },
+      "session_id": "S25",
+      "status": "failed",
+      "superseded_by": "M18",
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "evaluation_semantics": null,
+      "measurements": [
+        {
+          "args": [
+            "--candidate",
+            "campaigns\\checkpoints\\candidates\\1ae27a27-6880-4ca6-9d50-e6498e771cb7\\t14\\checkpoint-120832\\model.zip",
+            "--episodes",
+            "160",
+            "--seed",
+            "4200",
+            "--artifact",
+            "campaigns\\evaluations\\1ae27a27-6880-4ca6-9d50-e6498e771cb7\\python-module-M18-1-i12-t14-residual-margin.json"
+          ],
+          "artifact": "campaigns/evaluations/1ae27a27-6880-4ca6-9d50-e6498e771cb7/python-module-M18-1-i12-t14-residual-margin.json",
+          "instrument": "python_module",
+          "label": "I12 T14 residual margin",
+          "module": "robot_learning.lab.residual_margin"
+        },
+        {
+          "args": [
+            "--candidate",
+            "campaigns\\checkpoints\\candidates\\1ae27a27-6880-4ca6-9d50-e6498e771cb7\\t3\\checkpoint-120832\\model.zip",
+            "--episodes",
+            "160",
+            "--seed",
+            "4200",
+            "--artifact",
+            "campaigns\\evaluations\\1ae27a27-6880-4ca6-9d50-e6498e771cb7\\python-module-M18-2-i12-t3-residual-margin.json"
+          ],
+          "artifact": "campaigns/evaluations/1ae27a27-6880-4ca6-9d50-e6498e771cb7/python-module-M18-2-i12-t3-residual-margin.json",
+          "instrument": "python_module",
+          "label": "I12 T3 residual margin control",
+          "module": "robot_learning.lab.residual_margin"
+        }
+      ],
+      "module_provenance": {
+        "campaign_lab_manifest": [
+          {
+            "fingerprint": "6fd6be6cec2b9ab4000129bc55647cfce26b073269a4c8b04ef312b23f33c51b",
+            "path": "robot_learning/lab/__init__.py"
+          },
+          {
+            "fingerprint": "fce927fbc614f129d2f46f55b64cbe6c1cf83c476c9475268ba16bb3fa4f55d8",
+            "path": "robot_learning/lab/plant_margin.py"
+          },
+          {
+            "fingerprint": "ee9ac0e22d59dcfb7765da0a57ed3a610a888a6a47137eb87f21669df5048d90",
+            "path": "robot_learning/lab/residual_margin.py"
+          }
+        ],
+        "campaign_lab_publication": null,
+        "code_parent_commit": "59b0894d0f7cc8f208faf85f8afb960ccb5e8e6b",
+        "effective_parameters": {
+          "algorithm": {
+            "name": "ppo"
+          },
+          "policy": {
+            "activation": "tanh",
+            "net_arch": [
+              64,
+              64
+            ]
+          },
+          "ppo": {
+            "batch_size": 64,
+            "ent_coef": 0.01,
+            "gae_lambda": 0.95,
+            "gamma": 0.99,
+            "learning_rate": 0.0003,
+            "n_steps": 1024
+          },
+          "training": {
+            "checkpoint_every_steps": 5000,
+            "n_envs": 1
+          }
+        },
+        "module_manifest": [
+          {
+            "exists": true,
+            "fingerprint": "ee9ac0e22d59dcfb7765da0a57ed3a610a888a6a47137eb87f21669df5048d90",
+            "path": "robot_learning/lab/residual_margin.py"
+          }
+        ],
+        "module_paths": [
+          "robot_learning/lab/residual_margin.py"
+        ],
+        "scientific_commit": null,
+        "scientific_manifest": [],
+        "scientific_paths": []
+      },
+      "paired_comparisons": [],
+      "partial_results": [],
+      "result": null,
+      "task_reference_contract": null
+    },
+    "failure": null,
+    "id": "M18",
+    "inquiry_id": "I12",
+    "kind": "measurement",
+    "progress": "accepted",
+    "request": {
+      "measurement": {
+        "description": "Matched residual-arrival and local plant-margin analysis for T14:checkpoint-120832 and T3:checkpoint-120832 on the 160-episode development panel.",
+        "measurements": [
+          {
+            "args": [
+              "--candidate",
+              "campaigns\\checkpoints\\candidates\\1ae27a27-6880-4ca6-9d50-e6498e771cb7\\t14\\checkpoint-120832\\model.zip",
+              "--episodes",
+              "160",
+              "--seed",
+              "4200",
+              "--artifact",
+              "campaigns\\evaluations\\1ae27a27-6880-4ca6-9d50-e6498e771cb7\\python-module-M18-1-i12-t14-residual-margin.json"
+            ],
+            "artifact": "campaigns/evaluations/1ae27a27-6880-4ca6-9d50-e6498e771cb7/python-module-M18-1-i12-t14-residual-margin.json",
+            "instrument": "python_module",
+            "label": "I12 T14 residual margin",
+            "module": "robot_learning.lab.residual_margin"
+          },
+          {
+            "args": [
+              "--candidate",
+              "campaigns\\checkpoints\\candidates\\1ae27a27-6880-4ca6-9d50-e6498e771cb7\\t3\\checkpoint-120832\\model.zip",
+              "--episodes",
+              "160",
+              "--seed",
+              "4200",
+              "--artifact",
+              "campaigns\\evaluations\\1ae27a27-6880-4ca6-9d50-e6498e771cb7\\python-module-M18-2-i12-t3-residual-margin.json"
+            ],
+            "artifact": "campaigns/evaluations/1ae27a27-6880-4ca6-9d50-e6498e771cb7/python-module-M18-2-i12-t3-residual-margin.json",
+            "instrument": "python_module",
+            "label": "I12 T3 residual margin control",
+            "module": "robot_learning.lab.residual_margin"
+          }
+        ],
+        "rationale": "M17 failed because the module requests omitted the required --artifact argument; it provides no scientific evidence. This corrected rerun preserves the same candidates, panel, and analysis while supplying the required output paths. The measurement distinguishes whether T14's four paired losses arose from reduced reach coverage or from changed terminal braking margin."
+      }
+    },
+    "request_fingerprint": "9b675916cf2a0ed115c80615b2d641b09543850c23bccf133dfaceb0ea1417c9",
+    "session_id": "S25",
+    "supersedes": "M17"
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T3:checkpoint-120832 remains the strongest measured development candidate at 153/160 successes, 157 first reaches, and four hold interruptions. T13:checkpoint-120832 exactly matched T3 on the M13 panel and has no assigned role. T12:checkpoint-120832 remains intervention-limited at 151/160. No working, best-known, or retained role is assigned.",
     "completed_operations": [
