@@ -1,5 +1,16 @@
 {
-  "active_inquiry": null,
+  "active_inquiry": {
+    "closure_condition": "Close with a positive, negative, limited, or inconclusive conclusion after a matched candidate comparison and trajectory diagnostics preserve complete-hold success, first_reach_step, max_held_steps, hold_interruptions, timeout status, target angle, and terminal joint/branch geometry. A positive result requires rescue of the recurring failure seeds with evidence of improved acquisition or holding; no matched rescue weakens this route, while changed failure mechanisms or unavailable diagnostics require a limited or inconclusive conclusion.",
+    "goal_connection": "The human goal requires at least 196 of 200 complete uninterrupted holds. The strongest development result is 153 of 160, with four failures before first reach and three failures that entered tolerance but interrupted the hold. Resolving whether angle-dependent trajectory and braking control can remove these failures is a direct route toward closing that gap.",
+    "handoff_conclusion": "M1 established the compiled dynamics and control-response context. T2 improved matched development success from 110/160 to 150/160 through broader official-radius coverage, establishing that distribution coverage materially affects the goal gap. T3 added a near-target joint-velocity penalty and improved the matched result from 150/160 to 153/160; its paired wins included one acquisition rescue and two hold rescues, supporting a trajectory/stabilization effect but not a complete explanation. M4 diagnostics showed the seven T3 failures clustered near target angles approximately -130 to -151 degrees, with the terminal shoulder near its configured limit, small open-branch errors, and large alternate-branch errors. M5 tested a T3-derived branch-validity and near-target shoulder-limit-aware reward recipe. T5:checkpoint-100352 matched T3 at 153/160 on the same panel with zero discordant episodes; all seven failure seeds were unchanged. T5 altered some terminal distances and branch errors but rescued no episode and introduced no new success/failure pattern. This is a limited negative result for that implemented recipe, not proof that branch/limit interaction is absent and not a rejection of trajectory or braking control generally.",
+    "handoff_question": "Can general angle-dependent acquisition and braking control reduce the remaining T3 failures toward the 98% complete-hold goal after the branch/limit-aware recipe showed no matched rescue?",
+    "handoff_source_session_id": "S9",
+    "id": "I5",
+    "opened_in_session": "S10",
+    "question": "Can general angle-dependent acquisition and braking control reduce the remaining T3 failures toward the 98% complete-hold goal after the branch/limit-aware recipe showed no matched rescue?",
+    "rationale": "Completed evidence supports continuing trajectory investigation but corrects the inherited scope: M5/T5 tested one T3-derived branch-validity and shoulder-limit-aware reward implementation, not general angular acquisition or braking control. M4 showed the remaining failures cluster by target angle and near-limit shoulder geometry, while the model predicts angle-dependent transient motion from the common reset and a speed-versus-residual-velocity tradeoff at 50 Hz. The inquiry will distinguish these mechanisms without treating the terminal checkpoint or the recipe-specific null result as decisive.",
+    "reframes": []
+  },
   "campaign": {
     "base_commit": "5a0ec158aa0741306d5f825a3ec7db8176a3ff13",
     "id": "339736e0-5583-4bc4-8729-5023fc3077b7",
@@ -3285,16 +3296,16 @@
     }
   },
   "counters": {
-    "event": 17,
-    "inquiry": 4,
+    "event": 18,
+    "inquiry": 5,
     "measurement": 5,
-    "session": 9,
+    "session": 10,
     "training": 5
   },
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -6590,9 +6601,72 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-09T23:18:59Z",
+      "error": null,
+      "id": "E18",
+      "inquiry_id": "I5",
+      "kind": "inquiry",
+      "request": {
+        "action": "open",
+        "closure_condition": "Close with a positive, negative, limited, or inconclusive conclusion after a matched candidate comparison and trajectory diagnostics preserve complete-hold success, first_reach_step, max_held_steps, hold_interruptions, timeout status, target angle, and terminal joint/branch geometry. A positive result requires rescue of the recurring failure seeds with evidence of improved acquisition or holding; no matched rescue weakens this route, while changed failure mechanisms or unavailable diagnostics require a limited or inconclusive conclusion.",
+        "goal_connection": "The human goal requires at least 196 of 200 complete uninterrupted holds. The strongest development result is 153 of 160, with four failures before first reach and three failures that entered tolerance but interrupted the hold. Resolving whether angle-dependent trajectory and braking control can remove these failures is a direct route toward closing that gap.",
+        "question": "Can general angle-dependent acquisition and braking control reduce the remaining T3 failures toward the 98% complete-hold goal after the branch/limit-aware recipe showed no matched rescue?",
+        "rationale": "Completed evidence supports continuing trajectory investigation but corrects the inherited scope: M5/T5 tested one T3-derived branch-validity and shoulder-limit-aware reward implementation, not general angular acquisition or braking control. M4 showed the remaining failures cluster by target angle and near-limit shoulder geometry, while the model predicts angle-dependent transient motion from the common reset and a speed-versus-residual-velocity tradeoff at 50 Hz. The inquiry will distinguish these mechanisms without treating the terminal checkpoint or the recipe-specific null result as decisive."
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I5",
+        "status": "completed"
+      },
+      "session_id": "S10",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "open",
+        "inquiry": {
+          "closure_condition": "Close with a positive, negative, limited, or inconclusive conclusion after a matched candidate comparison and trajectory diagnostics preserve complete-hold success, first_reach_step, max_held_steps, hold_interruptions, timeout status, target angle, and terminal joint/branch geometry. A positive result requires rescue of the recurring failure seeds with evidence of improved acquisition or holding; no matched rescue weakens this route, while changed failure mechanisms or unavailable diagnostics require a limited or inconclusive conclusion.",
+          "goal_connection": "The human goal requires at least 196 of 200 complete uninterrupted holds. The strongest development result is 153 of 160, with four failures before first reach and three failures that entered tolerance but interrupted the hold. Resolving whether angle-dependent trajectory and braking control can remove these failures is a direct route toward closing that gap.",
+          "handoff_conclusion": "M1 established the compiled dynamics and control-response context. T2 improved matched development success from 110/160 to 150/160 through broader official-radius coverage, establishing that distribution coverage materially affects the goal gap. T3 added a near-target joint-velocity penalty and improved the matched result from 150/160 to 153/160; its paired wins included one acquisition rescue and two hold rescues, supporting a trajectory/stabilization effect but not a complete explanation. M4 diagnostics showed the seven T3 failures clustered near target angles approximately -130 to -151 degrees, with the terminal shoulder near its configured limit, small open-branch errors, and large alternate-branch errors. M5 tested a T3-derived branch-validity and near-target shoulder-limit-aware reward recipe. T5:checkpoint-100352 matched T3 at 153/160 on the same panel with zero discordant episodes; all seven failure seeds were unchanged. T5 altered some terminal distances and branch errors but rescued no episode and introduced no new success/failure pattern. This is a limited negative result for that implemented recipe, not proof that branch/limit interaction is absent and not a rejection of trajectory or braking control generally.",
+          "handoff_question": "Can general angle-dependent acquisition and braking control reduce the remaining T3 failures toward the 98% complete-hold goal after the branch/limit-aware recipe showed no matched rescue?",
+          "handoff_source_session_id": "S9",
+          "id": "I5",
+          "opened_in_session": "S10",
+          "question": "Can general angle-dependent acquisition and braking control reduce the remaining T3 failures toward the 98% complete-hold goal after the branch/limit-aware recipe showed no matched rescue?",
+          "rationale": "Completed evidence supports continuing trajectory investigation but corrects the inherited scope: M5/T5 tested one T3-derived branch-validity and shoulder-limit-aware reward implementation, not general angular acquisition or braking control. M4 showed the remaining failures cluster by target angle and near-limit shoulder geometry, while the model predicts angle-dependent transient motion from the common reset and a speed-versus-residual-velocity tradeoff at 50 Hz. The inquiry will distinguish these mechanisms without treating the terminal checkpoint or the recipe-specific null result as decisive.",
+          "reframes": []
+        }
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I5",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E18",
+    "inquiry_id": null,
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "open",
+        "closure_condition": "Close with a positive, negative, limited, or inconclusive conclusion after a matched candidate comparison and trajectory diagnostics preserve complete-hold success, first_reach_step, max_held_steps, hold_interruptions, timeout status, target angle, and terminal joint/branch geometry. A positive result requires rescue of the recurring failure seeds with evidence of improved acquisition or holding; no matched rescue weakens this route, while changed failure mechanisms or unavailable diagnostics require a limited or inconclusive conclusion.",
+        "goal_connection": "The human goal requires at least 196 of 200 complete uninterrupted holds. The strongest development result is 153 of 160, with four failures before first reach and three failures that entered tolerance but interrupted the hold. Resolving whether angle-dependent trajectory and braking control can remove these failures is a direct route toward closing that gap.",
+        "question": "Can general angle-dependent acquisition and braking control reduce the remaining T3 failures toward the 98% complete-hold goal after the branch/limit-aware recipe showed no matched rescue?",
+        "rationale": "Completed evidence supports continuing trajectory investigation but corrects the inherited scope: M5/T5 tested one T3-derived branch-validity and shoulder-limit-aware reward implementation, not general angular acquisition or braking control. M4 showed the remaining failures cluster by target angle and near-limit shoulder geometry, while the model predicts angle-dependent transient motion from the common reset and a speed-versus-residual-velocity tradeoff at 50 Hz. The inquiry will distinguish these mechanisms without treating the terminal checkpoint or the recipe-specific null result as decisive."
+      }
+    },
+    "request_fingerprint": "6031d5d063cf8315401645a1c57a20d0dd670eab60aaafbdebed19be1b8a8d12",
+    "session_id": "S10",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T3:checkpoint-120832 remains the strongest development-evaluated candidate at 153/160, with T5:checkpoint-100352 matching it at 153/160 under the tested branch/limit-aware recipe. T2:checkpoint-120832 remains the earlier 150/160 reference. No candidate has a working, best-known, or retained role because development evidence remains below the human goal and the goal review made no role assignment.",
     "completed_operations": [
@@ -6629,6 +6703,21 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "0fbcb3e4-381a-4dbe-a7ec-2cae5a7997c9",
+    "id": "S10",
+    "inquiry_id": null,
+    "kind": "goal_review",
+    "objective": "Use the completed evidence to update the scientific direction toward the human goal. Correct inherited interpretations, constraints or proposed questions when existing evidence warrants it. Request measurements when they resolve an uncertainty or develop the method. Then choose one outcome: request the official assessment, or open one bounded goal-linked inquiry.",
+    "operation_ids": [
+      "E18"
+    ],
+    "scientific_parent_commit": "1f59a903eec595ab1a194e42fc4fabee18330a46"
+  },
   "terminal_state": null
 }
