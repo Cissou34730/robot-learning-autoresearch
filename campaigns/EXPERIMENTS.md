@@ -84,3 +84,4 @@
 | M17 | measurement | I12 | failed |
 | M18 | measurement | I12 | completed |
 | E50 | inquiry | I12 | completed |
+| E51 | checkpoint | I12 | checkpointed |
