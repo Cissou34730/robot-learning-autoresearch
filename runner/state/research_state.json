@@ -4118,8 +4118,8 @@
     "event": 23,
     "inquiry": 6,
     "measurement": 6,
-    "session": 12,
-    "training": 6
+    "session": 13,
+    "training": 8
   },
   "human_goal": {
     "source": "contracts/scenario.md"
@@ -8414,9 +8414,129 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-09T23:35:09Z",
+      "error": "pytest failed:\n.............FF....                                                      [100%]\n================================== FAILURES ===================================\n_______ test_all_evaluation_paths_use_each_policys_inputs_and_same_task _______\n\nmonkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x00000236EC3ED8D0>\ntmp_path = WindowsPath('C:/Users/cyril.beurier/code/robot-learning-inquiry-centered-lifecycle/.pytest-run-temp/test_all_evaluation_paths_use_0')\n\n    def test_all_evaluation_paths_use_each_policys_inputs_and_same_task(\n        monkeypatch, tmp_path\n    ):\n        from benchmark.final_benchmark import official_environment\n        from benchmark.reference_evaluation import task_reference_environment\n        from robot_learning.scenario.environment import make_evaluation_env\n    \n        for factory in (\n            official_environment,\n            task_reference_environment,\n            make_evaluation_env,\n        ):\n            positions = []\n            for size in (3, 30):\n                path = artifact(\n                    tmp_path / f\"{factory.__name__}-{size}\",\n                    scientific_module(monkeypatch, size),\n                )\n                runtime = load_runtime(path)\n                env = factory(policy_runtime=runtime)\n                obs, _ = env.reset(seed=7)\n                positions.append(env.data.mocap_pos[0].copy())\n                assert obs.shape == (size,)\n                env.step(np.ones(2))\n>               np.testing.assert_allclose(env.data.ctrl, [0.1, 0.1])\nE               AssertionError: \nE               Not equal to tolerance rtol=1e-07, atol=0\nE               \nE               Mismatched elements: 2 / 2 (100%)\nE               Mismatch at indices:\nE                [0]: 0.05646648892043735 (ACTUAL), 0.1 (DESIRED)\nE                [1]: 0.05929908598607263 (ACTUAL), 0.1 (DESIRED)\nE               Max absolute difference among violations: 0.04353351\nE               Max relative difference among violations: 0.43533511\nE                ACTUAL: array([0.056466, 0.059299])\nE                DESIRED: array([0.1, 0.1])\n\ntests\\autoresearch\\test_policy_runtime.py:256: AssertionError\n______ test_all_evaluation_environments_apply_saved_action_mapping_once _______\n\nmonkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x00000236EDA9B930>\ntmp_path = WindowsPath('C:/Users/cyril.beurier/code/robot-learning-inquiry-centered-lifecycle/.pytest-run-temp/test_all_evaluation_environmen0')\n\n    def test_all_evaluation_environments_apply_saved_action_mapping_once(\n        monkeypatch, tmp_path\n    ):\n        from benchmark.final_benchmark import official_environment\n        from benchmark.reference_evaluation import (\n            task_reference_environment,\n        )\n        from robot_learning.scenario.environment import make_evaluation_env\n    \n        path = stateful_artifact(tmp_path, stateful_module(monkeypatch, 3))\n        for factory in (\n            official_environment,\n            task_reference_environment,\n            make_evaluation_env,\n        ):\n            runtime = load_runtime(path)\n            env = factory(policy_runtime=runtime)\n            env.reset(seed=7)\n            env.step(np.array([1.0, -1.0]))\n>           np.testing.assert_allclose(env.data.ctrl, [1.0, -1.0])\nE           AssertionError: \nE           Not equal to tolerance rtol=1e-07, atol=0\nE           \nE           Mismatched elements: 2 / 2 (100%)\nE           Mismatch at indices:\nE            [0]: 0.5514664889204374 (ACTUAL), 1.0 (DESIRED)\nE            [1]: -0.5457009140139274 (ACTUAL), -1.0 (DESIRED)\nE           Max absolute difference among violations: 0.45429909\nE           Max relative difference among violations: 0.45429909\nE            ACTUAL: array([ 0.551466, -0.545701])\nE            DESIRED: array([ 1., -1.])\n\ntests\\autoresearch\\test_policy_runtime.py:280: AssertionError\n=========================== short test summary info ===========================\nFAILED tests/autoresearch/test_policy_runtime.py::test_all_evaluation_paths_use_each_policys_inputs_and_same_task\nFAILED tests/autoresearch/test_policy_runtime.py::test_all_evaluation_environments_apply_saved_action_mapping_once\n2 failed, 17 passed in 6.29s\n\n",
+      "id": "T7",
+      "inquiry_id": "I6",
+      "kind": "training",
+      "request": {
+        "description": "Train a transfer candidate with explicit branch-constrained joint-space trajectory guidance and limit-aware control. At each control step, the shared environment selects the highest-margin IK branch that satisfies the joint limits, interpolates from the reset configuration to that endpoint, and blends a position/velocity reference action with the learned action while damping outward motion near the limits.",
+        "initialization": "transfer",
+        "parent": "T3:checkpoint-120832",
+        "rationale": "I6 remains unresolved because M5 and M6 only tested static reward implementations and both matched T3 at 153/160; they did not execute an explicit path. M4 shows recurring failures around -130 to -151 degrees where T3 either tracks the open branch into a shoulder-limit boundary or loses the hold near that boundary while the alternate branch is valid. This transfer run directly exercises the unresolved method while preserving the existing observation shape, task mechanics, and evaluation semantics. A subsequent matched 160-episode comparison against T3 will determine whether recurring failures are rescued without material regressions in first reach, complete hold, interruptions, timeout status, target angle, or terminal branch geometry.",
+        "seed": 0,
+        "steps": 120000
+      },
+      "result": {
+        "error": "pytest failed:\n.............FF....                                                      [100%]\n================================== FAILURES ===================================\n_______ test_all_evaluation_paths_use_each_policys_inputs_and_same_task _______\n\nmonkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x00000236EC3ED8D0>\ntmp_path = WindowsPath('C:/Users/cyril.beurier/code/robot-learning-inquiry-centered-lifecycle/.pytest-run-temp/test_all_evaluation_paths_use_0')\n\n    def test_all_evaluation_paths_use_each_policys_inputs_and_same_task(\n        monkeypatch, tmp_path\n    ):\n        from benchmark.final_benchmark import official_environment\n        from benchmark.reference_evaluation import task_reference_environment\n        from robot_learning.scenario.environment import make_evaluation_env\n    \n        for factory in (\n            official_environment,\n            task_reference_environment,\n            make_evaluation_env,\n        ):\n            positions = []\n            for size in (3, 30):\n                path = artifact(\n                    tmp_path / f\"{factory.__name__}-{size}\",\n                    scientific_module(monkeypatch, size),\n                )\n                runtime = load_runtime(path)\n                env = factory(policy_runtime=runtime)\n                obs, _ = env.reset(seed=7)\n                positions.append(env.data.mocap_pos[0].copy())\n                assert obs.shape == (size,)\n                env.step(np.ones(2))\n>               np.testing.assert_allclose(env.data.ctrl, [0.1, 0.1])\nE               AssertionError: \nE               Not equal to tolerance rtol=1e-07, atol=0\nE               \nE               Mismatched elements: 2 / 2 (100%)\nE               Mismatch at indices:\nE                [0]: 0.05646648892043735 (ACTUAL), 0.1 (DESIRED)\nE                [1]: 0.05929908598607263 (ACTUAL), 0.1 (DESIRED)\nE               Max absolute difference among violations: 0.04353351\nE               Max relative difference among violations: 0.43533511\nE                ACTUAL: array([0.056466, 0.059299])\nE                DESIRED: array([0.1, 0.1])\n\ntests\\autoresearch\\test_policy_runtime.py:256: AssertionError\n______ test_all_evaluation_environments_apply_saved_action_mapping_once _______\n\nmonkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x00000236EDA9B930>\ntmp_path = WindowsPath('C:/Users/cyril.beurier/code/robot-learning-inquiry-centered-lifecycle/.pytest-run-temp/test_all_evaluation_environmen0')\n\n    def test_all_evaluation_environments_apply_saved_action_mapping_once(\n        monkeypatch, tmp_path\n    ):\n        from benchmark.final_benchmark import official_environment\n        from benchmark.reference_evaluation import (\n            task_reference_environment,\n        )\n        from robot_learning.scenario.environment import make_evaluation_env\n    \n        path = stateful_artifact(tmp_path, stateful_module(monkeypatch, 3))\n        for factory in (\n            official_environment,\n            task_reference_environment,\n            make_evaluation_env,\n        ):\n            runtime = load_runtime(path)\n            env = factory(policy_runtime=runtime)\n            env.reset(seed=7)\n            env.step(np.array([1.0, -1.0]))\n>           np.testing.assert_allclose(env.data.ctrl, [1.0, -1.0])\nE           AssertionError: \nE           Not equal to tolerance rtol=1e-07, atol=0\nE           \nE           Mismatched elements: 2 / 2 (100%)\nE           Mismatch at indices:\nE            [0]: 0.5514664889204374 (ACTUAL), 1.0 (DESIRED)\nE            [1]: -0.5457009140139274 (ACTUAL), -1.0 (DESIRED)\nE           Max absolute difference among violations: 0.45429909\nE           Max relative difference among violations: 0.45429909\nE            ACTUAL: array([ 0.551466, -0.545701])\nE            DESIRED: array([ 1., -1.])\n\ntests\\autoresearch\\test_policy_runtime.py:280: AssertionError\n=========================== short test summary info ===========================\nFAILED tests/autoresearch/test_policy_runtime.py::test_all_evaluation_paths_use_each_policys_inputs_and_same_task\nFAILED tests/autoresearch/test_policy_runtime.py::test_all_evaluation_environments_apply_saved_action_mapping_once\n2 failed, 17 passed in 6.29s\n\n",
+        "status": "failed"
+      },
+      "session_id": "S13",
+      "status": "failed",
+      "superseded_by": "T8",
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "archived_candidates": null,
+      "candidate_dir": null,
+      "code_parent_commit": "2cfc3a4f4c25901edfc2c89cf011d407fa04e438",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "parent": {
+        "artifact": "campaigns/checkpoints/candidates/339736e0-5583-4bc4-8729-5023fc3077b7/t3/checkpoint-120832",
+        "fingerprint": "1c7788b0587f24fce285e6f2fa3582ba3bea6511487b70a77b0983b810e7f2b1",
+        "id": "T3:checkpoint-120832",
+        "parameters": {
+          "algorithm": {
+            "name": "ppo"
+          },
+          "policy": {
+            "activation": "tanh",
+            "net_arch": [
+              64,
+              64
+            ]
+          },
+          "ppo": {
+            "batch_size": 64,
+            "ent_coef": 0.01,
+            "gae_lambda": 0.95,
+            "gamma": 0.99,
+            "learning_rate": 0.0003,
+            "n_steps": 1024
+          },
+          "training": {
+            "checkpoint_every_steps": 5000,
+            "n_envs": 1
+          }
+        },
+        "scientific_commit": "f6950a28bf1179f1dda80095a4dc2601bb437ea4",
+        "training_steps": 120832
+      },
+      "result": null,
+      "scientific_commit": null,
+      "scientific_manifest": [
+        {
+          "exists": true,
+          "fingerprint": "09d0ea8443d79c0dba45fe8c2d8664d51050831b6edfabc8baa670e54759792d",
+          "path": "robot_learning/scenario/policy_io.py"
+        },
+        {
+          "exists": true,
+          "fingerprint": "eb7d609e697536c4842e3765db36a1c8d93c9554c6ce9fef63fb79e823408750",
+          "path": "robot_learning/scenario/trajectory_control.py"
+        }
+      ],
+      "scientific_paths": [
+        "robot_learning/scenario/policy_io.py",
+        "robot_learning/scenario/trajectory_control.py"
+      ]
+    },
+    "failure": null,
+    "id": "T8",
+    "inquiry_id": "I6",
+    "kind": "training",
+    "progress": "accepted",
+    "request": {
+      "training": {
+        "description": "Train a transfer candidate with explicit branch-constrained joint-space trajectory guidance and limit-aware control implemented inside the standard saved policy I/O mapping. The mapping selects the highest-margin valid IK branch, interpolates from reset to that endpoint, blends a position/velocity reference action with the learned action, and damps outward motion near joint limits.",
+        "initialization": "transfer",
+        "parent": "T3:checkpoint-120832",
+        "rationale": "T7 did not produce scientific evidence: Runner validation showed that applying guidance in the shared environment after policy_io.action violated the saved action-mapping contract, changing env.data.ctrl for arbitrary runtimes. The corrected implementation keeps the shared environment actuation path exact and applies guidance only in the scenario's standard policy I/O closure, so custom and previously serialized runtimes retain their own action mapping. This directly exercises explicit trajectory realization for the new transfer candidate while preserving evaluation semantics. The resulting candidate should be measured against T3 on the established 160-episode panel with complete-hold, acquisition, interruption, timeout, target-angle, and terminal branch diagnostics.",
+        "seed": 0,
+        "steps": 120000
+      }
+    },
+    "request_fingerprint": "37ba138308c71ac36cf232cc41cac7d908a5096537c30dd0d0450bc9069898e4",
+    "session_id": "S13",
+    "supersedes": "T7"
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T3:checkpoint-120832 remains the strongest development-evaluated candidate at 153/160. T5:checkpoint-100352 and T6:checkpoint-105472 matched T3 in their paired measurements. No candidate has a working, best-known, or retained role assigned in this session.",
     "completed_operations": [
@@ -8452,6 +8572,19 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "2d387084-1be8-4f40-978e-c53506c10834",
+    "id": "S13",
+    "inquiry_id": "I6",
+    "kind": "inquiry",
+    "objective": "Advance I6 toward an evidence-supported answer to its scientific question: Can explicit branch-constrained trajectory selection with limit-aware control rescue the persistent -130 to -151 degree failures toward the 98% complete-hold goal, or do matched failures persist and require a different control or learning method? Before choosing the next action, compare the accumulated evidence with the closure condition. Choose the supported operation that best advances the bounded work; no operation is the default. Close the inquiry when the condition is met.",
+    "operation_ids": [],
+    "scientific_parent_commit": "2cfc3a4f4c25901edfc2c89cf011d407fa04e438"
+  },
   "terminal_state": null
 }
