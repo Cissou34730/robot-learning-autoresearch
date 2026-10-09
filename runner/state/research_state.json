@@ -11175,38 +11175,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I7",
-        "outcome": "I7 closes with a negative, intervention-limited result: the T3-derived damped action mapper did not eliminate the residual radius-angle completion failures.",
-        "reason": "M8 evaluated T9 and T3 on the same 160 episode seeds. T9 achieved 95.625 percent success (153/160), exactly matching T3, and the paired comparison found zero discordant episodes. The action mapper therefore preserved the learned reach and hold behavior but produced no change in the evaluated outcomes. This satisfies the I7 redirect condition: persistent localized failures with preserved transfer behavior favor a deeper plant-state or numerical-margin limitation over the tested action-space redesign. It does not establish that every action redesign or terminal controller is incapable of improvement, but it rejects this explicit first-order damped command servo as a route to the 98 percent development threshold. T3 remains the strongest measured candidate; the next inquiry should use targeted plant-state or numerical-margin measurements to determine whether the residual cases are physically or discretely controllable before selecting another policy intervention."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I7",
-        "outcome": "I7 closes with a negative, intervention-limited result: the T3-derived damped action mapper did not eliminate the residual radius-angle completion failures.",
-        "reason": "M8 evaluated T9 and T3 on the same 160 episode seeds. T9 achieved 95.625 percent success (153/160), exactly matching T3, and the paired comparison found zero discordant episodes. The action mapper therefore preserved the learned reach and hold behavior but produced no change in the evaluated outcomes. This satisfies the I7 redirect condition: persistent localized failures with preserved transfer behavior favor a deeper plant-state or numerical-margin limitation over the tested action-space redesign. It does not establish that every action redesign or terminal controller is incapable of improvement, but it rejects this explicit first-order damped command servo as a route to the 98 percent development threshold. T3 remains the strongest measured candidate; the next inquiry should use targeted plant-state or numerical-margin measurements to determine whether the residual cases are physically or discretely controllable before selecting another policy intervention.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E28",
-    "inquiry_id": "I7",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "I7 closes with a negative, intervention-limited result: the T3-derived damped action mapper did not eliminate the residual radius-angle completion failures.",
-        "reason": "M8 evaluated T9 and T3 on the same 160 episode seeds. T9 achieved 95.625 percent success (153/160), exactly matching T3, and the paired comparison found zero discordant episodes. The action mapper therefore preserved the learned reach and hold behavior but produced no change in the evaluated outcomes. This satisfies the I7 redirect condition: persistent localized failures with preserved transfer behavior favor a deeper plant-state or numerical-margin limitation over the tested action-space redesign. It does not establish that every action redesign or terminal controller is incapable of improvement, but it rejects this explicit first-order damped command servo as a route to the 98 percent development threshold. T3 remains the strongest measured candidate; the next inquiry should use targeted plant-state or numerical-margin measurements to determine whether the residual cases are physically or discretely controllable before selecting another policy intervention."
-      }
-    },
-    "request_fingerprint": "8175c731ac41d312e11d3e67f06118deb5942b4d992c46eddf1381b1b2b8cdc5",
-    "session_id": "S15",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T3:checkpoint-120832 remains the strongest measured development candidate at 95.625 percent on M4, M6, and the matched M7 reference. T7:checkpoint-120832 is a negative, intervention-limited candidate at 95.0 percent with reduced first reach and increased interruptions. No candidate has a working, best-known, or retained role.",
     "completed_operations": [
