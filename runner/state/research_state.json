@@ -10105,38 +10105,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I5",
-        "outcome": "limited negative: the tested continuous endpoint-velocity representation does not provide a viable route toward the 98% goal under preserved T1 coverage.",
-        "reason": "M8 measured T5 at 107/160 and 108/160 successes for the peak-reward and terminal checkpoints, versus T1 at 150/160 on identical seeds. M9 mechanism diagnostics for the terminal T5 checkpoint found 49 of 52 failures without first reach, 48 failures with nonnegative terminal nearest-branch limit margin, and only 28/40 successes in the 6-10 cm inner band; T1 had 7/10 failures without first reach, 3 nonnegative-margin failures, and 40/40 inner-band successes. The paired loss and diagnostic tradeoff satisfy I5's closure condition: this specific less-disruptive trajectory representation causes broad positive-margin non-reaching and renewed inner-band loss. Its three post-reach failures do not establish a dominant hold-instability mechanism. Close I5 and redirect the campaign to another goal-linked capability rather than continuing this representation route."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I5",
-        "outcome": "limited negative: the tested continuous endpoint-velocity representation does not provide a viable route toward the 98% goal under preserved T1 coverage.",
-        "reason": "M8 measured T5 at 107/160 and 108/160 successes for the peak-reward and terminal checkpoints, versus T1 at 150/160 on identical seeds. M9 mechanism diagnostics for the terminal T5 checkpoint found 49 of 52 failures without first reach, 48 failures with nonnegative terminal nearest-branch limit margin, and only 28/40 successes in the 6-10 cm inner band; T1 had 7/10 failures without first reach, 3 nonnegative-margin failures, and 40/40 inner-band successes. The paired loss and diagnostic tradeoff satisfy I5's closure condition: this specific less-disruptive trajectory representation causes broad positive-margin non-reaching and renewed inner-band loss. Its three post-reach failures do not establish a dominant hold-instability mechanism. Close I5 and redirect the campaign to another goal-linked capability rather than continuing this representation route.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E22",
-    "inquiry_id": "I5",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "limited negative: the tested continuous endpoint-velocity representation does not provide a viable route toward the 98% goal under preserved T1 coverage.",
-        "reason": "M8 measured T5 at 107/160 and 108/160 successes for the peak-reward and terminal checkpoints, versus T1 at 150/160 on identical seeds. M9 mechanism diagnostics for the terminal T5 checkpoint found 49 of 52 failures without first reach, 48 failures with nonnegative terminal nearest-branch limit margin, and only 28/40 successes in the 6-10 cm inner band; T1 had 7/10 failures without first reach, 3 nonnegative-margin failures, and 40/40 inner-band successes. The paired loss and diagnostic tradeoff satisfy I5's closure condition: this specific less-disruptive trajectory representation causes broad positive-margin non-reaching and renewed inner-band loss. Its three post-reach failures do not establish a dominant hold-instability mechanism. Close I5 and redirect the campaign to another goal-linked capability rather than continuing this representation route."
-      }
-    },
-    "request_fingerprint": "65ff764099f48595575a15c62329a5bd1919d3b19209648af8adddb349c507f8",
-    "session_id": "S11",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T1:checkpoint-120832 remains the strongest measured development candidate at 93.75% with 40/40 inner-band successes, but has no assigned working, best-known, or retained role because it is below the goal and lacks a protected assessment. T2:checkpoint-120832, T3:checkpoint-120832, and T4:checkpoint-120832 remain rejected as viable routes based on their paired development results and diagnostics. No candidate has a role.",
     "completed_operations": [
