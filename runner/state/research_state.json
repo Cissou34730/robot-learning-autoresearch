@@ -1,5 +1,16 @@
 {
-  "active_inquiry": null,
+  "active_inquiry": {
+    "closure_condition": "Close when completed evidence establishes whether a selectively targeted control interface improves full-distribution development success toward or beyond 98% while preserving T1's 40/40 inner-band behavior and reducing positive- or negative-margin non-reaching, with residual failures classified by first-reach velocity and hold interruptions. Improvement with preserved inner-band coverage and predominantly post-reach velocity or interruption failures supports continuing the control route and prioritizing hold stabilization. Broad positive-margin non-reaching, renewed inner-band loss, or no meaningful success improvement redirects away from this interface. Results remain limited to the tested control design and do not generalize to all selective control methods.",
+    "goal_connection": "The human goal requires at least 196 successes in the protected 200-episode assessment. T1 is the strongest measured candidate at 150/160 development successes with 40/40 inner-band successes, so the remaining gap requires improving full-distribution reaching without sacrificing the difficult inner targets or uninterrupted hold behavior. This inquiry tests whether a targeted control capability can close that gap while preserving the learnability and authority that the rejected global slew-limited interface lost.",
+    "handoff_conclusion": "M1 established substantial transient actuation authority and at least one feasible analytic IK solution for every sampled official target, with 64 of 576 grid targets having only one feasible branch. T1's uniform official coverage and M2/M9 results establish the strongest measured baseline: 150/160 successes, 40/40 inner-band successes, seven failures without first reach, and three nonnegative-margin failures. M3 supports branch/limit-sensitive non-reaching as the dominant T1 failure class, with high approach speed and hold interruptions as a secondary class. T2's branch/limit-aware sampling, T3's explicit margin/feasibility features, T4's previous-action history, and T5's continuous radial/tangential endpoint-velocity features each produced recipe-specific learnability or performance collapse rather than progress; these results reject those tested recipes, not all control or representation methods. E26 restored the T1 recipe before I6. T6 then applied a per-step action slew limit while preserving T1's observation, target coverage, reward, action dimensionality, and hold semantics; all T6 checkpoints had zero recorded training success and low reward. M10 measured the two highest-reward T6 checkpoints at 17/160 and 11/160 against T1's 150/160 on identical seeds, with zero T6 paired wins and 133 and 139 reference wins. This establishes a limited negative result for the tested slew-limited action interface and agrees with its learning collapse in development behavior. The diagnostic artifacts returned structure metadata without measurement values, so the exact split between positive-margin non-reaching, inner-band loss, and hold instability remains unresolved. E27 therefore closes I6 without claiming that all low-disruption control methods or the broader hold mechanism are disproven.",
+    "handoff_question": "Can a selectively targeted, learnability-preserving control interface retain T1's direct action authority while reducing branch/limit-sensitive non-reaching under uniform official coverage without losing inner-band performance, and do residual failures then concentrate in approach velocity and hold-phase instability?",
+    "handoff_source_session_id": "S13",
+    "id": "I7",
+    "opened_in_session": "S14",
+    "question": "Can a selectively targeted, learnability-preserving control interface retain T1's direct action authority while reducing branch/limit-sensitive non-reaching under uniform official coverage without losing inner-band performance, and do residual failures then concentrate in approach velocity and hold-phase instability?",
+    "rationale": "M1 established substantial transient actuation authority and feasible analytic IK solutions throughout the sampled official geometry. T1's uniform-coverage evaluation and diagnostics measured 150/160 successes, 40/40 inner-band successes, seven branch/limit-aligned non-reaching failures, and a smaller high-approach-velocity hold-failure class. T2's aggressive sampler, T3-T5's added representations, and T6's global action slew limit each caused recipe-specific learnability or performance collapse; these results reject those tested recipes, not selective control in general. E27 therefore leaves the mechanism unresolved and specifically identifies a need to preserve T1's direct action authority while targeting only the failure-relevant regime. Opening this inquiry records that distinction without committing the next operation to training, measurement, or a particular interface; the fresh inquiry session will choose the most decision-relevant available action and retain uniform official coverage and the stated diagnostics.",
+    "reframes": []
+  },
   "campaign": {
     "base_commit": "4e87f6053469bb6648d355bc03a7a70faa91f33f",
     "id": "79395c88-afcd-40f0-a644-16ca95368c28",
@@ -4927,16 +4938,16 @@
     }
   },
   "counters": {
-    "event": 28,
-    "inquiry": 6,
+    "event": 29,
+    "inquiry": 7,
     "measurement": 10,
-    "session": 13,
+    "session": 14,
     "training": 6
   },
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -12603,9 +12614,72 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-09T14:54:53Z",
+      "error": null,
+      "id": "E29",
+      "inquiry_id": "I7",
+      "kind": "inquiry",
+      "request": {
+        "action": "open",
+        "closure_condition": "Close when completed evidence establishes whether a selectively targeted control interface improves full-distribution development success toward or beyond 98% while preserving T1's 40/40 inner-band behavior and reducing positive- or negative-margin non-reaching, with residual failures classified by first-reach velocity and hold interruptions. Improvement with preserved inner-band coverage and predominantly post-reach velocity or interruption failures supports continuing the control route and prioritizing hold stabilization. Broad positive-margin non-reaching, renewed inner-band loss, or no meaningful success improvement redirects away from this interface. Results remain limited to the tested control design and do not generalize to all selective control methods.",
+        "goal_connection": "The human goal requires at least 196 successes in the protected 200-episode assessment. T1 is the strongest measured candidate at 150/160 development successes with 40/40 inner-band successes, so the remaining gap requires improving full-distribution reaching without sacrificing the difficult inner targets or uninterrupted hold behavior. This inquiry tests whether a targeted control capability can close that gap while preserving the learnability and authority that the rejected global slew-limited interface lost.",
+        "question": "Can a selectively targeted, learnability-preserving control interface retain T1's direct action authority while reducing branch/limit-sensitive non-reaching under uniform official coverage without losing inner-band performance, and do residual failures then concentrate in approach velocity and hold-phase instability?",
+        "rationale": "M1 established substantial transient actuation authority and feasible analytic IK solutions throughout the sampled official geometry. T1's uniform-coverage evaluation and diagnostics measured 150/160 successes, 40/40 inner-band successes, seven branch/limit-aligned non-reaching failures, and a smaller high-approach-velocity hold-failure class. T2's aggressive sampler, T3-T5's added representations, and T6's global action slew limit each caused recipe-specific learnability or performance collapse; these results reject those tested recipes, not selective control in general. E27 therefore leaves the mechanism unresolved and specifically identifies a need to preserve T1's direct action authority while targeting only the failure-relevant regime. Opening this inquiry records that distinction without committing the next operation to training, measurement, or a particular interface; the fresh inquiry session will choose the most decision-relevant available action and retain uniform official coverage and the stated diagnostics."
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I7",
+        "status": "completed"
+      },
+      "session_id": "S14",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "open",
+        "inquiry": {
+          "closure_condition": "Close when completed evidence establishes whether a selectively targeted control interface improves full-distribution development success toward or beyond 98% while preserving T1's 40/40 inner-band behavior and reducing positive- or negative-margin non-reaching, with residual failures classified by first-reach velocity and hold interruptions. Improvement with preserved inner-band coverage and predominantly post-reach velocity or interruption failures supports continuing the control route and prioritizing hold stabilization. Broad positive-margin non-reaching, renewed inner-band loss, or no meaningful success improvement redirects away from this interface. Results remain limited to the tested control design and do not generalize to all selective control methods.",
+          "goal_connection": "The human goal requires at least 196 successes in the protected 200-episode assessment. T1 is the strongest measured candidate at 150/160 development successes with 40/40 inner-band successes, so the remaining gap requires improving full-distribution reaching without sacrificing the difficult inner targets or uninterrupted hold behavior. This inquiry tests whether a targeted control capability can close that gap while preserving the learnability and authority that the rejected global slew-limited interface lost.",
+          "handoff_conclusion": "M1 established substantial transient actuation authority and at least one feasible analytic IK solution for every sampled official target, with 64 of 576 grid targets having only one feasible branch. T1's uniform official coverage and M2/M9 results establish the strongest measured baseline: 150/160 successes, 40/40 inner-band successes, seven failures without first reach, and three nonnegative-margin failures. M3 supports branch/limit-sensitive non-reaching as the dominant T1 failure class, with high approach speed and hold interruptions as a secondary class. T2's branch/limit-aware sampling, T3's explicit margin/feasibility features, T4's previous-action history, and T5's continuous radial/tangential endpoint-velocity features each produced recipe-specific learnability or performance collapse rather than progress; these results reject those tested recipes, not all control or representation methods. E26 restored the T1 recipe before I6. T6 then applied a per-step action slew limit while preserving T1's observation, target coverage, reward, action dimensionality, and hold semantics; all T6 checkpoints had zero recorded training success and low reward. M10 measured the two highest-reward T6 checkpoints at 17/160 and 11/160 against T1's 150/160 on identical seeds, with zero T6 paired wins and 133 and 139 reference wins. This establishes a limited negative result for the tested slew-limited action interface and agrees with its learning collapse in development behavior. The diagnostic artifacts returned structure metadata without measurement values, so the exact split between positive-margin non-reaching, inner-band loss, and hold instability remains unresolved. E27 therefore closes I6 without claiming that all low-disruption control methods or the broader hold mechanism are disproven.",
+          "handoff_question": "Can a selectively targeted, learnability-preserving control interface retain T1's direct action authority while reducing branch/limit-sensitive non-reaching under uniform official coverage without losing inner-band performance, and do residual failures then concentrate in approach velocity and hold-phase instability?",
+          "handoff_source_session_id": "S13",
+          "id": "I7",
+          "opened_in_session": "S14",
+          "question": "Can a selectively targeted, learnability-preserving control interface retain T1's direct action authority while reducing branch/limit-sensitive non-reaching under uniform official coverage without losing inner-band performance, and do residual failures then concentrate in approach velocity and hold-phase instability?",
+          "rationale": "M1 established substantial transient actuation authority and feasible analytic IK solutions throughout the sampled official geometry. T1's uniform-coverage evaluation and diagnostics measured 150/160 successes, 40/40 inner-band successes, seven branch/limit-aligned non-reaching failures, and a smaller high-approach-velocity hold-failure class. T2's aggressive sampler, T3-T5's added representations, and T6's global action slew limit each caused recipe-specific learnability or performance collapse; these results reject those tested recipes, not selective control in general. E27 therefore leaves the mechanism unresolved and specifically identifies a need to preserve T1's direct action authority while targeting only the failure-relevant regime. Opening this inquiry records that distinction without committing the next operation to training, measurement, or a particular interface; the fresh inquiry session will choose the most decision-relevant available action and retain uniform official coverage and the stated diagnostics.",
+          "reframes": []
+        }
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I7",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E29",
+    "inquiry_id": null,
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "open",
+        "closure_condition": "Close when completed evidence establishes whether a selectively targeted control interface improves full-distribution development success toward or beyond 98% while preserving T1's 40/40 inner-band behavior and reducing positive- or negative-margin non-reaching, with residual failures classified by first-reach velocity and hold interruptions. Improvement with preserved inner-band coverage and predominantly post-reach velocity or interruption failures supports continuing the control route and prioritizing hold stabilization. Broad positive-margin non-reaching, renewed inner-band loss, or no meaningful success improvement redirects away from this interface. Results remain limited to the tested control design and do not generalize to all selective control methods.",
+        "goal_connection": "The human goal requires at least 196 successes in the protected 200-episode assessment. T1 is the strongest measured candidate at 150/160 development successes with 40/40 inner-band successes, so the remaining gap requires improving full-distribution reaching without sacrificing the difficult inner targets or uninterrupted hold behavior. This inquiry tests whether a targeted control capability can close that gap while preserving the learnability and authority that the rejected global slew-limited interface lost.",
+        "question": "Can a selectively targeted, learnability-preserving control interface retain T1's direct action authority while reducing branch/limit-sensitive non-reaching under uniform official coverage without losing inner-band performance, and do residual failures then concentrate in approach velocity and hold-phase instability?",
+        "rationale": "M1 established substantial transient actuation authority and feasible analytic IK solutions throughout the sampled official geometry. T1's uniform-coverage evaluation and diagnostics measured 150/160 successes, 40/40 inner-band successes, seven branch/limit-aligned non-reaching failures, and a smaller high-approach-velocity hold-failure class. T2's aggressive sampler, T3-T5's added representations, and T6's global action slew limit each caused recipe-specific learnability or performance collapse; these results reject those tested recipes, not selective control in general. E27 therefore leaves the mechanism unresolved and specifically identifies a need to preserve T1's direct action authority while targeting only the failure-relevant regime. Opening this inquiry records that distinction without committing the next operation to training, measurement, or a particular interface; the fresh inquiry session will choose the most decision-relevant available action and retain uniform official coverage and the stated diagnostics."
+      }
+    },
+    "request_fingerprint": "8b592a2783afe8fa3687f8a692b9344162e2be76c6ac6f3c8363006c0bde2db7",
+    "session_id": "S14",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T1:checkpoint-120832 remains the strongest evidence-backed development candidate at 150/160 successes with 40/40 inner-band successes, but no candidate has an assigned working, best-known, or retained role because none meets the development threshold or has a protected assessment. T6:checkpoint-115712 and T6:checkpoint-120832 are rejected for I6 based on M10; T2, T3, T4, and T5 remain rejected as recipe-specific negative routes. No candidate is assigned a role.",
     "completed_operations": [
@@ -12647,6 +12721,21 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "b0b84bea-4b62-4bd0-828a-eee9bf10cef5",
+    "id": "S14",
+    "inquiry_id": null,
+    "kind": "goal_review",
+    "objective": "Use the completed evidence to update the scientific direction toward the human goal. Request measurements when they resolve an uncertainty or develop the method. Then choose one outcome: request the official assessment, or open one bounded goal-linked inquiry. Frame the inquiry as an unresolved distinction, obstacle, or capability need; do not encode a selected training run, measurement, implementation, or recipe as the question.",
+    "operation_ids": [
+      "E29"
+    ],
+    "scientific_parent_commit": "8fdb28c3d75b3933db168d9b49237ecc38e8e42f"
+  },
   "terminal_state": null
 }
