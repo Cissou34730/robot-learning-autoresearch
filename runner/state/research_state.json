@@ -839,7 +839,7 @@
     }
   },
   "counters": {
-    "event": 6,
+    "event": 7,
     "inquiry": 2,
     "measurement": 3,
     "session": 4,
@@ -848,7 +848,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -2009,34 +2009,165 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-09T13:39:08Z",
+      "error": null,
+      "id": "E7",
+      "inquiry_id": null,
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "T1:checkpoint-120832 is the only candidate with completed development evaluation and measured 93.75% on the 160-episode panel; it has no working, best-known, or retained role. Other T1 checkpoints remain unmeasured and have no evidence-backed role. I2 is now open; no role assignment is changed by opening the inquiry.",
+        "completed_operations": [
+          "E6"
+        ],
+        "cumulative_resource_use": "One completed characterization measurement (M1), one inquiry opening for I1 (E2), one fresh 120000-step training allocation used by T1 (120832 completed simulator steps after rollout rounding), two completed development measurements (M2 and M3), one inquiry closure (E4), one inquiry checkpoint (E5), and one inquiry opening for I2 (E6).",
+        "current_goal_gap": "A learned candidate has substantial but insufficient development performance, with no evidence-backed working or best-known role and no protected official assessment. The remaining gap is to reach at least 98% across the full 0.06-0.20 m radius and angular distribution while preserving uninterrupted hold stability, especially in branch/limit-sensitive regions.",
+        "current_synthesis": "M1 established substantial transient actuation authority and at least one feasible analytic IK solution for every sampled official target; 64 of 576 grid targets had only one feasible branch. T1 trained a fresh PPO policy using the full official radius range, but its 0.58 training success at checkpoint-120832 does not establish development performance. M2 measured 150/160 successes (93.75%) for that checkpoint under the official target distribution and hold semantics, including 40/40 successes in the 6-10 cm bin. M3 diagnosed 7 failures without tolerance entry that had negative nearest-branch limit margin, supporting branch/limit-aligned failure as the dominant mechanism; 2 post-reach failures had high first-reach joint speed and many hold interruptions, supporting a secondary approach-velocity/hold-oscillation mechanism; one further non-reaching failure had positive margin. These results limit the tested full-distribution recipe but do not invalidate learning or the global reachability interpretation. The causal branch/limit explanation remains unresolved at the intervention level because no branch/limit-aware candidate has yet been trained and measured, and the velocity/oscillation explanation remains secondary but consequential because post-reach failures occurred despite successful entry. Opening I2 changes the campaign from a closed prior inquiry to a bounded test of these competing mechanisms before any official assessment.",
+        "decision_frontier": "The unresolved distinction is whether branch/limit-aware coverage can eliminate the dominant angular and joint-limit failures without reducing the already strong inner-band performance, and whether residual post-reach failures remain dominated by high approach velocity or oscillation despite adequate limit margin. Candidate evidence at or above 98% with radius- and angle-consistent holds would support selecting that route for official consideration. Persistent negative-margin or one-branch failures would redirect toward explicit branch/limit or trajectory representation; persistent post-reach interruptions with adequate margin would redirect toward velocity shaping or phase/history representation. The next inquiry must use completed candidate diagnostics to distinguish these mechanisms rather than infer them from geometry alone.",
+        "evidence_references": [
+          "M1",
+          "T1",
+          "M2",
+          "M3",
+          "E4",
+          "E6"
+        ],
+        "human_goal_connection": "The human goal is at least 196 successes in the protected 200-episode official assessment under the uninterrupted 100-step hold semantics. The only evaluated candidate achieved 150 of 160 successes (93.75%) on a held-out official-distribution panel, so official assessment is not yet justified. Inquiry I2 was opened to resolve whether the dominant branch/limit failure class can be reduced without sacrificing inner-band behavior and whether remaining failures are primarily approach-velocity or hold-stabilization failures.",
+        "next_direction_or_closure": "Checkpoint the goal-review decision that opened I2. In the fresh I2 inquiry session, choose the first operation from the branch/limit versus approach-stabilization decision frontier. Do not request protected official assessment until a candidate has evidence at or above the 98% threshold with consistent geometry and hold diagnostics.",
+        "next_question": "Under the exact official target distribution and uninterrupted endpoint-hold semantics, can branch/limit-aware coverage raise learned-policy success to at least 98% without losing inner-band performance, and are the residual failures then dominated by approach velocity/oscillation despite adequate limit margin?"
+      },
+      "result": {
+        "session_id": "S4",
+        "status": "checkpointed"
+      },
+      "session_id": "S4",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "feedf992e1a48fcf413133a6e1d6f0a8ae83c97b",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "T1:checkpoint-120832 is the only candidate with completed development evaluation and measured 93.75% on the 160-episode panel; it has no working, best-known, or retained role. Other T1 checkpoints remain unmeasured and have no evidence-backed role. I2 is now open; no role assignment is changed by opening the inquiry.",
+        "completed_operations": [
+          "E6"
+        ],
+        "cumulative_resource_use": "One completed characterization measurement (M1), one inquiry opening for I1 (E2), one fresh 120000-step training allocation used by T1 (120832 completed simulator steps after rollout rounding), two completed development measurements (M2 and M3), one inquiry closure (E4), one inquiry checkpoint (E5), and one inquiry opening for I2 (E6).",
+        "current_goal_gap": "A learned candidate has substantial but insufficient development performance, with no evidence-backed working or best-known role and no protected official assessment. The remaining gap is to reach at least 98% across the full 0.06-0.20 m radius and angular distribution while preserving uninterrupted hold stability, especially in branch/limit-sensitive regions.",
+        "current_synthesis": "M1 established substantial transient actuation authority and at least one feasible analytic IK solution for every sampled official target; 64 of 576 grid targets had only one feasible branch. T1 trained a fresh PPO policy using the full official radius range, but its 0.58 training success at checkpoint-120832 does not establish development performance. M2 measured 150/160 successes (93.75%) for that checkpoint under the official target distribution and hold semantics, including 40/40 successes in the 6-10 cm bin. M3 diagnosed 7 failures without tolerance entry that had negative nearest-branch limit margin, supporting branch/limit-aligned failure as the dominant mechanism; 2 post-reach failures had high first-reach joint speed and many hold interruptions, supporting a secondary approach-velocity/hold-oscillation mechanism; one further non-reaching failure had positive margin. These results limit the tested full-distribution recipe but do not invalidate learning or the global reachability interpretation. The causal branch/limit explanation remains unresolved at the intervention level because no branch/limit-aware candidate has yet been trained and measured, and the velocity/oscillation explanation remains secondary but consequential because post-reach failures occurred despite successful entry. Opening I2 changes the campaign from a closed prior inquiry to a bounded test of these competing mechanisms before any official assessment.",
+        "decision_frontier": "The unresolved distinction is whether branch/limit-aware coverage can eliminate the dominant angular and joint-limit failures without reducing the already strong inner-band performance, and whether residual post-reach failures remain dominated by high approach velocity or oscillation despite adequate limit margin. Candidate evidence at or above 98% with radius- and angle-consistent holds would support selecting that route for official consideration. Persistent negative-margin or one-branch failures would redirect toward explicit branch/limit or trajectory representation; persistent post-reach interruptions with adequate margin would redirect toward velocity shaping or phase/history representation. The next inquiry must use completed candidate diagnostics to distinguish these mechanisms rather than infer them from geometry alone.",
+        "evidence_references": [
+          "M1",
+          "T1",
+          "M2",
+          "M3",
+          "E4",
+          "E6"
+        ],
+        "human_goal_connection": "The human goal is at least 196 successes in the protected 200-episode official assessment under the uninterrupted 100-step hold semantics. The only evaluated candidate achieved 150 of 160 successes (93.75%) on a held-out official-distribution panel, so official assessment is not yet justified. Inquiry I2 was opened to resolve whether the dominant branch/limit failure class can be reduced without sacrificing inner-band behavior and whether remaining failures are primarily approach-velocity or hold-stabilization failures.",
+        "inquiry_id": null,
+        "next_direction_or_closure": "Checkpoint the goal-review decision that opened I2. In the fresh I2 inquiry session, choose the first operation from the branch/limit versus approach-stabilization decision frontier. Do not request protected official assessment until a candidate has evidence at or above the 98% threshold with consistent geometry and hold diagnostics.",
+        "next_question": "Under the exact official target distribution and uninterrupted endpoint-hold semantics, can branch/limit-aware coverage raise learned-policy success to at least 98% without losing inner-band performance, and are the residual failures then dominated by approach velocity/oscillation despite adequate limit margin?",
+        "session_id": "S4"
+      },
+      "presentation": {
+        "backend_session_id": "8b43c138-2359-4496-a697-a83f7704beb7",
+        "campaign_id": "79395c88-afcd-40f0-a644-16ca95368c28",
+        "campaign_usage": "12m23s | 27.89 AIU | prompt 4.4m (88% cached) | output 52.8k",
+        "session_id": "S4",
+        "session_kind": "goal_review",
+        "session_usage": "1m07s | 2.58 AIU | prompt 263.4k (75% cached) | output 4.3k"
+      },
+      "result": {
+        "session_id": "S4",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "15dbc976392cc78c5a78de113bac229076652f8a",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E7",
+    "inquiry_id": null,
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "T1:checkpoint-120832 is the only candidate with completed development evaluation and measured 93.75% on the 160-episode panel; it has no working, best-known, or retained role. Other T1 checkpoints remain unmeasured and have no evidence-backed role. I2 is now open; no role assignment is changed by opening the inquiry.",
+        "completed_operations": [
+          "E6"
+        ],
+        "cumulative_resource_use": "One completed characterization measurement (M1), one inquiry opening for I1 (E2), one fresh 120000-step training allocation used by T1 (120832 completed simulator steps after rollout rounding), two completed development measurements (M2 and M3), one inquiry closure (E4), one inquiry checkpoint (E5), and one inquiry opening for I2 (E6).",
+        "current_goal_gap": "A learned candidate has substantial but insufficient development performance, with no evidence-backed working or best-known role and no protected official assessment. The remaining gap is to reach at least 98% across the full 0.06-0.20 m radius and angular distribution while preserving uninterrupted hold stability, especially in branch/limit-sensitive regions.",
+        "current_synthesis": "M1 established substantial transient actuation authority and at least one feasible analytic IK solution for every sampled official target; 64 of 576 grid targets had only one feasible branch. T1 trained a fresh PPO policy using the full official radius range, but its 0.58 training success at checkpoint-120832 does not establish development performance. M2 measured 150/160 successes (93.75%) for that checkpoint under the official target distribution and hold semantics, including 40/40 successes in the 6-10 cm bin. M3 diagnosed 7 failures without tolerance entry that had negative nearest-branch limit margin, supporting branch/limit-aligned failure as the dominant mechanism; 2 post-reach failures had high first-reach joint speed and many hold interruptions, supporting a secondary approach-velocity/hold-oscillation mechanism; one further non-reaching failure had positive margin. These results limit the tested full-distribution recipe but do not invalidate learning or the global reachability interpretation. The causal branch/limit explanation remains unresolved at the intervention level because no branch/limit-aware candidate has yet been trained and measured, and the velocity/oscillation explanation remains secondary but consequential because post-reach failures occurred despite successful entry. Opening I2 changes the campaign from a closed prior inquiry to a bounded test of these competing mechanisms before any official assessment.",
+        "decision_frontier": "The unresolved distinction is whether branch/limit-aware coverage can eliminate the dominant angular and joint-limit failures without reducing the already strong inner-band performance, and whether residual post-reach failures remain dominated by high approach velocity or oscillation despite adequate limit margin. Candidate evidence at or above 98% with radius- and angle-consistent holds would support selecting that route for official consideration. Persistent negative-margin or one-branch failures would redirect toward explicit branch/limit or trajectory representation; persistent post-reach interruptions with adequate margin would redirect toward velocity shaping or phase/history representation. The next inquiry must use completed candidate diagnostics to distinguish these mechanisms rather than infer them from geometry alone.",
+        "evidence_references": [
+          "M1",
+          "T1",
+          "M2",
+          "M3",
+          "E4",
+          "E6"
+        ],
+        "human_goal_connection": "The human goal is at least 196 successes in the protected 200-episode official assessment under the uninterrupted 100-step hold semantics. The only evaluated candidate achieved 150 of 160 successes (93.75%) on a held-out official-distribution panel, so official assessment is not yet justified. Inquiry I2 was opened to resolve whether the dominant branch/limit failure class can be reduced without sacrificing inner-band behavior and whether remaining failures are primarily approach-velocity or hold-stabilization failures.",
+        "next_direction_or_closure": "Checkpoint the goal-review decision that opened I2. In the fresh I2 inquiry session, choose the first operation from the branch/limit versus approach-stabilization decision frontier. Do not request protected official assessment until a candidate has evidence at or above the 98% threshold with consistent geometry and hold diagnostics.",
+        "next_question": "Under the exact official target distribution and uninterrupted endpoint-hold semantics, can branch/limit-aware coverage raise learned-policy success to at least 98% without losing inner-band performance, and are the residual failures then dominated by approach velocity/oscillation despite adequate limit margin?"
+      }
+    },
+    "request_fingerprint": "cc2107a99ece4a6e1207823b0733274d8b3ef4b7004cbbd9521e328d604ebaa4",
+    "session_id": "S4",
+    "supersedes": null
+  },
   "pi_checkpoint": {
-    "candidates_and_roles": "T1:checkpoint-120832 is the only candidate with completed development evaluation and achieved 93.75% on the 160-episode panel; no working, best-known, or retained role has been assigned. Other T1 checkpoints remain unmeasured and have no evidence-backed role.",
+    "candidates_and_roles": "T1:checkpoint-120832 is the only candidate with completed development evaluation and measured 93.75% on the 160-episode panel; it has no working, best-known, or retained role. Other T1 checkpoints remain unmeasured and have no evidence-backed role. I2 is now open; no role assignment is changed by opening the inquiry.",
     "completed_operations": [
-      "T1",
-      "M2",
-      "M3",
-      "E4"
+      "E6"
     ],
-    "cumulative_resource_use": "One completed characterization measurement (M1), one inquiry opening (E2), one fresh 120000-step training allocation used by T1 (120832 completed simulator steps after rollout rounding), two completed development measurements (M2 and M3), and one inquiry closure (E4).",
-    "current_goal_gap": "A learned candidate exists with substantial but insufficient full-distribution development performance; no candidate has an evidence-backed role, and no protected official assessment has been run. The remaining gap is to raise performance from 93.75% to at least 98% while covering angular branch/limit cases and preventing high-velocity hold interruptions across the full 0.06-0.20 m radius range.",
-    "current_synthesis": "M1 established substantial transient actuation authority and at least one feasible analytic IK solution for every sampled official target, with 64 of 576 grid targets having only one feasible branch. T1 trained a fresh PPO policy on the full official radius range; its learning trajectory reached 0.58 training success at checkpoint-120832, but training statistics did not establish development performance. M2 evaluated that checkpoint on 160 held-out official-distribution episodes and measured 150 successes (93.75%), including 40 of 40 successes in the 6-10 cm bin. Of 10 failures, 7 never entered tolerance and 3 entered tolerance but failed the uninterrupted hold. M3 replayed the same panel with joint and IK diagnostics: 7 failures had negative nearest-branch limit margin, supporting branch/limit-aligned failure as the dominant mechanism; 2 post-reach failures had high first-reach joint speed (4.17 and 5.99 rad/s) and 242 and 192 interruptions, supporting a secondary velocity/hold-stabilization mechanism; one additional failure had positive margin but did not reach. Thus the tested full-distribution recipe has a limited negative result, not a negative result for learning in general. M1's global reachability interpretation remains supported because failures align with policy branch/limit selection and transient dynamics rather than absent geometric solutions.",
-    "decision_frontier": "The unresolved next distinction is whether branch/limit-aware coverage can eliminate the dominant angular and joint-limit failures without sacrificing the already strong inner-band behavior, and whether residual post-reach failures remain driven by high approach velocity and hold oscillation. Evidence that a branch/limit-aware candidate reaches at least 98% with radius- and angle-consistent holds would support selecting it for official consideration; persistent failures at negative-margin or one-branch regions would require a more explicit branch/limit representation or trajectory strategy; persistent post-reach interruptions with adequate limit margin would shift priority to velocity shaping or phase/history representation. Low-margin alignment must be tested against completed candidate diagnostics rather than inferred from geometry alone.",
+    "cumulative_resource_use": "One completed characterization measurement (M1), one inquiry opening for I1 (E2), one fresh 120000-step training allocation used by T1 (120832 completed simulator steps after rollout rounding), two completed development measurements (M2 and M3), one inquiry closure (E4), one inquiry checkpoint (E5), and one inquiry opening for I2 (E6).",
+    "current_goal_gap": "A learned candidate has substantial but insufficient development performance, with no evidence-backed working or best-known role and no protected official assessment. The remaining gap is to reach at least 98% across the full 0.06-0.20 m radius and angular distribution while preserving uninterrupted hold stability, especially in branch/limit-sensitive regions.",
+    "current_synthesis": "M1 established substantial transient actuation authority and at least one feasible analytic IK solution for every sampled official target; 64 of 576 grid targets had only one feasible branch. T1 trained a fresh PPO policy using the full official radius range, but its 0.58 training success at checkpoint-120832 does not establish development performance. M2 measured 150/160 successes (93.75%) for that checkpoint under the official target distribution and hold semantics, including 40/40 successes in the 6-10 cm bin. M3 diagnosed 7 failures without tolerance entry that had negative nearest-branch limit margin, supporting branch/limit-aligned failure as the dominant mechanism; 2 post-reach failures had high first-reach joint speed and many hold interruptions, supporting a secondary approach-velocity/hold-oscillation mechanism; one further non-reaching failure had positive margin. These results limit the tested full-distribution recipe but do not invalidate learning or the global reachability interpretation. The causal branch/limit explanation remains unresolved at the intervention level because no branch/limit-aware candidate has yet been trained and measured, and the velocity/oscillation explanation remains secondary but consequential because post-reach failures occurred despite successful entry. Opening I2 changes the campaign from a closed prior inquiry to a bounded test of these competing mechanisms before any official assessment.",
+    "decision_frontier": "The unresolved distinction is whether branch/limit-aware coverage can eliminate the dominant angular and joint-limit failures without reducing the already strong inner-band performance, and whether residual post-reach failures remain dominated by high approach velocity or oscillation despite adequate limit margin. Candidate evidence at or above 98% with radius- and angle-consistent holds would support selecting that route for official consideration. Persistent negative-margin or one-branch failures would redirect toward explicit branch/limit or trajectory representation; persistent post-reach interruptions with adequate margin would redirect toward velocity shaping or phase/history representation. The next inquiry must use completed candidate diagnostics to distinguish these mechanisms rather than infer them from geometry alone.",
     "evidence_references": [
       "M1",
       "T1",
       "M2",
       "M3",
-      "E4"
+      "E4",
+      "E6"
     ],
-    "human_goal_connection": "The human goal requires at least 196 of 200 official episodes to complete an uninterrupted 100-step hold. T1 produced a candidate that achieved 150 of 160 successes (93.75%) on a held-out development panel under the official distribution and hold semantics, so the goal remains unmet and protected official assessment is not justified.",
-    "inquiry_id": "I1",
-    "next_direction_or_closure": "Checkpoint the closed I1 session and begin a fresh inquiry focused first on branch/limit-aware coverage, using the T1/M2/M3 failure pattern as the decision frontier and retaining velocity shaping as the secondary mechanism to discriminate. Do not request official assessment until a candidate has evidence at or above the goal threshold with consistent geometry and hold diagnostics.",
+    "human_goal_connection": "The human goal is at least 196 successes in the protected 200-episode official assessment under the uninterrupted 100-step hold semantics. The only evaluated candidate achieved 150 of 160 successes (93.75%) on a held-out official-distribution panel, so official assessment is not yet justified. Inquiry I2 was opened to resolve whether the dominant branch/limit failure class can be reduced without sacrificing inner-band behavior and whether remaining failures are primarily approach-velocity or hold-stabilization failures.",
+    "inquiry_id": null,
+    "next_direction_or_closure": "Checkpoint the goal-review decision that opened I2. In the fresh I2 inquiry session, choose the first operation from the branch/limit versus approach-stabilization decision frontier. Do not request protected official assessment until a candidate has evidence at or above the 98% threshold with consistent geometry and hold diagnostics.",
     "next_question": "Under the exact official target distribution and uninterrupted endpoint-hold semantics, can branch/limit-aware coverage raise learned-policy success to at least 98% without losing inner-band performance, and are the residual failures then dominated by approach velocity/oscillation despite adequate limit margin?",
-    "scientific_commit": "68d5ccafae0d0594c388cee9d459e78baeaa84e2",
-    "session_id": "S3"
+    "scientific_commit": "15dbc976392cc78c5a78de113bac229076652f8a",
+    "session_id": "S4"
   },
   "schema_version": 6,
   "scientific_model": {
@@ -2044,21 +2175,6 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "8b43c138-2359-4496-a697-a83f7704beb7",
-    "id": "S4",
-    "inquiry_id": null,
-    "kind": "goal_review",
-    "objective": "Use the completed evidence to update the scientific direction toward the human goal. Request measurements when they resolve an uncertainty or develop the method. Then choose one outcome: request the official assessment, or open one bounded goal-linked inquiry. Frame the inquiry as an unresolved distinction, obstacle, or capability need; do not encode a selected training run, measurement, implementation, or recipe as the question.",
-    "operation_ids": [
-      "E6"
-    ],
-    "scientific_parent_commit": "feedf992e1a48fcf413133a6e1d6f0a8ae83c97b"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
