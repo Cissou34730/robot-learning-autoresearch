@@ -379,47 +379,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "open",
-        "inquiry": {
-          "closure_condition": "Close the inquiry when completed baseline training and development measurements quantify success, first tolerance entry, target radius-angle and branch or joint-limit context, entry velocity or post-entry error, maximum uninterrupted held run, and interruption outcomes sufficiently to identify the dominant failure contribution or to conclude that the distinction is inconclusive.",
-          "goal_connection": "The human goal requires at least 196 of 200 official episodes to complete an uninterrupted 2 second hold. Identifying whether baseline failures occur before first tolerance entry or after entry determines whether the next intervention should address target/branch coverage or stabilization, avoiding recipe changes that do not target the dominant failure mechanism.",
-          "handoff_conclusion": "M1 directly observed the compiled MuJoCo model: timestep 0.002 s, 0.020 s control period, two limited joints, gear-5 bounded motors, nonzero compiled body masses and inertias, and the declared damping and armature. Unit-pulse responses produced large joint accelerations and velocities, while command reversals changed velocity sign within the first post-switch control interval in the tested postures. Limit probes produced explicit constraint forces and returned positions to the declared limits. These observations support the interpretation that the arm has ample nominal actuation and rapid reversal authority, so a generic inability to move or brake is not currently the strongest explanation for future policy failures. They also establish that joint limits are real constraints and could still make one IK branch locally poor. The competing unresolved explanations are therefore (1) insufficient branch/workspace coverage, especially near inner or outer radial regions and angular limit margins, and (2) arrival with residual velocity or error that interrupts the 100-step hold. M1 did not measure target-grid branch feasibility or learned-policy behavior, so it cannot distinguish those explanations or establish task success. The mechanical conclusion is recipe-independent for this compiled model but the response probes were sparse and not target-conditioned.",
-          "handoff_question": "When a fresh baseline policy is evaluated with hold and geometry diagnostics, are its failures dominated by reaching/branch coverage or by interruption after first entering the 1 cm tolerance band?",
-          "handoff_source_session_id": "S1",
-          "id": "I1",
-          "opened_in_session": "S2",
-          "question": "When a fresh baseline policy is evaluated with hold and geometry diagnostics, are its failures dominated by reaching/branch coverage or by interruption after first entering the 1 cm tolerance band?",
-          "rationale": "M1 established substantial nominal actuation and rapid reversal authority in tested postures, while confirming real joint limits, but did not measure target-conditioned branch feasibility or any learned-policy behavior. The current evidence therefore supports obtaining a fresh baseline candidate and hold-plus-geometry diagnostics before selecting a branch-coverage or stabilization intervention.",
-          "reframes": []
-        }
-      },
-      "result": {
-        "action": "open",
-        "inquiry_id": "I1",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E2",
-    "inquiry_id": null,
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "open",
-        "closure_condition": "Close the inquiry when completed baseline training and development measurements quantify success, first tolerance entry, target radius-angle and branch or joint-limit context, entry velocity or post-entry error, maximum uninterrupted held run, and interruption outcomes sufficiently to identify the dominant failure contribution or to conclude that the distinction is inconclusive.",
-        "goal_connection": "The human goal requires at least 196 of 200 official episodes to complete an uninterrupted 2 second hold. Identifying whether baseline failures occur before first tolerance entry or after entry determines whether the next intervention should address target/branch coverage or stabilization, avoiding recipe changes that do not target the dominant failure mechanism.",
-        "question": "When a fresh baseline policy is evaluated with hold and geometry diagnostics, are its failures dominated by reaching/branch coverage or by interruption after first entering the 1 cm tolerance band?",
-        "rationale": "M1 established substantial nominal actuation and rapid reversal authority in tested postures, while confirming real joint limits, but did not measure target-conditioned branch feasibility or any learned-policy behavior. The current evidence therefore supports obtaining a fresh baseline candidate and hold-plus-geometry diagnostics before selecting a branch-coverage or stabilization intervention."
-      }
-    },
-    "request_fingerprint": "17ab59b985b5f4ec9fa3aeed679ec5fdb7554d1e74999fa23d67e00afbbd1149",
-    "session_id": "S2",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "No candidates exist; working, best-known, and retained roles are empty.",
     "completed_operations": [
