@@ -2480,8 +2480,8 @@
     "event": 15,
     "inquiry": 4,
     "measurement": 4,
-    "session": 8,
-    "training": 3
+    "session": 9,
+    "training": 5
   },
   "human_goal": {
     "source": "contracts/scenario.md"
@@ -4932,9 +4932,129 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-09T23:09:31Z",
+      "error": "pytest failed:\n.............FF....                                                      [100%]\n================================== FAILURES ===================================\n_______ test_all_evaluation_paths_use_each_policys_inputs_and_same_task _______\n\nmonkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000020B76EAD8D0>\ntmp_path = WindowsPath('C:/Users/cyril.beurier/code/robot-learning-inquiry-centered-lifecycle/.pytest-run-temp/test_all_evaluation_paths_use_0')\n\n    def test_all_evaluation_paths_use_each_policys_inputs_and_same_task(\n        monkeypatch, tmp_path\n    ):\n        from benchmark.final_benchmark import official_environment\n        from benchmark.reference_evaluation import task_reference_environment\n        from robot_learning.scenario.environment import make_evaluation_env\n    \n        for factory in (\n            official_environment,\n            task_reference_environment,\n            make_evaluation_env,\n        ):\n            positions = []\n            for size in (3, 30):\n                path = artifact(\n                    tmp_path / f\"{factory.__name__}-{size}\",\n                    scientific_module(monkeypatch, size),\n                )\n                runtime = load_runtime(path)\n                env = factory(policy_runtime=runtime)\n                obs, _ = env.reset(seed=7)\n                positions.append(env.data.mocap_pos[0].copy())\n                assert obs.shape == (size,)\n>               env.step(np.ones(2))\n\ntests\\autoresearch\\test_policy_runtime.py:255: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _\nrobot_learning\\scenario\\environment.py:146: in step\n    reward = reach_reward(\nrobot_learning\\training\\reward.py:162: in reach_reward\n    branch_guidance, limit_proximity = _branch_limit_aware_reward(\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _\n\ncurrent_distance = 0.15704001223130162\njoint_position = array([0.00651243, 0.00738633])\nbranch_errors = array([], dtype=float32)\n\n    def _branch_limit_aware_reward(\n        current_distance: float,\n        joint_position: np.ndarray,\n        branch_errors: np.ndarray,\n    ) -> tuple[float, float]:\n>       errors = np.asarray(branch_errors, dtype=np.float64).reshape(2, 2)\n                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nE       ValueError: cannot reshape array of size 0 into shape (2,2)\n\nrobot_learning\\training\\reward.py:64: ValueError\n______ test_all_evaluation_environments_apply_saved_action_mapping_once _______\n\nmonkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000020B7850BEE0>\ntmp_path = WindowsPath('C:/Users/cyril.beurier/code/robot-learning-inquiry-centered-lifecycle/.pytest-run-temp/test_all_evaluation_environmen0')\n\n    def test_all_evaluation_environments_apply_saved_action_mapping_once(\n        monkeypatch, tmp_path\n    ):\n        from benchmark.final_benchmark import official_environment\n        from benchmark.reference_evaluation import (\n            task_reference_environment,\n        )\n        from robot_learning.scenario.environment import make_evaluation_env\n    \n        path = stateful_artifact(tmp_path, stateful_module(monkeypatch, 3))\n        for factory in (\n            official_environment,\n            task_reference_environment,\n            make_evaluation_env,\n        ):\n            runtime = load_runtime(path)\n            env = factory(policy_runtime=runtime)\n            env.reset(seed=7)\n>           env.step(np.array([1.0, -1.0]))\n\ntests\\autoresearch\\test_policy_runtime.py:279: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _\nrobot_learning\\scenario\\environment.py:146: in step\n    reward = reach_reward(\nrobot_learning\\training\\reward.py:162: in reach_reward\n    branch_guidance, limit_proximity = _branch_limit_aware_reward(\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _\n\ncurrent_distance = 0.1532826704176189\njoint_position = array([ 0.06976654, -0.07850301])\nbranch_errors = array([], dtype=float32)\n\n    def _branch_limit_aware_reward(\n        current_distance: float,\n        joint_position: np.ndarray,\n        branch_errors: np.ndarray,\n    ) -> tuple[float, float]:\n>       errors = np.asarray(branch_errors, dtype=np.float64).reshape(2, 2)\n                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nE       ValueError: cannot reshape array of size 0 into shape (2,2)\n\nrobot_learning\\training\\reward.py:64: ValueError\n=========================== short test summary info ===========================\nFAILED tests/autoresearch/test_policy_runtime.py::test_all_evaluation_paths_use_each_policys_inputs_and_same_task\nFAILED tests/autoresearch/test_policy_runtime.py::test_all_evaluation_environments_apply_saved_action_mapping_once\n2 failed, 17 passed in 5.97s\n\n",
+      "id": "T4",
+      "inquiry_id": "I4",
+      "kind": "training",
+      "request": {
+        "description": "T3-derived branch- and joint-limit-aware trajectory shaping: select the IK branch with the greatest valid joint-limit margin, guide the policy toward that branch, and penalize near-target shoulder-limit proximity when a safely admissible branch exists.",
+        "initialization": "transfer",
+        "parent": "T3:checkpoint-120832",
+        "rationale": "M4 failures in the -130 to -151 degree cluster drove the shoulder to approximately +/-170 degrees while open-branch errors were small, although the open IK shoulder targets were beyond the configured limit and the folded targets had substantial margin. This transfer tests whether valid-branch guidance and near-target limit avoidance rescue the cluster, while the later matched evaluation against T3 will distinguish selective branch/limit improvement from broader angle-dependent acquisition or braking gains.",
+        "seed": 0,
+        "steps": 120000
+      },
+      "result": {
+        "error": "pytest failed:\n.............FF....                                                      [100%]\n================================== FAILURES ===================================\n_______ test_all_evaluation_paths_use_each_policys_inputs_and_same_task _______\n\nmonkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000020B76EAD8D0>\ntmp_path = WindowsPath('C:/Users/cyril.beurier/code/robot-learning-inquiry-centered-lifecycle/.pytest-run-temp/test_all_evaluation_paths_use_0')\n\n    def test_all_evaluation_paths_use_each_policys_inputs_and_same_task(\n        monkeypatch, tmp_path\n    ):\n        from benchmark.final_benchmark import official_environment\n        from benchmark.reference_evaluation import task_reference_environment\n        from robot_learning.scenario.environment import make_evaluation_env\n    \n        for factory in (\n            official_environment,\n            task_reference_environment,\n            make_evaluation_env,\n        ):\n            positions = []\n            for size in (3, 30):\n                path = artifact(\n                    tmp_path / f\"{factory.__name__}-{size}\",\n                    scientific_module(monkeypatch, size),\n                )\n                runtime = load_runtime(path)\n                env = factory(policy_runtime=runtime)\n                obs, _ = env.reset(seed=7)\n                positions.append(env.data.mocap_pos[0].copy())\n                assert obs.shape == (size,)\n>               env.step(np.ones(2))\n\ntests\\autoresearch\\test_policy_runtime.py:255: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _\nrobot_learning\\scenario\\environment.py:146: in step\n    reward = reach_reward(\nrobot_learning\\training\\reward.py:162: in reach_reward\n    branch_guidance, limit_proximity = _branch_limit_aware_reward(\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _\n\ncurrent_distance = 0.15704001223130162\njoint_position = array([0.00651243, 0.00738633])\nbranch_errors = array([], dtype=float32)\n\n    def _branch_limit_aware_reward(\n        current_distance: float,\n        joint_position: np.ndarray,\n        branch_errors: np.ndarray,\n    ) -> tuple[float, float]:\n>       errors = np.asarray(branch_errors, dtype=np.float64).reshape(2, 2)\n                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nE       ValueError: cannot reshape array of size 0 into shape (2,2)\n\nrobot_learning\\training\\reward.py:64: ValueError\n______ test_all_evaluation_environments_apply_saved_action_mapping_once _______\n\nmonkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000020B7850BEE0>\ntmp_path = WindowsPath('C:/Users/cyril.beurier/code/robot-learning-inquiry-centered-lifecycle/.pytest-run-temp/test_all_evaluation_environmen0')\n\n    def test_all_evaluation_environments_apply_saved_action_mapping_once(\n        monkeypatch, tmp_path\n    ):\n        from benchmark.final_benchmark import official_environment\n        from benchmark.reference_evaluation import (\n            task_reference_environment,\n        )\n        from robot_learning.scenario.environment import make_evaluation_env\n    \n        path = stateful_artifact(tmp_path, stateful_module(monkeypatch, 3))\n        for factory in (\n            official_environment,\n            task_reference_environment,\n            make_evaluation_env,\n        ):\n            runtime = load_runtime(path)\n            env = factory(policy_runtime=runtime)\n            env.reset(seed=7)\n>           env.step(np.array([1.0, -1.0]))\n\ntests\\autoresearch\\test_policy_runtime.py:279: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _\nrobot_learning\\scenario\\environment.py:146: in step\n    reward = reach_reward(\nrobot_learning\\training\\reward.py:162: in reach_reward\n    branch_guidance, limit_proximity = _branch_limit_aware_reward(\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _\n\ncurrent_distance = 0.1532826704176189\njoint_position = array([ 0.06976654, -0.07850301])\nbranch_errors = array([], dtype=float32)\n\n    def _branch_limit_aware_reward(\n        current_distance: float,\n        joint_position: np.ndarray,\n        branch_errors: np.ndarray,\n    ) -> tuple[float, float]:\n>       errors = np.asarray(branch_errors, dtype=np.float64).reshape(2, 2)\n                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nE       ValueError: cannot reshape array of size 0 into shape (2,2)\n\nrobot_learning\\training\\reward.py:64: ValueError\n=========================== short test summary info ===========================\nFAILED tests/autoresearch/test_policy_runtime.py::test_all_evaluation_paths_use_each_policys_inputs_and_same_task\nFAILED tests/autoresearch/test_policy_runtime.py::test_all_evaluation_environments_apply_saved_action_mapping_once\n2 failed, 17 passed in 5.97s\n\n",
+        "status": "failed"
+      },
+      "session_id": "S9",
+      "status": "failed",
+      "superseded_by": "T5",
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "archived_candidates": null,
+      "candidate_dir": null,
+      "code_parent_commit": "0bf8ad6556bcecc4ba7ad07c25a8d8673365a666",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "parent": {
+        "artifact": "campaigns/checkpoints/candidates/339736e0-5583-4bc4-8729-5023fc3077b7/t3/checkpoint-120832",
+        "fingerprint": "1c7788b0587f24fce285e6f2fa3582ba3bea6511487b70a77b0983b810e7f2b1",
+        "id": "T3:checkpoint-120832",
+        "parameters": {
+          "algorithm": {
+            "name": "ppo"
+          },
+          "policy": {
+            "activation": "tanh",
+            "net_arch": [
+              64,
+              64
+            ]
+          },
+          "ppo": {
+            "batch_size": 64,
+            "ent_coef": 0.01,
+            "gae_lambda": 0.95,
+            "gamma": 0.99,
+            "learning_rate": 0.0003,
+            "n_steps": 1024
+          },
+          "training": {
+            "checkpoint_every_steps": 5000,
+            "n_envs": 1
+          }
+        },
+        "scientific_commit": "f6950a28bf1179f1dda80095a4dc2601bb437ea4",
+        "training_steps": 120832
+      },
+      "result": null,
+      "scientific_commit": null,
+      "scientific_manifest": [
+        {
+          "exists": true,
+          "fingerprint": "3c817b83c6112a9797862bf77a9f7e484d93062c71161dd5a6846773253019c4",
+          "path": "robot_learning/scenario/environment.py"
+        },
+        {
+          "exists": true,
+          "fingerprint": "1a05d3de4d2e04fefb62a2da74d10a2a44082944988478fbad7aa842bb5c5496",
+          "path": "robot_learning/training/reward.py"
+        }
+      ],
+      "scientific_paths": [
+        "robot_learning/scenario/environment.py",
+        "robot_learning/training/reward.py"
+      ]
+    },
+    "failure": null,
+    "id": "T5",
+    "inquiry_id": "I4",
+    "kind": "training",
+    "progress": "accepted",
+    "request": {
+      "training": {
+        "description": "Retry the T3-derived branch- and joint-limit-aware trajectory shaping experiment after correcting a runtime-compatibility failure: select the IK branch with the greatest valid joint-limit margin, guide the policy toward that branch, and penalize near-target shoulder-limit proximity when a safely admissible branch exists.",
+        "initialization": "transfer",
+        "parent": "T3:checkpoint-120832",
+        "rationale": "T4 produced no scientific result because reward shaping incorrectly assumed every policy observation contained four branch-error values; the canonical physical state does contain them, while compatibility test policies may expose arbitrary observation widths. The corrected implementation derives branch errors directly from simulator state. This transfer tests whether valid-branch guidance and near-target limit avoidance rescue the clustered failures, while matched evaluation against T3 will distinguish selective branch/limit improvement from broader angle-dependent acquisition or braking gains.",
+        "seed": 0,
+        "steps": 120000
+      }
+    },
+    "request_fingerprint": "027e82ea178fc94affc62ef4a8e6b2580e7e50ec8e8ccce5bc60e5a6cc508d7a",
+    "session_id": "S9",
+    "supersedes": "T4"
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T3:checkpoint-120832 remains the strongest development-evaluated candidate at 153/160, with T2:checkpoint-120832 as its matched 150/160 reference. Neither candidate has a working, best-known, or retained role; training facts do not establish development performance, and the goal review made no role assignment.",
     "completed_operations": [
@@ -4966,6 +5086,19 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "1b5f63df-43a5-44a5-ab2e-2abcca71e7e8",
+    "id": "S9",
+    "inquiry_id": "I4",
+    "kind": "inquiry",
+    "objective": "Advance I4 toward an evidence-supported answer to its scientific question: Can targeted angle- and IK-branch/limit-aware trajectory control reduce the remaining T3 failures toward the 98% complete-hold goal, and do the gains distinguish branch/limit interaction from angle-dependent acquisition and braking? Before choosing the next action, compare the accumulated evidence with the closure condition. Choose the supported operation that best advances the bounded work; no operation is the default. Close the inquiry when the condition is met.",
+    "operation_ids": [],
+    "scientific_parent_commit": "0bf8ad6556bcecc4ba7ad07c25a8d8673365a666"
+  },
   "terminal_state": null
 }
