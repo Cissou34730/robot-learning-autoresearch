@@ -8210,7 +8210,7 @@
     }
   },
   "counters": {
-    "event": 48,
+    "event": 49,
     "inquiry": 12,
     "measurement": 15,
     "session": 24,
@@ -8219,7 +8219,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -16708,21 +16708,178 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-09T01:37:42Z",
+      "error": null,
+      "id": "E49",
+      "inquiry_id": null,
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "T3:checkpoint-120832 remains the strongest measured development candidate at 153/160 successes, 157 first reaches, and four hold interruptions. T13:checkpoint-120832 exactly matched T3 on the M13 panel and has no assigned role. T12:checkpoint-120832 remains intervention-limited at 151/160. No working, best-known, or retained role is assigned.",
+        "completed_operations": [
+          "E48"
+        ],
+        "cumulative_resource_use": "No new training allocation or measurement was used in this goal-review session. Prior allocations and measurements remain as recorded through I11, including T13's 120832 completed rollout-aligned steps and its matched 160-episode panel; E48 only opened I12.",
+        "current_goal_gap": "Seven T3 failures remain concentrated near -130 to -151 degrees. M10 measured 5.24-7.56 rad/s residual arrival speeds and generally negative one-interval retention margins. T13 matched T3 at 153/160 successes with zero discordant episodes, so the tested route-conditioned action recipe did not reduce the development gap or alter the residual outcomes.",
+        "current_synthesis": "Established observations: M1 found nonzero compiled plant authority, no sampled self-contact in valid target branches, and complete 100-step local holds from low-velocity perturbations. M4 showed that incremental-radius transfer produced T3 at 153/160 successes and 157/160 first reaches with four hold interruptions. M6, M7, and M8 showed that hold-exit forfeiture, branch-feasibility features, and a serialized damped action mapper did not repair the residual failures. M10 localized all seven T3 failures to the negative-angle cluster and found high-speed arrivals with insufficient sampled braking margin, while its matched local probes did not complete holds from those exact states; this supports a policy-reachable braking-margin bottleneck but does not prove that representation or action changes are sufficient. M11 rejected the tested global speed-penalty recipe because it degraded the broad regime, without establishing that residual arrival speed fell. T12 tested a transfer-compatible arrival-state representation and lost two paired episodes, reduced first reaches from 157 to 154, increased interruptions from four to five, and reached only 151/160 successes; this is evidence against that representation recipe, not against arrival-state conditioning or the broader control-aware explanation. T13 then restored T3's observation and curriculum and applied angle- and distance-gated joint-velocity damping at the action boundary. On the matched M13 panel T13 exactly matched T3 at 153/160 successes with zero discordant episodes. This rejects that bounded route-conditioned action recipe as a path to the goal, but does not establish that all action authority is ineffective. M14 and M15 failed during residual-margin execution because of request and archived-runtime defects; they provide no scientific evidence. E48 opened I12 because the remaining consequential distinction is whether a different plant-level control design can add sampled braking margin without sacrificing the route regime.",
+        "decision_frontier": "I12 now carries the unresolved distinction between a real plant-level braking-authority bottleneck and a redesign that trades braking for reach coverage. Positive evidence requires at least 157/160 first reaches, at least 157/160 complete holds, and improved negative-angle arrival speed or one-interval sampled retention margin relative to T3. Broad reach degradation rejects the design; preserved route coverage without improved residual margin weakens the available-control explanation; execution that cannot distinguish these outcomes is inconclusive.",
+        "evidence_references": [
+          "M1",
+          "M4",
+          "M6",
+          "M7",
+          "M8",
+          "M10",
+          "M11",
+          "T12",
+          "M12",
+          "E41",
+          "E45",
+          "T13",
+          "M13",
+          "E46",
+          "E48"
+        ],
+        "human_goal_connection": "The campaign still requires at least 196 successes in the 200-episode official assessment. T3:checkpoint-120832 remains the strongest measured development candidate at 153/160 successes, with 157 first reaches and four hold interruptions, so official assessment is not justified. Goal review opened I12 to test whether plant-level control can repair the concentrated negative-angle braking failures while preserving T3's reach coverage.",
+        "next_direction_or_closure": "The goal-review transition is complete: I12 was opened with plant-level control as the next bounded scientific direction, and this checkpoint ends the goal-review session. The fresh I12 session should choose the most discriminating supported operation, preserving T3's reach coverage as the control and testing the negative-angle braking-margin mechanism.",
+        "next_question": "Can a plant-level control design improve sampled braking margin in the residual negative-angle geometry without sacrificing T3's reach coverage and achieve at least 98% development success?"
+      },
+      "result": {
+        "session_id": "S24",
+        "status": "checkpointed"
+      },
+      "session_id": "S24",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "e60df42df0f65f332c3190fbbce033fb77c23f47",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "T3:checkpoint-120832 remains the strongest measured development candidate at 153/160 successes, 157 first reaches, and four hold interruptions. T13:checkpoint-120832 exactly matched T3 on the M13 panel and has no assigned role. T12:checkpoint-120832 remains intervention-limited at 151/160. No working, best-known, or retained role is assigned.",
+        "completed_operations": [
+          "E48"
+        ],
+        "cumulative_resource_use": "No new training allocation or measurement was used in this goal-review session. Prior allocations and measurements remain as recorded through I11, including T13's 120832 completed rollout-aligned steps and its matched 160-episode panel; E48 only opened I12.",
+        "current_goal_gap": "Seven T3 failures remain concentrated near -130 to -151 degrees. M10 measured 5.24-7.56 rad/s residual arrival speeds and generally negative one-interval retention margins. T13 matched T3 at 153/160 successes with zero discordant episodes, so the tested route-conditioned action recipe did not reduce the development gap or alter the residual outcomes.",
+        "current_synthesis": "Established observations: M1 found nonzero compiled plant authority, no sampled self-contact in valid target branches, and complete 100-step local holds from low-velocity perturbations. M4 showed that incremental-radius transfer produced T3 at 153/160 successes and 157/160 first reaches with four hold interruptions. M6, M7, and M8 showed that hold-exit forfeiture, branch-feasibility features, and a serialized damped action mapper did not repair the residual failures. M10 localized all seven T3 failures to the negative-angle cluster and found high-speed arrivals with insufficient sampled braking margin, while its matched local probes did not complete holds from those exact states; this supports a policy-reachable braking-margin bottleneck but does not prove that representation or action changes are sufficient. M11 rejected the tested global speed-penalty recipe because it degraded the broad regime, without establishing that residual arrival speed fell. T12 tested a transfer-compatible arrival-state representation and lost two paired episodes, reduced first reaches from 157 to 154, increased interruptions from four to five, and reached only 151/160 successes; this is evidence against that representation recipe, not against arrival-state conditioning or the broader control-aware explanation. T13 then restored T3's observation and curriculum and applied angle- and distance-gated joint-velocity damping at the action boundary. On the matched M13 panel T13 exactly matched T3 at 153/160 successes with zero discordant episodes. This rejects that bounded route-conditioned action recipe as a path to the goal, but does not establish that all action authority is ineffective. M14 and M15 failed during residual-margin execution because of request and archived-runtime defects; they provide no scientific evidence. E48 opened I12 because the remaining consequential distinction is whether a different plant-level control design can add sampled braking margin without sacrificing the route regime.",
+        "decision_frontier": "I12 now carries the unresolved distinction between a real plant-level braking-authority bottleneck and a redesign that trades braking for reach coverage. Positive evidence requires at least 157/160 first reaches, at least 157/160 complete holds, and improved negative-angle arrival speed or one-interval sampled retention margin relative to T3. Broad reach degradation rejects the design; preserved route coverage without improved residual margin weakens the available-control explanation; execution that cannot distinguish these outcomes is inconclusive.",
+        "evidence_references": [
+          "M1",
+          "M4",
+          "M6",
+          "M7",
+          "M8",
+          "M10",
+          "M11",
+          "T12",
+          "M12",
+          "E41",
+          "E45",
+          "T13",
+          "M13",
+          "E46",
+          "E48"
+        ],
+        "human_goal_connection": "The campaign still requires at least 196 successes in the 200-episode official assessment. T3:checkpoint-120832 remains the strongest measured development candidate at 153/160 successes, with 157 first reaches and four hold interruptions, so official assessment is not justified. Goal review opened I12 to test whether plant-level control can repair the concentrated negative-angle braking failures while preserving T3's reach coverage.",
+        "inquiry_id": null,
+        "next_direction_or_closure": "The goal-review transition is complete: I12 was opened with plant-level control as the next bounded scientific direction, and this checkpoint ends the goal-review session. The fresh I12 session should choose the most discriminating supported operation, preserving T3's reach coverage as the control and testing the negative-angle braking-margin mechanism.",
+        "next_question": "Can a plant-level control design improve sampled braking margin in the residual negative-angle geometry without sacrificing T3's reach coverage and achieve at least 98% development success?",
+        "session_id": "S24"
+      },
+      "presentation": {
+        "backend_session_id": "494f704b-ae93-40aa-8392-a0b07a46a1b7",
+        "campaign_id": "1ae27a27-6880-4ca6-9d50-e6498e771cb7",
+        "campaign_usage": "1h01m | 182.41 AIU | prompt 31m (87% cached) | output 227.9k",
+        "session_id": "S24",
+        "session_kind": "goal_review",
+        "session_usage": "1m23s | 5.08 AIU | prompt 698.8k (81% cached) | output 5.2k"
+      },
+      "result": {
+        "session_id": "S24",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "7ab37ca792acc35258231752b28dccc2e9567f28",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E49",
+    "inquiry_id": null,
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "T3:checkpoint-120832 remains the strongest measured development candidate at 153/160 successes, 157 first reaches, and four hold interruptions. T13:checkpoint-120832 exactly matched T3 on the M13 panel and has no assigned role. T12:checkpoint-120832 remains intervention-limited at 151/160. No working, best-known, or retained role is assigned.",
+        "completed_operations": [
+          "E48"
+        ],
+        "cumulative_resource_use": "No new training allocation or measurement was used in this goal-review session. Prior allocations and measurements remain as recorded through I11, including T13's 120832 completed rollout-aligned steps and its matched 160-episode panel; E48 only opened I12.",
+        "current_goal_gap": "Seven T3 failures remain concentrated near -130 to -151 degrees. M10 measured 5.24-7.56 rad/s residual arrival speeds and generally negative one-interval retention margins. T13 matched T3 at 153/160 successes with zero discordant episodes, so the tested route-conditioned action recipe did not reduce the development gap or alter the residual outcomes.",
+        "current_synthesis": "Established observations: M1 found nonzero compiled plant authority, no sampled self-contact in valid target branches, and complete 100-step local holds from low-velocity perturbations. M4 showed that incremental-radius transfer produced T3 at 153/160 successes and 157/160 first reaches with four hold interruptions. M6, M7, and M8 showed that hold-exit forfeiture, branch-feasibility features, and a serialized damped action mapper did not repair the residual failures. M10 localized all seven T3 failures to the negative-angle cluster and found high-speed arrivals with insufficient sampled braking margin, while its matched local probes did not complete holds from those exact states; this supports a policy-reachable braking-margin bottleneck but does not prove that representation or action changes are sufficient. M11 rejected the tested global speed-penalty recipe because it degraded the broad regime, without establishing that residual arrival speed fell. T12 tested a transfer-compatible arrival-state representation and lost two paired episodes, reduced first reaches from 157 to 154, increased interruptions from four to five, and reached only 151/160 successes; this is evidence against that representation recipe, not against arrival-state conditioning or the broader control-aware explanation. T13 then restored T3's observation and curriculum and applied angle- and distance-gated joint-velocity damping at the action boundary. On the matched M13 panel T13 exactly matched T3 at 153/160 successes with zero discordant episodes. This rejects that bounded route-conditioned action recipe as a path to the goal, but does not establish that all action authority is ineffective. M14 and M15 failed during residual-margin execution because of request and archived-runtime defects; they provide no scientific evidence. E48 opened I12 because the remaining consequential distinction is whether a different plant-level control design can add sampled braking margin without sacrificing the route regime.",
+        "decision_frontier": "I12 now carries the unresolved distinction between a real plant-level braking-authority bottleneck and a redesign that trades braking for reach coverage. Positive evidence requires at least 157/160 first reaches, at least 157/160 complete holds, and improved negative-angle arrival speed or one-interval sampled retention margin relative to T3. Broad reach degradation rejects the design; preserved route coverage without improved residual margin weakens the available-control explanation; execution that cannot distinguish these outcomes is inconclusive.",
+        "evidence_references": [
+          "M1",
+          "M4",
+          "M6",
+          "M7",
+          "M8",
+          "M10",
+          "M11",
+          "T12",
+          "M12",
+          "E41",
+          "E45",
+          "T13",
+          "M13",
+          "E46",
+          "E48"
+        ],
+        "human_goal_connection": "The campaign still requires at least 196 successes in the 200-episode official assessment. T3:checkpoint-120832 remains the strongest measured development candidate at 153/160 successes, with 157 first reaches and four hold interruptions, so official assessment is not justified. Goal review opened I12 to test whether plant-level control can repair the concentrated negative-angle braking failures while preserving T3's reach coverage.",
+        "next_direction_or_closure": "The goal-review transition is complete: I12 was opened with plant-level control as the next bounded scientific direction, and this checkpoint ends the goal-review session. The fresh I12 session should choose the most discriminating supported operation, preserving T3's reach coverage as the control and testing the negative-angle braking-margin mechanism.",
+        "next_question": "Can a plant-level control design improve sampled braking margin in the residual negative-angle geometry without sacrificing T3's reach coverage and achieve at least 98% development success?"
+      }
+    },
+    "request_fingerprint": "4c597556a3b7a8494db21b538d763ed831e74c6aa9b630a0a0399adbbca1733f",
+    "session_id": "S24",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T3:checkpoint-120832 remains the strongest measured development candidate at 153/160 successes, 157 first reaches, and four hold interruptions. T13:checkpoint-120832 exactly matched T3 on the M13 panel and has no assigned role. T12:checkpoint-120832 remains intervention-limited at 151/160. No working, best-known, or retained role is assigned.",
     "completed_operations": [
-      "E45",
-      "T13",
-      "M13",
-      "E46"
+      "E48"
     ],
-    "cumulative_resource_use": "I11 used one 120000-step transfer allocation for T13, completing 120832 rollout-aligned steps, and one matched 160-episode evaluation panel for T13 and T3. The residual-margin requests M14 and M15 failed during execution and produced no scientific measurement. Prior allocations and measurements remain as recorded through M13.",
+    "cumulative_resource_use": "No new training allocation or measurement was used in this goal-review session. Prior allocations and measurements remain as recorded through I11, including T13's 120832 completed rollout-aligned steps and its matched 160-episode panel; E48 only opened I12.",
     "current_goal_gap": "Seven T3 failures remain concentrated near -130 to -151 degrees. M10 measured 5.24-7.56 rad/s residual arrival speeds and generally negative one-interval retention margins. T13 matched T3 at 153/160 successes with zero discordant episodes, so the tested route-conditioned action recipe did not reduce the development gap or alter the residual outcomes.",
-    "current_synthesis": "Established observations: M1 found nonzero compiled plant authority, no sampled self-contact in valid target branches, and complete 100-step local holds from low-velocity perturbations. M4 showed that incremental-radius transfer produced T3 at 153/160 successes and 157/160 first reaches with four hold interruptions. M6, M7, and M8 showed that hold-exit forfeiture, branch-feasibility features, and a serialized damped action mapper did not repair the residual failures. M10 localized all seven T3 failures to the negative-angle cluster and found high-speed arrivals with insufficient sampled braking margin, while its matched local probes did not complete holds from those exact states; this supports a policy-reachable braking-margin bottleneck but does not prove that representation or action changes are sufficient. M11 rejected the tested global speed-penalty recipe because it degraded the broad regime, without establishing that residual arrival speed fell. T12 tested a transfer-compatible arrival-state representation and lost two paired episodes, reduced first reaches from 157 to 154, increased interruptions from four to five, and reached only 151/160 successes; this is evidence against that representation recipe, not against arrival-state conditioning or the broader control-aware explanation. T13 then restored T3's observation and curriculum and applied angle- and distance-gated joint-velocity damping at the action boundary. On the matched M13 panel T13 exactly matched T3 at 153/160 successes with zero discordant episodes. This rejects that bounded route-conditioned action recipe as a path to the goal, but does not establish that all action authority is ineffective. M14 and M15 failed during residual-margin execution because of request and archived-runtime defects; they provide no scientific evidence. The leading explanation remains that the residual policy-reachable braking-margin bottleneck requires a different plant-level control structure that preserves T3's global route coverage while braking before the discrete-time tolerance boundary.",
-    "decision_frontier": "The route-conditioned action recipe tested by T13 preserved T3's reach regime but produced no change in success or paired episode outcomes, so I11 closes negatively for that recipe. The next unresolved distinction is whether a plant-level control redesign can increase braking authority and sampled retention margin specifically in the negative-angle residual geometry without sacrificing T3's 157 first reaches or approximately four hold interruptions. Improvement in negative-angle arrival speed or one-interval retention margin together with at least 157/160 development successes would support the braking-margin mechanism and advance the human goal; unchanged margin would weaken the available-control explanation, while broad reach degradation would reject that plant-level design.",
+    "current_synthesis": "Established observations: M1 found nonzero compiled plant authority, no sampled self-contact in valid target branches, and complete 100-step local holds from low-velocity perturbations. M4 showed that incremental-radius transfer produced T3 at 153/160 successes and 157/160 first reaches with four hold interruptions. M6, M7, and M8 showed that hold-exit forfeiture, branch-feasibility features, and a serialized damped action mapper did not repair the residual failures. M10 localized all seven T3 failures to the negative-angle cluster and found high-speed arrivals with insufficient sampled braking margin, while its matched local probes did not complete holds from those exact states; this supports a policy-reachable braking-margin bottleneck but does not prove that representation or action changes are sufficient. M11 rejected the tested global speed-penalty recipe because it degraded the broad regime, without establishing that residual arrival speed fell. T12 tested a transfer-compatible arrival-state representation and lost two paired episodes, reduced first reaches from 157 to 154, increased interruptions from four to five, and reached only 151/160 successes; this is evidence against that representation recipe, not against arrival-state conditioning or the broader control-aware explanation. T13 then restored T3's observation and curriculum and applied angle- and distance-gated joint-velocity damping at the action boundary. On the matched M13 panel T13 exactly matched T3 at 153/160 successes with zero discordant episodes. This rejects that bounded route-conditioned action recipe as a path to the goal, but does not establish that all action authority is ineffective. M14 and M15 failed during residual-margin execution because of request and archived-runtime defects; they provide no scientific evidence. E48 opened I12 because the remaining consequential distinction is whether a different plant-level control design can add sampled braking margin without sacrificing the route regime.",
+    "decision_frontier": "I12 now carries the unresolved distinction between a real plant-level braking-authority bottleneck and a redesign that trades braking for reach coverage. Positive evidence requires at least 157/160 first reaches, at least 157/160 complete holds, and improved negative-angle arrival speed or one-interval sampled retention margin relative to T3. Broad reach degradation rejects the design; preserved route coverage without improved residual margin weakens the available-control explanation; execution that cannot distinguish these outcomes is inconclusive.",
     "evidence_references": [
       "M1",
       "M4",
@@ -16737,14 +16894,15 @@
       "E45",
       "T13",
       "M13",
-      "E46"
+      "E46",
+      "E48"
     ],
-    "human_goal_connection": "The campaign still requires at least 196 successes in the 200-episode official assessment. T3:checkpoint-120832 remains the strongest development candidate at 153/160 successes, with 157 first reaches and four hold interruptions, so official assessment is not justified. I11 tested whether route-conditioned action authority could repair the concentrated negative-angle failures without sacrificing T3's reach regime.",
-    "inquiry_id": "I11",
-    "next_direction_or_closure": "I11 is closed negatively for the tested route-conditioned action recipe. The next fresh inquiry should investigate a plant-level control design, using T3's reach coverage as the preservation control and M10's negative-angle arrival speed and sampled retention margin as the mechanism tests. The carried question is whether a plant-level redesign can add the missing braking authority without changing the route regime.",
+    "human_goal_connection": "The campaign still requires at least 196 successes in the 200-episode official assessment. T3:checkpoint-120832 remains the strongest measured development candidate at 153/160 successes, with 157 first reaches and four hold interruptions, so official assessment is not justified. Goal review opened I12 to test whether plant-level control can repair the concentrated negative-angle braking failures while preserving T3's reach coverage.",
+    "inquiry_id": null,
+    "next_direction_or_closure": "The goal-review transition is complete: I12 was opened with plant-level control as the next bounded scientific direction, and this checkpoint ends the goal-review session. The fresh I12 session should choose the most discriminating supported operation, preserving T3's reach coverage as the control and testing the negative-angle braking-margin mechanism.",
     "next_question": "Can a plant-level control design improve sampled braking margin in the residual negative-angle geometry without sacrificing T3's reach coverage and achieve at least 98% development success?",
-    "scientific_commit": "468e546e0dbde8d9cbec5cc80b97fdf1a5e9aab4",
-    "session_id": "S23"
+    "scientific_commit": "7ab37ca792acc35258231752b28dccc2e9567f28",
+    "session_id": "S24"
   },
   "schema_version": 6,
   "scientific_model": {
@@ -16752,21 +16910,6 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "494f704b-ae93-40aa-8392-a0b07a46a1b7",
-    "id": "S24",
-    "inquiry_id": null,
-    "kind": "goal_review",
-    "objective": "Use the completed evidence to update the scientific direction toward the human goal. Request measurements when they resolve an uncertainty or develop the method. Then choose one outcome: request the official assessment, or open one bounded goal-linked inquiry.",
-    "operation_ids": [
-      "E48"
-    ],
-    "scientific_parent_commit": "e60df42df0f65f332c3190fbbce033fb77c23f47"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }

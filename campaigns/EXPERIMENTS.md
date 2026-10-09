@@ -78,3 +78,4 @@
 | E46 | inquiry | I11 | completed |
 | E47 | checkpoint | I11 | checkpointed |
 | E48 | inquiry | I12 | completed |
+| E49 | checkpoint | - | checkpointed |
