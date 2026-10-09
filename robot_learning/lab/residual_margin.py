@@ -57,6 +57,15 @@ def _distance(data: mujoco.MjData, target: np.ndarray) -> float:
     return float(np.linalg.norm(data.site("end_effector").xpos - target))
 
 
+def _site_linear_velocity(
+    model: mujoco.MjModel, data: mujoco.MjData, site_id: int
+) -> np.ndarray:
+    jacobian = np.zeros((3, model.nv), dtype=np.float64)
+    rotational_jacobian = np.zeros((3, model.nv), dtype=np.float64)
+    mujoco.mj_jacSite(model, data, jacobian, rotational_jacobian, site_id)
+    return (jacobian @ data.qvel)[:2].copy()
+
+
 def _advance(model: mujoco.MjModel, data: mujoco.MjData, action: np.ndarray) -> None:
     data.ctrl[:] = np.clip(action, -1.0, 1.0)
     for _ in range(FRAME_SKIP):
@@ -283,7 +292,7 @@ def measure(candidate: Path, episodes: int, seed: int) -> dict:
             state = (
                 data.qpos.copy(),
                 data.qvel.copy(),
-                data.site_xvelp[site_id, :2].copy(),
+                _site_linear_velocity(model, data, site_id),
             )
             if distance < closest_distance:
                 closest_distance = distance
