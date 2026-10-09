@@ -17,6 +17,10 @@ def _wrap_to_pi(angle: float) -> float:
 
 
 def select_ik_target(target_xy: np.ndarray) -> np.ndarray:
+    return select_ik_solution(target_xy)[1]
+
+
+def select_ik_solution(target_xy: np.ndarray) -> tuple[str, np.ndarray, float]:
     radius_squared = float(np.dot(target_xy, target_xy))
     target_angle = float(np.arctan2(target_xy[1], target_xy[0]))
     elbow_open = float(
@@ -29,8 +33,11 @@ def select_ik_target(target_xy: np.ndarray) -> np.ndarray:
             )
         )
     )
-    solutions: list[tuple[float, np.ndarray]] = []
-    for elbow in (elbow_open, -elbow_open):
+    solutions: list[tuple[str, np.ndarray, float]] = []
+    for branch, elbow in (
+        ("positive_elbow", elbow_open),
+        ("negative_elbow", -elbow_open),
+    ):
         shoulder = _wrap_to_pi(
             target_angle
             - np.arctan2(
@@ -41,10 +48,10 @@ def select_ik_target(target_xy: np.ndarray) -> np.ndarray:
         qpos = np.array([shoulder, elbow], dtype=np.float64)
         margin = min(JOINT_LIMIT_RAD - abs(shoulder), JOINT_LIMIT_RAD - abs(elbow))
         if margin >= 0.0:
-            solutions.append((margin, qpos))
+            solutions.append((branch, qpos, margin))
     if not solutions:
         raise RuntimeError("official target has no feasible analytic IK branch")
-    return max(solutions, key=lambda item: item[0])[1]
+    return max(solutions, key=lambda item: item[2])
 
 
 def computed_torque_action(

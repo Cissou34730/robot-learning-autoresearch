@@ -7,10 +7,12 @@ observation space declared by the scenario environment.
 import numpy as np
 
 from contracts.robots.two_joint_arm import FOREARM_LENGTH, UPPER_ARM_LENGTH
-from robot_learning.scenario.model_based_control import select_ik_target
+from robot_learning.scenario.model_based_control import (
+    JOINT_LIMIT_RAD,
+    select_ik_solution,
+)
 
-OBSERVATION_SIZE = 21
-TRAJECTORY_DURATION_STEPS = 30
+OBSERVATION_SIZE = 16
 
 
 def reach_observation(data) -> np.ndarray:
@@ -51,57 +53,21 @@ def reach_observation(data) -> np.ndarray:
     ).astype(np.float32)
 
 
-def phase_aware_observation(
-    data,
-    *,
-    step_count: int = 0,
-    held_steps: int = 0,
-    hold_steps_required: int = 100,
-    previous_action: np.ndarray | None = None,
-) -> np.ndarray:
-    """Add trajectory, phase and action-history context to the base state."""
+def branch_limit_conditioned_observation(data) -> np.ndarray:
+    """Add a static, limit-aware joint target without phase or action history."""
     base = reach_observation(data)
     target_xy = np.asarray(data.mocap_pos[0][:2], dtype=np.float64)
-    target_qpos = select_ik_target(target_xy)
-
-    trajectory_progress = float(
-        np.clip(step_count / TRAJECTORY_DURATION_STEPS, 0.0, 1.0)
-    )
-    smooth_progress = trajectory_progress**2 * (3.0 - 2.0 * trajectory_progress)
-    desired_qpos = smooth_progress * target_qpos
-    if 0 < trajectory_progress < 1:
-        desired_qvel = (
-            target_qpos
-            * (6.0 * trajectory_progress - 6.0 * trajectory_progress**2)
-            / TRAJECTORY_DURATION_STEPS
-        )
-    else:
-        desired_qvel = np.zeros(2, dtype=np.float64)
-
-    if hold_steps_required <= 0:
-        raise ValueError("hold_steps_required must be positive")
-    hold_progress = float(np.clip(held_steps / hold_steps_required, 0.0, 1.0))
-    hold_active = float(held_steps > 0)
-    phase = np.array(
-        [
-            float(not hold_active),
-            hold_active,
-            trajectory_progress,
-            hold_progress,
-        ],
-        dtype=np.float64,
-    )
-    action_history = (
-        np.zeros(2, dtype=np.float64)
-        if previous_action is None
-        else np.asarray(previous_action, dtype=np.float64)
+    branch, target_qpos, limit_margin = select_ik_solution(target_xy)
+    branch_indicator = (
+        np.array([1.0, 0.0], dtype=np.float64)
+        if branch == "positive_elbow"
+        else np.array([0.0, 1.0], dtype=np.float64)
     )
     return np.concatenate(
         [
             base,
-            desired_qpos,
-            desired_qvel,
-            phase,
-            np.clip(action_history, -1.0, 1.0),
+            target_qpos,
+            branch_indicator,
+            [np.clip(limit_margin / JOINT_LIMIT_RAD, 0.0, 1.0)],
         ]
     ).astype(np.float32)
