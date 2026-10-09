@@ -26,7 +26,6 @@ from contracts.task_spec import (
     TARGET_RADIUS_RANGE,
 )
 from robot_learning.scenario.observations import OBSERVATION_SIZE
-from robot_learning.scenario.observations import reach_observation
 from robot_learning.scenario.policy_io import make_policy_io
 from robot_learning.training.reward import reach_reward
 
@@ -144,7 +143,9 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
             self._held_steps = 0
 
         observation = self._observation()
-        physical_observation = reach_observation(self.data)
+        target_angle = float(
+            np.arctan2(self.data.mocap_pos[0][1], self.data.mocap_pos[0][0])
+        )
         reward = reach_reward(
             self._previous_distance,
             distance,
@@ -155,8 +156,7 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
             previous_held_steps=previous_held_steps,
             hold_steps_required=self.hold_steps_required,
             penalize_outside=self._outside_after_hold,
-            joint_position=self.data.qpos[:2],
-            branch_errors=physical_observation[7:11],
+            target_angle=target_angle,
         )
         self._previous_distance = distance
 
