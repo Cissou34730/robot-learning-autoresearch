@@ -11349,38 +11349,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I6",
-        "outcome": "limited negative",
-        "reason": "M7 closes I6 with a matched null result. T9:checkpoint-105472, which recovered training performance after the T8 implementation collapse, achieved 153/160 development successes, exactly matching T3:checkpoint-120832 with zero discordant episodes. The same seven episode seeds remained failures in both artifacts, including the recurring approximately -130 to -151 degree regime; both artifacts recorded the required complete-hold outcome, first_reach_step, max_held_steps, hold_interruptions, timeout fields, target angle, and terminal joint/branch diagnostics. Inspected recurring failures show no rescue: for example, seed 4201 remains an interrupted hold and seed 4208 remains a no-first-reach failure, with near-limit shoulder and large alternate-branch errors. This is evidence against the tested explicit branch-constrained acquisition plus weak limit-braking implementation as a rescue for this failure set, not proof that all trajectory control is ineffective. The inquiry is therefore redirected toward a different control or learning method while retaining T3 as the strongest development-evaluated candidate; the human goal remains unmet and official performance remains unmeasured."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I6",
-        "outcome": "limited negative",
-        "reason": "M7 closes I6 with a matched null result. T9:checkpoint-105472, which recovered training performance after the T8 implementation collapse, achieved 153/160 development successes, exactly matching T3:checkpoint-120832 with zero discordant episodes. The same seven episode seeds remained failures in both artifacts, including the recurring approximately -130 to -151 degree regime; both artifacts recorded the required complete-hold outcome, first_reach_step, max_held_steps, hold_interruptions, timeout fields, target angle, and terminal joint/branch diagnostics. Inspected recurring failures show no rescue: for example, seed 4201 remains an interrupted hold and seed 4208 remains a no-first-reach failure, with near-limit shoulder and large alternate-branch errors. This is evidence against the tested explicit branch-constrained acquisition plus weak limit-braking implementation as a rescue for this failure set, not proof that all trajectory control is ineffective. The inquiry is therefore redirected toward a different control or learning method while retaining T3 as the strongest development-evaluated candidate; the human goal remains unmet and official performance remains unmeasured.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E24",
-    "inquiry_id": "I6",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "limited negative",
-        "reason": "M7 closes I6 with a matched null result. T9:checkpoint-105472, which recovered training performance after the T8 implementation collapse, achieved 153/160 development successes, exactly matching T3:checkpoint-120832 with zero discordant episodes. The same seven episode seeds remained failures in both artifacts, including the recurring approximately -130 to -151 degree regime; both artifacts recorded the required complete-hold outcome, first_reach_step, max_held_steps, hold_interruptions, timeout fields, target angle, and terminal joint/branch diagnostics. Inspected recurring failures show no rescue: for example, seed 4201 remains an interrupted hold and seed 4208 remains a no-first-reach failure, with near-limit shoulder and large alternate-branch errors. This is evidence against the tested explicit branch-constrained acquisition plus weak limit-braking implementation as a rescue for this failure set, not proof that all trajectory control is ineffective. The inquiry is therefore redirected toward a different control or learning method while retaining T3 as the strongest development-evaluated candidate; the human goal remains unmet and official performance remains unmeasured."
-      }
-    },
-    "request_fingerprint": "2d1270cb81d63e2148fb51490cebd41941f74874c7699fd4445f076bd91f8503",
-    "session_id": "S13",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T3:checkpoint-120832 remains the strongest development-evaluated candidate at 153/160. T5:checkpoint-100352 and T6:checkpoint-105472 matched T3 in their paired measurements. No candidate has a working, best-known, or retained role assigned in this session.",
     "completed_operations": [
