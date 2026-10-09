@@ -9850,7 +9850,7 @@
   "counters": {
     "event": 54,
     "inquiry": 13,
-    "measurement": 21,
+    "measurement": 22,
     "session": 27,
     "training": 15
   },
@@ -20549,6 +20549,55 @@
       "status": "failed",
       "superseded_by": "M21",
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-09T01:58:45Z",
+      "error": "robot_learning.lab.residual_margin failed:\n\nusage: residual_margin.py [-h] --candidate CANDIDATE [--episodes EPISODES]\n                          [--seed SEED] --artifact ARTIFACT\nresidual_margin.py: error: the following arguments are required: --artifact\n",
+      "id": "M21",
+      "inquiry_id": "I13",
+      "kind": "measurement",
+      "request": {
+        "description": "I13 matched residual arrival and local feedback margin for T15 pre-arrival shaping versus T3 control",
+        "measurements": [
+          {
+            "args": [
+              "--candidate",
+              "campaigns/checkpoints/candidates/1ae27a27-6880-4ca6-9d50-e6498e771cb7/t15/checkpoint-120832",
+              "--episodes",
+              "160",
+              "--seed",
+              "4200"
+            ],
+            "artifact": "campaigns/evaluations/1ae27a27-6880-4ca6-9d50-e6498e771cb7/python-module-M21-1-i13-t15-residual-margin.json",
+            "instrument": "python_module",
+            "label": "I13 T15 pre-arrival velocity shaping",
+            "module": "robot_learning.lab.residual_margin"
+          },
+          {
+            "args": [
+              "--candidate",
+              "campaigns/checkpoints/candidates/1ae27a27-6880-4ca6-9d50-e6498e771cb7/t3/checkpoint-120832",
+              "--episodes",
+              "160",
+              "--seed",
+              "4200"
+            ],
+            "artifact": "campaigns/evaluations/1ae27a27-6880-4ca6-9d50-e6498e771cb7/python-module-M21-2-i13-t3-residual-margin.json",
+            "instrument": "python_module",
+            "label": "I13 T3 matched control",
+            "module": "robot_learning.lab.residual_margin"
+          }
+        ],
+        "rationale": "M19 found identical matched episode outcomes but did not expose arrival-speed or retention-margin values. Measure both candidates from their durable runtime-complete checkpoints on the same 160-seed panel to determine whether the intervention changed the proposed braking mechanism."
+      },
+      "result": {
+        "error": "robot_learning.lab.residual_margin failed:\n\nusage: residual_margin.py [-h] --candidate CANDIDATE [--episodes EPISODES]\n                          [--seed SEED] --artifact ARTIFACT\nresidual_margin.py: error: the following arguments are required: --artifact\n",
+        "status": "failed"
+      },
+      "session_id": "S27",
+      "status": "failed",
+      "superseded_by": "M22",
+      "supersedes": "M20"
     }
   ],
   "pending_operation": {
@@ -20562,9 +20611,11 @@
             "--episodes",
             "160",
             "--seed",
-            "4200"
+            "4200",
+            "--artifact",
+            "campaigns/evaluations/1ae27a27-6880-4ca6-9d50-e6498e771cb7/python-module-M22-1-i13-t15-residual-margin.json"
           ],
-          "artifact": "campaigns/evaluations/1ae27a27-6880-4ca6-9d50-e6498e771cb7/python-module-M21-1-i13-t15-residual-margin.json",
+          "artifact": "campaigns/evaluations/1ae27a27-6880-4ca6-9d50-e6498e771cb7/python-module-M22-1-i13-t15-residual-margin.json",
           "instrument": "python_module",
           "label": "I13 T15 pre-arrival velocity shaping",
           "module": "robot_learning.lab.residual_margin"
@@ -20576,9 +20627,11 @@
             "--episodes",
             "160",
             "--seed",
-            "4200"
+            "4200",
+            "--artifact",
+            "campaigns/evaluations/1ae27a27-6880-4ca6-9d50-e6498e771cb7/python-module-M22-2-i13-t3-residual-margin.json"
           ],
-          "artifact": "campaigns/evaluations/1ae27a27-6880-4ca6-9d50-e6498e771cb7/python-module-M21-2-i13-t3-residual-margin.json",
+          "artifact": "campaigns/evaluations/1ae27a27-6880-4ca6-9d50-e6498e771cb7/python-module-M22-2-i13-t3-residual-margin.json",
           "instrument": "python_module",
           "label": "I13 T3 matched control",
           "module": "robot_learning.lab.residual_margin"
@@ -20645,7 +20698,7 @@
       "task_reference_contract": null
     },
     "failure": null,
-    "id": "M21",
+    "id": "M22",
     "inquiry_id": "I13",
     "kind": "measurement",
     "progress": "accepted",
@@ -20660,9 +20713,11 @@
               "--episodes",
               "160",
               "--seed",
-              "4200"
+              "4200",
+              "--artifact",
+              "campaigns/evaluations/1ae27a27-6880-4ca6-9d50-e6498e771cb7/python-module-M22-1-i13-t15-residual-margin.json"
             ],
-            "artifact": "campaigns/evaluations/1ae27a27-6880-4ca6-9d50-e6498e771cb7/python-module-M21-1-i13-t15-residual-margin.json",
+            "artifact": "campaigns/evaluations/1ae27a27-6880-4ca6-9d50-e6498e771cb7/python-module-M22-1-i13-t15-residual-margin.json",
             "instrument": "python_module",
             "label": "I13 T15 pre-arrival velocity shaping",
             "module": "robot_learning.lab.residual_margin"
@@ -20674,9 +20729,11 @@
               "--episodes",
               "160",
               "--seed",
-              "4200"
+              "4200",
+              "--artifact",
+              "campaigns/evaluations/1ae27a27-6880-4ca6-9d50-e6498e771cb7/python-module-M22-2-i13-t3-residual-margin.json"
             ],
-            "artifact": "campaigns/evaluations/1ae27a27-6880-4ca6-9d50-e6498e771cb7/python-module-M21-2-i13-t3-residual-margin.json",
+            "artifact": "campaigns/evaluations/1ae27a27-6880-4ca6-9d50-e6498e771cb7/python-module-M22-2-i13-t3-residual-margin.json",
             "instrument": "python_module",
             "label": "I13 T3 matched control",
             "module": "robot_learning.lab.residual_margin"
@@ -20685,9 +20742,9 @@
         "rationale": "M19 found identical matched episode outcomes but did not expose arrival-speed or retention-margin values. Measure both candidates from their durable runtime-complete checkpoints on the same 160-seed panel to determine whether the intervention changed the proposed braking mechanism."
       }
     },
-    "request_fingerprint": "336559f96b26c6b677a031ef12835eb1d46abf1982bedcc25b799536d3cac371",
+    "request_fingerprint": "ed1d01797254c6e990052c5d6fcc9e317fea6352e3ee371cdb2bcf20a556d04f",
     "session_id": "S27",
-    "supersedes": "M20"
+    "supersedes": "M21"
   },
   "pi_checkpoint": {
     "candidates_and_roles": "T3:checkpoint-120832 remains the strongest evidence-backed development candidate at 153/160 successes, 157 first reaches, and four hold interruptions. T14:checkpoint-120832 remains rejected for the tested radial braking recipe at 149/160 successes. No working, best-known, or retained role is assigned.",
