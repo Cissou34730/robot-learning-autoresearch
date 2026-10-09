@@ -8081,41 +8081,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "model": "T5:checkpoint-115712",
-        "reason": "T5:checkpoint-115712 is the explicit best-known candidate based on completed M6 development evidence and the E18 role assignment. M6 showed 125/128 complete uninterrupted holds with reduced never-reached failures and hold interruptions relative to T1, while the remaining unresolved distinction is official-distribution generalization. The protected 200-episode assessment is therefore the decisive operation: at least 196 successes establishes the human goal; a failure redirects the next scientific direction toward the residual stabilization or tail-generalization mechanism.",
-        "status": "official_assessment_requested"
-      },
-      "presentation": {
-        "backend_session_id": "63a8483a-f629-47ec-99cc-ca921ac8fb5a",
-        "campaign_id": "896c230a-0ff1-4105-8ab7-1691a09c5482",
-        "campaign_usage": "26m02s | 78.43 AIU | prompt 12.4m (86% cached) | output 100.6k",
-        "session_id": "S10",
-        "session_kind": "goal_review",
-        "session_usage": "51s | 3.88 AIU | prompt 393.3k (69% cached) | output 2.2k"
-      },
-      "result": {
-        "model": "T5:checkpoint-115712",
-        "status": "official_assessment_requested"
-      }
-    },
-    "failure": null,
-    "id": "E19",
-    "inquiry_id": null,
-    "kind": "campaign_conclusion",
-    "progress": "completed",
-    "request": {
-      "campaign_conclusion": {
-        "action": "request_official_assessment",
-        "reason": "T5:checkpoint-115712 is the explicit best-known candidate based on completed M6 development evidence and the E18 role assignment. M6 showed 125/128 complete uninterrupted holds with reduced never-reached failures and hold interruptions relative to T1, while the remaining unresolved distinction is official-distribution generalization. The protected 200-episode assessment is therefore the decisive operation: at least 196 successes establishes the human goal; a failure redirects the next scientific direction toward the residual stabilization or tail-generalization mechanism."
-      }
-    },
-    "request_fingerprint": "bd9790ca41e8b6e6aac9b08e9d40809487691dfc80c2da98c2779b226e8d7670",
-    "session_id": "S10",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T5:checkpoint-115712 is the strongest development-measured candidate at 125/128 complete holds (97.65625%) on M6. T1:checkpoint-115712 remains the matched reference at 92/128, while T4 was inadequate and unmeasured for development performance. No working, best-known, or retained role is assigned in this inquiry-closing session; the fresh goal-review session should explicitly decide whether M6 supports assigning T5 as best-known before any protected official assessment.",
     "completed_operations": [
