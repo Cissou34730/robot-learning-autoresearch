@@ -10,30 +10,33 @@ from contracts.policy_runtime import PolicyIO
 from robot_learning.scenario.observations import reach_observation
 
 
-ACTION_SLEW_LIMIT = 0.5
+JOINT_LIMIT_RAD = float(np.deg2rad(170.0))
+JOINT_LIMIT_GUARD_RAD = float(np.deg2rad(15.0))
 
 
 def make_policy_io():
-    previous_action = np.zeros(2, dtype=np.float32)
+    latest_qpos = np.zeros(2, dtype=np.float32)
+
+    def observe(data):
+        latest_qpos[:] = data.qpos[:2]
+        return reach_observation(data)
 
     def physical_action(action):
-        nonlocal previous_action
         requested_action = np.asarray(action, dtype=np.float32)
         if requested_action.shape != (2,):
             raise ValueError("action must have shape (2,)")
-        previous_action = previous_action + np.clip(
-            requested_action - previous_action,
-            -ACTION_SLEW_LIMIT,
-            ACTION_SLEW_LIMIT,
-        )
-        return previous_action.copy()
+        action_out = requested_action.copy()
+        limit_margin = JOINT_LIMIT_RAD - np.abs(latest_qpos)
+        guard_scale = np.clip(limit_margin / JOINT_LIMIT_GUARD_RAD, 0.0, 1.0)
+        outward = latest_qpos * action_out > 0.0
+        action_out[outward] *= guard_scale[outward]
+        return action_out
 
     def reset():
-        nonlocal previous_action
-        previous_action = np.zeros(2, dtype=np.float32)
+        latest_qpos[:] = 0.0
 
     return PolicyIO(
-        observe=reach_observation,
+        observe=observe,
         action=physical_action,
         reset=reset,
     )
