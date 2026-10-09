@@ -1,16 +1,5 @@
 {
-  "active_inquiry": {
-    "closure_condition": "Close this inquiry when completed development evidence from a learned candidate, using the official radius and angle range, reports episode success together with first_reach_step, max_held_steps, hold_interruptions, timeout status, target radius and angle, and branch or terminal geometry sufficient to support a positive, negative, limited, or inconclusive attribution among the stated mechanisms and select the next goal-directed route.",
-    "goal_connection": "The official goal requires at least 196 of 200 episodes to complete an uninterrupted 100-step hold. Identifying whether the first policy fails during acquisition, in sustained holding, or in specific inner-radius, angular, or IK-branch regimes determines whether the next development route should emphasize stabilization, distribution coverage, or trajectory and branch control.",
-    "handoff_conclusion": "M1 measured the compiled native MuJoCo plant and showed high actuation authority with substantial residual-motion risk: initial accelerations were approximately 393-512 rad/s^2, peak joint speeds reached approximately 10 rad/s within ten 20 ms intervals, and command reversal did not promptly settle motion. This supports residual-motion and hold instability as a live mechanistic explanation, but M1 did not measure target-directed acquisition, tolerance entry, complete holds, inner-radius generalization, or branch and angle effects, so it does not establish the first learned-policy bottleneck. The baseline inner-radius coverage concern and branch/angle trajectory concern therefore remain competing explanations.",
-    "handoff_question": "Which failure mechanism limits the first learned policy under the official distribution: residual-motion and hold instability, inner-radius coverage, or branch- and angle-dependent acquisition?",
-    "handoff_source_session_id": "S2",
-    "id": "I1",
-    "opened_in_session": "S2",
-    "question": "Which failure mechanism limits the first learned policy under the official distribution: residual-motion and hold instability, inner-radius coverage, or branch- and angle-dependent acquisition?",
-    "rationale": "M1 established high actuation authority and substantial residual-motion risk in bounded plant probes, but it did not measure target-directed trajectories, tolerance entry, hold completion, inner-radius generalization, or branch and angle effects. Therefore M1 supports testing stabilization as a live explanation but cannot justify treating it as the first learned-policy bottleneck. No candidate exists for official assessment; a bounded first-candidate inquiry is the most decision-relevant next step.",
-    "reframes": []
-  },
+  "active_inquiry": null,
   "campaign": {
     "base_commit": "5a0ec158aa0741306d5f825a3ec7db8176a3ff13",
     "id": "339736e0-5583-4bc4-8729-5023fc3077b7",
@@ -839,7 +828,7 @@
     }
   },
   "counters": {
-    "event": 3,
+    "event": 4,
     "inquiry": 1,
     "measurement": 2,
     "session": 3,
@@ -1508,9 +1497,63 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-09T22:38:34Z",
+      "error": null,
+      "id": "E4",
+      "inquiry_id": "I1",
+      "kind": "inquiry",
+      "request": {
+        "action": "close",
+        "outcome": "limited",
+        "reason": "M2 provides a limited attribution for I1. On the 160-episode official-distribution development panel, T1:checkpoint-120832 succeeded in 110 episodes (68.75%); 118 episodes first reached tolerance and only 8 of those failed the complete hold, while 42 episodes never reached tolerance. Radius stratification shows the dominant gap is inner-workspace acquisition and not sustained holding: success was 10/40 at 6-10 cm, 37/53 at 10-14 cm, 37/39 at 14-18 cm, and 26/28 at 18-20 cm. The result supports changing the next development route toward training coverage and acquisition for inner targets. Angle-stratified outcomes varied (32/51, 18/31, 26/40, and 34/38 across four angular bins), but radius composition is not controlled and M2 recorded no elbow-branch, terminal joint, or equivalent geometry, so branch- and angle-dependent acquisition is not resolved. M1's residual-motion concern remains physically credible but is not the leading first-policy bottleneck in this candidate. The inquiry is therefore closed with a limited conclusion, not as evidence of official-goal success or as a rejection of stabilization as a future requirement."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I1",
+        "outcome": "limited",
+        "reason": "M2 provides a limited attribution for I1. On the 160-episode official-distribution development panel, T1:checkpoint-120832 succeeded in 110 episodes (68.75%); 118 episodes first reached tolerance and only 8 of those failed the complete hold, while 42 episodes never reached tolerance. Radius stratification shows the dominant gap is inner-workspace acquisition and not sustained holding: success was 10/40 at 6-10 cm, 37/53 at 10-14 cm, 37/39 at 14-18 cm, and 26/28 at 18-20 cm. The result supports changing the next development route toward training coverage and acquisition for inner targets. Angle-stratified outcomes varied (32/51, 18/31, 26/40, and 34/38 across four angular bins), but radius composition is not controlled and M2 recorded no elbow-branch, terminal joint, or equivalent geometry, so branch- and angle-dependent acquisition is not resolved. M1's residual-motion concern remains physically credible but is not the leading first-policy bottleneck in this candidate. The inquiry is therefore closed with a limited conclusion, not as evidence of official-goal success or as a rejection of stabilization as a future requirement.",
+        "status": "completed"
+      },
+      "session_id": "S3",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "close",
+        "inquiry_id": "I1",
+        "outcome": "limited",
+        "reason": "M2 provides a limited attribution for I1. On the 160-episode official-distribution development panel, T1:checkpoint-120832 succeeded in 110 episodes (68.75%); 118 episodes first reached tolerance and only 8 of those failed the complete hold, while 42 episodes never reached tolerance. Radius stratification shows the dominant gap is inner-workspace acquisition and not sustained holding: success was 10/40 at 6-10 cm, 37/53 at 10-14 cm, 37/39 at 14-18 cm, and 26/28 at 18-20 cm. The result supports changing the next development route toward training coverage and acquisition for inner targets. Angle-stratified outcomes varied (32/51, 18/31, 26/40, and 34/38 across four angular bins), but radius composition is not controlled and M2 recorded no elbow-branch, terminal joint, or equivalent geometry, so branch- and angle-dependent acquisition is not resolved. M1's residual-motion concern remains physically credible but is not the leading first-policy bottleneck in this candidate. The inquiry is therefore closed with a limited conclusion, not as evidence of official-goal success or as a rejection of stabilization as a future requirement."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I1",
+        "outcome": "limited",
+        "reason": "M2 provides a limited attribution for I1. On the 160-episode official-distribution development panel, T1:checkpoint-120832 succeeded in 110 episodes (68.75%); 118 episodes first reached tolerance and only 8 of those failed the complete hold, while 42 episodes never reached tolerance. Radius stratification shows the dominant gap is inner-workspace acquisition and not sustained holding: success was 10/40 at 6-10 cm, 37/53 at 10-14 cm, 37/39 at 14-18 cm, and 26/28 at 18-20 cm. The result supports changing the next development route toward training coverage and acquisition for inner targets. Angle-stratified outcomes varied (32/51, 18/31, 26/40, and 34/38 across four angular bins), but radius composition is not controlled and M2 recorded no elbow-branch, terminal joint, or equivalent geometry, so branch- and angle-dependent acquisition is not resolved. M1's residual-motion concern remains physically credible but is not the leading first-policy bottleneck in this candidate. The inquiry is therefore closed with a limited conclusion, not as evidence of official-goal success or as a rejection of stabilization as a future requirement.",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E4",
+    "inquiry_id": "I1",
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "close",
+        "outcome": "limited",
+        "reason": "M2 provides a limited attribution for I1. On the 160-episode official-distribution development panel, T1:checkpoint-120832 succeeded in 110 episodes (68.75%); 118 episodes first reached tolerance and only 8 of those failed the complete hold, while 42 episodes never reached tolerance. Radius stratification shows the dominant gap is inner-workspace acquisition and not sustained holding: success was 10/40 at 6-10 cm, 37/53 at 10-14 cm, 37/39 at 14-18 cm, and 26/28 at 18-20 cm. The result supports changing the next development route toward training coverage and acquisition for inner targets. Angle-stratified outcomes varied (32/51, 18/31, 26/40, and 34/38 across four angular bins), but radius composition is not controlled and M2 recorded no elbow-branch, terminal joint, or equivalent geometry, so branch- and angle-dependent acquisition is not resolved. M1's residual-motion concern remains physically credible but is not the leading first-policy bottleneck in this candidate. The inquiry is therefore closed with a limited conclusion, not as evidence of official-goal success or as a rejection of stabilization as a future requirement."
+      }
+    },
+    "request_fingerprint": "332e7eef659201035e12e96a806aef2bcb26eb71a8c1caa70af72faa9da301a7",
+    "session_id": "S3",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No learned candidates exist. Working, best-known, and retained roles remain empty; no role assignment is justified by M1 or the inquiry opening.",
     "completed_operations": [
@@ -1550,7 +1593,8 @@
     "objective": "Advance I1 toward an evidence-supported answer to its scientific question: Which failure mechanism limits the first learned policy under the official distribution: residual-motion and hold instability, inner-radius coverage, or branch- and angle-dependent acquisition? Before choosing the next action, compare the accumulated evidence with the closure condition. Choose the supported operation that best advances the bounded work; no operation is the default. Close the inquiry when the condition is met.",
     "operation_ids": [
       "T1",
-      "M2"
+      "M2",
+      "E4"
     ],
     "scientific_parent_commit": "5c8036f0091c876114a31836e6970e7584b893e3"
   },
