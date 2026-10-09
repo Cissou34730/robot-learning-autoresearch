@@ -79,3 +79,4 @@
 | E47 | checkpoint | I11 | checkpointed |
 | E48 | inquiry | I12 | completed |
 | E49 | checkpoint | - | checkpointed |
+| T14 | training | I12 | completed |
