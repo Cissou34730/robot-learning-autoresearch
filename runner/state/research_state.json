@@ -1,16 +1,5 @@
 {
-  "active_inquiry": {
-    "closure_condition": "Close after a matched T3-derived comparison of a targeted angle- and IK-branch/limit-aware trajectory intervention against T3 on the same official-radius panel reports success, first_reach_step, max_held_steps, hold_interruptions, timeout status, target angle, and terminal branch or joint geometry, and establishes whether any success change is selective for the observed angle/limit cluster or general across angles.",
-    "goal_connection": "The strongest development candidate reaches 153/160 successes, below the 98% target. Resolving whether the remaining failures arise from shoulder-limit and IK-branch path interaction or from angle-dependent acquisition and braking will determine whether targeted trajectory control is a credible route to the required uninterrupted hold performance.",
-    "handoff_conclusion": "Completed evidence shows that broader official-radius coverage was a substantial component of improvement from T1 to T2, while the T2-derived near-target joint-velocity penalty in T3 produced a smaller matched gain from 150/160 to 153/160. That intervention's three paired wins included one acquisition rescue and two hold rescues, so it supports a beneficial trajectory/stabilization effect but not a complete explanation or solution. Inspection of the seven T3 failures found the four missed acquisitions and the three interrupted holds concentrated near target angles approximately -130 to -151 degrees; the terminal shoulder repeatedly approached its configured limit, open-branch errors were small, and alternate-branch errors were large. These observations make branch/limit interaction a plausible contributor, but they do not establish causality because the same angular sector can independently create difficult acquisition and braking trajectories. The goal review therefore corrects any stronger inherited causal reading: endpoint geometry and angular clustering nominate, but do not prove, a branch/limit mechanism. E14 opened I4 to obtain the matched discriminating evidence.",
-    "handoff_question": "Can targeted angle- and IK-branch/limit-aware trajectory control reduce the remaining T3 failures toward the 98% complete-hold goal, and do the gains distinguish branch/limit interaction from angle-dependent acquisition and braking?",
-    "handoff_source_session_id": "S8",
-    "id": "I4",
-    "opened_in_session": "S8",
-    "question": "Can targeted angle- and IK-branch/limit-aware trajectory control reduce the remaining T3 failures toward the 98% complete-hold goal, and do the gains distinguish branch/limit interaction from angle-dependent acquisition and braking?",
-    "rationale": "M4 improved matched development success from 150/160 to 153/160 but left seven failures. Inspected M4 diagnostics show four failures without first reach and three interrupted holds concentrated near -130 to -151 degrees, with terminal shoulder positions at the configured limit and small open-branch errors while alternate-branch errors are large. These observations support a discriminating inquiry but do not establish that the limit/branch interaction, rather than angle-dependent acquisition or braking, is causal; official assessment is therefore deferred.",
-    "reframes": []
-  },
+  "active_inquiry": null,
   "campaign": {
     "base_commit": "5a0ec158aa0741306d5f825a3ec7db8176a3ff13",
     "id": "339736e0-5583-4bc4-8729-5023fc3077b7",
@@ -3296,7 +3285,7 @@
     }
   },
   "counters": {
-    "event": 15,
+    "event": 16,
     "inquiry": 4,
     "measurement": 5,
     "session": 9,
@@ -6536,9 +6525,63 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-09T23:17:12Z",
+      "error": null,
+      "id": "E16",
+      "inquiry_id": "I4",
+      "kind": "inquiry",
+      "request": {
+        "action": "close",
+        "outcome": "limited negative",
+        "reason": "M5 completed the matched closure comparison: T5:checkpoint-100352 and T3:checkpoint-120832 each achieved 153/160 successes on the same 160-episode panel, with zero discordant episodes. The seven failures were the same seeds for both candidates and remained concentrated at target angles approximately -130 to -151 degrees. T5 changed terminal distances and branch errors in some failures but rescued none and introduced no different success/failure pattern. Therefore this implemented branch-validity and near-target shoulder-limit reward recipe did not reduce complete-hold failures and does not support a causal branch/limit rescue. The result is limited to this recipe and checkpoint; it does not invalidate broader trajectory or braking control, which remains unresolved for the campaign goal."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I4",
+        "outcome": "limited negative",
+        "reason": "M5 completed the matched closure comparison: T5:checkpoint-100352 and T3:checkpoint-120832 each achieved 153/160 successes on the same 160-episode panel, with zero discordant episodes. The seven failures were the same seeds for both candidates and remained concentrated at target angles approximately -130 to -151 degrees. T5 changed terminal distances and branch errors in some failures but rescued none and introduced no different success/failure pattern. Therefore this implemented branch-validity and near-target shoulder-limit reward recipe did not reduce complete-hold failures and does not support a causal branch/limit rescue. The result is limited to this recipe and checkpoint; it does not invalidate broader trajectory or braking control, which remains unresolved for the campaign goal.",
+        "status": "completed"
+      },
+      "session_id": "S9",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "close",
+        "inquiry_id": "I4",
+        "outcome": "limited negative",
+        "reason": "M5 completed the matched closure comparison: T5:checkpoint-100352 and T3:checkpoint-120832 each achieved 153/160 successes on the same 160-episode panel, with zero discordant episodes. The seven failures were the same seeds for both candidates and remained concentrated at target angles approximately -130 to -151 degrees. T5 changed terminal distances and branch errors in some failures but rescued none and introduced no different success/failure pattern. Therefore this implemented branch-validity and near-target shoulder-limit reward recipe did not reduce complete-hold failures and does not support a causal branch/limit rescue. The result is limited to this recipe and checkpoint; it does not invalidate broader trajectory or braking control, which remains unresolved for the campaign goal."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I4",
+        "outcome": "limited negative",
+        "reason": "M5 completed the matched closure comparison: T5:checkpoint-100352 and T3:checkpoint-120832 each achieved 153/160 successes on the same 160-episode panel, with zero discordant episodes. The seven failures were the same seeds for both candidates and remained concentrated at target angles approximately -130 to -151 degrees. T5 changed terminal distances and branch errors in some failures but rescued none and introduced no different success/failure pattern. Therefore this implemented branch-validity and near-target shoulder-limit reward recipe did not reduce complete-hold failures and does not support a causal branch/limit rescue. The result is limited to this recipe and checkpoint; it does not invalidate broader trajectory or braking control, which remains unresolved for the campaign goal.",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E16",
+    "inquiry_id": "I4",
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "close",
+        "outcome": "limited negative",
+        "reason": "M5 completed the matched closure comparison: T5:checkpoint-100352 and T3:checkpoint-120832 each achieved 153/160 successes on the same 160-episode panel, with zero discordant episodes. The seven failures were the same seeds for both candidates and remained concentrated at target angles approximately -130 to -151 degrees. T5 changed terminal distances and branch errors in some failures but rescued none and introduced no different success/failure pattern. Therefore this implemented branch-validity and near-target shoulder-limit reward recipe did not reduce complete-hold failures and does not support a causal branch/limit rescue. The result is limited to this recipe and checkpoint; it does not invalidate broader trajectory or braking control, which remains unresolved for the campaign goal."
+      }
+    },
+    "request_fingerprint": "2f50b6d9ecba113e8d656c5cab1d84857e7a47eb05cb0a951f933eeaab935e5d",
+    "session_id": "S9",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T3:checkpoint-120832 remains the strongest development-evaluated candidate at 153/160, with T2:checkpoint-120832 as its matched 150/160 reference. Neither candidate has a working, best-known, or retained role; training facts do not establish development performance, and the goal review made no role assignment.",
     "completed_operations": [
@@ -6583,7 +6626,8 @@
     "objective": "Advance I4 toward an evidence-supported answer to its scientific question: Can targeted angle- and IK-branch/limit-aware trajectory control reduce the remaining T3 failures toward the 98% complete-hold goal, and do the gains distinguish branch/limit interaction from angle-dependent acquisition and braking? Before choosing the next action, compare the accumulated evidence with the closure condition. Choose the supported operation that best advances the bounded work; no operation is the default. Close the inquiry when the condition is met.",
     "operation_ids": [
       "T5",
-      "M5"
+      "M5",
+      "E16"
     ],
     "scientific_parent_commit": "82a12e146ec712be3d7871c1a095bbdcb9963dd9"
   },

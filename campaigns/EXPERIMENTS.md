@@ -27,3 +27,4 @@
 | T4 | training | I4 | failed |
 | T5 | training | I4 | completed |
 | M5 | measurement | I4 | completed |
+| E16 | inquiry | I4 | completed |
