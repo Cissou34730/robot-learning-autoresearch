@@ -18,7 +18,7 @@ CURRICULUM_EPISODES = 300
 
 
 class IncrementalRadiusTrainingEnv(TwoJointArmReachEnv):
-    """Broaden inward reach coverage while retaining uniform angle exposure."""
+    """Broaden inward reach coverage while retaining uniform angle coverage."""
 
     def __init__(self) -> None:
         super().__init__(target_radius_range=BASELINE_TARGET_RADIUS_RANGE)
