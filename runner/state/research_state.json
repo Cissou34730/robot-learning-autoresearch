@@ -23861,38 +23861,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I10",
-        "outcome": "limited negative",
-        "reason": "M19 and M20 establish a bounded negative for the tested phase-aware, history-dependent and trajectory-aware PPO acquisition implementation. M19 measured 0/160 successes on the fixed uniform panel, and the completed M20 replay showed 150 of 160 failures without first tolerance entry and only 10 failures after first reach. The 10 reached failures accumulated 134 hold interruptions, so post-reach instability exists but is not the dominant explanation for the aggregate collapse. The target-radius extraction showed 0/40 successes in the inner band, unlike T1, T8, T9 and T10, which preserved the inner-band result. All 160 diagnostic terminal or first-reach nearest-branch margin observations were nonnegative, so the collapse is not supported as a negative-limit or unreachable-branch effect; it is consistent with broad acquisition or trajectory-contract incompatibility under the tested implementation. This closes I10 with a limited negative for this method and recipe, not for policy methods generally: M17 still establishes 160/160 same-interface computed-torque controllability, while T11 did not transfer it. The current evidence supports changing direction toward a less coupled, branch- or limit-conditioned trajectory design that preserves the proven uniform target acquisition, with hold stabilization retained as a secondary mechanism. No candidate meets the 196/200-equivalent development condition, and no official assessment is justified."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I10",
-        "outcome": "limited negative",
-        "reason": "M19 and M20 establish a bounded negative for the tested phase-aware, history-dependent and trajectory-aware PPO acquisition implementation. M19 measured 0/160 successes on the fixed uniform panel, and the completed M20 replay showed 150 of 160 failures without first tolerance entry and only 10 failures after first reach. The 10 reached failures accumulated 134 hold interruptions, so post-reach instability exists but is not the dominant explanation for the aggregate collapse. The target-radius extraction showed 0/40 successes in the inner band, unlike T1, T8, T9 and T10, which preserved the inner-band result. All 160 diagnostic terminal or first-reach nearest-branch margin observations were nonnegative, so the collapse is not supported as a negative-limit or unreachable-branch effect; it is consistent with broad acquisition or trajectory-contract incompatibility under the tested implementation. This closes I10 with a limited negative for this method and recipe, not for policy methods generally: M17 still establishes 160/160 same-interface computed-torque controllability, while T11 did not transfer it. The current evidence supports changing direction toward a less coupled, branch- or limit-conditioned trajectory design that preserves the proven uniform target acquisition, with hold stabilization retained as a secondary mechanism. No candidate meets the 196/200-equivalent development condition, and no official assessment is justified.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E44",
-    "inquiry_id": "I10",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "limited negative",
-        "reason": "M19 and M20 establish a bounded negative for the tested phase-aware, history-dependent and trajectory-aware PPO acquisition implementation. M19 measured 0/160 successes on the fixed uniform panel, and the completed M20 replay showed 150 of 160 failures without first tolerance entry and only 10 failures after first reach. The 10 reached failures accumulated 134 hold interruptions, so post-reach instability exists but is not the dominant explanation for the aggregate collapse. The target-radius extraction showed 0/40 successes in the inner band, unlike T1, T8, T9 and T10, which preserved the inner-band result. All 160 diagnostic terminal or first-reach nearest-branch margin observations were nonnegative, so the collapse is not supported as a negative-limit or unreachable-branch effect; it is consistent with broad acquisition or trajectory-contract incompatibility under the tested implementation. This closes I10 with a limited negative for this method and recipe, not for policy methods generally: M17 still establishes 160/160 same-interface computed-torque controllability, while T11 did not transfer it. The current evidence supports changing direction toward a less coupled, branch- or limit-conditioned trajectory design that preserves the proven uniform target acquisition, with hold stabilization retained as a secondary mechanism. No candidate meets the 196/200-equivalent development condition, and no official assessment is justified."
-      }
-    },
-    "request_fingerprint": "607e2baff454f4af9299fd239101be42e178c6e745386e7c03e0c7a14b06c7bb",
-    "session_id": "S21",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T8:checkpoint-60416 and T9:checkpoint-20480 remain the strongest measured learned candidates at 153/160, but neither meets the development threshold or has a protected working, best-known, or retained role. T10:checkpoint-10240 and T10:checkpoint-120832 are measured controller-prior candidates at the same 153/160 result and are not promoted. The M17 computed-torque controller is evidence of same-interface capability, not a learned candidate for the human goal. Opening I10 does not change candidate roles.",
     "completed_operations": [
