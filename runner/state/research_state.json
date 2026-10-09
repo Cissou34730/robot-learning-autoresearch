@@ -4937,8 +4937,8 @@
     "event": 27,
     "inquiry": 7,
     "measurement": 7,
-    "session": 14,
-    "training": 7
+    "session": 15,
+    "training": 9
   },
   "human_goal": {
     "source": "contracts/scenario.md"
@@ -9682,9 +9682,123 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-09T00:50:51Z",
+      "error": "pytest failed:\n.............FF....                                                      [100%]\n================================== FAILURES ===================================\n_______ test_all_evaluation_paths_use_each_policys_inputs_and_same_task _______\n\nmonkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001CC32B05630>\ntmp_path = WindowsPath('C:/Users/cyril.beurier/code/robot-learning-inquiry-centered-lifecycle/.pytest-run-temp/test_all_evaluation_paths_use_0')\n\n    def test_all_evaluation_paths_use_each_policys_inputs_and_same_task(\n        monkeypatch, tmp_path\n    ):\n        from benchmark.final_benchmark import official_environment\n        from benchmark.reference_evaluation import task_reference_environment\n        from robot_learning.scenario.environment import make_evaluation_env\n    \n        for factory in (\n            official_environment,\n            task_reference_environment,\n            make_evaluation_env,\n        ):\n            positions = []\n            for size in (3, 30):\n                path = artifact(\n                    tmp_path / f\"{factory.__name__}-{size}\",\n                    scientific_module(monkeypatch, size),\n                )\n                runtime = load_runtime(path)\n                env = factory(policy_runtime=runtime)\n                obs, _ = env.reset(seed=7)\n                positions.append(env.data.mocap_pos[0].copy())\n                assert obs.shape == (size,)\n                env.step(np.ones(2))\n>               np.testing.assert_allclose(env.data.ctrl, [0.1, 0.1])\nE               AssertionError: \nE               Not equal to tolerance rtol=1e-07, atol=0\nE               \nE               Mismatched elements: 2 / 2 (100%)\nE               Mismatch at indices:\nE                [0]: 0.15000000000000002 (ACTUAL), 0.1 (DESIRED)\nE                [1]: 0.15000000000000002 (ACTUAL), 0.1 (DESIRED)\nE               Max absolute difference among violations: 0.05\nE               Max relative difference among violations: 0.5\nE                ACTUAL: array([0.15, 0.15])\nE                DESIRED: array([0.1, 0.1])\n\ntests\\autoresearch\\test_policy_runtime.py:256: AssertionError\n______ test_all_evaluation_environments_apply_saved_action_mapping_once _______\n\nmonkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001CC3293A410>\ntmp_path = WindowsPath('C:/Users/cyril.beurier/code/robot-learning-inquiry-centered-lifecycle/.pytest-run-temp/test_all_evaluation_environmen0')\n\n    def test_all_evaluation_environments_apply_saved_action_mapping_once(\n        monkeypatch, tmp_path\n    ):\n        from benchmark.final_benchmark import official_environment\n        from benchmark.reference_evaluation import (\n            task_reference_environment,\n        )\n        from robot_learning.scenario.environment import make_evaluation_env\n    \n        path = stateful_artifact(tmp_path, stateful_module(monkeypatch, 3))\n        for factory in (\n            official_environment,\n            task_reference_environment,\n            make_evaluation_env,\n        ):\n            runtime = load_runtime(path)\n            env = factory(policy_runtime=runtime)\n            env.reset(seed=7)\n            env.step(np.array([1.0, -1.0]))\n            np.testing.assert_allclose(env.data.ctrl, [1.0, -1.0])\n            env.step(np.array([-1.0, 1.0]))\n>           np.testing.assert_allclose(env.data.ctrl, [-0.5, 0.5])\nE           AssertionError: \nE           Not equal to tolerance rtol=1e-07, atol=0\nE           \nE           Mismatched elements: 2 / 2 (100%)\nE           Mismatch at indices:\nE            [0]: -1.0 (ACTUAL), -0.5 (DESIRED)\nE            [1]: 1.0 (ACTUAL), 0.5 (DESIRED)\nE           Max absolute difference among violations: 0.5\nE           Max relative difference among violations: 1.\nE            ACTUAL: array([-1.,  1.])\nE            DESIRED: array([-0.5,  0.5])\n\ntests\\autoresearch\\test_policy_runtime.py:282: AssertionError\n=========================== short test summary info ===========================\nFAILED tests/autoresearch/test_policy_runtime.py::test_all_evaluation_paths_use_each_policys_inputs_and_same_task\nFAILED tests/autoresearch/test_policy_runtime.py::test_all_evaluation_environments_apply_saved_action_mapping_once\n2 failed, 17 passed in 4.01s\n\n",
+      "id": "T8",
+      "inquiry_id": "I7",
+      "kind": "training",
+      "request": {
+        "description": "Continue T3's incremental radius curriculum with the same observations, reward, and PPO settings, but redesign the two-dimensional action as normalized joint-velocity commands passed through a bounded velocity servo. The servo damps residual joint velocity when the policy commands zero, providing explicit terminal stabilization while retaining bounded motor controls.",
+        "initialization": "transfer",
+        "parent": "T3:checkpoint-120832",
+        "rationale": "I7 requires a genuinely different action structure that can improve terminal control without repeating T7's branch-feature regression. T3 supplies the supported incremental-radius reach regime, while the current direct motor action leaves terminal braking entirely to the learned policy. This transfer changes only the action-to-control mapping: policy actions specify desired joint velocities and a fixed velocity servo converts their error to bounded motor input, so zero action actively removes residual motion during the hold. Evaluate the terminal candidate against T3 on the same 160-seed development panel using success, first-reach coverage, maximum held steps, hold interruptions, final distance, and radius-angle strata. At least 98 percent success with broad reach and approximately four interruptions supports the action-structure and terminal-control explanation; persistent localized failures with preserved reach favor a deeper plant-state or numerical-margin limitation, while broad interruption regression rejects this action intervention.",
+        "seed": 0,
+        "steps": 120000
+      },
+      "result": {
+        "error": "pytest failed:\n.............FF....                                                      [100%]\n================================== FAILURES ===================================\n_______ test_all_evaluation_paths_use_each_policys_inputs_and_same_task _______\n\nmonkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001CC32B05630>\ntmp_path = WindowsPath('C:/Users/cyril.beurier/code/robot-learning-inquiry-centered-lifecycle/.pytest-run-temp/test_all_evaluation_paths_use_0')\n\n    def test_all_evaluation_paths_use_each_policys_inputs_and_same_task(\n        monkeypatch, tmp_path\n    ):\n        from benchmark.final_benchmark import official_environment\n        from benchmark.reference_evaluation import task_reference_environment\n        from robot_learning.scenario.environment import make_evaluation_env\n    \n        for factory in (\n            official_environment,\n            task_reference_environment,\n            make_evaluation_env,\n        ):\n            positions = []\n            for size in (3, 30):\n                path = artifact(\n                    tmp_path / f\"{factory.__name__}-{size}\",\n                    scientific_module(monkeypatch, size),\n                )\n                runtime = load_runtime(path)\n                env = factory(policy_runtime=runtime)\n                obs, _ = env.reset(seed=7)\n                positions.append(env.data.mocap_pos[0].copy())\n                assert obs.shape == (size,)\n                env.step(np.ones(2))\n>               np.testing.assert_allclose(env.data.ctrl, [0.1, 0.1])\nE               AssertionError: \nE               Not equal to tolerance rtol=1e-07, atol=0\nE               \nE               Mismatched elements: 2 / 2 (100%)\nE               Mismatch at indices:\nE                [0]: 0.15000000000000002 (ACTUAL), 0.1 (DESIRED)\nE                [1]: 0.15000000000000002 (ACTUAL), 0.1 (DESIRED)\nE               Max absolute difference among violations: 0.05\nE               Max relative difference among violations: 0.5\nE                ACTUAL: array([0.15, 0.15])\nE                DESIRED: array([0.1, 0.1])\n\ntests\\autoresearch\\test_policy_runtime.py:256: AssertionError\n______ test_all_evaluation_environments_apply_saved_action_mapping_once _______\n\nmonkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001CC3293A410>\ntmp_path = WindowsPath('C:/Users/cyril.beurier/code/robot-learning-inquiry-centered-lifecycle/.pytest-run-temp/test_all_evaluation_environmen0')\n\n    def test_all_evaluation_environments_apply_saved_action_mapping_once(\n        monkeypatch, tmp_path\n    ):\n        from benchmark.final_benchmark import official_environment\n        from benchmark.reference_evaluation import (\n            task_reference_environment,\n        )\n        from robot_learning.scenario.environment import make_evaluation_env\n    \n        path = stateful_artifact(tmp_path, stateful_module(monkeypatch, 3))\n        for factory in (\n            official_environment,\n            task_reference_environment,\n            make_evaluation_env,\n        ):\n            runtime = load_runtime(path)\n            env = factory(policy_runtime=runtime)\n            env.reset(seed=7)\n            env.step(np.array([1.0, -1.0]))\n            np.testing.assert_allclose(env.data.ctrl, [1.0, -1.0])\n            env.step(np.array([-1.0, 1.0]))\n>           np.testing.assert_allclose(env.data.ctrl, [-0.5, 0.5])\nE           AssertionError: \nE           Not equal to tolerance rtol=1e-07, atol=0\nE           \nE           Mismatched elements: 2 / 2 (100%)\nE           Mismatch at indices:\nE            [0]: -1.0 (ACTUAL), -0.5 (DESIRED)\nE            [1]: 1.0 (ACTUAL), 0.5 (DESIRED)\nE           Max absolute difference among violations: 0.5\nE           Max relative difference among violations: 1.\nE            ACTUAL: array([-1.,  1.])\nE            DESIRED: array([-0.5,  0.5])\n\ntests\\autoresearch\\test_policy_runtime.py:282: AssertionError\n=========================== short test summary info ===========================\nFAILED tests/autoresearch/test_policy_runtime.py::test_all_evaluation_paths_use_each_policys_inputs_and_same_task\nFAILED tests/autoresearch/test_policy_runtime.py::test_all_evaluation_environments_apply_saved_action_mapping_once\n2 failed, 17 passed in 4.01s\n\n",
+        "status": "failed"
+      },
+      "session_id": "S15",
+      "status": "failed",
+      "superseded_by": "T9",
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "archived_candidates": null,
+      "candidate_dir": null,
+      "code_parent_commit": "d3c1baf7385d6d3219969faf9b87bd761322c952",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "parent": {
+        "artifact": "campaigns/checkpoints/candidates/1ae27a27-6880-4ca6-9d50-e6498e771cb7/t3/checkpoint-120832",
+        "fingerprint": "b7e19a6bacfecbcd4bae2bed3afe7d01df9193de0399b3a887a91a2c073688da",
+        "id": "T3:checkpoint-120832",
+        "parameters": {
+          "algorithm": {
+            "name": "ppo"
+          },
+          "policy": {
+            "activation": "tanh",
+            "net_arch": [
+              64,
+              64
+            ]
+          },
+          "ppo": {
+            "batch_size": 64,
+            "ent_coef": 0.01,
+            "gae_lambda": 0.95,
+            "gamma": 0.99,
+            "learning_rate": 0.0003,
+            "n_steps": 1024
+          },
+          "training": {
+            "checkpoint_every_steps": 5000,
+            "n_envs": 1
+          }
+        },
+        "scientific_commit": "ac80177d270a56c270c2c7ddd930bba9699430be",
+        "training_steps": 120832
+      },
+      "result": null,
+      "scientific_commit": null,
+      "scientific_manifest": [
+        {
+          "exists": true,
+          "fingerprint": "c8b3facf5261c66d5fb47ca0382ef302784c1d69b61081ab23f2c6a0d92509c2",
+          "path": "robot_learning/scenario/policy_io.py"
+        }
+      ],
+      "scientific_paths": [
+        "robot_learning/scenario/policy_io.py"
+      ]
+    },
+    "failure": null,
+    "id": "T9",
+    "inquiry_id": "I7",
+    "kind": "training",
+    "progress": "accepted",
+    "request": {
+      "training": {
+        "description": "Continue T3's incremental radius curriculum with the same observations, reward, and PPO settings, but redesign the two-dimensional action as a target motor command passed through a stateful first-order command servo. The servo damps command changes and decays toward zero when the policy commands zero, providing explicit terminal stabilization while preserving the environment's direct actuator contract.",
+        "initialization": "transfer",
+        "parent": "T3:checkpoint-120832",
+        "rationale": "T8 exposed an implementation boundary: changing the environment after the saved policy action mapping caused validation failures because every evaluation path must apply each policy's mapping exactly once and expose the mapped command directly to the actuator. That failure is execution history, not evidence against action redesign. I7 therefore keeps the environment's direct-control semantics and moves the intervention into the saved policy action mapper. T3 supplies the supported incremental-radius reach regime; the mapper changes only action semantics, smoothing command transients and making zero command a decaying terminal command. Evaluate the terminal candidate against T3 on the same 160-seed development panel using success, first-reach coverage, maximum held steps, hold interruptions, final distance, and radius-angle strata. At least 98 percent success with broad reach and approximately four interruptions supports the action-structure and terminal-control explanation; persistent localized failures with preserved reach favor a deeper plant-state or numerical-margin limitation, while broad interruption regression rejects this action intervention.",
+        "seed": 0,
+        "steps": 120000
+      }
+    },
+    "request_fingerprint": "d9386b7e2de7b795638fbe1bd3ad9525c320a44773a0ce49f73dab1584bc064f",
+    "session_id": "S15",
+    "supersedes": "T8"
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T3:checkpoint-120832 remains the strongest measured development candidate at 95.625 percent on M4, M6, and the matched M7 reference. T7:checkpoint-120832 is a negative, intervention-limited candidate at 95.0 percent with reduced first reach and increased interruptions. No candidate has a working, best-known, or retained role.",
     "completed_operations": [
@@ -9721,6 +9835,19 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "7edb5f2c-858c-46b4-8743-cbd8a53c6711",
+    "id": "S15",
+    "inquiry_id": "I7",
+    "kind": "inquiry",
+    "objective": "Advance I7 toward an evidence-supported answer to its scientific question: Can an action-space redesign with explicit terminal-stabilizing control, built on the T3 reach curriculum, eliminate the localized radius-angle completion failures without reproducing T7's interruption regression? Before choosing the next action, compare the accumulated evidence with the closure condition. Close the inquiry when the condition is met.",
+    "operation_ids": [],
+    "scientific_parent_commit": "d3c1baf7385d6d3219969faf9b87bd761322c952"
+  },
   "terminal_state": null
 }
