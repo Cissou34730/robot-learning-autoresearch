@@ -76,3 +76,4 @@
 | M14 | measurement | I11 | failed |
 | M15 | measurement | I11 | failed |
 | E46 | inquiry | I11 | completed |
+| E47 | checkpoint | I11 | checkpointed |
