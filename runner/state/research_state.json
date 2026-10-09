@@ -1,16 +1,5 @@
 {
-  "active_inquiry": {
-    "closure_condition": "Close with a positive, negative, limited, or inconclusive conclusion after a matched candidate comparison and trajectory diagnostics preserve complete-hold success, first_reach_step, max_held_steps, hold_interruptions, timeout status, target angle, and terminal joint/branch geometry. A positive result requires rescue of the recurring failure seeds with evidence of improved acquisition or holding; no matched rescue weakens this route, while changed failure mechanisms or unavailable diagnostics require a limited or inconclusive conclusion.",
-    "goal_connection": "The human goal requires at least 196 of 200 complete uninterrupted holds. The strongest development result is 153 of 160, with four failures before first reach and three failures that entered tolerance but interrupted the hold. Resolving whether angle-dependent trajectory and braking control can remove these failures is a direct route toward closing that gap.",
-    "handoff_conclusion": "Completed evidence establishes that broader radius coverage improved matched development success from 110/160 to 150/160 (T2), and that T3's near-target joint-velocity penalty improved it to 153/160 with paired acquisition and hold rescues. M4 localized the remaining T3 failures to target angles approximately -130 to -151 degrees, with near-limit terminal shoulder positions, small open-branch errors, and large alternate-branch errors. T5/M5 then tested one T3-derived branch-validity and shoulder-limit-aware reward implementation and matched T3 at 153/160 with zero discordant episodes; all seven failure seeds were unchanged. This is a limited negative result for that implementation, not evidence against branch/limit mechanisms in general or against trajectory and braking control. The physical model predicts that the common zero reset makes target angle a trajectory variable and that direct 50 Hz motor commands create a speed-versus-residual-velocity braking tradeoff. The consequential unresolved distinction is therefore whether the recurring failures are primarily angle-dependent acquisition and braking failures or endpoint branch-geometry failures. I5 will test that distinction while preserving the limits of the recipe-specific evidence.",
-    "handoff_question": "Can general angle-dependent acquisition and braking control reduce the remaining T3 failures toward the 98% complete-hold goal after the branch/limit-aware recipe showed no matched rescue?",
-    "handoff_source_session_id": "S10",
-    "id": "I5",
-    "opened_in_session": "S10",
-    "question": "Can general angle-dependent acquisition and braking control reduce the remaining T3 failures toward the 98% complete-hold goal after the branch/limit-aware recipe showed no matched rescue?",
-    "rationale": "Completed evidence supports continuing trajectory investigation but corrects the inherited scope: M5/T5 tested one T3-derived branch-validity and shoulder-limit-aware reward implementation, not general angular acquisition or braking control. M4 showed the remaining failures cluster by target angle and near-limit shoulder geometry, while the model predicts angle-dependent transient motion from the common reset and a speed-versus-residual-velocity tradeoff at 50 Hz. The inquiry will distinguish these mechanisms without treating the terminal checkpoint or the recipe-specific null result as decisive.",
-    "reframes": []
-  },
+  "active_inquiry": null,
   "campaign": {
     "base_commit": "5a0ec158aa0741306d5f825a3ec7db8176a3ff13",
     "id": "339736e0-5583-4bc4-8729-5023fc3077b7",
@@ -4115,7 +4104,7 @@
     }
   },
   "counters": {
-    "event": 19,
+    "event": 20,
     "inquiry": 5,
     "measurement": 6,
     "session": 11,
@@ -8281,9 +8270,63 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-09T23:29:04Z",
+      "error": null,
+      "id": "E20",
+      "inquiry_id": "I5",
+      "kind": "inquiry",
+      "request": {
+        "action": "close",
+        "outcome": "limited negative",
+        "reason": "M6 directly tested one T3-derived angle-dependent acquisition and braking implementation on the matched 160-episode panel. T6:checkpoint-105472 achieved 153/160, exactly matching T3:checkpoint-120832, with zero discordant episodes and therefore no rescue of any recurring T3 failure seed. The M6 artifacts preserve complete-hold success, first_reach_step, max_held_steps, hold_interruptions, timeout status, target angle, and terminal joint and branch geometry diagnostics, so the required evidence was available. This weakens the route that this tested angle-dependent braking recipe can close the goal gap, but it does not disprove general trajectory control or establish endpoint branch geometry as the sole cause; the conclusion is limited to the implementation exercised. The human goal remains unmet and official performance remains unmeasured."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I5",
+        "outcome": "limited negative",
+        "reason": "M6 directly tested one T3-derived angle-dependent acquisition and braking implementation on the matched 160-episode panel. T6:checkpoint-105472 achieved 153/160, exactly matching T3:checkpoint-120832, with zero discordant episodes and therefore no rescue of any recurring T3 failure seed. The M6 artifacts preserve complete-hold success, first_reach_step, max_held_steps, hold_interruptions, timeout status, target angle, and terminal joint and branch geometry diagnostics, so the required evidence was available. This weakens the route that this tested angle-dependent braking recipe can close the goal gap, but it does not disprove general trajectory control or establish endpoint branch geometry as the sole cause; the conclusion is limited to the implementation exercised. The human goal remains unmet and official performance remains unmeasured.",
+        "status": "completed"
+      },
+      "session_id": "S11",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "close",
+        "inquiry_id": "I5",
+        "outcome": "limited negative",
+        "reason": "M6 directly tested one T3-derived angle-dependent acquisition and braking implementation on the matched 160-episode panel. T6:checkpoint-105472 achieved 153/160, exactly matching T3:checkpoint-120832, with zero discordant episodes and therefore no rescue of any recurring T3 failure seed. The M6 artifacts preserve complete-hold success, first_reach_step, max_held_steps, hold_interruptions, timeout status, target angle, and terminal joint and branch geometry diagnostics, so the required evidence was available. This weakens the route that this tested angle-dependent braking recipe can close the goal gap, but it does not disprove general trajectory control or establish endpoint branch geometry as the sole cause; the conclusion is limited to the implementation exercised. The human goal remains unmet and official performance remains unmeasured."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I5",
+        "outcome": "limited negative",
+        "reason": "M6 directly tested one T3-derived angle-dependent acquisition and braking implementation on the matched 160-episode panel. T6:checkpoint-105472 achieved 153/160, exactly matching T3:checkpoint-120832, with zero discordant episodes and therefore no rescue of any recurring T3 failure seed. The M6 artifacts preserve complete-hold success, first_reach_step, max_held_steps, hold_interruptions, timeout status, target angle, and terminal joint and branch geometry diagnostics, so the required evidence was available. This weakens the route that this tested angle-dependent braking recipe can close the goal gap, but it does not disprove general trajectory control or establish endpoint branch geometry as the sole cause; the conclusion is limited to the implementation exercised. The human goal remains unmet and official performance remains unmeasured.",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E20",
+    "inquiry_id": "I5",
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "close",
+        "outcome": "limited negative",
+        "reason": "M6 directly tested one T3-derived angle-dependent acquisition and braking implementation on the matched 160-episode panel. T6:checkpoint-105472 achieved 153/160, exactly matching T3:checkpoint-120832, with zero discordant episodes and therefore no rescue of any recurring T3 failure seed. The M6 artifacts preserve complete-hold success, first_reach_step, max_held_steps, hold_interruptions, timeout status, target angle, and terminal joint and branch geometry diagnostics, so the required evidence was available. This weakens the route that this tested angle-dependent braking recipe can close the goal gap, but it does not disprove general trajectory control or establish endpoint branch geometry as the sole cause; the conclusion is limited to the implementation exercised. The human goal remains unmet and official performance remains unmeasured."
+      }
+    },
+    "request_fingerprint": "943468ec3d17ade950aecbf7692dda60430a171fd888c8d5d7f6b6db9a3120ae",
+    "session_id": "S11",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T3:checkpoint-120832 remains the strongest development-evaluated candidate at 153/160, with T5:checkpoint-100352 matching it under the tested branch/limit-aware recipe. No candidate has a working, best-known, or retained role because development evidence remains below the human goal and no role assignment was made.",
     "completed_operations": [
@@ -8332,7 +8375,8 @@
     "objective": "Advance I5 toward an evidence-supported answer to its scientific question: Can general angle-dependent acquisition and braking control reduce the remaining T3 failures toward the 98% complete-hold goal after the branch/limit-aware recipe showed no matched rescue? Before choosing the next action, compare the accumulated evidence with the closure condition. Choose the supported operation that best advances the bounded work; no operation is the default. Close the inquiry when the condition is met.",
     "operation_ids": [
       "T6",
-      "M6"
+      "M6",
+      "E20"
     ],
     "scientific_parent_commit": "41b33d2db6d91e163898ba16018dc73bdf6d8114"
   },
