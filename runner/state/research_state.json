@@ -5484,47 +5484,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "open",
-        "inquiry": {
-          "closure_condition": "Close after matched development evidence from a competent learning-dynamics intervention has been measured against the strongest available reference with bearing-, radius-, first-reach-, never-reached-, hold-, interruption-, qvel-, branch-, and action-conditioned diagnostics. A positive result requires improved first reach and fewer never-reached failures across left/back bearings and the full 0.06-0.20 m range without a consequential increase in hold interruptions or loss of complete 100-step holds. A competent intervention with unchanged bearing- or radius-conditioned reach failure redirects the campaign to control or representation design; failed or inadequate training leaves the mechanism unresolved and requires another bounded learning-dynamics test rather than treating the recipe as a method-level negative.",
-          "goal_connection": "The best development candidate reaches only 67.97%, far below the 98% complete-uninterrupted-hold objective. The inquiry directly tests whether the measured left/back and outer-radius failures can be removed through learning dynamics while retaining the behavior that defines official success.",
-          "handoff_conclusion": "Observed: M4 established that T2's deficit was concentrated in approach and reach, especially on left and back bearings, with action saturation across radius bins and a secondary hold deficit; T1 reached the same sectors, arguing against globally unreachable geometry or absent campaign-wide actuator authority. M5 then compared T3:checkpoint-120832, trained with geometry-conditioned observations, against T1:checkpoint-115712 on 128 shared episode seeds. T3 reached 5/27 back-bearing targets versus T1's 23/27, and 16/50 targets in the 14-20 cm radius bin versus T1's 50/50. T3 achieved 68/128 complete 100-step holds versus T1's 83/128, accumulated 431 hold interruptions, and retained maximum action magnitude of 1.0 across the diagnostic groups. Interpretation: the tested T3 recipe did not eliminate the bearing- or outer-radius reach deficit and did not preserve hold behavior; the aggregate negative result agrees with the mechanism diagnostics. This is a limited negative result for that representation/training recipe, not evidence that geometry conditioning as a broader method is impossible. The evidence still does not distinguish a learned bearing-control limitation caused by PPO credit assignment from other learning-dynamics failures, because T3's training success was only 11% and its development failure could reflect inadequate optimization rather than an invalid representation. The physical-model consequences remain consistent with branch- and radius-conditioned dynamics mattering, but T1's matched-sector reach keeps global reachability and omitted dynamics lower priority.",
-          "handoff_question": "Can improved PPO credit assignment or learning-dynamics conditioning eliminate the persistent left/back and outer-radius reach deficit while preserving complete uninterrupted holds across the official 0.06-0.20 m radius range?",
-          "handoff_source_session_id": "S7",
-          "id": "I4",
-          "opened_in_session": "S8",
-          "question": "Can improved PPO credit assignment or learning-dynamics conditioning eliminate the persistent left/back and outer-radius reach deficit while preserving complete uninterrupted holds across the official 0.06-0.20 m radius range?",
-          "rationale": "M4 showed T2's deficit was concentrated in approach and reach on left/back bearings with action saturation, while T1 reached the same sectors, lowering the priority of global reachability. M5 showed that the tested geometry-conditioned T3 recipe worsened back-bearing and outer-radius reach and reduced complete holds, but its 11% training success prevents attributing that result to representation rather than optimization. The decisive unresolved distinction is therefore whether PPO credit assignment or learning-dynamics conditioning is limiting acquisition under the mixed-radius task. The active PPO surface exposes rollout, discount/GAE, entropy, learning-rate, network, and training-distribution controls suitable for a bounded discriminating test.",
-          "reframes": []
-        }
-      },
-      "result": {
-        "action": "open",
-        "inquiry_id": "I4",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E14",
-    "inquiry_id": null,
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "open",
-        "closure_condition": "Close after matched development evidence from a competent learning-dynamics intervention has been measured against the strongest available reference with bearing-, radius-, first-reach-, never-reached-, hold-, interruption-, qvel-, branch-, and action-conditioned diagnostics. A positive result requires improved first reach and fewer never-reached failures across left/back bearings and the full 0.06-0.20 m range without a consequential increase in hold interruptions or loss of complete 100-step holds. A competent intervention with unchanged bearing- or radius-conditioned reach failure redirects the campaign to control or representation design; failed or inadequate training leaves the mechanism unresolved and requires another bounded learning-dynamics test rather than treating the recipe as a method-level negative.",
-        "goal_connection": "The best development candidate reaches only 67.97%, far below the 98% complete-uninterrupted-hold objective. The inquiry directly tests whether the measured left/back and outer-radius failures can be removed through learning dynamics while retaining the behavior that defines official success.",
-        "question": "Can improved PPO credit assignment or learning-dynamics conditioning eliminate the persistent left/back and outer-radius reach deficit while preserving complete uninterrupted holds across the official 0.06-0.20 m radius range?",
-        "rationale": "M4 showed T2's deficit was concentrated in approach and reach on left/back bearings with action saturation, while T1 reached the same sectors, lowering the priority of global reachability. M5 showed that the tested geometry-conditioned T3 recipe worsened back-bearing and outer-radius reach and reduced complete holds, but its 11% training success prevents attributing that result to representation rather than optimization. The decisive unresolved distinction is therefore whether PPO credit assignment or learning-dynamics conditioning is limiting acquisition under the mixed-radius task. The active PPO surface exposes rollout, discount/GAE, entropy, learning-rate, network, and training-distribution controls suitable for a bounded discriminating test."
-      }
-    },
-    "request_fingerprint": "2ff84bb326258fd0a3a351c18b73531a66da460f27954a5a9d057dbed94fab4c",
-    "session_id": "S8",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T1:checkpoint-115712 remains the strongest development-measured candidate at 67.97% on the latest matched panel. T3:checkpoint-120832 measured 53.125% after the geometry-conditioned observation change. No candidate has a working, best-known, or retained role; neither development result establishes the official goal.",
     "completed_operations": [
