@@ -103,3 +103,4 @@
 | T16 | training | I14 | completed |
 | M26 | measurement | I14 | failed |
 | M27 | measurement | I14 | completed |
+| E59 | inquiry | I14 | completed |
