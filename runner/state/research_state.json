@@ -4108,7 +4108,7 @@
     }
   },
   "counters": {
-    "event": 16,
+    "event": 17,
     "inquiry": 4,
     "measurement": 6,
     "session": 9,
@@ -4117,7 +4117,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -7994,31 +7994,169 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-09T10:45:46Z",
+      "error": null,
+      "id": "E17",
+      "inquiry_id": "I4",
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "T5:checkpoint-115712 is the strongest development-measured candidate at 125/128 complete holds (97.65625%) on M6. T1:checkpoint-115712 remains the matched reference at 92/128, while T4 was inadequate and unmeasured for development performance. No working, best-known, or retained role is assigned in this inquiry-closing session; the fresh goal-review session should explicitly decide whether M6 supports assigning T5 as best-known before any protected official assessment.",
+        "completed_operations": [
+          "T4",
+          "T5",
+          "M6",
+          "E16"
+        ],
+        "cumulative_resource_use": "Five training runs completed: T1, T2, T3, T4, and T5, each requested at 120000 steps and rounded by PPO rollout boundaries to 120832 simulator steps. Six development measurement operations produced seven panels: M1 through M6, with M3, M4, M5, and M6 containing matched comparisons. I1, I2, and I3 closed with limited negative results; I4 closed with a positive transfer learning-dynamics result. No official assessment has been requested.",
+        "current_goal_gap": "No candidate has established the official goal. T5:checkpoint-115712 is now the strongest completed development candidate at 97.65625% on the M6 panel, one development-panel failure short of 98% when expressed as 128 trials, but this result is not an official assessment and cannot substitute for the protected 200-episode verdict.",
+        "current_synthesis": "Observed: T4's fresh longer-horizon PPO run never acquired a competent policy, with zero training success throughout, so it did not discriminate control limitation from optimization failure. T5 then transferred T1:checkpoint-115712 into the official 0.06-0.20 m training distribution using the established 11-element observation and PPO schedule; its training success reached 0.99 at checkpoint 115712. M6 evaluated T5 and T1 on 128 shared seeds. T5 achieved 125/128 complete holds versus T1's 92/128, reduced never-reached failures from 29 to 1 overall, eliminated never-reached failures in the 6-10 cm and 14-20 cm bins and in the back-bearing group, and reduced hold interruptions from 443 to 231. First-reach behavior improved or remained comparable across the reported bearing and radius groups, while both policies used the open branch and saturated action magnitude in all episodes. T5 had higher recorded maximum hold qvel (mean maximum component 6.96 versus 4.60), but the increase did not produce a consequential loss of complete holds. Interpretation: the aggregate result and the required mechanism diagnostics agree that curriculum-like transfer from a competent outer-range policy repaired the dominant full-radius reach deficit while preserving uninterrupted holds for the tested recipe. This is positive evidence for the tested transfer learning-dynamics intervention, not a method-level claim about all PPO conditioning or representations. The remaining uncertainty is official-distribution generalization and whether the three residual development failures or elevated hold qvel represent a consequential tail under the protected 200-episode assessment.",
+        "decision_frontier": "I4's learning-dynamics distinction is resolved positively for the tested transfer recipe: a competent policy adapted to the official radius distribution substantially reduced left/back and outer-radius never-reached failures without losing complete holds. The remaining goal-relevant distinction is whether T5's matched development behavior generalizes to at least 196 successes in the protected 200-episode official assessment, or whether residual hold interruptions and elevated hold qvel create an official tail failure. Official assessment evidence would decide this directly; an official pass would end the campaign, while an official fail would redirect attention to the residual stabilization or tail-generalization mechanism rather than reopening the already-supported transfer explanation.",
+        "evidence_references": [
+          "T4",
+          "T5",
+          "M6",
+          "E16"
+        ],
+        "human_goal_connection": "I4 produced the strongest development result so far toward the human objective: the transfer-trained T5 policy achieved 125/128 complete uninterrupted holds (97.65625%) on a matched development panel, versus 92/128 for T1. The protected goal remains at least 196 successes in the official 200-episode assessment, which has not been requested.",
+        "next_direction_or_closure": "I4 is closed with a positive, recipe-specific learning-dynamics result. Continue to fresh goal review with the exact next question recorded here. The next decision should use M6 and the T5 artifact to assign an evidence-backed candidate role if justified, then request the protected official assessment only for the explicitly selected frozen candidate; do not treat the M6 development percentage as the official verdict.",
+        "next_question": "Can the transfer-trained T5 policy achieve at least 98% episode success under the protected official task distribution while preserving complete uninterrupted holds across all bearings and radii?"
+      },
+      "result": {
+        "session_id": "S9",
+        "status": "checkpointed"
+      },
+      "session_id": "S9",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "d66673e6aead9c9eab995c81569272fc743d50bd",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "T5:checkpoint-115712 is the strongest development-measured candidate at 125/128 complete holds (97.65625%) on M6. T1:checkpoint-115712 remains the matched reference at 92/128, while T4 was inadequate and unmeasured for development performance. No working, best-known, or retained role is assigned in this inquiry-closing session; the fresh goal-review session should explicitly decide whether M6 supports assigning T5 as best-known before any protected official assessment.",
+        "completed_operations": [
+          "T4",
+          "T5",
+          "M6",
+          "E16"
+        ],
+        "cumulative_resource_use": "Five training runs completed: T1, T2, T3, T4, and T5, each requested at 120000 steps and rounded by PPO rollout boundaries to 120832 simulator steps. Six development measurement operations produced seven panels: M1 through M6, with M3, M4, M5, and M6 containing matched comparisons. I1, I2, and I3 closed with limited negative results; I4 closed with a positive transfer learning-dynamics result. No official assessment has been requested.",
+        "current_goal_gap": "No candidate has established the official goal. T5:checkpoint-115712 is now the strongest completed development candidate at 97.65625% on the M6 panel, one development-panel failure short of 98% when expressed as 128 trials, but this result is not an official assessment and cannot substitute for the protected 200-episode verdict.",
+        "current_synthesis": "Observed: T4's fresh longer-horizon PPO run never acquired a competent policy, with zero training success throughout, so it did not discriminate control limitation from optimization failure. T5 then transferred T1:checkpoint-115712 into the official 0.06-0.20 m training distribution using the established 11-element observation and PPO schedule; its training success reached 0.99 at checkpoint 115712. M6 evaluated T5 and T1 on 128 shared seeds. T5 achieved 125/128 complete holds versus T1's 92/128, reduced never-reached failures from 29 to 1 overall, eliminated never-reached failures in the 6-10 cm and 14-20 cm bins and in the back-bearing group, and reduced hold interruptions from 443 to 231. First-reach behavior improved or remained comparable across the reported bearing and radius groups, while both policies used the open branch and saturated action magnitude in all episodes. T5 had higher recorded maximum hold qvel (mean maximum component 6.96 versus 4.60), but the increase did not produce a consequential loss of complete holds. Interpretation: the aggregate result and the required mechanism diagnostics agree that curriculum-like transfer from a competent outer-range policy repaired the dominant full-radius reach deficit while preserving uninterrupted holds for the tested recipe. This is positive evidence for the tested transfer learning-dynamics intervention, not a method-level claim about all PPO conditioning or representations. The remaining uncertainty is official-distribution generalization and whether the three residual development failures or elevated hold qvel represent a consequential tail under the protected 200-episode assessment.",
+        "decision_frontier": "I4's learning-dynamics distinction is resolved positively for the tested transfer recipe: a competent policy adapted to the official radius distribution substantially reduced left/back and outer-radius never-reached failures without losing complete holds. The remaining goal-relevant distinction is whether T5's matched development behavior generalizes to at least 196 successes in the protected 200-episode official assessment, or whether residual hold interruptions and elevated hold qvel create an official tail failure. Official assessment evidence would decide this directly; an official pass would end the campaign, while an official fail would redirect attention to the residual stabilization or tail-generalization mechanism rather than reopening the already-supported transfer explanation.",
+        "evidence_references": [
+          "T4",
+          "T5",
+          "M6",
+          "E16"
+        ],
+        "human_goal_connection": "I4 produced the strongest development result so far toward the human objective: the transfer-trained T5 policy achieved 125/128 complete uninterrupted holds (97.65625%) on a matched development panel, versus 92/128 for T1. The protected goal remains at least 196 successes in the official 200-episode assessment, which has not been requested.",
+        "inquiry_id": "I4",
+        "next_direction_or_closure": "I4 is closed with a positive, recipe-specific learning-dynamics result. Continue to fresh goal review with the exact next question recorded here. The next decision should use M6 and the T5 artifact to assign an evidence-backed candidate role if justified, then request the protected official assessment only for the explicitly selected frozen candidate; do not treat the M6 development percentage as the official verdict.",
+        "next_question": "Can the transfer-trained T5 policy achieve at least 98% episode success under the protected official task distribution while preserving complete uninterrupted holds across all bearings and radii?",
+        "session_id": "S9"
+      },
+      "presentation": {
+        "backend_session_id": "21c24ea6-5994-4b91-a685-6be62ebbac2a",
+        "campaign_id": "896c230a-0ff1-4105-8ab7-1691a09c5482",
+        "campaign_usage": "25m11s | 74.56 AIU | prompt 12m (86% cached) | output 98.4k",
+        "session_id": "S9",
+        "session_kind": "inquiry",
+        "session_usage": "4m42s | 13.33 AIU | prompt 3m (93% cached) | output 18k"
+      },
+      "result": {
+        "session_id": "S9",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "7eb79b7940d12551b4ea22e7ecc077cfc7e479e3",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E17",
+    "inquiry_id": "I4",
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "T5:checkpoint-115712 is the strongest development-measured candidate at 125/128 complete holds (97.65625%) on M6. T1:checkpoint-115712 remains the matched reference at 92/128, while T4 was inadequate and unmeasured for development performance. No working, best-known, or retained role is assigned in this inquiry-closing session; the fresh goal-review session should explicitly decide whether M6 supports assigning T5 as best-known before any protected official assessment.",
+        "completed_operations": [
+          "T4",
+          "T5",
+          "M6",
+          "E16"
+        ],
+        "cumulative_resource_use": "Five training runs completed: T1, T2, T3, T4, and T5, each requested at 120000 steps and rounded by PPO rollout boundaries to 120832 simulator steps. Six development measurement operations produced seven panels: M1 through M6, with M3, M4, M5, and M6 containing matched comparisons. I1, I2, and I3 closed with limited negative results; I4 closed with a positive transfer learning-dynamics result. No official assessment has been requested.",
+        "current_goal_gap": "No candidate has established the official goal. T5:checkpoint-115712 is now the strongest completed development candidate at 97.65625% on the M6 panel, one development-panel failure short of 98% when expressed as 128 trials, but this result is not an official assessment and cannot substitute for the protected 200-episode verdict.",
+        "current_synthesis": "Observed: T4's fresh longer-horizon PPO run never acquired a competent policy, with zero training success throughout, so it did not discriminate control limitation from optimization failure. T5 then transferred T1:checkpoint-115712 into the official 0.06-0.20 m training distribution using the established 11-element observation and PPO schedule; its training success reached 0.99 at checkpoint 115712. M6 evaluated T5 and T1 on 128 shared seeds. T5 achieved 125/128 complete holds versus T1's 92/128, reduced never-reached failures from 29 to 1 overall, eliminated never-reached failures in the 6-10 cm and 14-20 cm bins and in the back-bearing group, and reduced hold interruptions from 443 to 231. First-reach behavior improved or remained comparable across the reported bearing and radius groups, while both policies used the open branch and saturated action magnitude in all episodes. T5 had higher recorded maximum hold qvel (mean maximum component 6.96 versus 4.60), but the increase did not produce a consequential loss of complete holds. Interpretation: the aggregate result and the required mechanism diagnostics agree that curriculum-like transfer from a competent outer-range policy repaired the dominant full-radius reach deficit while preserving uninterrupted holds for the tested recipe. This is positive evidence for the tested transfer learning-dynamics intervention, not a method-level claim about all PPO conditioning or representations. The remaining uncertainty is official-distribution generalization and whether the three residual development failures or elevated hold qvel represent a consequential tail under the protected 200-episode assessment.",
+        "decision_frontier": "I4's learning-dynamics distinction is resolved positively for the tested transfer recipe: a competent policy adapted to the official radius distribution substantially reduced left/back and outer-radius never-reached failures without losing complete holds. The remaining goal-relevant distinction is whether T5's matched development behavior generalizes to at least 196 successes in the protected 200-episode official assessment, or whether residual hold interruptions and elevated hold qvel create an official tail failure. Official assessment evidence would decide this directly; an official pass would end the campaign, while an official fail would redirect attention to the residual stabilization or tail-generalization mechanism rather than reopening the already-supported transfer explanation.",
+        "evidence_references": [
+          "T4",
+          "T5",
+          "M6",
+          "E16"
+        ],
+        "human_goal_connection": "I4 produced the strongest development result so far toward the human objective: the transfer-trained T5 policy achieved 125/128 complete uninterrupted holds (97.65625%) on a matched development panel, versus 92/128 for T1. The protected goal remains at least 196 successes in the official 200-episode assessment, which has not been requested.",
+        "next_direction_or_closure": "I4 is closed with a positive, recipe-specific learning-dynamics result. Continue to fresh goal review with the exact next question recorded here. The next decision should use M6 and the T5 artifact to assign an evidence-backed candidate role if justified, then request the protected official assessment only for the explicitly selected frozen candidate; do not treat the M6 development percentage as the official verdict.",
+        "next_question": "Can the transfer-trained T5 policy achieve at least 98% episode success under the protected official task distribution while preserving complete uninterrupted holds across all bearings and radii?"
+      }
+    },
+    "request_fingerprint": "5e9d79c7e3d067e638100449a77d9f4ca349a42bdfce172d8b8ecdd9e1e1cc95",
+    "session_id": "S9",
+    "supersedes": null
+  },
   "pi_checkpoint": {
-    "candidates_and_roles": "No working, best-known, or retained role is assigned. T1:checkpoint-115712 remains the strongest development-measured candidate at 67.97%, and T3:checkpoint-120832 measured 53.125% after the geometry-conditioned observation change; neither establishes the official goal.",
+    "candidates_and_roles": "T5:checkpoint-115712 is the strongest development-measured candidate at 125/128 complete holds (97.65625%) on M6. T1:checkpoint-115712 remains the matched reference at 92/128, while T4 was inadequate and unmeasured for development performance. No working, best-known, or retained role is assigned in this inquiry-closing session; the fresh goal-review session should explicitly decide whether M6 supports assigning T5 as best-known before any protected official assessment.",
     "completed_operations": [
-      "E14"
+      "T4",
+      "T5",
+      "M6",
+      "E16"
     ],
-    "cumulative_resource_use": "Three fresh 120000-step training runs completed, each rounded to 120832 simulator steps: T1, T2, and T3. Five development measurement operations produced six panels: M1 through M5, with M4 and M5 containing matched diagnostic comparisons. I1, I2, and I3 closed with limited negative results; I4 is now open. No official assessment has been requested.",
-    "current_goal_gap": "No candidate has established the official goal. T1:checkpoint-115712 is the strongest completed development result at 67.97%; T3:checkpoint-120832 measured 53.125%. Both are development measurements, not official assessment results.",
-    "current_synthesis": "M4 observed that T2's deficit was concentrated in approach and reach on left/back bearings, with action saturation across radius bins and a secondary hold deficit, while T1 reached the same sectors. This argues against globally unreachable geometry or absent campaign-wide actuator authority. M5 observed that the tested geometry-conditioned T3 recipe reached 5/27 back-bearing targets versus T1's 23/27 and 16/50 targets in the 14-20 cm bin versus 50/50, while achieving 68/128 complete holds versus 83/128 and 431 hold interruptions. The negative aggregate and diagnostics agree for that recipe, but T3's 11% training success leaves the broader representation explanation unresolved. The new goal-review decision is to test the remaining PPO credit-assignment or learning-dynamics explanation rather than treating T3 as a method-level negative. The physical model's branch- and radius-dependent dynamics remain consequential; T1's matched-sector reach keeps global reachability and omitted dynamics lower priority.",
-    "decision_frontier": "The unresolved distinction is whether left/back and outer-radius failures primarily arise from PPO credit assignment and curriculum under the mixed-radius distribution, or persist as a learned control limitation after competent optimization. Matched evidence from a competent learning-dynamics intervention must compare bearing-, radius-, first-reach-, never-reached-, hold-, interruption-, qvel-, branch-, and action-conditioned behavior against the strongest reference. Improved first reach and fewer never-reached failures across left/back bearings and 0.06-0.20 m, without consequential hold interruptions or loss of complete holds, support continuing the learning-dynamics route. Competent training with unchanged bearing-conditioned reach failure redirects attention to control or representation design; inadequate training leaves the distinction unresolved.",
+    "cumulative_resource_use": "Five training runs completed: T1, T2, T3, T4, and T5, each requested at 120000 steps and rounded by PPO rollout boundaries to 120832 simulator steps. Six development measurement operations produced seven panels: M1 through M6, with M3, M4, M5, and M6 containing matched comparisons. I1, I2, and I3 closed with limited negative results; I4 closed with a positive transfer learning-dynamics result. No official assessment has been requested.",
+    "current_goal_gap": "No candidate has established the official goal. T5:checkpoint-115712 is now the strongest completed development candidate at 97.65625% on the M6 panel, one development-panel failure short of 98% when expressed as 128 trials, but this result is not an official assessment and cannot substitute for the protected 200-episode verdict.",
+    "current_synthesis": "Observed: T4's fresh longer-horizon PPO run never acquired a competent policy, with zero training success throughout, so it did not discriminate control limitation from optimization failure. T5 then transferred T1:checkpoint-115712 into the official 0.06-0.20 m training distribution using the established 11-element observation and PPO schedule; its training success reached 0.99 at checkpoint 115712. M6 evaluated T5 and T1 on 128 shared seeds. T5 achieved 125/128 complete holds versus T1's 92/128, reduced never-reached failures from 29 to 1 overall, eliminated never-reached failures in the 6-10 cm and 14-20 cm bins and in the back-bearing group, and reduced hold interruptions from 443 to 231. First-reach behavior improved or remained comparable across the reported bearing and radius groups, while both policies used the open branch and saturated action magnitude in all episodes. T5 had higher recorded maximum hold qvel (mean maximum component 6.96 versus 4.60), but the increase did not produce a consequential loss of complete holds. Interpretation: the aggregate result and the required mechanism diagnostics agree that curriculum-like transfer from a competent outer-range policy repaired the dominant full-radius reach deficit while preserving uninterrupted holds for the tested recipe. This is positive evidence for the tested transfer learning-dynamics intervention, not a method-level claim about all PPO conditioning or representations. The remaining uncertainty is official-distribution generalization and whether the three residual development failures or elevated hold qvel represent a consequential tail under the protected 200-episode assessment.",
+    "decision_frontier": "I4's learning-dynamics distinction is resolved positively for the tested transfer recipe: a competent policy adapted to the official radius distribution substantially reduced left/back and outer-radius never-reached failures without losing complete holds. The remaining goal-relevant distinction is whether T5's matched development behavior generalizes to at least 196 successes in the protected 200-episode official assessment, or whether residual hold interruptions and elevated hold qvel create an official tail failure. Official assessment evidence would decide this directly; an official pass would end the campaign, while an official fail would redirect attention to the residual stabilization or tail-generalization mechanism rather than reopening the already-supported transfer explanation.",
     "evidence_references": [
-      "M4",
-      "T3",
-      "M5",
-      "E12",
-      "E14"
+      "T4",
+      "T5",
+      "M6",
+      "E16"
     ],
-    "human_goal_connection": "The campaign remains 30.03 percentage points below the 98% complete-uninterrupted-hold objective: the strongest development result is T1:checkpoint-115712 at 67.97%. I4 directly tests whether learning-dynamics changes can repair its left/back and outer-radius reach failures while preserving complete 100-step holds.",
-    "inquiry_id": null,
-    "next_direction_or_closure": "I4 is opened and this goal-review session is complete. The next bounded inquiry session will select a learning-dynamics intervention and require matched development evidence against T1:checkpoint-115712 with the stated reach and hold diagnostics before deciding whether to continue that route or redirect to control or representation design.",
-    "next_question": "Can improved PPO credit assignment or learning-dynamics conditioning eliminate the persistent left/back and outer-radius reach deficit while preserving complete uninterrupted holds across the official 0.06-0.20 m radius range?",
-    "scientific_commit": "461f6ec7ae5764070d04a99af618bbcc3daf2525",
-    "session_id": "S8"
+    "human_goal_connection": "I4 produced the strongest development result so far toward the human objective: the transfer-trained T5 policy achieved 125/128 complete uninterrupted holds (97.65625%) on a matched development panel, versus 92/128 for T1. The protected goal remains at least 196 successes in the official 200-episode assessment, which has not been requested.",
+    "inquiry_id": "I4",
+    "next_direction_or_closure": "I4 is closed with a positive, recipe-specific learning-dynamics result. Continue to fresh goal review with the exact next question recorded here. The next decision should use M6 and the T5 artifact to assign an evidence-backed candidate role if justified, then request the protected official assessment only for the explicitly selected frozen candidate; do not treat the M6 development percentage as the official verdict.",
+    "next_question": "Can the transfer-trained T5 policy achieve at least 98% episode success under the protected official task distribution while preserving complete uninterrupted holds across all bearings and radii?",
+    "scientific_commit": "7eb79b7940d12551b4ea22e7ecc077cfc7e479e3",
+    "session_id": "S9"
   },
   "schema_version": 6,
   "scientific_model": {
@@ -8026,24 +8164,6 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "21c24ea6-5994-4b91-a685-6be62ebbac2a",
-    "id": "S9",
-    "inquiry_id": "I4",
-    "kind": "inquiry",
-    "objective": "Advance I4 toward an evidence-supported answer to its scientific question: Can improved PPO credit assignment or learning-dynamics conditioning eliminate the persistent left/back and outer-radius reach deficit while preserving complete uninterrupted holds across the official 0.06-0.20 m radius range? Before choosing the next action, compare the accumulated evidence with the closure condition. Close the inquiry when the condition is met.",
-    "operation_ids": [
-      "T4",
-      "T5",
-      "M6",
-      "E16"
-    ],
-    "scientific_parent_commit": "d66673e6aead9c9eab995c81569272fc743d50bd"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
