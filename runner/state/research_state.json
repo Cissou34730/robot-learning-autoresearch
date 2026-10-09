@@ -7401,7 +7401,7 @@
   "counters": {
     "event": 39,
     "inquiry": 9,
-    "measurement": 16,
+    "measurement": 17,
     "session": 19,
     "training": 9
   },
@@ -19873,6 +19873,41 @@
       "status": "failed",
       "superseded_by": "M16",
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-09T15:44:16Z",
+      "error": "robot_learning.lab.direct_action_capability failed:\n\nTraceback (most recent call last):\n  File \"<frozen runpy>\", line 203, in _run_module_as_main\n  File \"<frozen runpy>\", line 88, in _run_code\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\direct_action_capability.py\", line 228, in <module>\n    main()\n    ~~~~^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\direct_action_capability.py\", line 224, in main\n    measure(args.artifact, args.episodes, args.seed)\n    ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\direct_action_capability.py\", line 196, in measure\n    _run_controller(kp=kp, kd=kd, episodes=episodes, seed=seed)\n    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\direct_action_capability.py\", line 125, in _run_controller\n    action = _computed_torque_action(\n        env.model, env.data, target_qpos, kp, kd\n    )\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\direct_action_capability.py\", line 83, in _computed_torque_action\n    mujoco.mj_fullM(model, mass_matrix.ravel(), data.M)\n    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nTypeError: mj_fullM(): incompatible function arguments. The following argument types are supported:\n    1. (m: mujoco._structs.MjModel, d: mujoco._structs.MjData, dst: typing.Annotated[numpy.typing.NDArray[numpy.float64], \"[m, n]\", \"flags.writeable\", \"flags.c_contiguous\"]) -> None\n\nInvoked with: <mujoco._structs.MjModel object at 0x000002757E2FDDB0>, array([0., 0., 0., 0.]), array([0.01210221, 0.00050715, 0.01019229])\n",
+      "id": "M16",
+      "inquiry_id": "I9",
+      "kind": "measurement",
+      "request": {
+        "description": "Repeat the I9 same-interface controllability measurement after correcting the MuJoCo 3.12 mass-matrix API call.",
+        "measurements": [
+          {
+            "args": [
+              "--artifact",
+              "campaigns\\evaluations\\79395c88-afcd-40f0-a644-16ca95368c28\\same_interface_model_based_control_capability.json",
+              "--episodes",
+              "160",
+              "--seed",
+              "4200"
+            ],
+            "artifact": "campaigns\\evaluations\\79395c88-afcd-40f0-a644-16ca95368c28\\same_interface_model_based_control_capability.json",
+            "instrument": "python_module",
+            "label": "I9 corrected same-interface model-based controllability",
+            "module": "robot_learning.lab.direct_action_capability"
+          }
+        ],
+        "rationale": "M15 did not exercise the scientific discriminator: the PI-owned controller failed before the first episode because it used obsolete data.qM instead of native MuJoCo 3.12 data.M. This is an implementation failure, not evidence about controllability. The corrected measurement retains the same analytic IK branch selection, bounded direct-action interface, computed-torque controller, uniform 160-episode panel, and diagnostics. Its result will determine whether the residual reach and hold failures are achievable through the existing action interface before allocating another policy-side training recipe."
+      },
+      "result": {
+        "error": "robot_learning.lab.direct_action_capability failed:\n\nTraceback (most recent call last):\n  File \"<frozen runpy>\", line 203, in _run_module_as_main\n  File \"<frozen runpy>\", line 88, in _run_code\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\direct_action_capability.py\", line 228, in <module>\n    main()\n    ~~~~^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\direct_action_capability.py\", line 224, in main\n    measure(args.artifact, args.episodes, args.seed)\n    ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\direct_action_capability.py\", line 196, in measure\n    _run_controller(kp=kp, kd=kd, episodes=episodes, seed=seed)\n    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\direct_action_capability.py\", line 125, in _run_controller\n    action = _computed_torque_action(\n        env.model, env.data, target_qpos, kp, kd\n    )\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\direct_action_capability.py\", line 83, in _computed_torque_action\n    mujoco.mj_fullM(model, mass_matrix.ravel(), data.M)\n    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nTypeError: mj_fullM(): incompatible function arguments. The following argument types are supported:\n    1. (m: mujoco._structs.MjModel, d: mujoco._structs.MjData, dst: typing.Annotated[numpy.typing.NDArray[numpy.float64], \"[m, n]\", \"flags.writeable\", \"flags.c_contiguous\"]) -> None\n\nInvoked with: <mujoco._structs.MjModel object at 0x000002757E2FDDB0>, array([0., 0., 0., 0.]), array([0.01210221, 0.00050715, 0.01019229])\n",
+        "status": "failed"
+      },
+      "session_id": "S19",
+      "status": "failed",
+      "superseded_by": "M17",
+      "supersedes": "M15"
     }
   ],
   "pending_operation": {
@@ -19909,7 +19944,7 @@
             "path": "robot_learning/lab/diagnose_policy.py"
           },
           {
-            "fingerprint": "5b60919464b206f2b716948f21e0dcd22a62bd79d4796785565ca2257273ee8f",
+            "fingerprint": "e9c1795e83e9e7df6aae48eb89d786bfcb2f98d988908637340b35fba744ee68",
             "path": "robot_learning/lab/direct_action_capability.py"
           }
         ],
@@ -19942,7 +19977,7 @@
         "module_manifest": [
           {
             "exists": true,
-            "fingerprint": "5b60919464b206f2b716948f21e0dcd22a62bd79d4796785565ca2257273ee8f",
+            "fingerprint": "e9c1795e83e9e7df6aae48eb89d786bfcb2f98d988908637340b35fba744ee68",
             "path": "robot_learning/lab/direct_action_capability.py"
           }
         ],
@@ -19959,13 +19994,13 @@
       "task_reference_contract": null
     },
     "failure": null,
-    "id": "M16",
+    "id": "M17",
     "inquiry_id": "I9",
     "kind": "measurement",
     "progress": "accepted",
     "request": {
       "measurement": {
-        "description": "Repeat the I9 same-interface controllability measurement after correcting the MuJoCo 3.12 mass-matrix API call.",
+        "description": "Repeat the I9 same-interface controllability measurement after correcting the MuJoCo 3.12 mj_fullM call signature.",
         "measurements": [
           {
             "args": [
@@ -19982,12 +20017,12 @@
             "module": "robot_learning.lab.direct_action_capability"
           }
         ],
-        "rationale": "M15 did not exercise the scientific discriminator: the PI-owned controller failed before the first episode because it used obsolete data.qM instead of native MuJoCo 3.12 data.M. This is an implementation failure, not evidence about controllability. The corrected measurement retains the same analytic IK branch selection, bounded direct-action interface, computed-torque controller, uniform 160-episode panel, and diagnostics. Its result will determine whether the residual reach and hold failures are achievable through the existing action interface before allocating another policy-side training recipe."
+        "rationale": "M16 did not exercise the scientific discriminator: after the prior data-field correction, the controller passed arguments in the legacy order and MuJoCo 3.12 rejected the call before the first episode. This is an implementation failure, not evidence about controllability. The unresolved distinction remains whether the residual pre-reach and uninterrupted-hold failures are controllable through the bounded direct-action interface or require a different policy-side method. The corrected measurement keeps the same analytic IK branch selection, computed-torque controller, uniform 160-episode panel, and reach/hold diagnostics; its result will determine whether to continue policy-side development or redirect toward action/trajectory redesign."
       }
     },
-    "request_fingerprint": "1260c1fa5ddb3d18a5b281ff03ae73a82bfd548332fb7de3a84d809532dc1e15",
+    "request_fingerprint": "a07eabde9dfd7ae475aa627b077187e7003bf001e8e3d66cd6788d9e608ff5dc",
     "session_id": "S19",
-    "supersedes": "M15"
+    "supersedes": "M16"
   },
   "pi_checkpoint": {
     "candidates_and_roles": "T1:checkpoint-120832 remains the strongest original evidence-backed baseline at 150/160 with 40/40 inner-band successes. T8:checkpoint-60416 and T9:checkpoint-20480 are the strongest measured I8 candidates at 153/160, but neither meets the development threshold or has a protected assessment or durable working, best-known, or retained role. T2-T7 remain rejected as recipe-specific negative routes.",
