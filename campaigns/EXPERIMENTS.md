@@ -56,3 +56,4 @@
 | E33 | checkpoint | I8 | checkpointed |
 | E34 | inquiry | I9 | completed |
 | E35 | checkpoint | - | checkpointed |
+| T10 | training | I9 | completed |
