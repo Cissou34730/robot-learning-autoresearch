@@ -5,10 +5,8 @@ observation space declared by the scenario environment.
 """
 
 import numpy as np
-import mujoco
 
 from contracts.robots.two_joint_arm import FOREARM_LENGTH, UPPER_ARM_LENGTH
-from contracts.task_spec import FRAME_SKIP
 
 OBSERVATION_SIZE = 11
 
@@ -36,23 +34,11 @@ def reach_observation(data) -> np.ndarray:
     elbow_folded = -elbow_open
     shoulder_folded = shoulder_for_elbow(elbow_folded)
     end_effector = data.site("end_effector").xpos.copy()
-    site_id = data.model.site("end_effector").id
-    site_jacobian = np.zeros((3, data.model.nv), dtype=np.float64)
-    mujoco.mj_jacSite(data.model, data, site_jacobian, None, site_id)
-    end_effector_velocity = site_jacobian @ data.qvel
-    position_error = end_effector[:2] - data.mocap_pos[0][:2]
-    error_norm = float(np.linalg.norm(position_error))
-    if error_norm > 0.0:
-        radial_axis = position_error / error_norm
-        radial_velocity = float(np.dot(end_effector_velocity[:2], radial_axis))
-    else:
-        radial_velocity = 0.0
-    radial_step = radial_velocity * data.model.opt.timestep * FRAME_SKIP
     return np.concatenate(
         [
             data.qpos,
             data.qvel,
-            [end_effector[0] - target_x, end_effector[1] - target_y, radial_step],
+            end_effector - data.mocap_pos[0],
             [
                 wrap_to_pi(shoulder_open - float(data.qpos[0])),
                 wrap_to_pi(elbow_open - float(data.qpos[1])),
