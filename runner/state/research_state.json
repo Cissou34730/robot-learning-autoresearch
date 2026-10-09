@@ -5414,38 +5414,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I3",
-        "outcome": "limited_negative",
-        "reason": "M5 completed the I3 discriminator for the tested T3 geometry-conditioned observation recipe. On the matched 128-episode panel, T3 reached only 5/27 back-bearing targets versus T1's 23/27 and 9/24 right-bearing targets versus 14/24, while its outer 14-20 cm reach was 16/50 versus T1's 50/50. T3 also achieved 68/128 complete 100-step holds versus T1's 83/128, with 431 total hold interruptions, and maximum action magnitude was 1.0 across all bearing and radius groups. The persistent bearing and outer-radius reach deficit, together with the lack of a hold-preserving improvement, fails I3's positive closure condition and redirects the campaign toward the remaining PPO learning-dynamics/credit-assignment explanation. This closes the result for the tested T3 recipe only; it does not disprove geometry conditioning as a broader method. The campaign remains below the 98% official objective, so the next goal-review session must select a new goal-linked inquiry."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I3",
-        "outcome": "limited_negative",
-        "reason": "M5 completed the I3 discriminator for the tested T3 geometry-conditioned observation recipe. On the matched 128-episode panel, T3 reached only 5/27 back-bearing targets versus T1's 23/27 and 9/24 right-bearing targets versus 14/24, while its outer 14-20 cm reach was 16/50 versus T1's 50/50. T3 also achieved 68/128 complete 100-step holds versus T1's 83/128, with 431 total hold interruptions, and maximum action magnitude was 1.0 across all bearing and radius groups. The persistent bearing and outer-radius reach deficit, together with the lack of a hold-preserving improvement, fails I3's positive closure condition and redirects the campaign toward the remaining PPO learning-dynamics/credit-assignment explanation. This closes the result for the tested T3 recipe only; it does not disprove geometry conditioning as a broader method. The campaign remains below the 98% official objective, so the next goal-review session must select a new goal-linked inquiry.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E12",
-    "inquiry_id": "I3",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "limited_negative",
-        "reason": "M5 completed the I3 discriminator for the tested T3 geometry-conditioned observation recipe. On the matched 128-episode panel, T3 reached only 5/27 back-bearing targets versus T1's 23/27 and 9/24 right-bearing targets versus 14/24, while its outer 14-20 cm reach was 16/50 versus T1's 50/50. T3 also achieved 68/128 complete 100-step holds versus T1's 83/128, with 431 total hold interruptions, and maximum action magnitude was 1.0 across all bearing and radius groups. The persistent bearing and outer-radius reach deficit, together with the lack of a hold-preserving improvement, fails I3's positive closure condition and redirects the campaign toward the remaining PPO learning-dynamics/credit-assignment explanation. This closes the result for the tested T3 recipe only; it does not disprove geometry conditioning as a broader method. The campaign remains below the 98% official objective, so the next goal-review session must select a new goal-linked inquiry."
-      }
-    },
-    "request_fingerprint": "515077d57ef83ff35a007f5f139ff07ea6099e376c268802413b5409b8007270",
-    "session_id": "S7",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T1:checkpoint-115712 remains the strongest development-measured candidate at 67.97% on the latest matched panel; T2:checkpoint-120832 measures 37.50%. No candidate has a working, best-known, or retained role.",
     "completed_operations": [
