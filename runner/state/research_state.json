@@ -1,5 +1,16 @@
 {
-  "active_inquiry": null,
+  "active_inquiry": {
+    "closure_condition": "Close when a matched candidate comparison on the established 160-episode development panel preserves complete-hold success, first_reach_step, max_held_steps, hold_interruptions, timeout status, target angle, and terminal joint/branch geometry, and either rescues the recurring angular failures with no material regression elsewhere or shows another null result sufficient to redirect toward a different control or learning method.",
+    "goal_connection": "The current best development result is 153/160 successes, below the required 196/200 official successes, with the remaining failures concentrated in a narrow angular regime. A bounded test of explicit trajectory realization could determine whether that regime is recoverable without changing the complete-hold task.",
+    "handoff_conclusion": "T2 established that broader radius coverage improved matched development success from 110/160 to 150/160. T3's near-target joint-velocity penalty improved it to 153/160 with paired acquisition and hold rescues. M4 localized the remaining failures to approximately -130 to -151 degrees, with near-limit terminal shoulder positions, small open-branch errors, and large alternate-branch errors. T5/M5 tested one branch-validity and shoulder-limit-aware reward implementation and matched T3 at 153/160 with zero discordant episodes, so that recipe produced no rescue. I5 then trained T6 with an isolated angle-dependent braking intervention and M6 evaluated T6:checkpoint-105472 against T3:checkpoint-120832 on the same 160 seeds. Both achieved 153/160 with zero discordant episodes. M6 preserved complete-hold success, first_reach_step, max_held_steps, hold_interruptions, timeout status, target angle, and terminal joint/branch geometry diagnostics. The completed evidence therefore supports a limited negative conclusion about the tested angle-dependent braking implementation: it did not rescue the recurring failures. It does not invalidate general trajectory control, establish endpoint branch geometry as the sole cause, or evaluate the official 200-episode assessment.",
+    "handoff_question": "Can explicit branch-constrained trajectory selection with limit-aware control rescue the persistent -130 to -151 degree failures toward the 98% complete-hold goal, or do matched failures persist and require a different control or learning method?",
+    "handoff_source_session_id": "S11",
+    "id": "I6",
+    "opened_in_session": "S12",
+    "question": "Can explicit branch-constrained trajectory selection with limit-aware control rescue the persistent -130 to -151 degree failures toward the 98% complete-hold goal, or do matched failures persist and require a different control or learning method?",
+    "rationale": "M4 associated the failures with near-limit terminal shoulder positions and branch errors, but that association does not establish endpoint geometry as the cause. M5 tested branch-validity and shoulder-limit-aware reward shaping and matched T3; M6 tested angle-dependent braking and also matched T3. Those results reject the tested reward implementations, not explicit path selection or the broader trajectory-control route. The inquiry therefore tests the still-unexercised causal distinction while preserving the episode-level and trajectory diagnostics needed to judge a real rescue.",
+    "reframes": []
+  },
   "campaign": {
     "base_commit": "5a0ec158aa0741306d5f825a3ec7db8176a3ff13",
     "id": "339736e0-5583-4bc4-8729-5023fc3077b7",
@@ -4104,16 +4115,16 @@
     }
   },
   "counters": {
-    "event": 21,
-    "inquiry": 5,
+    "event": 22,
+    "inquiry": 6,
     "measurement": 6,
-    "session": 11,
+    "session": 12,
     "training": 6
   },
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -8339,9 +8350,72 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-09T23:30:56Z",
+      "error": null,
+      "id": "E22",
+      "inquiry_id": "I6",
+      "kind": "inquiry",
+      "request": {
+        "action": "open",
+        "closure_condition": "Close when a matched candidate comparison on the established 160-episode development panel preserves complete-hold success, first_reach_step, max_held_steps, hold_interruptions, timeout status, target angle, and terminal joint/branch geometry, and either rescues the recurring angular failures with no material regression elsewhere or shows another null result sufficient to redirect toward a different control or learning method.",
+        "goal_connection": "The current best development result is 153/160 successes, below the required 196/200 official successes, with the remaining failures concentrated in a narrow angular regime. A bounded test of explicit trajectory realization could determine whether that regime is recoverable without changing the complete-hold task.",
+        "question": "Can explicit branch-constrained trajectory selection with limit-aware control rescue the persistent -130 to -151 degree failures toward the 98% complete-hold goal, or do matched failures persist and require a different control or learning method?",
+        "rationale": "M4 associated the failures with near-limit terminal shoulder positions and branch errors, but that association does not establish endpoint geometry as the cause. M5 tested branch-validity and shoulder-limit-aware reward shaping and matched T3; M6 tested angle-dependent braking and also matched T3. Those results reject the tested reward implementations, not explicit path selection or the broader trajectory-control route. The inquiry therefore tests the still-unexercised causal distinction while preserving the episode-level and trajectory diagnostics needed to judge a real rescue."
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I6",
+        "status": "completed"
+      },
+      "session_id": "S12",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "open",
+        "inquiry": {
+          "closure_condition": "Close when a matched candidate comparison on the established 160-episode development panel preserves complete-hold success, first_reach_step, max_held_steps, hold_interruptions, timeout status, target angle, and terminal joint/branch geometry, and either rescues the recurring angular failures with no material regression elsewhere or shows another null result sufficient to redirect toward a different control or learning method.",
+          "goal_connection": "The current best development result is 153/160 successes, below the required 196/200 official successes, with the remaining failures concentrated in a narrow angular regime. A bounded test of explicit trajectory realization could determine whether that regime is recoverable without changing the complete-hold task.",
+          "handoff_conclusion": "T2 established that broader radius coverage improved matched development success from 110/160 to 150/160. T3's near-target joint-velocity penalty improved it to 153/160 with paired acquisition and hold rescues. M4 localized the remaining failures to approximately -130 to -151 degrees, with near-limit terminal shoulder positions, small open-branch errors, and large alternate-branch errors. T5/M5 tested one branch-validity and shoulder-limit-aware reward implementation and matched T3 at 153/160 with zero discordant episodes, so that recipe produced no rescue. I5 then trained T6 with an isolated angle-dependent braking intervention and M6 evaluated T6:checkpoint-105472 against T3:checkpoint-120832 on the same 160 seeds. Both achieved 153/160 with zero discordant episodes. M6 preserved complete-hold success, first_reach_step, max_held_steps, hold_interruptions, timeout status, target angle, and terminal joint/branch geometry diagnostics. The completed evidence therefore supports a limited negative conclusion about the tested angle-dependent braking implementation: it did not rescue the recurring failures. It does not invalidate general trajectory control, establish endpoint branch geometry as the sole cause, or evaluate the official 200-episode assessment.",
+          "handoff_question": "Can explicit branch-constrained trajectory selection with limit-aware control rescue the persistent -130 to -151 degree failures toward the 98% complete-hold goal, or do matched failures persist and require a different control or learning method?",
+          "handoff_source_session_id": "S11",
+          "id": "I6",
+          "opened_in_session": "S12",
+          "question": "Can explicit branch-constrained trajectory selection with limit-aware control rescue the persistent -130 to -151 degree failures toward the 98% complete-hold goal, or do matched failures persist and require a different control or learning method?",
+          "rationale": "M4 associated the failures with near-limit terminal shoulder positions and branch errors, but that association does not establish endpoint geometry as the cause. M5 tested branch-validity and shoulder-limit-aware reward shaping and matched T3; M6 tested angle-dependent braking and also matched T3. Those results reject the tested reward implementations, not explicit path selection or the broader trajectory-control route. The inquiry therefore tests the still-unexercised causal distinction while preserving the episode-level and trajectory diagnostics needed to judge a real rescue.",
+          "reframes": []
+        }
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I6",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E22",
+    "inquiry_id": null,
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "open",
+        "closure_condition": "Close when a matched candidate comparison on the established 160-episode development panel preserves complete-hold success, first_reach_step, max_held_steps, hold_interruptions, timeout status, target angle, and terminal joint/branch geometry, and either rescues the recurring angular failures with no material regression elsewhere or shows another null result sufficient to redirect toward a different control or learning method.",
+        "goal_connection": "The current best development result is 153/160 successes, below the required 196/200 official successes, with the remaining failures concentrated in a narrow angular regime. A bounded test of explicit trajectory realization could determine whether that regime is recoverable without changing the complete-hold task.",
+        "question": "Can explicit branch-constrained trajectory selection with limit-aware control rescue the persistent -130 to -151 degree failures toward the 98% complete-hold goal, or do matched failures persist and require a different control or learning method?",
+        "rationale": "M4 associated the failures with near-limit terminal shoulder positions and branch errors, but that association does not establish endpoint geometry as the cause. M5 tested branch-validity and shoulder-limit-aware reward shaping and matched T3; M6 tested angle-dependent braking and also matched T3. Those results reject the tested reward implementations, not explicit path selection or the broader trajectory-control route. The inquiry therefore tests the still-unexercised causal distinction while preserving the episode-level and trajectory diagnostics needed to judge a real rescue."
+      }
+    },
+    "request_fingerprint": "9567a130db7085ad61101b0f4db6f5c8dfcbb43c18c16fffc36d8a1329fe3647",
+    "session_id": "S12",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T3:checkpoint-120832 remains the strongest development-evaluated candidate at 153/160. T5:checkpoint-100352 and T6:checkpoint-105472 each matched T3 at 153/160 under their respective tested recipes. No candidate has a working, best-known, or retained role because development evidence remains below the human goal and no role assignment was made.",
     "completed_operations": [
@@ -8382,6 +8456,21 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "7c6bfd89-9839-4080-be63-a8991b7e26b5",
+    "id": "S12",
+    "inquiry_id": null,
+    "kind": "goal_review",
+    "objective": "Use the completed evidence to update the scientific direction toward the human goal. Correct inherited interpretations, constraints or proposed questions when existing evidence warrants it. Request measurements when they resolve an uncertainty or develop the method. Then choose one outcome: request the official assessment, or open one bounded goal-linked inquiry.",
+    "operation_ids": [
+      "E22"
+    ],
+    "scientific_parent_commit": "a19ef934328a6283c85efdb447bb6b3d1407bdff"
+  },
   "terminal_state": null
 }
