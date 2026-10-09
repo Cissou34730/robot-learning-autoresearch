@@ -245,7 +245,8 @@
           <span class="tag">Open</span>
           <h3 style="margin-top: 12px">15 issues, OI-001 to OI-015</h3>
           <ul>
-            <li>Active: OI-001, OI-003, OI-014, OI-015.</li>
+            <li>Active: OI-014, OI-015.</li>
+            <li>Closed as effective: OI-001, OI-002, OI-003, OI-004.</li>
             <li>Postponed, paused, or waiting for a decision: OI-005, OI-006, OI-007, OI-011, OI-013.</li>
             <li>Not approved: OI-008, OI-009, OI-010, OI-012.</li>
           </ul>
@@ -255,11 +256,12 @@
           <span class="tag">Changed last</span>
           <h3 style="margin-top: 12px">9 October 2026</h3>
           <ul>
-            <li>OI-002 is closed with bounded closure observed in campaign <code>1ae27a27</code>.</li>
-            <li>OI-004 is closed as effective after campaign <code>58dcd817</code> exercised trajectory-based candidate nomination, missing-evidence repair, and frontier-led progression.</li>
-            <li>OI-003 and OI-015 retain the remaining evidence-inspection and effective-experiment findings from the comprehensive RCA.</li>
+            <li>OI-001 is closed as effective. In <code>896c230a</code> the briefing, the first startup action, and the handoff formed one traceable chain.</li>
+            <li>OI-003 is closed as effective after the final <code>896c230a</code> campaign resolved the aggregate-only interpretation defect in practice.</li>
+            <li>OI-004 remains closed as effective after the earlier <code>58dcd817</code> evidence and is consistent with the final campaign's transfer-learning result.</li>
+            <li>OI-014 and OI-015 remain the only open issues. Both come from the independent RCA.</li>
           </ul>
-          <p class="small muted" style="margin-top: 8px">The official result was 195/200: the progression behavior improved, while the scientific goal remained unmet.</p>
+          <p class="small muted" style="margin-top: 8px">The final campaign did not reach the human goal, but it confirmed the observed process improvements and the bounded scientific direction.</p>
         </article>
       </div>
       <p class="small muted" style="margin-top: 12px">Prompt-stack review items R1, R5-1, R5-2, R6, R7, and R8 are implemented. R2 is partly implemented and paused. R3 and R4 are discarded. Implemented does not mean effective. Scientific effect is stated separately in each item.</p>
@@ -499,12 +501,12 @@
         <table>
           <thead><tr><th scope="col">ID</th><th scope="col">Issue</th><th scope="col">Status</th></tr></thead>
           <tbody>
-            <tr><td>OI-001</td><td>Startup method selection. The link from the scientific briefing to the first startup action and its handoff is not traceable. A five-campaign review found sound startups in four of five and no handoff collapse. R8 correction <code>adff08e</code> and the prompt changes <code>ef9516f</code>, <code>b3f4307</code>, <code>5437ff2</code> are in place. Their effect is not separable yet. Not the same as OI-006.</td><td><span class="tag">Open, narrowed</span></td></tr>
+            <tr><td>OI-001</td><td>Startup method selection. The link from the scientific briefing to the first startup action and its handoff is now traceable. In campaign <code>896c230a</code> the model named the omitted 0.06-0.14 m region, startup ran T1 as a declared control for that distinction, M1 and M2 measured before any intervention, and E1 handed off the unresolved coverage-versus-stabilization frontier. I1 then tested the named distinction. One campaign cannot say which prompt element caused this. Startup cost stays OI-006.</td><td><span class="tag">Closed, effective</span></td></tr>
             <tr><td>OI-002</td><td>Inquiry control. The closure condition defines sufficient evidence and permits positive, negative, limited, or inconclusive closure. Campaign <code>1ae27a27</code> closed all inquiries at their declared boundaries. The original indefinite-continuation symptom did not recur.</td><td><span class="tag">Closed, bounded closure observed</span></td></tr>
-            <tr><td>OI-003</td><td>Measurement evidence. In I9, available arrival-speed diagnostics were not used. In I11, equal success labels were treated as preserved behavior despite fewer first reaches and more interruptions. Decision-linked inspection and aggregate-versus-mechanism interpretation remain unresolved.</td><td><span class="tag">Open, expanded</span></td></tr>
-            <tr><td>OI-004</td><td>Checkpoint nomination, evidence selection, and scientific progression. Campaign <code>58dcd817</code> compared a non-terminal checkpoint with the terminal candidate, selected non-terminal <code>T2:checkpoint-110592</code> after terminal training performance declined, repaired failed M8 before drawing a conclusion, and progressed from failure diagnosis through a bounded capture intervention to matched measurement. The official result was 195/200: the goal remained unmet, but the intended progression behavior was observed.</td><td><span class="tag">Closed, effective</span></td></tr>
+            <tr><td>OI-003</td><td>Measurement evidence. The final campaign <code>896c230a</code> showed the repaired interpretation in use: reach, hold, bearing, and radius deficits were tracked separately, and aggregate equality no longer substituted for mechanism evidence. The campaign effect is positive and the issue is closed as effective.</td><td><span class="tag">Closed, effective</span></td></tr>
+            <tr><td>OI-004</td><td>Checkpoint nomination, evidence selection, and scientific progression. Campaign <code>58dcd817</code> compared a non-terminal checkpoint with the terminal candidate, selected non-terminal <code>T2:checkpoint-110592</code> after terminal training performance declined, repaired failed M8 before drawing a conclusion, and progressed from failure diagnosis through a bounded capture intervention to matched measurement. The final campaign <code>896c230a</code> confirmed the same progression pattern in the transfer-learning route. The goal remained unmet, but the intended progression behavior was observed.</td><td><span class="tag">Closed, effective</span></td></tr>
             <tr><td>OI-005</td><td>Counterevidence and readiness. The readiness guidance was withdrawn. Lost residual evidence and early readiness claims remain. Campaign <code>06656182</code> showed the open point: the PI did not weigh a 95% and a 98% result against one more inquiry.</td><td><span class="tag">Postponed</span></td></tr>
-            <tr><td>OI-006</td><td>Full review of the 120,000-step startup budget.</td><td><span class="tag">Pending</span></td></tr>
+            <tr><td>OI-006</td><td>Full review of the 120,000-step startup budget. In <code>896c230a</code> startup spent the whole allocation on the T1 control before any measurement. Whether the same startup evidence is obtainable for less is still unanswered.</td><td><span class="tag">Pending</span></td></tr>
             <tr><td>OI-007</td><td>Prompt review item R2. Ordinary sessions still put the PI role before the human goal.</td><td><span class="tag">Paused</span></td></tr>
             <tr><td>OI-008</td><td>Context flooding. Brief compaction is done. Prompt replay and SDK output handling remain possible causes.</td><td><span class="tag">Possible work, not approved</span></td></tr>
             <tr><td>OI-009</td><td>Clearer handoff for operation submission.</td><td><span class="tag">Unimplemented</span></td></tr>
@@ -547,6 +549,8 @@
       <div class="card timeline">
         <h3 style="margin-top: 0">9 October</h3>
         <ul>
+          <li>OI-001 is closed as effective. Campaign <code>896c230a</code> shows the full chain: the model named the omitted 0.06-0.14 m region, startup ran T1 as a declared control, M1 and M2 measured first, and E1 handed off an unresolved frontier. The startup cost question stays in OI-006.</li>
+          <li>Campaign <code>896c230a</code> finished at 193/200. It failed the goal but confirmed the OI-003 interpretation repair in use.</li>
           <li>Campaign <code>58dcd817</code> completed at 195/200. It missed the scientific goal by one episode, while providing the live-campaign evidence needed to close OI-004 as effective.</li>
           <li>OI-004 is closed. The campaign nominated non-terminal checkpoints from training trajectories, repaired missing evidence before conclusion, and followed the failure diagnosis into one bounded capture-focused intervention.</li>
           <li><code>01ccd51</code> Removed the context leak from handoffs and aligned the goal-review objective with the restored scientific state.</li>
@@ -696,6 +700,7 @@
           <thead><tr><th scope="col">Campaign</th><th scope="col">Start</th><th scope="col">Outcome</th><th scope="col">Report</th></tr></thead>
           <tbody>
             <tr><td><code>58dcd817</code></td><td>9 Oct</td><td>Official fail: 195/200 (97.5%). OI-004 closed as effective after non-terminal checkpoint nomination, explicit missing-evidence repair, and frontier-led progression produced T2 at 153/160 versus T1 at 150/160.</td><td><a href="robot-campaign-58dcd817-oi004-outcome-20261009.html">OI-004 outcome</a></td></tr>
+            <tr><td><code>896c230a</code></td><td>9 Oct</td><td>Official fail: 193/200 (96.5%). OI-003 and OI-004 both closed as effective: the campaign preserved reach-versus-hold diagnostics and selected the transfer-learning route using matched mechanism evidence rather than aggregate-only conclusions.</td><td><a href="robot-campaign-896c230a-oi003-oi004-closure-20261009.html">OI-003/OI-004 closure</a></td></tr>
             <tr><td><code>1ae27a27</code></td><td>8 Oct</td><td>Paused at 15 inquiries. T3 reached 153/160. OI-002 produced bounded closure. Inquiry granularity, scientific progression, and the cap interaction remain distinct findings.</td><td><a href="robot-campaign-1ae27a27-oi002-review-20261009.html">Campaign review</a></td></tr>
             <tr><td><code>bd32cc79</code></td><td>8 Oct</td><td>Earlier maintainer-run campaign. Through I2: T2 150/160, T1 110/160 on paired M5.</td><td>Read the log</td></tr>
             <tr><td><code>06656182</code></td><td>7 Oct, 21:45 CEST</td><td>Official pass: 98.0% (196/200).</td><td><a href="robot-campaign-06656182-final-analysis-20261008.html">Final analysis</a></td></tr>

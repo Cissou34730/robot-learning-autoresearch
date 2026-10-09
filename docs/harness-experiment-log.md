@@ -445,12 +445,12 @@ Implementation checks and unassessed campaign effects are not separate issues.
 
 | ID | Issue | Status / boundary |
 |---|---|---|
-| OI-001 | Startup scientific-method selection | **Open, narrowed 2026-10-08.** Defined as a failure of traceable coupling from the PI-generated scientific briefing, through startup action selection, to the startup handoff. Three failure locations: briefing defect, use defect and handoff defect. A five-campaign retrospective found no handoff collapse and sound startups in four of five. It found one use defect (06656182) and a briefing that steered the method in four of five. R8 had removed the PI-authority sentence, now restored. The scientific-model prompt (`ef9516f`) changed language, persona and closing section at once. The closing section is restored in controlled English; language and persona stay. Campaign bd32cc79 ran the bundled prompt without the synthesis. Effect on startup selection is not separable. This is separate from the startup training budget. |
+| OI-001 | Startup scientific-method selection | **Closed effective 2026-10-09.** Defined as a failure of traceable coupling from the PI-generated scientific briefing, through startup action selection, to the startup handoff. Three failure locations: briefing defect, use defect and handoff defect. Campaign `896c230a` shows the coupling intact end to end: the model named the omitted 0.06-0.14 m region as the most immediate distinction, startup requested T1 as a declared control for that distinction, M1 and M2 measured radius, first-reach and hold before any intervention, and E1 handed off evidence, an unresolved coverage-versus-stabilization frontier and a conditional next question. I1 then tested the named distinction directly. The campaign does not isolate which prompt element produced this; closure rests on the defect not recurring with the coupling observable, not on causal attribution. Startup cost remains OI-006. |
 | OI-002 | Inquiry control and bounded closure | **Closed 2026-10-09; bounded closure observed.** The contract and inquiry reminder permit positive, negative, limited and inconclusive closure. Campaign `1ae27a27` closed all inquiries at their declared evidence boundaries, including negative and limited results. The campaign does not isolate causality, but the original indefinite-continuation symptom did not recur. Inquiry granularity and later progression belong to OI-004; the temporary cap remains OI-013. |
-| OI-003 | Measurement-evidence inspection and interpretation | **Implemented 2026-10-09; campaign effect unmeasured.** In campaign `1ae27a27`, I9 said arrival-speed change was unestablished although completed M11 artifacts contained the relevant speed diagnostics. I11 treated equal success labels as preserved behavior although M13 showed fewer first reaches and more interruptions. The program and ordinary-session prompt now require interpretation of completed evidence for the stated discriminator, prohibit inferring preserved behavior from equal aggregate outcomes when relevant diagnostics differ, and preserve absent evidence as unresolved. Consequential agreement, contradiction or tradeoff must enter `current_synthesis`; exhaustive inspection of unrelated fields is not required. No Runner gate or mandatory diagnostic sequence was added. |
-| OI-004 | Checkpoint nomination, evidence selection and scientific progression | **Closed effective 2026-10-09.** The bounded repair gives terminal checkpoints no privileged status, preserves failed or unavailable discriminating evidence as unresolved, and requires the next direction to follow completed evidence and the recorded frontier. Post-change campaign `58dcd817` exercised all three behaviors: M6 compared a nominated non-terminal checkpoint with the terminal checkpoint; M9 evaluated non-terminal `T2:checkpoint-110592` after terminal performance declined; failed M8 was explicitly treated as no scientific result and repaired before I2 closed; and the sequence M6-M7-T2-M9 followed the recorded capture frontier. The protected assessment reached 195/200, so the scientific goal remained unmet, but the progression behavior was effective. No Runner gate or required operation sequence was added. |
+| OI-003 | Measurement-evidence inspection and interpretation | **Closed effective 2026-10-09.** The final campaign `896c230a` showed the repaired interpretation in use: I1 and I2 tracked full-radius reach and bearing/radius deficits separately, I3 kept the reach-versus-hold discriminator explicit, and I4 used matched mechanism diagnostics instead of equal aggregate labels. This is the positive campaign effect observed for the prompt/contract repair. The issue is closed as effective without adding a Runner gate or required diagnostic sequence. |
+| OI-004 | Checkpoint nomination, evidence selection and scientific progression | **Closed effective 2026-10-09.** The bounded repair gives terminal checkpoints no privileged status, preserves failed or unavailable discriminating evidence as unresolved, and requires the next direction to follow completed evidence and the recorded frontier. The final campaign `896c230a` reinforced this behavior: T5 was selected by matched transfer evidence and strong reach-versus-hold diagnostics, while the campaign still failed the protected 196/200 objective. The scientific progression effect is therefore confirmed, although the goal remained unmet. |
 | OI-005 | Counterevidence preservation and official-assessment readiness | **Postponed.** The narrow readiness guidance was withdrawn. Residual-evidence loss and premature readiness conclusions remain unresolved. No replacement readiness prompt is approved. |
-| OI-006 | Full startup-budget review | **Pending.** Shorter startup requests are permitted, but the maintainer-owned 120,000-step ceiling and its scientific effect have not received the planned full review. This budget question is not the cause or solution for OI-001. |
+| OI-006 | Full startup-budget review | **Pending.** Shorter startup requests are permitted, but the maintainer-owned 120,000-step ceiling and its scientific effect have not received the planned full review. This budget question is not the cause or solution for OI-001. Campaign `896c230a` spent the full allocation on the T1 control before any measurement, so the question of whether equivalent startup evidence is obtainable more cheaply stays open here. |
 | OI-007 | Complete prompt-stack review item R2 | **Paused.** Scientific context now precedes operational options, but ordinary sessions do not place the human goal before the PI role. The remaining ordering change is not approved. |
 | OI-008 | Residual context-delivery work | **Possible work, not approved.** Brief-only compaction is implemented. Prompt replay and SDK output handling remain separate possible causes of context flooding. |
 | OI-009 | Operation-submission handoff clarification | **Unimplemented.** No change is approved. |
@@ -2829,4 +2829,41 @@ separate from harness changes so their outcomes are not conflated.
   discriminator, reject aggregate equality as proof of preserved behavior,
   retain contradictions and tradeoffs, preserve missing mechanism evidence as
   unresolved, and exclude exhaustive inspection of unrelated fields.
-- **Status:** implementation complete and campaign effect unmeasured.
+- **Status:** OI-003 is closed effective 2026-10-09. In the final campaign `896c230a`, the repaired interpretation kept the relevant discriminator explicit: reach, hold, bearing and radius deficits were treated separately, and the final transfer-learning outcome was supported by matched mechanism evidence rather than equal aggregate outcomes alone. This aligns with the independent RCA and confirms the behavior change without claiming a universal effect beyond the implemented prompt/contract repair.
+
+## 2026-10-09: close OI-001 on campaign 896c230a startup coupling
+
+- **Disposition:** OI-001 is closed effective. The issue was the traceable
+  coupling from the PI-generated scientific briefing, through startup action
+  selection, to the startup handoff. It was implemented across `adff08e`
+  (restored PI-authority sentence), `ef9516f`, `b3f4307` and `5437ff2`
+  (analyst persona, controlled English, restored "Decision-relevant
+  synthesis"), and was recorded as implemented but unmeasured.
+- **Observed coupling in `896c230a`:** the scientific model named the omitted
+  0.06-0.14 m official region as the most immediate distinction for the first
+  campaign direction, with radius-binned success and complete-hold diagnostics
+  as the discriminating evidence. Startup requested T1 as a declared control
+  for that same distinction rather than as an unexplained default. M1 (fixed
+  task-reference panel, 71.0%) and M2 (separate research panel, 78.5%, with
+  first-reach, max-held, interruption and geometry fields) measured before any
+  intervention. E1 preserved the evidence, named the unresolved
+  coverage-versus-stabilization frontier, and carried a conditional next
+  question. I1 opened directly on the named distinction, using M2's
+  radius-binned values (39.1% at 6-10 cm, 75.0% at 10-14 cm, 97.2% at
+  14-20 cm; 35 of 43 failures never reached tolerance).
+- **Failure locations:** no briefing defect, no use defect and no handoff
+  defect is present in this campaign. The 06656182 use defect, which was the
+  single clear instance in the five-campaign retrospective, did not recur.
+- **Attribution limit:** the campaign does not separate which prompt element
+  produced this behavior. The earlier retrospective already found sound
+  startups in four of five campaigns, so a single campaign cannot isolate the
+  change. Closure rests on the defined defect being absent while the coupling
+  is observable in the durable record, not on causal attribution. This limit
+  is consistent with OI-014.
+- **Explicitly out of scope:** the startup consumed the full 120,000-step
+  allocation for T1 before any measurement. Whether equivalent startup
+  evidence is obtainable at lower cost is OI-006 and stays pending.
+- **Boundary:** no campaign was launched, resumed, reset or trained. This
+  entry is a read-only review of a campaign the maintainer runs.
+- **Status:** OI-001 closed effective 2026-10-09. Remaining open issues are
+  OI-014 and OI-015.
