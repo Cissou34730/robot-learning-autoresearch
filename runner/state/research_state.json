@@ -2978,47 +2978,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "open",
-        "inquiry": {
-          "closure_condition": "Close when checkpoint- and geometry-conditioned evidence either shows competent local reach and stabilization with a learning/distribution collapse, or shows persistent bearing-, branch-, radius-, or post-reach control deficits that redirect the campaign toward dynamics, action authority, observation, or stabilization; if neither is established, close with an explicit limited or inconclusive result preserving the unresolved mechanism.",
-          "goal_connection": "The strongest development candidate is only 75.0% on the matched panel, while the fresh full-radius candidate is 36.0%, far below the 98% complete-hold objective. Resolving whether the deficit is caused by the training distribution and reward credit assignment or by geometry-dependent reach and stabilization determines whether the campaign should redesign learning or change the control/representation route toward a policy suitable for the official task.",
-          "handoff_conclusion": "Observed: T1 was trained only on 0.14-0.20 m radii. M1 measured 71.0%, M2 measured 78.5%, and M2 diagnostics showed 39.1% success at 6-10 cm, 75.0% at 10-14 cm, and 97.2% at 14-20 cm; 35 of 43 failures never reached tolerance, while all eight reached-but-failed episodes were below 14 cm. This supported testing official-radius coverage. T2 was then trained fresh with the 0.06-0.20 m distribution, but its training success remained zero and its reward statistics do not establish development behavior. M3 measured T2 and T1 on identical seeds: T2 achieved 36.0% versus T1's 75.0%, with T2 success of 36.4%, 32.8%, and 38.2% in the 6-10, 10-14, and 14-20 cm bins, compared with T1's 48.5%, 79.3%, and 94.7%. T2 had 120 of 128 failures never reaching tolerance and eight reached-but-failed outer-bin episodes; T1 had substantially better outer complete-hold behavior. Interpretation: the negative result establishes that fresh PPO plus uniform full-radius exposure did not remove the inner deficit and materially degraded the outer range. It does not invalidate coverage generally. The broad T2 reach deficit is consistent with a learning/distribution interaction or geometry-dependent control failure, but the available diagnostics do not yet distinguish optimization and reward credit assignment from branch-, bearing-, or dynamics-limited control.",
-          "handoff_question": "Why did fresh PPO training on the official 0.06-0.20 m radius distribution fail to acquire a policy that reaches and holds both inner and outer targets, and is the limiting mechanism learning/distribution credit assignment or geometry-dependent control and stabilization?",
-          "handoff_source_session_id": "S3",
-          "id": "I2",
-          "opened_in_session": "S4",
-          "question": "Why did fresh PPO training on the official 0.06-0.20 m radius distribution fail to acquire a policy that reaches and holds both inner and outer targets, and is the limiting mechanism learning/distribution credit assignment or geometry-dependent control and stabilization?",
-          "rationale": "T2 produced 120 of 128 never-reached failures and degraded T1's outer performance despite identical evaluation seeds, which is compatible with both mixed-radius PPO credit-assignment failure and geometry-dependent control failure. Existing aggregate and radius-binned diagnostics do not establish branch, bearing, or local mechanical competence. A bounded inquiry is therefore more goal-relevant than official assessment, and should first use existing checkpoints and targeted trajectory evidence to discriminate the two mechanisms.",
-          "reframes": []
-        }
-      },
-      "result": {
-        "action": "open",
-        "inquiry_id": "I2",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E6",
-    "inquiry_id": null,
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "open",
-        "closure_condition": "Close when checkpoint- and geometry-conditioned evidence either shows competent local reach and stabilization with a learning/distribution collapse, or shows persistent bearing-, branch-, radius-, or post-reach control deficits that redirect the campaign toward dynamics, action authority, observation, or stabilization; if neither is established, close with an explicit limited or inconclusive result preserving the unresolved mechanism.",
-        "goal_connection": "The strongest development candidate is only 75.0% on the matched panel, while the fresh full-radius candidate is 36.0%, far below the 98% complete-hold objective. Resolving whether the deficit is caused by the training distribution and reward credit assignment or by geometry-dependent reach and stabilization determines whether the campaign should redesign learning or change the control/representation route toward a policy suitable for the official task.",
-        "question": "Why did fresh PPO training on the official 0.06-0.20 m radius distribution fail to acquire a policy that reaches and holds both inner and outer targets, and is the limiting mechanism learning/distribution credit assignment or geometry-dependent control and stabilization?",
-        "rationale": "T2 produced 120 of 128 never-reached failures and degraded T1's outer performance despite identical evaluation seeds, which is compatible with both mixed-radius PPO credit-assignment failure and geometry-dependent control failure. Existing aggregate and radius-binned diagnostics do not establish branch, bearing, or local mechanical competence. A bounded inquiry is therefore more goal-relevant than official assessment, and should first use existing checkpoints and targeted trajectory evidence to discriminate the two mechanisms."
-      }
-    },
-    "request_fingerprint": "2c75b9f5a732a6502ff987a1cf565bd79f01a2fef17acac3c21ec104b7d2cf15",
-    "session_id": "S4",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T1 and T2 produced archived candidate checkpoints. T1:checkpoint-115712 remains the strongest development-measured candidate, with 71.0% on M1, 78.5% on M2, and 75.0% on the matched M3 panel. T2:checkpoint-120832 was measured at 36.0% on M3. No candidate has been assigned working, best-known, or retained status because none meets the current development objective or the 98% human goal.",
     "completed_operations": [
