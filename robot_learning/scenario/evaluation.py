@@ -103,6 +103,12 @@ def evaluate_research_model(
                 "max_held_steps": max_held_steps,
                 "in_tolerance_steps": in_tolerance_steps,
                 "hold_interruptions": hold_interruptions,
+                "terminal_joint_positions": [
+                    float(value) for value in env.data.qpos[:2]
+                ],
+                "terminal_branch_errors": [
+                    float(value) for value in obs[7:11]
+                ],
             }
         )
         if progress_callback is not None:
