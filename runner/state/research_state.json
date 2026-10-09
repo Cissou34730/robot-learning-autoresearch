@@ -26343,38 +26343,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I13",
-        "outcome": "limited_negative",
-        "reason": "I13 is closed as a limited negative for the tested explicit-handling routes. T11's smooth trajectory-conditioned phase/history candidate achieved 0/160, while T12's static max-margin branch/limit candidate achieved 44/160 and only 20/40 in the 6-10 cm inner band. T12 recorded 103 failures before first reach, including 95 non-reaching failures with positive nearest-analytic-branch limit margin. Thus explicit trajectory or branch/limit features did not reach 196/200-equivalent, did not preserve the inner-band result, and left a substantial adequate-margin acquisition failure class. The evidence redirects the campaign toward a broader learned-acquisition or representation limitation; it does not establish that all learned policies or all controller-trajectory methods are ineffective."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I13",
-        "outcome": "limited_negative",
-        "reason": "I13 is closed as a limited negative for the tested explicit-handling routes. T11's smooth trajectory-conditioned phase/history candidate achieved 0/160, while T12's static max-margin branch/limit candidate achieved 44/160 and only 20/40 in the 6-10 cm inner band. T12 recorded 103 failures before first reach, including 95 non-reaching failures with positive nearest-analytic-branch limit margin. Thus explicit trajectory or branch/limit features did not reach 196/200-equivalent, did not preserve the inner-band result, and left a substantial adequate-margin acquisition failure class. The evidence redirects the campaign toward a broader learned-acquisition or representation limitation; it does not establish that all learned policies or all controller-trajectory methods are ineffective.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E56",
-    "inquiry_id": "I13",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "limited_negative",
-        "reason": "I13 is closed as a limited negative for the tested explicit-handling routes. T11's smooth trajectory-conditioned phase/history candidate achieved 0/160, while T12's static max-margin branch/limit candidate achieved 44/160 and only 20/40 in the 6-10 cm inner band. T12 recorded 103 failures before first reach, including 95 non-reaching failures with positive nearest-analytic-branch limit margin. Thus explicit trajectory or branch/limit features did not reach 196/200-equivalent, did not preserve the inner-band result, and left a substantial adequate-margin acquisition failure class. The evidence redirects the campaign toward a broader learned-acquisition or representation limitation; it does not establish that all learned policies or all controller-trajectory methods are ineffective."
-      }
-    },
-    "request_fingerprint": "b7105ac1097424ff0986ca56fd9f5c0640d3375e6f9b87a6a02dfcceffd33fd7",
-    "session_id": "S27",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T8:checkpoint-60416 and T9:checkpoint-20480 remain the strongest measured learned candidates at 153/160; T10:checkpoint-10240 and T10:checkpoint-120832 also measured 153/160. None has a protected working, best-known or retained role. T11:checkpoint-120832 is rejected at 0/160, and T12:checkpoint-120832 is rejected at 44/160 with 20/40 inner-band success. M17 is evidence of same-interface model-based capability, not a learned candidate. No candidate has an evidence-backed protected role.",
     "completed_operations": [
