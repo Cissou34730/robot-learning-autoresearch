@@ -4938,49 +4938,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "set_best_known",
-        "candidate_id": "T2:checkpoint-110592",
-        "evidence": [
-          "M9"
-        ],
-        "reason": "T2:checkpoint-110592 is the strongest evidence-backed candidate: on the matched M9 development panel it achieved 153/160 successes versus 150/160 for T1, improved first-entry timing and 14-18 cm capture coverage, and reduced recorded hold interruptions from 438 to 3. The evidence supports the capture-improved route while preserving complete-hold behavior, but does not establish official success."
-      },
-      "publication": {
-        "destination": "campaigns/checkpoints/retained/58dcd817-4fed-42e6-854b-58f20408e6a1/t2-c720dc389-93dd43ab9738d28cbb57e976683412376ef8e0baa2796190823591174ccdb9b1",
-        "fingerprint": "93dd43ab9738d28cbb57e976683412376ef8e0baa2796190823591174ccdb9b1",
-        "source": "campaigns/checkpoints/candidates/58dcd817-4fed-42e6-854b-58f20408e6a1/t2/checkpoint-110592"
-      },
-      "result": {
-        "action": "set_best_known",
-        "candidate": "T2:checkpoint-110592",
-        "evidence": [
-          "M9"
-        ],
-        "status": "assigned"
-      }
-    },
-    "failure": null,
-    "id": "E10",
-    "inquiry_id": null,
-    "kind": "model_role",
-    "progress": "completed",
-    "request": {
-      "model_role": {
-        "action": "set_best_known",
-        "candidate": "T2:checkpoint-110592",
-        "evidence": [
-          "M9"
-        ],
-        "reason": "T2:checkpoint-110592 is the strongest evidence-backed candidate: on the matched M9 development panel it achieved 153/160 successes versus 150/160 for T1, improved first-entry timing and 14-18 cm capture coverage, and reduced recorded hold interruptions from 438 to 3. The evidence supports the capture-improved route while preserving complete-hold behavior, but does not establish official success."
-      }
-    },
-    "request_fingerprint": "d19b34f1a3a67aca036c0fb4ef6346db7e58f55ec7902a230dd14323057ea04e",
-    "session_id": "S6",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "No formal model role has been assigned. T2:checkpoint-110592 is the strongest measured development candidate at 153/160 and is supported by M9's matched capture and hold diagnostics. T1:checkpoint-120832 remains the matched baseline at 150/160. Neither has protected official assessment evidence.",
     "completed_operations": [
