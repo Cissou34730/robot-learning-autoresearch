@@ -55,3 +55,4 @@
 | E33 | inquiry | I8 | completed |
 | E34 | checkpoint | - | checkpointed |
 | E35 | restore_recipe | I8 | restored |
+| T8 | training | I8 | completed |
