@@ -16629,38 +16629,7 @@
       "supersedes": "M15"
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I11",
-        "outcome": "negative",
-        "reason": "I11 is closed negatively for the tested route-conditioned action recipe. T13 trained successfully from T3 with the original observation and curriculum, but matched M13 evaluation produced exactly the T3 result: 153/160 successes, with zero discordant episodes and no change in the evaluated route or hold outcomes. This does not establish that all action authority is ineffective, but it rejects this bounded angle- and distance-gated joint-velocity damping recipe as a path to the goal. M14 and M15 failed during residual-margin execution because the required artifact argument was initially omitted and the archived T13 candidate lacked policy_runtime.pkl; those execution failures provide no braking-margin evidence and were not used as scientific support. The next direction is plant-level control design, because targeted action control preserved reach but did not improve the residual failures."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I11",
-        "outcome": "negative",
-        "reason": "I11 is closed negatively for the tested route-conditioned action recipe. T13 trained successfully from T3 with the original observation and curriculum, but matched M13 evaluation produced exactly the T3 result: 153/160 successes, with zero discordant episodes and no change in the evaluated route or hold outcomes. This does not establish that all action authority is ineffective, but it rejects this bounded angle- and distance-gated joint-velocity damping recipe as a path to the goal. M14 and M15 failed during residual-margin execution because the required artifact argument was initially omitted and the archived T13 candidate lacked policy_runtime.pkl; those execution failures provide no braking-margin evidence and were not used as scientific support. The next direction is plant-level control design, because targeted action control preserved reach but did not improve the residual failures.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E46",
-    "inquiry_id": "I11",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "negative",
-        "reason": "I11 is closed negatively for the tested route-conditioned action recipe. T13 trained successfully from T3 with the original observation and curriculum, but matched M13 evaluation produced exactly the T3 result: 153/160 successes, with zero discordant episodes and no change in the evaluated route or hold outcomes. This does not establish that all action authority is ineffective, but it rejects this bounded angle- and distance-gated joint-velocity damping recipe as a path to the goal. M14 and M15 failed during residual-margin execution because the required artifact argument was initially omitted and the archived T13 candidate lacked policy_runtime.pkl; those execution failures provide no braking-margin evidence and were not used as scientific support. The next direction is plant-level control design, because targeted action control preserved reach but did not improve the residual failures."
-      }
-    },
-    "request_fingerprint": "08ad6c96c383072a63c763775f36cc7850d60b573205609d47ceebe0bf9500f2",
-    "session_id": "S23",
-    "supersedes": "M15"
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T3:checkpoint-120832 remains the strongest measured development candidate at 153/160 successes and has no assigned working, best-known, or retained role. T12:checkpoint-120832 is intervention-limited at 151/160 and has no role. No candidate role change is requested.",
     "completed_operations": [
