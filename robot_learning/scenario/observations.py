@@ -8,7 +8,7 @@ import numpy as np
 
 from contracts.robots.two_joint_arm import FOREARM_LENGTH, UPPER_ARM_LENGTH
 
-OBSERVATION_SIZE = 17
+OBSERVATION_SIZE = 11
 
 
 def reach_observation(data) -> np.ndarray:
@@ -33,16 +33,6 @@ def reach_observation(data) -> np.ndarray:
     shoulder_open = shoulder_for_elbow(elbow_open)
     elbow_folded = -elbow_open
     shoulder_folded = shoulder_for_elbow(elbow_folded)
-    open_error = np.hypot(
-        wrap_to_pi(shoulder_open - float(data.qpos[0])),
-        wrap_to_pi(elbow_open - float(data.qpos[1])),
-    )
-    folded_error = np.hypot(
-        wrap_to_pi(shoulder_folded - float(data.qpos[0])),
-        wrap_to_pi(elbow_folded - float(data.qpos[1])),
-    )
-    target_angle = float(np.arctan2(target_y, target_x))
-    target_radius = float(np.hypot(target_x, target_y))
     end_effector = data.site("end_effector").xpos.copy()
     return np.concatenate(
         [
@@ -54,14 +44,6 @@ def reach_observation(data) -> np.ndarray:
                 wrap_to_pi(elbow_open - float(data.qpos[1])),
                 wrap_to_pi(shoulder_folded - float(data.qpos[0])),
                 wrap_to_pi(elbow_folded - float(data.qpos[1])),
-            ],
-            [
-                target_radius,
-                np.sin(target_angle),
-                np.cos(target_angle),
-                open_error,
-                folded_error,
-                open_error - folded_error,
             ],
         ]
     ).astype(np.float32)
