@@ -112,3 +112,4 @@
 | E64 | inquiry | I15 | completed |
 | E65 | checkpoint | - | checkpointed |
 | T17 | training | I15 | completed |
+| M29 | measurement | I15 | failed |
