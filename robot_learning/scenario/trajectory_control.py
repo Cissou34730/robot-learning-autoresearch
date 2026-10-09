@@ -7,6 +7,7 @@ from contracts.robots.two_joint_arm import FOREARM_LENGTH, UPPER_ARM_LENGTH
 JOINT_LIMIT = np.deg2rad(170.0)
 TRAJECTORY_DURATION_STEPS = 20
 REFERENCE_BLEND = 0.45
+LIMIT_BRAKE_BLEND = 0.08
 POSITION_GAIN = np.array([1.4, 1.0], dtype=np.float64)
 VELOCITY_GAIN = np.array([0.12, 0.08], dtype=np.float64)
 LIMIT_MARGIN = np.deg2rad(8.0)
@@ -93,14 +94,16 @@ def guided_action(data, action: np.ndarray, step_count: int) -> np.ndarray:
 
     near_limit = np.abs(data.qpos[:2]) >= JOINT_LIMIT - LIMIT_MARGIN
     moving_outward = np.asarray(data.qpos[:2]) * np.asarray(data.qvel[:2]) > 0.0
-    reference_action = np.where(
+    limit_brake = np.where(
         near_limit & moving_outward,
-        reference_action - np.sign(data.qpos[:2]) * np.abs(reference_action),
-        reference_action,
+        -np.sign(data.qpos[:2]) * np.minimum(np.abs(data.qvel[:2]), 1.0),
+        0.0,
     )
+    trajectory_blend = REFERENCE_BLEND * (1.0 - interpolation)
     return np.clip(
-        (1.0 - REFERENCE_BLEND) * np.asarray(action, dtype=np.float64)
-        + REFERENCE_BLEND * reference_action,
+        (1.0 - trajectory_blend) * np.asarray(action, dtype=np.float64)
+        + trajectory_blend * reference_action
+        + LIMIT_BRAKE_BLEND * limit_brake,
         -1.0,
         1.0,
     )
