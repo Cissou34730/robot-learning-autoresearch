@@ -14735,38 +14735,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I7",
-        "outcome": "limited negative",
-        "reason": "M11 resolves I7 for the tested selective joint-limit guard. T7 achieved 30/160 successes and zero paired wins against T1's 150/160. It lost the preserved inner-band behavior required by the inquiry: T7 achieved 29/93 inner-band successes versus T1's 90/93, and only 1/67 versus T1's 60/67 in the outer band. T7 diagnostics classify 119 of 130 failures as without first reach, and every one of those failures had at least one nonnegative-margin analytic IK branch, so the intervention did not reduce the relevant positive-margin non-reaching class. The remaining 11 post-reach failures and 14 total hold interruptions do not support a shift to hold stabilization for this candidate. Agreement between the zero training-success trajectory and the 18.75% development result supports a learnability/performance collapse for this tested guard, while the paired and diagnostic tradeoff rejects it as a route toward the human goal. This conclusion is limited to the tested 15-degree outward joint-limit attenuation and does not disprove all selective control methods or the broader hold mechanism."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I7",
-        "outcome": "limited negative",
-        "reason": "M11 resolves I7 for the tested selective joint-limit guard. T7 achieved 30/160 successes and zero paired wins against T1's 150/160. It lost the preserved inner-band behavior required by the inquiry: T7 achieved 29/93 inner-band successes versus T1's 90/93, and only 1/67 versus T1's 60/67 in the outer band. T7 diagnostics classify 119 of 130 failures as without first reach, and every one of those failures had at least one nonnegative-margin analytic IK branch, so the intervention did not reduce the relevant positive-margin non-reaching class. The remaining 11 post-reach failures and 14 total hold interruptions do not support a shift to hold stabilization for this candidate. Agreement between the zero training-success trajectory and the 18.75% development result supports a learnability/performance collapse for this tested guard, while the paired and diagnostic tradeoff rejects it as a route toward the human goal. This conclusion is limited to the tested 15-degree outward joint-limit attenuation and does not disprove all selective control methods or the broader hold mechanism.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E31",
-    "inquiry_id": "I7",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "limited negative",
-        "reason": "M11 resolves I7 for the tested selective joint-limit guard. T7 achieved 30/160 successes and zero paired wins against T1's 150/160. It lost the preserved inner-band behavior required by the inquiry: T7 achieved 29/93 inner-band successes versus T1's 90/93, and only 1/67 versus T1's 60/67 in the outer band. T7 diagnostics classify 119 of 130 failures as without first reach, and every one of those failures had at least one nonnegative-margin analytic IK branch, so the intervention did not reduce the relevant positive-margin non-reaching class. The remaining 11 post-reach failures and 14 total hold interruptions do not support a shift to hold stabilization for this candidate. Agreement between the zero training-success trajectory and the 18.75% development result supports a learnability/performance collapse for this tested guard, while the paired and diagnostic tradeoff rejects it as a route toward the human goal. This conclusion is limited to the tested 15-degree outward joint-limit attenuation and does not disprove all selective control methods or the broader hold mechanism."
-      }
-    },
-    "request_fingerprint": "7d35bfacc142692343620a3abe70937bca05b78137998588a00990091e277214",
-    "session_id": "S15",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T1:checkpoint-120832 remains the strongest evidence-backed development candidate at 150/160 successes with 40/40 inner-band successes, but no candidate has an assigned working, best-known, or retained role because none meets the development threshold or has a protected assessment. T6:checkpoint-115712 and T6:checkpoint-120832 are rejected for I6 based on M10; T2, T3, T4, and T5 remain rejected as recipe-specific negative routes. No candidate is assigned a role.",
     "completed_operations": [
