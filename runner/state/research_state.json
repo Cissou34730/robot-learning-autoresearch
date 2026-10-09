@@ -20,7 +20,7 @@
   },
   "candidates": {},
   "counters": {
-    "event": 2,
+    "event": 3,
     "inquiry": 1,
     "measurement": 1,
     "session": 2,
@@ -29,7 +29,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -481,27 +481,149 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-09T13:26:05Z",
+      "error": null,
+      "id": "E3",
+      "inquiry_id": null,
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "No learned candidates exist; working, best-known, and retained roles remain empty.",
+        "completed_operations": [
+          "E2"
+        ],
+        "cumulative_resource_use": "One completed characterization measurement (M1); one inquiry opening (E2); no training allocation used.",
+        "current_goal_gap": "There is no learned candidate or official-distribution behavioral evidence. The remaining gap is whether a policy can convert the available actuator authority into stable 100-step holds across the full 0.06-0.20 m radius range and angular distribution.",
+        "current_synthesis": "M1 established that the compiled arm has substantial transient actuation authority and that every sampled official target has at least one feasible analytic IK solution, while 64 of 576 sampled grid targets have only one feasible branch. These observations support testing learned behavior rather than attributing failures to global geometric unreachable-ness, but they leave velocity shaping, hold interruption, inner-band coverage, branch selection, and limit margin unresolved. M1 did not measure a learned policy or endpoint-hold behavior. Goal review therefore opened I1; no evidence supports official assessment yet, and no intervention mechanism has been established.",
+        "decision_frontier": "The unresolved distinction is whether a learned policy can stabilize the endpoint across both radial bands under the exact official hold semantics, and, if it fails, whether failures are dominated by approach velocity/oscillation despite reaching or by inner-radius, angular-boundary, branch, and limit-margin coverage. Evidence of high and radius-consistent success with reach-versus-hold diagnostics would support continuing generic full-distribution learning; systematic near-target oscillation or high entry velocity would redirect toward dynamics or representation work; geometry-aligned inner-band or boundary failures would redirect toward coverage and branch work. M1 and the inquiry opening establish the need for this evidence but do not resolve the distinction.",
+        "evidence_references": [
+          "M1",
+          "E2"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 of 200 official episodes to complete an uninterrupted 100-step hold. Opening I1 preserves the direct need to establish learned-policy capability across the full official target distribution before any official assessment.",
+        "next_direction_or_closure": "Continue I1 in the fresh inquiry session. Select the first evidence-producing operation there based on this frontier; the immediate scientific need is learned-policy behavioral evidence with full-distribution reach-versus-hold diagnostics, not official assessment or a conclusion from M1.",
+        "next_question": "Under the exact official target distribution and uninterrupted endpoint-hold semantics, can a learned policy achieve stable holds across both the inner and outer radius bands, and are any failures dominated by approach velocity/oscillation or by branch and limit-margin coverage?"
+      },
+      "result": {
+        "session_id": "S2",
+        "status": "checkpointed"
+      },
+      "session_id": "S2",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "b447e4786511d4f2646c6ebdab07ad458165e736",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "No learned candidates exist; working, best-known, and retained roles remain empty.",
+        "completed_operations": [
+          "E2"
+        ],
+        "cumulative_resource_use": "One completed characterization measurement (M1); one inquiry opening (E2); no training allocation used.",
+        "current_goal_gap": "There is no learned candidate or official-distribution behavioral evidence. The remaining gap is whether a policy can convert the available actuator authority into stable 100-step holds across the full 0.06-0.20 m radius range and angular distribution.",
+        "current_synthesis": "M1 established that the compiled arm has substantial transient actuation authority and that every sampled official target has at least one feasible analytic IK solution, while 64 of 576 sampled grid targets have only one feasible branch. These observations support testing learned behavior rather than attributing failures to global geometric unreachable-ness, but they leave velocity shaping, hold interruption, inner-band coverage, branch selection, and limit margin unresolved. M1 did not measure a learned policy or endpoint-hold behavior. Goal review therefore opened I1; no evidence supports official assessment yet, and no intervention mechanism has been established.",
+        "decision_frontier": "The unresolved distinction is whether a learned policy can stabilize the endpoint across both radial bands under the exact official hold semantics, and, if it fails, whether failures are dominated by approach velocity/oscillation despite reaching or by inner-radius, angular-boundary, branch, and limit-margin coverage. Evidence of high and radius-consistent success with reach-versus-hold diagnostics would support continuing generic full-distribution learning; systematic near-target oscillation or high entry velocity would redirect toward dynamics or representation work; geometry-aligned inner-band or boundary failures would redirect toward coverage and branch work. M1 and the inquiry opening establish the need for this evidence but do not resolve the distinction.",
+        "evidence_references": [
+          "M1",
+          "E2"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 of 200 official episodes to complete an uninterrupted 100-step hold. Opening I1 preserves the direct need to establish learned-policy capability across the full official target distribution before any official assessment.",
+        "inquiry_id": null,
+        "next_direction_or_closure": "Continue I1 in the fresh inquiry session. Select the first evidence-producing operation there based on this frontier; the immediate scientific need is learned-policy behavioral evidence with full-distribution reach-versus-hold diagnostics, not official assessment or a conclusion from M1.",
+        "next_question": "Under the exact official target distribution and uninterrupted endpoint-hold semantics, can a learned policy achieve stable holds across both the inner and outer radius bands, and are any failures dominated by approach velocity/oscillation or by branch and limit-margin coverage?",
+        "session_id": "S2"
+      },
+      "presentation": {
+        "backend_session_id": "c6c659bd-661c-4c84-8ea0-82567b8bd0e4",
+        "campaign_id": "79395c88-afcd-40f0-a644-16ca95368c28",
+        "campaign_usage": "6m33s | 11.03 AIU | prompt 1.2m (83% cached) | output 31.2k",
+        "session_id": "S2",
+        "session_kind": "goal_review",
+        "session_usage": "58s | 2.50 AIU | prompt 300.8k (77% cached) | output 2.7k"
+      },
+      "result": {
+        "session_id": "S2",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "c5ce93aabab8448545175c906f06df426d2300fa",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E3",
+    "inquiry_id": null,
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "No learned candidates exist; working, best-known, and retained roles remain empty.",
+        "completed_operations": [
+          "E2"
+        ],
+        "cumulative_resource_use": "One completed characterization measurement (M1); one inquiry opening (E2); no training allocation used.",
+        "current_goal_gap": "There is no learned candidate or official-distribution behavioral evidence. The remaining gap is whether a policy can convert the available actuator authority into stable 100-step holds across the full 0.06-0.20 m radius range and angular distribution.",
+        "current_synthesis": "M1 established that the compiled arm has substantial transient actuation authority and that every sampled official target has at least one feasible analytic IK solution, while 64 of 576 sampled grid targets have only one feasible branch. These observations support testing learned behavior rather than attributing failures to global geometric unreachable-ness, but they leave velocity shaping, hold interruption, inner-band coverage, branch selection, and limit margin unresolved. M1 did not measure a learned policy or endpoint-hold behavior. Goal review therefore opened I1; no evidence supports official assessment yet, and no intervention mechanism has been established.",
+        "decision_frontier": "The unresolved distinction is whether a learned policy can stabilize the endpoint across both radial bands under the exact official hold semantics, and, if it fails, whether failures are dominated by approach velocity/oscillation despite reaching or by inner-radius, angular-boundary, branch, and limit-margin coverage. Evidence of high and radius-consistent success with reach-versus-hold diagnostics would support continuing generic full-distribution learning; systematic near-target oscillation or high entry velocity would redirect toward dynamics or representation work; geometry-aligned inner-band or boundary failures would redirect toward coverage and branch work. M1 and the inquiry opening establish the need for this evidence but do not resolve the distinction.",
+        "evidence_references": [
+          "M1",
+          "E2"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 of 200 official episodes to complete an uninterrupted 100-step hold. Opening I1 preserves the direct need to establish learned-policy capability across the full official target distribution before any official assessment.",
+        "next_direction_or_closure": "Continue I1 in the fresh inquiry session. Select the first evidence-producing operation there based on this frontier; the immediate scientific need is learned-policy behavioral evidence with full-distribution reach-versus-hold diagnostics, not official assessment or a conclusion from M1.",
+        "next_question": "Under the exact official target distribution and uninterrupted endpoint-hold semantics, can a learned policy achieve stable holds across both the inner and outer radius bands, and are any failures dominated by approach velocity/oscillation or by branch and limit-margin coverage?"
+      }
+    },
+    "request_fingerprint": "441deffadd705d7dfec8fd76326e5a713807247504f83e028ae8a24e095ada1a",
+    "session_id": "S2",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No learned candidates exist; working, best-known, and retained roles remain empty.",
     "completed_operations": [
-      "M1"
+      "E2"
     ],
-    "cumulative_resource_use": "One completed characterization measurement (M1); no training allocation used.",
+    "cumulative_resource_use": "One completed characterization measurement (M1); one inquiry opening (E2); no training allocation used.",
     "current_goal_gap": "There is no learned candidate or official-distribution behavioral evidence. The remaining gap is whether a policy can convert the available actuator authority into stable 100-step holds across the full 0.06-0.20 m radius range and angular distribution.",
-    "current_synthesis": "Observation from completed M1: the native compiled model has 0.5 rad/s damping, 0.01 rad2 armature, 5-unit motor gear, and geom-derived link masses of about 0.099 kg and 0.052 kg; saturated one-control-interval pulses produce initial accelerations of about 414-492 rad/s2 and peak joint speeds of about 5.5-6.1 rad/s, then return to near-zero velocity after 24 further 20 ms intervals. Interpretation: actuation is not obviously too weak, but the transient authority and configuration-dependent coupling make velocity shaping central to the hold problem. Observation from M1: all 576 radius-angle grid targets have at least one feasible analytic IK solution; 512 have both branches feasible and 64 have only one feasible branch, with no target lacking a solution. Interpretation: the official annulus is geometrically reachable, so a primary unreachable-target explanation is contradicted, while branch selection and limit margin remain consequential near angular boundaries and inner radii. The pulse experiment did not exercise target tracking, policy behavior, hold interruption, substep excursions, or the training distribution, so it cannot establish that strong action authority yields a successful learned policy or that branch asymmetry causes failures.",
-    "decision_frontier": "The unresolved scientific distinction is whether the first policy direction should be generic full-distribution learning with hold diagnostics, or dynamics/branch-focused intervention because velocity transients and one-branch regions prevent reliable stabilization. Evidence that would support the generic route is a completed candidate evaluation showing high official-distribution success with comparable first-reach, maximum-held-step, interruption, and radius-binned behavior, including the inner band. Evidence that would redirect toward control or representation work is systematic near-target oscillation, high entry velocity, or hold interruption across radii despite reaching; evidence that would redirect toward coverage and branch work is a sharp inner-radius or angular-boundary failure pattern aligned with the one-branch feasibility regions. M1 alone supports continuing toward policy capability measurement but does not resolve these behavioral alternatives.",
+    "current_synthesis": "M1 established that the compiled arm has substantial transient actuation authority and that every sampled official target has at least one feasible analytic IK solution, while 64 of 576 sampled grid targets have only one feasible branch. These observations support testing learned behavior rather than attributing failures to global geometric unreachable-ness, but they leave velocity shaping, hold interruption, inner-band coverage, branch selection, and limit margin unresolved. M1 did not measure a learned policy or endpoint-hold behavior. Goal review therefore opened I1; no evidence supports official assessment yet, and no intervention mechanism has been established.",
+    "decision_frontier": "The unresolved distinction is whether a learned policy can stabilize the endpoint across both radial bands under the exact official hold semantics, and, if it fails, whether failures are dominated by approach velocity/oscillation despite reaching or by inner-radius, angular-boundary, branch, and limit-margin coverage. Evidence of high and radius-consistent success with reach-versus-hold diagnostics would support continuing generic full-distribution learning; systematic near-target oscillation or high entry velocity would redirect toward dynamics or representation work; geometry-aligned inner-band or boundary failures would redirect toward coverage and branch work. M1 and the inquiry opening establish the need for this evidence but do not resolve the distinction.",
     "evidence_references": [
-      "M1"
+      "M1",
+      "E2"
     ],
-    "human_goal_connection": "The human goal requires 196 of 200 official episodes to complete an uninterrupted 2-second hold. M1 establishes the compiled physical authority and feasibility conditions that a learned policy must exploit, but does not measure policy success.",
+    "human_goal_connection": "The human goal requires at least 196 of 200 official episodes to complete an uninterrupted 100-step hold. Opening I1 preserves the direct need to establish learned-policy capability across the full official target distribution before any official assessment.",
     "inquiry_id": null,
-    "next_direction_or_closure": "End startup at this checkpoint and enter goal review with the stated question. The next decision should open a bounded inquiry around full-distribution policy capability and its reach-versus-hold failure mechanism, rather than treating M1 as evidence of task success.",
+    "next_direction_or_closure": "Continue I1 in the fresh inquiry session. Select the first evidence-producing operation there based on this frontier; the immediate scientific need is learned-policy behavioral evidence with full-distribution reach-versus-hold diagnostics, not official assessment or a conclusion from M1.",
     "next_question": "Under the exact official target distribution and uninterrupted endpoint-hold semantics, can a learned policy achieve stable holds across both the inner and outer radius bands, and are any failures dominated by approach velocity/oscillation or by branch and limit-margin coverage?",
-    "scientific_commit": "e9be30446ab617af5dd4ead1cc073ea8e225da1f",
-    "session_id": "S1"
+    "scientific_commit": "c5ce93aabab8448545175c906f06df426d2300fa",
+    "session_id": "S2"
   },
   "schema_version": 6,
   "scientific_model": {
@@ -509,21 +631,6 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "c6c659bd-661c-4c84-8ea0-82567b8bd0e4",
-    "id": "S2",
-    "inquiry_id": null,
-    "kind": "goal_review",
-    "objective": "Use the completed evidence to update the scientific direction toward the human goal. Request measurements when they resolve an uncertainty or develop the method. Then choose one outcome: request the official assessment, or open one bounded goal-linked inquiry. Frame the inquiry as an unresolved distinction, obstacle, or capability need; do not encode a selected training run, measurement, implementation, or recipe as the question.",
-    "operation_ids": [
-      "E2"
-    ],
-    "scientific_parent_commit": "b447e4786511d4f2646c6ebdab07ad458165e736"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
