@@ -11,11 +11,13 @@ from contracts.policy_runtime import PolicyIO
 from robot_learning.scenario.observations import reach_observation
 
 
-BRAKING_DISTANCE_METERS = 0.055
+BRAKING_START_METERS = 0.012
+BRAKING_END_METERS = 0.050
 SUCCESS_THRESHOLD_METERS = 0.01
-RADIAL_APPROACH_DAMPING = 2.0
-RADIAL_VELOCITY_THRESHOLD = 0.05
-FOLDED_ANGLE_RANGE_DEGREES = (-165.0, -105.0)
+SAFE_RADIAL_ACCELERATION = 1.5
+RADIAL_VELOCITY_GAIN = 1.2
+FOLDED_ANGLE_RANGE_DEGREES = (-155.0, -125.0)
+CONTROL_INTERVAL_SECONDS = 0.02
 ACTUATOR_GEAR = 5.0
 
 
@@ -67,7 +69,7 @@ def make_policy_io():
         latest_observation = reach_observation(data)
         return latest_observation
 
-    def action_with_prearrival_damping(action):
+    def action_with_prearrival_velocity_shaping(action):
         if latest_observation is None:
             raise RuntimeError("action requested before an observation")
 
@@ -81,7 +83,7 @@ def make_policy_io():
             <= FOLDED_ANGLE_RANGE_DEGREES[1]
         )
         if (
-            SUCCESS_THRESHOLD_METERS < distance <= BRAKING_DISTANCE_METERS
+            BRAKING_START_METERS < distance <= BRAKING_END_METERS
             and in_folded_failure_sector
             and _is_folded_branch(latest_observation)
         ):
@@ -89,13 +91,34 @@ def make_policy_io():
             jacobian = _end_effector_jacobian(latest_observation)
             end_effector_velocity = jacobian @ latest_observation[2:4]
             radial_velocity = float(np.dot(end_effector_velocity, radial_unit))
-            if radial_velocity < -RADIAL_VELOCITY_THRESHOLD:
-                damping_effort = (
-                    -RADIAL_APPROACH_DAMPING
-                    * radial_velocity
+            braking_gap = max(distance - SUCCESS_THRESHOLD_METERS, 0.0)
+            safe_radial_velocity = -np.sqrt(
+                2.0 * SAFE_RADIAL_ACCELERATION * braking_gap
+            )
+            velocity_excess = safe_radial_velocity - radial_velocity
+            if velocity_excess > 0.0:
+                window = (distance - BRAKING_START_METERS) / (
+                    BRAKING_END_METERS - BRAKING_START_METERS
+                )
+                terminal_safe_gate = float(np.clip(window, 0.0, 1.0) ** 2)
+                predicted_distance = (
+                    distance + radial_velocity * CONTROL_INTERVAL_SECONDS
+                )
+                overshoot_risk = max(
+                    SUCCESS_THRESHOLD_METERS - predicted_distance, 0.0
+                )
+                overshoot_gain = 1.0 + min(
+                    overshoot_risk / braking_gap if braking_gap > 0.0 else 0.0,
+                    1.0,
+                )
+                braking_effort = (
+                    terminal_safe_gate
+                    * overshoot_gain
+                    * RADIAL_VELOCITY_GAIN
+                    * velocity_excess
                     * (jacobian.T @ radial_unit)
                 )
-                action = action + damping_effort / ACTUATOR_GEAR
+                action = action + braking_effort / ACTUATOR_GEAR
         return action
 
     def reset():
@@ -104,6 +127,6 @@ def make_policy_io():
 
     return PolicyIO(
         observe=observe,
-        action=action_with_prearrival_damping,
+        action=action_with_prearrival_velocity_shaping,
         reset=reset,
     )
