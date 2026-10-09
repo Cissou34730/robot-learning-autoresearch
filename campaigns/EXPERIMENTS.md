@@ -54,3 +54,4 @@
 | E32 | checkpoint | I7 | checkpointed |
 | E33 | inquiry | I8 | completed |
 | E34 | checkpoint | - | checkpointed |
+| E35 | restore_recipe | I8 | restored |
