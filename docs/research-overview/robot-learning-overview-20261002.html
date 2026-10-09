@@ -245,7 +245,7 @@
           <span class="tag">Open</span>
           <h3 style="margin-top: 12px">15 issues, OI-001 to OI-015</h3>
           <ul>
-            <li>Active: OI-001, OI-003, OI-004, OI-014, OI-015.</li>
+            <li>Active: OI-001, OI-003, OI-014, OI-015.</li>
             <li>Postponed, paused, or waiting for a decision: OI-005, OI-006, OI-007, OI-011, OI-013.</li>
             <li>Not approved: OI-008, OI-009, OI-010, OI-012.</li>
           </ul>
@@ -253,14 +253,13 @@
         </article>
         <article class="card">
           <span class="tag">Changed last</span>
-          <h3 style="margin-top: 12px">8 October 2026</h3>
+          <h3 style="margin-top: 12px">9 October 2026</h3>
           <ul>
-            <li><code>a3d05ac</code> clarified the OI-002 closure boundary and added an explicit closure check.</li>
-            <li>Campaign <code>1ae27a27</code> showed clean inquiry closure and many one-recipe inquiry boundaries.</li>
-            <li>The campaign review separates closure behavior, inquiry granularity, scientific progression, and the cap interaction.</li>
-            <li>Earlier scientific-model and handoff changes remain bundled in this campaign.</li>
+            <li>OI-002 is closed with bounded closure observed in campaign <code>1ae27a27</code>.</li>
+            <li>OI-004 is closed as effective after campaign <code>58dcd817</code> exercised trajectory-based candidate nomination, missing-evidence repair, and frontier-led progression.</li>
+            <li>OI-003 and OI-015 retain the remaining evidence-inspection and effective-experiment findings from the comprehensive RCA.</li>
           </ul>
-          <p class="small muted" style="margin-top: 8px">The campaign evidence does not isolate the effect of any one prompt change.</p>
+          <p class="small muted" style="margin-top: 8px">The protected result was 195/200: the progression behavior improved, while the scientific goal remained unmet.</p>
         </article>
       </div>
       <p class="small muted" style="margin-top: 12px">Prompt-stack review items R1, R5-1, R5-2, R6, R7, and R8 are implemented. R2 is partly implemented and paused. R3 and R4 are discarded. Implemented does not mean effective. Scientific effect is stated separately in each item.</p>
@@ -503,7 +502,7 @@
             <tr><td>OI-001</td><td>Startup method selection. The link from the scientific briefing to the first startup action and its handoff is not traceable. A five-campaign review found sound startups in four of five and no handoff collapse. R8 correction <code>adff08e</code> and the prompt changes <code>ef9516f</code>, <code>b3f4307</code>, <code>5437ff2</code> are in place. Their effect is not separable yet. Not the same as OI-006.</td><td><span class="tag">Open, narrowed</span></td></tr>
             <tr><td>OI-002</td><td>Inquiry control. The closure condition defines sufficient evidence and permits positive, negative, limited, or inconclusive closure. Campaign <code>1ae27a27</code> closed all inquiries at their declared boundaries. The original indefinite-continuation symptom did not recur.</td><td><span class="tag">Closed, bounded closure observed</span></td></tr>
             <tr><td>OI-003</td><td>Measurement evidence. In I9, available arrival-speed diagnostics were not used. In I11, equal success labels were treated as preserved behavior despite fewer first reaches and more interruptions. Decision-linked inspection and aggregate-versus-mechanism interpretation remain unresolved.</td><td><span class="tag">Open, expanded</span></td></tr>
-            <tr><td>OI-004</td><td>Checkpoint nomination, evidence selection, and scientific progression. The bounded repair gives terminal checkpoints no privileged status, preserves missing discriminating evidence as unresolved, and connects the next direction to completed evidence and the frontier. I12-I14 show that evidence-dependent progression was already possible. Post-change campaign effect is not measured.</td><td><span class="tag">Implemented, unmeasured</span></td></tr>
+            <tr><td>OI-004</td><td>Checkpoint nomination, evidence selection, and scientific progression. Campaign <code>58dcd817</code> compared a non-terminal checkpoint with the terminal candidate, selected non-terminal <code>T2:checkpoint-110592</code> after terminal training performance declined, repaired failed M8 before drawing a conclusion, and progressed from failure diagnosis through a bounded capture intervention to matched measurement. The official result was 195/200: the goal remained unmet, but the intended progression behavior was observed.</td><td><span class="tag">Closed, effective</span></td></tr>
             <tr><td>OI-005</td><td>Counterevidence and readiness. The readiness guidance was withdrawn. Lost residual evidence and early readiness claims remain. Campaign <code>06656182</code> showed the open point: the PI did not weigh a 95% and a 98% result against one more inquiry.</td><td><span class="tag">Postponed</span></td></tr>
             <tr><td>OI-006</td><td>Full review of the 120,000-step startup budget.</td><td><span class="tag">Pending</span></td></tr>
             <tr><td>OI-007</td><td>Prompt review item R2. Ordinary sessions still put the PI role before the human goal.</td><td><span class="tag">Paused</span></td></tr>

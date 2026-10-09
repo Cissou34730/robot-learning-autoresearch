@@ -448,7 +448,7 @@ Implementation checks and unassessed campaign effects are not separate issues.
 | OI-001 | Startup scientific-method selection | **Open, narrowed 2026-10-08.** Defined as a failure of traceable coupling from the PI-generated scientific briefing, through startup action selection, to the startup handoff. Three failure locations: briefing defect, use defect and handoff defect. A five-campaign retrospective found no handoff collapse and sound startups in four of five. It found one use defect (06656182) and a briefing that steered the method in four of five. R8 had removed the PI-authority sentence, now restored. The scientific-model prompt (`ef9516f`) changed language, persona and closing section at once. The closing section is restored in controlled English; language and persona stay. Campaign bd32cc79 ran the bundled prompt without the synthesis. Effect on startup selection is not separable. This is separate from the startup training budget. |
 | OI-002 | Inquiry control and bounded closure | **Closed 2026-10-09; bounded closure observed.** The contract and inquiry reminder permit positive, negative, limited and inconclusive closure. Campaign `1ae27a27` closed all inquiries at their declared evidence boundaries, including negative and limited results. The campaign does not isolate causality, but the original indefinite-continuation symptom did not recur. Inquiry granularity and later progression belong to OI-004; the temporary cap remains OI-013. |
 | OI-003 | Measurement-evidence inspection and interpretation | **Open; expanded 2026-10-09.** The PI has overlooked advertised diagnostic strata, read partial artifacts as complete and lost consequential counterevidence in synthesis. In campaign `1ae27a27`, I9 said arrival-speed change was unestablished although completed M11 artifacts contained the relevant speed diagnostics. I11 treated equal success labels as preserved behavior although M13 showed fewer first reaches and more interruptions. Discoverability is retained, but decision-linked inspection and aggregate-versus-mechanism interpretation remain unresolved. |
-| OI-004 | Checkpoint nomination, evidence selection and scientific progression | **Implemented 2026-10-09; campaign effect unmeasured.** Campaign `1ae27a27` evaluated only terminal checkpoints in I9-I15 despite earlier training peaks being available for nomination. I11 then progressed from a behavior-preservation interpretation contradicted by completed diagnostics, while I12-I14 show that the PI could obtain and use further mechanism evidence. The program and ordinary-session prompt now give terminal checkpoints no privileged status, preserve failed or unavailable discriminating evidence as unresolved, and require the next direction to follow completed evidence and the recorded frontier. No Runner gate or required operation sequence was added. OI-004 is not closed until post-change campaign evidence shows whether progression improves. |
+| OI-004 | Checkpoint nomination, evidence selection and scientific progression | **Closed effective 2026-10-09.** The bounded repair gives terminal checkpoints no privileged status, preserves failed or unavailable discriminating evidence as unresolved, and requires the next direction to follow completed evidence and the recorded frontier. Post-change campaign `58dcd817` exercised all three behaviors: M6 compared a nominated non-terminal checkpoint with the terminal checkpoint; M9 evaluated non-terminal `T2:checkpoint-110592` after terminal performance declined; failed M8 was explicitly treated as no scientific result and repaired before I2 closed; and the sequence M6-M7-T2-M9 followed the recorded capture frontier. The protected assessment reached 195/200, so the scientific goal remained unmet, but the progression behavior was effective. No Runner gate or required operation sequence was added. |
 | OI-005 | Counterevidence preservation and official-assessment readiness | **Postponed.** The narrow readiness guidance was withdrawn. Residual-evidence loss and premature readiness conclusions remain unresolved. No replacement readiness prompt is approved. |
 | OI-006 | Full startup-budget review | **Pending.** Shorter startup requests are permitted, but the maintainer-owned 120,000-step ceiling and its scientific effect have not received the planned full review. This budget question is not the cause or solution for OI-001. |
 | OI-007 | Complete prompt-stack review item R2 | **Paused.** Scientific context now precedes operational options, but ordinary sessions do not place the human goal before the PI role. The remaining ordering change is not approved. |
@@ -2763,3 +2763,34 @@ separate from harness changes so their outcomes are not conflated.
 - **Boundary:** this update records issue ownership and evidence only. It does
   not alter the OI-004 implementation, approve an OI-003 or OI-015 repair,
   modify scientific code, or launch, resume, reset or train a campaign.
+
+## 2026-10-09: close OI-004 after post-change campaign evidence
+
+- **Campaign:** `58dcd817-4fed-42e6-854b-58f20408e6a1`.
+- **Candidate nomination:** M6 compared the strongest nominated non-terminal T1
+  checkpoint with the terminal checkpoint rather than assuming the terminal
+  artifact was best. After T2 training success declined from 0.99 at
+  `checkpoint-110592` to 0.97 at the terminal checkpoint, M9 evaluated
+  `T2:checkpoint-110592`. Development measurement, not training statistics,
+  then established it as the best-known candidate.
+- **Missing evidence:** M8 failed because the branch probe omitted required
+  artifact arguments. The PI recorded that M8 supplied no scientific result,
+  corrected the same discriminating measurement in M9, and did not close I2
+  until that evidence completed.
+- **Progression:** M6 exposed predominantly absent or late capture. I1 used M7
+  to resolve geometry and branch behavior before selecting an intervention.
+  I2 then tested one capture-focused reward change and M9 measured the exact
+  first-entry, geometry, complete-hold and interruption outcomes required by
+  its closure condition.
+- **Outcome:** the selected non-terminal T2 candidate improved matched
+  development success from 150/160 to 153/160 and reached 195/200 in the
+  protected assessment. The human goal remained unmet by one episode. That
+  scientific result does not negate the observed process improvement.
+- **Decision:** close OI-004 as effective. An identical second stochastic
+  campaign is not required. The fixed-context checks and live campaign jointly
+  establish the intended behavior; future campaigns should monitor recurrence.
+  Redirection after a completed scientifically negative intervention was not
+  exercised and remains a limitation of the evidence, not a new issue.
+- **Boundary:** OI-003 still owns inspection and interpretation of completed
+  measurement evidence. OI-015 still owns whether an intended intervention
+  became a distinct effective experiment. Neither is closed by OI-004.
