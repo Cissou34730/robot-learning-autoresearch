@@ -77,6 +77,7 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
         self._held_steps = 0
         self._outside_after_hold = False
         self._previous_branch_error = 0.0
+        self._previous_action = np.zeros(2, dtype=np.float64)
 
     def _end_effector_position(self) -> np.ndarray:
         return self.data.site("end_effector").xpos.copy()
@@ -132,6 +133,7 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
         self._previous_distance = self._distance_to_target()
         self._held_steps = 0
         self._outside_after_hold = False
+        self._previous_action.fill(0.0)
         observation = self._observation()
         self._previous_branch_error = self._nearest_branch_error(observation)
         return observation, {}
@@ -175,9 +177,11 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
             hold_steps_required=self.hold_steps_required,
             penalize_outside=self._outside_after_hold,
             branch_error_progress=branch_error_progress,
+            previous_action=self._previous_action,
         )
         self._previous_distance = distance
         self._previous_branch_error = branch_error
+        self._previous_action = action.copy()
 
         self._step_count += 1
         terminated = self._held_steps >= self.hold_steps_required

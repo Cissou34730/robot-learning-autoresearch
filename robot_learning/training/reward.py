@@ -17,6 +17,7 @@ PROGRESS_COEFFICIENT = 10.0
 CLOSENESS_COEFFICIENT = 4.0
 CLOSENESS_LENGTH_SCALE = 0.05
 ACTION_COST_COEFFICIENT = 0.01
+ACTION_SMOOTHNESS_COEFFICIENT = 0.01
 HOLD_PROGRESS_BONUS = 50.0
 HOLD_PROGRESS_EXPONENT = 1.0
 HOLD_EXIT_FORFEIT_FRACTION = 1.0
@@ -55,6 +56,7 @@ def reach_reward(
     hold_steps_required: int = 100,
     penalize_outside: bool = False,
     branch_error_progress: float = 0.0,
+    previous_action: np.ndarray | None = None,
 ) -> RewardResult:
     progress = PROGRESS_COEFFICIENT * (previous_distance - current_distance)
     reward = progress
@@ -96,9 +98,17 @@ def reach_reward(
     reward += branch_guidance
 
     action_cost = 0.0
+    action_smoothness = 0.0
     if action is not None:
         action_cost = -(ACTION_COST_COEFFICIENT * float(np.sum(np.square(action))))
+        if previous_action is not None:
+            action_delta = np.asarray(action) - np.asarray(previous_action)
+            action_smoothness = -(
+                ACTION_SMOOTHNESS_COEFFICIENT
+                * float(np.sum(np.square(action_delta)))
+            )
     reward += action_cost
+    reward += action_smoothness
 
     return RewardResult(
         total=float(reward),
@@ -110,5 +120,6 @@ def reach_reward(
             "hold_complete": float(hold_complete),
             "branch_guidance": float(branch_guidance),
             "action_cost": float(action_cost),
+            "action_smoothness": float(action_smoothness),
         },
     )
