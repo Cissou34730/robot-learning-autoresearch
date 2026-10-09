@@ -7649,38 +7649,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I4",
-        "outcome": "limited negative",
-        "reason": "M7 provides a bounded negative answer for the tested previous-action history representation. T4 measured 73/160 successes (45.625%) versus T1's 150/160 (93.75%) on identical seeds, with zero candidate wins across 77 discordant episodes. The diagnostic replay found 87 failures: 86 without first reach and only one after first reach; 76 failures had positive terminal nearest-branch limit margin and 11 had negative margin, while the sole post-reach failure had positive margin. Inner-band performance fell to 23/40, compared with T1's 40/40. Thus this minimal history feature did not reduce the dominant reachability failures or improve hold stabilization; it caused a broad recipe-specific learnability or representation loss. The result rejects this history recipe under the current PPO, reward, allocation, and runtime, but does not invalidate velocity shaping or phase/history methods in general. I4's closure condition is met as a bounded negative result: the tested stabilization representation neither approaches 98% nor preserves uniform coverage, and the remaining gap is redirected toward a less disruptive branch/trajectory reachability intervention while retaining the possibility of separately designed velocity shaping."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I4",
-        "outcome": "limited negative",
-        "reason": "M7 provides a bounded negative answer for the tested previous-action history representation. T4 measured 73/160 successes (45.625%) versus T1's 150/160 (93.75%) on identical seeds, with zero candidate wins across 77 discordant episodes. The diagnostic replay found 87 failures: 86 without first reach and only one after first reach; 76 failures had positive terminal nearest-branch limit margin and 11 had negative margin, while the sole post-reach failure had positive margin. Inner-band performance fell to 23/40, compared with T1's 40/40. Thus this minimal history feature did not reduce the dominant reachability failures or improve hold stabilization; it caused a broad recipe-specific learnability or representation loss. The result rejects this history recipe under the current PPO, reward, allocation, and runtime, but does not invalidate velocity shaping or phase/history methods in general. I4's closure condition is met as a bounded negative result: the tested stabilization representation neither approaches 98% nor preserves uniform coverage, and the remaining gap is redirected toward a less disruptive branch/trajectory reachability intervention while retaining the possibility of separately designed velocity shaping.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E17",
-    "inquiry_id": "I4",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "limited negative",
-        "reason": "M7 provides a bounded negative answer for the tested previous-action history representation. T4 measured 73/160 successes (45.625%) versus T1's 150/160 (93.75%) on identical seeds, with zero candidate wins across 77 discordant episodes. The diagnostic replay found 87 failures: 86 without first reach and only one after first reach; 76 failures had positive terminal nearest-branch limit margin and 11 had negative margin, while the sole post-reach failure had positive margin. Inner-band performance fell to 23/40, compared with T1's 40/40. Thus this minimal history feature did not reduce the dominant reachability failures or improve hold stabilization; it caused a broad recipe-specific learnability or representation loss. The result rejects this history recipe under the current PPO, reward, allocation, and runtime, but does not invalidate velocity shaping or phase/history methods in general. I4's closure condition is met as a bounded negative result: the tested stabilization representation neither approaches 98% nor preserves uniform coverage, and the remaining gap is redirected toward a less disruptive branch/trajectory reachability intervention while retaining the possibility of separately designed velocity shaping."
-      }
-    },
-    "request_fingerprint": "ecebb77e28c6bfc00fbe74cec234b434137283ceea914f09f7bc4598b0c60f2e",
-    "session_id": "S9",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T1:checkpoint-120832 remains the strongest measured development candidate at 93.75% with 40/40 inner-band successes, but no working, best-known, or retained role is assigned because it is below the goal and lacks a protected assessment. T2:checkpoint-120832 and T3:checkpoint-120832 remain rejected as viable routes based on their paired development results and diagnostics. No candidate has a role.",
     "completed_operations": [
