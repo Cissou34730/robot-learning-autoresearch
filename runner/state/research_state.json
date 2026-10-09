@@ -1,5 +1,16 @@
 {
-  "active_inquiry": null,
+  "active_inquiry": {
+    "closure_condition": "Close this inquiry after a full-coverage candidate is measured on a non-overlapping diagnostic panel with radius-binned success and complete-hold diagnostics. A positive result requires at least 98% aggregate development success with no material loss in the 0.14-0.20 m bin; a negative or limited result is sufficient when inner-radius failures persist or outer-range performance degrades, with the observed failure mechanism recorded to redirect the campaign.",
+    "goal_connection": "The baseline candidate is 78.5% on the research panel and 71.0% on the task-reference panel, far below the 98% complete-hold objective. M2 shows the deficit is concentrated in the omitted inner region, so resolving whether official-radius coverage can remove that deficit is the most direct next step toward the goal.",
+    "handoff_conclusion": "Observed: T1 was trained on the baseline 0.14-0.20 m radius range; its late training statistics rose to at most 0.96 but are not development evidence. M1 measured 71.0% on the fixed task-reference panel. M2 measured 78.5% on a separate research panel and recorded per-episode fields for first reach, maximum held steps, interruptions, final distance, and target radius/angle. Interpretation: the aggregate deficit is established and supports continuing scientific investigation rather than requesting official assessment. The difference between M1 and M2 is compatible with panel variation and does not identify a mechanism. The M2 artifact structure confirms that the needed diagnostics were produced, but their values are not available in this session context; therefore coverage failure versus stabilization failure remains unresolved. No conclusion about branch behavior, dynamics, or memory is justified yet.",
+    "handoff_question": "Does the baseline candidate's 78.5% research-panel deficit arise primarily from omitted inner-radius coverage, or from post-reach stabilization failures across the trained outer range?",
+    "handoff_source_session_id": "S1",
+    "id": "I1",
+    "opened_in_session": "S2",
+    "question": "Can expanding training coverage to the official 0.06-0.20 m radius distribution eliminate the baseline candidate's inner-radius reach deficit while preserving complete-hold performance across 0.14-0.20 m?",
+    "rationale": "T1 was trained only on 0.14-0.20 m. M2 measured 39.1% success at 6-10 cm, 75.0% at 10-14 cm, and 97.2% at 14-20 cm; 35 of 43 failures never reached tolerance and all eight reached-but-failed episodes were below 14 cm. This discriminates the current baseline deficit toward omitted coverage rather than post-reach stabilization across the trained range. The result supports testing full-radius exposure, but does not establish that this recipe will solve the task or preserve outer-range behavior.",
+    "reframes": []
+  },
   "campaign": {
     "base_commit": "763bfc2925254b5477bc762e1bc424fa4efa4aa2",
     "id": "896c230a-0ff1-4105-8ab7-1691a09c5482",
@@ -829,16 +840,16 @@
     }
   },
   "counters": {
-    "event": 1,
-    "inquiry": 0,
+    "event": 2,
+    "inquiry": 1,
     "measurement": 2,
-    "session": 1,
+    "session": 2,
     "training": 1
   },
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -1328,9 +1339,72 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-09T09:53:56Z",
+      "error": null,
+      "id": "E2",
+      "inquiry_id": "I1",
+      "kind": "inquiry",
+      "request": {
+        "action": "open",
+        "closure_condition": "Close this inquiry after a full-coverage candidate is measured on a non-overlapping diagnostic panel with radius-binned success and complete-hold diagnostics. A positive result requires at least 98% aggregate development success with no material loss in the 0.14-0.20 m bin; a negative or limited result is sufficient when inner-radius failures persist or outer-range performance degrades, with the observed failure mechanism recorded to redirect the campaign.",
+        "goal_connection": "The baseline candidate is 78.5% on the research panel and 71.0% on the task-reference panel, far below the 98% complete-hold objective. M2 shows the deficit is concentrated in the omitted inner region, so resolving whether official-radius coverage can remove that deficit is the most direct next step toward the goal.",
+        "question": "Can expanding training coverage to the official 0.06-0.20 m radius distribution eliminate the baseline candidate's inner-radius reach deficit while preserving complete-hold performance across 0.14-0.20 m?",
+        "rationale": "T1 was trained only on 0.14-0.20 m. M2 measured 39.1% success at 6-10 cm, 75.0% at 10-14 cm, and 97.2% at 14-20 cm; 35 of 43 failures never reached tolerance and all eight reached-but-failed episodes were below 14 cm. This discriminates the current baseline deficit toward omitted coverage rather than post-reach stabilization across the trained range. The result supports testing full-radius exposure, but does not establish that this recipe will solve the task or preserve outer-range behavior."
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I1",
+        "status": "completed"
+      },
+      "session_id": "S2",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "open",
+        "inquiry": {
+          "closure_condition": "Close this inquiry after a full-coverage candidate is measured on a non-overlapping diagnostic panel with radius-binned success and complete-hold diagnostics. A positive result requires at least 98% aggregate development success with no material loss in the 0.14-0.20 m bin; a negative or limited result is sufficient when inner-radius failures persist or outer-range performance degrades, with the observed failure mechanism recorded to redirect the campaign.",
+          "goal_connection": "The baseline candidate is 78.5% on the research panel and 71.0% on the task-reference panel, far below the 98% complete-hold objective. M2 shows the deficit is concentrated in the omitted inner region, so resolving whether official-radius coverage can remove that deficit is the most direct next step toward the goal.",
+          "handoff_conclusion": "Observed: T1 was trained on the baseline 0.14-0.20 m radius range; its late training statistics rose to at most 0.96 but are not development evidence. M1 measured 71.0% on the fixed task-reference panel. M2 measured 78.5% on a separate research panel and recorded per-episode fields for first reach, maximum held steps, interruptions, final distance, and target radius/angle. Interpretation: the aggregate deficit is established and supports continuing scientific investigation rather than requesting official assessment. The difference between M1 and M2 is compatible with panel variation and does not identify a mechanism. The M2 artifact structure confirms that the needed diagnostics were produced, but their values are not available in this session context; therefore coverage failure versus stabilization failure remains unresolved. No conclusion about branch behavior, dynamics, or memory is justified yet.",
+          "handoff_question": "Does the baseline candidate's 78.5% research-panel deficit arise primarily from omitted inner-radius coverage, or from post-reach stabilization failures across the trained outer range?",
+          "handoff_source_session_id": "S1",
+          "id": "I1",
+          "opened_in_session": "S2",
+          "question": "Can expanding training coverage to the official 0.06-0.20 m radius distribution eliminate the baseline candidate's inner-radius reach deficit while preserving complete-hold performance across 0.14-0.20 m?",
+          "rationale": "T1 was trained only on 0.14-0.20 m. M2 measured 39.1% success at 6-10 cm, 75.0% at 10-14 cm, and 97.2% at 14-20 cm; 35 of 43 failures never reached tolerance and all eight reached-but-failed episodes were below 14 cm. This discriminates the current baseline deficit toward omitted coverage rather than post-reach stabilization across the trained range. The result supports testing full-radius exposure, but does not establish that this recipe will solve the task or preserve outer-range behavior.",
+          "reframes": []
+        }
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I1",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E2",
+    "inquiry_id": null,
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "open",
+        "closure_condition": "Close this inquiry after a full-coverage candidate is measured on a non-overlapping diagnostic panel with radius-binned success and complete-hold diagnostics. A positive result requires at least 98% aggregate development success with no material loss in the 0.14-0.20 m bin; a negative or limited result is sufficient when inner-radius failures persist or outer-range performance degrades, with the observed failure mechanism recorded to redirect the campaign.",
+        "goal_connection": "The baseline candidate is 78.5% on the research panel and 71.0% on the task-reference panel, far below the 98% complete-hold objective. M2 shows the deficit is concentrated in the omitted inner region, so resolving whether official-radius coverage can remove that deficit is the most direct next step toward the goal.",
+        "question": "Can expanding training coverage to the official 0.06-0.20 m radius distribution eliminate the baseline candidate's inner-radius reach deficit while preserving complete-hold performance across 0.14-0.20 m?",
+        "rationale": "T1 was trained only on 0.14-0.20 m. M2 measured 39.1% success at 6-10 cm, 75.0% at 10-14 cm, and 97.2% at 14-20 cm; 35 of 43 failures never reached tolerance and all eight reached-but-failed episodes were below 14 cm. This discriminates the current baseline deficit toward omitted coverage rather than post-reach stabilization across the trained range. The result supports testing full-radius exposure, but does not establish that this recipe will solve the task or preserve outer-range behavior."
+      }
+    },
+    "request_fingerprint": "da016309f0e01a265498fae98d463669ac62d5eb82ac1e796c22774b7a1f6360",
+    "session_id": "S2",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T1 produced archived candidates, including T1:checkpoint-115712 used by M1 and M2. No candidate has been assigned working, best-known, or retained status because development diagnostics have not yet been interpreted sufficiently.",
     "completed_operations": [
@@ -1360,6 +1434,21 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "dd05c206-1c1c-489c-b174-67ca876b7c48",
+    "id": "S2",
+    "inquiry_id": null,
+    "kind": "goal_review",
+    "objective": "Use the completed evidence to update the scientific direction toward the human goal. Request measurements when they resolve an uncertainty or develop the method. Then choose one outcome: request the official assessment, or open one bounded goal-linked inquiry.",
+    "operation_ids": [
+      "E2"
+    ],
+    "scientific_parent_commit": "8ee3d4d629c1530416eeb11e87c9dcb5b2e19e34"
+  },
   "terminal_state": null
 }
