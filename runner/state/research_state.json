@@ -19802,47 +19802,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "open",
-        "inquiry": {
-          "closure_condition": "Close when completed same-interface controllability evidence and, if warranted, a policy-side candidate measured under the same uniform official coverage establish whether the residual pre-reach and uninterrupted-hold failures can be recovered without sacrificing the 40/40 inner-band behavior; preserve a limited or inconclusive outcome if the evidence cannot discriminate these explanations.",
-          "goal_connection": "The human goal requires at least 196 successes in the protected 200-episode assessment. T8 and T9 each measured 153/160, so the current direct-action route is below the development threshold and does not justify official assessment. Resolving whether the residual failures are controllability-limited or policy-side recoverable determines whether to redesign the policy route or the action/trajectory mechanism toward the 98% goal.",
-          "handoff_conclusion": "M1 established substantial transient actuation authority and at least one feasible analytic IK branch for every sampled official target, with 64 of 576 grid targets having only one feasible branch. T1 measured 150/160 with 40/40 inner-band successes, seven pre-reach failures, and three post-reach failures. T8 demonstrated a real policy-side improvement within the unchanged direct-action interface, reaching 153/160 and preserving the recorded 40/40 inner-band behavior; M13 measured one pre-reach and six post-reach failures with six hold interruptions. T9's near-target velocity and joint-limit stabilization reward also measured 153/160, matched T8 on all paired panel episodes, and recovered none of the residual episodes; it only shifted the failure split and reduced failure interruptions from six to five. Therefore E36 establishes a bounded negative for the tested continuation of PPO optimization and the tested stabilization reward recipe, with the remaining failures better supported as action-interface or branch-limit-trajectory coupled for this route. This does not establish that every policy-side method or every action interface will fail.",
-          "handoff_question": "Can a policy-side method improve T1's seven pre-reach failures under uniform official coverage while preserving its 40/40 inner-band behavior and uninterrupted hold, or is the remaining gap intrinsically coupled to the action interface?",
-          "handoff_source_session_id": "S17",
-          "id": "I9",
-          "opened_in_session": "S18",
-          "question": "Can a policy-side method improve T1's seven pre-reach failures under uniform official coverage while preserving its 40/40 inner-band behavior and uninterrupted hold, or is the remaining gap intrinsically coupled to the action interface?",
-          "rationale": "M1 established feasible analytic IK branches and substantial actuation authority, while T8 improved T1 from 150/160 to 153/160 within the unchanged direct-action interface. M13 and M14 show that the remaining failures involve both pre-reach and post-reach hold interruptions, with T8's residual dominated by post-reach failures and T9 recovering none of the paired residual episodes. This supports continuing the inquiry but does not establish that all policy-side methods fail. The first fresh-session operation should therefore test whether a full-state model-based controller can realize stable branch and trajectory control through the same bounded action interface before allocating another policy training recipe.",
-          "reframes": []
-        }
-      },
-      "result": {
-        "action": "open",
-        "inquiry_id": "I9",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E38",
-    "inquiry_id": null,
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "open",
-        "closure_condition": "Close when completed same-interface controllability evidence and, if warranted, a policy-side candidate measured under the same uniform official coverage establish whether the residual pre-reach and uninterrupted-hold failures can be recovered without sacrificing the 40/40 inner-band behavior; preserve a limited or inconclusive outcome if the evidence cannot discriminate these explanations.",
-        "goal_connection": "The human goal requires at least 196 successes in the protected 200-episode assessment. T8 and T9 each measured 153/160, so the current direct-action route is below the development threshold and does not justify official assessment. Resolving whether the residual failures are controllability-limited or policy-side recoverable determines whether to redesign the policy route or the action/trajectory mechanism toward the 98% goal.",
-        "question": "Can a policy-side method improve T1's seven pre-reach failures under uniform official coverage while preserving its 40/40 inner-band behavior and uninterrupted hold, or is the remaining gap intrinsically coupled to the action interface?",
-        "rationale": "M1 established feasible analytic IK branches and substantial actuation authority, while T8 improved T1 from 150/160 to 153/160 within the unchanged direct-action interface. M13 and M14 show that the remaining failures involve both pre-reach and post-reach hold interruptions, with T8's residual dominated by post-reach failures and T9 recovering none of the paired residual episodes. This supports continuing the inquiry but does not establish that all policy-side methods fail. The first fresh-session operation should therefore test whether a full-state model-based controller can realize stable branch and trajectory control through the same bounded action interface before allocating another policy training recipe."
-      }
-    },
-    "request_fingerprint": "e2f04cf6160a79ae38d21d7741a2de55d910fa578c8624aae4823ce1fffca105",
-    "session_id": "S18",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T1:checkpoint-120832 remains the strongest original evidence-backed baseline at 150/160 with 40/40 inner-band successes. T8:checkpoint-60416 and T9:checkpoint-20480 are the strongest measured I8 candidates at 153/160, but neither meets the development threshold or receives a protected assessment or durable working, best-known, or retained role. T2-T7 remain rejected as recipe-specific negative routes.",
     "completed_operations": [
