@@ -176,12 +176,81 @@ def _angle_sector(angle_degrees: float) -> int:
     return int(np.floor((angle_degrees + 180.0) / 30.0) * 30.0 - 180.0)
 
 
+def _select_branch(
+    model: mujoco.MjModel,
+    radius: float,
+    angle: float,
+    qpos: np.ndarray,
+) -> tuple[str, np.ndarray, float]:
+    branch_candidates = []
+    for branch_name, elbow_sign in (("open", 1.0), ("folded", -1.0)):
+        qtarget = _branch_configuration(radius, angle, elbow_sign)
+        valid = bool(
+            np.all(qtarget >= model.jnt_range[:2, 0])
+            and np.all(qtarget <= model.jnt_range[:2, 1])
+        )
+        if valid:
+            error = np.array(
+                [_wrap_to_pi(float(current - desired)) for current, desired in zip(qpos, qtarget)]
+            )
+            branch_candidates.append((float(np.linalg.norm(error)), branch_name, qtarget))
+    if not branch_candidates:
+        raise RuntimeError("residual target has no valid inverse-kinematic branch")
+    residual, branch_name, qtarget = min(branch_candidates, key=lambda item: item[0])
+    return branch_name, qtarget, residual
+
+
+def _arrival_diagnostics(
+    model: mujoco.MjModel,
+    data: mujoco.MjData,
+    *,
+    qpos: np.ndarray,
+    qvel: np.ndarray,
+    task_velocity: np.ndarray,
+    target: np.ndarray,
+    radius: float,
+    angle: float,
+    state_selection: str,
+    first_reach_step: int | None,
+) -> tuple[dict, str, np.ndarray]:
+    branch_name, qtarget, branch_residual = _select_branch(
+        model, radius, angle, qpos
+    )
+    _set_state(model, data, qpos, qvel, target)
+    end_effector = np.asarray(data.site("end_effector").xpos, dtype=np.float64)
+    displacement = target[:2] - end_effector[:2]
+    distance = float(np.linalg.norm(displacement))
+    radial_unit = displacement / distance if distance > 0.0 else np.zeros(2)
+    radial_velocity = float(np.dot(task_velocity, radial_unit))
+    tangential_velocity = task_velocity - radial_velocity * radial_unit
+    return (
+        {
+            "state_selection": state_selection,
+            "first_reach_step": first_reach_step,
+            "selected_branch": branch_name,
+            "branch_residual_rad": branch_residual,
+            "qpos_rad": qpos.tolist(),
+            "qvel_rad_s": qvel.tolist(),
+            "end_effector_velocity_m_s": task_velocity.tolist(),
+            "radial_velocity_m_s": radial_velocity,
+            "tangential_speed_m_s": float(np.linalg.norm(tangential_velocity)),
+            "joint_speed_rad_s": float(np.linalg.norm(qvel)),
+        },
+        branch_name,
+        qtarget,
+    )
+
+
 def measure(candidate: Path, episodes: int, seed: int) -> dict:
     runtime = load_runtime(candidate)
     env = make_evaluation_env(policy_runtime=runtime)
     model = env.model
     data = env.data
+    site_id = mujoco.mj_name2id(
+        model, mujoco.mjtObj.mjOBJ_SITE, "end_effector"
+    )
     policy_records: list[dict] = []
+    arrival_records: list[dict] = []
     residual_cases: list[dict] = []
 
     for episode in range(episodes):
@@ -190,8 +259,8 @@ def measure(candidate: Path, episodes: int, seed: int) -> dict:
         target = np.asarray(data.mocap_pos[0], dtype=np.float64).copy()
         target_radius = float(np.hypot(target[0], target[1]))
         target_angle = float(np.degrees(np.arctan2(target[1], target[0])))
-        first_inside: tuple[np.ndarray, np.ndarray] | None = None
-        closest_state: tuple[np.ndarray, np.ndarray] | None = None
+        first_inside: tuple[np.ndarray, np.ndarray, np.ndarray] | None = None
+        closest_state: tuple[np.ndarray, np.ndarray, np.ndarray] | None = None
         closest_distance = float("inf")
         first_reach_step: int | None = None
         max_held_steps = 0
@@ -211,7 +280,11 @@ def measure(candidate: Path, episodes: int, seed: int) -> dict:
             distance = float(info["distance"])
             final_distance = distance
             min_distance = min(min_distance, distance)
-            state = (data.qpos.copy(), data.qvel.copy())
+            state = (
+                data.qpos.copy(),
+                data.qvel.copy(),
+                data.site_xvelp[site_id, :2].copy(),
+            )
             if distance < closest_distance:
                 closest_distance = distance
                 closest_state = state
@@ -242,27 +315,57 @@ def measure(candidate: Path, episodes: int, seed: int) -> dict:
                 "hold_interruptions": hold_interruptions,
             }
         )
-        if success:
-            continue
         selected_state = first_inside or closest_state
         if selected_state is None:
             raise RuntimeError("failed policy episode did not produce a simulator state")
-        branch_candidates = []
-        for branch_name, elbow_sign in (("open", 1.0), ("folded", -1.0)):
-            qtarget = _branch_configuration(target_radius, np.radians(target_angle), elbow_sign)
-            valid = bool(
-                np.all(qtarget >= model.jnt_range[:2, 0])
-                and np.all(qtarget <= model.jnt_range[:2, 1])
-            )
-            if valid:
-                error = np.array(
-                    [_wrap_to_pi(float(current - desired)) for current, desired in zip(selected_state[0], qtarget)]
-                )
-                branch_candidates.append((float(np.linalg.norm(error)), branch_name, qtarget))
-        if not branch_candidates:
-            raise RuntimeError("residual target has no valid inverse-kinematic branch")
-        _, branch_name, qtarget = min(branch_candidates, key=lambda item: item[0])
-        qpos, qvel = selected_state
+        qpos, qvel, task_velocity = selected_state
+        state_selection = (
+            "first_in_tolerance" if first_inside is not None else "closest_approach"
+        )
+        arrival, branch_name, qtarget = _arrival_diagnostics(
+            model,
+            data,
+            qpos=qpos,
+            qvel=qvel,
+            task_velocity=task_velocity,
+            target=target,
+            radius=target_radius,
+            angle=np.radians(target_angle),
+            state_selection=state_selection,
+            first_reach_step=first_reach_step,
+        )
+        zero_retention = _retention_rollout(
+            model,
+            data,
+            qtarget=qtarget,
+            qpos=qpos,
+            qvel=qvel,
+            target=target,
+            controller="zero",
+        )
+        arrival_records.append(
+            {
+                "episode": episode,
+                "episode_seed": seed + episode,
+                "target_radius_m": target_radius,
+                "target_angle_degrees": target_angle,
+                "angle_sector_start_degrees": _angle_sector(target_angle),
+                "success": success,
+                "policy_failure_class": (
+                    None
+                    if success
+                    else (
+                        "hold_interruption"
+                        if first_inside is not None
+                        else "no_first_reach"
+                    )
+                ),
+                **arrival,
+                "zero_action_retention": zero_retention,
+            }
+        )
+        if success:
+            continue
         residual_cases.append(
             {
                 "episode": episode,
@@ -284,16 +387,19 @@ def measure(candidate: Path, episodes: int, seed: int) -> dict:
                     model, data, qpos=qpos, qvel=qvel, target=target
                 ),
                 "local_feedback": [
-                    _retention_rollout(
-                        model,
-                        data,
-                        qtarget=qtarget,
-                        qpos=qpos,
-                        qvel=qvel,
-                        target=target,
-                        controller=controller,
-                    )
-                    for controller in ("zero", "local_pd", "strong_local_pd")
+                    zero_retention,
+                    *[
+                        _retention_rollout(
+                            model,
+                            data,
+                            qtarget=qtarget,
+                            qpos=qpos,
+                            qvel=qvel,
+                            target=target,
+                            controller=controller,
+                        )
+                        for controller in ("local_pd", "strong_local_pd")
+                    ],
                 ],
             }
         )
@@ -333,7 +439,7 @@ def measure(candidate: Path, episodes: int, seed: int) -> dict:
     failed = [record for record in policy_records if not record["success"]]
     return {
         "schema_version": 1,
-        "measurement": "matched_residual_arrival_and_local_feedback_margin",
+        "measurement": "matched_arrival_trajectory_and_local_feedback_margin",
         "candidate": str(candidate),
         "panel": {"episodes": episodes, "seed": seed},
         "control_interval": {
@@ -353,6 +459,7 @@ def measure(candidate: Path, episodes: int, seed: int) -> dict:
             ),
         },
         "local_feedback_summary": controller_summary,
+        "arrival_records": arrival_records,
         "policy_episode_records": policy_records,
         "residual_cases": residual_cases,
     }
