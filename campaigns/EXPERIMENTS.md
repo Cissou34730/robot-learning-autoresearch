@@ -32,3 +32,4 @@
 | E18 | inquiry | I5 | completed |
 | E19 | checkpoint | - | checkpointed |
 | T6 | training | I5 | completed |
+| M6 | measurement | I5 | completed |
