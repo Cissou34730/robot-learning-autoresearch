@@ -1,5 +1,16 @@
 {
-  "active_inquiry": null,
+  "active_inquiry": {
+    "closure_condition": "Close the inquiry when paired development evidence compares a targeted inner-radius and inverse-kinematic branch-coverage intervention with a baseline using the same hold, entry, radius-angle, branch, joint-limit, and interruption diagnostics, and establishes whether inner-radius success and no-entry failures improve while conditional post-entry hold success is preserved, or whether the result is negative, limited, or inconclusive and redirects the next method decision.",
+    "goal_connection": "The human goal requires at least 196 of 200 episodes to complete an uninterrupted 2 second hold. The best measured baseline succeeds on only 110 of 160 development episodes, with failures dominated by no entry into the 1 cm band and concentrated at inner radii. This inquiry tests whether addressing that dominant loss can improve full-distribution success without sacrificing the complete-hold behavior that succeeds for most episodes after entry.",
+    "handoff_conclusion": "M1 observed substantial nominal actuation and rapid reversal authority in tested postures and confirmed real joint-limit reactions, so generic weak actuation is not the leading explanation. T1 produced a learning trajectory but its training success did not establish development performance. M2 evaluated two high-performing T1 checkpoints on the same panel: checkpoint-115712 achieved 105/160 (65.625%) and checkpoint-120832 achieved 110/160 (68.75%), with checkpoint-120832 winning 9 versus 4 discordant episodes; this is a recipe-specific candidate difference, not evidence that the terminal checkpoint is intrinsically superior. The mechanism discriminator is clear: failures without first tolerance entry were 49/55 and 42/50, while entered-episode success was 94.6% and 93.2%. Success was 22.5% and 25.0% for inner-radius targets versus 91.5% for outer-radius targets. Entry branch error was approximately 0.10 radians and minimum joint-limit margins were generally broad, although a small number of entered failures and hold interruptions remain. Therefore I1 is resolved with a limited result in favor of reaching/workspace and branch coverage as the primary intervention target; stabilization remains a secondary constraint and must remain in subsequent diagnostics. The result does not establish that a particular branch intervention will work or that the broader learning method is inadequate.",
+    "handoff_question": "Can a targeted inner-radius and inverse-kinematic branch-coverage intervention improve full-distribution reach success while preserving the baseline policy's high conditional success after first entering the 1 cm tolerance band?",
+    "handoff_source_session_id": "S3",
+    "id": "I2",
+    "opened_in_session": "S4",
+    "question": "Can a targeted inner-radius and inverse-kinematic branch-coverage intervention improve full-distribution reach success while preserving the baseline policy's high conditional success after first entering the 1 cm tolerance band?",
+    "rationale": "M1 supports proceeding without treating generic weak actuation as the leading cause. T1 training statistics nominate checkpoints but do not establish development performance. M2 shows that the measured baseline reaches only 65.625% and 68.75%, with 49/55 and 42/50 failures occurring before tolerance entry, inner-radius success of only 22.5% and 25.0%, and conditional entry success above 93%, while also leaving a secondary interruption risk. E4 therefore supports a targeted coverage intervention but does not establish that any particular branch intervention will work. The next bounded question should test that causal route directly and retain the hold diagnostics.",
+    "reframes": []
+  },
   "campaign": {
     "base_commit": "fc6eed9ce7e909e3f30fa5c495ca2cde467893b3",
     "id": "81a5458d-ce8f-4c03-b9d2-8ce4f1ff9e9e",
@@ -830,16 +841,16 @@
     }
   },
   "counters": {
-    "event": 5,
-    "inquiry": 1,
+    "event": 6,
+    "inquiry": 2,
     "measurement": 2,
-    "session": 3,
+    "session": 4,
     "training": 1
   },
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -1927,9 +1938,72 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-09T12:20:51Z",
+      "error": null,
+      "id": "E6",
+      "inquiry_id": "I2",
+      "kind": "inquiry",
+      "request": {
+        "action": "open",
+        "closure_condition": "Close the inquiry when paired development evidence compares a targeted inner-radius and inverse-kinematic branch-coverage intervention with a baseline using the same hold, entry, radius-angle, branch, joint-limit, and interruption diagnostics, and establishes whether inner-radius success and no-entry failures improve while conditional post-entry hold success is preserved, or whether the result is negative, limited, or inconclusive and redirects the next method decision.",
+        "goal_connection": "The human goal requires at least 196 of 200 episodes to complete an uninterrupted 2 second hold. The best measured baseline succeeds on only 110 of 160 development episodes, with failures dominated by no entry into the 1 cm band and concentrated at inner radii. This inquiry tests whether addressing that dominant loss can improve full-distribution success without sacrificing the complete-hold behavior that succeeds for most episodes after entry.",
+        "question": "Can a targeted inner-radius and inverse-kinematic branch-coverage intervention improve full-distribution reach success while preserving the baseline policy's high conditional success after first entering the 1 cm tolerance band?",
+        "rationale": "M1 supports proceeding without treating generic weak actuation as the leading cause. T1 training statistics nominate checkpoints but do not establish development performance. M2 shows that the measured baseline reaches only 65.625% and 68.75%, with 49/55 and 42/50 failures occurring before tolerance entry, inner-radius success of only 22.5% and 25.0%, and conditional entry success above 93%, while also leaving a secondary interruption risk. E4 therefore supports a targeted coverage intervention but does not establish that any particular branch intervention will work. The next bounded question should test that causal route directly and retain the hold diagnostics."
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I2",
+        "status": "completed"
+      },
+      "session_id": "S4",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "open",
+        "inquiry": {
+          "closure_condition": "Close the inquiry when paired development evidence compares a targeted inner-radius and inverse-kinematic branch-coverage intervention with a baseline using the same hold, entry, radius-angle, branch, joint-limit, and interruption diagnostics, and establishes whether inner-radius success and no-entry failures improve while conditional post-entry hold success is preserved, or whether the result is negative, limited, or inconclusive and redirects the next method decision.",
+          "goal_connection": "The human goal requires at least 196 of 200 episodes to complete an uninterrupted 2 second hold. The best measured baseline succeeds on only 110 of 160 development episodes, with failures dominated by no entry into the 1 cm band and concentrated at inner radii. This inquiry tests whether addressing that dominant loss can improve full-distribution success without sacrificing the complete-hold behavior that succeeds for most episodes after entry.",
+          "handoff_conclusion": "M1 observed substantial nominal actuation and rapid reversal authority in tested postures and confirmed real joint-limit reactions, so generic weak actuation is not the leading explanation. T1 produced a learning trajectory but its training success did not establish development performance. M2 evaluated two high-performing T1 checkpoints on the same panel: checkpoint-115712 achieved 105/160 (65.625%) and checkpoint-120832 achieved 110/160 (68.75%), with checkpoint-120832 winning 9 versus 4 discordant episodes; this is a recipe-specific candidate difference, not evidence that the terminal checkpoint is intrinsically superior. The mechanism discriminator is clear: failures without first tolerance entry were 49/55 and 42/50, while entered-episode success was 94.6% and 93.2%. Success was 22.5% and 25.0% for inner-radius targets versus 91.5% for outer-radius targets. Entry branch error was approximately 0.10 radians and minimum joint-limit margins were generally broad, although a small number of entered failures and hold interruptions remain. Therefore I1 is resolved with a limited result in favor of reaching/workspace and branch coverage as the primary intervention target; stabilization remains a secondary constraint and must remain in subsequent diagnostics. The result does not establish that a particular branch intervention will work or that the broader learning method is inadequate.",
+          "handoff_question": "Can a targeted inner-radius and inverse-kinematic branch-coverage intervention improve full-distribution reach success while preserving the baseline policy's high conditional success after first entering the 1 cm tolerance band?",
+          "handoff_source_session_id": "S3",
+          "id": "I2",
+          "opened_in_session": "S4",
+          "question": "Can a targeted inner-radius and inverse-kinematic branch-coverage intervention improve full-distribution reach success while preserving the baseline policy's high conditional success after first entering the 1 cm tolerance band?",
+          "rationale": "M1 supports proceeding without treating generic weak actuation as the leading cause. T1 training statistics nominate checkpoints but do not establish development performance. M2 shows that the measured baseline reaches only 65.625% and 68.75%, with 49/55 and 42/50 failures occurring before tolerance entry, inner-radius success of only 22.5% and 25.0%, and conditional entry success above 93%, while also leaving a secondary interruption risk. E4 therefore supports a targeted coverage intervention but does not establish that any particular branch intervention will work. The next bounded question should test that causal route directly and retain the hold diagnostics.",
+          "reframes": []
+        }
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I2",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E6",
+    "inquiry_id": null,
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "open",
+        "closure_condition": "Close the inquiry when paired development evidence compares a targeted inner-radius and inverse-kinematic branch-coverage intervention with a baseline using the same hold, entry, radius-angle, branch, joint-limit, and interruption diagnostics, and establishes whether inner-radius success and no-entry failures improve while conditional post-entry hold success is preserved, or whether the result is negative, limited, or inconclusive and redirects the next method decision.",
+        "goal_connection": "The human goal requires at least 196 of 200 episodes to complete an uninterrupted 2 second hold. The best measured baseline succeeds on only 110 of 160 development episodes, with failures dominated by no entry into the 1 cm band and concentrated at inner radii. This inquiry tests whether addressing that dominant loss can improve full-distribution success without sacrificing the complete-hold behavior that succeeds for most episodes after entry.",
+        "question": "Can a targeted inner-radius and inverse-kinematic branch-coverage intervention improve full-distribution reach success while preserving the baseline policy's high conditional success after first entering the 1 cm tolerance band?",
+        "rationale": "M1 supports proceeding without treating generic weak actuation as the leading cause. T1 training statistics nominate checkpoints but do not establish development performance. M2 shows that the measured baseline reaches only 65.625% and 68.75%, with 49/55 and 42/50 failures occurring before tolerance entry, inner-radius success of only 22.5% and 25.0%, and conditional entry success above 93%, while also leaving a secondary interruption risk. E4 therefore supports a targeted coverage intervention but does not establish that any particular branch intervention will work. The next bounded question should test that causal route directly and retain the hold diagnostics."
+      }
+    },
+    "request_fingerprint": "329b8febab8f230c02cd1dfbb422af412e5bccfc8b0cc40d1de97fcac0f896f0",
+    "session_id": "S4",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "Available candidates are T1:checkpoint-100352, T1:checkpoint-10240, T1:checkpoint-105472, T1:checkpoint-110592, T1:checkpoint-115712, T1:checkpoint-120832, T1:checkpoint-15360, T1:checkpoint-20480, T1:checkpoint-25600, T1:checkpoint-30720, T1:checkpoint-35840, T1:checkpoint-40960, T1:checkpoint-45056, T1:checkpoint-50176, T1:checkpoint-5120, T1:checkpoint-55296, T1:checkpoint-60416, T1:checkpoint-65536, T1:checkpoint-70656, T1:checkpoint-75776, T1:checkpoint-80896, T1:checkpoint-86016, T1:checkpoint-90112, and T1:checkpoint-95232. No working, best-known, or retained role is assigned because development evidence is below the human goal and the inquiry did not establish a final candidate.",
     "completed_operations": [
@@ -1960,6 +2034,21 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "86137027-8d44-451f-950e-ab2e5a1d17b0",
+    "id": "S4",
+    "inquiry_id": null,
+    "kind": "goal_review",
+    "objective": "Use the completed evidence to update the scientific direction toward the human goal. Request measurements when they resolve an uncertainty or develop the method. Then choose one outcome: request the official assessment, or open one bounded goal-linked inquiry.",
+    "operation_ids": [
+      "E6"
+    ],
+    "scientific_parent_commit": "120a65582d3ab6d758e4d4b72de7faebfd17d5a2"
+  },
   "terminal_state": null
 }
