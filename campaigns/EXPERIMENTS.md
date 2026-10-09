@@ -68,3 +68,4 @@
 | M12 | measurement | I10 | completed |
 | E41 | inquiry | I10 | completed |
 | E42 | checkpoint | I10 | checkpointed |
+| E43 | inquiry | I11 | completed |
