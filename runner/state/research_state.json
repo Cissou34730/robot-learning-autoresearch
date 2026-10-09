@@ -1522,38 +1522,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I1",
-        "outcome": "limited",
-        "reason": "M2 provides a limited attribution for I1. On the 160-episode official-distribution development panel, T1:checkpoint-120832 succeeded in 110 episodes (68.75%); 118 episodes first reached tolerance and only 8 of those failed the complete hold, while 42 episodes never reached tolerance. Radius stratification shows the dominant gap is inner-workspace acquisition and not sustained holding: success was 10/40 at 6-10 cm, 37/53 at 10-14 cm, 37/39 at 14-18 cm, and 26/28 at 18-20 cm. The result supports changing the next development route toward training coverage and acquisition for inner targets. Angle-stratified outcomes varied (32/51, 18/31, 26/40, and 34/38 across four angular bins), but radius composition is not controlled and M2 recorded no elbow-branch, terminal joint, or equivalent geometry, so branch- and angle-dependent acquisition is not resolved. M1's residual-motion concern remains physically credible but is not the leading first-policy bottleneck in this candidate. The inquiry is therefore closed with a limited conclusion, not as evidence of official-goal success or as a rejection of stabilization as a future requirement."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I1",
-        "outcome": "limited",
-        "reason": "M2 provides a limited attribution for I1. On the 160-episode official-distribution development panel, T1:checkpoint-120832 succeeded in 110 episodes (68.75%); 118 episodes first reached tolerance and only 8 of those failed the complete hold, while 42 episodes never reached tolerance. Radius stratification shows the dominant gap is inner-workspace acquisition and not sustained holding: success was 10/40 at 6-10 cm, 37/53 at 10-14 cm, 37/39 at 14-18 cm, and 26/28 at 18-20 cm. The result supports changing the next development route toward training coverage and acquisition for inner targets. Angle-stratified outcomes varied (32/51, 18/31, 26/40, and 34/38 across four angular bins), but radius composition is not controlled and M2 recorded no elbow-branch, terminal joint, or equivalent geometry, so branch- and angle-dependent acquisition is not resolved. M1's residual-motion concern remains physically credible but is not the leading first-policy bottleneck in this candidate. The inquiry is therefore closed with a limited conclusion, not as evidence of official-goal success or as a rejection of stabilization as a future requirement.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E4",
-    "inquiry_id": "I1",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "limited",
-        "reason": "M2 provides a limited attribution for I1. On the 160-episode official-distribution development panel, T1:checkpoint-120832 succeeded in 110 episodes (68.75%); 118 episodes first reached tolerance and only 8 of those failed the complete hold, while 42 episodes never reached tolerance. Radius stratification shows the dominant gap is inner-workspace acquisition and not sustained holding: success was 10/40 at 6-10 cm, 37/53 at 10-14 cm, 37/39 at 14-18 cm, and 26/28 at 18-20 cm. The result supports changing the next development route toward training coverage and acquisition for inner targets. Angle-stratified outcomes varied (32/51, 18/31, 26/40, and 34/38 across four angular bins), but radius composition is not controlled and M2 recorded no elbow-branch, terminal joint, or equivalent geometry, so branch- and angle-dependent acquisition is not resolved. M1's residual-motion concern remains physically credible but is not the leading first-policy bottleneck in this candidate. The inquiry is therefore closed with a limited conclusion, not as evidence of official-goal success or as a rejection of stabilization as a future requirement."
-      }
-    },
-    "request_fingerprint": "332e7eef659201035e12e96a806aef2bcb26eb71a8c1caa70af72faa9da301a7",
-    "session_id": "S3",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "No learned candidates exist. Working, best-known, and retained roles remain empty; no role assignment is justified by M1 or the inquiry opening.",
     "completed_operations": [
