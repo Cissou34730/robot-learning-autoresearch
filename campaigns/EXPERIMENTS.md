@@ -89,3 +89,4 @@
 | E53 | checkpoint | - | checkpointed |
 | E54 | restore_recipe | I13 | restored |
 | T15 | training | I13 | completed |
+| M19 | measurement | I13 | completed |
