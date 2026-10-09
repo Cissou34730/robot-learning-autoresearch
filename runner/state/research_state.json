@@ -4119,7 +4119,7 @@
   "counters": {
     "event": 21,
     "inquiry": 5,
-    "measurement": 8,
+    "measurement": 9,
     "session": 11,
     "training": 5
   },
@@ -9704,9 +9704,1156 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-09T14:34:11Z",
+      "error": null,
+      "id": "M9",
+      "inquiry_id": "I5",
+      "kind": "measurement",
+      "request": {
+        "description": "Mechanism diagnostics for T5 terminal and T1 reference policies over the same 160-episode official-seed panel.",
+        "measurements": [
+          {
+            "args": [
+              "--model",
+              "campaigns/checkpoints/candidates/79395c88-afcd-40f0-a644-16ca95368c28/t5/checkpoint-120832/model.zip",
+              "--artifact",
+              "campaigns/evaluations/79395c88-afcd-40f0-a644-16ca95368c28/m9-t5-policy-failure-diagnostics.json",
+              "--episodes",
+              "160",
+              "--seed",
+              "4200"
+            ],
+            "artifact": "campaigns/evaluations/79395c88-afcd-40f0-a644-16ca95368c28/m9-t5-policy-failure-diagnostics.json",
+            "instrument": "python_module",
+            "label": "T5 terminal mechanism diagnostics",
+            "module": "robot_learning.lab.diagnose_policy"
+          },
+          {
+            "args": [
+              "--model",
+              "campaigns/checkpoints/candidates/79395c88-afcd-40f0-a644-16ca95368c28/t1/checkpoint-120832/model.zip",
+              "--artifact",
+              "campaigns/evaluations/79395c88-afcd-40f0-a644-16ca95368c28/m9-t1-policy-failure-diagnostics.json",
+              "--episodes",
+              "160",
+              "--seed",
+              "4200"
+            ],
+            "artifact": "campaigns/evaluations/79395c88-afcd-40f0-a644-16ca95368c28/m9-t1-policy-failure-diagnostics.json",
+            "instrument": "python_module",
+            "label": "T1 reference mechanism diagnostics",
+            "module": "robot_learning.lab.diagnose_policy"
+          }
+        ],
+        "rationale": "M8 establishes that both T5 checkpoints underperform T1, but its recorded summary does not expose the values needed by I5's closure discriminator. Re-running the existing failure-geometry diagnostic on T5 and T1 will measure failures without first reach, nearest-branch limit margin, first-reach joint velocity, post-reach hold interruptions, and target radius/angle. Agreement with the aggregate loss plus broad positive-margin non-reaching or renewed inner-band failure will close and redirect the representation route; a different failure mix would preserve the route only as a mechanistic lead toward stabilization or branch handling."
+      },
+      "result": {
+        "measurements": [
+          {
+            "args": [
+              "--model",
+              "campaigns/checkpoints/candidates/79395c88-afcd-40f0-a644-16ca95368c28/t5/checkpoint-120832/model.zip",
+              "--artifact",
+              "campaigns/evaluations/79395c88-afcd-40f0-a644-16ca95368c28/m9-t5-policy-failure-diagnostics.json",
+              "--episodes",
+              "160",
+              "--seed",
+              "4200"
+            ],
+            "instrument": "python_module",
+            "label": "T5 terminal mechanism diagnostics",
+            "metrics": {
+              "evaluation_artifact": "campaigns/evaluations/79395c88-afcd-40f0-a644-16ca95368c28/python-module-M9-1-m9-t5-policy-failure-diagnostics.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 10,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/measurement",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/model",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/seed",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/target_radius_range_m",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/hold_steps_required",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 160,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "final_distance_cm",
+                      "first_reach_state",
+                      "first_reach_step",
+                      "hold_interruptions",
+                      "max_held_steps",
+                      "min_distance_cm",
+                      "success",
+                      "target_angle_degrees",
+                      "target_radius_cm",
+                      "terminal_state",
+                      "terminated",
+                      "truncated"
+                    ],
+                    "path": "/episode_diagnostics",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/summary",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/units",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/summary/successes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/failures",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/failures_without_first_reach",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/failures_after_first_reach",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/failure_hold_interruptions",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/units/distance",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/units/angle",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/units/joint_position",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/units/joint_velocity",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/units/time",
+                    "type": "string"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "5a18418dd66092f286796fb60d6e2282b05a2e683b4eea3d36a2e516434e7107"
+            },
+            "module": "robot_learning.lab.diagnose_policy"
+          },
+          {
+            "args": [
+              "--model",
+              "campaigns/checkpoints/candidates/79395c88-afcd-40f0-a644-16ca95368c28/t1/checkpoint-120832/model.zip",
+              "--artifact",
+              "campaigns/evaluations/79395c88-afcd-40f0-a644-16ca95368c28/m9-t1-policy-failure-diagnostics.json",
+              "--episodes",
+              "160",
+              "--seed",
+              "4200"
+            ],
+            "instrument": "python_module",
+            "label": "T1 reference mechanism diagnostics",
+            "metrics": {
+              "evaluation_artifact": "campaigns/evaluations/79395c88-afcd-40f0-a644-16ca95368c28/python-module-M9-2-m9-t1-policy-failure-diagnostics.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 10,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/measurement",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/model",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/seed",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/target_radius_range_m",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/hold_steps_required",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 160,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "final_distance_cm",
+                      "first_reach_state",
+                      "first_reach_step",
+                      "hold_interruptions",
+                      "max_held_steps",
+                      "min_distance_cm",
+                      "success",
+                      "target_angle_degrees",
+                      "target_radius_cm",
+                      "terminal_state",
+                      "terminated",
+                      "truncated"
+                    ],
+                    "path": "/episode_diagnostics",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/summary",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/units",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/summary/successes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/failures",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/failures_without_first_reach",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/failures_after_first_reach",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/failure_hold_interruptions",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/units/distance",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/units/angle",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/units/joint_position",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/units/joint_velocity",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/units/time",
+                    "type": "string"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "55101c8e0b8416728ec3776969826de2697130bd67e552e170d1c1d65ebf019d"
+            },
+            "module": "robot_learning.lab.diagnose_policy"
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": {
+          "campaign_lab_manifest": [
+            {
+              "fingerprint": "6fd6be6cec2b9ab4000129bc55647cfce26b073269a4c8b04ef312b23f33c51b",
+              "path": "robot_learning/lab/__init__.py"
+            },
+            {
+              "fingerprint": "f9fb21f3d5c867fbaaf106a0b1e35a043fee4c32f2df04df6503baef165f8552",
+              "path": "robot_learning/lab/characterize_arm.py"
+            },
+            {
+              "fingerprint": "02df6c3513935a3e004b48d280d9e1e5a9e5157b9bd8f9f0edafdb8177ab456e",
+              "path": "robot_learning/lab/diagnose_policy.py"
+            }
+          ],
+          "campaign_lab_publication": {
+            "commit": "19dadcefe7d3f34c274c94400da72b1e7c030cd0",
+            "fingerprint": "52da62ab4e02329bb962a7eedac4baef53904c5502c48b46a647f609154cbafd",
+            "manifest": [
+              {
+                "fingerprint": "6fd6be6cec2b9ab4000129bc55647cfce26b073269a4c8b04ef312b23f33c51b",
+                "path": "robot_learning/lab/__init__.py"
+              },
+              {
+                "fingerprint": "f9fb21f3d5c867fbaaf106a0b1e35a043fee4c32f2df04df6503baef165f8552",
+                "path": "robot_learning/lab/characterize_arm.py"
+              },
+              {
+                "fingerprint": "02df6c3513935a3e004b48d280d9e1e5a9e5157b9bd8f9f0edafdb8177ab456e",
+                "path": "robot_learning/lab/diagnose_policy.py"
+              }
+            ]
+          },
+          "code_parent_commit": "353799272fc0ecddb4faefbe40f38c3793d567d4",
+          "effective_parameters": {
+            "algorithm": {
+              "name": "ppo"
+            },
+            "policy": {
+              "activation": "tanh",
+              "net_arch": [
+                64,
+                64
+              ]
+            },
+            "ppo": {
+              "batch_size": 64,
+              "ent_coef": 0.01,
+              "gae_lambda": 0.95,
+              "gamma": 0.99,
+              "learning_rate": 0.0003,
+              "n_steps": 1024
+            },
+            "training": {
+              "checkpoint_every_steps": 5000,
+              "n_envs": 1
+            }
+          },
+          "module_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "02df6c3513935a3e004b48d280d9e1e5a9e5157b9bd8f9f0edafdb8177ab456e",
+              "path": "robot_learning/lab/diagnose_policy.py"
+            }
+          ],
+          "module_paths": [
+            "robot_learning/lab/diagnose_policy.py"
+          ],
+          "scientific_commit": null,
+          "scientific_manifest": [],
+          "scientific_paths": []
+        }
+      },
+      "session_id": "S11",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "evaluation_semantics": null,
+      "measurements": [
+        {
+          "args": [
+            "--model",
+            "campaigns/checkpoints/candidates/79395c88-afcd-40f0-a644-16ca95368c28/t5/checkpoint-120832/model.zip",
+            "--artifact",
+            "campaigns/evaluations/79395c88-afcd-40f0-a644-16ca95368c28/m9-t5-policy-failure-diagnostics.json",
+            "--episodes",
+            "160",
+            "--seed",
+            "4200"
+          ],
+          "artifact": "campaigns/evaluations/79395c88-afcd-40f0-a644-16ca95368c28/m9-t5-policy-failure-diagnostics.json",
+          "instrument": "python_module",
+          "label": "T5 terminal mechanism diagnostics",
+          "module": "robot_learning.lab.diagnose_policy"
+        },
+        {
+          "args": [
+            "--model",
+            "campaigns/checkpoints/candidates/79395c88-afcd-40f0-a644-16ca95368c28/t1/checkpoint-120832/model.zip",
+            "--artifact",
+            "campaigns/evaluations/79395c88-afcd-40f0-a644-16ca95368c28/m9-t1-policy-failure-diagnostics.json",
+            "--episodes",
+            "160",
+            "--seed",
+            "4200"
+          ],
+          "artifact": "campaigns/evaluations/79395c88-afcd-40f0-a644-16ca95368c28/m9-t1-policy-failure-diagnostics.json",
+          "instrument": "python_module",
+          "label": "T1 reference mechanism diagnostics",
+          "module": "robot_learning.lab.diagnose_policy"
+        }
+      ],
+      "module_provenance": {
+        "campaign_lab_manifest": [
+          {
+            "fingerprint": "6fd6be6cec2b9ab4000129bc55647cfce26b073269a4c8b04ef312b23f33c51b",
+            "path": "robot_learning/lab/__init__.py"
+          },
+          {
+            "fingerprint": "f9fb21f3d5c867fbaaf106a0b1e35a043fee4c32f2df04df6503baef165f8552",
+            "path": "robot_learning/lab/characterize_arm.py"
+          },
+          {
+            "fingerprint": "02df6c3513935a3e004b48d280d9e1e5a9e5157b9bd8f9f0edafdb8177ab456e",
+            "path": "robot_learning/lab/diagnose_policy.py"
+          }
+        ],
+        "campaign_lab_publication": {
+          "commit": "19dadcefe7d3f34c274c94400da72b1e7c030cd0",
+          "fingerprint": "52da62ab4e02329bb962a7eedac4baef53904c5502c48b46a647f609154cbafd",
+          "manifest": [
+            {
+              "fingerprint": "6fd6be6cec2b9ab4000129bc55647cfce26b073269a4c8b04ef312b23f33c51b",
+              "path": "robot_learning/lab/__init__.py"
+            },
+            {
+              "fingerprint": "f9fb21f3d5c867fbaaf106a0b1e35a043fee4c32f2df04df6503baef165f8552",
+              "path": "robot_learning/lab/characterize_arm.py"
+            },
+            {
+              "fingerprint": "02df6c3513935a3e004b48d280d9e1e5a9e5157b9bd8f9f0edafdb8177ab456e",
+              "path": "robot_learning/lab/diagnose_policy.py"
+            }
+          ]
+        },
+        "code_parent_commit": "353799272fc0ecddb4faefbe40f38c3793d567d4",
+        "effective_parameters": {
+          "algorithm": {
+            "name": "ppo"
+          },
+          "policy": {
+            "activation": "tanh",
+            "net_arch": [
+              64,
+              64
+            ]
+          },
+          "ppo": {
+            "batch_size": 64,
+            "ent_coef": 0.01,
+            "gae_lambda": 0.95,
+            "gamma": 0.99,
+            "learning_rate": 0.0003,
+            "n_steps": 1024
+          },
+          "training": {
+            "checkpoint_every_steps": 5000,
+            "n_envs": 1
+          }
+        },
+        "module_manifest": [
+          {
+            "exists": true,
+            "fingerprint": "02df6c3513935a3e004b48d280d9e1e5a9e5157b9bd8f9f0edafdb8177ab456e",
+            "path": "robot_learning/lab/diagnose_policy.py"
+          }
+        ],
+        "module_paths": [
+          "robot_learning/lab/diagnose_policy.py"
+        ],
+        "scientific_commit": null,
+        "scientific_manifest": [],
+        "scientific_paths": []
+      },
+      "paired_comparisons": [],
+      "partial_results": [
+        {
+          "args": [
+            "--model",
+            "campaigns/checkpoints/candidates/79395c88-afcd-40f0-a644-16ca95368c28/t5/checkpoint-120832/model.zip",
+            "--artifact",
+            "campaigns/evaluations/79395c88-afcd-40f0-a644-16ca95368c28/m9-t5-policy-failure-diagnostics.json",
+            "--episodes",
+            "160",
+            "--seed",
+            "4200"
+          ],
+          "instrument": "python_module",
+          "label": "T5 terminal mechanism diagnostics",
+          "metrics": {
+            "evaluation_artifact": "campaigns/evaluations/79395c88-afcd-40f0-a644-16ca95368c28/python-module-M9-1-m9-t5-policy-failure-diagnostics.json",
+            "evaluation_artifact_contents": {
+              "scope": "structure_only",
+              "sections": [
+                {
+                  "entries": 10,
+                  "path": "",
+                  "type": "object"
+                },
+                {
+                  "path": "/schema_version",
+                  "type": "number"
+                },
+                {
+                  "path": "/measurement",
+                  "type": "string"
+                },
+                {
+                  "path": "/model",
+                  "type": "string"
+                },
+                {
+                  "path": "/episodes",
+                  "type": "number"
+                },
+                {
+                  "path": "/seed",
+                  "type": "number"
+                },
+                {
+                  "entries": 2,
+                  "path": "/target_radius_range_m",
+                  "type": "array"
+                },
+                {
+                  "path": "/hold_steps_required",
+                  "type": "number"
+                },
+                {
+                  "entries": 160,
+                  "field_names": [
+                    "episode",
+                    "episode_seed",
+                    "final_distance_cm",
+                    "first_reach_state",
+                    "first_reach_step",
+                    "hold_interruptions",
+                    "max_held_steps",
+                    "min_distance_cm",
+                    "success",
+                    "target_angle_degrees",
+                    "target_radius_cm",
+                    "terminal_state",
+                    "terminated",
+                    "truncated"
+                  ],
+                  "path": "/episode_diagnostics",
+                  "type": "array"
+                },
+                {
+                  "entries": 5,
+                  "path": "/summary",
+                  "type": "object"
+                },
+                {
+                  "entries": 5,
+                  "path": "/units",
+                  "type": "object"
+                },
+                {
+                  "path": "/summary/successes",
+                  "type": "number"
+                },
+                {
+                  "path": "/summary/failures",
+                  "type": "number"
+                },
+                {
+                  "path": "/summary/failures_without_first_reach",
+                  "type": "number"
+                },
+                {
+                  "path": "/summary/failures_after_first_reach",
+                  "type": "number"
+                },
+                {
+                  "path": "/summary/failure_hold_interruptions",
+                  "type": "number"
+                },
+                {
+                  "path": "/units/distance",
+                  "type": "string"
+                },
+                {
+                  "path": "/units/angle",
+                  "type": "string"
+                },
+                {
+                  "path": "/units/joint_position",
+                  "type": "string"
+                },
+                {
+                  "path": "/units/joint_velocity",
+                  "type": "string"
+                },
+                {
+                  "path": "/units/time",
+                  "type": "string"
+                }
+              ],
+              "truncated": false
+            },
+            "evaluation_artifact_fingerprint": "5a18418dd66092f286796fb60d6e2282b05a2e683b4eea3d36a2e516434e7107"
+          },
+          "module": "robot_learning.lab.diagnose_policy"
+        },
+        {
+          "args": [
+            "--model",
+            "campaigns/checkpoints/candidates/79395c88-afcd-40f0-a644-16ca95368c28/t1/checkpoint-120832/model.zip",
+            "--artifact",
+            "campaigns/evaluations/79395c88-afcd-40f0-a644-16ca95368c28/m9-t1-policy-failure-diagnostics.json",
+            "--episodes",
+            "160",
+            "--seed",
+            "4200"
+          ],
+          "instrument": "python_module",
+          "label": "T1 reference mechanism diagnostics",
+          "metrics": {
+            "evaluation_artifact": "campaigns/evaluations/79395c88-afcd-40f0-a644-16ca95368c28/python-module-M9-2-m9-t1-policy-failure-diagnostics.json",
+            "evaluation_artifact_contents": {
+              "scope": "structure_only",
+              "sections": [
+                {
+                  "entries": 10,
+                  "path": "",
+                  "type": "object"
+                },
+                {
+                  "path": "/schema_version",
+                  "type": "number"
+                },
+                {
+                  "path": "/measurement",
+                  "type": "string"
+                },
+                {
+                  "path": "/model",
+                  "type": "string"
+                },
+                {
+                  "path": "/episodes",
+                  "type": "number"
+                },
+                {
+                  "path": "/seed",
+                  "type": "number"
+                },
+                {
+                  "entries": 2,
+                  "path": "/target_radius_range_m",
+                  "type": "array"
+                },
+                {
+                  "path": "/hold_steps_required",
+                  "type": "number"
+                },
+                {
+                  "entries": 160,
+                  "field_names": [
+                    "episode",
+                    "episode_seed",
+                    "final_distance_cm",
+                    "first_reach_state",
+                    "first_reach_step",
+                    "hold_interruptions",
+                    "max_held_steps",
+                    "min_distance_cm",
+                    "success",
+                    "target_angle_degrees",
+                    "target_radius_cm",
+                    "terminal_state",
+                    "terminated",
+                    "truncated"
+                  ],
+                  "path": "/episode_diagnostics",
+                  "type": "array"
+                },
+                {
+                  "entries": 5,
+                  "path": "/summary",
+                  "type": "object"
+                },
+                {
+                  "entries": 5,
+                  "path": "/units",
+                  "type": "object"
+                },
+                {
+                  "path": "/summary/successes",
+                  "type": "number"
+                },
+                {
+                  "path": "/summary/failures",
+                  "type": "number"
+                },
+                {
+                  "path": "/summary/failures_without_first_reach",
+                  "type": "number"
+                },
+                {
+                  "path": "/summary/failures_after_first_reach",
+                  "type": "number"
+                },
+                {
+                  "path": "/summary/failure_hold_interruptions",
+                  "type": "number"
+                },
+                {
+                  "path": "/units/distance",
+                  "type": "string"
+                },
+                {
+                  "path": "/units/angle",
+                  "type": "string"
+                },
+                {
+                  "path": "/units/joint_position",
+                  "type": "string"
+                },
+                {
+                  "path": "/units/joint_velocity",
+                  "type": "string"
+                },
+                {
+                  "path": "/units/time",
+                  "type": "string"
+                }
+              ],
+              "truncated": false
+            },
+            "evaluation_artifact_fingerprint": "55101c8e0b8416728ec3776969826de2697130bd67e552e170d1c1d65ebf019d"
+          },
+          "module": "robot_learning.lab.diagnose_policy"
+        }
+      ],
+      "result": {
+        "measurements": [
+          {
+            "args": [
+              "--model",
+              "campaigns/checkpoints/candidates/79395c88-afcd-40f0-a644-16ca95368c28/t5/checkpoint-120832/model.zip",
+              "--artifact",
+              "campaigns/evaluations/79395c88-afcd-40f0-a644-16ca95368c28/m9-t5-policy-failure-diagnostics.json",
+              "--episodes",
+              "160",
+              "--seed",
+              "4200"
+            ],
+            "instrument": "python_module",
+            "label": "T5 terminal mechanism diagnostics",
+            "metrics": {
+              "evaluation_artifact": "campaigns/evaluations/79395c88-afcd-40f0-a644-16ca95368c28/python-module-M9-1-m9-t5-policy-failure-diagnostics.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 10,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/measurement",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/model",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/seed",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/target_radius_range_m",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/hold_steps_required",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 160,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "final_distance_cm",
+                      "first_reach_state",
+                      "first_reach_step",
+                      "hold_interruptions",
+                      "max_held_steps",
+                      "min_distance_cm",
+                      "success",
+                      "target_angle_degrees",
+                      "target_radius_cm",
+                      "terminal_state",
+                      "terminated",
+                      "truncated"
+                    ],
+                    "path": "/episode_diagnostics",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/summary",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/units",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/summary/successes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/failures",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/failures_without_first_reach",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/failures_after_first_reach",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/failure_hold_interruptions",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/units/distance",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/units/angle",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/units/joint_position",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/units/joint_velocity",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/units/time",
+                    "type": "string"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "5a18418dd66092f286796fb60d6e2282b05a2e683b4eea3d36a2e516434e7107"
+            },
+            "module": "robot_learning.lab.diagnose_policy"
+          },
+          {
+            "args": [
+              "--model",
+              "campaigns/checkpoints/candidates/79395c88-afcd-40f0-a644-16ca95368c28/t1/checkpoint-120832/model.zip",
+              "--artifact",
+              "campaigns/evaluations/79395c88-afcd-40f0-a644-16ca95368c28/m9-t1-policy-failure-diagnostics.json",
+              "--episodes",
+              "160",
+              "--seed",
+              "4200"
+            ],
+            "instrument": "python_module",
+            "label": "T1 reference mechanism diagnostics",
+            "metrics": {
+              "evaluation_artifact": "campaigns/evaluations/79395c88-afcd-40f0-a644-16ca95368c28/python-module-M9-2-m9-t1-policy-failure-diagnostics.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 10,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/measurement",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/model",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/seed",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/target_radius_range_m",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/hold_steps_required",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 160,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "final_distance_cm",
+                      "first_reach_state",
+                      "first_reach_step",
+                      "hold_interruptions",
+                      "max_held_steps",
+                      "min_distance_cm",
+                      "success",
+                      "target_angle_degrees",
+                      "target_radius_cm",
+                      "terminal_state",
+                      "terminated",
+                      "truncated"
+                    ],
+                    "path": "/episode_diagnostics",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/summary",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/units",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/summary/successes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/failures",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/failures_without_first_reach",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/failures_after_first_reach",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/summary/failure_hold_interruptions",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/units/distance",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/units/angle",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/units/joint_position",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/units/joint_velocity",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/units/time",
+                    "type": "string"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "55101c8e0b8416728ec3776969826de2697130bd67e552e170d1c1d65ebf019d"
+            },
+            "module": "robot_learning.lab.diagnose_policy"
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": {
+          "campaign_lab_manifest": [
+            {
+              "fingerprint": "6fd6be6cec2b9ab4000129bc55647cfce26b073269a4c8b04ef312b23f33c51b",
+              "path": "robot_learning/lab/__init__.py"
+            },
+            {
+              "fingerprint": "f9fb21f3d5c867fbaaf106a0b1e35a043fee4c32f2df04df6503baef165f8552",
+              "path": "robot_learning/lab/characterize_arm.py"
+            },
+            {
+              "fingerprint": "02df6c3513935a3e004b48d280d9e1e5a9e5157b9bd8f9f0edafdb8177ab456e",
+              "path": "robot_learning/lab/diagnose_policy.py"
+            }
+          ],
+          "campaign_lab_publication": {
+            "commit": "19dadcefe7d3f34c274c94400da72b1e7c030cd0",
+            "fingerprint": "52da62ab4e02329bb962a7eedac4baef53904c5502c48b46a647f609154cbafd",
+            "manifest": [
+              {
+                "fingerprint": "6fd6be6cec2b9ab4000129bc55647cfce26b073269a4c8b04ef312b23f33c51b",
+                "path": "robot_learning/lab/__init__.py"
+              },
+              {
+                "fingerprint": "f9fb21f3d5c867fbaaf106a0b1e35a043fee4c32f2df04df6503baef165f8552",
+                "path": "robot_learning/lab/characterize_arm.py"
+              },
+              {
+                "fingerprint": "02df6c3513935a3e004b48d280d9e1e5a9e5157b9bd8f9f0edafdb8177ab456e",
+                "path": "robot_learning/lab/diagnose_policy.py"
+              }
+            ]
+          },
+          "code_parent_commit": "353799272fc0ecddb4faefbe40f38c3793d567d4",
+          "effective_parameters": {
+            "algorithm": {
+              "name": "ppo"
+            },
+            "policy": {
+              "activation": "tanh",
+              "net_arch": [
+                64,
+                64
+              ]
+            },
+            "ppo": {
+              "batch_size": 64,
+              "ent_coef": 0.01,
+              "gae_lambda": 0.95,
+              "gamma": 0.99,
+              "learning_rate": 0.0003,
+              "n_steps": 1024
+            },
+            "training": {
+              "checkpoint_every_steps": 5000,
+              "n_envs": 1
+            }
+          },
+          "module_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "02df6c3513935a3e004b48d280d9e1e5a9e5157b9bd8f9f0edafdb8177ab456e",
+              "path": "robot_learning/lab/diagnose_policy.py"
+            }
+          ],
+          "module_paths": [
+            "robot_learning/lab/diagnose_policy.py"
+          ],
+          "scientific_commit": null,
+          "scientific_manifest": [],
+          "scientific_paths": []
+        }
+      },
+      "task_reference_contract": null
+    },
+    "failure": null,
+    "id": "M9",
+    "inquiry_id": "I5",
+    "kind": "measurement",
+    "progress": "completed",
+    "request": {
+      "measurement": {
+        "description": "Mechanism diagnostics for T5 terminal and T1 reference policies over the same 160-episode official-seed panel.",
+        "measurements": [
+          {
+            "args": [
+              "--model",
+              "campaigns/checkpoints/candidates/79395c88-afcd-40f0-a644-16ca95368c28/t5/checkpoint-120832/model.zip",
+              "--artifact",
+              "campaigns/evaluations/79395c88-afcd-40f0-a644-16ca95368c28/m9-t5-policy-failure-diagnostics.json",
+              "--episodes",
+              "160",
+              "--seed",
+              "4200"
+            ],
+            "artifact": "campaigns/evaluations/79395c88-afcd-40f0-a644-16ca95368c28/m9-t5-policy-failure-diagnostics.json",
+            "instrument": "python_module",
+            "label": "T5 terminal mechanism diagnostics",
+            "module": "robot_learning.lab.diagnose_policy"
+          },
+          {
+            "args": [
+              "--model",
+              "campaigns/checkpoints/candidates/79395c88-afcd-40f0-a644-16ca95368c28/t1/checkpoint-120832/model.zip",
+              "--artifact",
+              "campaigns/evaluations/79395c88-afcd-40f0-a644-16ca95368c28/m9-t1-policy-failure-diagnostics.json",
+              "--episodes",
+              "160",
+              "--seed",
+              "4200"
+            ],
+            "artifact": "campaigns/evaluations/79395c88-afcd-40f0-a644-16ca95368c28/m9-t1-policy-failure-diagnostics.json",
+            "instrument": "python_module",
+            "label": "T1 reference mechanism diagnostics",
+            "module": "robot_learning.lab.diagnose_policy"
+          }
+        ],
+        "rationale": "M8 establishes that both T5 checkpoints underperform T1, but its recorded summary does not expose the values needed by I5's closure discriminator. Re-running the existing failure-geometry diagnostic on T5 and T1 will measure failures without first reach, nearest-branch limit margin, first-reach joint velocity, post-reach hold interruptions, and target radius/angle. Agreement with the aggregate loss plus broad positive-margin non-reaching or renewed inner-band failure will close and redirect the representation route; a different failure mix would preserve the route only as a mechanistic lead toward stabilization or branch handling."
+      }
+    },
+    "request_fingerprint": "f0aaf077d548921adaf5372c51f85a2b2fb47f6fa73112f0201ef7d94d911ae8",
+    "session_id": "S11",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T1:checkpoint-120832 remains the strongest measured development candidate at 93.75% with 40/40 inner-band successes, but has no assigned working, best-known, or retained role because it is below the goal and lacks a protected assessment. T2:checkpoint-120832, T3:checkpoint-120832, and T4:checkpoint-120832 remain rejected as viable routes based on their paired development results and diagnostics. No candidate has a role.",
     "completed_operations": [
@@ -9758,7 +10905,8 @@
     "operation_ids": [
       "E21",
       "T5",
-      "M8"
+      "M8",
+      "M9"
     ],
     "scientific_parent_commit": "353799272fc0ecddb4faefbe40f38c3793d567d4"
   },
