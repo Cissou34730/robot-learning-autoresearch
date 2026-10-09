@@ -9565,38 +9565,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I6",
-        "outcome": "negative, intervention-limited result",
-        "reason": "M7 evaluated the explicit branch-feasibility-conditioned T7 transfer policy against T3 on the same 160-seed panel. T7 achieved 95.0 percent success (152/160) versus T3's 95.625 percent (153/160), with one discordant episode and no candidate win. The residual -130 to -150 degree failures persisted, T7 added a failure near -52 degrees, first-reach coverage fell from 157/160 to 156/160, and hold interruptions rose from 4 to 13. This tested representation therefore failed the closure criterion and broadly regressed interruption behavior. The result rejects this feature and training recipe as sufficient; it does not establish that branch conditioning, action redesign, or terminal control generally cannot improve the human-goal gap."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I6",
-        "outcome": "negative, intervention-limited result",
-        "reason": "M7 evaluated the explicit branch-feasibility-conditioned T7 transfer policy against T3 on the same 160-seed panel. T7 achieved 95.0 percent success (152/160) versus T3's 95.625 percent (153/160), with one discordant episode and no candidate win. The residual -130 to -150 degree failures persisted, T7 added a failure near -52 degrees, first-reach coverage fell from 157/160 to 156/160, and hold interruptions rose from 4 to 13. This tested representation therefore failed the closure criterion and broadly regressed interruption behavior. The result rejects this feature and training recipe as sufficient; it does not establish that branch conditioning, action redesign, or terminal control generally cannot improve the human-goal gap.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E24",
-    "inquiry_id": "I6",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "negative, intervention-limited result",
-        "reason": "M7 evaluated the explicit branch-feasibility-conditioned T7 transfer policy against T3 on the same 160-seed panel. T7 achieved 95.0 percent success (152/160) versus T3's 95.625 percent (153/160), with one discordant episode and no candidate win. The residual -130 to -150 degree failures persisted, T7 added a failure near -52 degrees, first-reach coverage fell from 157/160 to 156/160, and hold interruptions rose from 4 to 13. This tested representation therefore failed the closure criterion and broadly regressed interruption behavior. The result rejects this feature and training recipe as sufficient; it does not establish that branch conditioning, action redesign, or terminal control generally cannot improve the human-goal gap."
-      }
-    },
-    "request_fingerprint": "1898e6a24614fc81f63782bc2e4fbd1d9c0cfc47e330302364503e5e33e28478",
-    "session_id": "S13",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T3:checkpoint-120832 remains the strongest measured development candidate at 95.625 percent on M4 and M6. T6:checkpoint-120832 is an intervention-limited null matching T3 with zero discordant episodes. Neither candidate has a working, best-known, or retained role.",
     "completed_operations": [
