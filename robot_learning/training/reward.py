@@ -23,6 +23,9 @@ HOLD_EXIT_FORFEIT_FRACTION = 1.0
 OUTSIDE_BAND_WIDTH = 0.01
 OUTSIDE_BAND_PENALTY = 0.1
 HOLD_COMPLETE_BONUS = 50.0
+ARRIVAL_SPEED_BAND = 0.04
+ARRIVAL_SPEED_THRESHOLD = 1.5
+ARRIVAL_SPEED_PENALTY = 0.08
 
 
 @dataclass(frozen=True)
@@ -53,6 +56,7 @@ def reach_reward(
     previous_held_steps: int = 0,
     hold_steps_required: int = 100,
     penalize_outside: bool = False,
+    joint_velocity: np.ndarray | None = None,
 ) -> RewardResult:
     progress = PROGRESS_COEFFICIENT * (previous_distance - current_distance)
     reward = progress
@@ -85,6 +89,23 @@ def reach_reward(
         outside_band = -(OUTSIDE_BAND_PENALTY * outside_fraction)
     reward += outside_band
 
+    arrival_speed = 0.0
+    if joint_velocity is not None and current_distance < ARRIVAL_SPEED_BAND:
+        proximity = np.clip(
+            (ARRIVAL_SPEED_BAND - current_distance)
+            / (ARRIVAL_SPEED_BAND - success_threshold),
+            0.0,
+            1.0,
+        )
+        speed_excess = max(
+            float(np.linalg.norm(joint_velocity)) - ARRIVAL_SPEED_THRESHOLD,
+            0.0,
+        )
+        arrival_speed = -(
+            ARRIVAL_SPEED_PENALTY * float(proximity) * speed_excess**2
+        )
+    reward += arrival_speed
+
     hold_complete = 0.0
     if held_steps >= hold_steps_required and previous_held_steps < hold_steps_required:
         hold_complete = HOLD_COMPLETE_BONUS
@@ -102,6 +123,7 @@ def reach_reward(
             "closeness": float(closeness),
             "hold_progress": float(hold_progress),
             "outside_band": float(outside_band),
+            "arrival_speed": float(arrival_speed),
             "hold_complete": float(hold_complete),
             "action_cost": float(action_cost),
         },

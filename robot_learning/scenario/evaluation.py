@@ -49,8 +49,10 @@ def evaluate_research_model(
         terminated = False
         truncated = False
         min_distance_cm = float("inf")
+        closest_approach_joint_speed_rad_s: float | None = None
         final_distance_cm = float("nan")
         first_reach_step: int | None = None
+        first_reach_joint_speed_rad_s: float | None = None
         max_held_steps = 0
         in_tolerance_steps = 0
         hold_interruptions = 0
@@ -62,13 +64,20 @@ def evaluate_research_model(
             reward_total += float(reward)
             distance_cm = 100.0 * float(info["distance"])
             held_steps = int(info.get("held_steps", 0))
-            min_distance_cm = min(min_distance_cm, distance_cm)
+            if distance_cm < min_distance_cm:
+                min_distance_cm = distance_cm
+                closest_approach_joint_speed_rad_s = float(
+                    np.linalg.norm(env.data.qvel)
+                )
             final_distance_cm = distance_cm
             max_held_steps = max(max_held_steps, held_steps)
             if held_steps > 0:
                 in_tolerance_steps += 1
                 if first_reach_step is None:
                     first_reach_step = steps
+                    first_reach_joint_speed_rad_s = float(
+                        np.linalg.norm(env.data.qvel)
+                    )
             elif was_in_tolerance:
                 hold_interruptions += 1
             was_in_tolerance = held_steps > 0
@@ -98,8 +107,12 @@ def evaluate_research_model(
                     np.degrees(np.arctan2(target_position[1], target_position[0]))
                 ),
                 "min_distance_cm": min_distance_cm,
+                "closest_approach_joint_speed_rad_s": (
+                    closest_approach_joint_speed_rad_s
+                ),
                 "final_distance_cm": final_distance_cm,
                 "first_reach_step": first_reach_step,
+                "first_reach_joint_speed_rad_s": first_reach_joint_speed_rad_s,
                 "max_held_steps": max_held_steps,
                 "in_tolerance_steps": in_tolerance_steps,
                 "hold_interruptions": hold_interruptions,
