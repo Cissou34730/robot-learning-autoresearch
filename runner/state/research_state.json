@@ -8383,38 +8383,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I4",
-        "outcome": "resolved_limited",
-        "reason": "M5 met the I4 closure condition with a paired 160-episode comparison and complete required diagnostics. The isolated action-change regularizer reduced total hold interruptions from 789 to 1 and reduced entered-episode interruption burden from 6.02 to 0.009 per entered episode, but it reduced overall success from 126/160 to 110/160, inner-radius success from 67/93 to 62/93, outer-radius success from 59/67 to 48/67, and entries from 131 to 111. Conditional entered success was 110/111 versus 126/131, so the recipe improved stability conditional on entry but lost reach and did not recover outer-radius performance. Entry speed also increased from 0.459 to 0.935 cm/control-step, while branch-error and joint-limit diagnostics were comparable. This establishes a recipe-specific stability-versus-reach tradeoff, not that action smoothness or stabilization is ineffective in general. I4 closes with balance redesign required and the broader mechanism uncertainty preserved."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I4",
-        "outcome": "resolved_limited",
-        "reason": "M5 met the I4 closure condition with a paired 160-episode comparison and complete required diagnostics. The isolated action-change regularizer reduced total hold interruptions from 789 to 1 and reduced entered-episode interruption burden from 6.02 to 0.009 per entered episode, but it reduced overall success from 126/160 to 110/160, inner-radius success from 67/93 to 62/93, outer-radius success from 59/67 to 48/67, and entries from 131 to 111. Conditional entered success was 110/111 versus 126/131, so the recipe improved stability conditional on entry but lost reach and did not recover outer-radius performance. Entry speed also increased from 0.459 to 0.935 cm/control-step, while branch-error and joint-limit diagnostics were comparable. This establishes a recipe-specific stability-versus-reach tradeoff, not that action smoothness or stabilization is ineffective in general. I4 closes with balance redesign required and the broader mechanism uncertainty preserved.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E16",
-    "inquiry_id": "I4",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "resolved_limited",
-        "reason": "M5 met the I4 closure condition with a paired 160-episode comparison and complete required diagnostics. The isolated action-change regularizer reduced total hold interruptions from 789 to 1 and reduced entered-episode interruption burden from 6.02 to 0.009 per entered episode, but it reduced overall success from 126/160 to 110/160, inner-radius success from 67/93 to 62/93, outer-radius success from 59/67 to 48/67, and entries from 131 to 111. Conditional entered success was 110/111 versus 126/131, so the recipe improved stability conditional on entry but lost reach and did not recover outer-radius performance. Entry speed also increased from 0.459 to 0.935 cm/control-step, while branch-error and joint-limit diagnostics were comparable. This establishes a recipe-specific stability-versus-reach tradeoff, not that action smoothness or stabilization is ineffective in general. I4 closes with balance redesign required and the broader mechanism uncertainty preserved."
-      }
-    },
-    "request_fingerprint": "37348e7c98427a98cfd3ae22ebf6f83edf0d2ce45d3e810bedc3ff52cdb3f3ac",
-    "session_id": "S9",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T2:checkpoint-120832 remains the strongest measured development candidate and the reference for I4 at 126/160, but no candidate has a working, best-known, or retained role because development evidence remains below the human goal. T3:checkpoint-70656 and T3:checkpoint-120832 are not role candidates after their severe paired losses against T2. T1:checkpoint-120832 remains the earlier paired baseline at 110/160.",
     "completed_operations": [
