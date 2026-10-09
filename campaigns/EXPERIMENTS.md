@@ -6,3 +6,4 @@
 | M2 | measurement | - | failed |
 | M3 | measurement | - | failed |
 | M4 | measurement | - | failed |
+| M5 | measurement | - | completed |

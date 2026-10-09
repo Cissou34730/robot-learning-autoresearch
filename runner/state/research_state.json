@@ -18,7 +18,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "fresh campaign initialized; scientific model pending",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -149,6 +149,411 @@
       "status": "failed",
       "superseded_by": "M5",
       "supersedes": "M3"
+    },
+    {
+      "completed_at": "2026-10-09T08:23:01Z",
+      "error": null,
+      "id": "M5",
+      "inquiry_id": null,
+      "kind": "measurement",
+      "request": {
+        "description": "Repeat the compiled MuJoCo dynamics, constrained inverse-kinematics coverage, Jacobian conditioning, and action/braking response characterization after normalizing the NumPy IK feasibility flag for JSON serialization.",
+        "measurements": [
+          {
+            "args": [
+              "--artifact",
+              "campaigns\\evaluations\\58dcd817-4fed-42e6-854b-58f20408e6a1\\dynamics_probe.json"
+            ],
+            "artifact": "campaigns\\evaluations\\58dcd817-4fed-42e6-854b-58f20408e6a1\\dynamics_probe.json",
+            "instrument": "python_module",
+            "label": "repaired dynamics characterization serialization",
+            "module": "robot_learning.lab.dynamics_probe"
+          }
+        ],
+        "rationale": "M4 reached the final artifact write but failed because a NumPy boolean was not JSON serializable. No accepted artifact or scientific evidence resulted. The corrected probe preserves the original decision test: complete IK coverage would rule out workspace impossibility, while compiled inertial quantities and reset/representative action responses determine whether the first learning direction should prioritize transient capture, braking and hold regulation, or official inner-radius coverage."
+      },
+      "result": {
+        "measurements": [
+          {
+            "args": [
+              "--artifact",
+              "campaigns\\evaluations\\58dcd817-4fed-42e6-854b-58f20408e6a1\\dynamics_probe.json"
+            ],
+            "instrument": "python_module",
+            "label": "repaired dynamics characterization serialization",
+            "metrics": {
+              "evaluation_artifact": "campaigns/evaluations/58dcd817-4fed-42e6-854b-58f20408e6a1/python-module-M5-1-dynamics_probe.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 8,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/measurement",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 10,
+                    "path": "/model",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/constrained_ik",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/configurations",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/mass_matrix_by_configuration",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/jacobian_by_configuration",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 8,
+                    "field_names": [
+                      "configuration",
+                      "response"
+                    ],
+                    "path": "/response_trials",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/model/timestep_s",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/model/control_period_s",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/model/nq",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/model/nv",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/model/body_mass_kg",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/model/body_inertia",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/model/joint_damping",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/model/joint_armature",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/model/actuator_gear",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/model/actuator_ctrlrange",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/constrained_ik/sample_count",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/constrained_ik/feasible_counts",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/constrained_ik/feasible_fractions",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 576,
+                    "field_names": [
+                      "angle_degrees",
+                      "branches",
+                      "radius_m"
+                    ],
+                    "path": "/constrained_ik/samples",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 1,
+                    "path": "/configurations/reset_singularity",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 1,
+                    "path": "/configurations/representative_radius_0.08",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 1,
+                    "path": "/configurations/representative_radius_0.14",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 1,
+                    "path": "/configurations/representative_radius_0.20",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 1,
+                    "path": "/configurations/elbow_quarter_turn",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/mass_matrix_by_configuration/reset_singularity",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/mass_matrix_by_configuration/representative_radius_0.08",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/mass_matrix_by_configuration/representative_radius_0.14",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/mass_matrix_by_configuration/representative_radius_0.20",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/mass_matrix_by_configuration/elbow_quarter_turn",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/jacobian_by_configuration/reset_singularity",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/jacobian_by_configuration/representative_radius_0.08",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/jacobian_by_configuration/representative_radius_0.14",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/jacobian_by_configuration/representative_radius_0.20",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/jacobian_by_configuration/elbow_quarter_turn",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/model/body_mass_kg/world",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/model/body_mass_kg/base",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/model/body_mass_kg/upper_arm",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/model/body_mass_kg/forearm",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/model/body_mass_kg/target",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/model/body_inertia/world",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/model/body_inertia/base",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/model/body_inertia/upper_arm",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/model/body_inertia/forearm",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/model/body_inertia/target",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/model/joint_damping/shoulder",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/model/joint_damping/elbow",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/model/joint_armature/shoulder",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/model/joint_armature/elbow",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 6,
+                    "path": "/model/actuator_gear/0",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 6,
+                    "path": "/model/actuator_gear/1",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/model/actuator_ctrlrange/0",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/model/actuator_ctrlrange/1",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/constrained_ik/feasible_counts/open",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/constrained_ik/feasible_counts/folded",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/constrained_ik/feasible_counts/any",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/constrained_ik/feasible_fractions/open",
+                    "type": "number"
+                  }
+                ],
+                "truncated": true
+              },
+              "evaluation_artifact_fingerprint": "1872f2a993931e409a04bf1c470d9005e090d3e996df494e4f334a3fb210c586"
+            },
+            "module": "robot_learning.lab.dynamics_probe"
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": {
+          "campaign_lab_manifest": [
+            {
+              "fingerprint": "af534c4e6e994351ed9b87e4830b9460ccb82b1182319ba160beaf485634f47d",
+              "path": "robot_learning/lab/__init__.py"
+            },
+            {
+              "fingerprint": "f3380b5d16b0bd138f18555c3cc6f1f5de9984bfdbe8579eff7b0b4e4560f437",
+              "path": "robot_learning/lab/dynamics_probe.py"
+            }
+          ],
+          "campaign_lab_publication": {
+            "commit": "d7b1861379c3dad369e8dac0636eca34dbcb976d",
+            "fingerprint": "574a6aa4c209569c5b203ceee38fbe5568d21a5fdd28170b4773a672afee8db8",
+            "manifest": [
+              {
+                "fingerprint": "af534c4e6e994351ed9b87e4830b9460ccb82b1182319ba160beaf485634f47d",
+                "path": "robot_learning/lab/__init__.py"
+              },
+              {
+                "fingerprint": "f3380b5d16b0bd138f18555c3cc6f1f5de9984bfdbe8579eff7b0b4e4560f437",
+                "path": "robot_learning/lab/dynamics_probe.py"
+              }
+            ]
+          },
+          "code_parent_commit": "71e1429e83ac73bc7e4e7f4da38075cef1e81416",
+          "effective_parameters": {
+            "algorithm": {
+              "name": "ppo"
+            },
+            "policy": {
+              "activation": "tanh",
+              "net_arch": [
+                64,
+                64
+              ]
+            },
+            "ppo": {
+              "batch_size": 64,
+              "ent_coef": 0.01,
+              "gae_lambda": 0.95,
+              "gamma": 0.99,
+              "learning_rate": 0.0003,
+              "n_steps": 1024
+            },
+            "training": {
+              "checkpoint_every_steps": 5000,
+              "n_envs": 1
+            }
+          },
+          "module_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "f3380b5d16b0bd138f18555c3cc6f1f5de9984bfdbe8579eff7b0b4e4560f437",
+              "path": "robot_learning/lab/dynamics_probe.py"
+            }
+          ],
+          "module_paths": [
+            "robot_learning/lab/dynamics_probe.py"
+          ],
+          "scientific_commit": null,
+          "scientific_manifest": [],
+          "scientific_paths": []
+        }
+      },
+      "session_id": "S1",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": "M4"
     }
   ],
   "pending_operation": {
@@ -177,7 +582,20 @@
             "path": "robot_learning/lab/dynamics_probe.py"
           }
         ],
-        "campaign_lab_publication": null,
+        "campaign_lab_publication": {
+          "commit": "d7b1861379c3dad369e8dac0636eca34dbcb976d",
+          "fingerprint": "574a6aa4c209569c5b203ceee38fbe5568d21a5fdd28170b4773a672afee8db8",
+          "manifest": [
+            {
+              "fingerprint": "af534c4e6e994351ed9b87e4830b9460ccb82b1182319ba160beaf485634f47d",
+              "path": "robot_learning/lab/__init__.py"
+            },
+            {
+              "fingerprint": "f3380b5d16b0bd138f18555c3cc6f1f5de9984bfdbe8579eff7b0b4e4560f437",
+              "path": "robot_learning/lab/dynamics_probe.py"
+            }
+          ]
+        },
         "code_parent_commit": "71e1429e83ac73bc7e4e7f4da38075cef1e81416",
         "effective_parameters": {
           "algorithm": {
@@ -218,15 +636,701 @@
         "scientific_paths": []
       },
       "paired_comparisons": [],
-      "partial_results": [],
-      "result": null,
+      "partial_results": [
+        {
+          "args": [
+            "--artifact",
+            "campaigns\\evaluations\\58dcd817-4fed-42e6-854b-58f20408e6a1\\dynamics_probe.json"
+          ],
+          "instrument": "python_module",
+          "label": "repaired dynamics characterization serialization",
+          "metrics": {
+            "evaluation_artifact": "campaigns/evaluations/58dcd817-4fed-42e6-854b-58f20408e6a1/python-module-M5-1-dynamics_probe.json",
+            "evaluation_artifact_contents": {
+              "scope": "structure_only",
+              "sections": [
+                {
+                  "entries": 8,
+                  "path": "",
+                  "type": "object"
+                },
+                {
+                  "path": "/schema_version",
+                  "type": "number"
+                },
+                {
+                  "path": "/measurement",
+                  "type": "string"
+                },
+                {
+                  "entries": 10,
+                  "path": "/model",
+                  "type": "object"
+                },
+                {
+                  "entries": 4,
+                  "path": "/constrained_ik",
+                  "type": "object"
+                },
+                {
+                  "entries": 5,
+                  "path": "/configurations",
+                  "type": "object"
+                },
+                {
+                  "entries": 5,
+                  "path": "/mass_matrix_by_configuration",
+                  "type": "object"
+                },
+                {
+                  "entries": 5,
+                  "path": "/jacobian_by_configuration",
+                  "type": "object"
+                },
+                {
+                  "entries": 8,
+                  "field_names": [
+                    "configuration",
+                    "response"
+                  ],
+                  "path": "/response_trials",
+                  "type": "array"
+                },
+                {
+                  "path": "/model/timestep_s",
+                  "type": "number"
+                },
+                {
+                  "path": "/model/control_period_s",
+                  "type": "number"
+                },
+                {
+                  "path": "/model/nq",
+                  "type": "number"
+                },
+                {
+                  "path": "/model/nv",
+                  "type": "number"
+                },
+                {
+                  "entries": 5,
+                  "path": "/model/body_mass_kg",
+                  "type": "object"
+                },
+                {
+                  "entries": 5,
+                  "path": "/model/body_inertia",
+                  "type": "object"
+                },
+                {
+                  "entries": 2,
+                  "path": "/model/joint_damping",
+                  "type": "object"
+                },
+                {
+                  "entries": 2,
+                  "path": "/model/joint_armature",
+                  "type": "object"
+                },
+                {
+                  "entries": 2,
+                  "path": "/model/actuator_gear",
+                  "type": "object"
+                },
+                {
+                  "entries": 2,
+                  "path": "/model/actuator_ctrlrange",
+                  "type": "object"
+                },
+                {
+                  "path": "/constrained_ik/sample_count",
+                  "type": "number"
+                },
+                {
+                  "entries": 3,
+                  "path": "/constrained_ik/feasible_counts",
+                  "type": "object"
+                },
+                {
+                  "entries": 3,
+                  "path": "/constrained_ik/feasible_fractions",
+                  "type": "object"
+                },
+                {
+                  "entries": 576,
+                  "field_names": [
+                    "angle_degrees",
+                    "branches",
+                    "radius_m"
+                  ],
+                  "path": "/constrained_ik/samples",
+                  "type": "array"
+                },
+                {
+                  "entries": 1,
+                  "path": "/configurations/reset_singularity",
+                  "type": "object"
+                },
+                {
+                  "entries": 1,
+                  "path": "/configurations/representative_radius_0.08",
+                  "type": "object"
+                },
+                {
+                  "entries": 1,
+                  "path": "/configurations/representative_radius_0.14",
+                  "type": "object"
+                },
+                {
+                  "entries": 1,
+                  "path": "/configurations/representative_radius_0.20",
+                  "type": "object"
+                },
+                {
+                  "entries": 1,
+                  "path": "/configurations/elbow_quarter_turn",
+                  "type": "object"
+                },
+                {
+                  "entries": 2,
+                  "path": "/mass_matrix_by_configuration/reset_singularity",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/mass_matrix_by_configuration/representative_radius_0.08",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/mass_matrix_by_configuration/representative_radius_0.14",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/mass_matrix_by_configuration/representative_radius_0.20",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/mass_matrix_by_configuration/elbow_quarter_turn",
+                  "type": "array"
+                },
+                {
+                  "entries": 3,
+                  "path": "/jacobian_by_configuration/reset_singularity",
+                  "type": "object"
+                },
+                {
+                  "entries": 3,
+                  "path": "/jacobian_by_configuration/representative_radius_0.08",
+                  "type": "object"
+                },
+                {
+                  "entries": 3,
+                  "path": "/jacobian_by_configuration/representative_radius_0.14",
+                  "type": "object"
+                },
+                {
+                  "entries": 3,
+                  "path": "/jacobian_by_configuration/representative_radius_0.20",
+                  "type": "object"
+                },
+                {
+                  "entries": 3,
+                  "path": "/jacobian_by_configuration/elbow_quarter_turn",
+                  "type": "object"
+                },
+                {
+                  "path": "/model/body_mass_kg/world",
+                  "type": "number"
+                },
+                {
+                  "path": "/model/body_mass_kg/base",
+                  "type": "number"
+                },
+                {
+                  "path": "/model/body_mass_kg/upper_arm",
+                  "type": "number"
+                },
+                {
+                  "path": "/model/body_mass_kg/forearm",
+                  "type": "number"
+                },
+                {
+                  "path": "/model/body_mass_kg/target",
+                  "type": "number"
+                },
+                {
+                  "entries": 3,
+                  "path": "/model/body_inertia/world",
+                  "type": "array"
+                },
+                {
+                  "entries": 3,
+                  "path": "/model/body_inertia/base",
+                  "type": "array"
+                },
+                {
+                  "entries": 3,
+                  "path": "/model/body_inertia/upper_arm",
+                  "type": "array"
+                },
+                {
+                  "entries": 3,
+                  "path": "/model/body_inertia/forearm",
+                  "type": "array"
+                },
+                {
+                  "entries": 3,
+                  "path": "/model/body_inertia/target",
+                  "type": "array"
+                },
+                {
+                  "path": "/model/joint_damping/shoulder",
+                  "type": "number"
+                },
+                {
+                  "path": "/model/joint_damping/elbow",
+                  "type": "number"
+                },
+                {
+                  "path": "/model/joint_armature/shoulder",
+                  "type": "number"
+                },
+                {
+                  "path": "/model/joint_armature/elbow",
+                  "type": "number"
+                },
+                {
+                  "entries": 6,
+                  "path": "/model/actuator_gear/0",
+                  "type": "array"
+                },
+                {
+                  "entries": 6,
+                  "path": "/model/actuator_gear/1",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/model/actuator_ctrlrange/0",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/model/actuator_ctrlrange/1",
+                  "type": "array"
+                },
+                {
+                  "path": "/constrained_ik/feasible_counts/open",
+                  "type": "number"
+                },
+                {
+                  "path": "/constrained_ik/feasible_counts/folded",
+                  "type": "number"
+                },
+                {
+                  "path": "/constrained_ik/feasible_counts/any",
+                  "type": "number"
+                },
+                {
+                  "path": "/constrained_ik/feasible_fractions/open",
+                  "type": "number"
+                }
+              ],
+              "truncated": true
+            },
+            "evaluation_artifact_fingerprint": "1872f2a993931e409a04bf1c470d9005e090d3e996df494e4f334a3fb210c586"
+          },
+          "module": "robot_learning.lab.dynamics_probe"
+        }
+      ],
+      "result": {
+        "measurements": [
+          {
+            "args": [
+              "--artifact",
+              "campaigns\\evaluations\\58dcd817-4fed-42e6-854b-58f20408e6a1\\dynamics_probe.json"
+            ],
+            "instrument": "python_module",
+            "label": "repaired dynamics characterization serialization",
+            "metrics": {
+              "evaluation_artifact": "campaigns/evaluations/58dcd817-4fed-42e6-854b-58f20408e6a1/python-module-M5-1-dynamics_probe.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 8,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/measurement",
+                    "type": "string"
+                  },
+                  {
+                    "entries": 10,
+                    "path": "/model",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 4,
+                    "path": "/constrained_ik",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/configurations",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/mass_matrix_by_configuration",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/jacobian_by_configuration",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 8,
+                    "field_names": [
+                      "configuration",
+                      "response"
+                    ],
+                    "path": "/response_trials",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/model/timestep_s",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/model/control_period_s",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/model/nq",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/model/nv",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/model/body_mass_kg",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 5,
+                    "path": "/model/body_inertia",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/model/joint_damping",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/model/joint_armature",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/model/actuator_gear",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/model/actuator_ctrlrange",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/constrained_ik/sample_count",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/constrained_ik/feasible_counts",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/constrained_ik/feasible_fractions",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 576,
+                    "field_names": [
+                      "angle_degrees",
+                      "branches",
+                      "radius_m"
+                    ],
+                    "path": "/constrained_ik/samples",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 1,
+                    "path": "/configurations/reset_singularity",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 1,
+                    "path": "/configurations/representative_radius_0.08",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 1,
+                    "path": "/configurations/representative_radius_0.14",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 1,
+                    "path": "/configurations/representative_radius_0.20",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 1,
+                    "path": "/configurations/elbow_quarter_turn",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/mass_matrix_by_configuration/reset_singularity",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/mass_matrix_by_configuration/representative_radius_0.08",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/mass_matrix_by_configuration/representative_radius_0.14",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/mass_matrix_by_configuration/representative_radius_0.20",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/mass_matrix_by_configuration/elbow_quarter_turn",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/jacobian_by_configuration/reset_singularity",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/jacobian_by_configuration/representative_radius_0.08",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/jacobian_by_configuration/representative_radius_0.14",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/jacobian_by_configuration/representative_radius_0.20",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/jacobian_by_configuration/elbow_quarter_turn",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/model/body_mass_kg/world",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/model/body_mass_kg/base",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/model/body_mass_kg/upper_arm",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/model/body_mass_kg/forearm",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/model/body_mass_kg/target",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/model/body_inertia/world",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/model/body_inertia/base",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/model/body_inertia/upper_arm",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/model/body_inertia/forearm",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 3,
+                    "path": "/model/body_inertia/target",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/model/joint_damping/shoulder",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/model/joint_damping/elbow",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/model/joint_armature/shoulder",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/model/joint_armature/elbow",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 6,
+                    "path": "/model/actuator_gear/0",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 6,
+                    "path": "/model/actuator_gear/1",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/model/actuator_ctrlrange/0",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/model/actuator_ctrlrange/1",
+                    "type": "array"
+                  },
+                  {
+                    "path": "/constrained_ik/feasible_counts/open",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/constrained_ik/feasible_counts/folded",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/constrained_ik/feasible_counts/any",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/constrained_ik/feasible_fractions/open",
+                    "type": "number"
+                  }
+                ],
+                "truncated": true
+              },
+              "evaluation_artifact_fingerprint": "1872f2a993931e409a04bf1c470d9005e090d3e996df494e4f334a3fb210c586"
+            },
+            "module": "robot_learning.lab.dynamics_probe"
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": {
+          "campaign_lab_manifest": [
+            {
+              "fingerprint": "af534c4e6e994351ed9b87e4830b9460ccb82b1182319ba160beaf485634f47d",
+              "path": "robot_learning/lab/__init__.py"
+            },
+            {
+              "fingerprint": "f3380b5d16b0bd138f18555c3cc6f1f5de9984bfdbe8579eff7b0b4e4560f437",
+              "path": "robot_learning/lab/dynamics_probe.py"
+            }
+          ],
+          "campaign_lab_publication": {
+            "commit": "d7b1861379c3dad369e8dac0636eca34dbcb976d",
+            "fingerprint": "574a6aa4c209569c5b203ceee38fbe5568d21a5fdd28170b4773a672afee8db8",
+            "manifest": [
+              {
+                "fingerprint": "af534c4e6e994351ed9b87e4830b9460ccb82b1182319ba160beaf485634f47d",
+                "path": "robot_learning/lab/__init__.py"
+              },
+              {
+                "fingerprint": "f3380b5d16b0bd138f18555c3cc6f1f5de9984bfdbe8579eff7b0b4e4560f437",
+                "path": "robot_learning/lab/dynamics_probe.py"
+              }
+            ]
+          },
+          "code_parent_commit": "71e1429e83ac73bc7e4e7f4da38075cef1e81416",
+          "effective_parameters": {
+            "algorithm": {
+              "name": "ppo"
+            },
+            "policy": {
+              "activation": "tanh",
+              "net_arch": [
+                64,
+                64
+              ]
+            },
+            "ppo": {
+              "batch_size": 64,
+              "ent_coef": 0.01,
+              "gae_lambda": 0.95,
+              "gamma": 0.99,
+              "learning_rate": 0.0003,
+              "n_steps": 1024
+            },
+            "training": {
+              "checkpoint_every_steps": 5000,
+              "n_envs": 1
+            }
+          },
+          "module_manifest": [
+            {
+              "exists": true,
+              "fingerprint": "f3380b5d16b0bd138f18555c3cc6f1f5de9984bfdbe8579eff7b0b4e4560f437",
+              "path": "robot_learning/lab/dynamics_probe.py"
+            }
+          ],
+          "module_paths": [
+            "robot_learning/lab/dynamics_probe.py"
+          ],
+          "scientific_commit": null,
+          "scientific_manifest": [],
+          "scientific_paths": []
+        }
+      },
       "task_reference_contract": null
     },
     "failure": null,
     "id": "M5",
     "inquiry_id": null,
     "kind": "measurement",
-    "progress": "accepted",
+    "progress": "completed",
     "request": {
       "measurement": {
         "description": "Repeat the compiled MuJoCo dynamics, constrained inverse-kinematics coverage, Jacobian conditioning, and action/braking response characterization after normalizing the NumPy IK feasibility flag for JSON serialization.",
@@ -267,7 +1371,9 @@
     "inquiry_id": null,
     "kind": "startup",
     "objective": "Establish the most credible initial scientific direction toward the human goal from the scientific model and available evidence. Use scientific work in this session to establish or refine that direction, including building or adapting reusable scientific tools and PI-owned methods where needed. These capabilities can support subsequent inquiries. Choose the first useful scientific action and explain why it advances the direction. Preserve the work actually performed, resulting understanding, remaining uncertainties and chosen next action in the scientific session record.",
-    "operation_ids": [],
+    "operation_ids": [
+      "M5"
+    ],
     "scientific_parent_commit": "71e1429e83ac73bc7e4e7f4da38075cef1e81416"
   },
   "terminal_state": null
