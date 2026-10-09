@@ -19725,38 +19725,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I8",
-        "outcome": "limited negative: policy-side optimization within the unchanged direct-action interface improved T1 but bounded continuation did not reach the development threshold, and the near-target stabilization reward did not recover any additional residual episodes; the remaining gap is better-supported as action-interface or branch-limit coupled for the tested route.",
-        "reason": "M12 and M13 show that T8 improved T1 from 150/160 to 153/160, reduced pre-reach failures from seven to one at M13, and preserved the recorded 40/40 inner-band behavior, so policy-side optimization is a real but sub-threshold capability within the direct-action interface. Its residual shifted to six post-reach failures with six hold interruptions. M14 then measured T9's near-target stabilization reward at the same 153/160 as T8; the two candidates failed on the same seven panel episodes, had the same 90/93 outcome on the computed inner-radius subset, and T9 reduced failure interruptions only from six to five while changing the pre/post failure split from one/six to three/four. The failures remained concentrated on the same positive-elbow, negative-limit-margin target family. Thus the tested reward-side stabilization did not recover the residual, and the prior optimization gain could not be extended to the development threshold without a reach/hold tradeoff. This closes I8 with a bounded negative for continued PPO optimization and the tested near-target reward method, while leaving the broader policy-side class and all action interfaces unproven."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I8",
-        "outcome": "limited negative: policy-side optimization within the unchanged direct-action interface improved T1 but bounded continuation did not reach the development threshold, and the near-target stabilization reward did not recover any additional residual episodes; the remaining gap is better-supported as action-interface or branch-limit coupled for the tested route.",
-        "reason": "M12 and M13 show that T8 improved T1 from 150/160 to 153/160, reduced pre-reach failures from seven to one at M13, and preserved the recorded 40/40 inner-band behavior, so policy-side optimization is a real but sub-threshold capability within the direct-action interface. Its residual shifted to six post-reach failures with six hold interruptions. M14 then measured T9's near-target stabilization reward at the same 153/160 as T8; the two candidates failed on the same seven panel episodes, had the same 90/93 outcome on the computed inner-radius subset, and T9 reduced failure interruptions only from six to five while changing the pre/post failure split from one/six to three/four. The failures remained concentrated on the same positive-elbow, negative-limit-margin target family. Thus the tested reward-side stabilization did not recover the residual, and the prior optimization gain could not be extended to the development threshold without a reach/hold tradeoff. This closes I8 with a bounded negative for continued PPO optimization and the tested near-target reward method, while leaving the broader policy-side class and all action interfaces unproven.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E36",
-    "inquiry_id": "I8",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "limited negative: policy-side optimization within the unchanged direct-action interface improved T1 but bounded continuation did not reach the development threshold, and the near-target stabilization reward did not recover any additional residual episodes; the remaining gap is better-supported as action-interface or branch-limit coupled for the tested route.",
-        "reason": "M12 and M13 show that T8 improved T1 from 150/160 to 153/160, reduced pre-reach failures from seven to one at M13, and preserved the recorded 40/40 inner-band behavior, so policy-side optimization is a real but sub-threshold capability within the direct-action interface. Its residual shifted to six post-reach failures with six hold interruptions. M14 then measured T9's near-target stabilization reward at the same 153/160 as T8; the two candidates failed on the same seven panel episodes, had the same 90/93 outcome on the computed inner-radius subset, and T9 reduced failure interruptions only from six to five while changing the pre/post failure split from one/six to three/four. The failures remained concentrated on the same positive-elbow, negative-limit-margin target family. Thus the tested reward-side stabilization did not recover the residual, and the prior optimization gain could not be extended to the development threshold without a reach/hold tradeoff. This closes I8 with a bounded negative for continued PPO optimization and the tested near-target reward method, while leaving the broader policy-side class and all action interfaces unproven."
-      }
-    },
-    "request_fingerprint": "710a209907eeb46c7092bf54d6f2949d48cdbf3d664fd4d2f296f0e5c79209f9",
-    "session_id": "S17",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T1:checkpoint-120832 remains the strongest evidence-backed development candidate at 150/160 successes with 40/40 inner-band successes. T7:checkpoint-120832 is rejected for I7 based on M11. T2, T3, T4, T5 and T6 remain rejected as recipe-specific negative routes. No candidate has an assigned working, best-known or retained role because none has met the development threshold or received a protected assessment.",
     "completed_operations": [
