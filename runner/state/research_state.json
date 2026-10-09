@@ -3879,47 +3879,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "open",
-        "inquiry": {
-          "closure_condition": "Close when completed evidence establishes whether a representation-preserving intervention can reach at least 98% on the full official development distribution while retaining inner-band performance and classifies residual failures by branch/limit margin, approach velocity, and hold interruptions. Improvement in negative-margin or one-branch cases with preserved inner-band success supports explicit representation; persistent positive-margin non-reaching failures redirects toward learnability or phase/history representation; persistent adequate-margin post-reach interruptions with high entry velocity elevates velocity shaping. If no bounded evidence separates these mechanisms, close with an inconclusive result while preserving the unresolved route.",
-          "goal_connection": "The human goal requires at least 196 of 200 official episodes to complete an uninterrupted 100-step endpoint hold. T1 reached 150/160 successes (93.75%) with 40/40 inner-band successes, so the campaign remains below target. T2 showed that aggressive branch/limit-aware oversampling collapses learnability to 52/160, but its positive-margin non-reaching failures do not invalidate explicit branch/limit or trajectory representation as a route. Resolving this distinction determines whether the remaining gap is best addressed by representing feasible branch/trajectory choices or by prioritizing velocity and hold-phase stabilization.",
-          "handoff_conclusion": "M1 established substantial transient actuation authority and at least one feasible analytic IK solution for every sampled official target; 64 of 576 grid targets had only one feasible branch. T1 trained on the full official radius range and M2 measured 150/160 successes (93.75%), including 40/40 in the 6-10 cm bin. M3 diagnosed 7 of T1's 10 failures with negative nearest-branch limit margin, supporting a branch/limit-aligned failure mechanism, plus 2 post-reach failures with high first-reach speed and repeated hold interruptions, supporting a secondary velocity/hold-stabilization mechanism; one further failure had positive margin but did not reach. T2 tested aggressive branch/limit-aware target oversampling, but M4 measured only 52/160 successes (32.5%) versus T1's 150/160 on identical seeds, with 101 reference wins and 3 candidate wins. M5 showed that T2's collapse was broad rather than selectively limit-driven: 104 of 108 failures never reached, 87 of those non-reaching failures had positive terminal nearest-branch margin, only 17 failures had negative terminal or reach margin, and all 4 post-reach failures had positive margin with high first-reach speed (5.25-6.89 rad/s) and interruptions. E8 therefore closed I2 as limited negative. The aggressive sampler is rejected as a recipe because it disrupted learnability and lost aggregate performance; this does not invalidate branch/limit structure as a cause of T1 failures, because T2 changed exposure rather than representing branch choice explicitly. M1's global reachability interpretation remains supported, and adequate-margin post-reach failures preserve velocity shaping or phase/history as a coupled mechanism.",
-          "handoff_question": "Can an explicit branch/limit or trajectory representation, while preserving T1's uniform official target coverage, raise learned-policy success to at least 98% without losing inner-band performance, and are any remaining failures then dominated by adequate-margin approach-velocity or hold-phase instability?",
-          "handoff_source_session_id": "S5",
-          "id": "I3",
-          "opened_in_session": "S6",
-          "question": "Can an explicit branch/limit or trajectory representation, while preserving T1's uniform official target coverage, raise learned-policy success to at least 98% without losing inner-band performance, and are any remaining failures then dominated by adequate-margin approach-velocity or hold-phase instability?",
-          "rationale": "The unresolved distinction is whether T1's negative-margin and one-branch failures require explicit branch/limit or trajectory information, versus whether the decisive bottleneck is control phase and approach velocity. M3 supports both mechanisms, while M4/M5 establish only that T2's distribution-distorting sampler caused a broad learning collapse: it is not a test of explicit representation. T1's uniform official coverage and strong 40/40 inner-band result provide the reference behavior to preserve. This fresh inquiry is therefore the appropriate goal-level decision; it does not commit the next operation to training or measurement, allowing the first inquiry action to be selected from the representation-versus-stabilization evidence frontier.",
-          "reframes": []
-        }
-      },
-      "result": {
-        "action": "open",
-        "inquiry_id": "I3",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E10",
-    "inquiry_id": null,
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "open",
-        "closure_condition": "Close when completed evidence establishes whether a representation-preserving intervention can reach at least 98% on the full official development distribution while retaining inner-band performance and classifies residual failures by branch/limit margin, approach velocity, and hold interruptions. Improvement in negative-margin or one-branch cases with preserved inner-band success supports explicit representation; persistent positive-margin non-reaching failures redirects toward learnability or phase/history representation; persistent adequate-margin post-reach interruptions with high entry velocity elevates velocity shaping. If no bounded evidence separates these mechanisms, close with an inconclusive result while preserving the unresolved route.",
-        "goal_connection": "The human goal requires at least 196 of 200 official episodes to complete an uninterrupted 100-step endpoint hold. T1 reached 150/160 successes (93.75%) with 40/40 inner-band successes, so the campaign remains below target. T2 showed that aggressive branch/limit-aware oversampling collapses learnability to 52/160, but its positive-margin non-reaching failures do not invalidate explicit branch/limit or trajectory representation as a route. Resolving this distinction determines whether the remaining gap is best addressed by representing feasible branch/trajectory choices or by prioritizing velocity and hold-phase stabilization.",
-        "question": "Can an explicit branch/limit or trajectory representation, while preserving T1's uniform official target coverage, raise learned-policy success to at least 98% without losing inner-band performance, and are any remaining failures then dominated by adequate-margin approach-velocity or hold-phase instability?",
-        "rationale": "The unresolved distinction is whether T1's negative-margin and one-branch failures require explicit branch/limit or trajectory information, versus whether the decisive bottleneck is control phase and approach velocity. M3 supports both mechanisms, while M4/M5 establish only that T2's distribution-distorting sampler caused a broad learning collapse: it is not a test of explicit representation. T1's uniform official coverage and strong 40/40 inner-band result provide the reference behavior to preserve. This fresh inquiry is therefore the appropriate goal-level decision; it does not commit the next operation to training or measurement, allowing the first inquiry action to be selected from the representation-versus-stabilization evidence frontier."
-      }
-    },
-    "request_fingerprint": "706f59818e87dc0d8b1494fa00abcceb6f9aec98950891fe73fc19eb3a8aff9a",
-    "session_id": "S6",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T1:checkpoint-120832 remains the strongest measured development candidate at 93.75% but has no working, best-known, or retained role because it is below the goal and lacks a protected assessment. T2:checkpoint-120832 is rejected as a viable candidate after its 32.5% paired development result and has no role. No candidate is assigned a role.",
     "completed_operations": [
