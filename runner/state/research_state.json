@@ -1,16 +1,5 @@
 {
-  "active_inquiry": {
-    "closure_condition": "Close when a T3-derived representation or action intervention is evaluated on the same 160-seed development panel with success, first-reach coverage, maximum held steps, hold interruptions, final distance, and radius-angle strata: either it reaches at least 98 percent with broad first reach and approximately four interruptions, or persistent localized failures, preserved transfer behavior, or broad interruption regression establishes that this tested redesign is insufficient and redirects the next inquiry.",
-    "goal_connection": "The human goal requires at least 196 of 200 official episodes to complete an uninterrupted 100-step hold. T3 reaches 153 of 160 development episodes, leaving seven localized failures. Resolving whether explicit branch conditioning or a different action structure removes those failures is the most direct remaining route before official assessment.",
-    "handoff_conclusion": "M1 established nonzero compiled plant authority, no sampled self-contact in valid target branches, and complete local 100-step holds under zero input and bounded local PD. T1 established a reach-limited, geometry-conditioned baseline at 68.75 percent. T2 rejected an abrupt hard-distribution recipe without rejecting learning generally. T3's incremental radius transfer improved success to 95.625 percent, first reach to 157/160, and reduced hold interruptions to 4, supporting distribution-shift sensitivity as the leading explanation for the earlier reach deficit. M5 showed that T5's 70 percent residual-angle oversampling and 30 percent uniform exposure reached 93.125 percent with 158 first reaches but 511 interruptions; this rejects that oversampling recipe, not incremental transfer generally. T6 continued from T3 with the same incremental radius curriculum and uniform angle exposure while changing only the reward to forfeit the full accumulated hold-progress credit on interruption. M6 evaluated T6 and T3 on the same 160 seeds: both achieved 95.625 percent (153/160), with zero discordant episodes. Thus the tested hold-exit-forfeiture signal neither repaired the residual failures nor changed the learned outcomes. This is a negative, intervention-limited result: it rejects that reward-only terminal-control intervention as sufficient, but does not establish that terminal control, action margin, or learning generally are incapable of improvement. The plant remains locally holdable, and preserved transfer behavior with persistent localized failures now makes explicit policy representation, branch conditioning, or action structure the leading unresolved direction.",
-    "handoff_question": "Can an explicit branch-conditioned policy representation or action structure built on T3 eliminate the residual radius-angle completion failures while preserving broad first reach and approximately four hold interruptions?",
-    "handoff_source_session_id": "S11",
-    "id": "I6",
-    "opened_in_session": "S12",
-    "question": "Can an explicit branch-conditioned policy representation or action structure built on T3 eliminate the residual radius-angle completion failures while preserving broad first reach and approximately four hold interruptions?",
-    "rationale": "T6 changed only hold-exit reward handling and matched T3 exactly at 95.625 percent with zero discordant episodes, so repeating reward-only terminal shaping is not a credible next step. T3's broad reach and low interruption count, together with persistent localized failures, make branch ambiguity, insufficient conditioning, and action representation the leading unresolved mechanisms.",
-    "reframes": []
-  },
+  "active_inquiry": null,
   "campaign": {
     "base_commit": "183ba7483c02b821a562dc3107d9c0100b10d3d9",
     "id": "1ae27a27-6880-4ca6-9d50-e6498e771cb7",
@@ -4934,7 +4923,7 @@
     }
   },
   "counters": {
-    "event": 23,
+    "event": 24,
     "inquiry": 6,
     "measurement": 7,
     "session": 13,
@@ -9551,9 +9540,63 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-09T00:44:44Z",
+      "error": null,
+      "id": "E24",
+      "inquiry_id": "I6",
+      "kind": "inquiry",
+      "request": {
+        "action": "close",
+        "outcome": "negative, intervention-limited result",
+        "reason": "M7 evaluated the explicit branch-feasibility-conditioned T7 transfer policy against T3 on the same 160-seed panel. T7 achieved 95.0 percent success (152/160) versus T3's 95.625 percent (153/160), with one discordant episode and no candidate win. The residual -130 to -150 degree failures persisted, T7 added a failure near -52 degrees, first-reach coverage fell from 157/160 to 156/160, and hold interruptions rose from 4 to 13. This tested representation therefore failed the closure criterion and broadly regressed interruption behavior. The result rejects this feature and training recipe as sufficient; it does not establish that branch conditioning, action redesign, or terminal control generally cannot improve the human-goal gap."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I6",
+        "outcome": "negative, intervention-limited result",
+        "reason": "M7 evaluated the explicit branch-feasibility-conditioned T7 transfer policy against T3 on the same 160-seed panel. T7 achieved 95.0 percent success (152/160) versus T3's 95.625 percent (153/160), with one discordant episode and no candidate win. The residual -130 to -150 degree failures persisted, T7 added a failure near -52 degrees, first-reach coverage fell from 157/160 to 156/160, and hold interruptions rose from 4 to 13. This tested representation therefore failed the closure criterion and broadly regressed interruption behavior. The result rejects this feature and training recipe as sufficient; it does not establish that branch conditioning, action redesign, or terminal control generally cannot improve the human-goal gap.",
+        "status": "completed"
+      },
+      "session_id": "S13",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "close",
+        "inquiry_id": "I6",
+        "outcome": "negative, intervention-limited result",
+        "reason": "M7 evaluated the explicit branch-feasibility-conditioned T7 transfer policy against T3 on the same 160-seed panel. T7 achieved 95.0 percent success (152/160) versus T3's 95.625 percent (153/160), with one discordant episode and no candidate win. The residual -130 to -150 degree failures persisted, T7 added a failure near -52 degrees, first-reach coverage fell from 157/160 to 156/160, and hold interruptions rose from 4 to 13. This tested representation therefore failed the closure criterion and broadly regressed interruption behavior. The result rejects this feature and training recipe as sufficient; it does not establish that branch conditioning, action redesign, or terminal control generally cannot improve the human-goal gap."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I6",
+        "outcome": "negative, intervention-limited result",
+        "reason": "M7 evaluated the explicit branch-feasibility-conditioned T7 transfer policy against T3 on the same 160-seed panel. T7 achieved 95.0 percent success (152/160) versus T3's 95.625 percent (153/160), with one discordant episode and no candidate win. The residual -130 to -150 degree failures persisted, T7 added a failure near -52 degrees, first-reach coverage fell from 157/160 to 156/160, and hold interruptions rose from 4 to 13. This tested representation therefore failed the closure criterion and broadly regressed interruption behavior. The result rejects this feature and training recipe as sufficient; it does not establish that branch conditioning, action redesign, or terminal control generally cannot improve the human-goal gap.",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E24",
+    "inquiry_id": "I6",
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "close",
+        "outcome": "negative, intervention-limited result",
+        "reason": "M7 evaluated the explicit branch-feasibility-conditioned T7 transfer policy against T3 on the same 160-seed panel. T7 achieved 95.0 percent success (152/160) versus T3's 95.625 percent (153/160), with one discordant episode and no candidate win. The residual -130 to -150 degree failures persisted, T7 added a failure near -52 degrees, first-reach coverage fell from 157/160 to 156/160, and hold interruptions rose from 4 to 13. This tested representation therefore failed the closure criterion and broadly regressed interruption behavior. The result rejects this feature and training recipe as sufficient; it does not establish that branch conditioning, action redesign, or terminal control generally cannot improve the human-goal gap."
+      }
+    },
+    "request_fingerprint": "1898e6a24614fc81f63782bc2e4fbd1d9c0cfc47e330302364503e5e33e28478",
+    "session_id": "S13",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T3:checkpoint-120832 remains the strongest measured development candidate at 95.625 percent on M4 and M6. T6:checkpoint-120832 is an intervention-limited null matching T3 with zero discordant episodes. Neither candidate has a working, best-known, or retained role.",
     "completed_operations": [
@@ -9599,7 +9642,8 @@
     "objective": "Advance I6 toward an evidence-supported answer to its scientific question: Can an explicit branch-conditioned policy representation or action structure built on T3 eliminate the residual radius-angle completion failures while preserving broad first reach and approximately four hold interruptions? Before choosing the next action, compare the accumulated evidence with the closure condition. Close the inquiry when the condition is met.",
     "operation_ids": [
       "T7",
-      "M7"
+      "M7",
+      "E24"
     ],
     "scientific_parent_commit": "92795b15d4427c37a909aa809b4a81db6eae7f37"
   },
