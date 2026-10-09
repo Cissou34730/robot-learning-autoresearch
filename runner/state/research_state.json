@@ -1,5 +1,16 @@
 {
-  "active_inquiry": null,
+  "active_inquiry": {
+    "closure_condition": "Close after one bounded incremental or transfer intervention has been evaluated against T1 on the same full-distribution development panel with first-reach coverage, maximum held steps, hold interruptions, and radius-angle strata. A positive result requires materially improved difficult-geometry first reach and episode success with no material increase in hold interruptions; a negative or limited result is sufficient if baseline behavior is not preserved, reach does not improve, or collapse persists despite preserved baseline exposure, redirecting the campaign toward the policy or observation-control representation.",
+    "goal_connection": "The human goal requires at least 196 of 200 episodes to complete an uninterrupted 100-step hold. T1 reaches 68.75% on development evaluation, with the deficit concentrated in difficult reach geometries, while the abrupt hard-distribution T2 intervention collapsed to 1.25%. This inquiry tests whether preserving the baseline regime while broadening coverage can raise difficult-geometry first reach and episode success toward 98% without sacrificing hold completion.",
+    "handoff_conclusion": "M1 established nonzero compiled plant authority, no sampled self-contact in valid target branches, and complete local 100-step holds under zero input and bounded local PD. T1 training-buffer success was not episode-level evidence. M2/M3 evaluated T1 on the same 160-episode development panel and established 68.75% success, with most failures never entering tolerance, geometry-conditioned deficits, and only a minority of failures reaching tolerance without completing the hold. I2 tested one fresh reach-focused recipe (T2) that restored the official radius range and oversampled short-radius reset-opposed targets while leaving reward and hold semantics unchanged. T2 achieved only 1.25% success on the paired panel, with one candidate win versus 109 reference wins and a net -108 result. This is strong evidence against that particular target-sampling recipe as implemented. It does not establish that learning generally fails, that the physical reach hypothesis is false, or that terminal stabilization is the governing bottleneck, because T2's broad collapse prevents a meaningful stabilization comparison. The leading new explanation is a learning-dynamics or intervention-sensitivity bottleneck: exposing the baseline learner to the hard distribution may have destroyed the learned control regime rather than improved coverage. An implementation or representation limitation remains a competing explanation.",
+    "handoff_question": "Can a controlled, incremental broadening of the training distribution preserve the baseline policy's learned control regime while improving difficult-geometry reach, or does the failure persist because the current policy and observation-control representation cannot support the full task?",
+    "handoff_source_session_id": "S5",
+    "id": "I3",
+    "opened_in_session": "S6",
+    "question": "Can a controlled, incremental broadening of the training distribution preserve the baseline policy's learned control regime while improving difficult-geometry reach, or does the failure persist because the current policy and observation-control representation cannot support the full task?",
+    "rationale": "M1 established nonzero compiled plant authority, no sampled self-contact in valid target branches, and complete local holds. M2/M3 showed that T1 is reach-limited and geometry-conditioned, while T2 strongly rejects the tested abrupt target-sampling recipe but is too globally impaired to distinguish learning-dynamics collapse from representation inadequacy. An incremental or transfer intervention that explicitly preserves the measured T1 regime is the highest-value next test: improvement would support intervention sensitivity as the cause of T2, whereas failure under preserved baseline exposure would make policy architecture, memory, action shaping, or another control representation the next direction.",
+    "reframes": []
+  },
   "campaign": {
     "base_commit": "183ba7483c02b821a562dc3107d9c0100b10d3d9",
     "id": "1ae27a27-6880-4ca6-9d50-e6498e771cb7",
@@ -1647,16 +1658,16 @@
     }
   },
   "counters": {
-    "event": 9,
-    "inquiry": 2,
+    "event": 10,
+    "inquiry": 3,
     "measurement": 3,
-    "session": 5,
+    "session": 6,
     "training": 2
   },
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -3231,9 +3242,72 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-09T00:08:58Z",
+      "error": null,
+      "id": "E10",
+      "inquiry_id": "I3",
+      "kind": "inquiry",
+      "request": {
+        "action": "open",
+        "closure_condition": "Close after one bounded incremental or transfer intervention has been evaluated against T1 on the same full-distribution development panel with first-reach coverage, maximum held steps, hold interruptions, and radius-angle strata. A positive result requires materially improved difficult-geometry first reach and episode success with no material increase in hold interruptions; a negative or limited result is sufficient if baseline behavior is not preserved, reach does not improve, or collapse persists despite preserved baseline exposure, redirecting the campaign toward the policy or observation-control representation.",
+        "goal_connection": "The human goal requires at least 196 of 200 episodes to complete an uninterrupted 100-step hold. T1 reaches 68.75% on development evaluation, with the deficit concentrated in difficult reach geometries, while the abrupt hard-distribution T2 intervention collapsed to 1.25%. This inquiry tests whether preserving the baseline regime while broadening coverage can raise difficult-geometry first reach and episode success toward 98% without sacrificing hold completion.",
+        "question": "Can a controlled, incremental broadening of the training distribution preserve the baseline policy's learned control regime while improving difficult-geometry reach, or does the failure persist because the current policy and observation-control representation cannot support the full task?",
+        "rationale": "M1 established nonzero compiled plant authority, no sampled self-contact in valid target branches, and complete local holds. M2/M3 showed that T1 is reach-limited and geometry-conditioned, while T2 strongly rejects the tested abrupt target-sampling recipe but is too globally impaired to distinguish learning-dynamics collapse from representation inadequacy. An incremental or transfer intervention that explicitly preserves the measured T1 regime is the highest-value next test: improvement would support intervention sensitivity as the cause of T2, whereas failure under preserved baseline exposure would make policy architecture, memory, action shaping, or another control representation the next direction."
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I3",
+        "status": "completed"
+      },
+      "session_id": "S6",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "open",
+        "inquiry": {
+          "closure_condition": "Close after one bounded incremental or transfer intervention has been evaluated against T1 on the same full-distribution development panel with first-reach coverage, maximum held steps, hold interruptions, and radius-angle strata. A positive result requires materially improved difficult-geometry first reach and episode success with no material increase in hold interruptions; a negative or limited result is sufficient if baseline behavior is not preserved, reach does not improve, or collapse persists despite preserved baseline exposure, redirecting the campaign toward the policy or observation-control representation.",
+          "goal_connection": "The human goal requires at least 196 of 200 episodes to complete an uninterrupted 100-step hold. T1 reaches 68.75% on development evaluation, with the deficit concentrated in difficult reach geometries, while the abrupt hard-distribution T2 intervention collapsed to 1.25%. This inquiry tests whether preserving the baseline regime while broadening coverage can raise difficult-geometry first reach and episode success toward 98% without sacrificing hold completion.",
+          "handoff_conclusion": "M1 established nonzero compiled plant authority, no sampled self-contact in valid target branches, and complete local 100-step holds under zero input and bounded local PD. T1 training-buffer success was not episode-level evidence. M2/M3 evaluated T1 on the same 160-episode development panel and established 68.75% success, with most failures never entering tolerance, geometry-conditioned deficits, and only a minority of failures reaching tolerance without completing the hold. I2 tested one fresh reach-focused recipe (T2) that restored the official radius range and oversampled short-radius reset-opposed targets while leaving reward and hold semantics unchanged. T2 achieved only 1.25% success on the paired panel, with one candidate win versus 109 reference wins and a net -108 result. This is strong evidence against that particular target-sampling recipe as implemented. It does not establish that learning generally fails, that the physical reach hypothesis is false, or that terminal stabilization is the governing bottleneck, because T2's broad collapse prevents a meaningful stabilization comparison. The leading new explanation is a learning-dynamics or intervention-sensitivity bottleneck: exposing the baseline learner to the hard distribution may have destroyed the learned control regime rather than improved coverage. An implementation or representation limitation remains a competing explanation.",
+          "handoff_question": "Can a controlled, incremental broadening of the training distribution preserve the baseline policy's learned control regime while improving difficult-geometry reach, or does the failure persist because the current policy and observation-control representation cannot support the full task?",
+          "handoff_source_session_id": "S5",
+          "id": "I3",
+          "opened_in_session": "S6",
+          "question": "Can a controlled, incremental broadening of the training distribution preserve the baseline policy's learned control regime while improving difficult-geometry reach, or does the failure persist because the current policy and observation-control representation cannot support the full task?",
+          "rationale": "M1 established nonzero compiled plant authority, no sampled self-contact in valid target branches, and complete local holds. M2/M3 showed that T1 is reach-limited and geometry-conditioned, while T2 strongly rejects the tested abrupt target-sampling recipe but is too globally impaired to distinguish learning-dynamics collapse from representation inadequacy. An incremental or transfer intervention that explicitly preserves the measured T1 regime is the highest-value next test: improvement would support intervention sensitivity as the cause of T2, whereas failure under preserved baseline exposure would make policy architecture, memory, action shaping, or another control representation the next direction.",
+          "reframes": []
+        }
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I3",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E10",
+    "inquiry_id": null,
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "open",
+        "closure_condition": "Close after one bounded incremental or transfer intervention has been evaluated against T1 on the same full-distribution development panel with first-reach coverage, maximum held steps, hold interruptions, and radius-angle strata. A positive result requires materially improved difficult-geometry first reach and episode success with no material increase in hold interruptions; a negative or limited result is sufficient if baseline behavior is not preserved, reach does not improve, or collapse persists despite preserved baseline exposure, redirecting the campaign toward the policy or observation-control representation.",
+        "goal_connection": "The human goal requires at least 196 of 200 episodes to complete an uninterrupted 100-step hold. T1 reaches 68.75% on development evaluation, with the deficit concentrated in difficult reach geometries, while the abrupt hard-distribution T2 intervention collapsed to 1.25%. This inquiry tests whether preserving the baseline regime while broadening coverage can raise difficult-geometry first reach and episode success toward 98% without sacrificing hold completion.",
+        "question": "Can a controlled, incremental broadening of the training distribution preserve the baseline policy's learned control regime while improving difficult-geometry reach, or does the failure persist because the current policy and observation-control representation cannot support the full task?",
+        "rationale": "M1 established nonzero compiled plant authority, no sampled self-contact in valid target branches, and complete local holds. M2/M3 showed that T1 is reach-limited and geometry-conditioned, while T2 strongly rejects the tested abrupt target-sampling recipe but is too globally impaired to distinguish learning-dynamics collapse from representation inadequacy. An incremental or transfer intervention that explicitly preserves the measured T1 regime is the highest-value next test: improvement would support intervention sensitivity as the cause of T2, whereas failure under preserved baseline exposure would make policy architecture, memory, action shaping, or another control representation the next direction."
+      }
+    },
+    "request_fingerprint": "c9a757275e65861060c8ee802429b1faeda531b13e8c771b869774b50f8a44e8",
+    "session_id": "S6",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T1:checkpoint-120832 remains the strongest evidence-backed development candidate at 68.75% success on M2/M3. T2:checkpoint-120832 is a negative intervention result at 1.25% and receives no role. No working, best-known, or retained role is assigned.",
     "completed_operations": [
@@ -3268,6 +3342,21 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "96cc16f2-1e14-4e93-b2b2-9053ca437a4f",
+    "id": "S6",
+    "inquiry_id": null,
+    "kind": "goal_review",
+    "objective": "Use the completed evidence to update the scientific direction toward the human goal. Request measurements when they resolve an uncertainty or develop the method. Then choose one outcome: request the official assessment, or open one bounded goal-linked inquiry.",
+    "operation_ids": [
+      "E10"
+    ],
+    "scientific_parent_commit": "f523151ac60b8cc3ecac912d6ecdaa0f0d9be0e8"
+  },
   "terminal_state": null
 }
