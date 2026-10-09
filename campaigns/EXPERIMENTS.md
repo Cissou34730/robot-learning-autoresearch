@@ -110,3 +110,4 @@
 | E62 | inquiry | I14 | completed |
 | E63 | checkpoint | I14 | checkpointed |
 | E64 | inquiry | I15 | completed |
+| E65 | checkpoint | - | checkpointed |
