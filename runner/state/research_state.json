@@ -147,7 +147,8 @@
     "T1:checkpoint-115712": {
       "artifact": "campaigns/checkpoints/candidates/896c230a-0ff1-4105-8ab7-1691a09c5482/t1/checkpoint-115712",
       "evaluation_artifacts": [
-        "campaigns/evaluations/896c230a-0ff1-4105-8ab7-1691a09c5482/task-reference-896c230a-0ff1-4105-8ab7-1691a09c5482-m1-T1-checkpoint-115712-task-reference-v1.json"
+        "campaigns/evaluations/896c230a-0ff1-4105-8ab7-1691a09c5482/task-reference-896c230a-0ff1-4105-8ab7-1691a09c5482-m1-T1-checkpoint-115712-task-reference-v1.json",
+        "campaigns/evaluations/896c230a-0ff1-4105-8ab7-1691a09c5482/evaluation-896c230a-0ff1-4105-8ab7-1691a09c5482-m2-T1-checkpoint-115712-200ep-seed17300-604d52985c97.json"
       ],
       "fingerprint": "1f2f6a56b3ceb26ec73a8ab6ef5208096e740f66bd5af1ea46a2ef0ef2bc20d8",
       "id": "T1:checkpoint-115712",
@@ -830,7 +831,7 @@
   "counters": {
     "event": 0,
     "inquiry": 0,
-    "measurement": 1,
+    "measurement": 2,
     "session": 1,
     "training": 1
   },
@@ -1159,9 +1160,397 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-09T09:51:49Z",
+      "error": null,
+      "id": "M2",
+      "inquiry_id": null,
+      "kind": "measurement",
+      "request": {
+        "description": "Evaluate T1:checkpoint-115712 on a separate 200-episode research panel with complete hold and target-geometry diagnostics.",
+        "measurements": [
+          {
+            "candidate": "T1:checkpoint-115712",
+            "episodes": 200,
+            "instrument": "research_evaluation",
+            "label": "baseline-diagnostic-panel",
+            "seed": 17300
+          }
+        ],
+        "rationale": "The fixed task-reference panel measured 71% success, establishing a substantial gap but not its mechanism because its artifact lacks first-reach, maximum-held, interruption, and detailed geometry diagnostics. This matched candidate evaluation supplies those missing measurements on a non-overlapping seed panel. Inner-radius-specific failures with stable outer holds would support changing training coverage; failures after first reach or across the trained range would support a stabilization/control route; absent or contradictory diagnostics will keep the distinction unresolved."
+      },
+      "result": {
+        "measurements": [
+          {
+            "candidate": "T1:checkpoint-115712",
+            "candidate_id": "T1:checkpoint-115712",
+            "instrument": "research_evaluation",
+            "label": "baseline-diagnostic-panel",
+            "metrics": {
+              "episodes": 200,
+              "evaluation_artifact": "campaigns/evaluations/896c230a-0ff1-4105-8ab7-1691a09c5482/evaluation-896c230a-0ff1-4105-8ab7-1691a09c5482-m2-T1-checkpoint-115712-200ep-seed17300-604d52985c97.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 8,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/model",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/seed",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/official_benchmark",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 200,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "reward_total",
+                      "steps",
+                      "success",
+                      "terminated",
+                      "truncated"
+                    ],
+                    "path": "/episode_results",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 200,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "final_distance_cm",
+                      "first_reach_step",
+                      "hold_interruptions",
+                      "in_tolerance_steps",
+                      "max_held_steps",
+                      "min_distance_cm",
+                      "target_angle_degrees",
+                      "target_radius_cm"
+                    ],
+                    "path": "/research_evidence/episode_diagnostics",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence/units",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/research_evidence/units/distance",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/time",
+                    "type": "string"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "66278d6c1b1b894422a21a512a5fb7209c8541700f67c0771830343e341a530b",
+              "evaluation_semantics": "604d52985c97",
+              "model_fingerprint": "1f2f6a56b3ceb26ec73a8ab6ef5208096e740f66bd5af1ea46a2ef0ef2bc20d8",
+              "official_benchmark": false,
+              "schema_version": 5,
+              "seed": 17300,
+              "success_percent": 78.5,
+              "successes": 157
+            }
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": null
+      },
+      "session_id": "S1",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "evaluation_semantics": "604d52985c97",
+      "measurements": [
+        {
+          "artifact": "campaigns/checkpoints/candidates/896c230a-0ff1-4105-8ab7-1691a09c5482/t1/checkpoint-115712",
+          "candidate": "T1:checkpoint-115712",
+          "candidate_id": "T1:checkpoint-115712",
+          "episodes": 200,
+          "instrument": "research_evaluation",
+          "label": "baseline-diagnostic-panel",
+          "model_fingerprint": "1f2f6a56b3ceb26ec73a8ab6ef5208096e740f66bd5af1ea46a2ef0ef2bc20d8",
+          "seed": 17300
+        }
+      ],
+      "module_provenance": null,
+      "paired_comparisons": [],
+      "partial_results": [
+        {
+          "candidate": "T1:checkpoint-115712",
+          "candidate_id": "T1:checkpoint-115712",
+          "instrument": "research_evaluation",
+          "label": "baseline-diagnostic-panel",
+          "metrics": {
+            "episodes": 200,
+            "evaluation_artifact": "campaigns/evaluations/896c230a-0ff1-4105-8ab7-1691a09c5482/evaluation-896c230a-0ff1-4105-8ab7-1691a09c5482-m2-T1-checkpoint-115712-200ep-seed17300-604d52985c97.json",
+            "evaluation_artifact_contents": {
+              "scope": "structure_only",
+              "sections": [
+                {
+                  "entries": 8,
+                  "path": "",
+                  "type": "object"
+                },
+                {
+                  "path": "/schema_version",
+                  "type": "number"
+                },
+                {
+                  "path": "/model",
+                  "type": "string"
+                },
+                {
+                  "path": "/episodes",
+                  "type": "number"
+                },
+                {
+                  "path": "/seed",
+                  "type": "number"
+                },
+                {
+                  "path": "/official_benchmark",
+                  "type": "boolean"
+                },
+                {
+                  "path": "/success_percent",
+                  "type": "number"
+                },
+                {
+                  "entries": 200,
+                  "field_names": [
+                    "episode",
+                    "episode_seed",
+                    "reward_total",
+                    "steps",
+                    "success",
+                    "terminated",
+                    "truncated"
+                  ],
+                  "path": "/episode_results",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/research_evidence",
+                  "type": "object"
+                },
+                {
+                  "entries": 200,
+                  "field_names": [
+                    "episode",
+                    "episode_seed",
+                    "final_distance_cm",
+                    "first_reach_step",
+                    "hold_interruptions",
+                    "in_tolerance_steps",
+                    "max_held_steps",
+                    "min_distance_cm",
+                    "target_angle_degrees",
+                    "target_radius_cm"
+                  ],
+                  "path": "/research_evidence/episode_diagnostics",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/research_evidence/units",
+                  "type": "object"
+                },
+                {
+                  "path": "/research_evidence/units/distance",
+                  "type": "string"
+                },
+                {
+                  "path": "/research_evidence/units/time",
+                  "type": "string"
+                }
+              ],
+              "truncated": false
+            },
+            "evaluation_artifact_fingerprint": "66278d6c1b1b894422a21a512a5fb7209c8541700f67c0771830343e341a530b",
+            "evaluation_semantics": "604d52985c97",
+            "model_fingerprint": "1f2f6a56b3ceb26ec73a8ab6ef5208096e740f66bd5af1ea46a2ef0ef2bc20d8",
+            "official_benchmark": false,
+            "schema_version": 5,
+            "seed": 17300,
+            "success_percent": 78.5,
+            "successes": 157
+          }
+        }
+      ],
+      "result": {
+        "measurements": [
+          {
+            "candidate": "T1:checkpoint-115712",
+            "candidate_id": "T1:checkpoint-115712",
+            "instrument": "research_evaluation",
+            "label": "baseline-diagnostic-panel",
+            "metrics": {
+              "episodes": 200,
+              "evaluation_artifact": "campaigns/evaluations/896c230a-0ff1-4105-8ab7-1691a09c5482/evaluation-896c230a-0ff1-4105-8ab7-1691a09c5482-m2-T1-checkpoint-115712-200ep-seed17300-604d52985c97.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 8,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/model",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/seed",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/official_benchmark",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 200,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "reward_total",
+                      "steps",
+                      "success",
+                      "terminated",
+                      "truncated"
+                    ],
+                    "path": "/episode_results",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 200,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "final_distance_cm",
+                      "first_reach_step",
+                      "hold_interruptions",
+                      "in_tolerance_steps",
+                      "max_held_steps",
+                      "min_distance_cm",
+                      "target_angle_degrees",
+                      "target_radius_cm"
+                    ],
+                    "path": "/research_evidence/episode_diagnostics",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence/units",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/research_evidence/units/distance",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/time",
+                    "type": "string"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "66278d6c1b1b894422a21a512a5fb7209c8541700f67c0771830343e341a530b",
+              "evaluation_semantics": "604d52985c97",
+              "model_fingerprint": "1f2f6a56b3ceb26ec73a8ab6ef5208096e740f66bd5af1ea46a2ef0ef2bc20d8",
+              "official_benchmark": false,
+              "schema_version": 5,
+              "seed": 17300,
+              "success_percent": 78.5,
+              "successes": 157
+            }
+          }
+        ],
+        "paired_comparisons": [],
+        "status": "completed",
+        "tool_provenance": null
+      },
+      "task_reference_contract": null
+    },
+    "failure": null,
+    "id": "M2",
+    "inquiry_id": null,
+    "kind": "measurement",
+    "progress": "completed",
+    "request": {
+      "measurement": {
+        "description": "Evaluate T1:checkpoint-115712 on a separate 200-episode research panel with complete hold and target-geometry diagnostics.",
+        "measurements": [
+          {
+            "candidate": "T1:checkpoint-115712",
+            "episodes": 200,
+            "instrument": "research_evaluation",
+            "label": "baseline-diagnostic-panel",
+            "seed": 17300
+          }
+        ],
+        "rationale": "The fixed task-reference panel measured 71% success, establishing a substantial gap but not its mechanism because its artifact lacks first-reach, maximum-held, interruption, and detailed geometry diagnostics. This matched candidate evaluation supplies those missing measurements on a non-overlapping seed panel. Inner-radius-specific failures with stable outer holds would support changing training coverage; failures after first reach or across the trained range would support a stabilization/control route; absent or contradictory diagnostics will keep the distinction unresolved."
+      }
+    },
+    "request_fingerprint": "8d7ffedfb7ad8a9c4f33500e2efc5af998b4a89825f5951d6fc8e2851974e394",
+    "session_id": "S1",
+    "supersedes": null
+  },
   "pi_checkpoint": null,
   "schema_version": 6,
   "scientific_model": {
@@ -1182,7 +1571,8 @@
     "objective": "Establish the most credible initial scientific direction toward the human goal from the scientific model and available evidence. Use scientific work in this session to establish or refine that direction, including building or adapting reusable scientific tools and PI-owned methods where needed. These capabilities can support subsequent inquiries. Choose the first useful scientific action and explain why it advances the direction. Preserve the work actually performed, resulting understanding, remaining uncertainties and chosen next action in the scientific session record.",
     "operation_ids": [
       "T1",
-      "M1"
+      "M1",
+      "M2"
     ],
     "scientific_parent_commit": "fa9e74f38c70796df750c35a49f402d24fcbe23c"
   },
