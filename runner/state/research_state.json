@@ -9855,7 +9855,7 @@
     }
   },
   "counters": {
-    "event": 50,
+    "event": 51,
     "inquiry": 12,
     "measurement": 21,
     "session": 24,
@@ -9864,7 +9864,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -25878,20 +25878,193 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-09T16:29:21Z",
+      "error": null,
+      "id": "E51",
+      "inquiry_id": null,
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "T8:checkpoint-60416 and T9:checkpoint-20480 remain the strongest measured learned candidates at 153/160 but have no protected working, best-known or retained role. T10:checkpoint-10240 and T10:checkpoint-120832 also measured 153/160 and are not promoted. T11:checkpoint-120832 is rejected at 0/160, and T12:checkpoint-120832 is rejected at 44/160 with 20/40 inner-band success. M17 is evidence of same-interface capability, not a learned candidate. No candidate has an evidence-backed protected role.",
+        "completed_operations": [
+          "E50"
+        ],
+        "cumulative_resource_use": "The campaign used M1 characterization; twelve 120000-step training allocations T1-T12, each completing 120832 simulator steps; development and diagnostic measurements M2-M14 and M17-M21; controller-prior training T10; phase/history/trajectory training T11; less-coupled branch/limit training T12; and inquiry/checkpoint events through E50. No learned candidate meets the 98% development threshold and no protected official assessment has been performed.",
+        "current_goal_gap": "The best measured learned candidates are four successes short of the prior 98% development reference at 153/160. T12 measured 44/160 with 20/40 inner-band success. No learned candidate has an evidence-backed working or best-known role.",
+        "current_synthesis": "M1 established substantial transient actuation authority and at least one feasible analytic IK branch for every sampled official target. T1, T8 and T9 show that the unchanged direct-action route can reach 153/160 while preserving 40/40 inner-band behavior. M17 shows that the same bounded interface is controllable by computed torque across gain settings, including 93/93 inner-band success and no reach or hold interruptions. M18 shows that the tested controller-derived PPO action-prior recipe did not transfer that capability and remained at 153/160; this is a negative for that recipe, not for controller imitation or learned policies generally. T11 and T12 produced bounded negatives for their tested phase/history/trajectory and static branch/limit recipes: most failures were before first reach despite nonnegative nearest-branch margins, while post-reach stabilization was secondary. The unresolved causal distinction is therefore whether learned acquisition fails to reproduce the demonstrated controller behavior or whether PPO acquisition remains limiting even with direct control supervision.",
+        "decision_frontier": "I11 is closed with a limited negative for the tested static max-margin branch/limit observation contract. The next decision must distinguish transfer of same-interface computed-torque capability through controller imitation from continued PPO acquisition failure. Evidence must preserve the official target distribution, bounded action interface and uninterrupted 100-step hold semantics, and must include uniform-panel success, 40/40 inner-band behavior, first-reach and post-reach splits, velocity, branch/limit diagnostics and hold interruptions. Positive transfer at or above 196/200-equivalent would support candidate selection; persistent positive-margin non-reaching failures would redirect beyond this acquisition route; adequate-margin post-reach interruptions would elevate stabilization.",
+        "evidence_references": [
+          "M1",
+          "T1",
+          "T8",
+          "M13",
+          "T9",
+          "M14",
+          "M17",
+          "T10",
+          "M18",
+          "E40",
+          "E42",
+          "T11",
+          "M19",
+          "M20",
+          "E44",
+          "E46",
+          "T12",
+          "M21",
+          "E48",
+          "E50"
+        ],
+        "human_goal_connection": "The campaign seeks a learned policy with at least 196 uninterrupted-hold successes in the protected 200-episode official assessment. M17 established 160/160 same-interface computed-torque controllability, including complete inner-band success, but the strongest learned candidates remain at 153/160 and no candidate is justified for official assessment.",
+        "next_direction_or_closure": "The goal-review session opens I12 and ends at this checkpoint. The fresh inquiry session should choose the first operation from the controller-imitation versus PPO-acquisition frontier, without treating training as mandatory. Any resulting candidate must be measured under uniform official coverage with the required reach, velocity, branch/limit and hold-interruption diagnostics before role assignment or official assessment.",
+        "next_question": "Can controller-imitation training transfer the demonstrated same-interface computed-torque capability to a learned policy that achieves at least 196/200-equivalent uninterrupted-hold successes under uniform official coverage while preserving the 40/40 inner-band behavior?"
+      },
+      "result": {
+        "session_id": "S24",
+        "status": "checkpointed"
+      },
+      "session_id": "S24",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "eb5cddc1b32f97e6bb034747356e4cd55550e117",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "T8:checkpoint-60416 and T9:checkpoint-20480 remain the strongest measured learned candidates at 153/160 but have no protected working, best-known or retained role. T10:checkpoint-10240 and T10:checkpoint-120832 also measured 153/160 and are not promoted. T11:checkpoint-120832 is rejected at 0/160, and T12:checkpoint-120832 is rejected at 44/160 with 20/40 inner-band success. M17 is evidence of same-interface capability, not a learned candidate. No candidate has an evidence-backed protected role.",
+        "completed_operations": [
+          "E50"
+        ],
+        "cumulative_resource_use": "The campaign used M1 characterization; twelve 120000-step training allocations T1-T12, each completing 120832 simulator steps; development and diagnostic measurements M2-M14 and M17-M21; controller-prior training T10; phase/history/trajectory training T11; less-coupled branch/limit training T12; and inquiry/checkpoint events through E50. No learned candidate meets the 98% development threshold and no protected official assessment has been performed.",
+        "current_goal_gap": "The best measured learned candidates are four successes short of the prior 98% development reference at 153/160. T12 measured 44/160 with 20/40 inner-band success. No learned candidate has an evidence-backed working or best-known role.",
+        "current_synthesis": "M1 established substantial transient actuation authority and at least one feasible analytic IK branch for every sampled official target. T1, T8 and T9 show that the unchanged direct-action route can reach 153/160 while preserving 40/40 inner-band behavior. M17 shows that the same bounded interface is controllable by computed torque across gain settings, including 93/93 inner-band success and no reach or hold interruptions. M18 shows that the tested controller-derived PPO action-prior recipe did not transfer that capability and remained at 153/160; this is a negative for that recipe, not for controller imitation or learned policies generally. T11 and T12 produced bounded negatives for their tested phase/history/trajectory and static branch/limit recipes: most failures were before first reach despite nonnegative nearest-branch margins, while post-reach stabilization was secondary. The unresolved causal distinction is therefore whether learned acquisition fails to reproduce the demonstrated controller behavior or whether PPO acquisition remains limiting even with direct control supervision.",
+        "decision_frontier": "I11 is closed with a limited negative for the tested static max-margin branch/limit observation contract. The next decision must distinguish transfer of same-interface computed-torque capability through controller imitation from continued PPO acquisition failure. Evidence must preserve the official target distribution, bounded action interface and uninterrupted 100-step hold semantics, and must include uniform-panel success, 40/40 inner-band behavior, first-reach and post-reach splits, velocity, branch/limit diagnostics and hold interruptions. Positive transfer at or above 196/200-equivalent would support candidate selection; persistent positive-margin non-reaching failures would redirect beyond this acquisition route; adequate-margin post-reach interruptions would elevate stabilization.",
+        "evidence_references": [
+          "M1",
+          "T1",
+          "T8",
+          "M13",
+          "T9",
+          "M14",
+          "M17",
+          "T10",
+          "M18",
+          "E40",
+          "E42",
+          "T11",
+          "M19",
+          "M20",
+          "E44",
+          "E46",
+          "T12",
+          "M21",
+          "E48",
+          "E50"
+        ],
+        "human_goal_connection": "The campaign seeks a learned policy with at least 196 uninterrupted-hold successes in the protected 200-episode official assessment. M17 established 160/160 same-interface computed-torque controllability, including complete inner-band success, but the strongest learned candidates remain at 153/160 and no candidate is justified for official assessment.",
+        "inquiry_id": null,
+        "next_direction_or_closure": "The goal-review session opens I12 and ends at this checkpoint. The fresh inquiry session should choose the first operation from the controller-imitation versus PPO-acquisition frontier, without treating training as mandatory. Any resulting candidate must be measured under uniform official coverage with the required reach, velocity, branch/limit and hold-interruption diagnostics before role assignment or official assessment.",
+        "next_question": "Can controller-imitation training transfer the demonstrated same-interface computed-torque capability to a learned policy that achieves at least 196/200-equivalent uninterrupted-hold successes under uniform official coverage while preserving the 40/40 inner-band behavior?",
+        "session_id": "S24"
+      },
+      "presentation": {
+        "backend_session_id": "a837368e-078f-4d42-b9d0-25e4e94681d3",
+        "campaign_id": "79395c88-afcd-40f0-a644-16ca95368c28",
+        "campaign_usage": "1h16m | 252.71 AIU | prompt 42.9m (87% cached) | output 294.2k",
+        "session_id": "S24",
+        "session_kind": "goal_review",
+        "session_usage": "1m15s | 4.55 AIU | prompt 490.4k (74% cached) | output 4.9k"
+      },
+      "result": {
+        "session_id": "S24",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "e629fc4fbb3d1ef17e1052dcb6b6d2fb795bd41d",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E51",
+    "inquiry_id": null,
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "T8:checkpoint-60416 and T9:checkpoint-20480 remain the strongest measured learned candidates at 153/160 but have no protected working, best-known or retained role. T10:checkpoint-10240 and T10:checkpoint-120832 also measured 153/160 and are not promoted. T11:checkpoint-120832 is rejected at 0/160, and T12:checkpoint-120832 is rejected at 44/160 with 20/40 inner-band success. M17 is evidence of same-interface capability, not a learned candidate. No candidate has an evidence-backed protected role.",
+        "completed_operations": [
+          "E50"
+        ],
+        "cumulative_resource_use": "The campaign used M1 characterization; twelve 120000-step training allocations T1-T12, each completing 120832 simulator steps; development and diagnostic measurements M2-M14 and M17-M21; controller-prior training T10; phase/history/trajectory training T11; less-coupled branch/limit training T12; and inquiry/checkpoint events through E50. No learned candidate meets the 98% development threshold and no protected official assessment has been performed.",
+        "current_goal_gap": "The best measured learned candidates are four successes short of the prior 98% development reference at 153/160. T12 measured 44/160 with 20/40 inner-band success. No learned candidate has an evidence-backed working or best-known role.",
+        "current_synthesis": "M1 established substantial transient actuation authority and at least one feasible analytic IK branch for every sampled official target. T1, T8 and T9 show that the unchanged direct-action route can reach 153/160 while preserving 40/40 inner-band behavior. M17 shows that the same bounded interface is controllable by computed torque across gain settings, including 93/93 inner-band success and no reach or hold interruptions. M18 shows that the tested controller-derived PPO action-prior recipe did not transfer that capability and remained at 153/160; this is a negative for that recipe, not for controller imitation or learned policies generally. T11 and T12 produced bounded negatives for their tested phase/history/trajectory and static branch/limit recipes: most failures were before first reach despite nonnegative nearest-branch margins, while post-reach stabilization was secondary. The unresolved causal distinction is therefore whether learned acquisition fails to reproduce the demonstrated controller behavior or whether PPO acquisition remains limiting even with direct control supervision.",
+        "decision_frontier": "I11 is closed with a limited negative for the tested static max-margin branch/limit observation contract. The next decision must distinguish transfer of same-interface computed-torque capability through controller imitation from continued PPO acquisition failure. Evidence must preserve the official target distribution, bounded action interface and uninterrupted 100-step hold semantics, and must include uniform-panel success, 40/40 inner-band behavior, first-reach and post-reach splits, velocity, branch/limit diagnostics and hold interruptions. Positive transfer at or above 196/200-equivalent would support candidate selection; persistent positive-margin non-reaching failures would redirect beyond this acquisition route; adequate-margin post-reach interruptions would elevate stabilization.",
+        "evidence_references": [
+          "M1",
+          "T1",
+          "T8",
+          "M13",
+          "T9",
+          "M14",
+          "M17",
+          "T10",
+          "M18",
+          "E40",
+          "E42",
+          "T11",
+          "M19",
+          "M20",
+          "E44",
+          "E46",
+          "T12",
+          "M21",
+          "E48",
+          "E50"
+        ],
+        "human_goal_connection": "The campaign seeks a learned policy with at least 196 uninterrupted-hold successes in the protected 200-episode official assessment. M17 established 160/160 same-interface computed-torque controllability, including complete inner-band success, but the strongest learned candidates remain at 153/160 and no candidate is justified for official assessment.",
+        "next_direction_or_closure": "The goal-review session opens I12 and ends at this checkpoint. The fresh inquiry session should choose the first operation from the controller-imitation versus PPO-acquisition frontier, without treating training as mandatory. Any resulting candidate must be measured under uniform official coverage with the required reach, velocity, branch/limit and hold-interruption diagnostics before role assignment or official assessment.",
+        "next_question": "Can controller-imitation training transfer the demonstrated same-interface computed-torque capability to a learned policy that achieves at least 196/200-equivalent uninterrupted-hold successes under uniform official coverage while preserving the 40/40 inner-band behavior?"
+      }
+    },
+    "request_fingerprint": "2ff2650ff1aa486e7241182b08b4e52cebf59502f579a4b57b012d515283fed2",
+    "session_id": "S24",
+    "supersedes": null
+  },
   "pi_checkpoint": {
-    "candidates_and_roles": "T8:checkpoint-60416 and T9:checkpoint-20480 remain the strongest measured learned candidates at 153/160 but have no protected working, best-known or retained role. T10:checkpoint-10240 and T10:checkpoint-120832 also measured 153/160 and are not promoted. T11:checkpoint-120832 is rejected at 0/160, and T12:checkpoint-120832 is rejected at 44/160 with 20/40 inner-band success. The M17 computed-torque controller is evidence of same-interface capability, not a learned candidate for the human goal. No candidate has an evidence-backed protected role.",
+    "candidates_and_roles": "T8:checkpoint-60416 and T9:checkpoint-20480 remain the strongest measured learned candidates at 153/160 but have no protected working, best-known or retained role. T10:checkpoint-10240 and T10:checkpoint-120832 also measured 153/160 and are not promoted. T11:checkpoint-120832 is rejected at 0/160, and T12:checkpoint-120832 is rejected at 44/160 with 20/40 inner-band success. M17 is evidence of same-interface capability, not a learned candidate. No candidate has an evidence-backed protected role.",
     "completed_operations": [
-      "T12",
-      "M21",
-      "E48"
+      "E50"
     ],
-    "cumulative_resource_use": "The campaign used M1 characterization; twelve 120000-step training allocations T1-T12, each completing 120832 simulator steps; development and diagnostic measurements M2-M14, M17-M21; controller-prior training T10; phase/history/trajectory training T11; less-coupled branch/limit training T12; and inquiry/checkpoint events through E48. No learned candidate meets the 98% development threshold and no protected official assessment has been performed.",
-    "current_goal_gap": "The strongest measured learned candidates remain four development successes short of the prior 98% reference at 153/160, while the latest less-coupled T12 candidate achieved only 44/160 and 20/40 inner-band success. No candidate has an evidence-backed working or best-known role, and no protected official assessment is justified.",
-    "current_synthesis": "M1 established substantial transient actuation authority and at least one feasible analytic IK branch for every sampled official target, with 64 of 576 grid targets having only one feasible branch. T1 measured 150/160 with 40/40 inner-band success; T8 and T9 improved the unchanged direct-action route to 153/160 while preserving 40/40 inner-band success, with residual reach and hold failures. M17 then established that the unchanged bounded action interface is controllable: computed-torque control achieved 160/160 across gain settings, including 93/93 inner-band success and no reach or hold interruptions. M18 showed that the tested controller-derived PPO action-prior recipe did not transfer that capability and remained at 153/160. T11's coupled phase/history/trajectory recipe measured 0/160; M20 found 150 failures before first reach, 10 after first reach with 134 interruptions, and nonnegative nearest-branch margins, establishing a bounded negative for that recipe rather than for policy methods generally. T12 separated static branch/limit context from trajectory timing and recovered a nonzero training signal, but M21 measured only 44/160, 20/40 inner-band success, 103/116 failures without first reach, and 13 post-reach failures with 13 interruptions. Of the 103 non-reaching failures, 95 had nonnegative nearest-branch limit margins. E48 therefore closed I11 with a limited negative: this max-margin static branch/limit observation contract is insufficient, while the dominant unresolved obstacle is learned acquisition or trajectory execution despite demonstrated same-interface controllability; hold stabilization remains secondary.",
-    "decision_frontier": "I11 is closed with a limited negative. The tested less-coupled static max-margin branch/limit contract improved the learning trajectory relative to T11 but did not recover uniform acquisition or inner-band coverage: most failures occurred before first reach despite nonnegative nearest-branch margins. This shifts the scientific frontier toward whether a learned policy can acquire and reproduce the demonstrated computed-torque behavior when the controller trajectory itself is used as the learning signal, versus whether PPO acquisition remains the limiting capability even with direct control supervision. The next design must preserve the official target distribution, bounded action interface and uninterrupted hold semantics, and must be judged by uniform-panel success, 40/40 inner-band behavior, first-reach and post-reach splits, velocity, branch/limit diagnostics and hold interruptions. Positive transfer at or above 196/200-equivalent would support candidate selection; persistent positive-margin non-reaching failures would redirect beyond the tested PPO acquisition route, while adequate-margin post-reach interruptions would elevate stabilization.",
+    "cumulative_resource_use": "The campaign used M1 characterization; twelve 120000-step training allocations T1-T12, each completing 120832 simulator steps; development and diagnostic measurements M2-M14 and M17-M21; controller-prior training T10; phase/history/trajectory training T11; less-coupled branch/limit training T12; and inquiry/checkpoint events through E50. No learned candidate meets the 98% development threshold and no protected official assessment has been performed.",
+    "current_goal_gap": "The best measured learned candidates are four successes short of the prior 98% development reference at 153/160. T12 measured 44/160 with 20/40 inner-band success. No learned candidate has an evidence-backed working or best-known role.",
+    "current_synthesis": "M1 established substantial transient actuation authority and at least one feasible analytic IK branch for every sampled official target. T1, T8 and T9 show that the unchanged direct-action route can reach 153/160 while preserving 40/40 inner-band behavior. M17 shows that the same bounded interface is controllable by computed torque across gain settings, including 93/93 inner-band success and no reach or hold interruptions. M18 shows that the tested controller-derived PPO action-prior recipe did not transfer that capability and remained at 153/160; this is a negative for that recipe, not for controller imitation or learned policies generally. T11 and T12 produced bounded negatives for their tested phase/history/trajectory and static branch/limit recipes: most failures were before first reach despite nonnegative nearest-branch margins, while post-reach stabilization was secondary. The unresolved causal distinction is therefore whether learned acquisition fails to reproduce the demonstrated controller behavior or whether PPO acquisition remains limiting even with direct control supervision.",
+    "decision_frontier": "I11 is closed with a limited negative for the tested static max-margin branch/limit observation contract. The next decision must distinguish transfer of same-interface computed-torque capability through controller imitation from continued PPO acquisition failure. Evidence must preserve the official target distribution, bounded action interface and uninterrupted 100-step hold semantics, and must include uniform-panel success, 40/40 inner-band behavior, first-reach and post-reach splits, velocity, branch/limit diagnostics and hold interruptions. Positive transfer at or above 196/200-equivalent would support candidate selection; persistent positive-margin non-reaching failures would redirect beyond this acquisition route; adequate-margin post-reach interruptions would elevate stabilization.",
     "evidence_references": [
       "M1",
       "T1",
@@ -25911,14 +26084,15 @@
       "E46",
       "T12",
       "M21",
-      "E48"
+      "E48",
+      "E50"
     ],
-    "human_goal_connection": "The human goal remains at least 196 successful episodes out of 200 under the official target distribution, with every success requiring an uninterrupted 100-step hold. No learned candidate meets that threshold: T8, T9 and T10 measured 153/160, T12 measured 44/160, and M17 established 160/160 same-interface computed-torque controllability. I11 is closed with a limited negative, so the next line of work must address learned acquisition or controller imitation rather than official assessment.",
-    "inquiry_id": "I11",
-    "next_direction_or_closure": "I11 is closed by E48 with a limited negative for the tested static branch/limit recipe. The next fresh inquiry should investigate controller imitation as the most direct route from the demonstrated 160/160 same-interface capability to learned acquisition, without assuming that training is mandatory. Any candidate must be measured on uniform official coverage with complete inner-band, first-reach, post-reach, velocity, branch/limit and hold-interruption diagnostics before role assignment or official assessment.",
+    "human_goal_connection": "The campaign seeks a learned policy with at least 196 uninterrupted-hold successes in the protected 200-episode official assessment. M17 established 160/160 same-interface computed-torque controllability, including complete inner-band success, but the strongest learned candidates remain at 153/160 and no candidate is justified for official assessment.",
+    "inquiry_id": null,
+    "next_direction_or_closure": "The goal-review session opens I12 and ends at this checkpoint. The fresh inquiry session should choose the first operation from the controller-imitation versus PPO-acquisition frontier, without treating training as mandatory. Any resulting candidate must be measured under uniform official coverage with the required reach, velocity, branch/limit and hold-interruption diagnostics before role assignment or official assessment.",
     "next_question": "Can controller-imitation training transfer the demonstrated same-interface computed-torque capability to a learned policy that achieves at least 196/200-equivalent uninterrupted-hold successes under uniform official coverage while preserving the 40/40 inner-band behavior?",
-    "scientific_commit": "c65edc7306891511aea0e505292ccc9a52be2a1a",
-    "session_id": "S23"
+    "scientific_commit": "e629fc4fbb3d1ef17e1052dcb6b6d2fb795bd41d",
+    "session_id": "S24"
   },
   "schema_version": 6,
   "scientific_model": {
@@ -25926,21 +26100,6 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "a837368e-078f-4d42-b9d0-25e4e94681d3",
-    "id": "S24",
-    "inquiry_id": null,
-    "kind": "goal_review",
-    "objective": "Use the completed evidence to update the scientific direction toward the human goal. Request measurements when they resolve an uncertainty or develop the method. Then choose one outcome: request the official assessment, or open one bounded goal-linked inquiry. Frame the inquiry as an unresolved distinction, obstacle, or capability need; do not encode a selected training run, measurement, implementation, or recipe as the question.",
-    "operation_ids": [
-      "E50"
-    ],
-    "scientific_parent_commit": "eb5cddc1b32f97e6bb034747356e4cd55550e117"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
