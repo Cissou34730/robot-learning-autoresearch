@@ -1,16 +1,5 @@
 {
-  "active_inquiry": {
-    "closure_condition": "Close when completed uniform-distribution evidence under the unchanged bounded direct-action interface includes the required inner-band, first-reach, post-reach, velocity, branch/limit-margin and hold-interruption diagnostics, and either demonstrates a learned candidate at or above the 196/200-equivalent threshold while preserving 40/40 inner-band success, or shows persistent adequate-margin pre-reach failure after a controlled representation-versus-PPO comparison sufficient for a limited or inconclusive conclusion.",
-    "goal_connection": "The human goal requires at least 196 uninterrupted-hold successes in the protected 200-episode assessment. The strongest learned candidates remain at 153/160 despite same-interface computed-torque capability at 160/160, so resolving whether learning can acquire the available capability is the shortest credible route to the remaining four-success development gap.",
-    "handoff_conclusion": "M1 established substantial transient actuation authority and at least one feasible analytic IK branch for every sampled official target, with 64 of 576 grid targets having only one feasible branch. T1, T8 and T9 established that the unchanged direct-action route can reach 153/160 while preserving 40/40 inner-band behavior. M17 established same-interface computed-torque controllability at 160/160 across gain settings, including 93/93 inner-band success and no reach or hold interruptions. M18 and M22 showed that the tested controller-derived PPO action-prior recipe remained at 153/160; its seven failures included four before first reach and three post-reach hold interruptions, all with nonpositive nearest-branch limit margins, so this is a recipe-specific negative rather than a method-level rejection. T11's smooth trajectory-conditioned phase/history route achieved 0/160. T12's static max-margin branch/limit route achieved 44/160 and only 20/40 inner-band success; 103 failures were before first reach, including 95 with positive nearest-analytic-branch limit margin. E56 therefore closed I13 as a limited negative for the tested explicit trajectory and branch/limit routes. The leading interpretation is now a broader learned-acquisition or representation limitation, while the evidence does not distinguish observation aliasing, action-interface representation, and PPO optimization failure and does not invalidate learned policies generally.",
-    "handoff_question": "Can a learned policy overcome the persistent adequate-margin pre-reach failures through a broader acquisition/representation redesign while preserving the direct-action interface and 40/40 inner-band behavior, and do controlled evidence distinguish observation/action representation limits from PPO optimization failure?",
-    "handoff_source_session_id": "S27",
-    "id": "I14",
-    "opened_in_session": "S28",
-    "question": "Can a learned policy overcome the persistent adequate-margin pre-reach failures through a broader acquisition/representation redesign while preserving the direct-action interface and 40/40 inner-band behavior, and do controlled evidence distinguish observation/action representation limits from PPO optimization failure?",
-    "rationale": "M17 establishes that the interface and compiled dynamics admit 160/160 computed-torque behavior, while T10 and M22 show that the tested controller-derived PPO recipe remains at 153/160 and T11/T12 show recipe-specific failures for phase/history and static branch/limit routes. Those results support continuing learned acquisition but do not distinguish observation or action representation limits from PPO optimization and credit assignment. A bounded inquiry is therefore more decision-relevant than official assessment of a candidate below threshold or another unpaired intervention.",
-    "reframes": []
-  },
+  "active_inquiry": null,
   "campaign": {
     "base_commit": "4e87f6053469bb6648d355bc03a7a70faa91f33f",
     "id": "79395c88-afcd-40f0-a644-16ca95368c28",
@@ -13135,7 +13124,7 @@
     }
   },
   "counters": {
-    "event": 61,
+    "event": 62,
     "inquiry": 14,
     "measurement": 28,
     "session": 30,
@@ -35285,9 +35274,63 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-09T17:22:49Z",
+      "error": null,
+      "id": "E62",
+      "inquiry_id": "I14",
+      "kind": "inquiry",
+      "request": {
+        "action": "close",
+        "outcome": "limited_negative",
+        "reason": "I14 is resolved as a limited negative for the tested PPO direct-action acquisition route, not for learned policies generally. M23/M24 showed the smooth target-geometry representation was substantially worse than T1; M25 showed that extending its PPO horizon improved but did not solve that route. M26 showed that restoring the original 11-value observation with the 2048-step horizon reached 156/160, but M27 exposed a tradeoff at 190/200 with only 107/113 inner-band successes. T16 then replicated the original observation with the 1024-step horizon: M28 reached 192/200, narrowly exceeded T1 by one paired success, but still had 7 pre-reach failures including 2 with positive nearest-branch limit margin and achieved only 110/113 inner-band successes, while T1 had 113/113 inner-band successes. Across T15 and T16, positive-margin pre-reach failures persisted despite the controlled representation and horizon comparisons. The evidence therefore does not establish a physical or bounded-action limitation, nor does it reject PPO or learned control generally; it establishes that the tested PPO observation/horizon recipes do not meet the 196/200 goal threshold while preserving the required inner-band behavior."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I14",
+        "outcome": "limited_negative",
+        "reason": "I14 is resolved as a limited negative for the tested PPO direct-action acquisition route, not for learned policies generally. M23/M24 showed the smooth target-geometry representation was substantially worse than T1; M25 showed that extending its PPO horizon improved but did not solve that route. M26 showed that restoring the original 11-value observation with the 2048-step horizon reached 156/160, but M27 exposed a tradeoff at 190/200 with only 107/113 inner-band successes. T16 then replicated the original observation with the 1024-step horizon: M28 reached 192/200, narrowly exceeded T1 by one paired success, but still had 7 pre-reach failures including 2 with positive nearest-branch limit margin and achieved only 110/113 inner-band successes, while T1 had 113/113 inner-band successes. Across T15 and T16, positive-margin pre-reach failures persisted despite the controlled representation and horizon comparisons. The evidence therefore does not establish a physical or bounded-action limitation, nor does it reject PPO or learned control generally; it establishes that the tested PPO observation/horizon recipes do not meet the 196/200 goal threshold while preserving the required inner-band behavior.",
+        "status": "completed"
+      },
+      "session_id": "S30",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "close",
+        "inquiry_id": "I14",
+        "outcome": "limited_negative",
+        "reason": "I14 is resolved as a limited negative for the tested PPO direct-action acquisition route, not for learned policies generally. M23/M24 showed the smooth target-geometry representation was substantially worse than T1; M25 showed that extending its PPO horizon improved but did not solve that route. M26 showed that restoring the original 11-value observation with the 2048-step horizon reached 156/160, but M27 exposed a tradeoff at 190/200 with only 107/113 inner-band successes. T16 then replicated the original observation with the 1024-step horizon: M28 reached 192/200, narrowly exceeded T1 by one paired success, but still had 7 pre-reach failures including 2 with positive nearest-branch limit margin and achieved only 110/113 inner-band successes, while T1 had 113/113 inner-band successes. Across T15 and T16, positive-margin pre-reach failures persisted despite the controlled representation and horizon comparisons. The evidence therefore does not establish a physical or bounded-action limitation, nor does it reject PPO or learned control generally; it establishes that the tested PPO observation/horizon recipes do not meet the 196/200 goal threshold while preserving the required inner-band behavior."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I14",
+        "outcome": "limited_negative",
+        "reason": "I14 is resolved as a limited negative for the tested PPO direct-action acquisition route, not for learned policies generally. M23/M24 showed the smooth target-geometry representation was substantially worse than T1; M25 showed that extending its PPO horizon improved but did not solve that route. M26 showed that restoring the original 11-value observation with the 2048-step horizon reached 156/160, but M27 exposed a tradeoff at 190/200 with only 107/113 inner-band successes. T16 then replicated the original observation with the 1024-step horizon: M28 reached 192/200, narrowly exceeded T1 by one paired success, but still had 7 pre-reach failures including 2 with positive nearest-branch limit margin and achieved only 110/113 inner-band successes, while T1 had 113/113 inner-band successes. Across T15 and T16, positive-margin pre-reach failures persisted despite the controlled representation and horizon comparisons. The evidence therefore does not establish a physical or bounded-action limitation, nor does it reject PPO or learned control generally; it establishes that the tested PPO observation/horizon recipes do not meet the 196/200 goal threshold while preserving the required inner-band behavior.",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E62",
+    "inquiry_id": "I14",
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "close",
+        "outcome": "limited_negative",
+        "reason": "I14 is resolved as a limited negative for the tested PPO direct-action acquisition route, not for learned policies generally. M23/M24 showed the smooth target-geometry representation was substantially worse than T1; M25 showed that extending its PPO horizon improved but did not solve that route. M26 showed that restoring the original 11-value observation with the 2048-step horizon reached 156/160, but M27 exposed a tradeoff at 190/200 with only 107/113 inner-band successes. T16 then replicated the original observation with the 1024-step horizon: M28 reached 192/200, narrowly exceeded T1 by one paired success, but still had 7 pre-reach failures including 2 with positive nearest-branch limit margin and achieved only 110/113 inner-band successes, while T1 had 113/113 inner-band successes. Across T15 and T16, positive-margin pre-reach failures persisted despite the controlled representation and horizon comparisons. The evidence therefore does not establish a physical or bounded-action limitation, nor does it reject PPO or learned control generally; it establishes that the tested PPO observation/horizon recipes do not meet the 196/200 goal threshold while preserving the required inner-band behavior."
+      }
+    },
+    "request_fingerprint": "305954e7eb23836363256d77e58d4585157f0a57ba5dabfb47c4319890d01654",
+    "session_id": "S30",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No learned candidate has an evidence-backed working, best-known, or retained role. T1 remains the measured direct-action reference; T14 is an unassigned experimental candidate with 38.75% development success; M17 is model-based capability evidence rather than a learned candidate role.",
     "completed_operations": [
@@ -35340,7 +35383,8 @@
       "M26",
       "M27",
       "T16",
-      "M28"
+      "M28",
+      "E62"
     ],
     "scientific_parent_commit": "48a852c0747532933ff84990561c72452653e56d"
   },
