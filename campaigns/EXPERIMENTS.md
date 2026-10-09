@@ -9,3 +9,4 @@
 | M5 | measurement | - | completed |
 | T1 | training | - | completed |
 | M6 | measurement | - | completed |
+| E1 | checkpoint | - | checkpointed |
