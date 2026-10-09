@@ -7,3 +7,4 @@
 | M3 | measurement | - | failed |
 | M4 | measurement | - | failed |
 | M5 | measurement | - | completed |
+| T1 | training | - | completed |
