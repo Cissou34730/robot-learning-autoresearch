@@ -45,3 +45,4 @@
 | E27 | checkpoint | - | checkpointed |
 | T8 | training | I7 | failed |
 | T9 | training | I7 | completed |
+| M8 | measurement | I7 | completed |
