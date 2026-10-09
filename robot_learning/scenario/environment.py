@@ -11,6 +11,7 @@ different distribution, tolerance or horizon. The human-defined task is
 enforced only by the protected benchmark in `benchmark/`.
 """
 
+from collections.abc import Callable
 from typing import Any, ClassVar
 
 import gymnasium as gym
@@ -42,11 +43,15 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
         frame_skip: int = FRAME_SKIP,
         max_episode_steps: int = MAX_EPISODE_STEPS,
         policy_runtime=None,
+        target_radius_sampler: Callable[[np.random.Generator], float] | None = None,
+        branch_guidance: bool = False,
     ) -> None:
         super().__init__()
         self.max_episode_steps = max_episode_steps
         self.frame_skip = frame_skip
         self.target_radius_range = target_radius_range
+        self.target_radius_sampler = target_radius_sampler
+        self.branch_guidance = branch_guidance
         self.policy_io = policy_runtime.io if policy_runtime else make_policy_io()
 
         self.model = mujoco.MjModel.from_xml_path(str(TWO_JOINT_ARM_XML_PATH))
@@ -71,6 +76,7 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
         self._previous_distance = 0.0
         self._held_steps = 0
         self._outside_after_hold = False
+        self._previous_branch_error = 0.0
 
     def _end_effector_position(self) -> np.ndarray:
         return self.data.site("end_effector").xpos.copy()
@@ -82,11 +88,14 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
 
     def _sample_target_position(self) -> None:
         angle = float(self.np_random.uniform(-np.pi, np.pi))
-        radius = float(
-            self.np_random.uniform(
-                self.target_radius_range[0], self.target_radius_range[1]
+        if self.target_radius_sampler is None:
+            radius = float(
+                self.np_random.uniform(
+                    self.target_radius_range[0], self.target_radius_range[1]
+                )
             )
-        )
+        else:
+            radius = float(self.target_radius_sampler(self.np_random))
         # The arm is planar but its plane sits above the world origin. Keep the
         # target in that same plane so the 3-D distance can genuinely reach zero.
         target_z = float(self._end_effector_position()[2])
@@ -95,6 +104,12 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
             radius * np.sin(angle),
             target_z,
         ]
+
+    def _nearest_branch_error(self, observation: np.ndarray) -> float:
+        return min(
+            float(np.linalg.norm(observation[7:9])),
+            float(np.linalg.norm(observation[9:11])),
+        )
 
     def _observation(self) -> np.ndarray:
         return self.policy_io.observe(self.data)
@@ -117,7 +132,9 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
         self._previous_distance = self._distance_to_target()
         self._held_steps = 0
         self._outside_after_hold = False
-        return self._observation(), {}
+        observation = self._observation()
+        self._previous_branch_error = self._nearest_branch_error(observation)
+        return observation, {}
 
     def step(
         self, action: np.ndarray
@@ -142,6 +159,12 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
                 self._outside_after_hold = True
             self._held_steps = 0
 
+        observation = self._observation()
+        branch_error = self._nearest_branch_error(observation)
+        branch_error_progress = 0.0
+        if self.branch_guidance and self._held_steps == 0:
+            branch_error_progress = self._previous_branch_error - branch_error
+
         reward = reach_reward(
             self._previous_distance,
             distance,
@@ -151,8 +174,10 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
             previous_held_steps=previous_held_steps,
             hold_steps_required=self.hold_steps_required,
             penalize_outside=self._outside_after_hold,
+            branch_error_progress=branch_error_progress,
         )
         self._previous_distance = distance
+        self._previous_branch_error = branch_error
 
         self._step_count += 1
         terminated = self._held_steps >= self.hold_steps_required
@@ -165,7 +190,7 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
             # ever sees `reward.total`.
             "reward_components": reward.components,
         }
-        return self._observation(), float(reward.total), terminated, truncated, info
+        return observation, float(reward.total), terminated, truncated, info
 
 
 def make_evaluation_env(*, policy_runtime=None) -> gym.Env:
