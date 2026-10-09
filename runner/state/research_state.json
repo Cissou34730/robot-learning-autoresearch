@@ -26286,38 +26286,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I15",
-        "outcome": "I15 closes with a limited, recipe-specific negative result: the T17 branch- and trajectory-conditioned safe radial-velocity envelope did not improve the matched development outcome.",
-        "reason": "M28 evaluated T17 and T3 on the same 160-episode panel. Both achieved 153 complete holds (95.625 percent), and the paired comparison had zero discordant episodes. T17 therefore failed I15's positive protection threshold of at least 157 complete holds, regardless of its training-buffer statistics; the inquiry cannot support the claim that this shaping recipe safely converts the observed negative-angle arrival association into better uninterrupted holds. The result rejects this distance-envelope and overshoot-risk controller, not branch conditioning, trajectory awareness, or terminal control generally. The next direction should move away from another pre-arrival velocity-shaping variant and reassess the residual mechanism through a different terminal-state or plant-control representation before spending another training allocation."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I15",
-        "outcome": "I15 closes with a limited, recipe-specific negative result: the T17 branch- and trajectory-conditioned safe radial-velocity envelope did not improve the matched development outcome.",
-        "reason": "M28 evaluated T17 and T3 on the same 160-episode panel. Both achieved 153 complete holds (95.625 percent), and the paired comparison had zero discordant episodes. T17 therefore failed I15's positive protection threshold of at least 157 complete holds, regardless of its training-buffer statistics; the inquiry cannot support the claim that this shaping recipe safely converts the observed negative-angle arrival association into better uninterrupted holds. The result rejects this distance-envelope and overshoot-risk controller, not branch conditioning, trajectory awareness, or terminal control generally. The next direction should move away from another pre-arrival velocity-shaping variant and reassess the residual mechanism through a different terminal-state or plant-control representation before spending another training allocation.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E63",
-    "inquiry_id": "I15",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "I15 closes with a limited, recipe-specific negative result: the T17 branch- and trajectory-conditioned safe radial-velocity envelope did not improve the matched development outcome.",
-        "reason": "M28 evaluated T17 and T3 on the same 160-episode panel. Both achieved 153 complete holds (95.625 percent), and the paired comparison had zero discordant episodes. T17 therefore failed I15's positive protection threshold of at least 157 complete holds, regardless of its training-buffer statistics; the inquiry cannot support the claim that this shaping recipe safely converts the observed negative-angle arrival association into better uninterrupted holds. The result rejects this distance-envelope and overshoot-risk controller, not branch conditioning, trajectory awareness, or terminal control generally. The next direction should move away from another pre-arrival velocity-shaping variant and reassess the residual mechanism through a different terminal-state or plant-control representation before spending another training allocation."
-      }
-    },
-    "request_fingerprint": "8fdeccb5b8d17ca8ed8b5a2d16df0a0f4b4fe1605a6b7fba1fc88c8fa9631bea",
-    "session_id": "S31",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T3:checkpoint-120832 remains the strongest evidence-backed development candidate at 153/160 complete holds, 157/160 first reaches, and four hold interruptions across the cited matched panels. T16:checkpoint-120832 matched T3's complete holds and first reaches but increased interruptions to eight and is not promoted. No candidate has a working, best-known, or retained role.",
     "completed_operations": [
