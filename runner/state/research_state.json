@@ -3841,38 +3841,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I2",
-        "outcome": "limited negative result with geometry-conditioned control redirect",
-        "reason": "M4 satisfies I2's closure condition by showing persistent bearing- and reach-conditioned deficits that redirect the campaign away from treating fresh uniform full-radius PPO as a sufficient intervention. On identical seeds, T1 achieved 70.31% at checkpoint-90112 and 67.97% at checkpoint-115712, while T2 achieved 47.66% at checkpoint-90112 and 37.50% at checkpoint-120832. T2's late success was 11/26 front, 1/35 left, 1/26 back, and 35/41 right; its mid success was 23/26 front, 0/35 left, 1/26 back, and 37/41 right. T1 succeeded on the same late bearing groups at 13/26, 27/35, 24/26, and 23/41, respectively. T2's radius-conditioned late results were 14/37 at 6-10 cm, 18/41 at 10-14 cm, and 16/50 at 14-20 cm, with 22, 23, and 27 never-reached failures; the mid checkpoint showed the same broad reach deficit. This bearing asymmetry is consequential because T1 reaches the same physical target sectors under the same action bounds, so the evidence does not support a globally unreachable geometry or a campaign-wide lack of actuator authority. T2 selected the open analytic branch for all first reaches, with nonzero but modest branch-switch counts, while its actions reached the bound in every radius bin; these observations motivate a geometry-conditioned approach/control or representation investigation rather than an unqualified dynamics claim. The majority of T2 failures never reached tolerance, so approach control and policy acquisition dominate the measured deficit; seven late outer-bin episodes reached but failed the hold, preserving a secondary stabilization problem. The result does not fully separate PPO distribution credit assignment from observation/representation or learned bearing-control failure, and it does not establish that coverage is ineffective in general. It closes I2 as a limited result and redirects the campaign toward a geometry-conditioned control/representation route with explicit reach-versus-hold diagnostics."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I2",
-        "outcome": "limited negative result with geometry-conditioned control redirect",
-        "reason": "M4 satisfies I2's closure condition by showing persistent bearing- and reach-conditioned deficits that redirect the campaign away from treating fresh uniform full-radius PPO as a sufficient intervention. On identical seeds, T1 achieved 70.31% at checkpoint-90112 and 67.97% at checkpoint-115712, while T2 achieved 47.66% at checkpoint-90112 and 37.50% at checkpoint-120832. T2's late success was 11/26 front, 1/35 left, 1/26 back, and 35/41 right; its mid success was 23/26 front, 0/35 left, 1/26 back, and 37/41 right. T1 succeeded on the same late bearing groups at 13/26, 27/35, 24/26, and 23/41, respectively. T2's radius-conditioned late results were 14/37 at 6-10 cm, 18/41 at 10-14 cm, and 16/50 at 14-20 cm, with 22, 23, and 27 never-reached failures; the mid checkpoint showed the same broad reach deficit. This bearing asymmetry is consequential because T1 reaches the same physical target sectors under the same action bounds, so the evidence does not support a globally unreachable geometry or a campaign-wide lack of actuator authority. T2 selected the open analytic branch for all first reaches, with nonzero but modest branch-switch counts, while its actions reached the bound in every radius bin; these observations motivate a geometry-conditioned approach/control or representation investigation rather than an unqualified dynamics claim. The majority of T2 failures never reached tolerance, so approach control and policy acquisition dominate the measured deficit; seven late outer-bin episodes reached but failed the hold, preserving a secondary stabilization problem. The result does not fully separate PPO distribution credit assignment from observation/representation or learned bearing-control failure, and it does not establish that coverage is ineffective in general. It closes I2 as a limited result and redirects the campaign toward a geometry-conditioned control/representation route with explicit reach-versus-hold diagnostics.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E8",
-    "inquiry_id": "I2",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "limited negative result with geometry-conditioned control redirect",
-        "reason": "M4 satisfies I2's closure condition by showing persistent bearing- and reach-conditioned deficits that redirect the campaign away from treating fresh uniform full-radius PPO as a sufficient intervention. On identical seeds, T1 achieved 70.31% at checkpoint-90112 and 67.97% at checkpoint-115712, while T2 achieved 47.66% at checkpoint-90112 and 37.50% at checkpoint-120832. T2's late success was 11/26 front, 1/35 left, 1/26 back, and 35/41 right; its mid success was 23/26 front, 0/35 left, 1/26 back, and 37/41 right. T1 succeeded on the same late bearing groups at 13/26, 27/35, 24/26, and 23/41, respectively. T2's radius-conditioned late results were 14/37 at 6-10 cm, 18/41 at 10-14 cm, and 16/50 at 14-20 cm, with 22, 23, and 27 never-reached failures; the mid checkpoint showed the same broad reach deficit. This bearing asymmetry is consequential because T1 reaches the same physical target sectors under the same action bounds, so the evidence does not support a globally unreachable geometry or a campaign-wide lack of actuator authority. T2 selected the open analytic branch for all first reaches, with nonzero but modest branch-switch counts, while its actions reached the bound in every radius bin; these observations motivate a geometry-conditioned approach/control or representation investigation rather than an unqualified dynamics claim. The majority of T2 failures never reached tolerance, so approach control and policy acquisition dominate the measured deficit; seven late outer-bin episodes reached but failed the hold, preserving a secondary stabilization problem. The result does not fully separate PPO distribution credit assignment from observation/representation or learned bearing-control failure, and it does not establish that coverage is ineffective in general. It closes I2 as a limited result and redirects the campaign toward a geometry-conditioned control/representation route with explicit reach-versus-hold diagnostics."
-      }
-    },
-    "request_fingerprint": "bcf85fd3a459185cb8774ce6f6a3691a900d5240ca2aa3200068e2f0c7118954",
-    "session_id": "S5",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T1:checkpoint-115712 remains the strongest development-measured candidate, with 71.0% on M1, 78.5% on M2, and 75.0% on M3. T2:checkpoint-120832 measured 36.0% on M3. No candidate has a working, best-known, or retained role because neither is near the development objective.",
     "completed_operations": [
