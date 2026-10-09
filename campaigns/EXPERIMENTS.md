@@ -26,3 +26,4 @@
 | E13 | checkpoint | I3 | checkpointed |
 | E14 | inquiry | I4 | completed |
 | E15 | checkpoint | - | checkpointed |
+| E16 | restore_recipe | I4 | restored |
