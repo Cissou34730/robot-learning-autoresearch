@@ -10666,7 +10666,7 @@
   "counters": {
     "event": 58,
     "inquiry": 14,
-    "measurement": 25,
+    "measurement": 27,
     "session": 29,
     "training": 16
   },
@@ -22862,9 +22862,442 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-09T02:14:34Z",
+      "error": "robot_learning.lab.residual_margin failed:\n\nTraceback (most recent call last):\n  File \"<frozen runpy>\", line 203, in _run_module_as_main\n  File \"<frozen runpy>\", line 88, in _run_code\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\residual_margin.py\", line 494, in <module>\n    main()\n    ~~~~^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\residual_margin.py\", line 488, in main\n    json.dumps(measure(args.candidate, args.episodes, args.seed), indent=2) + \"\\n\",\n               ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\residual_margin.py\", line 254, in measure\n    runtime = load_runtime(candidate)\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\contracts\\policy_runtime.py\", line 181, in load_runtime\n    return PolicyRuntime(validate_runtime_files(model_path), model_path, algorithm)\n                         ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\contracts\\policy_runtime.py\", line 94, in validate_runtime_files\n    raise ValueError(\n    ...<2 lines>...\n    )\nValueError: Missing policy_runtime.pkl. Legacy policies require explicit migration from their historical scientific code; current observations must not be substituted.\n",
+      "id": "M26",
+      "inquiry_id": "I14",
+      "kind": "measurement",
+      "request": {
+        "description": "Matched I14 evaluation of T16 against T3 on the 160-episode development panel, with branch- and trajectory-stratified arrival and zero-action retention-margin measurements for both candidates.",
+        "measurements": [
+          {
+            "candidate": "T16:checkpoint-120832",
+            "episodes": 160,
+            "instrument": "research_evaluation",
+            "label": "I14 T16 localized shaping",
+            "seed": 4200
+          },
+          {
+            "candidate": "T3:checkpoint-120832",
+            "episodes": 160,
+            "instrument": "research_evaluation",
+            "label": "I14 T3 matched control",
+            "seed": 4200
+          },
+          {
+            "args": [
+              "--candidate",
+              "T16:checkpoint-120832",
+              "--episodes",
+              "160",
+              "--seed",
+              "4200",
+              "--artifact",
+              "campaigns/evaluations/1ae27a27-6880-4ca6-9d50-e6498e771cb7/python-module-M26-1-i14-t16-residual-margin.json"
+            ],
+            "artifact": "campaigns/evaluations/1ae27a27-6880-4ca6-9d50-e6498e771cb7/python-module-M26-1-i14-t16-residual-margin.json",
+            "instrument": "python_module",
+            "label": "I14 T16 arrival and retention margin",
+            "module": "robot_learning.lab.residual_margin"
+          },
+          {
+            "args": [
+              "--candidate",
+              "T3:checkpoint-120832",
+              "--episodes",
+              "160",
+              "--seed",
+              "4200",
+              "--artifact",
+              "campaigns/evaluations/1ae27a27-6880-4ca6-9d50-e6498e771cb7/python-module-M26-2-i14-t3-residual-margin.json"
+            ],
+            "artifact": "campaigns/evaluations/1ae27a27-6880-4ca6-9d50-e6498e771cb7/python-module-M26-2-i14-t3-residual-margin.json",
+            "instrument": "python_module",
+            "label": "I14 T3 arrival and retention margin control",
+            "module": "robot_learning.lab.residual_margin"
+          }
+        ],
+        "paired_comparisons": [
+          {
+            "candidate": "T16:checkpoint-120832",
+            "reference": "T3:checkpoint-120832"
+          }
+        ],
+        "rationale": "T16 is the single localized folded-branch negative-angle pre-arrival shaping design selected for I14. T3 is the controlled reference. The matched research evaluation measures first reaches, complete uninterrupted holds, and terminal hold interruptions; the paired residual-margin measurements test whether the intervention improves the demonstrated negative-angle arrival velocity or zero-action sampled retention margin. Meeting all I14 thresholds would support positive closure; reduced route coverage, added interruptions, unchanged margin, or improvement outside the residual strata will close the inquiry with a negative or limited recipe-specific result."
+      },
+      "result": {
+        "error": "robot_learning.lab.residual_margin failed:\n\nTraceback (most recent call last):\n  File \"<frozen runpy>\", line 203, in _run_module_as_main\n  File \"<frozen runpy>\", line 88, in _run_code\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\residual_margin.py\", line 494, in <module>\n    main()\n    ~~~~^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\residual_margin.py\", line 488, in main\n    json.dumps(measure(args.candidate, args.episodes, args.seed), indent=2) + \"\\n\",\n               ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\residual_margin.py\", line 254, in measure\n    runtime = load_runtime(candidate)\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\contracts\\policy_runtime.py\", line 181, in load_runtime\n    return PolicyRuntime(validate_runtime_files(model_path), model_path, algorithm)\n                         ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\contracts\\policy_runtime.py\", line 94, in validate_runtime_files\n    raise ValueError(\n    ...<2 lines>...\n    )\nValueError: Missing policy_runtime.pkl. Legacy policies require explicit migration from their historical scientific code; current observations must not be substituted.\n",
+        "status": "failed"
+      },
+      "session_id": "S29",
+      "status": "failed",
+      "superseded_by": "M27",
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "evaluation_semantics": "604d52985c97",
+      "measurements": [
+        {
+          "artifact": "campaigns/checkpoints/candidates/1ae27a27-6880-4ca6-9d50-e6498e771cb7/t16/checkpoint-120832",
+          "candidate": "T16:checkpoint-120832",
+          "candidate_id": "T16:checkpoint-120832",
+          "episodes": 160,
+          "instrument": "research_evaluation",
+          "label": "I14 T16 localized shaping",
+          "model_fingerprint": "567dbd891cca5defa5f8402ada28349bff915f79d7d98ddedcb19f76d8e13640",
+          "seed": 4200
+        },
+        {
+          "artifact": "campaigns/checkpoints/candidates/1ae27a27-6880-4ca6-9d50-e6498e771cb7/t3/checkpoint-120832",
+          "candidate": "T3:checkpoint-120832",
+          "candidate_id": "T3:checkpoint-120832",
+          "episodes": 160,
+          "instrument": "research_evaluation",
+          "label": "I14 T3 matched control",
+          "model_fingerprint": "b7e19a6bacfecbcd4bae2bed3afe7d01df9193de0399b3a887a91a2c073688da",
+          "seed": 4200
+        },
+        {
+          "args": [
+            "--candidate",
+            "campaigns\\checkpoints\\candidates\\1ae27a27-6880-4ca6-9d50-e6498e771cb7\\t16\\checkpoint-120832\\model.zip",
+            "--episodes",
+            "160",
+            "--seed",
+            "4200",
+            "--artifact",
+            "campaigns/evaluations/1ae27a27-6880-4ca6-9d50-e6498e771cb7/python-module-M27-1-i14-t16-residual-margin.json"
+          ],
+          "artifact": "campaigns/evaluations/1ae27a27-6880-4ca6-9d50-e6498e771cb7/python-module-M27-1-i14-t16-residual-margin.json",
+          "instrument": "python_module",
+          "label": "I14 T16 arrival and retention margin",
+          "module": "robot_learning.lab.residual_margin"
+        },
+        {
+          "args": [
+            "--candidate",
+            "campaigns\\checkpoints\\candidates\\1ae27a27-6880-4ca6-9d50-e6498e771cb7\\t3\\checkpoint-120832\\model.zip",
+            "--episodes",
+            "160",
+            "--seed",
+            "4200",
+            "--artifact",
+            "campaigns/evaluations/1ae27a27-6880-4ca6-9d50-e6498e771cb7/python-module-M27-2-i14-t3-residual-margin.json"
+          ],
+          "artifact": "campaigns/evaluations/1ae27a27-6880-4ca6-9d50-e6498e771cb7/python-module-M27-2-i14-t3-residual-margin.json",
+          "instrument": "python_module",
+          "label": "I14 T3 arrival and retention margin control",
+          "module": "robot_learning.lab.residual_margin"
+        }
+      ],
+      "module_provenance": {
+        "campaign_lab_manifest": [
+          {
+            "fingerprint": "6fd6be6cec2b9ab4000129bc55647cfce26b073269a4c8b04ef312b23f33c51b",
+            "path": "robot_learning/lab/__init__.py"
+          },
+          {
+            "fingerprint": "fce927fbc614f129d2f46f55b64cbe6c1cf83c476c9475268ba16bb3fa4f55d8",
+            "path": "robot_learning/lab/plant_margin.py"
+          },
+          {
+            "fingerprint": "14bf403fc94915a1b6d62e34c51a26a53e6375fa8c2e376f29e45edba794e4fb",
+            "path": "robot_learning/lab/residual_margin.py"
+          }
+        ],
+        "campaign_lab_publication": null,
+        "code_parent_commit": "ba2e90f974e04d84050145a73c027d6a2be94393",
+        "effective_parameters": {
+          "algorithm": {
+            "name": "ppo"
+          },
+          "policy": {
+            "activation": "tanh",
+            "net_arch": [
+              64,
+              64
+            ]
+          },
+          "ppo": {
+            "batch_size": 64,
+            "ent_coef": 0.01,
+            "gae_lambda": 0.95,
+            "gamma": 0.99,
+            "learning_rate": 0.0003,
+            "n_steps": 1024
+          },
+          "training": {
+            "checkpoint_every_steps": 5000,
+            "n_envs": 1
+          }
+        },
+        "module_manifest": [
+          {
+            "exists": true,
+            "fingerprint": "14bf403fc94915a1b6d62e34c51a26a53e6375fa8c2e376f29e45edba794e4fb",
+            "path": "robot_learning/lab/residual_margin.py"
+          }
+        ],
+        "module_paths": [
+          "robot_learning/lab/residual_margin.py"
+        ],
+        "scientific_commit": null,
+        "scientific_manifest": [],
+        "scientific_paths": []
+      },
+      "paired_comparisons": [
+        {
+          "candidate": "T16:checkpoint-120832",
+          "candidate_measurement_indexes": [
+            0
+          ],
+          "candidate_model_fingerprint": "567dbd891cca5defa5f8402ada28349bff915f79d7d98ddedcb19f76d8e13640",
+          "reference": "T3:checkpoint-120832",
+          "reference_measurement_indexes": [
+            1
+          ],
+          "reference_model_fingerprint": "b7e19a6bacfecbcd4bae2bed3afe7d01df9193de0399b3a887a91a2c073688da",
+          "shared_episode_seeds": [
+            4200,
+            4201,
+            4202,
+            4203,
+            4204,
+            4205,
+            4206,
+            4207,
+            4208,
+            4209,
+            4210,
+            4211,
+            4212,
+            4213,
+            4214,
+            4215,
+            4216,
+            4217,
+            4218,
+            4219,
+            4220,
+            4221,
+            4222,
+            4223,
+            4224,
+            4225,
+            4226,
+            4227,
+            4228,
+            4229,
+            4230,
+            4231,
+            4232,
+            4233,
+            4234,
+            4235,
+            4236,
+            4237,
+            4238,
+            4239,
+            4240,
+            4241,
+            4242,
+            4243,
+            4244,
+            4245,
+            4246,
+            4247,
+            4248,
+            4249,
+            4250,
+            4251,
+            4252,
+            4253,
+            4254,
+            4255,
+            4256,
+            4257,
+            4258,
+            4259,
+            4260,
+            4261,
+            4262,
+            4263,
+            4264,
+            4265,
+            4266,
+            4267,
+            4268,
+            4269,
+            4270,
+            4271,
+            4272,
+            4273,
+            4274,
+            4275,
+            4276,
+            4277,
+            4278,
+            4279,
+            4280,
+            4281,
+            4282,
+            4283,
+            4284,
+            4285,
+            4286,
+            4287,
+            4288,
+            4289,
+            4290,
+            4291,
+            4292,
+            4293,
+            4294,
+            4295,
+            4296,
+            4297,
+            4298,
+            4299,
+            4300,
+            4301,
+            4302,
+            4303,
+            4304,
+            4305,
+            4306,
+            4307,
+            4308,
+            4309,
+            4310,
+            4311,
+            4312,
+            4313,
+            4314,
+            4315,
+            4316,
+            4317,
+            4318,
+            4319,
+            4320,
+            4321,
+            4322,
+            4323,
+            4324,
+            4325,
+            4326,
+            4327,
+            4328,
+            4329,
+            4330,
+            4331,
+            4332,
+            4333,
+            4334,
+            4335,
+            4336,
+            4337,
+            4338,
+            4339,
+            4340,
+            4341,
+            4342,
+            4343,
+            4344,
+            4345,
+            4346,
+            4347,
+            4348,
+            4349,
+            4350,
+            4351,
+            4352,
+            4353,
+            4354,
+            4355,
+            4356,
+            4357,
+            4358,
+            4359
+          ]
+        }
+      ],
+      "partial_results": [],
+      "result": null,
+      "task_reference_contract": null
+    },
+    "failure": null,
+    "id": "M27",
+    "inquiry_id": "I14",
+    "kind": "measurement",
+    "progress": "accepted",
+    "request": {
+      "measurement": {
+        "description": "Matched I14 evaluation of T16 against T3 on the 160-episode development panel, with branch- and trajectory-stratified arrival and zero-action retention-margin measurements for both candidates.",
+        "measurements": [
+          {
+            "candidate": "T16:checkpoint-120832",
+            "episodes": 160,
+            "instrument": "research_evaluation",
+            "label": "I14 T16 localized shaping",
+            "seed": 4200
+          },
+          {
+            "candidate": "T3:checkpoint-120832",
+            "episodes": 160,
+            "instrument": "research_evaluation",
+            "label": "I14 T3 matched control",
+            "seed": 4200
+          },
+          {
+            "args": [
+              "--candidate",
+              "campaigns\\checkpoints\\candidates\\1ae27a27-6880-4ca6-9d50-e6498e771cb7\\t16\\checkpoint-120832\\model.zip",
+              "--episodes",
+              "160",
+              "--seed",
+              "4200",
+              "--artifact",
+              "campaigns/evaluations/1ae27a27-6880-4ca6-9d50-e6498e771cb7/python-module-M27-1-i14-t16-residual-margin.json"
+            ],
+            "artifact": "campaigns/evaluations/1ae27a27-6880-4ca6-9d50-e6498e771cb7/python-module-M27-1-i14-t16-residual-margin.json",
+            "instrument": "python_module",
+            "label": "I14 T16 arrival and retention margin",
+            "module": "robot_learning.lab.residual_margin"
+          },
+          {
+            "args": [
+              "--candidate",
+              "campaigns\\checkpoints\\candidates\\1ae27a27-6880-4ca6-9d50-e6498e771cb7\\t3\\checkpoint-120832\\model.zip",
+              "--episodes",
+              "160",
+              "--seed",
+              "4200",
+              "--artifact",
+              "campaigns/evaluations/1ae27a27-6880-4ca6-9d50-e6498e771cb7/python-module-M27-2-i14-t3-residual-margin.json"
+            ],
+            "artifact": "campaigns/evaluations/1ae27a27-6880-4ca6-9d50-e6498e771cb7/python-module-M27-2-i14-t3-residual-margin.json",
+            "instrument": "python_module",
+            "label": "I14 T3 arrival and retention margin control",
+            "module": "robot_learning.lab.residual_margin"
+          }
+        ],
+        "paired_comparisons": [
+          {
+            "candidate": "T16:checkpoint-120832",
+            "reference": "T3:checkpoint-120832"
+          }
+        ],
+        "rationale": "M26 failed before producing scientific evidence because the residual-margin module received symbolic candidate identifiers instead of concrete model paths. T16 is the single localized folded-branch negative-angle pre-arrival shaping design selected for I14, and T3 is the controlled reference. This corrected request measures first reaches, complete uninterrupted holds, terminal hold interruptions, negative-angle arrival velocity, and zero-action sampled retention margin on matched seeds. Meeting all I14 thresholds would support positive closure; reduced route coverage, added interruptions, unchanged margin, or improvement outside the residual strata will close the inquiry with a negative or limited recipe-specific result."
+      }
+    },
+    "request_fingerprint": "c5c6f23808d124379abdce36b5d36dd28ea43e453c9c9e71a41b3529212c3430",
+    "session_id": "S29",
+    "supersedes": "M26"
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T3:checkpoint-120832 remains the strongest evidence-backed development candidate at 153/160 successes, 157 first reaches, and four hold interruptions. T15:checkpoint-120832 remains rejected for the tested bounded radial pre-arrival recipe because it retained 153/160 successes, added interruptions, and did not improve the measured zero-action retention margin. No working, best-known, or retained role is assigned.",
     "completed_operations": [
