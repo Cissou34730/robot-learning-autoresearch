@@ -4870,38 +4870,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I2",
-        "outcome": "positive",
-        "reason": "M9 satisfied I2's positive closure condition on the matched 160-episode development panel. T2:checkpoint-110592 improved complete-hold success from 150/160 (93.75%) to 153/160 (95.625%), first-entry coverage from 153/160 to 154/160, and mean first-entry timing from 13.90 to 12.42 control steps. In the identified failure geometries, entry coverage improved in the 14-18 cm bin from 36/39 to 38/39 and capture timing improved from 13.83 to 12.37 steps; in the 18-20 cm bin timing improved from 14.41 to 9.65 steps. Failures remained on the open branch, while no-entry failures fell from 7 to 6, late-entry failures from 1 to 0, and early-entry interruptions from 2 to 1. Aggregate hold interruptions fell from 438 to 3. This supports the capture/convergence explanation and continuing the reward intervention route, but it is development evidence and does not establish the 98% official objective."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I2",
-        "outcome": "positive",
-        "reason": "M9 satisfied I2's positive closure condition on the matched 160-episode development panel. T2:checkpoint-110592 improved complete-hold success from 150/160 (93.75%) to 153/160 (95.625%), first-entry coverage from 153/160 to 154/160, and mean first-entry timing from 13.90 to 12.42 control steps. In the identified failure geometries, entry coverage improved in the 14-18 cm bin from 36/39 to 38/39 and capture timing improved from 13.83 to 12.37 steps; in the 18-20 cm bin timing improved from 14.41 to 9.65 steps. Failures remained on the open branch, while no-entry failures fell from 7 to 6, late-entry failures from 1 to 0, and early-entry interruptions from 2 to 1. Aggregate hold interruptions fell from 438 to 3. This supports the capture/convergence explanation and continuing the reward intervention route, but it is development evidence and does not establish the 98% official objective.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E8",
-    "inquiry_id": "I2",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "positive",
-        "reason": "M9 satisfied I2's positive closure condition on the matched 160-episode development panel. T2:checkpoint-110592 improved complete-hold success from 150/160 (93.75%) to 153/160 (95.625%), first-entry coverage from 153/160 to 154/160, and mean first-entry timing from 13.90 to 12.42 control steps. In the identified failure geometries, entry coverage improved in the 14-18 cm bin from 36/39 to 38/39 and capture timing improved from 13.83 to 12.37 steps; in the 18-20 cm bin timing improved from 14.41 to 9.65 steps. Failures remained on the open branch, while no-entry failures fell from 7 to 6, late-entry failures from 1 to 0, and early-entry interruptions from 2 to 1. Aggregate hold interruptions fell from 438 to 3. This supports the capture/convergence explanation and continuing the reward intervention route, but it is development evidence and does not establish the 98% official objective."
-      }
-    },
-    "request_fingerprint": "acb7df02a087307101b6fa1bcfaa5964b041760ae8627a60b3234ce51c836797",
-    "session_id": "S5",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "No formal model role has been assigned. T1:checkpoint-120832 remains the strongest evidence-backed development candidate at 93.75% on M6 and M7 and is the baseline for I2. T1:checkpoint-115712 is the matched 88.75% reference. Neither meets the human goal or has official assessment evidence.",
     "completed_operations": [
