@@ -4774,38 +4774,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I3",
-        "outcome": "I3 closes with a positive, mechanism-discriminating result: controlled incremental radius broadening from a T1 transfer preserved the learned control regime and substantially improved difficult-geometry reach without introducing a hold-interruption tradeoff.",
-        "reason": "M4 evaluated T3 and T1 on the same 160 full-distribution episode seeds. T3 achieved 95.625% success versus T1's 68.75%, with 157/160 first reaches versus 118/160, low-radius success of 97.35% versus 59.29%, and high-radius success unchanged at 91.49%. T3 had 4 total hold interruptions versus T1's 502 and mean maximum held steps of 95.66 versus 69.51. The paired comparison gave T3 43 wins and T1 zero wins across 43 discordant episodes. Together with T3's non-collapsed transfer learning dynamics, this supports abrupt distribution-shift/intervention sensitivity as the leading explanation for T2's collapse and rejects representation failure as the primary explanation tested by I3. The result is not official 98% evidence: 95.625% on the development panel leaves 7 percentage points to the human goal, so the next goal-review decision must select how to close the remaining difficult-geometry gap and then obtain protected assessment only for an explicitly assigned best-known candidate."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I3",
-        "outcome": "I3 closes with a positive, mechanism-discriminating result: controlled incremental radius broadening from a T1 transfer preserved the learned control regime and substantially improved difficult-geometry reach without introducing a hold-interruption tradeoff.",
-        "reason": "M4 evaluated T3 and T1 on the same 160 full-distribution episode seeds. T3 achieved 95.625% success versus T1's 68.75%, with 157/160 first reaches versus 118/160, low-radius success of 97.35% versus 59.29%, and high-radius success unchanged at 91.49%. T3 had 4 total hold interruptions versus T1's 502 and mean maximum held steps of 95.66 versus 69.51. The paired comparison gave T3 43 wins and T1 zero wins across 43 discordant episodes. Together with T3's non-collapsed transfer learning dynamics, this supports abrupt distribution-shift/intervention sensitivity as the leading explanation for T2's collapse and rejects representation failure as the primary explanation tested by I3. The result is not official 98% evidence: 95.625% on the development panel leaves 7 percentage points to the human goal, so the next goal-review decision must select how to close the remaining difficult-geometry gap and then obtain protected assessment only for an explicitly assigned best-known candidate.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E12",
-    "inquiry_id": "I3",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "I3 closes with a positive, mechanism-discriminating result: controlled incremental radius broadening from a T1 transfer preserved the learned control regime and substantially improved difficult-geometry reach without introducing a hold-interruption tradeoff.",
-        "reason": "M4 evaluated T3 and T1 on the same 160 full-distribution episode seeds. T3 achieved 95.625% success versus T1's 68.75%, with 157/160 first reaches versus 118/160, low-radius success of 97.35% versus 59.29%, and high-radius success unchanged at 91.49%. T3 had 4 total hold interruptions versus T1's 502 and mean maximum held steps of 95.66 versus 69.51. The paired comparison gave T3 43 wins and T1 zero wins across 43 discordant episodes. Together with T3's non-collapsed transfer learning dynamics, this supports abrupt distribution-shift/intervention sensitivity as the leading explanation for T2's collapse and rejects representation failure as the primary explanation tested by I3. The result is not official 98% evidence: 95.625% on the development panel leaves 7 percentage points to the human goal, so the next goal-review decision must select how to close the remaining difficult-geometry gap and then obtain protected assessment only for an explicitly assigned best-known candidate."
-      }
-    },
-    "request_fingerprint": "d83e1a3746e1e6e7909bdc53be0edf4d733b1a006362fc8f43dc7a4a2d57cbec",
-    "session_id": "S7",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T1:checkpoint-120832 remains the strongest evidence-backed development candidate at 68.75% success on M2/M3. T2:checkpoint-120832 is a negative intervention result at 1.25% and receives no role. No working, best-known, or retained role is assigned.",
     "completed_operations": [
