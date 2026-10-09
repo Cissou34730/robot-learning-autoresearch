@@ -10181,47 +10181,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "open",
-        "inquiry": {
-          "closure_condition": "Close when completed evidence shows either that a low-disruption action or control route improves full-distribution success toward at least 98% while preserving inner-band performance and reducing branch/limit-sensitive or positive-margin non-reaching failures, with any residual failures characterized as approach-velocity or hold-phase instability, or that the route causes broad positive-margin non-reaching, renewed inner-band loss, or another mechanism pattern that redirects the campaign.",
-          "goal_connection": "The human goal requires at least 196 successes in the protected 200-episode assessment. T1 is the strongest evidence-backed development candidate at 150/160 successes with 40/40 inner-band successes, so the campaign must improve full-distribution reaching without sacrificing the difficult inner targets before official assessment is justified.",
-          "handoff_conclusion": "M1 established substantial transient actuation authority and at least one feasible analytic IK solution for every sampled official target, with 64 of 576 grid targets having only one feasible branch. T1's uniform official coverage and M2/M9 results establish the strongest measured baseline: 150/160 successes, 40/40 inner-band successes, seven failures without first reach, and three nonnegative-margin failures. M3 supports branch/limit-sensitive non-reaching as the dominant T1 failure class, with high approach speed and hold interruptions as a secondary class. T2's branch/limit-aware sampling, T3's explicit margin/feasibility features, T4's previous-action history, and T5's continuous radial/tangential endpoint-velocity features each produced recipe-specific learnability or performance collapse rather than progress; these results reject those tested recipes, not all control or representation methods. M8 measured T5 at 107/160 and 108/160 against T1's 150/160 on identical seeds. M9 showed that T5's terminal loss was reachability-dominated: 49/52 failures occurred without first reach, 48/52 had nonnegative terminal nearest-branch margin, and inner-band success fell to 28/40; only three failures followed first reach. Thus I5 closed with a limited negative result because the tested trajectory representation caused broad positive-margin non-reaching and renewed inner-band loss, not because hold instability was resolved.",
-          "handoff_question": "Can a low-disruption action or control representation improve branch/limit-sensitive reaching under T1's uniform official target coverage without losing inner-band performance, and do residual failures then concentrate in approach velocity and hold-phase instability?",
-          "handoff_source_session_id": "S11",
-          "id": "I6",
-          "opened_in_session": "S12",
-          "question": "Can a low-disruption action or control representation improve branch/limit-sensitive reaching under T1's uniform official target coverage without losing inner-band performance, and do residual failures then concentrate in approach velocity and hold-phase instability?",
-          "rationale": "M1 established substantial actuation authority and at least one feasible analytic IK solution for every sampled official target, while T1 diagnostics identify branch/limit-sensitive non-reaching as the dominant observed class and high approach velocity with hold interruptions as secondary. T2's aggressive sampler, T3's explicit margin features, T4's previous-action history, and T5's continuous endpoint-velocity representation each produced recipe-specific learnability or performance collapse; they do not invalidate low-disruption control methods generally. I5 closed because T5 fell to 108/160 and 28/40 inner-band successes with broad positive-margin non-reaching, leaving unresolved whether a different action/control interface can improve T1's reachability without repeating that tradeoff.",
-          "reframes": []
-        }
-      },
-      "result": {
-        "action": "open",
-        "inquiry_id": "I6",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E24",
-    "inquiry_id": null,
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "open",
-        "closure_condition": "Close when completed evidence shows either that a low-disruption action or control route improves full-distribution success toward at least 98% while preserving inner-band performance and reducing branch/limit-sensitive or positive-margin non-reaching failures, with any residual failures characterized as approach-velocity or hold-phase instability, or that the route causes broad positive-margin non-reaching, renewed inner-band loss, or another mechanism pattern that redirects the campaign.",
-        "goal_connection": "The human goal requires at least 196 successes in the protected 200-episode assessment. T1 is the strongest evidence-backed development candidate at 150/160 successes with 40/40 inner-band successes, so the campaign must improve full-distribution reaching without sacrificing the difficult inner targets before official assessment is justified.",
-        "question": "Can a low-disruption action or control representation improve branch/limit-sensitive reaching under T1's uniform official target coverage without losing inner-band performance, and do residual failures then concentrate in approach velocity and hold-phase instability?",
-        "rationale": "M1 established substantial actuation authority and at least one feasible analytic IK solution for every sampled official target, while T1 diagnostics identify branch/limit-sensitive non-reaching as the dominant observed class and high approach velocity with hold interruptions as secondary. T2's aggressive sampler, T3's explicit margin features, T4's previous-action history, and T5's continuous endpoint-velocity representation each produced recipe-specific learnability or performance collapse; they do not invalidate low-disruption control methods generally. I5 closed because T5 fell to 108/160 and 28/40 inner-band successes with broad positive-margin non-reaching, leaving unresolved whether a different action/control interface can improve T1's reachability without repeating that tradeoff."
-      }
-    },
-    "request_fingerprint": "889916ab89fc34b0956fa38039856c046a636bc7e6736394704d50089045c869",
-    "session_id": "S12",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T1:checkpoint-120832 remains the strongest evidence-backed development candidate at 150/160 successes with 40/40 inner-band successes, but no candidate has an assigned working, best-known, or retained role because none meets the development threshold or has a protected assessment. T5:checkpoint-105472 and T5:checkpoint-120832 are rejected for I5 based on M8 and M9. T2, T3, and T4 remain rejected as recipe-specific negative routes.",
     "completed_operations": [
