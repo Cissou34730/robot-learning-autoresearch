@@ -104,3 +104,4 @@
 | E61 | checkpoint | I14 | checkpointed |
 | T15 | training | I14 | completed |
 | M26 | measurement | I14 | completed |
+| M27 | measurement | I14 | completed |
