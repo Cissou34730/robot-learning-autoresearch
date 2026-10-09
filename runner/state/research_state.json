@@ -7401,8 +7401,8 @@
   "counters": {
     "event": 39,
     "inquiry": 9,
-    "measurement": 14,
-    "session": 18,
+    "measurement": 16,
+    "session": 19,
     "training": 9
   },
   "human_goal": {
@@ -19838,9 +19838,157 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-09T15:43:22Z",
+      "error": "robot_learning.lab.direct_action_capability failed:\n\nTraceback (most recent call last):\n  File \"<frozen runpy>\", line 203, in _run_module_as_main\n  File \"<frozen runpy>\", line 88, in _run_code\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\direct_action_capability.py\", line 228, in <module>\n    main()\n    ~~~~^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\direct_action_capability.py\", line 224, in main\n    measure(args.artifact, args.episodes, args.seed)\n    ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\direct_action_capability.py\", line 196, in measure\n    _run_controller(kp=kp, kd=kd, episodes=episodes, seed=seed)\n    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\direct_action_capability.py\", line 125, in _run_controller\n    action = _computed_torque_action(\n        env.model, env.data, target_qpos, kp, kd\n    )\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\direct_action_capability.py\", line 83, in _computed_torque_action\n    mujoco.mj_fullM(model, mass_matrix.ravel(), data.qM)\n                                                ^^^^^^^\nAttributeError: 'mujoco._structs.MjData' object has no attribute 'qM'. Did you mean: 'M'?\n",
+      "id": "M15",
+      "inquiry_id": "I9",
+      "kind": "measurement",
+      "request": {
+        "description": "Measure same-interface controllability with an analytic IK branch selector and MuJoCo computed-torque PD controller across the uniform official development panel.",
+        "measurements": [
+          {
+            "args": [
+              "--artifact",
+              "campaigns\\evaluations\\79395c88-afcd-40f0-a644-16ca95368c28\\same_interface_model_based_control_capability.json",
+              "--episodes",
+              "160",
+              "--seed",
+              "4200"
+            ],
+            "artifact": "campaigns\\evaluations\\79395c88-afcd-40f0-a644-16ca95368c28\\same_interface_model_based_control_capability.json",
+            "instrument": "python_module",
+            "label": "I9 same-interface model-based controllability",
+            "module": "robot_learning.lab.direct_action_capability"
+          }
+        ],
+        "rationale": "I9 separates policy-side recoverability from action-interface or trajectory limitation. T8 and T9 improved the unchanged direct-action route to 153/160 but neither recovered the paired residual episodes, while M13 and M14 show both pre-reach and uninterrupted-hold failures. This controller uses the same bounded direct-action interface and full physical state, so its uniform-panel success, inner-band success, first-reach behavior, branch-limit margins, and hold interruptions directly test whether the remaining failures are physically controllable without another policy recipe. A strong result would support a new policy-side method; a weak result with feasible branch coverage would redirect toward action or trajectory redesign."
+      },
+      "result": {
+        "error": "robot_learning.lab.direct_action_capability failed:\n\nTraceback (most recent call last):\n  File \"<frozen runpy>\", line 203, in _run_module_as_main\n  File \"<frozen runpy>\", line 88, in _run_code\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\direct_action_capability.py\", line 228, in <module>\n    main()\n    ~~~~^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\direct_action_capability.py\", line 224, in main\n    measure(args.artifact, args.episodes, args.seed)\n    ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\direct_action_capability.py\", line 196, in measure\n    _run_controller(kp=kp, kd=kd, episodes=episodes, seed=seed)\n    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\direct_action_capability.py\", line 125, in _run_controller\n    action = _computed_torque_action(\n        env.model, env.data, target_qpos, kp, kd\n    )\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\direct_action_capability.py\", line 83, in _computed_torque_action\n    mujoco.mj_fullM(model, mass_matrix.ravel(), data.qM)\n                                                ^^^^^^^\nAttributeError: 'mujoco._structs.MjData' object has no attribute 'qM'. Did you mean: 'M'?\n",
+        "status": "failed"
+      },
+      "session_id": "S19",
+      "status": "failed",
+      "superseded_by": "M16",
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "evaluation_semantics": null,
+      "measurements": [
+        {
+          "args": [
+            "--artifact",
+            "campaigns\\evaluations\\79395c88-afcd-40f0-a644-16ca95368c28\\same_interface_model_based_control_capability.json",
+            "--episodes",
+            "160",
+            "--seed",
+            "4200"
+          ],
+          "artifact": "campaigns/evaluations/79395c88-afcd-40f0-a644-16ca95368c28/same_interface_model_based_control_capability.json",
+          "instrument": "python_module",
+          "label": "I9 corrected same-interface model-based controllability",
+          "module": "robot_learning.lab.direct_action_capability"
+        }
+      ],
+      "module_provenance": {
+        "campaign_lab_manifest": [
+          {
+            "fingerprint": "6fd6be6cec2b9ab4000129bc55647cfce26b073269a4c8b04ef312b23f33c51b",
+            "path": "robot_learning/lab/__init__.py"
+          },
+          {
+            "fingerprint": "f9fb21f3d5c867fbaaf106a0b1e35a043fee4c32f2df04df6503baef165f8552",
+            "path": "robot_learning/lab/characterize_arm.py"
+          },
+          {
+            "fingerprint": "02df6c3513935a3e004b48d280d9e1e5a9e5157b9bd8f9f0edafdb8177ab456e",
+            "path": "robot_learning/lab/diagnose_policy.py"
+          },
+          {
+            "fingerprint": "5b60919464b206f2b716948f21e0dcd22a62bd79d4796785565ca2257273ee8f",
+            "path": "robot_learning/lab/direct_action_capability.py"
+          }
+        ],
+        "campaign_lab_publication": null,
+        "code_parent_commit": "06a94f20399c5d5d77811e1c3954ee81052c7c40",
+        "effective_parameters": {
+          "algorithm": {
+            "name": "ppo"
+          },
+          "policy": {
+            "activation": "tanh",
+            "net_arch": [
+              64,
+              64
+            ]
+          },
+          "ppo": {
+            "batch_size": 64,
+            "ent_coef": 0.01,
+            "gae_lambda": 0.95,
+            "gamma": 0.99,
+            "learning_rate": 0.0003,
+            "n_steps": 1024
+          },
+          "training": {
+            "checkpoint_every_steps": 5000,
+            "n_envs": 1
+          }
+        },
+        "module_manifest": [
+          {
+            "exists": true,
+            "fingerprint": "5b60919464b206f2b716948f21e0dcd22a62bd79d4796785565ca2257273ee8f",
+            "path": "robot_learning/lab/direct_action_capability.py"
+          }
+        ],
+        "module_paths": [
+          "robot_learning/lab/direct_action_capability.py"
+        ],
+        "scientific_commit": null,
+        "scientific_manifest": [],
+        "scientific_paths": []
+      },
+      "paired_comparisons": [],
+      "partial_results": [],
+      "result": null,
+      "task_reference_contract": null
+    },
+    "failure": null,
+    "id": "M16",
+    "inquiry_id": "I9",
+    "kind": "measurement",
+    "progress": "accepted",
+    "request": {
+      "measurement": {
+        "description": "Repeat the I9 same-interface controllability measurement after correcting the MuJoCo 3.12 mass-matrix API call.",
+        "measurements": [
+          {
+            "args": [
+              "--artifact",
+              "campaigns\\evaluations\\79395c88-afcd-40f0-a644-16ca95368c28\\same_interface_model_based_control_capability.json",
+              "--episodes",
+              "160",
+              "--seed",
+              "4200"
+            ],
+            "artifact": "campaigns\\evaluations\\79395c88-afcd-40f0-a644-16ca95368c28\\same_interface_model_based_control_capability.json",
+            "instrument": "python_module",
+            "label": "I9 corrected same-interface model-based controllability",
+            "module": "robot_learning.lab.direct_action_capability"
+          }
+        ],
+        "rationale": "M15 did not exercise the scientific discriminator: the PI-owned controller failed before the first episode because it used obsolete data.qM instead of native MuJoCo 3.12 data.M. This is an implementation failure, not evidence about controllability. The corrected measurement retains the same analytic IK branch selection, bounded direct-action interface, computed-torque controller, uniform 160-episode panel, and diagnostics. Its result will determine whether the residual reach and hold failures are achievable through the existing action interface before allocating another policy-side training recipe."
+      }
+    },
+    "request_fingerprint": "1260c1fa5ddb3d18a5b281ff03ae73a82bfd548332fb7de3a84d809532dc1e15",
+    "session_id": "S19",
+    "supersedes": "M15"
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T1:checkpoint-120832 remains the strongest original evidence-backed baseline at 150/160 with 40/40 inner-band successes. T8:checkpoint-60416 and T9:checkpoint-20480 are the strongest measured I8 candidates at 153/160, but neither meets the development threshold or has a protected assessment or durable working, best-known, or retained role. T2-T7 remain rejected as recipe-specific negative routes.",
     "completed_operations": [
@@ -19873,6 +20021,19 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "33c71833-eac8-4c76-8ab6-093f4b61b4ed",
+    "id": "S19",
+    "inquiry_id": "I9",
+    "kind": "inquiry",
+    "objective": "Advance I9 toward an evidence-supported answer to its scientific question: Can a policy-side method improve T1's seven pre-reach failures under uniform official coverage while preserving its 40/40 inner-band behavior and uninterrupted hold, or is the remaining gap intrinsically coupled to the action interface? Before choosing the next action, compare the accumulated evidence with the closure condition. Restate the unresolved distinction and choose the most decision-relevant available operation; no operation is the default. Close the inquiry when the condition is met.",
+    "operation_ids": [],
+    "scientific_parent_commit": "06a94f20399c5d5d77811e1c3954ee81052c7c40"
+  },
   "terminal_state": null
 }
