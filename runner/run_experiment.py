@@ -665,6 +665,15 @@ def _execute_checkpoint(state: dict, pending: dict) -> int:
 
     def apply(current: dict, _result: dict) -> None:
         current["pi_checkpoint"] = checkpoint
+        active = current.get("active_inquiry")
+        if (
+            checkpoint["inquiry_id"] is None
+            and isinstance(active, dict)
+            and active.get("opened_in_session") == checkpoint["session_id"]
+        ):
+            active["handoff_conclusion"] = checkpoint["current_synthesis"]
+            active["handoff_question"] = active["question"]
+            active["handoff_source_session_id"] = checkpoint["session_id"]
         current["scientific_session"] = None
 
     _complete_operation(

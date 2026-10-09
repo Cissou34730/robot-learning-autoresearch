@@ -621,7 +621,7 @@ def plan_inquiry_operation(request: dict, state: dict) -> dict:
                 "rationale": request["rationale"].strip(),
                 "opened_in_session": session["id"],
                 "handoff_conclusion": checkpoint["current_synthesis"],
-                "handoff_question": checkpoint["next_question"],
+                "handoff_question": request["question"].strip(),
                 "handoff_source_session_id": checkpoint["session_id"],
                 "reframes": [],
             },

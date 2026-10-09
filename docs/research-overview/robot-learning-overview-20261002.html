@@ -245,9 +245,9 @@
           <span class="tag">Open</span>
           <h3 style="margin-top: 12px">16 issues, OI-001 to OI-016</h3>
           <ul>
-            <li>Active: OI-014.</li>
-            <li>Implemented, awaiting campaign evidence: OI-015, OI-016.</li>
-            <li>Closed as effective: OI-001, OI-002, OI-003, OI-004.</li>
+            <li>Active: OI-003, OI-014.</li>
+            <li>Implemented or revised, awaiting campaign evidence: OI-015, OI-016.</li>
+            <li>Closed as effective: OI-001, OI-002, OI-004.</li>
             <li>Postponed, paused, or waiting for a decision: OI-005, OI-006, OI-007, OI-011, OI-013.</li>
             <li>Not approved: OI-008, OI-009, OI-010, OI-012.</li>
           </ul>
@@ -257,14 +257,12 @@
           <span class="tag">Changed last</span>
           <h3 style="margin-top: 12px">9 October 2026</h3>
           <ul>
+            <li>The comprehensive RCA for campaign <code>79395c88</code> reopened OI-003, extended OI-015, and showed the first OI-016 implementation ineffective.</li>
+            <li>OI-016 now separates a proposed next question from an active inquiry identity and permits correction of inherited interpretation from existing evidence.</li>
             <li>OI-001 is closed as effective. In <code>896c230a</code> the briefing, the first startup action, and the handoff formed one traceable chain.</li>
-            <li>OI-003 is closed as effective after the final <code>896c230a</code> campaign resolved the aggregate-only interpretation defect in practice.</li>
             <li>OI-004 remains closed as effective after the earlier <code>58dcd817</code> evidence and is consistent with the final campaign's transfer-learning result.</li>
-            <li>OI-015 now reports exact learned-component matches separately from runtime and integrity fingerprints. Its campaign effect is unmeasured.</li>
-            <li>OI-016 restores the boundary between an unresolved inquiry question and a preselected operation. Its campaign effect is unmeasured.</li>
-            <li>OI-014 remains open and unimplemented.</li>
           </ul>
-          <p class="small muted" style="margin-top: 8px">The final campaign did not reach the human goal, but it confirmed the observed process improvements and the bounded scientific direction.</p>
+          <p class="small muted" style="margin-top: 8px">Campaign evidence can confirm one repair and later expose a recurrence or a different failure mode. Implemented does not mean effective.</p>
         </article>
       </div>
       <p class="small muted" style="margin-top: 12px">Prompt-stack review items R1, R5-1, R5-2, R6, R7, and R8 are implemented. R2 is partly implemented and paused. R3 and R4 are discarded. Implemented does not mean effective. Scientific effect is stated separately in each item.</p>
@@ -506,7 +504,7 @@
           <tbody>
             <tr><td>OI-001</td><td>Startup method selection. The link from the scientific briefing to the first startup action and its handoff is now traceable. In campaign <code>896c230a</code> the model named the omitted 0.06-0.14 m region, startup ran T1 as a declared control for that distinction, M1 and M2 measured before any intervention, and E1 handed off the unresolved coverage-versus-stabilization frontier. I1 then tested the named distinction. One campaign cannot say which prompt element caused this. Startup cost stays OI-006.</td><td><span class="tag">Closed, effective</span></td></tr>
             <tr><td>OI-002</td><td>Inquiry control. The closure condition defines sufficient evidence and permits positive, negative, limited, or inconclusive closure. Campaign <code>1ae27a27</code> closed all inquiries at their declared boundaries. The original indefinite-continuation symptom did not recur.</td><td><span class="tag">Closed, bounded closure observed</span></td></tr>
-            <tr><td>OI-003</td><td>Measurement evidence. The final campaign <code>896c230a</code> showed the repaired interpretation in use: reach, hold, bearing, and radius deficits were tracked separately, and aggregate equality no longer substituted for mechanism evidence. The campaign effect is positive and the issue is closed as effective.</td><td><span class="tag">Closed, effective</span></td></tr>
+            <tr><td>OI-003</td><td>Measurement evidence. Campaign <code>896c230a</code> showed the repair in use, but campaign <code>79395c88</code> later declared M30 nearest-branch margins missing even though the completed artifact contained them. Claim-to-artifact traceability must improve without a Runner scientific gate or exhaustive review rule.</td><td><span class="tag">Reopened</span></td></tr>
             <tr><td>OI-004</td><td>Checkpoint nomination, evidence selection, and scientific progression. Campaign <code>58dcd817</code> compared a non-terminal checkpoint with the terminal candidate, selected non-terminal <code>T2:checkpoint-110592</code> after terminal training performance declined, repaired failed M8 before drawing a conclusion, and progressed from failure diagnosis through a bounded capture intervention to matched measurement. The final campaign <code>896c230a</code> confirmed the same progression pattern in the transfer-learning route. The goal remained unmet, but the intended progression behavior was observed.</td><td><span class="tag">Closed, effective</span></td></tr>
             <tr><td>OI-005</td><td>Counterevidence and readiness. The readiness guidance was withdrawn. Lost residual evidence and early readiness claims remain. Campaign <code>06656182</code> showed the open point: the PI did not weigh a 95% and a 98% result against one more inquiry.</td><td><span class="tag">Postponed</span></td></tr>
             <tr><td>OI-006</td><td>Full review of the 120,000-step startup budget. In <code>896c230a</code> startup spent the whole allocation on the T1 control before any measurement. Whether the same startup evidence is obtainable for less is still unanswered.</td><td><span class="tag">Pending</span></td></tr>
@@ -517,9 +515,9 @@
             <tr><td>OI-011</td><td>Console clarity and more maintainer-file read controls. Phase-specific source-read controls are done.</td><td><span class="tag">Deferred</span></td></tr>
             <tr><td>OI-012</td><td>Publish a frozen policy independent of training. Campaign recovery is not authorized.</td><td><span class="tag">Proposal only</span></td></tr>
             <tr><td>OI-013</td><td>Remove the temporary 15-inquiry cap. The value is unchanged.</td><td><span class="tag">Pending</span></td></tr>
-            <tr><td>OI-014</td><td>Single-change attribution. One intervention can change several factors and get a one-cause explanation. That explanation then steers later inquiries. A bundled change is valid if its candidate gets a direct paired evaluation and the open attribution stays visible.</td><td><span class="tag">Open</span></td></tr>
-            <tr><td>OI-015</td><td>Intended intervention versus effective experiment. Training results now report exact serialized learned-component matches across corresponding checkpoints while keeping runtime equality and the complete integrity fingerprint separate. The PI must preserve uncertainty when evidence does not establish that the intended distinction was exercised.</td><td><span class="tag">Implemented, unmeasured</span></td></tr>
-            <tr><td>OI-016</td><td>Operation-shaped inquiry formation and first-action precommitment. An inquiry question must describe an unresolved distinction, obstacle or capability need, not a preselected operation or recipe. The first operation remains a PI choice without imposing measurement-first behavior.</td><td><span class="tag">Implemented, unmeasured</span></td></tr>
+            <tr><td>OI-014</td><td>Single-change attribution. Campaign <code>79395c88</code> adds seed-confounded observation and rollout-horizon comparisons. Candidate outcomes are valid, but individual causal effects remain unresolved.</td><td><span class="tag">Open</span></td></tr>
+            <tr><td>OI-015</td><td>Intended intervention versus effective experiment. Serialized component observability is implemented, but campaign <code>79395c88</code> also treated PPO expert-action reward shaping as evidence about direct controller imitation. The semantic realization gap remains open.</td><td><span class="tag">Partly implemented</span></td></tr>
+            <tr><td>OI-016</td><td>Inquiry and handoff semantics. The first repair was ineffective. The corrective revision permits method-specific bounded inquiries, treats a closed-session next question as a revisable goal-review proposal, preserves exact identity after opening, and passes the goal review's actual synthesis into the fresh inquiry.</td><td><span class="tag">Revised, unmeasured</span></td></tr>
           </tbody>
         </table>
       </div>
@@ -553,7 +551,8 @@
       <div class="card timeline">
         <h3 style="margin-top: 0">9 October</h3>
         <ul>
-          <li>OI-016 is implemented. The contract and inquiry handoff now separate the unresolved scientific question from the first operation. Training, measurement and implementation remain peer choices; no measurement-first rule or Runner scientific gate was added.</li>
+          <li>OI-016 corrective revision is implemented after campaign <code>79395c88</code> showed the first repair ineffective. Proposed next questions are revisable in goal review, active inquiry identity remains exact, and the fresh inquiry receives the goal review's actual synthesis. Bounded closure and peer instruments are preserved.</li>
+          <li>The comprehensive campaign <code>79395c88</code> RCA reopened OI-003 for the false M30 missing-evidence claim, added the T10 imitation mismatch to OI-015, and recorded new comparison-confounding evidence under OI-014.</li>
           <li>OI-015 is implemented. Candidate archival now records separate learned-component and runtime fingerprints, completed training reports exact checkpoint matches, and both feedback paths state that serialized equality does not determine intervention realization. No campaign has measured the behavior change yet.</li>
           <li>OI-001 is closed as effective. Campaign <code>896c230a</code> shows the full chain: the model named the omitted 0.06-0.14 m region, startup ran T1 as a declared control, M1 and M2 measured first, and E1 handed off an unresolved frontier. The startup cost question stays in OI-006.</li>
           <li>Campaign <code>896c230a</code> finished at 193/200. It failed the goal but confirmed the OI-003 interpretation repair in use.</li>

@@ -460,7 +460,7 @@ Implementation checks and unassessed campaign effects are not separate issues.
 | OI-013 | Remove the temporary fifteen-inquiry cap | **Pending.** The cap now pauses at a checkpointed boundary and no longer represents scientific exhaustion. Its value is unchanged. Removal remains a later maintainer decision. |
 | OI-014 | Single-change attribution in an intervention | **Open; additional campaign evidence recorded 2026-10-09.** An intervention can change several factors at once and then receive a single-cause explanation. Campaign `79395c88` changed training seeds across observation and rollout-horizon variants, so the measured candidates are valid but the individual representation or horizon effects are not isolated. The requirement remains attribution that matches the change, not mandatory matched seeds or repeatable campaigns. No design or runtime change is approved. See the [comprehensive campaign RCA](campaign_79395c88_comprehensive_rca_20261009.md). |
 | OI-015 | Intended intervention versus effective experiment | **Component observability implemented; semantic realization gap added 2026-10-09.** The serialized-component comparison remains valid and campaign `79395c88` emitted it without false equality claims, but no duplicate-policy case exercised its intended behavioral warning. The campaign also exposed a different realization failure: T10 implemented PPO expert-action reward shaping, while I12 reasoned about direct controller imitation and closed that route without exercising direct supervised imitation. Component hashes cannot detect this semantic mismatch. See the [comprehensive campaign RCA](campaign_79395c88_comprehensive_rca_20261009.md). |
-| OI-016 | Operation-shaped inquiry formation and first-action precommitment | **Implemented 2026-10-09; campaign evidence shows the implementation ineffective; corrective revision pending.** Campaign `79395c88` retained method/recipe coupling, provisional handoff decisions acquired excessive authority, and all fifteen inquiry slots were consumed. Do not roll back to the earlier semantics or ban method-specific inquiries. Replace the current repetitive guidance with a bounded inquiry definition and revisable handoff that distinguish completed facts, provisional interpretations, proposed next questions and active inquiry identity. Preserve bounded closure, peer instruments, PI authority and Runner non-judgment. See the [comprehensive campaign RCA](campaign_79395c88_comprehensive_rca_20261009.md) and the earlier [OI-016-focused RCA](oi016_post_campaign_rca_20261009.md). |
+| OI-016 | Operation-shaped inquiry formation and first-action precommitment | **Corrective revision implemented 2026-10-09; campaign effect unmeasured.** Campaign `79395c88` showed the first implementation ineffective. The replacement permits method-specific bounded inquiries, makes closed-session `next_question` a revisable proposal for goal review, preserves exact identity only after an inquiry opens, and lets existing evidence correct inherited interpretations, research constraints and proposed actions. After goal review checkpoints, the fresh inquiry now receives that review's actual synthesis and active question instead of stale pre-review state. Repetitive restatement and first-operation justification prompts were removed; peer instruments, bounded closure, PI authority and Runner non-judgment remain unchanged. See the [comprehensive campaign RCA](campaign_79395c88_comprehensive_rca_20261009.md) and the earlier [OI-016-focused RCA](oi016_post_campaign_rca_20261009.md). |
 
 ### Detailed backlog and status context
 
@@ -2981,3 +2981,46 @@ separate from harness changes so their outcomes are not conflated.
 - **Boundary:** this entry records evidence and implementation order only. It
   makes no contract, prompt, state, Runner, brief or scientific-runtime change.
   No campaign was launched, resumed, reset, trained, measured or evaluated.
+
+## 2026-10-09: implement the OI-016 corrective handoff revision
+
+- **Inquiry boundary:** a method-specific question is explicitly valid when it
+  defines bounded scientific work and its closure evidence. Opening an inquiry
+  does not require a particular operation or predetermine its result.
+- **Question states:** startup and inquiry closure now record a proposed
+  question for goal review. Goal review may revise or decline it using
+  completed evidence already available. Once goal review opens an inquiry, its
+  checkpoint and later active-inquiry checkpoints preserve the exact active
+  question; changing it still requires the existing reframe boundary.
+- **Revisable judgment:** completed facts remain the factual record, while
+  inherited interpretations, research constraints, priorities and proposed
+  actions remain revisable scientific judgments. The PI may correct them from
+  existing evidence and records the correction and its basis.
+- **State correction:** inquiry opening records the actual opened question.
+  When goal review checkpoints, the active inquiry handoff is updated with that
+  review's synthesis, active question and source session. The fresh inquiry no
+  longer receives the previous inquiry closure's stale synthesis as its source
+  conclusion.
+- **Prompt simplification:** repeated demands to restate the distinction,
+  justify the first operation and avoid method-specific questions were removed.
+  One operation-neutral rule remains: training, measurement and implementation
+  are peer options, and no instrument is the default.
+- **Presentation:** the durable brief labels a checkpoint question as either a
+  proposed next inquiry question or the active inquiry question according to
+  lifecycle state.
+- **Validation:** Python compilation, PowerShell parsing and whitespace checks
+  pass. A direct protocol/state reproduction verifies that goal review can
+  replace a proposed question using existing evidence, the opened question
+  becomes exact, the goal-review checkpoint validates against it, the active
+  handoff receives the corrected synthesis, and brief labels distinguish
+  proposed from active questions.
+- **Preserved boundaries:** positive, negative, limited and inconclusive
+  closure remain available. Method-specific inquiry, training-first work,
+  measurement-only work, continuation, checkpointing and reframing remain
+  valid. No Runner scientific judgment, measurement-first rule, operation
+  permission, allocation or inquiry-cap change was added.
+- **Scope separation:** OI-003 evidence traceability, OI-014 attribution,
+  OI-015 semantic realization, brief compaction and artifact indexing are not
+  part of this implementation.
+- **Campaign boundary:** no campaign was launched, resumed, reset, trained,
+  measured or evaluated. Campaign effect remains unmeasured.

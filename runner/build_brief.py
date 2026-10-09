@@ -357,12 +357,17 @@ def _checkpoint_lines(state: dict) -> list[str]:
     checkpoint = state["pi_checkpoint"]
     if not isinstance(checkpoint, dict):
         return ["- No durable PI checkpoint has been recorded."]
+    question_label = (
+        "Active inquiry question"
+        if isinstance(state["active_inquiry"], dict)
+        else "Proposed next inquiry question"
+    )
     return [
         f"- Inquiry: `{checkpoint['inquiry_id'] or '-'}`",
         f"- Human-goal connection: {checkpoint['human_goal_connection']}",
         f"- Current synthesis: {checkpoint['current_synthesis']}",
         f"- Decision frontier: {checkpoint['decision_frontier']}",
-        f"- Next inquiry question: {checkpoint['next_question']}",
+        f"- {question_label}: {checkpoint['next_question']}",
         "- Completed operations: "
         + (
             ", ".join(f"`{item}`" for item in checkpoint["completed_operations"])

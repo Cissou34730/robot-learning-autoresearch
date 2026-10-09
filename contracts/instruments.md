@@ -344,12 +344,11 @@ A policy checkpoint is a separate training artifact.
 
 Every field is required.
 All string fields must be non-empty.
-`next_question` states the exact scientific question that the same PI carries
-into the next fresh context.
-Startup selects the first inquiry question.
-An inquiry closure selects the question for the next inquiry.
-If the same inquiry continues, the checkpoint repeats its current question.
-The goal-review checkpoint repeats the question of the inquiry that it opened.
+After startup or inquiry closure, `next_question` states the proposed question
+for the next goal review. Goal review may revise or decline that proposal
+before opening an inquiry. The goal-review checkpoint repeats the exact
+question of the inquiry opened in that session. If the same inquiry continues,
+the checkpoint repeats its current active question.
 `completed_operations` must exactly match the active session's completed
 operation identities.
 Every evidence reference must identify a completed operation.

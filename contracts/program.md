@@ -73,11 +73,11 @@ Opening an inquiry records its question, connection to the human goal, closure
 condition, and rationale. The opening goal-review session then ends at a
 durable scientific session record, and a fresh inquiry session continues from
 that state.
-The inquiry question describes an unresolved scientific distinction, obstacle,
-or capability need. It must not merely name a training run, measurement,
-implementation, or recipe that has already been selected. Opening an inquiry
-does not commit the PI to an instrument; the first operation is chosen in the
-fresh inquiry session from the accumulated evidence and decision frontier.
+An inquiry is a bounded scope of scientific work toward the human goal. Its
+question states what remains to be learned or developed, and its closure
+condition states the evidence sufficient for that bounded conclusion. A
+method-specific question is valid. Opening an inquiry does not require a
+particular operation or predetermine the result.
 The closure condition states the evidence sufficient to end the inquiry. It
 permits closure with a positive, negative, limited or inconclusive conclusion.
 Obtaining and assessing this evidence can span several operations.
@@ -115,12 +115,9 @@ discriminating evidence already recorded in `current_synthesis` and
 inquiry; no operation is the default. The launcher states which operations are
 legal from the current state; each is a valid scientific choice when the
 evidence supports it.
-Before selecting the first operation, restate the unresolved distinction and
-why the selected operation is the most decision-relevant available action.
-Treat a proposed training recipe, measurement, or implementation as one
-possible response to the question, not as the question itself or as a required
-first step. This does not require measurement before training or prescribe any
-instrument sequence.
+The inquiry question does not require a particular first instrument. Training,
+measurement and implementation remain peer options; select whichever supported
+operation best advances the bounded work.
 
 Measurement and training are peer instruments. Either returns factual results
 to the same active bounded session without implying a required successor
@@ -204,19 +201,27 @@ evidence, and the limits of current claims.
 method-development question and the evidence that would discriminate or
 redirect it. It is not merely a candidate implementation or a list of changes.
 
-`next_question` records the exact question that the same PI selects for the
-next fresh context. Startup selects the first inquiry question. An inquiry
-closure selects the question for the next inquiry. If the same inquiry
-continues after a checkpoint or reframe, the record repeats its current
-question. Goal review opens the selected question and preserves it in its
-checkpoint.
+`next_question` has two meanings according to lifecycle state. Startup and an
+inquiry closure record a proposed question for the next goal review. Goal
+review may revise or decline that proposal using completed evidence already
+available; opening an inquiry makes the opened question active. A goal-review
+checkpoint and every checkpoint while that inquiry remains active repeat the
+exact active question.
 
-The Runner passes the source session's `current_synthesis` and `next_question`
-verbatim into goal review and the opened inquiry. A fresh model context is a
-continuation of the same PI, not a new scientific review. The PI continues from
-that state. It changes the conclusion or question only when new evidence, an
-implementation finding, or a concrete dead end changes the scientific
-situation. The later record states what changed and why.
+The Runner passes the source session's `current_synthesis` and proposed
+`next_question` into goal review. A fresh model context continues the same
+scientific work, but completed facts and provisional scientific judgment do not
+have the same authority. Conclusions, research constraints, priorities and
+proposed next actions remain revisable. The PI corrects an unsupported
+interpretation or a mismatch between the question and the evidence when it
+identifies one, including from evidence already available, and records the
+correction and its basis. A proposed question does not require opening an
+inquiry already settled by that evidence.
+
+After goal review opens an inquiry and checkpoints, the fresh inquiry session
+receives that goal review's recorded synthesis and the exact active question.
+Changing an active question uses the inquiry reframe operation and its
+scientific-session boundary.
 
 `next_direction_or_closure` records the chosen action or closure decision and
 its connection to that frontier. The PI chooses the instrument; these meanings
