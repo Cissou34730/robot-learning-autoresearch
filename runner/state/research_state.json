@@ -8212,7 +8212,7 @@
   "counters": {
     "event": 45,
     "inquiry": 11,
-    "measurement": 13,
+    "measurement": 15,
     "session": 23,
     "training": 13
   },
@@ -16543,9 +16543,157 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-09T01:33:14Z",
+      "error": "robot_learning.lab.residual_margin failed:\n\nusage: residual_margin.py [-h] --candidate CANDIDATE [--episodes EPISODES]\n                          [--seed SEED] --artifact ARTIFACT\nresidual_margin.py: error: the following arguments are required: --artifact\n",
+      "id": "M14",
+      "inquiry_id": "I11",
+      "kind": "measurement",
+      "request": {
+        "description": "Matched residual-arrival and local-feedback margin analysis for T13 route-conditioned braking authority.",
+        "measurements": [
+          {
+            "args": [
+              "--candidate",
+              "T13:checkpoint-120832",
+              "--episodes",
+              "160",
+              "--seed",
+              "4200"
+            ],
+            "artifact": "campaigns/evaluations/1ae27a27-6880-4ca6-9d50-e6498e771cb7/python-module-M14-1-i11-t13-residual-margin.json",
+            "instrument": "python_module",
+            "label": "I11 T13 residual braking margin",
+            "module": "robot_learning.lab.residual_margin"
+          }
+        ],
+        "rationale": "M13 produced an exact behavioral match to T3: 153/160 successes and zero discordant episodes. The aggregate result cannot distinguish an inactive route gate from an ineffective braking correction. This measurement inspects T13's seven residual cases, arrival speeds, one-interval braking probe, and local retention margins on the same episode panel used by M10. If T13 does not improve the negative-angle speed or sampled retention margin, the route-conditioned action recipe is closed negatively and the campaign redirects to plant-level control; if it does improve those quantities, the remaining decision is whether the action correction is mistimed or insufficient despite preserving route coverage."
+      },
+      "result": {
+        "error": "robot_learning.lab.residual_margin failed:\n\nusage: residual_margin.py [-h] --candidate CANDIDATE [--episodes EPISODES]\n                          [--seed SEED] --artifact ARTIFACT\nresidual_margin.py: error: the following arguments are required: --artifact\n",
+        "status": "failed"
+      },
+      "session_id": "S23",
+      "status": "failed",
+      "superseded_by": "M15",
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "evaluation_semantics": null,
+      "measurements": [
+        {
+          "args": [
+            "--candidate",
+            "T13:checkpoint-120832",
+            "--episodes",
+            "160",
+            "--seed",
+            "4200",
+            "--artifact",
+            "campaigns/evaluations/1ae27a27-6880-4ca6-9d50-e6498e771cb7/python-module-M14-1-i11-t13-residual-margin.json"
+          ],
+          "artifact": "campaigns/evaluations/1ae27a27-6880-4ca6-9d50-e6498e771cb7/python-module-M14-1-i11-t13-residual-margin.json",
+          "instrument": "python_module",
+          "label": "I11 T13 residual braking margin",
+          "module": "robot_learning.lab.residual_margin"
+        }
+      ],
+      "module_provenance": {
+        "campaign_lab_manifest": [
+          {
+            "fingerprint": "6fd6be6cec2b9ab4000129bc55647cfce26b073269a4c8b04ef312b23f33c51b",
+            "path": "robot_learning/lab/__init__.py"
+          },
+          {
+            "fingerprint": "fce927fbc614f129d2f46f55b64cbe6c1cf83c476c9475268ba16bb3fa4f55d8",
+            "path": "robot_learning/lab/plant_margin.py"
+          },
+          {
+            "fingerprint": "ee9ac0e22d59dcfb7765da0a57ed3a610a888a6a47137eb87f21669df5048d90",
+            "path": "robot_learning/lab/residual_margin.py"
+          }
+        ],
+        "campaign_lab_publication": null,
+        "code_parent_commit": "f1ce7b1f1bb680f6936c246a67faa44f6aacefad",
+        "effective_parameters": {
+          "algorithm": {
+            "name": "ppo"
+          },
+          "policy": {
+            "activation": "tanh",
+            "net_arch": [
+              64,
+              64
+            ]
+          },
+          "ppo": {
+            "batch_size": 64,
+            "ent_coef": 0.01,
+            "gae_lambda": 0.95,
+            "gamma": 0.99,
+            "learning_rate": 0.0003,
+            "n_steps": 1024
+          },
+          "training": {
+            "checkpoint_every_steps": 5000,
+            "n_envs": 1
+          }
+        },
+        "module_manifest": [
+          {
+            "exists": true,
+            "fingerprint": "ee9ac0e22d59dcfb7765da0a57ed3a610a888a6a47137eb87f21669df5048d90",
+            "path": "robot_learning/lab/residual_margin.py"
+          }
+        ],
+        "module_paths": [
+          "robot_learning/lab/residual_margin.py"
+        ],
+        "scientific_commit": null,
+        "scientific_manifest": [],
+        "scientific_paths": []
+      },
+      "paired_comparisons": [],
+      "partial_results": [],
+      "result": null,
+      "task_reference_contract": null
+    },
+    "failure": null,
+    "id": "M15",
+    "inquiry_id": "I11",
+    "kind": "measurement",
+    "progress": "accepted",
+    "request": {
+      "measurement": {
+        "description": "Matched residual-arrival and local-feedback margin analysis for T13 route-conditioned braking authority.",
+        "measurements": [
+          {
+            "args": [
+              "--candidate",
+              "T13:checkpoint-120832",
+              "--episodes",
+              "160",
+              "--seed",
+              "4200",
+              "--artifact",
+              "campaigns/evaluations/1ae27a27-6880-4ca6-9d50-e6498e771cb7/python-module-M14-1-i11-t13-residual-margin.json"
+            ],
+            "artifact": "campaigns/evaluations/1ae27a27-6880-4ca6-9d50-e6498e771cb7/python-module-M14-1-i11-t13-residual-margin.json",
+            "instrument": "python_module",
+            "label": "I11 T13 residual braking margin",
+            "module": "robot_learning.lab.residual_margin"
+          }
+        ],
+        "rationale": "M13 produced an exact behavioral match to T3: 153/160 successes and zero discordant episodes. The aggregate result cannot distinguish an inactive route gate from an ineffective braking correction. This measurement inspects T13's seven residual cases, arrival speeds, one-interval braking probe, and local retention margins on the same episode panel used by M10. If T13 does not improve the negative-angle speed or sampled retention margin, the route-conditioned action recipe is closed negatively and the campaign redirects to plant-level control; if it does improve those quantities, the remaining decision is whether the action correction is mistimed or insufficient despite preserving route coverage."
+      }
+    },
+    "request_fingerprint": "8832d96bf16192305b02d4ec7939ecd9d6be1cc94f678007cb3babdcdb63bc2c",
+    "session_id": "S23",
+    "supersedes": "M14"
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T3:checkpoint-120832 remains the strongest measured development candidate at 153/160 successes and has no assigned working, best-known, or retained role. T12:checkpoint-120832 is intervention-limited at 151/160 and has no role. No candidate role change is requested.",
     "completed_operations": [

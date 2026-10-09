@@ -73,3 +73,4 @@
 | E45 | restore_recipe | I11 | restored |
 | T13 | training | I11 | completed |
 | M13 | measurement | I11 | completed |
+| M14 | measurement | I11 | failed |
