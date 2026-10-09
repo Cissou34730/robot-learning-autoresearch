@@ -1,0 +1,5066 @@
+{
+  "schema_version": 5,
+  "model": "C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\campaigns\\checkpoints\\candidates\\81a5458d-ce8f-4c03-b9d2-8ce4f1ff9e9e\\t5\\checkpoint-115712\\model.zip",
+  "episodes": 160,
+  "seed": 4200,
+  "official_benchmark": false,
+  "success_percent": 68.75,
+  "episode_results": [
+    {
+      "episode": 0,
+      "episode_seed": 4200,
+      "success": true,
+      "reward_total": 102.15445200306505,
+      "steps": 113,
+      "terminated": true,
+      "truncated": false
+    },
+    {
+      "episode": 1,
+      "episode_seed": 4201,
+      "success": false,
+      "reward_total": 3.338930394534525,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true
+    },
+    {
+      "episode": 2,
+      "episode_seed": 4202,
+      "success": true,
+      "reward_total": 100.50657121779221,
+      "steps": 115,
+      "terminated": true,
+      "truncated": false
+    },
+    {
+      "episode": 3,
+      "episode_seed": 4203,
+      "success": true,
+      "reward_total": 105.80003899218725,
+      "steps": 110,
+      "terminated": true,
+      "truncated": false
+    },
+    {
+      "episode": 4,
+      "episode_seed": 4204,
+      "success": false,
+      "reward_total": -0.2834934992443591,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true
+    },
+    {
+      "episode": 5,
+      "episode_seed": 4205,
+      "success": true,
+      "reward_total": 99.90464636616096,
+      "steps": 112,
+      "terminated": true,
+      "truncated": false
+    },
+    {
+      "episode": 6,
+      "episode_seed": 4206,
+      "success": true,
+      "reward_total": 100.01816754587654,
+      "steps": 111,
+      "terminated": true,
+      "truncated": false
+    },
+    {
+      "episode": 7,
+      "episode_seed": 4207,
+      "success": false,
+      "reward_total": 0.6583945758308473,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true
+    },
+    {
+      "episode": 8,
+      "episode_seed": 4208,
+      "success": false,
+      "reward_total": 0.31296119335220574,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true
+    },
+    {
+      "episode": 9,
+      "episode_seed": 4209,
+      "success": false,
+      "reward_total": 0.28963823170597364,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true
+    },
+    {
+      "episode": 10,
+      "episode_seed": 4210,
+      "success": true,
+      "reward_total": 100.60966059129103,
+      "steps": 114,
+      "terminated": true,
+      "truncated": false
+    },
+    {
+      "episode": 11,
+      "episode_seed": 4211,
+      "success": true,
+      "reward_total": 105.22482245661917,
+      "steps": 111,
+      "terminated": true,
+      "truncated": false
+    },
+    {
+      "episode": 12,
+      "episode_seed": 4212,
+      "success": true,
+      "reward_total": 99.8997355991055,
+      "steps": 111,
+      "terminated": true,
+      "truncated": false
+    },
+    {
+      "episode": 13,
+      "episode_seed": 4213,
+      "success": false,
+      "reward_total": 0.5703761800190009,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true
+    },
+    {
+      "episode": 14,
+      "episode_seed": 4214,
+      "success": false,
+      "reward_total": -1.2411402831844351,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true
+    },
+    {
+      "episode": 15,
+      "episode_seed": 4215,
+      "success": false,
+      "reward_total": 0.8698491398009879,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true
+    },
+    {
+      "episode": 16,
+      "episode_seed": 4216,
+      "success": true,
+      "reward_total": 106.03077446946796,
+      "steps": 113,
+      "terminated": true,
+      "truncated": false
+    },
+    {
+      "episode": 17,
+      "episode_seed": 4217,
+      "success": false,
+      "reward_total": 0.2710362097090045,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true
+    },
+    {
+      "episode": 18,
+      "episode_seed": 4218,
+      "success": true,
+      "reward_total": 100.29157311261841,
+      "steps": 111,
+      "terminated": true,
+      "truncated": false
+    },
+    {
+      "episode": 19,
+      "episode_seed": 4219,
+      "success": false,
+      "reward_total": -1.259594897248821,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true
+    },
+    {
+      "episode": 20,
+      "episode_seed": 4220,
+      "success": true,
+      "reward_total": 100.00615742169056,
+      "steps": 111,
+      "terminated": true,
+      "truncated": false
+    },
+    {
+      "episode": 21,
+      "episode_seed": 4221,
+      "success": true,
+      "reward_total": 104.71761726360819,
+      "steps": 116,
+      "terminated": true,
+      "truncated": false
+    },
+    {
+      "episode": 22,
+      "episode_seed": 4222,
+      "success": false,
+      "reward_total": 0.5101977576061489,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true
+    },
+    {
+      "episode": 23,
+      "episode_seed": 4223,
+      "success": true,
+      "reward_total": 100.09554257563259,
+      "steps": 112,
+      "terminated": true,
+      "truncated": false
+    },
+    {
+      "episode": 24,
+      "episode_seed": 4224,
+      "success": true,
+      "reward_total": 104.75978545548966,
+      "steps": 111,
+      "terminated": true,
+      "truncated": false
+    },
+    {
+      "episode": 25,
+      "episode_seed": 4225,
+      "success": true,
+      "reward_total": 104.5128540886825,
+      "steps": 107,
+      "terminated": true,
+      "truncated": false
+    },
+    {
+      "episode": 26,
+      "episode_seed": 4226,
+      "success": true,
+      "reward_total": 104.55187191325314,
+      "steps": 107,
+      "terminated": true,
+      "truncated": false
+    },
+    {
+      "episode": 27,
+      "episode_seed": 4227,
+      "success": true,
+      "reward_total": 99.61615879820127,
+      "steps": 111,
+      "terminated": true,
+      "truncated": false
+    },
+    {
+      "episode": 28,
+      "episode_seed": 4228,
+      "success": false,
+      "reward_total": -23.607356460054465,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true
+    },
+    {
+      "episode": 29,
+      "episode_seed": 4229,
+      "success": true,
+      "reward_total": 100.89768866065168,
+      "steps": 113,
+      "terminated": true,
+      "truncated": false
+    },
+    {
+      "episode": 30,
+      "episode_seed": 4230,
+      "success": true,
+      "reward_total": 106.31580197881564,
+      "steps": 115,
+      "terminated": true,
+      "truncated": false
+    },
+    {
+      "episode": 31,
+      "episode_seed": 4231,
+      "success": false,
+      "reward_total": 0.7917140240692053,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true
+    },
+    {
+      "episode": 32,
+      "episode_seed": 4232,
+      "success": false,
+      "reward_total": 0.16229775629801088,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true
+    },
+    {
+      "episode": 33,
+      "episode_seed": 4233,
+      "success": true,
+      "reward_total": 100.17883284624305,
+      "steps": 110,
+      "terminated": true,
+      "truncated": false
+    },
+    {
+      "episode": 34,
+      "episode_seed": 4234,
+      "success": true,
+      "reward_total": 107.0103042927775,
+      "steps": 115,
+      "terminated": true,
+      "truncated": false
+    },
+    {
+      "episode": 35,
+      "episode_seed": 4235,
+      "success": false,
+      "reward_total": 0.8483390185583878,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true
+    },
+    {
+      "episode": 36,
+      "episode_seed": 4236,
+      "success": false,
+      "reward_total": -0.7625596022074702,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true
+    },
+    {
+      "episode": 37,
+      "episode_seed": 4237,
+      "success": true,
+      "reward_total": 103.93776293120776,
+      "steps": 105,
+      "terminated": true,
+      "truncated": false
+    },
+    {
+      "episode": 38,
+      "episode_seed": 4238,
+      "success": true,
+      "reward_total": 101.1848894408001,
+      "steps": 114,
+      "terminated": true,
+      "truncated": false
+    },
+    {
+      "episode": 39,
+      "episode_seed": 4239,
+      "success": false,
+      "reward_total": 0.5380415806185038,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true
+    },
+    {
+      "episode": 40,
+      "episode_seed": 4240,
+      "success": false,
+      "reward_total": 0.381942563667994,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true
+    },
+    {
+      "episode": 41,
+      "episode_seed": 4241,
+      "success": true,
+      "reward_total": 100.39221857711179,
+      "steps": 114,
+      "terminated": true,
+      "truncated": false
+    },
+    {
+      "episode": 42,
+      "episode_seed": 4242,
+      "success": true,
+      "reward_total": 101.08309001669159,
+      "steps": 111,
+      "terminated": true,
+      "truncated": false
+    },
+    {
+      "episode": 43,
+      "episode_seed": 4243,
+      "success": true,
+      "reward_total": 103.19042805278889,
+      "steps": 107,
+      "terminated": true,
+      "truncated": false
+    },
+    {
+      "episode": 44,
+      "episode_seed": 4244,
+      "success": false,
+      "reward_total": 0.17787002411765507,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true
+    },
+    {
+      "episode": 45,
+      "episode_seed": 4245,
+      "success": true,
+      "reward_total": 102.31238484340051,
+      "steps": 104,
+      "terminated": true,
+      "truncated": false
+    },
+    {
+      "episode": 46,
+      "episode_seed": 4246,
+      "success": false,
+      "reward_total": 0.72059596029572,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true
+    },
+    {
+      "episode": 47,
+      "episode_seed": 4247,
+      "success": true,
+      "reward_total": 104.16379870529238,
+      "steps": 111,
+      "terminated": true,
+      "truncated": false
+    },
+    {
+      "episode": 48,
+      "episode_seed": 4248,
+      "success": false,
+      "reward_total": 1.0633022980882105,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true
+    },
+    {
+      "episode": 49,
+      "episode_seed": 4249,
+      "success": true,
+      "reward_total": 106.88352635172868,
+      "steps": 114,
+      "terminated": true,
+      "truncated": false
+    },
+    {
+      "episode": 50,
+      "episode_seed": 4250,
+      "success": true,
+      "reward_total": 99.88312307061506,
+      "steps": 113,
+      "terminated": true,
+      "truncated": false
+    },
+    {
+      "episode": 51,
+      "episode_seed": 4251,
+      "success": true,
+      "reward_total": 104.92835302861405,
+      "steps": 113,
+      "terminated": true,
+      "truncated": false
+    },
+    {
+      "episode": 52,
+      "episode_seed": 4252,
+      "success": false,
+      "reward_total": 0.7231849712041007,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true
+    },
+    {
+      "episode": 53,
+      "episode_seed": 4253,
+      "success": true,
+      "reward_total": 101.32847268240607,
+      "steps": 110,
+      "terminated": true,
+      "truncated": false
+    },
+    {
+      "episode": 54,
+      "episode_seed": 4254,
+      "success": true,
+      "reward_total": 105.02511413905714,
+      "steps": 112,
+      "terminated": true,
+      "truncated": false
+    },
+    {
+      "episode": 55,
+      "episode_seed": 4255,
+      "success": true,
+      "reward_total": 106.13368873193792,
+      "steps": 115,
+      "terminated": true,
+      "truncated": false
+    },
+    {
+      "episode": 56,
+      "episode_seed": 4256,
+      "success": true,
+      "reward_total": 100.47289175285542,
+      "steps": 109,
+      "terminated": true,
+      "truncated": false
+    },
+    {
+      "episode": 57,
+      "episode_seed": 4257,
+      "success": true,
+      "reward_total": 105.82859486082475,
+      "steps": 115,
+      "terminated": true,
+      "truncated": false
+    },
+    {
+      "episode": 58,
+      "episode_seed": 4258,
+      "success": false,
+      "reward_total": -0.8494455346806951,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true
+    },
+    {
+      "episode": 59,
+      "episode_seed": 4259,
+      "success": true,
+      "reward_total": 104.71777675548563,
+      "steps": 113,
+      "terminated": true,
+      "truncated": false
+    },
+    {
+      "episode": 60,
+      "episode_seed": 4260,
+      "success": true,
+      "reward_total": 100.30681028405326,
+      "steps": 113,
+      "terminated": true,
+      "truncated": false
+    },
+    {
+      "episode": 61,
+      "episode_seed": 4261,
+      "success": true,
+      "reward_total": 107.23419964980434,
+      "steps": 114,
+      "terminated": true,
+      "truncated": false
+    },
+    {
+      "episode": 62,
+      "episode_seed": 4262,
+      "success": true,
+      "reward_total": 106.96219123682118,
+      "steps": 117,
+      "terminated": true,
+      "truncated": false
+    },
+    {
+      "episode": 63,
+      "episode_seed": 4263,
+      "success": true,
+      "reward_total": 98.03009433198126,
+      "steps": 113,
+      "terminated": true,
+      "truncated": false
+    },
+    {
+      "episode": 64,
+      "episode_seed": 4264,
+      "success": true,
+      "reward_total": 107.0458493840236,
+      "steps": 116,
+      "terminated": true,
+      "truncated": false
+    },
+    {
+      "episode": 65,
+      "episode_seed": 4265,
+      "success": true,
+      "reward_total": 100.32239078431083,
+      "steps": 115,
+      "terminated": true,
+      "truncated": false
+    },
+    {
+      "episode": 66,
+      "episode_seed": 4266,
+      "success": true,
+      "reward_total": 105.74218691940914,
+      "steps": 111,
+      "terminated": true,
+      "truncated": false
+    },
+    {
+      "episode": 67,
+      "episode_seed": 4267,
+      "success": true,
+      "reward_total": 99.46446109638693,
+      "steps": 112,
+      "terminated": true,
+      "truncated": false
+    },
+    {
+      "episode": 68,
+      "episode_seed": 4268,
+      "success": true,
+      "reward_total": 99.60490246100429,
+      "steps": 111,
+      "terminated": true,
+      "truncated": false
+    },
+    {
+      "episode": 69,
+      "episode_seed": 4269,
+      "success": true,
+      "reward_total": 101.04787086433126,
+      "steps": 113,
+      "terminated": true,
+      "truncated": false
+    },
+    {
+      "episode": 70,
+      "episode_seed": 4270,
+      "success": true,
+      "reward_total": 103.73008858191173,
+      "steps": 105,
+      "terminated": true,
+      "truncated": false
+    },
+    {
+      "episode": 71,
+      "episode_seed": 4271,
+      "success": true,
+      "reward_total": 100.34593253142485,
+      "steps": 114,
+      "terminated": true,
+      "truncated": false
+    },
+    {
+      "episode": 72,
+      "episode_seed": 4272,
+      "success": true,
+      "reward_total": 106.44571437003407,
+      "steps": 114,
+      "terminated": true,
+      "truncated": false
+    },
+    {
+      "episode": 73,
+      "episode_seed": 4273,
+      "success": true,
+      "reward_total": 100.37913287894546,
+      "steps": 115,
+      "terminated": true,
+      "truncated": false
+    },
+    {
+      "episode": 74,
+      "episode_seed": 4274,
+      "success": true,
+      "reward_total": 105.25714930387917,
+      "steps": 113,
+      "terminated": true,
+      "truncated": false
+    },
+    {
+      "episode": 75,
+      "episode_seed": 4275,
+      "success": true,
+      "reward_total": 105.12754098501657,
+      "steps": 110,
+      "terminated": true,
+      "truncated": false
+    },
+    {
+      "episode": 76,
+      "episode_seed": 4276,
+      "success": false,
+      "reward_total": 0.2096066624935476,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true
+    },
+    {
+      "episode": 77,
+      "episode_seed": 4277,
+      "success": true,
+      "reward_total": 106.19541901649062,
+      "steps": 109,
+      "terminated": true,
+      "truncated": false
+    },
+    {
+      "episode": 78,
+      "episode_seed": 4278,
+      "success": false,
+      "reward_total": 0.9308151530468977,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true
+    },
+    {
+      "episode": 79,
+      "episode_seed": 4279,
+      "success": false,
+      "reward_total": 0.3038318658574529,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true
+    },
+    {
+      "episode": 80,
+      "episode_seed": 4280,
+      "success": false,
+      "reward_total": 1.1624403585584897,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true
+    },
+    {
+      "episode": 81,
+      "episode_seed": 4281,
+      "success": true,
+      "reward_total": 107.17226818777056,
+      "steps": 114,
+      "terminated": true,
+      "truncated": false
+    },
+    {
+      "episode": 82,
+      "episode_seed": 4282,
+      "success": false,
+      "reward_total": 0.6875347460605464,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true
+    },
+    {
+      "episode": 83,
+      "episode_seed": 4283,
+      "success": false,
+      "reward_total": -0.5495221466296797,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true
+    },
+    {
+      "episode": 84,
+      "episode_seed": 4284,
+      "success": true,
+      "reward_total": 100.29817695419044,
+      "steps": 115,
+      "terminated": true,
+      "truncated": false
+    },
+    {
+      "episode": 85,
+      "episode_seed": 4285,
+      "success": true,
+      "reward_total": 100.43481271705969,
+      "steps": 112,
+      "terminated": true,
+      "truncated": false
+    },
+    {
+      "episode": 86,
+      "episode_seed": 4286,
+      "success": true,
+      "reward_total": 102.11435683189946,
+      "steps": 105,
+      "terminated": true,
+      "truncated": false
+    },
+    {
+      "episode": 87,
+      "episode_seed": 4287,
+      "success": false,
+      "reward_total": 0.15185948831225834,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true
+    },
+    {
+      "episode": 88,
+      "episode_seed": 4288,
+      "success": true,
+      "reward_total": 105.12707726741425,
+      "steps": 113,
+      "terminated": true,
+      "truncated": false
+    },
+    {
+      "episode": 89,
+      "episode_seed": 4289,
+      "success": true,
+      "reward_total": 105.15934958887198,
+      "steps": 106,
+      "terminated": true,
+      "truncated": false
+    },
+    {
+      "episode": 90,
+      "episode_seed": 4290,
+      "success": true,
+      "reward_total": 105.85811447160665,
+      "steps": 111,
+      "terminated": true,
+      "truncated": false
+    },
+    {
+      "episode": 91,
+      "episode_seed": 4291,
+      "success": true,
+      "reward_total": 105.74358591576592,
+      "steps": 107,
+      "terminated": true,
+      "truncated": false
+    },
+    {
+      "episode": 92,
+      "episode_seed": 4292,
+      "success": false,
+      "reward_total": 1.1049444545415745,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true
+    },
+    {
+      "episode": 93,
+      "episode_seed": 4293,
+      "success": true,
+      "reward_total": 106.37388290837961,
+      "steps": 112,
+      "terminated": true,
+      "truncated": false
+    },
+    {
+      "episode": 94,
+      "episode_seed": 4294,
+      "success": true,
+      "reward_total": 100.45403254731158,
+      "steps": 108,
+      "terminated": true,
+      "truncated": false
+    },
+    {
+      "episode": 95,
+      "episode_seed": 4295,
+      "success": true,
+      "reward_total": 100.59788544905581,
+      "steps": 113,
+      "terminated": true,
+      "truncated": false
+    },
+    {
+      "episode": 96,
+      "episode_seed": 4296,
+      "success": true,
+      "reward_total": 105.11458872853251,
+      "steps": 113,
+      "terminated": true,
+      "truncated": false
+    },
+    {
+      "episode": 97,
+      "episode_seed": 4297,
+      "success": false,
+      "reward_total": 0.3335399046874656,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true
+    },
+    {
+      "episode": 98,
+      "episode_seed": 4298,
+      "success": false,
+      "reward_total": 0.7977756341715608,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true
+    },
+    {
+      "episode": 99,
+      "episode_seed": 4299,
+      "success": true,
+      "reward_total": 105.55725194829816,
+      "steps": 111,
+      "terminated": true,
+      "truncated": false
+    },
+    {
+      "episode": 100,
+      "episode_seed": 4300,
+      "success": true,
+      "reward_total": 104.91630555337315,
+      "steps": 113,
+      "terminated": true,
+      "truncated": false
+    },
+    {
+      "episode": 101,
+      "episode_seed": 4301,
+      "success": false,
+      "reward_total": 0.2447611658280429,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true
+    },
+    {
+      "episode": 102,
+      "episode_seed": 4302,
+      "success": false,
+      "reward_total": -0.6548098547675305,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true
+    },
+    {
+      "episode": 103,
+      "episode_seed": 4303,
+      "success": true,
+      "reward_total": 105.27625123187562,
+      "steps": 116,
+      "terminated": true,
+      "truncated": false
+    },
+    {
+      "episode": 104,
+      "episode_seed": 4304,
+      "success": true,
+      "reward_total": 104.69614661578254,
+      "steps": 116,
+      "terminated": true,
+      "truncated": false
+    },
+    {
+      "episode": 105,
+      "episode_seed": 4305,
+      "success": false,
+      "reward_total": 0.4558337698167832,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true
+    },
+    {
+      "episode": 106,
+      "episode_seed": 4306,
+      "success": false,
+      "reward_total": 0.5726402260156356,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true
+    },
+    {
+      "episode": 107,
+      "episode_seed": 4307,
+      "success": false,
+      "reward_total": 0.3437459541310992,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true
+    },
+    {
+      "episode": 108,
+      "episode_seed": 4308,
+      "success": false,
+      "reward_total": -0.21569889800036957,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true
+    },
+    {
+      "episode": 109,
+      "episode_seed": 4309,
+      "success": false,
+      "reward_total": 0.5567472139218005,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true
+    },
+    {
+      "episode": 110,
+      "episode_seed": 4310,
+      "success": true,
+      "reward_total": 105.79034638864148,
+      "steps": 109,
+      "terminated": true,
+      "truncated": false
+    },
+    {
+      "episode": 111,
+      "episode_seed": 4311,
+      "success": true,
+      "reward_total": 106.47866089856745,
+      "steps": 115,
+      "terminated": true,
+      "truncated": false
+    },
+    {
+      "episode": 112,
+      "episode_seed": 4312,
+      "success": true,
+      "reward_total": 104.8193705254308,
+      "steps": 110,
+      "terminated": true,
+      "truncated": false
+    },
+    {
+      "episode": 113,
+      "episode_seed": 4313,
+      "success": true,
+      "reward_total": 100.43841714608216,
+      "steps": 115,
+      "terminated": true,
+      "truncated": false
+    },
+    {
+      "episode": 114,
+      "episode_seed": 4314,
+      "success": true,
+      "reward_total": 104.2061811728335,
+      "steps": 108,
+      "terminated": true,
+      "truncated": false
+    },
+    {
+      "episode": 115,
+      "episode_seed": 4315,
+      "success": true,
+      "reward_total": 101.10370628800693,
+      "steps": 110,
+      "terminated": true,
+      "truncated": false
+    },
+    {
+      "episode": 116,
+      "episode_seed": 4316,
+      "success": false,
+      "reward_total": 0.5133604866775985,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true
+    },
+    {
+      "episode": 117,
+      "episode_seed": 4317,
+      "success": true,
+      "reward_total": 105.77773124369597,
+      "steps": 107,
+      "terminated": true,
+      "truncated": false
+    },
+    {
+      "episode": 118,
+      "episode_seed": 4318,
+      "success": true,
+      "reward_total": 104.68248788889349,
+      "steps": 109,
+      "terminated": true,
+      "truncated": false
+    },
+    {
+      "episode": 119,
+      "episode_seed": 4319,
+      "success": true,
+      "reward_total": 104.46823689882747,
+      "steps": 109,
+      "terminated": true,
+      "truncated": false
+    },
+    {
+      "episode": 120,
+      "episode_seed": 4320,
+      "success": true,
+      "reward_total": 104.28936658414324,
+      "steps": 112,
+      "terminated": true,
+      "truncated": false
+    },
+    {
+      "episode": 121,
+      "episode_seed": 4321,
+      "success": false,
+      "reward_total": 0.2862651735976863,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true
+    },
+    {
+      "episode": 122,
+      "episode_seed": 4322,
+      "success": true,
+      "reward_total": 103.63456697612817,
+      "steps": 113,
+      "terminated": true,
+      "truncated": false
+    },
+    {
+      "episode": 123,
+      "episode_seed": 4323,
+      "success": true,
+      "reward_total": 106.77547915574914,
+      "steps": 113,
+      "terminated": true,
+      "truncated": false
+    },
+    {
+      "episode": 124,
+      "episode_seed": 4324,
+      "success": true,
+      "reward_total": 105.96600501105092,
+      "steps": 113,
+      "terminated": true,
+      "truncated": false
+    },
+    {
+      "episode": 125,
+      "episode_seed": 4325,
+      "success": true,
+      "reward_total": 106.70461183792943,
+      "steps": 111,
+      "terminated": true,
+      "truncated": false
+    },
+    {
+      "episode": 126,
+      "episode_seed": 4326,
+      "success": false,
+      "reward_total": -0.9898381727186512,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true
+    },
+    {
+      "episode": 127,
+      "episode_seed": 4327,
+      "success": true,
+      "reward_total": 105.56641916005293,
+      "steps": 109,
+      "terminated": true,
+      "truncated": false
+    },
+    {
+      "episode": 128,
+      "episode_seed": 4328,
+      "success": true,
+      "reward_total": 104.9937091471927,
+      "steps": 108,
+      "terminated": true,
+      "truncated": false
+    },
+    {
+      "episode": 129,
+      "episode_seed": 4329,
+      "success": true,
+      "reward_total": 105.2905511124202,
+      "steps": 113,
+      "terminated": true,
+      "truncated": false
+    },
+    {
+      "episode": 130,
+      "episode_seed": 4330,
+      "success": true,
+      "reward_total": 98.309353116459,
+      "steps": 112,
+      "terminated": true,
+      "truncated": false
+    },
+    {
+      "episode": 131,
+      "episode_seed": 4331,
+      "success": false,
+      "reward_total": 0.8964469990776417,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true
+    },
+    {
+      "episode": 132,
+      "episode_seed": 4332,
+      "success": false,
+      "reward_total": 1.0310901585937011,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true
+    },
+    {
+      "episode": 133,
+      "episode_seed": 4333,
+      "success": true,
+      "reward_total": 106.5969696178231,
+      "steps": 110,
+      "terminated": true,
+      "truncated": false
+    },
+    {
+      "episode": 134,
+      "episode_seed": 4334,
+      "success": true,
+      "reward_total": 106.59332278052992,
+      "steps": 110,
+      "terminated": true,
+      "truncated": false
+    },
+    {
+      "episode": 135,
+      "episode_seed": 4335,
+      "success": true,
+      "reward_total": 106.53626416663644,
+      "steps": 115,
+      "terminated": true,
+      "truncated": false
+    },
+    {
+      "episode": 136,
+      "episode_seed": 4336,
+      "success": false,
+      "reward_total": 0.8455704557547488,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true
+    },
+    {
+      "episode": 137,
+      "episode_seed": 4337,
+      "success": true,
+      "reward_total": 103.91660762820291,
+      "steps": 105,
+      "terminated": true,
+      "truncated": false
+    },
+    {
+      "episode": 138,
+      "episode_seed": 4338,
+      "success": true,
+      "reward_total": 106.77675441951831,
+      "steps": 114,
+      "terminated": true,
+      "truncated": false
+    },
+    {
+      "episode": 139,
+      "episode_seed": 4339,
+      "success": true,
+      "reward_total": 105.9370574158246,
+      "steps": 114,
+      "terminated": true,
+      "truncated": false
+    },
+    {
+      "episode": 140,
+      "episode_seed": 4340,
+      "success": true,
+      "reward_total": 104.28271687383753,
+      "steps": 106,
+      "terminated": true,
+      "truncated": false
+    },
+    {
+      "episode": 141,
+      "episode_seed": 4341,
+      "success": false,
+      "reward_total": 0.2833781275190484,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true
+    },
+    {
+      "episode": 142,
+      "episode_seed": 4342,
+      "success": false,
+      "reward_total": 0.037269734150429536,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true
+    },
+    {
+      "episode": 143,
+      "episode_seed": 4343,
+      "success": true,
+      "reward_total": 100.43676435698029,
+      "steps": 113,
+      "terminated": true,
+      "truncated": false
+    },
+    {
+      "episode": 144,
+      "episode_seed": 4344,
+      "success": true,
+      "reward_total": 106.89417094992635,
+      "steps": 115,
+      "terminated": true,
+      "truncated": false
+    },
+    {
+      "episode": 145,
+      "episode_seed": 4345,
+      "success": false,
+      "reward_total": 0.9284877999889729,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true
+    },
+    {
+      "episode": 146,
+      "episode_seed": 4346,
+      "success": true,
+      "reward_total": 106.86899139444951,
+      "steps": 114,
+      "terminated": true,
+      "truncated": false
+    },
+    {
+      "episode": 147,
+      "episode_seed": 4347,
+      "success": true,
+      "reward_total": 104.85433668326294,
+      "steps": 108,
+      "terminated": true,
+      "truncated": false
+    },
+    {
+      "episode": 148,
+      "episode_seed": 4348,
+      "success": true,
+      "reward_total": 101.17022580719208,
+      "steps": 113,
+      "terminated": true,
+      "truncated": false
+    },
+    {
+      "episode": 149,
+      "episode_seed": 4349,
+      "success": true,
+      "reward_total": 100.02657873368233,
+      "steps": 109,
+      "terminated": true,
+      "truncated": false
+    },
+    {
+      "episode": 150,
+      "episode_seed": 4350,
+      "success": true,
+      "reward_total": 105.21960040236141,
+      "steps": 109,
+      "terminated": true,
+      "truncated": false
+    },
+    {
+      "episode": 151,
+      "episode_seed": 4351,
+      "success": true,
+      "reward_total": 100.43239631797164,
+      "steps": 111,
+      "terminated": true,
+      "truncated": false
+    },
+    {
+      "episode": 152,
+      "episode_seed": 4352,
+      "success": true,
+      "reward_total": 106.1132427021803,
+      "steps": 115,
+      "terminated": true,
+      "truncated": false
+    },
+    {
+      "episode": 153,
+      "episode_seed": 4353,
+      "success": true,
+      "reward_total": 105.45532789588678,
+      "steps": 107,
+      "terminated": true,
+      "truncated": false
+    },
+    {
+      "episode": 154,
+      "episode_seed": 4354,
+      "success": true,
+      "reward_total": 105.47330013456641,
+      "steps": 112,
+      "terminated": true,
+      "truncated": false
+    },
+    {
+      "episode": 155,
+      "episode_seed": 4355,
+      "success": true,
+      "reward_total": 102.83626690195905,
+      "steps": 110,
+      "terminated": true,
+      "truncated": false
+    },
+    {
+      "episode": 156,
+      "episode_seed": 4356,
+      "success": true,
+      "reward_total": 100.17628522519296,
+      "steps": 113,
+      "terminated": true,
+      "truncated": false
+    },
+    {
+      "episode": 157,
+      "episode_seed": 4357,
+      "success": true,
+      "reward_total": 104.89511251092495,
+      "steps": 111,
+      "terminated": true,
+      "truncated": false
+    },
+    {
+      "episode": 158,
+      "episode_seed": 4358,
+      "success": false,
+      "reward_total": 0.7498661370142862,
+      "steps": 500,
+      "terminated": false,
+      "truncated": true
+    },
+    {
+      "episode": 159,
+      "episode_seed": 4359,
+      "success": true,
+      "reward_total": 104.80051752819554,
+      "steps": 108,
+      "terminated": true,
+      "truncated": false
+    }
+  ],
+  "research_evidence": {
+    "episode_diagnostics": [
+      {
+        "episode": 0,
+        "episode_seed": 4200,
+        "target_radius_cm": 7.850314212182928,
+        "target_angle_degrees": 21.744096489779324,
+        "min_distance_cm": 0.5319308648799154,
+        "final_distance_cm": 0.5553367561031619,
+        "first_reach_step": 14,
+        "first_entry_speed_cm_per_step": 0.7756029318368799,
+        "first_entry_joint_speed_radians_per_step": 2.4720712832674687,
+        "first_entry_branch_error_radians": [
+          0.11991649121046066,
+          -0.009972232393920422,
+          2.071209669113159,
+          1.4053459167480469
+        ],
+        "first_entry_joint_limit_margin_radians": [
+          2.251002691728175,
+          0.5231539107985634
+        ],
+        "post_entry_max_distance_cm": 0.9465690403829453,
+        "max_held_steps": 100,
+        "in_tolerance_steps": 100,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 1,
+        "episode_seed": 4201,
+        "target_radius_cm": 18.82696061913494,
+        "target_angle_degrees": -147.95017048151985,
+        "min_distance_cm": 1.1558098477088532,
+        "final_distance_cm": 1.7632219383680887,
+        "first_reach_step": null,
+        "first_entry_speed_cm_per_step": null,
+        "first_entry_joint_speed_radians_per_step": null,
+        "first_entry_branch_error_radians": null,
+        "first_entry_joint_limit_margin_radians": null,
+        "post_entry_max_distance_cm": null,
+        "max_held_steps": 0,
+        "in_tolerance_steps": 0,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 2,
+        "episode_seed": 4202,
+        "target_radius_cm": 9.235016889782715,
+        "target_angle_degrees": 113.65395195902805,
+        "min_distance_cm": 0.6156729946857015,
+        "final_distance_cm": 0.7222380512474161,
+        "first_reach_step": 16,
+        "first_entry_speed_cm_per_step": 0.294182991038907,
+        "first_entry_joint_speed_radians_per_step": 4.7259878194777585,
+        "first_entry_branch_error_radians": [
+          0.10236727446317673,
+          -0.017703544348478317,
+          1.998358964920044,
+          1.6787607669830322
+        ],
+        "first_entry_joint_limit_margin_radians": [
+          2.033787178429536,
+          0.655995682553439
+        ],
+        "post_entry_max_distance_cm": 0.9105921476374824,
+        "max_held_steps": 100,
+        "in_tolerance_steps": 100,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 3,
+        "episode_seed": 4203,
+        "target_radius_cm": 15.813782750975278,
+        "target_angle_degrees": -70.13346012411,
+        "min_distance_cm": 0.10694110336244142,
+        "final_distance_cm": 0.1447577555514646,
+        "first_reach_step": 11,
+        "first_entry_speed_cm_per_step": 1.5708698349558168,
+        "first_entry_joint_speed_radians_per_step": 2.4844931987408114,
+        "first_entry_branch_error_radians": [
+          -0.04552463814616203,
+          0.07428615540266037,
+          1.3231433629989624,
+          -3.016669988632202
+        ],
+        "first_entry_joint_limit_margin_radians": [
+          1.1041905761660629,
+          1.4958677792276491
+        ],
+        "post_entry_max_distance_cm": 0.6352448272718965,
+        "max_held_steps": 100,
+        "in_tolerance_steps": 100,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 4,
+        "episode_seed": 4204,
+        "target_radius_cm": 14.97522402487433,
+        "target_angle_degrees": -146.04897895812138,
+        "min_distance_cm": 3.1307984626673586,
+        "final_distance_cm": 4.275520940240477,
+        "first_reach_step": null,
+        "first_entry_speed_cm_per_step": null,
+        "first_entry_joint_speed_radians_per_step": null,
+        "first_entry_branch_error_radians": null,
+        "first_entry_joint_limit_margin_radians": null,
+        "post_entry_max_distance_cm": null,
+        "max_held_steps": 0,
+        "in_tolerance_steps": 0,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 5,
+        "episode_seed": 4205,
+        "target_radius_cm": 11.559364852586587,
+        "target_angle_degrees": 49.46041454845982,
+        "min_distance_cm": 0.3252415010822184,
+        "final_distance_cm": 0.41073668088875925,
+        "first_reach_step": 13,
+        "first_entry_speed_cm_per_step": 0.5798775470709565,
+        "first_entry_joint_speed_radians_per_step": 3.7253430339982736,
+        "first_entry_branch_error_radians": [
+          0.06108696013689041,
+          -0.03527486324310303,
+          1.8130537271499634,
+          2.1505048274993896
+        ],
+        "first_entry_joint_limit_margin_radians": [
+          2.8932364768806718,
+          0.8830821010332581
+        ],
+        "post_entry_max_distance_cm": 0.7158354029178622,
+        "max_held_steps": 100,
+        "in_tolerance_steps": 100,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 6,
+        "episode_seed": 4206,
+        "target_radius_cm": 13.79650236558806,
+        "target_angle_degrees": 56.26510271177524,
+        "min_distance_cm": 0.29821801134027776,
+        "final_distance_cm": 0.3480098570815663,
+        "first_reach_step": 12,
+        "first_entry_speed_cm_per_step": 0.5481386882888973,
+        "first_entry_joint_speed_radians_per_step": 3.848451688803026,
+        "first_entry_branch_error_radians": [
+          0.04591113701462746,
+          -0.05069109797477722,
+          1.614920735359192,
+          2.6399526596069336
+        ],
+        "first_entry_joint_limit_margin_radians": [
+          2.8154643926866365,
+          1.1200978390726426
+        ],
+        "post_entry_max_distance_cm": 0.6228511997668255,
+        "max_held_steps": 100,
+        "in_tolerance_steps": 100,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 7,
+        "episode_seed": 4207,
+        "target_radius_cm": 12.348254854846452,
+        "target_angle_degrees": 179.97501858378067,
+        "min_distance_cm": 25.6735763998247,
+        "final_distance_cm": 26.40538187656407,
+        "first_reach_step": null,
+        "first_entry_speed_cm_per_step": null,
+        "first_entry_joint_speed_radians_per_step": null,
+        "first_entry_branch_error_radians": null,
+        "first_entry_joint_limit_margin_radians": null,
+        "post_entry_max_distance_cm": null,
+        "max_held_steps": 0,
+        "in_tolerance_steps": 0,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 8,
+        "episode_seed": 4208,
+        "target_radius_cm": 10.657031564769065,
+        "target_angle_degrees": -129.85988481026186,
+        "min_distance_cm": 1.439044519042512,
+        "final_distance_cm": 2.0384557955329767,
+        "first_reach_step": null,
+        "first_entry_speed_cm_per_step": null,
+        "first_entry_joint_speed_radians_per_step": null,
+        "first_entry_branch_error_radians": null,
+        "first_entry_joint_limit_margin_radians": null,
+        "post_entry_max_distance_cm": null,
+        "max_held_steps": 0,
+        "in_tolerance_steps": 0,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 9,
+        "episode_seed": 4209,
+        "target_radius_cm": 17.123367638442442,
+        "target_angle_degrees": -174.55721151747196,
+        "min_distance_cm": 34.56202322953202,
+        "final_distance_cm": 35.1018307572418,
+        "first_reach_step": null,
+        "first_entry_speed_cm_per_step": null,
+        "first_entry_joint_speed_radians_per_step": null,
+        "first_entry_branch_error_radians": null,
+        "first_entry_joint_limit_margin_radians": null,
+        "post_entry_max_distance_cm": null,
+        "max_held_steps": 0,
+        "in_tolerance_steps": 0,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 10,
+        "episode_seed": 4210,
+        "target_radius_cm": 10.90767704337352,
+        "target_angle_degrees": 108.03886288931889,
+        "min_distance_cm": 0.5335646493542958,
+        "final_distance_cm": 0.6689327257980852,
+        "first_reach_step": 15,
+        "first_entry_speed_cm_per_step": 0.31564897263842095,
+        "first_entry_joint_speed_radians_per_step": 2.7132837219531405,
+        "first_entry_branch_error_radians": [
+          0.08656615763902664,
+          -0.03498131409287453,
+          1.8841294050216675,
+          2.010737180709839
+        ],
+        "first_entry_joint_limit_margin_radians": [
+          2.066773644749326,
+          0.8133450139165013
+        ],
+        "post_entry_max_distance_cm": 0.8681478414670131,
+        "max_held_steps": 100,
+        "in_tolerance_steps": 100,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 11,
+        "episode_seed": 4211,
+        "target_radius_cm": 10.227514422381443,
+        "target_angle_degrees": -60.58523098344368,
+        "min_distance_cm": 0.3957621079667995,
+        "final_distance_cm": 0.41003568847722105,
+        "first_reach_step": 12,
+        "first_entry_speed_cm_per_step": 1.2785099250093956,
+        "first_entry_joint_speed_radians_per_step": 4.141872831379358,
+        "first_entry_branch_error_radians": [
+          0.010326733812689781,
+          0.06987077742815018,
+          1.8513790369033813,
+          1.971980333328247
+        ],
+        "first_entry_joint_limit_margin_radians": [
+          0.9787950732616122,
+          0.8463926381976412
+        ],
+        "post_entry_max_distance_cm": 0.8029635795021424,
+        "max_held_steps": 100,
+        "in_tolerance_steps": 100,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 12,
+        "episode_seed": 4212,
+        "target_radius_cm": 12.205508867830309,
+        "target_angle_degrees": 21.866188629525134,
+        "min_distance_cm": 0.27485086347713567,
+        "final_distance_cm": 0.32542273933774085,
+        "first_reach_step": 12,
+        "first_entry_speed_cm_per_step": 0.5810340922416892,
+        "first_entry_joint_speed_radians_per_step": 3.0688754730657943,
+        "first_entry_branch_error_radians": [
+          0.0597117617726326,
+          -0.012708532623946667,
+          1.7629436254501343,
+          2.314702033996582
+        ],
+        "first_entry_joint_limit_margin_radians": [
+          2.4373690220555457,
+          0.976463798942419
+        ],
+        "post_entry_max_distance_cm": 0.7048908663964645,
+        "max_held_steps": 100,
+        "in_tolerance_steps": 100,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 13,
+        "episode_seed": 4213,
+        "target_radius_cm": 13.55474702901353,
+        "target_angle_degrees": 157.87213127016193,
+        "min_distance_cm": 27.410913913042872,
+        "final_distance_cm": 27.939258829232323,
+        "first_reach_step": null,
+        "first_entry_speed_cm_per_step": null,
+        "first_entry_joint_speed_radians_per_step": null,
+        "first_entry_branch_error_radians": null,
+        "first_entry_joint_limit_margin_radians": null,
+        "post_entry_max_distance_cm": null,
+        "max_held_steps": 0,
+        "in_tolerance_steps": 0,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 14,
+        "episode_seed": 4214,
+        "target_radius_cm": 6.894960435017793,
+        "target_angle_degrees": -148.7312853550726,
+        "min_distance_cm": 4.348036080237741,
+        "final_distance_cm": 4.760856438693896,
+        "first_reach_step": null,
+        "first_entry_speed_cm_per_step": null,
+        "first_entry_joint_speed_radians_per_step": null,
+        "first_entry_branch_error_radians": null,
+        "first_entry_joint_limit_margin_radians": null,
+        "post_entry_max_distance_cm": null,
+        "max_held_steps": 0,
+        "in_tolerance_steps": 0,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 15,
+        "episode_seed": 4215,
+        "target_radius_cm": 9.498090943132581,
+        "target_angle_degrees": -167.61309408639417,
+        "min_distance_cm": 20.610224663541644,
+        "final_distance_cm": 21.40233306833103,
+        "first_reach_step": null,
+        "first_entry_speed_cm_per_step": null,
+        "first_entry_joint_speed_radians_per_step": null,
+        "first_entry_branch_error_radians": null,
+        "first_entry_joint_limit_margin_radians": null,
+        "post_entry_max_distance_cm": null,
+        "max_held_steps": 0,
+        "in_tolerance_steps": 0,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 16,
+        "episode_seed": 4216,
+        "target_radius_cm": 12.449666528107647,
+        "target_angle_degrees": -97.00233254896408,
+        "min_distance_cm": 0.21614539842210848,
+        "final_distance_cm": 0.3705556918922168,
+        "first_reach_step": 14,
+        "first_entry_speed_cm_per_step": 1.4504471504119507,
+        "first_entry_joint_speed_radians_per_step": 2.8131669000119817,
+        "first_entry_branch_error_radians": [
+          -0.055643558502197266,
+          0.06320115923881531,
+          1.6282933950424194,
+          2.444929361343384
+        ],
+        "first_entry_joint_limit_margin_radians": [
+          0.48772475117304115,
+          1.0795323511868151
+        ],
+        "post_entry_max_distance_cm": 0.7462899396444531,
+        "max_held_steps": 100,
+        "in_tolerance_steps": 100,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 17,
+        "episode_seed": 4217,
+        "target_radius_cm": 18.036816550354082,
+        "target_angle_degrees": 157.0350043655073,
+        "min_distance_cm": 35.01416614563383,
+        "final_distance_cm": 35.56892071016447,
+        "first_reach_step": null,
+        "first_entry_speed_cm_per_step": null,
+        "first_entry_joint_speed_radians_per_step": null,
+        "first_entry_branch_error_radians": null,
+        "first_entry_joint_limit_margin_radians": null,
+        "post_entry_max_distance_cm": null,
+        "max_held_steps": 0,
+        "in_tolerance_steps": 0,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 18,
+        "episode_seed": 4218,
+        "target_radius_cm": 13.930069519554845,
+        "target_angle_degrees": 66.18618898917703,
+        "min_distance_cm": 0.3200638387831619,
+        "final_distance_cm": 0.49607885750387315,
+        "first_reach_step": 12,
+        "first_entry_speed_cm_per_step": 0.5780317893202641,
+        "first_entry_joint_speed_radians_per_step": 3.780078860285011,
+        "first_entry_branch_error_radians": [
+          0.051908690482378006,
+          -0.05538465082645416,
+          1.608733057975769,
+          2.666865825653076
+        ],
+        "first_entry_joint_limit_margin_radians": [
+          2.642213657593439,
+          1.131207687620493
+        ],
+        "post_entry_max_distance_cm": 0.7003095895236912,
+        "max_held_steps": 100,
+        "in_tolerance_steps": 100,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 19,
+        "episode_seed": 4219,
+        "target_radius_cm": 11.452112578491278,
+        "target_angle_degrees": -151.2852028462695,
+        "min_distance_cm": 5.337814213795631,
+        "final_distance_cm": 6.068569255759581,
+        "first_reach_step": null,
+        "first_entry_speed_cm_per_step": null,
+        "first_entry_joint_speed_radians_per_step": null,
+        "first_entry_branch_error_radians": null,
+        "first_entry_joint_limit_margin_radians": null,
+        "post_entry_max_distance_cm": null,
+        "max_held_steps": 0,
+        "in_tolerance_steps": 0,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 20,
+        "episode_seed": 4220,
+        "target_radius_cm": 13.297009826714426,
+        "target_angle_degrees": 56.98967536674938,
+        "min_distance_cm": 0.301528713906013,
+        "final_distance_cm": 0.4246746860623288,
+        "first_reach_step": 12,
+        "first_entry_speed_cm_per_step": 0.688897192126589,
+        "first_entry_joint_speed_radians_per_step": 4.083106670038415,
+        "first_entry_branch_error_radians": [
+          0.05718093737959862,
+          -0.0409298911690712,
+          1.6704899072647095,
+          2.533165454864502
+        ],
+        "first_entry_joint_limit_margin_radians": [
+          2.8362376721555047,
+          1.0715848434275923
+        ],
+        "post_entry_max_distance_cm": 0.7456907869374143,
+        "max_held_steps": 100,
+        "in_tolerance_steps": 100,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 21,
+        "episode_seed": 4221,
+        "target_radius_cm": 7.6971845928375355,
+        "target_angle_degrees": -118.77619803277918,
+        "min_distance_cm": 0.5741464267665376,
+        "final_distance_cm": 0.735300592231822,
+        "first_reach_step": 17,
+        "first_entry_speed_cm_per_step": 0.7087527824438287,
+        "first_entry_joint_speed_radians_per_step": 1.8456026118269029,
+        "first_entry_branch_error_radians": [
+          -0.03047705627977848,
+          0.08693019300699234,
+          1.9250022172927856,
+          1.4714497327804565
+        ],
+        "first_entry_joint_limit_margin_radians": [
+          -0.05323857690104239,
+          0.6046570313777129
+        ],
+        "post_entry_max_distance_cm": 0.9062820201894237,
+        "max_held_steps": 100,
+        "in_tolerance_steps": 100,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 22,
+        "episode_seed": 4222,
+        "target_radius_cm": 14.389891431278597,
+        "target_angle_degrees": 170.5328219311873,
+        "min_distance_cm": 29.216134609766513,
+        "final_distance_cm": 29.844457369861168,
+        "first_reach_step": null,
+        "first_entry_speed_cm_per_step": null,
+        "first_entry_joint_speed_radians_per_step": null,
+        "first_entry_branch_error_radians": null,
+        "first_entry_joint_limit_margin_radians": null,
+        "post_entry_max_distance_cm": null,
+        "max_held_steps": 0,
+        "in_tolerance_steps": 0,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 23,
+        "episode_seed": 4223,
+        "target_radius_cm": 13.764577808587596,
+        "target_angle_degrees": 108.0907684557554,
+        "min_distance_cm": 0.46371813461487144,
+        "final_distance_cm": 0.5604744634588676,
+        "first_reach_step": 13,
+        "first_entry_speed_cm_per_step": 0.41424625417885197,
+        "first_entry_joint_speed_radians_per_step": 2.2389732009917,
+        "first_entry_branch_error_radians": [
+          0.0864943414926529,
+          -0.05699648708105087,
+          1.6583950519561768,
+          2.6261212825775146
+        ],
+        "first_entry_joint_limit_margin_radians": [
+          1.952964651746608,
+          1.1100294603810643
+        ],
+        "post_entry_max_distance_cm": 0.9708186680048306,
+        "max_held_steps": 100,
+        "in_tolerance_steps": 100,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 24,
+        "episode_seed": 4224,
+        "target_radius_cm": 10.235903915215006,
+        "target_angle_degrees": -40.25666110123438,
+        "min_distance_cm": 0.3844445185321166,
+        "final_distance_cm": 0.39605412243666327,
+        "first_reach_step": 12,
+        "first_entry_speed_cm_per_step": 1.488664694473814,
+        "first_entry_joint_speed_radians_per_step": 6.17844795143732,
+        "first_entry_branch_error_radians": [
+          0.03778982162475586,
+          0.04274915158748627,
+          1.8783328533172607,
+          1.9466156959533691
+        ],
+        "first_entry_joint_limit_margin_radians": [
+          1.3063870870085363,
+          0.8201494839837404
+        ],
+        "post_entry_max_distance_cm": 0.7457965680411724,
+        "max_held_steps": 100,
+        "in_tolerance_steps": 100,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 25,
+        "episode_seed": 4225,
+        "target_radius_cm": 16.941698753037354,
+        "target_angle_degrees": -31.811268766826164,
+        "min_distance_cm": 0.09024489768698642,
+        "final_distance_cm": 0.09779489302730833,
+        "first_reach_step": 8,
+        "first_entry_speed_cm_per_step": 0.8609580865018309,
+        "first_entry_joint_speed_radians_per_step": 4.076388209702527,
+        "first_entry_branch_error_radians": [
+          -0.008790557272732258,
+          0.0650734156370163,
+          1.2303833961486816,
+          -2.7160613536834717
+        ],
+        "first_entry_joint_limit_margin_radians": [
+          1.801051934374624,
+          1.6415657645201023
+        ],
+        "post_entry_max_distance_cm": 0.6078210753311654,
+        "max_held_steps": 100,
+        "in_tolerance_steps": 100,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 26,
+        "episode_seed": 4226,
+        "target_radius_cm": 18.473412933467753,
+        "target_angle_degrees": -41.052002437219144,
+        "min_distance_cm": 0.03788538109691172,
+        "final_distance_cm": 0.11263102058392803,
+        "first_reach_step": 8,
+        "first_entry_speed_cm_per_step": 1.0657175385816051,
+        "first_entry_joint_speed_radians_per_step": 3.01086384138458,
+        "first_entry_branch_error_radians": [
+          -0.021203991025686264,
+          0.045439060777425766,
+          1.0141655206680298,
+          -2.2615854740142822
+        ],
+        "first_entry_joint_limit_margin_radians": [
+          1.7540863777110036,
+          1.8589865747819796
+        ],
+        "post_entry_max_distance_cm": 0.30161516243869246,
+        "max_held_steps": 100,
+        "in_tolerance_steps": 100,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 27,
+        "episode_seed": 4227,
+        "target_radius_cm": 13.314349118655905,
+        "target_angle_degrees": 46.03390841936126,
+        "min_distance_cm": 0.28523212805188486,
+        "final_distance_cm": 0.4361067928876217,
+        "first_reach_step": 12,
+        "first_entry_speed_cm_per_step": 0.605204762393105,
+        "first_entry_joint_speed_radians_per_step": 3.900250295426741,
+        "first_entry_branch_error_radians": [
+          0.047695569694042206,
+          -0.03810875862836838,
+          1.659500002861023,
+          2.5399906635284424
+        ],
+        "first_entry_joint_limit_margin_radians": [
+          2.9169052023365327,
+          1.0764080678736996
+        ],
+        "post_entry_max_distance_cm": 0.6275877191851968,
+        "max_held_steps": 100,
+        "in_tolerance_steps": 100,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 28,
+        "episode_seed": 4228,
+        "target_radius_cm": 16.543478949126563,
+        "target_angle_degrees": -139.49372059450621,
+        "min_distance_cm": 0.9647401612965779,
+        "final_distance_cm": 1.5560321724027792,
+        "first_reach_step": 17,
+        "first_entry_speed_cm_per_step": 1.1992870741448218,
+        "first_entry_joint_speed_radians_per_step": 2.330599733538092,
+        "first_entry_branch_error_radians": [
+          -0.0769912451505661,
+          0.06612762808799744,
+          1.2095751762390137,
+          -2.8274407386779785
+        ],
+        "first_entry_joint_limit_margin_radians": [
+          -0.03385695179652082,
+          1.5864032131567234
+        ],
+        "post_entry_max_distance_cm": 0.9647401612965779,
+        "max_held_steps": 1,
+        "in_tolerance_steps": 1,
+        "hold_interruptions": 1
+      },
+      {
+        "episode": 29,
+        "episode_seed": 4229,
+        "target_radius_cm": 9.306531976346067,
+        "target_angle_degrees": 34.191735248318885,
+        "min_distance_cm": 0.4262635513128721,
+        "final_distance_cm": 0.5471527699354501,
+        "first_reach_step": 14,
+        "first_entry_speed_cm_per_step": 0.4326540817164761,
+        "first_entry_joint_speed_radians_per_step": 2.9595303732529317,
+        "first_entry_branch_error_radians": [
+          0.07686541974544525,
+          -0.014925389550626278,
+          1.9692739248275757,
+          1.6962226629257202
+        ],
+        "first_entry_joint_limit_margin_radians": [
+          2.5407484244305727,
+          0.6661157076832853
+        ],
+        "post_entry_max_distance_cm": 0.7452752477733463,
+        "max_held_steps": 100,
+        "in_tolerance_steps": 100,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 30,
+        "episode_seed": 4230,
+        "target_radius_cm": 12.259888657372793,
+        "target_angle_degrees": -117.08608781623258,
+        "min_distance_cm": 0.22624966957438317,
+        "final_distance_cm": 0.41774142337024245,
+        "first_reach_step": 16,
+        "first_entry_speed_cm_per_step": 1.2198493456753676,
+        "first_entry_joint_speed_radians_per_step": 2.5728619352636004,
+        "first_entry_branch_error_radians": [
+          -0.04582224786281586,
+          0.05651089921593666,
+          1.653153419494629,
+          2.395979404449463
+        ],
+        "first_entry_joint_limit_margin_radians": [
+          0.11985640651700402,
+          1.0517122074586447
+        ],
+        "post_entry_max_distance_cm": 0.6405371336166265,
+        "max_held_steps": 100,
+        "in_tolerance_steps": 100,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 31,
+        "episode_seed": 4231,
+        "target_radius_cm": 10.704877121394999,
+        "target_angle_degrees": 166.54467081313615,
+        "min_distance_cm": 22.466476081878863,
+        "final_distance_cm": 23.231033490330653,
+        "first_reach_step": null,
+        "first_entry_speed_cm_per_step": null,
+        "first_entry_joint_speed_radians_per_step": null,
+        "first_entry_branch_error_radians": null,
+        "first_entry_joint_limit_margin_radians": null,
+        "post_entry_max_distance_cm": null,
+        "max_held_steps": 0,
+        "in_tolerance_steps": 0,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 32,
+        "episode_seed": 4232,
+        "target_radius_cm": 18.18016177377475,
+        "target_angle_degrees": -163.11967996468556,
+        "min_distance_cm": 36.737699700032444,
+        "final_distance_cm": 37.17565220314716,
+        "first_reach_step": null,
+        "first_entry_speed_cm_per_step": null,
+        "first_entry_joint_speed_radians_per_step": null,
+        "first_entry_branch_error_radians": null,
+        "first_entry_joint_limit_margin_radians": null,
+        "post_entry_max_distance_cm": null,
+        "max_held_steps": 0,
+        "in_tolerance_steps": 0,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 33,
+        "episode_seed": 4233,
+        "target_radius_cm": 12.519539062459684,
+        "target_angle_degrees": 13.868603884808811,
+        "min_distance_cm": 0.2634901337836997,
+        "final_distance_cm": 0.3718198614075853,
+        "first_reach_step": 11,
+        "first_entry_speed_cm_per_step": 1.465703407502752,
+        "first_entry_joint_speed_radians_per_step": 4.91371667639392,
+        "first_entry_branch_error_radians": [
+          0.06754498928785324,
+          0.01028711162507534,
+          1.7458727359771729,
+          2.407646417617798
+        ],
+        "first_entry_joint_limit_margin_radians": [
+          2.3024036877966503,
+          1.0344338000930453
+        ],
+        "post_entry_max_distance_cm": 0.9473946810015885,
+        "max_held_steps": 100,
+        "in_tolerance_steps": 100,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 34,
+        "episode_seed": 4234,
+        "target_radius_cm": 16.5158274425222,
+        "target_angle_degrees": -131.34656351941024,
+        "min_distance_cm": 0.13835067113116956,
+        "final_distance_cm": 0.30195131751198395,
+        "first_reach_step": 16,
+        "first_entry_speed_cm_per_step": 1.8239829351916064,
+        "first_entry_joint_speed_radians_per_step": 3.6157915715235687,
+        "first_entry_branch_error_radians": [
+          -0.07517345994710922,
+          0.07805326581001282,
+          1.2146124839782715,
+          -2.8231899738311768
+        ],
+        "first_entry_joint_limit_margin_radians": [
+          0.10491022140106665,
+          1.594491370790364
+        ],
+        "post_entry_max_distance_cm": 0.9789387083124653,
+        "max_held_steps": 100,
+        "in_tolerance_steps": 100,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 35,
+        "episode_seed": 4235,
+        "target_radius_cm": 10.092163432321918,
+        "target_angle_degrees": 174.8976282349432,
+        "min_distance_cm": 21.575879476424895,
+        "final_distance_cm": 22.296628184749995,
+        "first_reach_step": null,
+        "first_entry_speed_cm_per_step": null,
+        "first_entry_joint_speed_radians_per_step": null,
+        "first_entry_branch_error_radians": null,
+        "first_entry_joint_limit_margin_radians": null,
+        "post_entry_max_distance_cm": null,
+        "max_held_steps": 0,
+        "in_tolerance_steps": 0,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 36,
+        "episode_seed": 4236,
+        "target_radius_cm": 11.74172798973017,
+        "target_angle_degrees": -144.148415781385,
+        "min_distance_cm": 3.8907278535755414,
+        "final_distance_cm": 4.639726251251724,
+        "first_reach_step": null,
+        "first_entry_speed_cm_per_step": null,
+        "first_entry_joint_speed_radians_per_step": null,
+        "first_entry_branch_error_radians": null,
+        "first_entry_joint_limit_margin_radians": null,
+        "post_entry_max_distance_cm": null,
+        "max_held_steps": 0,
+        "in_tolerance_steps": 0,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 37,
+        "episode_seed": 4237,
+        "target_radius_cm": 19.473905400189807,
+        "target_angle_degrees": 38.441334227258196,
+        "min_distance_cm": 0.16110492097996415,
+        "final_distance_cm": 0.18199373399612231,
+        "first_reach_step": 6,
+        "first_entry_speed_cm_per_step": 1.4432484275552855,
+        "first_entry_joint_speed_radians_per_step": 6.235473290165854,
+        "first_entry_branch_error_radians": [
+          0.03351511061191559,
+          0.023510055616497993,
+          0.9097316861152649,
+          -1.920920491218567
+        ],
+        "first_entry_joint_limit_margin_radians": [
+          2.7677552737450317,
+          2.01835451055227
+        ],
+        "post_entry_max_distance_cm": 0.9491184718028135,
+        "max_held_steps": 100,
+        "in_tolerance_steps": 100,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 38,
+        "episode_seed": 4238,
+        "target_radius_cm": 6.90852105594901,
+        "target_angle_degrees": 42.6733184393531,
+        "min_distance_cm": 0.6188179865911734,
+        "final_distance_cm": 0.6219452042884227,
+        "first_reach_step": 15,
+        "first_entry_speed_cm_per_step": 0.40723767857077164,
+        "first_entry_joint_speed_radians_per_step": 3.6517096618701035,
+        "first_entry_branch_error_radians": [
+          0.13423293828964233,
+          -0.0022414736449718475,
+          2.1033575534820557,
+          1.2241907119750977
+        ],
+        "first_entry_joint_limit_margin_radians": [
+          2.593054426549542,
+          0.4364416657432266
+        ],
+        "post_entry_max_distance_cm": 0.967675254458422,
+        "max_held_steps": 100,
+        "in_tolerance_steps": 100,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 39,
+        "episode_seed": 4239,
+        "target_radius_cm": 13.4895016742664,
+        "target_angle_degrees": 144.97302775410714,
+        "min_distance_cm": 26.89039646130102,
+        "final_distance_cm": 27.272267407044055,
+        "first_reach_step": null,
+        "first_entry_speed_cm_per_step": null,
+        "first_entry_joint_speed_radians_per_step": null,
+        "first_entry_branch_error_radians": null,
+        "first_entry_joint_limit_margin_radians": null,
+        "post_entry_max_distance_cm": null,
+        "max_held_steps": 0,
+        "in_tolerance_steps": 0,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 40,
+        "episode_seed": 4240,
+        "target_radius_cm": 16.425383847110425,
+        "target_angle_degrees": 159.79565482997822,
+        "min_distance_cm": 32.355081185450715,
+        "final_distance_cm": 32.91570471440979,
+        "first_reach_step": null,
+        "first_entry_speed_cm_per_step": null,
+        "first_entry_joint_speed_radians_per_step": null,
+        "first_entry_branch_error_radians": null,
+        "first_entry_joint_limit_margin_radians": null,
+        "post_entry_max_distance_cm": null,
+        "max_held_steps": 0,
+        "in_tolerance_steps": 0,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 41,
+        "episode_seed": 4241,
+        "target_radius_cm": 8.65401020632451,
+        "target_angle_degrees": 76.68199188039557,
+        "min_distance_cm": 0.536763903679643,
+        "final_distance_cm": 0.5915417865862369,
+        "first_reach_step": 15,
+        "first_entry_speed_cm_per_step": 0.47093348080432934,
+        "first_entry_joint_speed_radians_per_step": 2.8142985899496686,
+        "first_entry_branch_error_radians": [
+          0.10020191967487335,
+          -0.03913237899541855,
+          2.022857904434204,
+          1.5386934280395508
+        ],
+        "first_entry_joint_limit_margin_radians": [
+          2.690236412872963,
+          0.5752476109717497
+        ],
+        "post_entry_max_distance_cm": 0.9119193183500112,
+        "max_held_steps": 100,
+        "in_tolerance_steps": 100,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 42,
+        "episode_seed": 4242,
+        "target_radius_cm": 15.400813935786012,
+        "target_angle_degrees": 101.6105310923584,
+        "min_distance_cm": 0.4202280628774942,
+        "final_distance_cm": 0.44286685210087817,
+        "first_reach_step": 12,
+        "first_entry_speed_cm_per_step": 0.42268556954554065,
+        "first_entry_joint_speed_radians_per_step": 2.1653865330641886,
+        "first_entry_branch_error_radians": [
+          0.0731816291809082,
+          -0.06004822999238968,
+          1.485863447189331,
+          3.0247457027435303
+        ],
+        "first_entry_joint_limit_margin_radians": [
+          1.973143955191569,
+          1.3078158112965113
+        ],
+        "post_entry_max_distance_cm": 0.8521313930663724,
+        "max_held_steps": 100,
+        "in_tolerance_steps": 100,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 43,
+        "episode_seed": 4243,
+        "target_radius_cm": 16.943128673085685,
+        "target_angle_degrees": 16.543551662787557,
+        "min_distance_cm": 0.11058690751811576,
+        "final_distance_cm": 0.13014705357846623,
+        "first_reach_step": 8,
+        "first_entry_speed_cm_per_step": 1.4297145924372459,
+        "first_entry_joint_speed_radians_per_step": 6.460118727962104,
+        "first_entry_branch_error_radians": [
+          0.022224262356758118,
+          0.03886183723807335,
+          1.2612245082855225,
+          -2.7418625354766846
+        ],
+        "first_entry_joint_limit_margin_radians": [
+          2.6140748188867193,
+          1.6155594026494573
+        ],
+        "post_entry_max_distance_cm": 0.8040545093334128,
+        "max_held_steps": 100,
+        "in_tolerance_steps": 100,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 44,
+        "episode_seed": 4244,
+        "target_radius_cm": 10.771167215962437,
+        "target_angle_degrees": -131.46785329037718,
+        "min_distance_cm": 1.680862858476347,
+        "final_distance_cm": 2.313730490717405,
+        "first_reach_step": null,
+        "first_entry_speed_cm_per_step": null,
+        "first_entry_joint_speed_radians_per_step": null,
+        "first_entry_branch_error_radians": null,
+        "first_entry_joint_limit_margin_radians": null,
+        "post_entry_max_distance_cm": null,
+        "max_held_steps": 0,
+        "in_tolerance_steps": 0,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 45,
+        "episode_seed": 4245,
+        "target_radius_cm": 19.744334491836952,
+        "target_angle_degrees": -11.677701291241641,
+        "min_distance_cm": 0.13289308373365763,
+        "final_distance_cm": 0.13980791391352237,
+        "first_reach_step": 5,
+        "first_entry_speed_cm_per_step": 0.7679612925388196,
+        "first_entry_joint_speed_radians_per_step": 9.871150998441605,
+        "first_entry_branch_error_radians": [
+          -0.02077604830265045,
+          0.11528713256120682,
+          0.8071483969688416,
+          -1.7200801372528076
+        ],
+        "first_entry_joint_limit_margin_radians": [
+          2.3700592057672982,
+          2.1646632311569283
+        ],
+        "post_entry_max_distance_cm": 0.94791427180386,
+        "max_held_steps": 100,
+        "in_tolerance_steps": 100,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 46,
+        "episode_seed": 4246,
+        "target_radius_cm": 18.351506861749815,
+        "target_angle_degrees": -150.61959017892283,
+        "min_distance_cm": 2.23720388871644,
+        "final_distance_cm": 3.0526584110378785,
+        "first_reach_step": null,
+        "first_entry_speed_cm_per_step": null,
+        "first_entry_joint_speed_radians_per_step": null,
+        "first_entry_branch_error_radians": null,
+        "first_entry_joint_limit_margin_radians": null,
+        "post_entry_max_distance_cm": null,
+        "max_held_steps": 0,
+        "in_tolerance_steps": 0,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 47,
+        "episode_seed": 4247,
+        "target_radius_cm": 10.275934123911393,
+        "target_angle_degrees": -20.83632605973263,
+        "min_distance_cm": 0.3756489004470767,
+        "final_distance_cm": 0.39102856583927575,
+        "first_reach_step": 12,
+        "first_entry_speed_cm_per_step": 1.5396678411747273,
+        "first_entry_joint_speed_radians_per_step": 6.246053036851796,
+        "first_entry_branch_error_radians": [
+          0.05285385623574257,
+          0.036330271512269974,
+          1.8909573554992676,
+          1.9485846757888794
+        ],
+        "first_entry_joint_limit_margin_radians": [
+          1.63149161659858,
+          0.8179245472988224
+        ],
+        "post_entry_max_distance_cm": 0.8301973581270867,
+        "max_held_steps": 100,
+        "in_tolerance_steps": 100,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 48,
+        "episode_seed": 4248,
+        "target_radius_cm": 7.786648404472074,
+        "target_angle_degrees": 178.23878264410342,
+        "min_distance_cm": 17.539228192629526,
+        "final_distance_cm": 18.24443740471865,
+        "first_reach_step": null,
+        "first_entry_speed_cm_per_step": null,
+        "first_entry_joint_speed_radians_per_step": null,
+        "first_entry_branch_error_radians": null,
+        "first_entry_joint_limit_margin_radians": null,
+        "post_entry_max_distance_cm": null,
+        "max_held_steps": 0,
+        "in_tolerance_steps": 0,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 49,
+        "episode_seed": 4249,
+        "target_radius_cm": 19.059520755817548,
+        "target_angle_degrees": 143.2691518137374,
+        "min_distance_cm": 0.8368140092183588,
+        "final_distance_cm": 0.8560998123664976,
+        "first_reach_step": 15,
+        "first_entry_speed_cm_per_step": 0.1473608427434193,
+        "first_entry_joint_speed_radians_per_step": 0.7233103077346452,
+        "first_entry_branch_error_radians": [
+          0.06442270427942276,
+          -0.041480038315057755,
+          1.0098475217819214,
+          -2.142937421798706
+        ],
+        "first_entry_joint_limit_margin_radians": [
+          1.0036764342317306,
+          1.8748510560584055
+        ],
+        "post_entry_max_distance_cm": 0.9191257809128532,
+        "max_held_steps": 100,
+        "in_tolerance_steps": 100,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 50,
+        "episode_seed": 4250,
+        "target_radius_cm": 9.852558413467724,
+        "target_angle_degrees": 66.86276246145319,
+        "min_distance_cm": 0.44012520646174,
+        "final_distance_cm": 0.5897443508975567,
+        "first_reach_step": 14,
+        "first_entry_speed_cm_per_step": 0.6059213808524463,
+        "first_entry_joint_speed_radians_per_step": 4.527027391197519,
+        "first_entry_branch_error_radians": [
+          0.08726390451192856,
+          -0.040305111557245255,
+          1.9503405094146729,
+          1.7836172580718994
+        ],
+        "first_entry_joint_limit_margin_radians": [
+          2.8188865763174684,
+          0.6971231326641232
+        ],
+        "post_entry_max_distance_cm": 0.8999752373525174,
+        "max_held_steps": 100,
+        "in_tolerance_steps": 100,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 51,
+        "episode_seed": 4251,
+        "target_radius_cm": 6.191531303586301,
+        "target_angle_degrees": -52.47100137961958,
+        "min_distance_cm": 0.6921840125963952,
+        "final_distance_cm": 0.694248315458251,
+        "first_reach_step": 14,
+        "first_entry_speed_cm_per_step": 1.4702477954944182,
+        "first_entry_joint_speed_radians_per_step": 5.246131889215735,
+        "first_entry_branch_error_radians": [
+          0.09597353637218475,
+          0.06528009474277496,
+          2.063042163848877,
+          1.1482772827148438
+        ],
+        "first_entry_joint_limit_margin_radians": [
+          0.9717601559890603,
+          0.4322457389923722
+        ],
+        "post_entry_max_distance_cm": 0.9660701348942992,
+        "max_held_steps": 100,
+        "in_tolerance_steps": 100,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 52,
+        "episode_seed": 4252,
+        "target_radius_cm": 11.666903630154208,
+        "target_angle_degrees": 169.94361058144895,
+        "min_distance_cm": 24.344672551736004,
+        "final_distance_cm": 25.000130589283525,
+        "first_reach_step": null,
+        "first_entry_speed_cm_per_step": null,
+        "first_entry_joint_speed_radians_per_step": null,
+        "first_entry_branch_error_radians": null,
+        "first_entry_joint_limit_margin_radians": null,
+        "post_entry_max_distance_cm": null,
+        "max_held_steps": 0,
+        "in_tolerance_steps": 0,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 53,
+        "episode_seed": 4253,
+        "target_radius_cm": 13.153245134750469,
+        "target_angle_degrees": -13.190556939558629,
+        "min_distance_cm": 0.2549066547241998,
+        "final_distance_cm": 0.31152328286144443,
+        "first_reach_step": 11,
+        "first_entry_speed_cm_per_step": 0.8291483357837146,
+        "first_entry_joint_speed_radians_per_step": 0.6780233931369541,
+        "first_entry_branch_error_radians": [
+          0.04255242273211479,
+          0.0025155553594231606,
+          1.6682440042495728,
+          2.5435211658477783
+        ],
+        "first_entry_joint_limit_margin_radians": [
+          1.881442857097448,
+          1.0984854482089323
+        ],
+        "post_entry_max_distance_cm": 0.553635238334542,
+        "max_held_steps": 100,
+        "in_tolerance_steps": 100,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 54,
+        "episode_seed": 4254,
+        "target_radius_cm": 8.615267429250041,
+        "target_angle_degrees": -53.66731975281773,
+        "min_distance_cm": 0.4985828882698425,
+        "final_distance_cm": 0.5029801648826626,
+        "first_reach_step": 13,
+        "first_entry_speed_cm_per_step": 1.2578502933828186,
+        "first_entry_joint_speed_radians_per_step": 3.6775268552039075,
+        "first_entry_branch_error_radians": [
+          0.04909103736281395,
+          0.04230181500315666,
+          1.973360300064087,
+          1.6122548580169678
+        ],
+        "first_entry_joint_limit_margin_radians": [
+          1.019162605079021,
+          0.6527454142917319
+        ],
+        "post_entry_max_distance_cm": 0.6973634199230611,
+        "max_held_steps": 100,
+        "in_tolerance_steps": 100,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 55,
+        "episode_seed": 4255,
+        "target_radius_cm": 11.177477827274597,
+        "target_angle_degrees": -110.90863068846146,
+        "min_distance_cm": 0.28271417064307675,
+        "final_distance_cm": 0.4443495989120203,
+        "first_reach_step": 16,
+        "first_entry_speed_cm_per_step": 0.8880114111838373,
+        "first_entry_joint_speed_radians_per_step": 2.890187777312999,
+        "first_entry_branch_error_radians": [
+          -0.022635310888290405,
+          0.049251165241003036,
+          1.7564984560012817,
+          2.1526412963867188
+        ],
+        "first_entry_joint_limit_margin_radians": [
+          0.16440740587278668,
+          0.9264133498234521
+        ],
+        "post_entry_max_distance_cm": 0.5032887094527078,
+        "max_held_steps": 100,
+        "in_tolerance_steps": 100,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 56,
+        "episode_seed": 4256,
+        "target_radius_cm": 15.580375978111535,
+        "target_angle_degrees": 40.5765135741176,
+        "min_distance_cm": 0.2891003955291825,
+        "final_distance_cm": 0.29649401200882214,
+        "first_reach_step": 10,
+        "first_entry_speed_cm_per_step": 0.6413920628417805,
+        "first_entry_joint_speed_radians_per_step": 2.159422595989624,
+        "first_entry_branch_error_radians": [
+          0.04366317391395569,
+          -0.005567570216953754,
+          1.4374128580093384,
+          3.1255927085876465
+        ],
+        "first_entry_joint_limit_margin_radians": [
+          2.9347154595740603,
+          1.385479622616888
+        ],
+        "post_entry_max_distance_cm": 0.6657261880117641,
+        "max_held_steps": 100,
+        "in_tolerance_steps": 100,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 57,
+        "episode_seed": 4257,
+        "target_radius_cm": 8.951487178513878,
+        "target_angle_degrees": -106.88941481058161,
+        "min_distance_cm": 0.48435884470270024,
+        "final_distance_cm": 0.5525117593112215,
+        "first_reach_step": 16,
+        "first_entry_speed_cm_per_step": 0.8380387737429603,
+        "first_entry_joint_speed_radians_per_step": 2.910089758935292,
+        "first_entry_branch_error_radians": [
+          -0.004703962244093418,
+          0.06594517827033997,
+          1.9048609733581543,
+          1.7043741941452026
+        ],
+        "first_entry_joint_limit_margin_radians": [
+          0.15140899293760635,
+          0.7106267369469164
+        ],
+        "post_entry_max_distance_cm": 0.685063224187178,
+        "max_held_steps": 100,
+        "in_tolerance_steps": 100,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 58,
+        "episode_seed": 4258,
+        "target_radius_cm": 14.95493135447873,
+        "target_angle_degrees": -152.580906898977,
+        "min_distance_cm": 4.679585612058534,
+        "final_distance_cm": 5.8881693590553414,
+        "first_reach_step": null,
+        "first_entry_speed_cm_per_step": null,
+        "first_entry_joint_speed_radians_per_step": null,
+        "first_entry_branch_error_radians": null,
+        "first_entry_joint_limit_margin_radians": null,
+        "post_entry_max_distance_cm": null,
+        "max_held_steps": 0,
+        "in_tolerance_steps": 0,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 59,
+        "episode_seed": 4259,
+        "target_radius_cm": 6.98073256810937,
+        "target_angle_degrees": -33.76830375423403,
+        "min_distance_cm": 0.6162792380934282,
+        "final_distance_cm": 0.619234698105648,
+        "first_reach_step": 14,
+        "first_entry_speed_cm_per_step": 1.0500223456481526,
+        "first_entry_joint_speed_radians_per_step": 1.1632393812020603,
+        "first_entry_branch_error_radians": [
+          0.09437359124422073,
+          0.03640761226415634,
+          2.0628650188446045,
+          1.277288794517517
+        ],
+        "first_entry_joint_limit_margin_radians": [
+          1.2990723585562551,
+          0.48231526327341845
+        ],
+        "post_entry_max_distance_cm": 0.7891098326778555,
+        "max_held_steps": 100,
+        "in_tolerance_steps": 100,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 60,
+        "episode_seed": 4260,
+        "target_radius_cm": 9.328942116745944,
+        "target_angle_degrees": 59.662400329070294,
+        "min_distance_cm": 0.45732588153116854,
+        "final_distance_cm": 0.5920405570951677,
+        "first_reach_step": 14,
+        "first_entry_speed_cm_per_step": 0.5687236419466228,
+        "first_entry_joint_speed_radians_per_step": 3.776326674009088,
+        "first_entry_branch_error_radians": [
+          0.09928548336029053,
+          -0.02420637011528015,
+          1.9905582666397095,
+          1.69154691696167
+        ],
+        "first_entry_joint_limit_margin_radians": [
+          2.963443164807707,
+          0.6591373534106633
+        ],
+        "post_entry_max_distance_cm": 0.9582907104796123,
+        "max_held_steps": 100,
+        "in_tolerance_steps": 100,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 61,
+        "episode_seed": 4261,
+        "target_radius_cm": 19.232961723729776,
+        "target_angle_degrees": -122.88858670451751,
+        "min_distance_cm": 0.04744412745089331,
+        "final_distance_cm": 0.21146490716602742,
+        "first_reach_step": 15,
+        "first_entry_speed_cm_per_step": 1.063905199000054,
+        "first_entry_joint_speed_radians_per_step": 3.510998526475385,
+        "first_entry_branch_error_radians": [
+          -0.04033970832824707,
+          0.028304850682616234,
+          0.8767576217651367,
+          -2.0087697505950928
+        ],
+        "first_entry_joint_limit_margin_radians": [
+          0.4040403213910886,
+          1.9768272408072083
+        ],
+        "post_entry_max_distance_cm": 0.6221218024075404,
+        "max_held_steps": 100,
+        "in_tolerance_steps": 100,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 62,
+        "episode_seed": 4262,
+        "target_radius_cm": 19.559300414823642,
+        "target_angle_degrees": 150.98744674950922,
+        "min_distance_cm": 0.9686713129511644,
+        "final_distance_cm": 0.9751099914909398,
+        "first_reach_step": 18,
+        "first_entry_speed_cm_per_step": 0.047620452343400003,
+        "first_entry_joint_speed_radians_per_step": 0.6636558562238923,
+        "first_entry_branch_error_radians": [
+          0.06557372957468033,
+          -0.03856348618865013,
+          0.9268339276313782,
+          -1.9491746425628662
+        ],
+        "first_entry_joint_limit_margin_radians": [
+          0.8280354742216631,
+          1.9731906900137086
+        ],
+        "post_entry_max_distance_cm": 0.9897336625725284,
+        "max_held_steps": 100,
+        "in_tolerance_steps": 100,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 63,
+        "episode_seed": 4263,
+        "target_radius_cm": 12.255944924608313,
+        "target_angle_degrees": 106.59589394118028,
+        "min_distance_cm": 0.6095652048595654,
+        "final_distance_cm": 0.6116170501099684,
+        "first_reach_step": 14,
+        "first_entry_speed_cm_per_step": 0.3119097850679398,
+        "first_entry_joint_speed_radians_per_step": 4.728466778213358,
+        "first_entry_branch_error_radians": [
+          0.09164462983608246,
+          -0.040867891162633896,
+          1.7909297943115234,
+          2.2977254390716553
+        ],
+        "first_entry_joint_limit_margin_radians": [
+          2.047897600817933,
+          0.9538958021173674
+        ],
+        "post_entry_max_distance_cm": 0.952424555698901,
+        "max_held_steps": 100,
+        "in_tolerance_steps": 100,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 64,
+        "episode_seed": 4264,
+        "target_radius_cm": 17.639436041314696,
+        "target_angle_degrees": -138.50980113109642,
+        "min_distance_cm": 0.16351253897840232,
+        "final_distance_cm": 0.3872371333125667,
+        "first_reach_step": 17,
+        "first_entry_speed_cm_per_step": 0.8853865743326315,
+        "first_entry_joint_speed_radians_per_step": 3.6893983068407197,
+        "first_entry_branch_error_radians": [
+          -0.03949916735291481,
+          0.03963615372776985,
+          1.1115375757217407,
+          -2.5348048210144043
+        ],
+        "first_entry_joint_limit_margin_radians": [
+          0.013588456589096243,
+          1.719475370504753
+        ],
+        "post_entry_max_distance_cm": 0.5359426792131474,
+        "max_held_steps": 100,
+        "in_tolerance_steps": 100,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 65,
+        "episode_seed": 4265,
+        "target_radius_cm": 7.671626269877193,
+        "target_angle_degrees": 75.18877542652059,
+        "min_distance_cm": 0.6028068102340157,
+        "final_distance_cm": 0.6989101364618907,
+        "first_reach_step": 16,
+        "first_entry_speed_cm_per_step": 0.20849119046253756,
+        "first_entry_joint_speed_radians_per_step": 2.495294684028477,
+        "first_entry_branch_error_radians": [
+          0.11900502443313599,
+          -0.013079243712127209,
+          2.075138807296753,
+          1.3663039207458496
+        ],
+        "first_entry_joint_limit_margin_radians": [
+          2.7518399673275593,
+          0.5020794206048409
+        ],
+        "post_entry_max_distance_cm": 0.8776191534752487,
+        "max_held_steps": 100,
+        "in_tolerance_steps": 100,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 66,
+        "episode_seed": 4266,
+        "target_radius_cm": 13.235793879362296,
+        "target_angle_degrees": -78.53414525432436,
+        "min_distance_cm": 0.15582569977593635,
+        "final_distance_cm": 0.3207106109602535,
+        "first_reach_step": 12,
+        "first_entry_speed_cm_per_step": 1.8358740593709562,
+        "first_entry_joint_speed_radians_per_step": 5.00579326716311,
+        "first_entry_branch_error_radians": [
+          -0.0712212547659874,
+          0.06949372589588165,
+          1.5473803281784058,
+          2.6294753551483154
+        ],
+        "first_entry_joint_limit_margin_radians": [
+          0.8583007888357721,
+          1.1749516205060138
+        ],
+        "post_entry_max_distance_cm": 0.9515464852177073,
+        "max_held_steps": 100,
+        "in_tolerance_steps": 100,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 67,
+        "episode_seed": 4267,
+        "target_radius_cm": 12.796345590777165,
+        "target_angle_degrees": 68.84771117786285,
+        "min_distance_cm": 0.32848047583200846,
+        "final_distance_cm": 0.515144782152493,
+        "first_reach_step": 13,
+        "first_entry_speed_cm_per_step": 0.484714937447222,
+        "first_entry_joint_speed_radians_per_step": 3.2760397881144976,
+        "first_entry_branch_error_radians": [
+          0.05796822905540466,
+          -0.05105983465909958,
+          1.7136943340301514,
+          2.4086174964904785
+        ],
+        "first_entry_joint_limit_margin_radians": [
+          2.6512717691708607,
+          1.004245936808692
+        ],
+        "post_entry_max_distance_cm": 0.6636090330731875,
+        "max_held_steps": 100,
+        "in_tolerance_steps": 100,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 68,
+        "episode_seed": 4268,
+        "target_radius_cm": 12.425669611490704,
+        "target_angle_degrees": 32.88982791548449,
+        "min_distance_cm": 0.2787769308809876,
+        "final_distance_cm": 0.44156233984992677,
+        "first_reach_step": 12,
+        "first_entry_speed_cm_per_step": 0.5870206122237256,
+        "first_entry_joint_speed_radians_per_step": 3.187455854538313,
+        "first_entry_branch_error_radians": [
+          0.06278075277805328,
+          -0.016989104449748993,
+          1.748635172843933,
+          2.359379768371582
+        ],
+        "first_entry_joint_limit_margin_radians": [
+          2.6353875768558455,
+          0.9966624532583763
+        ],
+        "post_entry_max_distance_cm": 0.7533532193500154,
+        "max_held_steps": 100,
+        "in_tolerance_steps": 100,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 69,
+        "episode_seed": 4269,
+        "target_radius_cm": 9.376307308833812,
+        "target_angle_degrees": 30.047888961814554,
+        "min_distance_cm": 0.4187852413131161,
+        "final_distance_cm": 0.46493920490563,
+        "first_reach_step": 14,
+        "first_entry_speed_cm_per_step": 0.4072809235107471,
+        "first_entry_joint_speed_radians_per_step": 2.9026464425831713,
+        "first_entry_branch_error_radians": [
+          0.0719083845615387,
+          -0.015146160498261452,
+          1.9607609510421753,
+          1.7103468179702759
+        ],
+        "first_entry_joint_limit_margin_radians": [
+          2.4751596315217044,
+          0.6730674231755884
+        ],
+        "post_entry_max_distance_cm": 0.7025538885504912,
+        "max_held_steps": 100,
+        "in_tolerance_steps": 100,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 70,
+        "episode_seed": 4270,
+        "target_radius_cm": 19.792297393726006,
+        "target_angle_degrees": 26.319355490617696,
+        "min_distance_cm": 0.15877857144404361,
+        "final_distance_cm": 0.1759516058170758,
+        "first_reach_step": 6,
+        "first_entry_speed_cm_per_step": 0.7738951876184696,
+        "first_entry_joint_speed_radians_per_step": 1.9861837666122018,
+        "first_entry_branch_error_radians": [
+          0.02423921227455139,
+          0.013770109042525291,
+          0.8433011174201965,
+          -1.8016231060028076
+        ],
+        "first_entry_joint_limit_margin_radians": [
+          2.941470492486611,
+          2.073133222248225
+        ],
+        "post_entry_max_distance_cm": 0.5976456040373171,
+        "max_held_steps": 100,
+        "in_tolerance_steps": 100,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 71,
+        "episode_seed": 4271,
+        "target_radius_cm": 8.409624073650509,
+        "target_angle_degrees": 75.19942619256602,
+        "min_distance_cm": 0.5493037261617799,
+        "final_distance_cm": 0.6779299322987509,
+        "first_reach_step": 15,
+        "first_entry_speed_cm_per_step": 0.5308053400724776,
+        "first_entry_joint_speed_radians_per_step": 3.637129480057242,
+        "first_entry_branch_error_radians": [
+          0.10455111414194107,
+          -0.0372035838663578,
+          2.0370113849639893,
+          1.4910333156585693
+        ],
+        "first_entry_joint_limit_margin_radians": [
+          2.725363416904137,
+          0.5523819215313392
+        ],
+        "post_entry_max_distance_cm": 0.9430882434970164,
+        "max_held_steps": 100,
+        "in_tolerance_steps": 100,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 72,
+        "episode_seed": 4272,
+        "target_radius_cm": 14.151278883496612,
+        "target_angle_degrees": -113.45250492077099,
+        "min_distance_cm": 0.12394744967794946,
+        "final_distance_cm": 0.36648589055658537,
+        "first_reach_step": 15,
+        "first_entry_speed_cm_per_step": 1.6536292134260147,
+        "first_entry_joint_speed_radians_per_step": 2.9366157832343918,
+        "first_entry_branch_error_radians": [
+          -0.06806759536266327,
+          0.055299513041973114,
+          1.4682559967041016,
+          2.8303325176239014
+        ],
+        "first_entry_joint_limit_margin_radians": [
+          0.2868457855916051,
+          1.268283088600385
+        ],
+        "post_entry_max_distance_cm": 0.8680523368869536,
+        "max_held_steps": 100,
+        "in_tolerance_steps": 100,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 73,
+        "episode_seed": 4273,
+        "target_radius_cm": 8.007802159311678,
+        "target_angle_degrees": 95.59590611807079,
+        "min_distance_cm": 0.6271445527737449,
+        "final_distance_cm": 0.7189205883564805,
+        "first_reach_step": 16,
+        "first_entry_speed_cm_per_step": 0.25721647156602645,
+        "first_entry_joint_speed_radians_per_step": 3.7609902406578386,
+        "first_entry_branch_error_radians": [
+          0.12589457631111145,
+          -0.018420742824673653,
+          2.0724282264709473,
+          1.4286205768585205
+        ],
+        "first_entry_joint_limit_margin_radians": [
+          2.3977577557714493,
+          0.5305669971662126
+        ],
+        "post_entry_max_distance_cm": 0.9646403057418724,
+        "max_held_steps": 100,
+        "in_tolerance_steps": 100,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 74,
+        "episode_seed": 4274,
+        "target_radius_cm": 6.74352702468313,
+        "target_angle_degrees": -77.55095810947061,
+        "min_distance_cm": 0.6613738149050785,
+        "final_distance_cm": 0.6673414563752107,
+        "first_reach_step": 14,
+        "first_entry_speed_cm_per_step": 1.1138510698442223,
+        "first_entry_joint_speed_radians_per_step": 3.1578042495127474,
+        "first_entry_branch_error_radians": [
+          0.052971526980400085,
+          0.08342986553907394,
+          2.023012638092041,
+          1.2768568992614746
+        ],
+        "first_entry_joint_limit_margin_radians": [
+          0.5755480340781145,
+          0.5056104512824535
+        ],
+        "post_entry_max_distance_cm": 0.9782513013965797,
+        "max_held_steps": 100,
+        "in_tolerance_steps": 100,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 75,
+        "episode_seed": 4275,
+        "target_radius_cm": 12.042672738819125,
+        "target_angle_degrees": -55.73390504445888,
+        "min_distance_cm": 0.3039774034274261,
+        "final_distance_cm": 0.3267600340551206,
+        "first_reach_step": 11,
+        "first_entry_speed_cm_per_step": 1.2645831080606034,
+        "first_entry_joint_speed_radians_per_step": 3.923892654779884,
+        "first_entry_branch_error_radians": [
+          -0.005942773073911667,
+          0.0769314169883728,
+          1.709891676902771,
+          2.368368148803711
+        ],
+        "first_entry_joint_limit_margin_radians": [
+          1.1423451006678969,
+          1.0481168571603487
+        ],
+        "post_entry_max_distance_cm": 0.7978889709345663,
+        "max_held_steps": 100,
+        "in_tolerance_steps": 100,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 76,
+        "episode_seed": 4276,
+        "target_radius_cm": 18.78205497968714,
+        "target_angle_degrees": 164.76260364372646,
+        "min_distance_cm": 36.750573662059644,
+        "final_distance_cm": 37.361133249000915,
+        "first_reach_step": null,
+        "first_entry_speed_cm_per_step": null,
+        "first_entry_joint_speed_radians_per_step": null,
+        "first_entry_branch_error_radians": null,
+        "first_entry_joint_limit_margin_radians": null,
+        "post_entry_max_distance_cm": null,
+        "max_held_steps": 0,
+        "in_tolerance_steps": 0,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 77,
+        "episode_seed": 4277,
+        "target_radius_cm": 19.70080452220157,
+        "target_angle_degrees": 98.19960452337118,
+        "min_distance_cm": 0.45966267302897923,
+        "final_distance_cm": 0.48234668990066054,
+        "first_reach_step": 10,
+        "first_entry_speed_cm_per_step": 0.30259919219067527,
+        "first_entry_joint_speed_radians_per_step": 3.720128294599225,
+        "first_entry_branch_error_radians": [
+          0.049378830939531326,
+          -0.052002351731061935,
+          0.8852653503417969,
+          -1.9053248167037964
+        ],
+        "first_entry_joint_limit_margin_radians": [
+          1.7204754082022964,
+          1.988396158246462
+        ],
+        "post_entry_max_distance_cm": 0.718591637511786,
+        "max_held_steps": 100,
+        "in_tolerance_steps": 100,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 78,
+        "episode_seed": 4278,
+        "target_radius_cm": 8.271576275486375,
+        "target_angle_degrees": 139.53010660243194,
+        "min_distance_cm": 18.034512660031705,
+        "final_distance_cm": 18.45370086868984,
+        "first_reach_step": null,
+        "first_entry_speed_cm_per_step": null,
+        "first_entry_joint_speed_radians_per_step": null,
+        "first_entry_branch_error_radians": null,
+        "first_entry_joint_limit_margin_radians": null,
+        "post_entry_max_distance_cm": null,
+        "max_held_steps": 0,
+        "in_tolerance_steps": 0,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 79,
+        "episode_seed": 4279,
+        "target_radius_cm": 16.715664447133825,
+        "target_angle_degrees": -169.61624541846612,
+        "min_distance_cm": 33.911430811335116,
+        "final_distance_cm": 34.42241259736144,
+        "first_reach_step": null,
+        "first_entry_speed_cm_per_step": null,
+        "first_entry_joint_speed_radians_per_step": null,
+        "first_entry_branch_error_radians": null,
+        "first_entry_joint_limit_margin_radians": null,
+        "post_entry_max_distance_cm": null,
+        "max_held_steps": 0,
+        "in_tolerance_steps": 0,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 80,
+        "episode_seed": 4280,
+        "target_radius_cm": 6.651519842760553,
+        "target_angle_degrees": -166.46514689126045,
+        "min_distance_cm": 15.502323786937977,
+        "final_distance_cm": 16.32489261465533,
+        "first_reach_step": null,
+        "first_entry_speed_cm_per_step": null,
+        "first_entry_joint_speed_radians_per_step": null,
+        "first_entry_branch_error_radians": null,
+        "first_entry_joint_limit_margin_radians": null,
+        "post_entry_max_distance_cm": null,
+        "max_held_steps": 0,
+        "in_tolerance_steps": 0,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 81,
+        "episode_seed": 4281,
+        "target_radius_cm": 18.672574205237247,
+        "target_angle_degrees": -122.03119701931412,
+        "min_distance_cm": 0.04079841427775432,
+        "final_distance_cm": 0.21080446098507202,
+        "first_reach_step": 15,
+        "first_entry_speed_cm_per_step": 1.244299119660526,
+        "first_entry_joint_speed_radians_per_step": 3.355288806207326,
+        "first_entry_branch_error_radians": [
+          -0.047243040055036545,
+          0.038268107920885086,
+          0.9584797620773315,
+          -2.2007944583892822
+        ],
+        "first_entry_joint_limit_margin_radians": [
+          0.3815951825493866,
+          1.8857965413992774
+        ],
+        "post_entry_max_distance_cm": 0.6768884558020963,
+        "max_held_steps": 100,
+        "in_tolerance_steps": 100,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 82,
+        "episode_seed": 4282,
+        "target_radius_cm": 10.772939376877629,
+        "target_angle_degrees": -153.82185171071572,
+        "min_distance_cm": 22.862494585283972,
+        "final_distance_cm": 23.767462394514222,
+        "first_reach_step": null,
+        "first_entry_speed_cm_per_step": null,
+        "first_entry_joint_speed_radians_per_step": null,
+        "first_entry_branch_error_radians": null,
+        "first_entry_joint_limit_margin_radians": null,
+        "post_entry_max_distance_cm": null,
+        "max_held_steps": 0,
+        "in_tolerance_steps": 0,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 83,
+        "episode_seed": 4283,
+        "target_radius_cm": 6.226374858212093,
+        "target_angle_degrees": -136.43348641871114,
+        "min_distance_cm": 2.633074436515065,
+        "final_distance_cm": 2.9735960674019375,
+        "first_reach_step": null,
+        "first_entry_speed_cm_per_step": null,
+        "first_entry_joint_speed_radians_per_step": null,
+        "first_entry_branch_error_radians": null,
+        "first_entry_joint_limit_margin_radians": null,
+        "post_entry_max_distance_cm": null,
+        "max_held_steps": 0,
+        "in_tolerance_steps": 0,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 84,
+        "episode_seed": 4284,
+        "target_radius_cm": 8.236677653740667,
+        "target_angle_degrees": 93.7990958163733,
+        "min_distance_cm": 0.6079653089980965,
+        "final_distance_cm": 0.7250061248798856,
+        "first_reach_step": 16,
+        "first_entry_speed_cm_per_step": 0.2578228528943272,
+        "first_entry_joint_speed_radians_per_step": 3.959445620085673,
+        "first_entry_branch_error_radians": [
+          0.11789713054895401,
+          -0.017761465162038803,
+          2.0567402839660645,
+          1.475480079650879
+        ],
+        "first_entry_joint_limit_margin_radians": [
+          2.4172753959239084,
+          0.5543263982203857
+        ],
+        "post_entry_max_distance_cm": 0.9218026235671285,
+        "max_held_steps": 100,
+        "in_tolerance_steps": 100,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 85,
+        "episode_seed": 4285,
+        "target_radius_cm": 10.190383399826437,
+        "target_angle_degrees": 33.8460742835748,
+        "min_distance_cm": 0.37011439510032956,
+        "final_distance_cm": 0.512163407186988,
+        "first_reach_step": 13,
+        "first_entry_speed_cm_per_step": 0.7666724353948496,
+        "first_entry_joint_speed_radians_per_step": 2.962537433681285,
+        "first_entry_branch_error_radians": [
+          0.09163688868284225,
+          -0.03067689947783947,
+          1.9349346160888672,
+          1.8636606931686401
+        ],
+        "first_entry_joint_limit_margin_radians": [
+          2.5444994043815785,
+          0.74195898120918
+        ],
+        "post_entry_max_distance_cm": 0.9170596945872803,
+        "max_held_steps": 100,
+        "in_tolerance_steps": 100,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 86,
+        "episode_seed": 4286,
+        "target_radius_cm": 19.14586639227577,
+        "target_angle_degrees": 17.014920009371362,
+        "min_distance_cm": 0.13993307321299434,
+        "final_distance_cm": 0.145446137086064,
+        "first_reach_step": 6,
+        "first_entry_speed_cm_per_step": 1.5172386806040372,
+        "first_entry_joint_speed_radians_per_step": 9.088876978837384,
+        "first_entry_branch_error_radians": [
+          0.007461484521627426,
+          0.04999449849128723,
+          0.9388923048973083,
+          -2.0196373462677
+        ],
+        "first_entry_joint_limit_margin_radians": [
+          2.7908491958868633,
+          1.9822382600292334
+        ],
+        "post_entry_max_distance_cm": 0.752007926683403,
+        "max_held_steps": 100,
+        "in_tolerance_steps": 100,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 87,
+        "episode_seed": 4287,
+        "target_radius_cm": 19.467605707787687,
+        "target_angle_degrees": 175.63330053173982,
+        "min_distance_cm": 38.59348465926356,
+        "final_distance_cm": 39.12327654794998,
+        "first_reach_step": null,
+        "first_entry_speed_cm_per_step": null,
+        "first_entry_joint_speed_radians_per_step": null,
+        "first_entry_branch_error_radians": null,
+        "first_entry_joint_limit_margin_radians": null,
+        "post_entry_max_distance_cm": null,
+        "max_held_steps": 0,
+        "in_tolerance_steps": 0,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 88,
+        "episode_seed": 4288,
+        "target_radius_cm": 7.861097263042841,
+        "target_angle_degrees": -62.11907463602835,
+        "min_distance_cm": 0.5599496576862228,
+        "final_distance_cm": 0.5638193259495449,
+        "first_reach_step": 14,
+        "first_entry_speed_cm_per_step": 0.6192594504255702,
+        "first_entry_joint_speed_radians_per_step": 0.572219899663339,
+        "first_entry_branch_error_radians": [
+          0.06000853329896927,
+          0.02926461398601532,
+          2.0109903812408447,
+          1.4467531442642212
+        ],
+        "first_entry_joint_limit_margin_radians": [
+          0.8473779286173944,
+          0.5634759800948985
+        ],
+        "post_entry_max_distance_cm": 0.5851838686698253,
+        "max_held_steps": 100,
+        "in_tolerance_steps": 100,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 89,
+        "episode_seed": 4289,
+        "target_radius_cm": 19.819914346290375,
+        "target_angle_degrees": 48.56347624911759,
+        "min_distance_cm": 0.20390550809094143,
+        "final_distance_cm": 0.21660787070851487,
+        "first_reach_step": 7,
+        "first_entry_speed_cm_per_step": 0.5570054548318825,
+        "first_entry_joint_speed_radians_per_step": 1.9036050068263168,
+        "first_entry_branch_error_radians": [
+          0.03333110362291336,
+          -0.028733378276228905,
+          0.8472462296485901,
+          -1.832532525062561
+        ],
+        "first_entry_joint_limit_margin_radians": [
+          2.5597558300009995,
+          2.0364267662496234
+        ],
+        "post_entry_max_distance_cm": 0.5046317931014099,
+        "max_held_steps": 100,
+        "in_tolerance_steps": 100,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 90,
+        "episode_seed": 4290,
+        "target_radius_cm": 14.293926100921418,
+        "target_angle_degrees": -80.2698001340593,
+        "min_distance_cm": 0.12342741350107936,
+        "final_distance_cm": 0.3078400620944502,
+        "first_reach_step": 12,
+        "first_entry_speed_cm_per_step": 1.8157651972315465,
+        "first_entry_joint_speed_radians_per_step": 4.6353362933717355,
+        "first_entry_branch_error_radians": [
+          -0.06716597080230713,
+          0.05969664081931114,
+          1.455723762512207,
+          2.8690662384033203
+        ],
+        "first_entry_joint_limit_margin_radians": [
+          0.871808535555123,
+          1.2898485216945321
+        ],
+        "post_entry_max_distance_cm": 0.8891869856798376,
+        "max_held_steps": 100,
+        "in_tolerance_steps": 100,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 91,
+        "episode_seed": 4291,
+        "target_radius_cm": 19.569104885395085,
+        "target_angle_degrees": 78.37388019765065,
+        "min_distance_cm": 0.3027177807063545,
+        "final_distance_cm": 0.33973994824371,
+        "first_reach_step": 8,
+        "first_entry_speed_cm_per_step": 0.8014226284033676,
+        "first_entry_joint_speed_radians_per_step": 4.1915762723611,
+        "first_entry_branch_error_radians": [
+          0.05510006844997406,
+          -0.06262563914060593,
+          0.9146263599395752,
+          -1.9693185091018677
+        ],
+        "first_entry_joint_limit_margin_radians": [
+          2.084040691842838,
+          1.951087631751814
+        ],
+        "post_entry_max_distance_cm": 0.7647105000469014,
+        "max_held_steps": 100,
+        "in_tolerance_steps": 100,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 92,
+        "episode_seed": 4292,
+        "target_radius_cm": 7.40363838643554,
+        "target_angle_degrees": 179.6417200017839,
+        "min_distance_cm": 16.911153847049807,
+        "final_distance_cm": 17.57865288186322,
+        "first_reach_step": null,
+        "first_entry_speed_cm_per_step": null,
+        "first_entry_joint_speed_radians_per_step": null,
+        "first_entry_branch_error_radians": null,
+        "first_entry_joint_limit_margin_radians": null,
+        "post_entry_max_distance_cm": null,
+        "max_held_steps": 0,
+        "in_tolerance_steps": 0,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 93,
+        "episode_seed": 4293,
+        "target_radius_cm": 15.95341942103593,
+        "target_angle_degrees": -93.6522614357281,
+        "min_distance_cm": 0.13482786963491789,
+        "final_distance_cm": 0.18938213326293826,
+        "first_reach_step": 13,
+        "first_entry_speed_cm_per_step": 1.617803286545119,
+        "first_entry_joint_speed_radians_per_step": 2.4433582581173905,
+        "first_entry_branch_error_radians": [
+          -0.05225080996751785,
+          0.07354230433702469,
+          1.301148533821106,
+          -2.9804258346557617
+        ],
+        "first_entry_joint_limit_margin_radians": [
+          0.7080705491290717,
+          1.5136180152282768
+        ],
+        "post_entry_max_distance_cm": 0.6852639995130461,
+        "max_held_steps": 100,
+        "in_tolerance_steps": 100,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 94,
+        "episode_seed": 4294,
+        "target_radius_cm": 15.166116750683912,
+        "target_angle_degrees": -8.438432885879582,
+        "min_distance_cm": 0.24699295538131333,
+        "final_distance_cm": 0.2644600850401057,
+        "first_reach_step": 9,
+        "first_entry_speed_cm_per_step": 1.5295921983225493,
+        "first_entry_joint_speed_radians_per_step": 7.861359436626994,
+        "first_entry_branch_error_radians": [
+          0.005031106527894735,
+          0.0602903850376606,
+          1.4419974088668823,
+          3.085242748260498
+        ],
+        "first_entry_joint_limit_margin_radians": [
+          2.0962670096123768,
+          1.3982336366839154
+        ],
+        "post_entry_max_distance_cm": 0.7768643489742062,
+        "max_held_steps": 100,
+        "in_tolerance_steps": 100,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 95,
+        "episode_seed": 4295,
+        "target_radius_cm": 9.127224790418705,
+        "target_angle_degrees": 43.90721255569827,
+        "min_distance_cm": 0.44725145181666165,
+        "final_distance_cm": 0.5890371106361514,
+        "first_reach_step": 14,
+        "first_entry_speed_cm_per_step": 0.4913067383047945,
+        "first_entry_joint_speed_radians_per_step": 3.3373223482444025,
+        "first_entry_branch_error_radians": [
+          0.09078170359134674,
+          -0.014576435089111328,
+          1.9920545816421509,
+          1.6597908735275269
+        ],
+        "first_entry_joint_limit_margin_radians": [
+          2.6919670359946597,
+          0.6480742716003429
+        ],
+        "post_entry_max_distance_cm": 0.859648642171895,
+        "max_held_steps": 100,
+        "in_tolerance_steps": 100,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 96,
+        "episode_seed": 4296,
+        "target_radius_cm": 6.165070356690512,
+        "target_angle_degrees": -68.78681415691344,
+        "min_distance_cm": 0.7061193742446343,
+        "final_distance_cm": 0.7081256910180103,
+        "first_reach_step": 14,
+        "first_entry_speed_cm_per_step": 1.4171189786808247,
+        "first_entry_joint_speed_radians_per_step": 4.628840600017635,
+        "first_entry_branch_error_radians": [
+          0.08279146999120712,
+          0.07578108459711075,
+          2.0494556427001953,
+          1.1534801721572876
+        ],
+        "first_entry_joint_limit_margin_radians": [
+          0.7003798294442127,
+          0.4400976856900294
+        ],
+        "post_entry_max_distance_cm": 0.9944955693949212,
+        "max_held_steps": 100,
+        "in_tolerance_steps": 100,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 97,
+        "episode_seed": 4297,
+        "target_radius_cm": 15.60761112173705,
+        "target_angle_degrees": -158.7222174230672,
+        "min_distance_cm": 31.93892856094599,
+        "final_distance_cm": 32.447099910506324,
+        "first_reach_step": null,
+        "first_entry_speed_cm_per_step": null,
+        "first_entry_joint_speed_radians_per_step": null,
+        "first_entry_branch_error_radians": null,
+        "first_entry_joint_limit_margin_radians": null,
+        "post_entry_max_distance_cm": null,
+        "max_held_steps": 0,
+        "in_tolerance_steps": 0,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 98,
+        "episode_seed": 4298,
+        "target_radius_cm": 10.625494173358039,
+        "target_angle_degrees": 174.36403547251766,
+        "min_distance_cm": 22.408790248958574,
+        "final_distance_cm": 23.23649030856997,
+        "first_reach_step": null,
+        "first_entry_speed_cm_per_step": null,
+        "first_entry_joint_speed_radians_per_step": null,
+        "first_entry_branch_error_radians": null,
+        "first_entry_joint_limit_margin_radians": null,
+        "post_entry_max_distance_cm": null,
+        "max_held_steps": 0,
+        "in_tolerance_steps": 0,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 99,
+        "episode_seed": 4299,
+        "target_radius_cm": 15.555511075935518,
+        "target_angle_degrees": -80.99545434776002,
+        "min_distance_cm": 0.14709539439780409,
+        "final_distance_cm": 0.29868737408274665,
+        "first_reach_step": 12,
+        "first_entry_speed_cm_per_step": 1.5906613910858,
+        "first_entry_joint_speed_radians_per_step": 2.193841847754497,
+        "first_entry_branch_error_radians": [
+          -0.0469534732401371,
+          0.07666246592998505,
+          1.3494365215301514,
+          -3.0818142890930176
+        ],
+        "first_entry_joint_limit_margin_radians": [
+          0.902180875669786,
+          1.4644837851246055
+        ],
+        "post_entry_max_distance_cm": 0.6613134220176351,
+        "max_held_steps": 100,
+        "in_tolerance_steps": 100,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 100,
+        "episode_seed": 4300,
+        "target_radius_cm": 7.462198407486456,
+        "target_angle_degrees": -52.012566226112135,
+        "min_distance_cm": 0.5844891394214242,
+        "final_distance_cm": 0.5870781541955166,
+        "first_reach_step": 14,
+        "first_entry_speed_cm_per_step": 0.7668094398026747,
+        "first_entry_joint_speed_radians_per_step": 1.3699294906726653,
+        "first_entry_branch_error_radians": [
+          0.07351106405258179,
+          0.02643357589840889,
+          2.0345098972320557,
+          1.3637689352035522
+        ],
+        "first_entry_joint_limit_margin_radians": [
+          1.0052586647429245,
+          0.5205683467078908
+        ],
+        "post_entry_max_distance_cm": 0.6172028645698983,
+        "max_held_steps": 100,
+        "in_tolerance_steps": 100,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 101,
+        "episode_seed": 4301,
+        "target_radius_cm": 18.382472800690774,
+        "target_angle_degrees": 157.365993367162,
+        "min_distance_cm": 35.63423999255137,
+        "final_distance_cm": 36.19249035059402,
+        "first_reach_step": null,
+        "first_entry_speed_cm_per_step": null,
+        "first_entry_joint_speed_radians_per_step": null,
+        "first_entry_branch_error_radians": null,
+        "first_entry_joint_limit_margin_radians": null,
+        "post_entry_max_distance_cm": null,
+        "max_held_steps": 0,
+        "in_tolerance_steps": 0,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 102,
+        "episode_seed": 4302,
+        "target_radius_cm": 10.695728073370786,
+        "target_angle_degrees": -141.034962953282,
+        "min_distance_cm": 3.3408283683716324,
+        "final_distance_cm": 4.097280115229887,
+        "first_reach_step": null,
+        "first_entry_speed_cm_per_step": null,
+        "first_entry_joint_speed_radians_per_step": null,
+        "first_entry_branch_error_radians": null,
+        "first_entry_joint_limit_margin_radians": null,
+        "post_entry_max_distance_cm": null,
+        "max_held_steps": 0,
+        "in_tolerance_steps": 0,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 103,
+        "episode_seed": 4303,
+        "target_radius_cm": 7.0735987789462635,
+        "target_angle_degrees": -114.53442837611544,
+        "min_distance_cm": 0.3896212766187282,
+        "final_distance_cm": 0.434146557118558,
+        "first_reach_step": 17,
+        "first_entry_speed_cm_per_step": 0.6815777656724888,
+        "first_entry_joint_speed_radians_per_step": 2.278382684379306,
+        "first_entry_branch_error_radians": [
+          0.0161721333861351,
+          0.07950222492218018,
+          1.9836511611938477,
+          1.3389703035354614
+        ],
+        "first_entry_joint_limit_margin_radians": [
+          -0.03185480462824275,
+          0.5347033418372868
+        ],
+        "post_entry_max_distance_cm": 0.8527731519384978,
+        "max_held_steps": 100,
+        "in_tolerance_steps": 100,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 104,
+        "episode_seed": 4304,
+        "target_radius_cm": 7.917900687807164,
+        "target_angle_degrees": -119.4647847027816,
+        "min_distance_cm": 0.6172401553120929,
+        "final_distance_cm": 0.7928520133105021,
+        "first_reach_step": 17,
+        "first_entry_speed_cm_per_step": 0.7247616314479207,
+        "first_entry_joint_speed_radians_per_step": 1.8075846332270906,
+        "first_entry_branch_error_radians": [
+          -0.036670584231615067,
+          0.08628040552139282,
+          1.912635087966919,
+          1.5152063369750977
+        ],
+        "first_entry_joint_limit_margin_radians": [
+          -0.05597633645496014,
+          0.6262104749478326
+        ],
+        "post_entry_max_distance_cm": 0.9040043342638533,
+        "max_held_steps": 100,
+        "in_tolerance_steps": 100,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 105,
+        "episode_seed": 4305,
+        "target_radius_cm": 14.616014915797809,
+        "target_angle_degrees": 139.85812239818432,
+        "min_distance_cm": 28.477179590209,
+        "final_distance_cm": 28.72404586848047,
+        "first_reach_step": null,
+        "first_entry_speed_cm_per_step": null,
+        "first_entry_joint_speed_radians_per_step": null,
+        "first_entry_branch_error_radians": null,
+        "first_entry_joint_limit_margin_radians": null,
+        "post_entry_max_distance_cm": null,
+        "max_held_steps": 0,
+        "in_tolerance_steps": 0,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 106,
+        "episode_seed": 4306,
+        "target_radius_cm": 12.71954748547634,
+        "target_angle_degrees": -163.07285682590862,
+        "min_distance_cm": 26.446646893073233,
+        "final_distance_cm": 27.250281428427314,
+        "first_reach_step": null,
+        "first_entry_speed_cm_per_step": null,
+        "first_entry_joint_speed_radians_per_step": null,
+        "first_entry_branch_error_radians": null,
+        "first_entry_joint_limit_margin_radians": null,
+        "post_entry_max_distance_cm": null,
+        "max_held_steps": 0,
+        "in_tolerance_steps": 0,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 107,
+        "episode_seed": 4307,
+        "target_radius_cm": 10.853930142929325,
+        "target_angle_degrees": -129.95065529343904,
+        "min_distance_cm": 1.4006515135171358,
+        "final_distance_cm": 2.017733659224669,
+        "first_reach_step": null,
+        "first_entry_speed_cm_per_step": null,
+        "first_entry_joint_speed_radians_per_step": null,
+        "first_entry_branch_error_radians": null,
+        "first_entry_joint_limit_margin_radians": null,
+        "post_entry_max_distance_cm": null,
+        "max_held_steps": 0,
+        "in_tolerance_steps": 0,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 108,
+        "episode_seed": 4308,
+        "target_radius_cm": 11.634076267412908,
+        "target_angle_degrees": -137.29473516489085,
+        "min_distance_cm": 2.6280310877674196,
+        "final_distance_cm": 3.284770996367445,
+        "first_reach_step": null,
+        "first_entry_speed_cm_per_step": null,
+        "first_entry_joint_speed_radians_per_step": null,
+        "first_entry_branch_error_radians": null,
+        "first_entry_joint_limit_margin_radians": null,
+        "post_entry_max_distance_cm": null,
+        "max_held_steps": 0,
+        "in_tolerance_steps": 0,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 109,
+        "episode_seed": 4309,
+        "target_radius_cm": 13.799109012640956,
+        "target_angle_degrees": 162.4811642756675,
+        "min_distance_cm": 27.93231256846212,
+        "final_distance_cm": 28.53689067676913,
+        "first_reach_step": null,
+        "first_entry_speed_cm_per_step": null,
+        "first_entry_joint_speed_radians_per_step": null,
+        "first_entry_branch_error_radians": null,
+        "first_entry_joint_limit_margin_radians": null,
+        "post_entry_max_distance_cm": null,
+        "max_held_steps": 0,
+        "in_tolerance_steps": 0,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 110,
+        "episode_seed": 4310,
+        "target_radius_cm": 18.206452295374508,
+        "target_angle_degrees": -66.71760560960657,
+        "min_distance_cm": 0.05951236970341556,
+        "final_distance_cm": 0.11034354611546011,
+        "first_reach_step": 10,
+        "first_entry_speed_cm_per_step": 1.6992494878488689,
+        "first_entry_joint_speed_radians_per_step": 2.0775762349604845,
+        "first_entry_branch_error_radians": [
+          -0.044842429459095,
+          0.057293862104415894,
+          1.0289548635482788,
+          -2.3381528854370117
+        ],
+        "first_entry_joint_limit_margin_radians": [
+          1.3105616437107521,
+          1.826630273114868
+        ],
+        "post_entry_max_distance_cm": 0.5253354077268333,
+        "max_held_steps": 100,
+        "in_tolerance_steps": 100,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 111,
+        "episode_seed": 4311,
+        "target_radius_cm": 13.376980014757333,
+        "target_angle_degrees": -121.38985804994991,
+        "min_distance_cm": 0.18260953972181357,
+        "final_distance_cm": 0.3973399418510471,
+        "first_reach_step": 16,
+        "first_entry_speed_cm_per_step": 1.43164632100702,
+        "first_entry_joint_speed_radians_per_step": 2.5348946931936505,
+        "first_entry_branch_error_radians": [
+          -0.05839236080646515,
+          0.055500902235507965,
+          1.5479577779769897,
+          2.648087978363037
+        ],
+        "first_entry_joint_limit_margin_radians": [
+          0.10362429623383074,
+          1.177261533320573
+        ],
+        "post_entry_max_distance_cm": 0.7413825601682061,
+        "max_held_steps": 100,
+        "in_tolerance_steps": 100,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 112,
+        "episode_seed": 4312,
+        "target_radius_cm": 12.596656291931128,
+        "target_angle_degrees": -47.986323495430504,
+        "min_distance_cm": 0.2996653631857531,
+        "final_distance_cm": 0.3033266834493297,
+        "first_reach_step": 11,
+        "first_entry_speed_cm_per_step": 1.0489359679326675,
+        "first_entry_joint_speed_radians_per_step": 3.1204518579501417,
+        "first_entry_branch_error_radians": [
+          0.019289031624794006,
+          0.028394652530550957,
+          1.6913809776306152,
+          2.44305157661438
+        ],
+        "first_entry_joint_limit_margin_radians": [
+          1.2742053928314578,
+          1.0611901491770948
+        ],
+        "post_entry_max_distance_cm": 0.4664312223998837,
+        "max_held_steps": 100,
+        "in_tolerance_steps": 100,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 113,
+        "episode_seed": 4313,
+        "target_radius_cm": 7.2440359177967375,
+        "target_angle_degrees": 88.40347807281248,
+        "min_distance_cm": 0.6622549351850457,
+        "final_distance_cm": 0.6899718645489049,
+        "first_reach_step": 16,
+        "first_entry_speed_cm_per_step": 0.31899721687643784,
+        "first_entry_joint_speed_radians_per_step": 1.6609265787009135,
+        "first_entry_branch_error_radians": [
+          0.13204848766326904,
+          -0.028395406901836395,
+          2.0971157550811768,
+          1.2652041912078857
+        ],
+        "first_entry_joint_limit_margin_radians": [
+          2.538710090832599,
+          0.44387147555943596
+        ],
+        "post_entry_max_distance_cm": 0.9688097112257446,
+        "max_held_steps": 100,
+        "in_tolerance_steps": 100,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 114,
+        "episode_seed": 4314,
+        "target_radius_cm": 16.388019276874722,
+        "target_angle_degrees": 36.14824774845752,
+        "min_distance_cm": 0.13694523364091787,
+        "final_distance_cm": 0.16418335471133985,
+        "first_reach_step": 9,
+        "first_entry_speed_cm_per_step": 0.9398860211962226,
+        "first_entry_joint_speed_radians_per_step": 0.5619359306907797,
+        "first_entry_branch_error_radians": [
+          0.04625120013952255,
+          0.004432663321495056,
+          1.3508026599884033,
+          -2.9320743083953857
+        ],
+        "first_entry_joint_limit_margin_radians": [
+          2.899438711358898,
+          1.5032389099454224
+        ],
+        "post_entry_max_distance_cm": 0.7877608193929122,
+        "max_held_steps": 100,
+        "in_tolerance_steps": 100,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 115,
+        "episode_seed": 4315,
+        "target_radius_cm": 12.704048425419016,
+        "target_angle_degrees": 0.4258044043041191,
+        "min_distance_cm": 0.2583059122769257,
+        "final_distance_cm": 0.3133542328864202,
+        "first_reach_step": 11,
+        "first_entry_speed_cm_per_step": 1.2160677287606863,
+        "first_entry_joint_speed_radians_per_step": 3.1816332622911174,
+        "first_entry_branch_error_radians": [
+          0.05363408476114273,
+          0.011512543074786663,
+          1.716963768005371,
+          2.4503395557403564
+        ],
+        "first_entry_joint_limit_margin_radians": [
+          2.0891925152732638,
+          1.056393112873315
+        ],
+        "post_entry_max_distance_cm": 0.7662793519650419,
+        "max_held_steps": 100,
+        "in_tolerance_steps": 100,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 116,
+        "episode_seed": 4316,
+        "target_radius_cm": 17.486787366282112,
+        "target_angle_degrees": -148.37747616508878,
+        "min_distance_cm": 2.106605060892625,
+        "final_distance_cm": 3.21236428581442,
+        "first_reach_step": null,
+        "first_entry_speed_cm_per_step": null,
+        "first_entry_joint_speed_radians_per_step": null,
+        "first_entry_branch_error_radians": null,
+        "first_entry_joint_limit_margin_radians": null,
+        "post_entry_max_distance_cm": null,
+        "max_held_steps": 0,
+        "in_tolerance_steps": 0,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 117,
+        "episode_seed": 4317,
+        "target_radius_cm": 19.488085338761618,
+        "target_angle_degrees": 80.82052154387287,
+        "min_distance_cm": 0.3246309358876215,
+        "final_distance_cm": 0.3506211561506289,
+        "first_reach_step": 8,
+        "first_entry_speed_cm_per_step": 1.0185123559422244,
+        "first_entry_joint_speed_radians_per_step": 4.572033236821229,
+        "first_entry_branch_error_radians": [
+          0.06082502752542496,
+          -0.066718190908432,
+          0.9345758557319641,
+          -2.005570411682129
+        ],
+        "first_entry_joint_limit_margin_radians": [
+          2.054175962139619,
+          1.9309153786425834
+        ],
+        "post_entry_max_distance_cm": 0.8652850497064584,
+        "max_held_steps": 100,
+        "in_tolerance_steps": 100,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 118,
+        "episode_seed": 4318,
+        "target_radius_cm": 14.65059686159263,
+        "target_angle_degrees": -57.2638151774191,
+        "min_distance_cm": 0.16094260815477798,
+        "final_distance_cm": 0.2855429894447451,
+        "first_reach_step": 10,
+        "first_entry_speed_cm_per_step": 1.6458073286275676,
+        "first_entry_joint_speed_radians_per_step": 5.988477331303772,
+        "first_entry_branch_error_radians": [
+          -0.052554793655872345,
+          0.07679609954357147,
+          1.4359970092773438,
+          2.9731075763702393
+        ],
+        "first_entry_joint_limit_margin_radians": [
+          1.275896527815768,
+          1.3504189204842418
+        ],
+        "post_entry_max_distance_cm": 0.783092182033653,
+        "max_held_steps": 100,
+        "in_tolerance_steps": 100,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 119,
+        "episode_seed": 4319,
+        "target_radius_cm": 17.13481669034293,
+        "target_angle_degrees": 63.965081522734806,
+        "min_distance_cm": 0.17207058660928157,
+        "final_distance_cm": 0.21298161967839283,
+        "first_reach_step": 10,
+        "first_entry_speed_cm_per_step": 0.6901565100715142,
+        "first_entry_joint_speed_radians_per_step": 3.9809251206598866,
+        "first_entry_branch_error_radians": [
+          0.02920401282608509,
+          -0.04320837929844856,
+          1.2446675300598145,
+          -2.7684507369995117
+        ],
+        "first_entry_joint_limit_margin_radians": [
+          2.4875941979508243,
+          1.5612301414718468
+        ],
+        "post_entry_max_distance_cm": 0.38988989467116825,
+        "max_held_steps": 100,
+        "in_tolerance_steps": 100,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 120,
+        "episode_seed": 4320,
+        "target_radius_cm": 8.298004299963567,
+        "target_angle_degrees": -10.82900543735891,
+        "min_distance_cm": 0.5029948153370978,
+        "final_distance_cm": 0.5180978863061242,
+        "first_reach_step": 13,
+        "first_entry_speed_cm_per_step": 1.6138448617203882,
+        "first_entry_joint_speed_radians_per_step": 6.3822703625265715,
+        "first_entry_branch_error_radians": [
+          0.08896756172180176,
+          0.03747642785310745,
+          2.025602102279663,
+          1.5431185960769653
+        ],
+        "first_entry_joint_limit_margin_radians": [
+          1.7207731510141742,
+          0.6157645581207816
+        ],
+        "post_entry_max_distance_cm": 0.9738105074002619,
+        "max_held_steps": 100,
+        "in_tolerance_steps": 100,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 121,
+        "episode_seed": 4321,
+        "target_radius_cm": 17.317870094146972,
+        "target_angle_degrees": -178.89540765622897,
+        "min_distance_cm": 34.79714832238544,
+        "final_distance_cm": 35.36812962724789,
+        "first_reach_step": null,
+        "first_entry_speed_cm_per_step": null,
+        "first_entry_joint_speed_radians_per_step": null,
+        "first_entry_branch_error_radians": null,
+        "first_entry_joint_limit_margin_radians": null,
+        "post_entry_max_distance_cm": null,
+        "max_held_steps": 0,
+        "in_tolerance_steps": 0,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 122,
+        "episode_seed": 4322,
+        "target_radius_cm": 7.696523010727866,
+        "target_angle_degrees": 4.133383566836232,
+        "min_distance_cm": 0.5453727348835576,
+        "final_distance_cm": 0.5710486728043753,
+        "first_reach_step": 14,
+        "first_entry_speed_cm_per_step": 0.7420428306698794,
+        "first_entry_joint_speed_radians_per_step": 2.2851279637390824,
+        "first_entry_branch_error_radians": [
+          0.10782387852668762,
+          0.005057567730545998,
+          2.0633201599121094,
+          1.38944411277771
+        ],
+        "first_entry_joint_limit_margin_radians": [
+          1.9536288173852825,
+          0.5227179229062702
+        ],
+        "post_entry_max_distance_cm": 0.8422562806554799,
+        "max_held_steps": 100,
+        "in_tolerance_steps": 100,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 123,
+        "episode_seed": 4323,
+        "target_radius_cm": 17.137845589672292,
+        "target_angle_degrees": -107.47973416785383,
+        "min_distance_cm": 0.08625271902735912,
+        "final_distance_cm": 0.18963932025396285,
+        "first_reach_step": 14,
+        "first_entry_speed_cm_per_step": 1.5144548836075125,
+        "first_entry_joint_speed_radians_per_step": 2.813592118832846,
+        "first_entry_branch_error_radians": [
+          -0.05281320959329605,
+          0.05904438719153404,
+          1.1622743606567383,
+          -2.665313720703125
+        ],
+        "first_entry_joint_limit_margin_radians": [
+          0.5364538910743195,
+          1.663925008504774
+        ],
+        "post_entry_max_distance_cm": 0.6740028410269481,
+        "max_held_steps": 100,
+        "in_tolerance_steps": 100,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 124,
+        "episode_seed": 4324,
+        "target_radius_cm": 12.591925411032035,
+        "target_angle_degrees": -91.41335860668177,
+        "min_distance_cm": 0.17082929397737645,
+        "final_distance_cm": 0.35643534385467807,
+        "first_reach_step": 14,
+        "first_entry_speed_cm_per_step": 0.9441431719173317,
+        "first_entry_joint_speed_radians_per_step": 2.4147678814369953,
+        "first_entry_branch_error_radians": [
+          -0.02668682672083378,
+          0.04161413013935089,
+          1.6457890272140503,
+          2.4552085399627686
+        ],
+        "first_entry_joint_limit_margin_radians": [
+          0.5620445539516989,
+          1.0738783504258582
+        ],
+        "post_entry_max_distance_cm": 0.43478988895410164,
+        "max_held_steps": 100,
+        "in_tolerance_steps": 100,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 125,
+        "episode_seed": 4325,
+        "target_radius_cm": 19.19044835108702,
+        "target_angle_degrees": -95.87324767827683,
+        "min_distance_cm": 0.02115761739962689,
+        "final_distance_cm": 0.1476889639197845,
+        "first_reach_step": 12,
+        "first_entry_speed_cm_per_step": 2.0766154788837206,
+        "first_entry_joint_speed_radians_per_step": 2.7489542270562493,
+        "first_entry_branch_error_radians": [
+          -0.06601183861494064,
+          0.05614147335290909,
+          0.8581100106239319,
+          -1.996883749961853
+        ],
+        "first_entry_joint_limit_margin_radians": [
+          0.897706807372169,
+          1.9966885983412008
+        ],
+        "post_entry_max_distance_cm": 0.9139170241718767,
+        "max_held_steps": 100,
+        "in_tolerance_steps": 100,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 126,
+        "episode_seed": 4326,
+        "target_radius_cm": 11.037301354125853,
+        "target_angle_degrees": -146.2006249392697,
+        "min_distance_cm": 4.307028130716899,
+        "final_distance_cm": 5.069087646521632,
+        "first_reach_step": null,
+        "first_entry_speed_cm_per_step": null,
+        "first_entry_joint_speed_radians_per_step": null,
+        "first_entry_branch_error_radians": null,
+        "first_entry_joint_limit_margin_radians": null,
+        "post_entry_max_distance_cm": null,
+        "max_held_steps": 0,
+        "in_tolerance_steps": 0,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 127,
+        "episode_seed": 4327,
+        "target_radius_cm": 16.348673728143165,
+        "target_angle_degrees": -60.73719498294718,
+        "min_distance_cm": 0.07144899477760376,
+        "final_distance_cm": 0.11545978030425942,
+        "first_reach_step": 10,
+        "first_entry_speed_cm_per_step": 1.6639345080298338,
+        "first_entry_joint_speed_radians_per_step": 2.4320949881437643,
+        "first_entry_branch_error_radians": [
+          -0.044838208705186844,
+          0.07373688369989395,
+          1.26422119140625,
+          -2.8735575675964355
+        ],
+        "first_entry_joint_limit_margin_radians": [
+          1.2973041835728631,
+          1.5671494108772634
+        ],
+        "post_entry_max_distance_cm": 0.612730753985384,
+        "max_held_steps": 100,
+        "in_tolerance_steps": 100,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 128,
+        "episode_seed": 4328,
+        "target_radius_cm": 17.49033009356443,
+        "target_angle_degrees": 59.87862990394478,
+        "min_distance_cm": 0.19211565401712666,
+        "final_distance_cm": 0.23148283029842875,
+        "first_reach_step": 9,
+        "first_entry_speed_cm_per_step": 0.7565999696280231,
+        "first_entry_joint_speed_radians_per_step": 2.1895300727293283,
+        "first_entry_branch_error_radians": [
+          0.04724019020795822,
+          -0.02482490800321102,
+          1.217705488204956,
+          -2.6445865631103516
+        ],
+        "first_entry_joint_limit_margin_radians": [
+          2.554453353517483,
+          1.6323540157023098
+        ],
+        "post_entry_max_distance_cm": 0.7309337860626691,
+        "max_held_steps": 100,
+        "in_tolerance_steps": 100,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 129,
+        "episode_seed": 4329,
+        "target_radius_cm": 8.02538114224092,
+        "target_angle_degrees": -74.54126467045168,
+        "min_distance_cm": 0.5368035721121823,
+        "final_distance_cm": 0.5643342145909735,
+        "first_reach_step": 14,
+        "first_entry_speed_cm_per_step": 0.6399799586861263,
+        "first_entry_joint_speed_radians_per_step": 3.482753914535312,
+        "first_entry_branch_error_radians": [
+          0.041199419647455215,
+          0.04620104283094406,
+          1.987174153327942,
+          1.4967865943908691
+        ],
+        "first_entry_joint_limit_margin_radians": [
+          0.651882453472687,
+          0.5969608931466337
+        ],
+        "post_entry_max_distance_cm": 0.6612098847467407,
+        "max_held_steps": 100,
+        "in_tolerance_steps": 100,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 130,
+        "episode_seed": 4330,
+        "target_radius_cm": 13.386285985312826,
+        "target_angle_degrees": 96.18466756608181,
+        "min_distance_cm": 0.39720589810390255,
+        "final_distance_cm": 0.5768218335824431,
+        "first_reach_step": 13,
+        "first_entry_speed_cm_per_step": 0.47664279535826687,
+        "first_entry_joint_speed_radians_per_step": 1.2480123097365756,
+        "first_entry_branch_error_radians": [
+          0.07787027209997177,
+          -0.05897626653313637,
+          1.6834074258804321,
+          2.535766839981079
+        ],
+        "first_entry_joint_limit_margin_radians": [
+          2.1689594133554797,
+          1.0638623073602769
+        ],
+        "post_entry_max_distance_cm": 0.8793695263378387,
+        "max_held_steps": 100,
+        "in_tolerance_steps": 100,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 131,
+        "episode_seed": 4331,
+        "target_radius_cm": 9.521282491013013,
+        "target_angle_degrees": 164.77216020614964,
+        "min_distance_cm": 20.513365382126185,
+        "final_distance_cm": 21.123622361943344,
+        "first_reach_step": null,
+        "first_entry_speed_cm_per_step": null,
+        "first_entry_joint_speed_radians_per_step": null,
+        "first_entry_branch_error_radians": null,
+        "first_entry_joint_limit_margin_radians": null,
+        "post_entry_max_distance_cm": null,
+        "max_held_steps": 0,
+        "in_tolerance_steps": 0,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 132,
+        "episode_seed": 4332,
+        "target_radius_cm": 7.715204170639149,
+        "target_angle_degrees": -162.99301286132953,
+        "min_distance_cm": 17.487596448234246,
+        "final_distance_cm": 18.229606677168377,
+        "first_reach_step": null,
+        "first_entry_speed_cm_per_step": null,
+        "first_entry_joint_speed_radians_per_step": null,
+        "first_entry_branch_error_radians": null,
+        "first_entry_joint_limit_margin_radians": null,
+        "post_entry_max_distance_cm": null,
+        "max_held_steps": 0,
+        "in_tolerance_steps": 0,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 133,
+        "episode_seed": 4333,
+        "target_radius_cm": 18.582055919475557,
+        "target_angle_degrees": 117.91630874526365,
+        "min_distance_cm": 0.569463011140125,
+        "final_distance_cm": 0.5896339825032897,
+        "first_reach_step": 11,
+        "first_entry_speed_cm_per_step": 0.4729767012368704,
+        "first_entry_joint_speed_radians_per_step": 3.089401934611135,
+        "first_entry_branch_error_radians": [
+          0.06220008432865143,
+          -0.053843144327402115,
+          1.0815062522888184,
+          -2.3240175247192383
+        ],
+        "first_entry_joint_limit_margin_radians": [
+          1.4808850483804508,
+          1.7781293419594673
+        ],
+        "post_entry_max_distance_cm": 0.8917317365690101,
+        "max_held_steps": 100,
+        "in_tolerance_steps": 100,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 134,
+        "episode_seed": 4334,
+        "target_radius_cm": 19.184793809747347,
+        "target_angle_degrees": 116.50151583918654,
+        "min_distance_cm": 0.6020114551244791,
+        "final_distance_cm": 0.6098211611646045,
+        "first_reach_step": 11,
+        "first_entry_speed_cm_per_step": 0.4628973794189719,
+        "first_entry_joint_speed_radians_per_step": 2.8825988293882427,
+        "first_entry_branch_error_radians": [
+          0.06150848791003227,
+          -0.05835746228694916,
+          0.986560583114624,
+          -2.1134958267211914
+        ],
+        "first_entry_joint_limit_margin_radians": [
+          1.4577592342865984,
+          1.8811331402532459
+        ],
+        "post_entry_max_distance_cm": 0.859406474432767,
+        "max_held_steps": 100,
+        "in_tolerance_steps": 100,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 135,
+        "episode_seed": 4335,
+        "target_radius_cm": 14.601845897151227,
+        "target_angle_degrees": -115.74788157449333,
+        "min_distance_cm": 0.082020987956882,
+        "final_distance_cm": 0.36547019671002856,
+        "first_reach_step": 16,
+        "first_entry_speed_cm_per_step": 0.7350797319145779,
+        "first_entry_joint_speed_radians_per_step": 3.4670916646422985,
+        "first_entry_branch_error_radians": [
+          -0.01936735212802887,
+          0.018327932804822922,
+          1.4739418029785156,
+          2.902660846710205
+        ],
+        "first_entry_joint_limit_margin_radians": [
+          0.2195908799605406,
+          1.2859615166994887
+        ],
+        "post_entry_max_distance_cm": 0.3654813643705379,
+        "max_held_steps": 100,
+        "in_tolerance_steps": 100,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 136,
+        "episode_seed": 4336,
+        "target_radius_cm": 9.152482104920896,
+        "target_angle_degrees": 137.71714452084095,
+        "min_distance_cm": 19.530203657110885,
+        "final_distance_cm": 19.85258385311214,
+        "first_reach_step": null,
+        "first_entry_speed_cm_per_step": null,
+        "first_entry_joint_speed_radians_per_step": null,
+        "first_entry_branch_error_radians": null,
+        "first_entry_joint_limit_margin_radians": null,
+        "post_entry_max_distance_cm": null,
+        "max_held_steps": 0,
+        "in_tolerance_steps": 0,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 137,
+        "episode_seed": 4337,
+        "target_radius_cm": 19.590910072739465,
+        "target_angle_degrees": -33.7864578385553,
+        "min_distance_cm": 0.056869961309941694,
+        "final_distance_cm": 0.1347724778871624,
+        "first_reach_step": 6,
+        "first_entry_speed_cm_per_step": 2.770741567660826,
+        "first_entry_joint_speed_radians_per_step": 8.470505962483191,
+        "first_entry_branch_error_radians": [
+          -0.07162339240312576,
+          0.09433608502149582,
+          0.7840341329574585,
+          -1.8036160469055176
+        ],
+        "first_entry_joint_limit_margin_radians": [
+          2.0211694324340748,
+          2.112419732862584
+        ],
+        "post_entry_max_distance_cm": 0.9805834047373316,
+        "max_held_steps": 100,
+        "in_tolerance_steps": 100,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 138,
+        "episode_seed": 4338,
+        "target_radius_cm": 16.24963255819056,
+        "target_angle_degrees": -113.6220511880675,
+        "min_distance_cm": 0.15619034411547303,
+        "final_distance_cm": 0.24023754354499627,
+        "first_reach_step": 15,
+        "first_entry_speed_cm_per_step": 1.195195261137402,
+        "first_entry_joint_speed_radians_per_step": 3.2467931358285074,
+        "first_entry_branch_error_radians": [
+          -0.04280323162674904,
+          0.05543683469295502,
+          1.277526617050171,
+          -2.918872833251953
+        ],
+        "first_entry_joint_limit_margin_radians": [
+          0.36661911588827945,
+          1.5353417180526512
+        ],
+        "post_entry_max_distance_cm": 0.5698032796072017,
+        "max_held_steps": 100,
+        "in_tolerance_steps": 100,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 139,
+        "episode_seed": 4339,
+        "target_radius_cm": 10.424981387147206,
+        "target_angle_degrees": -104.09262267533366,
+        "min_distance_cm": 0.35541261468009094,
+        "final_distance_cm": 0.46474213398971387,
+        "first_reach_step": 15,
+        "first_entry_speed_cm_per_step": 1.3026986796721591,
+        "first_entry_joint_speed_radians_per_step": 3.0182778446372036,
+        "first_entry_branch_error_radians": [
+          -0.04712873697280884,
+          0.07636305689811707,
+          1.7817524671554565,
+          2.019918203353882
+        ],
+        "first_entry_joint_limit_margin_radians": [
+          0.28298888759728946,
+          0.8736076999045417
+        ],
+        "post_entry_max_distance_cm": 0.805870439439156,
+        "max_held_steps": 100,
+        "in_tolerance_steps": 100,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 140,
+        "episode_seed": 4340,
+        "target_radius_cm": 19.348704395183002,
+        "target_angle_degrees": 52.19326607088418,
+        "min_distance_cm": 0.17913205763050982,
+        "final_distance_cm": 0.22210671798005194,
+        "first_reach_step": 7,
+        "first_entry_speed_cm_per_step": 0.692505823188466,
+        "first_entry_joint_speed_radians_per_step": 2.5985695515462393,
+        "first_entry_branch_error_radians": [
+          0.048775140196084976,
+          -0.016622548922896385,
+          0.9464679956436157,
+          -2.0096843242645264
+        ],
+        "first_entry_joint_limit_margin_radians": [
+          2.5537369504878633,
+          1.9539062526380584
+        ],
+        "post_entry_max_distance_cm": 0.7923275027456542,
+        "max_held_steps": 100,
+        "in_tolerance_steps": 100,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 141,
+        "episode_seed": 4341,
+        "target_radius_cm": 17.859248406473345,
+        "target_angle_degrees": 157.91892690626193,
+        "min_distance_cm": 34.75132259404388,
+        "final_distance_cm": 35.31654951590549,
+        "first_reach_step": null,
+        "first_entry_speed_cm_per_step": null,
+        "first_entry_joint_speed_radians_per_step": null,
+        "first_entry_branch_error_radians": null,
+        "first_entry_joint_limit_margin_radians": null,
+        "post_entry_max_distance_cm": null,
+        "max_held_steps": 0,
+        "in_tolerance_steps": 0,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 142,
+        "episode_seed": 4342,
+        "target_radius_cm": 8.659551387160276,
+        "target_angle_degrees": -129.70759231677394,
+        "min_distance_cm": 1.7828584954485855,
+        "final_distance_cm": 2.222419553370502,
+        "first_reach_step": null,
+        "first_entry_speed_cm_per_step": null,
+        "first_entry_joint_speed_radians_per_step": null,
+        "first_entry_branch_error_radians": null,
+        "first_entry_joint_limit_margin_radians": null,
+        "post_entry_max_distance_cm": null,
+        "max_held_steps": 0,
+        "in_tolerance_steps": 0,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 143,
+        "episode_seed": 4343,
+        "target_radius_cm": 10.096296555133828,
+        "target_angle_degrees": 40.025075241539106,
+        "min_distance_cm": 0.38116734659774315,
+        "final_distance_cm": 0.47028970700382955,
+        "first_reach_step": 14,
+        "first_entry_speed_cm_per_step": 0.3765222000722634,
+        "first_entry_joint_speed_radians_per_step": 2.4170925973788826,
+        "first_entry_branch_error_radians": [
+          0.06147637963294983,
+          -0.028971057385206223,
+          1.9104013442993164,
+          1.8457024097442627
+        ],
+        "first_entry_joint_limit_margin_radians": [
+          2.6796901877052552,
+          0.7338327810137999
+        ],
+        "post_entry_max_distance_cm": 0.640972800991493,
+        "max_held_steps": 100,
+        "in_tolerance_steps": 100,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 144,
+        "episode_seed": 4344,
+        "target_radius_cm": 15.920998807720055,
+        "target_angle_degrees": -126.83543772683208,
+        "min_distance_cm": 0.18646528758386055,
+        "final_distance_cm": 0.30708977854857317,
+        "first_reach_step": 16,
+        "first_entry_speed_cm_per_step": 1.494374535833508,
+        "first_entry_joint_speed_radians_per_step": 3.458020490124763,
+        "first_entry_branch_error_radians": [
+          -0.05799747630953789,
+          0.07103903591632843,
+          1.2989648580551147,
+          -2.9915480613708496
+        ],
+        "first_entry_joint_limit_margin_radians": [
+          0.13288004462757907,
+          1.506805220477269
+        ],
+        "post_entry_max_distance_cm": 0.7638970023910676,
+        "max_held_steps": 100,
+        "in_tolerance_steps": 100,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 145,
+        "episode_seed": 4345,
+        "target_radius_cm": 9.087114609467667,
+        "target_angle_degrees": -176.4579709661168,
+        "min_distance_cm": 19.81169755429621,
+        "final_distance_cm": 20.60122388349197,
+        "first_reach_step": null,
+        "first_entry_speed_cm_per_step": null,
+        "first_entry_joint_speed_radians_per_step": null,
+        "first_entry_branch_error_radians": null,
+        "first_entry_joint_limit_margin_radians": null,
+        "post_entry_max_distance_cm": null,
+        "max_held_steps": 0,
+        "in_tolerance_steps": 0,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 146,
+        "episode_seed": 4346,
+        "target_radius_cm": 16.890636694264582,
+        "target_angle_degrees": -114.78710229238914,
+        "min_distance_cm": 0.12297742329487478,
+        "final_distance_cm": 0.22129618016335967,
+        "first_reach_step": 15,
+        "first_entry_speed_cm_per_step": 1.1085836313475927,
+        "first_entry_joint_speed_radians_per_step": 3.319084928543388,
+        "first_entry_branch_error_radians": [
+          -0.04069848358631134,
+          0.047273993492126465,
+          1.2046630382537842,
+          -2.7484843730926514
+        ],
+        "first_entry_joint_limit_margin_radians": [
+          0.38166459332728797,
+          1.6164545208607484
+        ],
+        "post_entry_max_distance_cm": 0.5362841381333886,
+        "max_held_steps": 100,
+        "in_tolerance_steps": 100,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 147,
+        "episode_seed": 4347,
+        "target_radius_cm": 15.83800100529924,
+        "target_angle_degrees": -39.09188407434723,
+        "min_distance_cm": 0.10640635560532317,
+        "final_distance_cm": 0.11259184211563021,
+        "first_reach_step": 9,
+        "first_entry_speed_cm_per_step": 0.8099961028126682,
+        "first_entry_joint_speed_radians_per_step": 3.1805288144123645,
+        "first_entry_branch_error_radians": [
+          -0.007135244086384773,
+          0.05742558464407921,
+          1.3588988780975342,
+          -3.0271403789520264
+        ],
+        "first_entry_joint_limit_margin_radians": [
+          1.608895794777308,
+          1.4822023314140456
+        ],
+        "post_entry_max_distance_cm": 0.5554604659489661,
+        "max_held_steps": 100,
+        "in_tolerance_steps": 100,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 148,
+        "episode_seed": 4348,
+        "target_radius_cm": 14.387648074648693,
+        "target_angle_degrees": 126.96117512797156,
+        "min_distance_cm": 0.532323282730289,
+        "final_distance_cm": 0.5529316001991464,
+        "first_reach_step": 14,
+        "first_entry_speed_cm_per_step": 0.25044264063800337,
+        "first_entry_joint_speed_radians_per_step": 3.297234651285689,
+        "first_entry_branch_error_radians": [
+          0.06326504796743393,
+          -0.0595841147005558,
+          1.5772360563278198,
+          2.772477865219116
+        ],
+        "first_entry_joint_limit_margin_radians": [
+          1.5714197724200418,
+          1.1819139312422835
+        ],
+        "post_entry_max_distance_cm": 0.818664478370914,
+        "max_held_steps": 100,
+        "in_tolerance_steps": 100,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 149,
+        "episode_seed": 4349,
+        "target_radius_cm": 14.387795463772136,
+        "target_angle_degrees": 17.97846602847405,
+        "min_distance_cm": 0.25608127807216857,
+        "final_distance_cm": 0.27345659146749474,
+        "first_reach_step": 10,
+        "first_entry_speed_cm_per_step": 1.213921971463515,
+        "first_entry_joint_speed_radians_per_step": 3.9433765816467408,
+        "first_entry_branch_error_radians": [
+          0.05337065830826759,
+          0.007995069958269596,
+          1.567327618598938,
+          2.840092897415161
+        ],
+        "first_entry_joint_limit_margin_radians": [
+          2.4704940146660066,
+          1.2495110028055276
+        ],
+        "post_entry_max_distance_cm": 0.8291193651371029,
+        "max_held_steps": 100,
+        "in_tolerance_steps": 100,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 150,
+        "episode_seed": 4350,
+        "target_radius_cm": 16.041819412402813,
+        "target_angle_degrees": 63.32980624140463,
+        "min_distance_cm": 0.1910061842166972,
+        "final_distance_cm": 0.22374345579323612,
+        "first_reach_step": 10,
+        "first_entry_speed_cm_per_step": 0.8078381043662504,
+        "first_entry_joint_speed_radians_per_step": 2.568482422492577,
+        "first_entry_branch_error_radians": [
+          0.056654609739780426,
+          -0.02204926684498787,
+          1.4002830982208252,
+          -3.0524182319641113
+        ],
+        "first_entry_joint_limit_margin_radians": [
+          2.59021493012786,
+          1.429826003516789
+        ],
+        "post_entry_max_distance_cm": 0.8448578303192407,
+        "max_held_steps": 100,
+        "in_tolerance_steps": 100,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 151,
+        "episode_seed": 4351,
+        "target_radius_cm": 15.729665631587114,
+        "target_angle_degrees": 99.47941459790046,
+        "min_distance_cm": 0.4242059355356558,
+        "final_distance_cm": 0.4265180061993959,
+        "first_reach_step": 12,
+        "first_entry_speed_cm_per_step": 0.3170828450953203,
+        "first_entry_joint_speed_radians_per_step": 4.120014791596244,
+        "first_entry_branch_error_radians": [
+          0.06700747460126877,
+          -0.05291669815778732,
+          1.444777250289917,
+          3.117196798324585
+        ],
+        "first_entry_joint_limit_margin_radians": [
+          1.9867087961513479,
+          1.3576071081007988
+        ],
+        "post_entry_max_distance_cm": 0.7685043713221661,
+        "max_held_steps": 100,
+        "in_tolerance_steps": 100,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 152,
+        "episode_seed": 4352,
+        "target_radius_cm": 10.934649657673368,
+        "target_angle_degrees": -111.62037904670845,
+        "min_distance_cm": 0.30722032124529164,
+        "final_distance_cm": 0.4563992500552989,
+        "first_reach_step": 16,
+        "first_entry_speed_cm_per_step": 0.962659031027326,
+        "first_entry_joint_speed_radians_per_step": 2.77215820895944,
+        "first_entry_branch_error_radians": [
+          -0.02651495486497879,
+          0.05545521154999733,
+          1.7692350149154663,
+          2.1069202423095703
+        ],
+        "first_entry_joint_limit_margin_radians": [
+          0.14755656992838118,
+          0.9066548050844063
+        ],
+        "post_entry_max_distance_cm": 0.565620762744612,
+        "max_held_steps": 100,
+        "in_tolerance_steps": 100,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 153,
+        "episode_seed": 4353,
+        "target_radius_cm": 19.06125161181751,
+        "target_angle_degrees": 70.96404223453891,
+        "min_distance_cm": 0.26019664583733454,
+        "final_distance_cm": 0.2894105707529441,
+        "first_reach_step": 8,
+        "first_entry_speed_cm_per_step": 0.9442702438007433,
+        "first_entry_joint_speed_radians_per_step": 3.3204093809955486,
+        "first_entry_branch_error_radians": [
+          0.05238545313477516,
+          -0.04792829975485802,
+          0.9975318312644958,
+          -2.148751974105835
+        ],
+        "first_entry_joint_limit_margin_radians": [
+          2.253462175294053,
+          1.8687196322466522
+        ],
+        "post_entry_max_distance_cm": 0.7703678957378087,
+        "max_held_steps": 100,
+        "in_tolerance_steps": 100,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 154,
+        "episode_seed": 4354,
+        "target_radius_cm": 10.358060214781377,
+        "target_angle_degrees": -75.38871597657115,
+        "min_distance_cm": 0.3516489084955813,
+        "final_distance_cm": 0.41999995773177606,
+        "first_reach_step": 13,
+        "first_entry_speed_cm_per_step": 0.8956764704350183,
+        "first_entry_joint_speed_radians_per_step": 2.8395433475421994,
+        "first_entry_branch_error_radians": [
+          -0.01153641939163208,
+          0.06214896962046623,
+          1.8215124607086182,
+          1.9916366338729858
+        ],
+        "first_entry_joint_limit_margin_radians": [
+          0.7462904029687598,
+          0.852359863187274
+        ],
+        "post_entry_max_distance_cm": 0.6447823972371491,
+        "max_held_steps": 100,
+        "in_tolerance_steps": 100,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 155,
+        "episode_seed": 4355,
+        "target_radius_cm": 12.342568230691969,
+        "target_angle_degrees": -17.822330803830855,
+        "min_distance_cm": 0.2815851240100062,
+        "final_distance_cm": 0.28909481906003304,
+        "first_reach_step": 11,
+        "first_entry_speed_cm_per_step": 1.3862705251012604,
+        "first_entry_joint_speed_radians_per_step": 5.281976386220912,
+        "first_entry_branch_error_radians": [
+          0.0412282831966877,
+          0.02575272135436535,
+          1.733687400817871,
+          2.3835976123809814
+        ],
+        "first_entry_joint_limit_margin_radians": [
+          1.7685435297872196,
+          1.0301422886832081
+        ],
+        "post_entry_max_distance_cm": 0.7261499833001935,
+        "max_held_steps": 100,
+        "in_tolerance_steps": 100,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 156,
+        "episode_seed": 4356,
+        "target_radius_cm": 12.19223507436484,
+        "target_angle_degrees": 92.7009224873107,
+        "min_distance_cm": 0.43229846946135786,
+        "final_distance_cm": 0.5759584933627571,
+        "first_reach_step": 14,
+        "first_entry_speed_cm_per_step": 0.25629103152542154,
+        "first_entry_joint_speed_radians_per_step": 4.412834139860043,
+        "first_entry_branch_error_radians": [
+          0.08096005767583847,
+          -0.03487319126725197,
+          1.7852271795272827,
+          2.289597511291504
+        ],
+        "first_entry_joint_limit_margin_radians": [
+          2.2822170538497866,
+          0.9528292050493956
+        ],
+        "post_entry_max_distance_cm": 0.8298703281617028,
+        "max_held_steps": 100,
+        "in_tolerance_steps": 100,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 157,
+        "episode_seed": 4357,
+        "target_radius_cm": 10.463941243595922,
+        "target_angle_degrees": -45.160476242782956,
+        "min_distance_cm": 0.378872140640366,
+        "final_distance_cm": 0.38637615659631486,
+        "first_reach_step": 12,
+        "first_entry_speed_cm_per_step": 1.3282631925615322,
+        "first_entry_joint_speed_radians_per_step": 4.767120329409326,
+        "first_entry_branch_error_radians": [
+          0.03489617630839348,
+          0.03706525266170502,
+          1.8613309860229492,
+          1.9888205528259277
+        ],
+        "first_entry_joint_limit_margin_radians": [
+          1.2307471280396878,
+          0.8384099967185166
+        ],
+        "post_entry_max_distance_cm": 0.6558454698756945,
+        "max_held_steps": 100,
+        "in_tolerance_steps": 100,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 158,
+        "episode_seed": 4358,
+        "target_radius_cm": 10.66339919654423,
+        "target_angle_degrees": 146.06245089362574,
+        "min_distance_cm": 22.09775554039239,
+        "final_distance_cm": 22.59939151495888,
+        "first_reach_step": null,
+        "first_entry_speed_cm_per_step": null,
+        "first_entry_joint_speed_radians_per_step": null,
+        "first_entry_branch_error_radians": null,
+        "first_entry_joint_limit_margin_radians": null,
+        "post_entry_max_distance_cm": null,
+        "max_held_steps": 0,
+        "in_tolerance_steps": 0,
+        "hold_interruptions": 0
+      },
+      {
+        "episode": 159,
+        "episode_seed": 4359,
+        "target_radius_cm": 18.268394800796877,
+        "target_angle_degrees": 66.98314664787841,
+        "min_distance_cm": 0.21889333240133416,
+        "final_distance_cm": 0.2697165098492612,
+        "first_reach_step": 9,
+        "first_entry_speed_cm_per_step": 0.6581382833706935,
+        "first_entry_joint_speed_radians_per_step": 3.1791940482505607,
+        "first_entry_branch_error_radians": [
+          0.03465365618467331,
+          -0.048427995294332504,
+          1.0996613502502441,
+          -2.4236154556274414
+        ],
+        "first_entry_joint_limit_margin_radians": [
+          2.3651407854349786,
+          1.7310380049011098
+        ],
+        "post_entry_max_distance_cm": 0.458886152904445,
+        "max_held_steps": 100,
+        "in_tolerance_steps": 100,
+        "hold_interruptions": 0
+      }
+    ],
+    "units": {
+      "distance": "cm",
+      "time": "control_steps"
+    }
+  }
+}
