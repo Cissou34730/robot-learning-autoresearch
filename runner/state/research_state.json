@@ -1,16 +1,5 @@
 {
-  "active_inquiry": {
-    "closure_condition": "A completed matched development comparison of an intervention derived from T2 against the T2 reference, with success, first_reach_step, max_held_steps, hold_interruptions, timeout status, target angle, and terminal branch or joint geometry, is sufficient to determine whether angle- or trajectory-aware control materially improves the goal gap and whether residual failures are angle-specific, branch/limit-specific, or their interaction.",
-    "goal_connection": "The best measured candidate, T2:checkpoint-120832, succeeds on 150 of 160 development episodes (93.75%), below the 196 of 200 episodes required officially. This inquiry targets the remaining acquisition and hold failures while preserving the official 0.06-0.20 m radius range and complete uninterrupted hold criterion.",
-    "handoff_conclusion": "M1 established high actuation authority and residual-motion risk but not the learned-policy bottleneck. M2 showed T1 at 110/160 and nominated inner-radius acquisition as a coverage concern without branch or terminal geometry. T2 changed the training radius range to the official 0.06-0.20 m interval, and matched M3 improved the compared recipe to 150/160 with 43 paired wins versus 3; this supports retaining broader coverage as a component, but does not establish coverage alone as sufficient or as the sole cause. The detailed M3 T2 artifact corrects the inherited failure summary: seven of the ten failures had no first_reach_step, while three entered tolerance and then failed the uninterrupted hold, so acquisition and stabilization are both live mechanisms. The no-entry failures cluster mainly near target angles around -130 to -151 degrees, whereas hold failures occurred near -148, -41, and +17 degrees. Terminal joint and branch-error fields show near-limit and near-branch configurations in some failures, but terminal geometry cannot distinguish IK-branch/limit interaction from angle-dependent trajectory acquisition, braking, or stabilization. The current evidence therefore supports changing from the overly narrow inner-radius framing to a bounded angle-/trajectory-aware intervention inquiry while preserving branch/limit attribution as a competing explanation.",
-    "handoff_question": "Can an angle- and trajectory-aware acquisition or stabilization intervention reduce the T2 residual failures toward the 98% complete-hold goal, and do the gains and remaining failures implicate target angle, IK-branch/limit interaction, or their interaction?",
-    "handoff_source_session_id": "S6",
-    "id": "I3",
-    "opened_in_session": "S6",
-    "question": "Can an angle- and trajectory-aware acquisition or stabilization intervention reduce the T2 residual failures toward the 98% complete-hold goal, and do the gains and remaining failures implicate target angle, IK-branch/limit interaction, or their interaction?",
-    "rationale": "M3 established that the broader-radius T2 recipe materially improved the compared policy, but it did not establish coverage alone as the cause of all remaining failures. The ten T2 failures were not confined to the inner-radius regime: seven never entered tolerance and three entered before losing the hold. The acquisition failures were concentrated mostly near target angles of roughly -130 to -151 degrees, while hold failures also occurred near -148, -41, and +17 degrees. Several terminal configurations approached a joint limit and had one small IK branch error, but terminal geometry alone cannot distinguish a branch-selection error from angle-dependent trajectory acquisition, braking, or stabilization. The prior inner-radius framing is therefore too narrow; this inquiry tests the unresolved angle/trajectory versus branch/limit mechanism that can change the route to 98%.",
-    "reframes": []
-  },
+  "active_inquiry": null,
   "campaign": {
     "base_commit": "5a0ec158aa0741306d5f825a3ec7db8176a3ff13",
     "id": "339736e0-5583-4bc4-8729-5023fc3077b7",
@@ -2477,7 +2466,7 @@
     }
   },
   "counters": {
-    "event": 11,
+    "event": 12,
     "inquiry": 3,
     "measurement": 4,
     "session": 7,
@@ -4806,9 +4795,63 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-09T23:02:52Z",
+      "error": null,
+      "id": "E12",
+      "inquiry_id": "I3",
+      "kind": "inquiry",
+      "request": {
+        "action": "close",
+        "outcome": "limited",
+        "reason": "M4 completed the matched I3 comparison and closes the inquiry with a limited result. T3, the T2-derived near-target joint-velocity intervention, achieved 153/160 successes (95.625%) versus 150/160 (93.75%) for T2, with three paired wins and no paired losses. The rescues include one acquisition failure and two hold failures, supporting a beneficial but modest trajectory/stabilization effect; training statistics are not used as development evidence. The remaining T3 failures are concentrated at target angles approximately -130 to -151 degrees, comprising four no-entry failures and three post-entry hold failures. Their terminal states repeatedly approach the shoulder joint limit and show small errors to the open-elbow branch, while the alternate branch errors remain large. This pattern supports continuing with targeted angle-/IK-branch/limit trajectory control rather than treating the velocity penalty as a general solution. The comparison preserved the official radius range, complete uninterrupted-hold criterion, matched seeds, and the required acquisition, hold, timeout, angle, and terminal-geometry diagnostics. The 98% official goal remains unmet and unmeasured."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I3",
+        "outcome": "limited",
+        "reason": "M4 completed the matched I3 comparison and closes the inquiry with a limited result. T3, the T2-derived near-target joint-velocity intervention, achieved 153/160 successes (95.625%) versus 150/160 (93.75%) for T2, with three paired wins and no paired losses. The rescues include one acquisition failure and two hold failures, supporting a beneficial but modest trajectory/stabilization effect; training statistics are not used as development evidence. The remaining T3 failures are concentrated at target angles approximately -130 to -151 degrees, comprising four no-entry failures and three post-entry hold failures. Their terminal states repeatedly approach the shoulder joint limit and show small errors to the open-elbow branch, while the alternate branch errors remain large. This pattern supports continuing with targeted angle-/IK-branch/limit trajectory control rather than treating the velocity penalty as a general solution. The comparison preserved the official radius range, complete uninterrupted-hold criterion, matched seeds, and the required acquisition, hold, timeout, angle, and terminal-geometry diagnostics. The 98% official goal remains unmet and unmeasured.",
+        "status": "completed"
+      },
+      "session_id": "S7",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "close",
+        "inquiry_id": "I3",
+        "outcome": "limited",
+        "reason": "M4 completed the matched I3 comparison and closes the inquiry with a limited result. T3, the T2-derived near-target joint-velocity intervention, achieved 153/160 successes (95.625%) versus 150/160 (93.75%) for T2, with three paired wins and no paired losses. The rescues include one acquisition failure and two hold failures, supporting a beneficial but modest trajectory/stabilization effect; training statistics are not used as development evidence. The remaining T3 failures are concentrated at target angles approximately -130 to -151 degrees, comprising four no-entry failures and three post-entry hold failures. Their terminal states repeatedly approach the shoulder joint limit and show small errors to the open-elbow branch, while the alternate branch errors remain large. This pattern supports continuing with targeted angle-/IK-branch/limit trajectory control rather than treating the velocity penalty as a general solution. The comparison preserved the official radius range, complete uninterrupted-hold criterion, matched seeds, and the required acquisition, hold, timeout, angle, and terminal-geometry diagnostics. The 98% official goal remains unmet and unmeasured."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I3",
+        "outcome": "limited",
+        "reason": "M4 completed the matched I3 comparison and closes the inquiry with a limited result. T3, the T2-derived near-target joint-velocity intervention, achieved 153/160 successes (95.625%) versus 150/160 (93.75%) for T2, with three paired wins and no paired losses. The rescues include one acquisition failure and two hold failures, supporting a beneficial but modest trajectory/stabilization effect; training statistics are not used as development evidence. The remaining T3 failures are concentrated at target angles approximately -130 to -151 degrees, comprising four no-entry failures and three post-entry hold failures. Their terminal states repeatedly approach the shoulder joint limit and show small errors to the open-elbow branch, while the alternate branch errors remain large. This pattern supports continuing with targeted angle-/IK-branch/limit trajectory control rather than treating the velocity penalty as a general solution. The comparison preserved the official radius range, complete uninterrupted-hold criterion, matched seeds, and the required acquisition, hold, timeout, angle, and terminal-geometry diagnostics. The 98% official goal remains unmet and unmeasured.",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E12",
+    "inquiry_id": "I3",
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "close",
+        "outcome": "limited",
+        "reason": "M4 completed the matched I3 comparison and closes the inquiry with a limited result. T3, the T2-derived near-target joint-velocity intervention, achieved 153/160 successes (95.625%) versus 150/160 (93.75%) for T2, with three paired wins and no paired losses. The rescues include one acquisition failure and two hold failures, supporting a beneficial but modest trajectory/stabilization effect; training statistics are not used as development evidence. The remaining T3 failures are concentrated at target angles approximately -130 to -151 degrees, comprising four no-entry failures and three post-entry hold failures. Their terminal states repeatedly approach the shoulder joint limit and show small errors to the open-elbow branch, while the alternate branch errors remain large. This pattern supports continuing with targeted angle-/IK-branch/limit trajectory control rather than treating the velocity penalty as a general solution. The comparison preserved the official radius range, complete uninterrupted-hold criterion, matched seeds, and the required acquisition, hold, timeout, angle, and terminal-geometry diagnostics. The 98% official goal remains unmet and unmeasured."
+      }
+    },
+    "request_fingerprint": "686afcae2c0a99734a552c91cc569664afd94d6a50c20ddad986fadbc0d3b4f5",
+    "session_id": "S7",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T2:checkpoint-120832 remains the strongest development-evaluated candidate at 150/160, with T1:checkpoint-120832 as the matched 110/160 reference. Neither is assigned working, best-known, or retained status because this goal-review transition opens I3 and no role assignment was requested.",
     "completed_operations": [
@@ -4854,7 +4897,8 @@
     "objective": "Advance I3 toward an evidence-supported answer to its scientific question: Can an angle- and trajectory-aware acquisition or stabilization intervention reduce the T2 residual failures toward the 98% complete-hold goal, and do the gains and remaining failures implicate target angle, IK-branch/limit interaction, or their interaction? Before choosing the next action, compare the accumulated evidence with the closure condition. Choose the supported operation that best advances the bounded work; no operation is the default. Close the inquiry when the condition is met.",
     "operation_ids": [
       "T3",
-      "M4"
+      "M4",
+      "E12"
     ],
     "scientific_parent_commit": "f6950a28bf1179f1dda80095a4dc2601bb437ea4"
   },
