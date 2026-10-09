@@ -8210,7 +8210,7 @@
     }
   },
   "counters": {
-    "event": 45,
+    "event": 46,
     "inquiry": 11,
     "measurement": 15,
     "session": 23,
@@ -16578,96 +16578,14 @@
       "status": "failed",
       "superseded_by": "M15",
       "supersedes": null
-    }
-  ],
-  "pending_operation": {
-    "data": {
-      "evaluation_semantics": null,
-      "measurements": [
-        {
-          "args": [
-            "--candidate",
-            "T13:checkpoint-120832",
-            "--episodes",
-            "160",
-            "--seed",
-            "4200",
-            "--artifact",
-            "campaigns/evaluations/1ae27a27-6880-4ca6-9d50-e6498e771cb7/python-module-M14-1-i11-t13-residual-margin.json"
-          ],
-          "artifact": "campaigns/evaluations/1ae27a27-6880-4ca6-9d50-e6498e771cb7/python-module-M14-1-i11-t13-residual-margin.json",
-          "instrument": "python_module",
-          "label": "I11 T13 residual braking margin",
-          "module": "robot_learning.lab.residual_margin"
-        }
-      ],
-      "module_provenance": {
-        "campaign_lab_manifest": [
-          {
-            "fingerprint": "6fd6be6cec2b9ab4000129bc55647cfce26b073269a4c8b04ef312b23f33c51b",
-            "path": "robot_learning/lab/__init__.py"
-          },
-          {
-            "fingerprint": "fce927fbc614f129d2f46f55b64cbe6c1cf83c476c9475268ba16bb3fa4f55d8",
-            "path": "robot_learning/lab/plant_margin.py"
-          },
-          {
-            "fingerprint": "ee9ac0e22d59dcfb7765da0a57ed3a610a888a6a47137eb87f21669df5048d90",
-            "path": "robot_learning/lab/residual_margin.py"
-          }
-        ],
-        "campaign_lab_publication": null,
-        "code_parent_commit": "f1ce7b1f1bb680f6936c246a67faa44f6aacefad",
-        "effective_parameters": {
-          "algorithm": {
-            "name": "ppo"
-          },
-          "policy": {
-            "activation": "tanh",
-            "net_arch": [
-              64,
-              64
-            ]
-          },
-          "ppo": {
-            "batch_size": 64,
-            "ent_coef": 0.01,
-            "gae_lambda": 0.95,
-            "gamma": 0.99,
-            "learning_rate": 0.0003,
-            "n_steps": 1024
-          },
-          "training": {
-            "checkpoint_every_steps": 5000,
-            "n_envs": 1
-          }
-        },
-        "module_manifest": [
-          {
-            "exists": true,
-            "fingerprint": "ee9ac0e22d59dcfb7765da0a57ed3a610a888a6a47137eb87f21669df5048d90",
-            "path": "robot_learning/lab/residual_margin.py"
-          }
-        ],
-        "module_paths": [
-          "robot_learning/lab/residual_margin.py"
-        ],
-        "scientific_commit": null,
-        "scientific_manifest": [],
-        "scientific_paths": []
-      },
-      "paired_comparisons": [],
-      "partial_results": [],
-      "result": null,
-      "task_reference_contract": null
     },
-    "failure": null,
-    "id": "M15",
-    "inquiry_id": "I11",
-    "kind": "measurement",
-    "progress": "accepted",
-    "request": {
-      "measurement": {
+    {
+      "completed_at": "2026-10-09T01:34:22Z",
+      "error": "robot_learning.lab.residual_margin failed:\n\nTraceback (most recent call last):\n  File \"<frozen runpy>\", line 203, in _run_module_as_main\n  File \"<frozen runpy>\", line 88, in _run_code\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\residual_margin.py\", line 378, in <module>\n    main()\n    ~~~~^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\residual_margin.py\", line 372, in main\n    json.dumps(measure(args.candidate, args.episodes, args.seed), indent=2) + \"\\n\",\n               ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\residual_margin.py\", line 180, in measure\n    runtime = load_runtime(candidate)\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\contracts\\policy_runtime.py\", line 181, in load_runtime\n    return PolicyRuntime(validate_runtime_files(model_path), model_path, algorithm)\n                         ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\contracts\\policy_runtime.py\", line 94, in validate_runtime_files\n    raise ValueError(\n    ...<2 lines>...\n    )\nValueError: Missing policy_runtime.pkl. Legacy policies require explicit migration from their historical scientific code; current observations must not be substituted.\n",
+      "id": "M15",
+      "inquiry_id": "I11",
+      "kind": "measurement",
+      "request": {
         "description": "Matched residual-arrival and local-feedback margin analysis for T13 route-conditioned braking authority.",
         "measurements": [
           {
@@ -16688,11 +16606,42 @@
           }
         ],
         "rationale": "M13 produced an exact behavioral match to T3: 153/160 successes and zero discordant episodes. The aggregate result cannot distinguish an inactive route gate from an ineffective braking correction. This measurement inspects T13's seven residual cases, arrival speeds, one-interval braking probe, and local retention margins on the same episode panel used by M10. If T13 does not improve the negative-angle speed or sampled retention margin, the route-conditioned action recipe is closed negatively and the campaign redirects to plant-level control; if it does improve those quantities, the remaining decision is whether the action correction is mistimed or insufficient despite preserving route coverage."
+      },
+      "result": {
+        "error": "robot_learning.lab.residual_margin failed:\n\nTraceback (most recent call last):\n  File \"<frozen runpy>\", line 203, in _run_module_as_main\n  File \"<frozen runpy>\", line 88, in _run_code\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\residual_margin.py\", line 378, in <module>\n    main()\n    ~~~~^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\residual_margin.py\", line 372, in main\n    json.dumps(measure(args.candidate, args.episodes, args.seed), indent=2) + \"\\n\",\n               ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\residual_margin.py\", line 180, in measure\n    runtime = load_runtime(candidate)\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\contracts\\policy_runtime.py\", line 181, in load_runtime\n    return PolicyRuntime(validate_runtime_files(model_path), model_path, algorithm)\n                         ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\contracts\\policy_runtime.py\", line 94, in validate_runtime_files\n    raise ValueError(\n    ...<2 lines>...\n    )\nValueError: Missing policy_runtime.pkl. Legacy policies require explicit migration from their historical scientific code; current observations must not be substituted.\n",
+        "status": "failed"
+      },
+      "session_id": "S23",
+      "status": "failed",
+      "superseded_by": "E46",
+      "supersedes": "M14"
+    }
+  ],
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "close",
+        "inquiry_id": "I11",
+        "outcome": "negative",
+        "reason": "I11 is closed negatively for the tested route-conditioned action recipe. T13 trained successfully from T3 with the original observation and curriculum, but matched M13 evaluation produced exactly the T3 result: 153/160 successes, with zero discordant episodes and no change in the evaluated route or hold outcomes. This does not establish that all action authority is ineffective, but it rejects this bounded angle- and distance-gated joint-velocity damping recipe as a path to the goal. M14 and M15 failed during residual-margin execution because the required artifact argument was initially omitted and the archived T13 candidate lacked policy_runtime.pkl; those execution failures provide no braking-margin evidence and were not used as scientific support. The next direction is plant-level control design, because targeted action control preserved reach but did not improve the residual failures."
+      },
+      "result": null
+    },
+    "failure": null,
+    "id": "E46",
+    "inquiry_id": "I11",
+    "kind": "inquiry",
+    "progress": "accepted",
+    "request": {
+      "inquiry": {
+        "action": "close",
+        "outcome": "negative",
+        "reason": "I11 is closed negatively for the tested route-conditioned action recipe. T13 trained successfully from T3 with the original observation and curriculum, but matched M13 evaluation produced exactly the T3 result: 153/160 successes, with zero discordant episodes and no change in the evaluated route or hold outcomes. This does not establish that all action authority is ineffective, but it rejects this bounded angle- and distance-gated joint-velocity damping recipe as a path to the goal. M14 and M15 failed during residual-margin execution because the required artifact argument was initially omitted and the archived T13 candidate lacked policy_runtime.pkl; those execution failures provide no braking-margin evidence and were not used as scientific support. The next direction is plant-level control design, because targeted action control preserved reach but did not improve the residual failures."
       }
     },
-    "request_fingerprint": "8832d96bf16192305b02d4ec7939ecd9d6be1cc94f678007cb3babdcdb63bc2c",
+    "request_fingerprint": "08ad6c96c383072a63c763775f36cc7850d60b573205609d47ceebe0bf9500f2",
     "session_id": "S23",
-    "supersedes": "M14"
+    "supersedes": "M15"
   },
   "pi_checkpoint": {
     "candidates_and_roles": "T3:checkpoint-120832 remains the strongest measured development candidate at 153/160 successes and has no assigned working, best-known, or retained role. T12:checkpoint-120832 is intervention-limited at 151/160 and has no role. No candidate role change is requested.",

@@ -74,3 +74,4 @@
 | T13 | training | I11 | completed |
 | M13 | measurement | I11 | completed |
 | M14 | measurement | I11 | failed |
+| M15 | measurement | I11 | failed |
