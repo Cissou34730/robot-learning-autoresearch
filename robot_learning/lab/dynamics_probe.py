@@ -117,7 +117,7 @@ def constrained_ik_summary() -> dict:
                         UPPER_ARM_LENGTH + FOREARM_LENGTH * np.cos(elbow),
                     )
                 )
-                feasible = (
+                feasible = bool(
                     abs(shoulder) <= joint_limit and abs(elbow) <= joint_limit
                 )
                 branch_results[branch] = {
