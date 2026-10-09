@@ -1,6 +1,6 @@
 {
   "algorithm": {
-    "name": "ppo"
+    "name": "sac"
   },
   "policy": {
     "activation": "tanh",
@@ -16,6 +16,17 @@
     "gamma": 0.99,
     "learning_rate": 0.0003,
     "n_steps": 1024
+  },
+  "sac": {
+    "batch_size": 256,
+    "buffer_size": 100000,
+    "ent_coef": "auto",
+    "gamma": 0.99,
+    "gradient_steps": 1,
+    "learning_rate": 0.0003,
+    "learning_starts": 1000,
+    "tau": 0.005,
+    "train_freq": 1
   },
   "training": {
     "checkpoint_every_steps": 5000,
