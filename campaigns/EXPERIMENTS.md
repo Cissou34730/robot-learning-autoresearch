@@ -115,3 +115,4 @@
 | M29 | measurement | I15 | failed |
 | M30 | measurement | I15 | completed |
 | E66 | inquiry | I15 | completed |
+| E67 | checkpoint | I15 | checkpointed |
