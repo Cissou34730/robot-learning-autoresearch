@@ -1,16 +1,5 @@
 {
-  "active_inquiry": {
-    "closure_condition": "Close when completed evidence under the unchanged bounded direct-action interface either demonstrates a learned route at or above 196/200 with complete inner-band success and preserved hold diagnostics, or establishes a bounded positive, negative, limited, or inconclusive result that identifies whether acquisition method, acquisition representation or phase information, optimization, or stabilization is the next goal-relevant route.",
-    "goal_connection": "The campaign still lacks a learned policy meeting at least 196 successes in the protected 200-episode assessment. The inquiry targets the remaining pre-reach and inner-band failures while preserving the unchanged bounded direct-action interface and the complete 100-step hold semantics.",
-    "handoff_conclusion": "M23 and M24 showed that the smooth target-geometry observation was substantially worse than the restored T1 observation. M25 showed that extending its PPO horizon improved that route but remained far below the reference. M26 showed that restoring the original observation with a 2048-step horizon reached 156/160, but M27 exposed a 190/200 result with degraded inner-band coverage. T16 then replicated the original observation with the 1024-step horizon: M28 reached 192/200 and narrowly beat T1 in paired outcomes, but retained seven pre-reach failures, including two with positive nearest-branch limit margin, and reached only 110/113 inner-band successes; T1 had five post-reach failures and 113/113 inner-band successes. The tested PPO representation/horizon recipes therefore do not meet the goal or preserve the required inner-band behavior. This is a recipe-bounded limited negative: physical controllability, the direct-action interface, learned policies generally, and PPO generally remain unresolved rather than rejected.",
-    "handoff_question": "Can a materially different learned acquisition method or acquisition mechanism overcome the residual positive-margin pre-reach and inner-band failures under the unchanged bounded direct-action interface, while preserving complete uninterrupted hold behavior, and what evidence distinguishes optimization limits from observation or phase-representation limits?",
-    "handoff_source_session_id": "S30",
-    "id": "I15",
-    "opened_in_session": "S31",
-    "question": "Can a materially different learned acquisition method or acquisition mechanism overcome the residual positive-margin pre-reach and inner-band failures under the unchanged bounded direct-action interface, while preserving complete uninterrupted hold behavior, and what evidence distinguishes optimization limits from observation or phase-representation limits?",
-    "rationale": "M23-M28 show a recipe-bounded PPO negative, not a rejection of learned control generally: T16 reaches 192/200 but has only 110/113 inner-band successes, while T1 has 113/113 inner-band successes with different residual failures. Persistent positive-margin pre-reach failures and the inner-band tradeoff leave optimization, acquisition representation, and phase/stabilization mechanisms unresolved. A fresh inquiry is therefore more decision-relevant than official assessment, and its first operation should be selected from this unresolved distinction rather than predetermined here.",
-    "reframes": []
-  },
+  "active_inquiry": null,
   "campaign": {
     "base_commit": "4e87f6053469bb6648d355bc03a7a70faa91f33f",
     "id": "79395c88-afcd-40f0-a644-16ca95368c28",
@@ -14218,7 +14207,7 @@
     }
   },
   "counters": {
-    "event": 65,
+    "event": 66,
     "inquiry": 15,
     "measurement": 30,
     "session": 32,
@@ -37236,9 +37225,63 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": "M29"
+    },
+    {
+      "completed_at": "2026-10-09T17:56:32Z",
+      "error": null,
+      "id": "E66",
+      "inquiry_id": "I15",
+      "kind": "inquiry",
+      "request": {
+        "action": "close",
+        "outcome": "limited_negative",
+        "reason": "I15 is resolved as a limited negative for the tested materially different SAC acquisition route under the unchanged bounded direct-action interface. M30 measured T17 at 168/200 versus paired T1 at 192/200, with SAC losing all 24 discordant episodes. The full diagnostics show 23 T17 failures before first reach and 9 post-reach hold interruptions, compared with 4 and 4 for T1; T17 also achieved 111/118 inner-band successes versus T1's 115/118. The aggregate and mechanism evidence agree that this SAC recipe does not approach the goal and does not preserve the reference behavior. The repeated pre-reach dominance across the tested PPO and SAC routes supports redirecting the next goal-relevant work toward acquisition representation or explicit phase information, while retaining stabilization diagnostics. However, M30 does not expose nearest-branch limit margins for unreached failures, so the specific positive-margin mechanism remains unresolved. This result rejects neither learned control generally, PPO generally, SAC generally, the physical system, nor the bounded direct-action interface; it bounds the negative to the tested observation-plus-acquisition recipes and leaves optimization versus representation causality unresolved."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I15",
+        "outcome": "limited_negative",
+        "reason": "I15 is resolved as a limited negative for the tested materially different SAC acquisition route under the unchanged bounded direct-action interface. M30 measured T17 at 168/200 versus paired T1 at 192/200, with SAC losing all 24 discordant episodes. The full diagnostics show 23 T17 failures before first reach and 9 post-reach hold interruptions, compared with 4 and 4 for T1; T17 also achieved 111/118 inner-band successes versus T1's 115/118. The aggregate and mechanism evidence agree that this SAC recipe does not approach the goal and does not preserve the reference behavior. The repeated pre-reach dominance across the tested PPO and SAC routes supports redirecting the next goal-relevant work toward acquisition representation or explicit phase information, while retaining stabilization diagnostics. However, M30 does not expose nearest-branch limit margins for unreached failures, so the specific positive-margin mechanism remains unresolved. This result rejects neither learned control generally, PPO generally, SAC generally, the physical system, nor the bounded direct-action interface; it bounds the negative to the tested observation-plus-acquisition recipes and leaves optimization versus representation causality unresolved.",
+        "status": "completed"
+      },
+      "session_id": "S32",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "close",
+        "inquiry_id": "I15",
+        "outcome": "limited_negative",
+        "reason": "I15 is resolved as a limited negative for the tested materially different SAC acquisition route under the unchanged bounded direct-action interface. M30 measured T17 at 168/200 versus paired T1 at 192/200, with SAC losing all 24 discordant episodes. The full diagnostics show 23 T17 failures before first reach and 9 post-reach hold interruptions, compared with 4 and 4 for T1; T17 also achieved 111/118 inner-band successes versus T1's 115/118. The aggregate and mechanism evidence agree that this SAC recipe does not approach the goal and does not preserve the reference behavior. The repeated pre-reach dominance across the tested PPO and SAC routes supports redirecting the next goal-relevant work toward acquisition representation or explicit phase information, while retaining stabilization diagnostics. However, M30 does not expose nearest-branch limit margins for unreached failures, so the specific positive-margin mechanism remains unresolved. This result rejects neither learned control generally, PPO generally, SAC generally, the physical system, nor the bounded direct-action interface; it bounds the negative to the tested observation-plus-acquisition recipes and leaves optimization versus representation causality unresolved."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I15",
+        "outcome": "limited_negative",
+        "reason": "I15 is resolved as a limited negative for the tested materially different SAC acquisition route under the unchanged bounded direct-action interface. M30 measured T17 at 168/200 versus paired T1 at 192/200, with SAC losing all 24 discordant episodes. The full diagnostics show 23 T17 failures before first reach and 9 post-reach hold interruptions, compared with 4 and 4 for T1; T17 also achieved 111/118 inner-band successes versus T1's 115/118. The aggregate and mechanism evidence agree that this SAC recipe does not approach the goal and does not preserve the reference behavior. The repeated pre-reach dominance across the tested PPO and SAC routes supports redirecting the next goal-relevant work toward acquisition representation or explicit phase information, while retaining stabilization diagnostics. However, M30 does not expose nearest-branch limit margins for unreached failures, so the specific positive-margin mechanism remains unresolved. This result rejects neither learned control generally, PPO generally, SAC generally, the physical system, nor the bounded direct-action interface; it bounds the negative to the tested observation-plus-acquisition recipes and leaves optimization versus representation causality unresolved.",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E66",
+    "inquiry_id": "I15",
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "close",
+        "outcome": "limited_negative",
+        "reason": "I15 is resolved as a limited negative for the tested materially different SAC acquisition route under the unchanged bounded direct-action interface. M30 measured T17 at 168/200 versus paired T1 at 192/200, with SAC losing all 24 discordant episodes. The full diagnostics show 23 T17 failures before first reach and 9 post-reach hold interruptions, compared with 4 and 4 for T1; T17 also achieved 111/118 inner-band successes versus T1's 115/118. The aggregate and mechanism evidence agree that this SAC recipe does not approach the goal and does not preserve the reference behavior. The repeated pre-reach dominance across the tested PPO and SAC routes supports redirecting the next goal-relevant work toward acquisition representation or explicit phase information, while retaining stabilization diagnostics. However, M30 does not expose nearest-branch limit margins for unreached failures, so the specific positive-margin mechanism remains unresolved. This result rejects neither learned control generally, PPO generally, SAC generally, the physical system, nor the bounded direct-action interface; it bounds the negative to the tested observation-plus-acquisition recipes and leaves optimization versus representation causality unresolved."
+      }
+    },
+    "request_fingerprint": "366c4e64133111b8ed0e4aad6eb1bc7188af3ffe990e3281da4e7c33eea5c15c",
+    "session_id": "S32",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No candidate has an evidence-backed working, best-known, or retained role. T16 is the strongest recent learned candidate by M28 aggregate success at 192/200, but it is not goal-adequate and loses three inner-band episodes relative to T1. T1 remains the inner-band reference at 113/113 on M27 and M28. T15 remains an experimental candidate at 190/200 on M27. M17 remains model-based capability evidence rather than a learned candidate role.",
     "completed_operations": [
@@ -37286,7 +37329,8 @@
     "objective": "Advance I15 toward an evidence-supported answer to its scientific question: Can a materially different learned acquisition method or acquisition mechanism overcome the residual positive-margin pre-reach and inner-band failures under the unchanged bounded direct-action interface, while preserving complete uninterrupted hold behavior, and what evidence distinguishes optimization limits from observation or phase-representation limits? Before choosing the next action, compare the accumulated evidence with the closure condition. Restate the unresolved distinction and choose the most decision-relevant available operation; no operation is the default. Close the inquiry when the condition is met.",
     "operation_ids": [
       "T17",
-      "M30"
+      "M30",
+      "E66"
     ],
     "scientific_parent_commit": "e288b5e9d7d3e71fe18040ecd261fec313ccf864"
   },
