@@ -19,3 +19,4 @@
 | E7 | checkpoint | - | checkpointed |
 | T2 | training | I2 | completed |
 | M8 | measurement | I2 | failed |
+| M9 | measurement | I2 | completed |
