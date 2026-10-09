@@ -84,3 +84,4 @@
 | M21 | measurement | I11 | completed |
 | E48 | inquiry | I11 | completed |
 | E49 | checkpoint | I11 | checkpointed |
+| E50 | inquiry | I12 | completed |
