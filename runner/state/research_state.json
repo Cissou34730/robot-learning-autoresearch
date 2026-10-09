@@ -1,16 +1,5 @@
 {
-  "active_inquiry": {
-    "closure_condition": "Close when completed evidence establishes positive transfer at or above the 196/200-equivalent development threshold with 40/40 inner-band success and compatible first-reach, velocity, branch/limit and hold-interruption diagnostics, or when the best controller-imitation evidence remains materially below that threshold and persistent positive-margin non-reaching failures or other diagnostics redirect the campaign away from this acquisition route. If the result is aggregate-positive but the required diagnostics are contradictory or unavailable, retain the mechanism claim as unresolved.",
-    "goal_connection": "The human goal requires at least 196 uninterrupted-hold successes out of 200 under the full official radius and angular distribution. M17 established 160/160 same-interface computed-torque controllability, including 40/40 inner-band success, while M18's controller-derived PPO action-prior recipe remained at 153/160. Direct controller imitation is therefore a goal-linked capability test of whether the demonstrated control authority can be transferred to a learned policy rather than rediscovered through sparse acquisition.",
-    "handoff_conclusion": "M1 established substantial transient actuation authority and at least one feasible analytic IK branch for every sampled official target, with 64 of 576 grid targets having only one feasible branch. T1 measured 150/160 with 40/40 inner-band success; T8 and T9 improved the unchanged direct-action route to 153/160 while preserving 40/40 inner-band success, with residual reach and hold failures. M17 then established that the unchanged bounded action interface is controllable: computed-torque control achieved 160/160 across gain settings, including 93/93 inner-band success and no reach or hold interruptions. M18 showed that the tested controller-derived PPO action-prior recipe did not transfer that capability and remained at 153/160. T11's coupled phase/history/trajectory recipe measured 0/160; M20 found 150 failures before first reach, 10 after first reach with 134 interruptions, and nonnegative nearest-branch margins, establishing a bounded negative for that recipe rather than for policy methods generally. T12 separated static branch/limit context from trajectory timing and recovered a nonzero training signal, but M21 measured only 44/160, 20/40 inner-band success, 103/116 failures without first reach, and 13 post-reach failures with 13 interruptions. Of the 103 non-reaching failures, 95 had nonnegative nearest-branch limit margins. E48 therefore closed I11 with a limited negative: this max-margin static branch/limit observation contract is insufficient, while the dominant unresolved obstacle is learned acquisition or trajectory execution despite demonstrated same-interface controllability; hold stabilization remains secondary.",
-    "handoff_question": "Can controller-imitation training transfer the demonstrated same-interface computed-torque capability to a learned policy that achieves at least 196/200-equivalent uninterrupted-hold successes under uniform official coverage while preserving the 40/40 inner-band behavior?",
-    "handoff_source_session_id": "S23",
-    "id": "I12",
-    "opened_in_session": "S24",
-    "question": "Can controller-imitation training transfer the demonstrated same-interface computed-torque capability to a learned policy that achieves at least 196/200-equivalent uninterrupted-hold successes under uniform official coverage while preserving the 40/40 inner-band behavior?",
-    "rationale": "The unchanged bounded action interface is controllable by computed torque, so lack of physical authority is no longer the leading explanation. The learned candidates at 153/160 and the failed T11/T12 recipes do not distinguish poor PPO acquisition from failure to reproduce the controller trajectory, and training statistics do not establish candidate behavior. This inquiry keeps that distinction open and requires uniform coverage and uninterrupted-hold diagnostics so an aggregate result cannot be mistaken for transferred control behavior.",
-    "reframes": []
-  },
+  "active_inquiry": null,
   "campaign": {
     "base_commit": "4e87f6053469bb6648d355bc03a7a70faa91f33f",
     "id": "79395c88-afcd-40f0-a644-16ca95368c28",
@@ -9855,7 +9844,7 @@
     }
   },
   "counters": {
-    "event": 51,
+    "event": 52,
     "inquiry": 12,
     "measurement": 22,
     "session": 25,
@@ -26177,9 +26166,63 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-09T16:32:24Z",
+      "error": null,
+      "id": "E52",
+      "inquiry_id": "I12",
+      "kind": "inquiry",
+      "request": {
+        "action": "close",
+        "outcome": "limited negative",
+        "reason": "The unresolved distinction was whether controller-imitation training failed because PPO did not reproduce the computed-torque acquisition trajectory, or because learned acquisition remains limiting even with direct controller supervision. M18 measured the tested controller-derived T10 recipe at 153/160, materially below the 196/200-equivalent development threshold. M22 supplied the missing diagnostics on the same uniform official-distribution panel: 153 successes and 7 failures, including 4 failures without first reach and 3 after first reach with 3 hold interruptions. All seven failures had nonpositive nearest-analytic-branch limit margins; the failures do not support persistent positive-margin non-reaching as the dominant explanation. The candidate preserved the 6-10 cm 40/40 inner-band result but lost episodes in the broader inner-radius region, and its aggregate and diagnostic evidence do not establish transfer of M17's 160/160 computed-torque capability. Close I12 as a limited negative for this controller-imitation recipe and redirect the campaign toward explicit trajectory or branch-limit handling. This does not invalidate controller imitation as a broader method, because only the tested T10 recipe was exercised."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I12",
+        "outcome": "limited negative",
+        "reason": "The unresolved distinction was whether controller-imitation training failed because PPO did not reproduce the computed-torque acquisition trajectory, or because learned acquisition remains limiting even with direct controller supervision. M18 measured the tested controller-derived T10 recipe at 153/160, materially below the 196/200-equivalent development threshold. M22 supplied the missing diagnostics on the same uniform official-distribution panel: 153 successes and 7 failures, including 4 failures without first reach and 3 after first reach with 3 hold interruptions. All seven failures had nonpositive nearest-analytic-branch limit margins; the failures do not support persistent positive-margin non-reaching as the dominant explanation. The candidate preserved the 6-10 cm 40/40 inner-band result but lost episodes in the broader inner-radius region, and its aggregate and diagnostic evidence do not establish transfer of M17's 160/160 computed-torque capability. Close I12 as a limited negative for this controller-imitation recipe and redirect the campaign toward explicit trajectory or branch-limit handling. This does not invalidate controller imitation as a broader method, because only the tested T10 recipe was exercised.",
+        "status": "completed"
+      },
+      "session_id": "S25",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "close",
+        "inquiry_id": "I12",
+        "outcome": "limited negative",
+        "reason": "The unresolved distinction was whether controller-imitation training failed because PPO did not reproduce the computed-torque acquisition trajectory, or because learned acquisition remains limiting even with direct controller supervision. M18 measured the tested controller-derived T10 recipe at 153/160, materially below the 196/200-equivalent development threshold. M22 supplied the missing diagnostics on the same uniform official-distribution panel: 153 successes and 7 failures, including 4 failures without first reach and 3 after first reach with 3 hold interruptions. All seven failures had nonpositive nearest-analytic-branch limit margins; the failures do not support persistent positive-margin non-reaching as the dominant explanation. The candidate preserved the 6-10 cm 40/40 inner-band result but lost episodes in the broader inner-radius region, and its aggregate and diagnostic evidence do not establish transfer of M17's 160/160 computed-torque capability. Close I12 as a limited negative for this controller-imitation recipe and redirect the campaign toward explicit trajectory or branch-limit handling. This does not invalidate controller imitation as a broader method, because only the tested T10 recipe was exercised."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I12",
+        "outcome": "limited negative",
+        "reason": "The unresolved distinction was whether controller-imitation training failed because PPO did not reproduce the computed-torque acquisition trajectory, or because learned acquisition remains limiting even with direct controller supervision. M18 measured the tested controller-derived T10 recipe at 153/160, materially below the 196/200-equivalent development threshold. M22 supplied the missing diagnostics on the same uniform official-distribution panel: 153 successes and 7 failures, including 4 failures without first reach and 3 after first reach with 3 hold interruptions. All seven failures had nonpositive nearest-analytic-branch limit margins; the failures do not support persistent positive-margin non-reaching as the dominant explanation. The candidate preserved the 6-10 cm 40/40 inner-band result but lost episodes in the broader inner-radius region, and its aggregate and diagnostic evidence do not establish transfer of M17's 160/160 computed-torque capability. Close I12 as a limited negative for this controller-imitation recipe and redirect the campaign toward explicit trajectory or branch-limit handling. This does not invalidate controller imitation as a broader method, because only the tested T10 recipe was exercised.",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E52",
+    "inquiry_id": "I12",
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "close",
+        "outcome": "limited negative",
+        "reason": "The unresolved distinction was whether controller-imitation training failed because PPO did not reproduce the computed-torque acquisition trajectory, or because learned acquisition remains limiting even with direct controller supervision. M18 measured the tested controller-derived T10 recipe at 153/160, materially below the 196/200-equivalent development threshold. M22 supplied the missing diagnostics on the same uniform official-distribution panel: 153 successes and 7 failures, including 4 failures without first reach and 3 after first reach with 3 hold interruptions. All seven failures had nonpositive nearest-analytic-branch limit margins; the failures do not support persistent positive-margin non-reaching as the dominant explanation. The candidate preserved the 6-10 cm 40/40 inner-band result but lost episodes in the broader inner-radius region, and its aggregate and diagnostic evidence do not establish transfer of M17's 160/160 computed-torque capability. Close I12 as a limited negative for this controller-imitation recipe and redirect the campaign toward explicit trajectory or branch-limit handling. This does not invalidate controller imitation as a broader method, because only the tested T10 recipe was exercised."
+      }
+    },
+    "request_fingerprint": "a63298c37f7068e18c625f88a05acc7444bf058fdf5addda910b544f4819d841",
+    "session_id": "S25",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T8:checkpoint-60416 and T9:checkpoint-20480 remain the strongest measured learned candidates at 153/160 but have no protected working, best-known or retained role. T10:checkpoint-10240 and T10:checkpoint-120832 also measured 153/160 and are not promoted. T11:checkpoint-120832 is rejected at 0/160, and T12:checkpoint-120832 is rejected at 44/160 with 20/40 inner-band success. M17 is evidence of same-interface capability, not a learned candidate. No candidate has an evidence-backed protected role.",
     "completed_operations": [
@@ -26236,7 +26279,8 @@
     "kind": "inquiry",
     "objective": "Advance I12 toward an evidence-supported answer to its scientific question: Can controller-imitation training transfer the demonstrated same-interface computed-torque capability to a learned policy that achieves at least 196/200-equivalent uninterrupted-hold successes under uniform official coverage while preserving the 40/40 inner-band behavior? Before choosing the next action, compare the accumulated evidence with the closure condition. Restate the unresolved distinction and choose the most decision-relevant available operation; no operation is the default. Close the inquiry when the condition is met.",
     "operation_ids": [
-      "M22"
+      "M22",
+      "E52"
     ],
     "scientific_parent_commit": "5bce299503e356bc17d9483669c6aaa717e50c41"
   },
