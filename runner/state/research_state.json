@@ -4820,38 +4820,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I3",
-        "outcome": "limited",
-        "reason": "M4 completed the matched I3 comparison and closes the inquiry with a limited result. T3, the T2-derived near-target joint-velocity intervention, achieved 153/160 successes (95.625%) versus 150/160 (93.75%) for T2, with three paired wins and no paired losses. The rescues include one acquisition failure and two hold failures, supporting a beneficial but modest trajectory/stabilization effect; training statistics are not used as development evidence. The remaining T3 failures are concentrated at target angles approximately -130 to -151 degrees, comprising four no-entry failures and three post-entry hold failures. Their terminal states repeatedly approach the shoulder joint limit and show small errors to the open-elbow branch, while the alternate branch errors remain large. This pattern supports continuing with targeted angle-/IK-branch/limit trajectory control rather than treating the velocity penalty as a general solution. The comparison preserved the official radius range, complete uninterrupted-hold criterion, matched seeds, and the required acquisition, hold, timeout, angle, and terminal-geometry diagnostics. The 98% official goal remains unmet and unmeasured."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I3",
-        "outcome": "limited",
-        "reason": "M4 completed the matched I3 comparison and closes the inquiry with a limited result. T3, the T2-derived near-target joint-velocity intervention, achieved 153/160 successes (95.625%) versus 150/160 (93.75%) for T2, with three paired wins and no paired losses. The rescues include one acquisition failure and two hold failures, supporting a beneficial but modest trajectory/stabilization effect; training statistics are not used as development evidence. The remaining T3 failures are concentrated at target angles approximately -130 to -151 degrees, comprising four no-entry failures and three post-entry hold failures. Their terminal states repeatedly approach the shoulder joint limit and show small errors to the open-elbow branch, while the alternate branch errors remain large. This pattern supports continuing with targeted angle-/IK-branch/limit trajectory control rather than treating the velocity penalty as a general solution. The comparison preserved the official radius range, complete uninterrupted-hold criterion, matched seeds, and the required acquisition, hold, timeout, angle, and terminal-geometry diagnostics. The 98% official goal remains unmet and unmeasured.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E12",
-    "inquiry_id": "I3",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "limited",
-        "reason": "M4 completed the matched I3 comparison and closes the inquiry with a limited result. T3, the T2-derived near-target joint-velocity intervention, achieved 153/160 successes (95.625%) versus 150/160 (93.75%) for T2, with three paired wins and no paired losses. The rescues include one acquisition failure and two hold failures, supporting a beneficial but modest trajectory/stabilization effect; training statistics are not used as development evidence. The remaining T3 failures are concentrated at target angles approximately -130 to -151 degrees, comprising four no-entry failures and three post-entry hold failures. Their terminal states repeatedly approach the shoulder joint limit and show small errors to the open-elbow branch, while the alternate branch errors remain large. This pattern supports continuing with targeted angle-/IK-branch/limit trajectory control rather than treating the velocity penalty as a general solution. The comparison preserved the official radius range, complete uninterrupted-hold criterion, matched seeds, and the required acquisition, hold, timeout, angle, and terminal-geometry diagnostics. The 98% official goal remains unmet and unmeasured."
-      }
-    },
-    "request_fingerprint": "686afcae2c0a99734a552c91cc569664afd94d6a50c20ddad986fadbc0d3b4f5",
-    "session_id": "S7",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T2:checkpoint-120832 remains the strongest development-evaluated candidate at 150/160, with T1:checkpoint-120832 as the matched 110/160 reference. Neither is assigned working, best-known, or retained status because this goal-review transition opens I3 and no role assignment was requested.",
     "completed_operations": [
