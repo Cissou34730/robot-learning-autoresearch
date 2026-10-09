@@ -38,3 +38,4 @@
 | E22 | inquiry | I6 | completed |
 | E23 | checkpoint | - | checkpointed |
 | T7 | training | I6 | failed |
+| T8 | training | I6 | completed |
