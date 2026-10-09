@@ -19042,72 +19042,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "candidate_id": "T3:checkpoint-120832",
-        "parameters": {
-          "algorithm": {
-            "name": "ppo"
-          },
-          "policy": {
-            "activation": "tanh",
-            "net_arch": [
-              64,
-              64
-            ]
-          },
-          "ppo": {
-            "batch_size": 64,
-            "ent_coef": 0.01,
-            "gae_lambda": 0.95,
-            "gamma": 0.99,
-            "learning_rate": 0.0003,
-            "n_steps": 1024
-          },
-          "training": {
-            "checkpoint_every_steps": 5000,
-            "n_envs": 1
-          }
-        },
-        "parent": "ac80177d270a56c270c2c7ddd930bba9699430be",
-        "remove_created": [],
-        "restore": [
-          "robot_learning/scenario/policy_io.py"
-        ],
-        "session_id": "S27"
-      },
-      "pre_restore_manifest": [
-        {
-          "exists": true,
-          "fingerprint": "f7c7ebf6172cb46ad8b2d12e286a1d7a2a6a644dde1d68d57f948570809b4102",
-          "path": "robot_learning/scenario/policy_io.py"
-        }
-      ],
-      "result": {
-        "candidate": "T3:checkpoint-120832",
-        "restored_paths": [
-          "robot_learning/scenario/policy_io.py"
-        ],
-        "scientific_commit": "ac80177d270a56c270c2c7ddd930bba9699430be",
-        "status": "restored"
-      }
-    },
-    "failure": null,
-    "id": "E54",
-    "inquiry_id": "I13",
-    "kind": "restore_recipe",
-    "progress": "completed",
-    "request": {
-      "restore_recipe": {
-        "candidate": "T3:checkpoint-120832",
-        "reason": "Restore the evidence-backed T3 route-preserving baseline before implementing one bounded pre-arrival velocity-shaping design for I13. This removes T14's tested terminal radial action injection so the next intervention can preserve T3 terminal dynamics and be evaluated against the matched T3 control."
-      }
-    },
-    "request_fingerprint": "aff718c8712a42c2e620b0174b528654d59fd6c9e7852703b9597180e3a7cfd5",
-    "session_id": "S27",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T3:checkpoint-120832 remains the strongest evidence-backed development candidate at 153/160 successes, 157 first reaches, and four hold interruptions. T14:checkpoint-120832 remains rejected for the tested radial braking recipe at 149/160 successes. No working, best-known, or retained role is assigned.",
     "completed_operations": [
