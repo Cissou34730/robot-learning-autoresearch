@@ -4117,13 +4117,20 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "official_assessment_requested",
+  "last_verdict": "official assessment goal not reached; success 96.5%; 200 episodes",
   "model_roles": {
     "best_known": "T5:checkpoint-115712",
     "retained": {},
     "working": null
   },
-  "official_assessment": null,
+  "official_assessment": {
+    "artifact": "campaigns/checkpoints/retained/896c230a-0ff1-4105-8ab7-1691a09c5482/t5-cfbc9e22f-a9b510f768f0e221ce3bed5fa35f256808ea6a6a8aa56e91373490e4cd93f71b",
+    "completed_at": "2026-10-09T10:47:58Z",
+    "fingerprint": "a9b510f768f0e221ce3bed5fa35f256808ea6a6a8aa56e91373490e4cd93f71b",
+    "model": "T5:checkpoint-115712",
+    "status": "failed",
+    "summary": "goal not reached; success 96.5%; 200 episodes"
+  },
   "operation_events": [
     {
       "completed_at": "2026-10-09T09:48:41Z",
@@ -8062,7 +8069,7 @@
       "supersedes": null
     },
     {
-      "completed_at": "2026-10-09T10:47:13Z",
+      "completed_at": "2026-10-09T10:47:58Z",
       "error": null,
       "id": "E19",
       "inquiry_id": null,
@@ -8073,7 +8080,7 @@
       },
       "result": {
         "model": "T5:checkpoint-115712",
-        "status": "official_assessment_requested"
+        "status": "official_assessment_failed"
       },
       "session_id": "S10",
       "status": "completed",
@@ -8117,6 +8124,6 @@
   "terminal_state": {
     "model": "T5:checkpoint-115712",
     "reason": "T5:checkpoint-115712 is the explicit best-known candidate based on completed M6 development evidence and the E18 role assignment. M6 showed 125/128 complete uninterrupted holds with reduced never-reached failures and hold interruptions relative to T1, while the remaining unresolved distinction is official-distribution generalization. The protected 200-episode assessment is therefore the decisive operation: at least 196 successes establishes the human goal; a failure redirects the next scientific direction toward the residual stabilization or tail-generalization mechanism.",
-    "status": "official_assessment_requested"
+    "status": "official_assessment_failed"
   }
 }
