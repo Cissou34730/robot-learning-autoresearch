@@ -246,7 +246,7 @@ def main() -> None:
     for name, qpos in configurations.items():
         set_configuration(model, data, qpos)
         mass_matrix = np.zeros((model.nv, model.nv))
-        mujoco.mj_fullM(model, mass_matrix, data.qM)
+        mujoco.mj_fullM(model, mass_matrix, data.M)
         mass_matrix_by_configuration[name] = mass_matrix.tolist()
         jacobian_by_configuration[name] = jacobian_summary(model, data, site_id)
 
