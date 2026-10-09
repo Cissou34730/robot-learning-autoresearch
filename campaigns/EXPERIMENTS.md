@@ -92,3 +92,4 @@
 | M19 | measurement | I13 | completed |
 | M20 | measurement | I13 | failed |
 | M21 | measurement | I13 | failed |
+| M22 | measurement | I13 | failed |

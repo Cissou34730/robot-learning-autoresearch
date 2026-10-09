@@ -9850,7 +9850,7 @@
   "counters": {
     "event": 54,
     "inquiry": 13,
-    "measurement": 22,
+    "measurement": 23,
     "session": 27,
     "training": 15
   },
@@ -20598,6 +20598,59 @@
       "status": "failed",
       "superseded_by": "M22",
       "supersedes": "M20"
+    },
+    {
+      "completed_at": "2026-10-09T01:59:36Z",
+      "error": "robot_learning.lab.residual_margin failed:\n\nTraceback (most recent call last):\n  File \"<frozen runpy>\", line 203, in _run_module_as_main\n  File \"<frozen runpy>\", line 88, in _run_code\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\residual_margin.py\", line 378, in <module>\n    main()\n    ~~~~^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\residual_margin.py\", line 372, in main\n    json.dumps(measure(args.candidate, args.episodes, args.seed), indent=2) + \"\\n\",\n               ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\residual_margin.py\", line 180, in measure\n    runtime = load_runtime(candidate)\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\contracts\\policy_runtime.py\", line 181, in load_runtime\n    return PolicyRuntime(validate_runtime_files(model_path), model_path, algorithm)\n                         ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\contracts\\policy_runtime.py\", line 94, in validate_runtime_files\n    raise ValueError(\n    ...<2 lines>...\n    )\nValueError: Missing campaigns\\checkpoints\\candidates\\1ae27a27-6880-4ca6-9d50-e6498e771cb7\\t15\\policy_runtime.pkl. Legacy policies require explicit migration from their historical scientific code; current observations must not be substituted.\n",
+      "id": "M22",
+      "inquiry_id": "I13",
+      "kind": "measurement",
+      "request": {
+        "description": "I13 matched residual arrival and local feedback margin for T15 pre-arrival shaping versus T3 control",
+        "measurements": [
+          {
+            "args": [
+              "--candidate",
+              "campaigns/checkpoints/candidates/1ae27a27-6880-4ca6-9d50-e6498e771cb7/t15/checkpoint-120832",
+              "--episodes",
+              "160",
+              "--seed",
+              "4200",
+              "--artifact",
+              "campaigns/evaluations/1ae27a27-6880-4ca6-9d50-e6498e771cb7/python-module-M22-1-i13-t15-residual-margin.json"
+            ],
+            "artifact": "campaigns/evaluations/1ae27a27-6880-4ca6-9d50-e6498e771cb7/python-module-M22-1-i13-t15-residual-margin.json",
+            "instrument": "python_module",
+            "label": "I13 T15 pre-arrival velocity shaping",
+            "module": "robot_learning.lab.residual_margin"
+          },
+          {
+            "args": [
+              "--candidate",
+              "campaigns/checkpoints/candidates/1ae27a27-6880-4ca6-9d50-e6498e771cb7/t3/checkpoint-120832",
+              "--episodes",
+              "160",
+              "--seed",
+              "4200",
+              "--artifact",
+              "campaigns/evaluations/1ae27a27-6880-4ca6-9d50-e6498e771cb7/python-module-M22-2-i13-t3-residual-margin.json"
+            ],
+            "artifact": "campaigns/evaluations/1ae27a27-6880-4ca6-9d50-e6498e771cb7/python-module-M22-2-i13-t3-residual-margin.json",
+            "instrument": "python_module",
+            "label": "I13 T3 matched control",
+            "module": "robot_learning.lab.residual_margin"
+          }
+        ],
+        "rationale": "M19 found identical matched episode outcomes but did not expose arrival-speed or retention-margin values. Measure both candidates from their durable runtime-complete checkpoints on the same 160-seed panel to determine whether the intervention changed the proposed braking mechanism."
+      },
+      "result": {
+        "error": "robot_learning.lab.residual_margin failed:\n\nTraceback (most recent call last):\n  File \"<frozen runpy>\", line 203, in _run_module_as_main\n  File \"<frozen runpy>\", line 88, in _run_code\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\residual_margin.py\", line 378, in <module>\n    main()\n    ~~~~^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\residual_margin.py\", line 372, in main\n    json.dumps(measure(args.candidate, args.episodes, args.seed), indent=2) + \"\\n\",\n               ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\residual_margin.py\", line 180, in measure\n    runtime = load_runtime(candidate)\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\contracts\\policy_runtime.py\", line 181, in load_runtime\n    return PolicyRuntime(validate_runtime_files(model_path), model_path, algorithm)\n                         ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\contracts\\policy_runtime.py\", line 94, in validate_runtime_files\n    raise ValueError(\n    ...<2 lines>...\n    )\nValueError: Missing campaigns\\checkpoints\\candidates\\1ae27a27-6880-4ca6-9d50-e6498e771cb7\\t15\\policy_runtime.pkl. Legacy policies require explicit migration from their historical scientific code; current observations must not be substituted.\n",
+        "status": "failed"
+      },
+      "session_id": "S27",
+      "status": "failed",
+      "superseded_by": "M23",
+      "supersedes": "M21"
     }
   ],
   "pending_operation": {
@@ -20607,15 +20660,15 @@
         {
           "args": [
             "--candidate",
-            "campaigns/checkpoints/candidates/1ae27a27-6880-4ca6-9d50-e6498e771cb7/t15/checkpoint-120832",
+            "campaigns/checkpoints/candidates/1ae27a27-6880-4ca6-9d50-e6498e771cb7/t15/checkpoint-120832/model.zip",
             "--episodes",
             "160",
             "--seed",
             "4200",
             "--artifact",
-            "campaigns/evaluations/1ae27a27-6880-4ca6-9d50-e6498e771cb7/python-module-M22-1-i13-t15-residual-margin.json"
+            "campaigns/evaluations/1ae27a27-6880-4ca6-9d50-e6498e771cb7/python-module-M23-1-i13-t15-residual-margin.json"
           ],
-          "artifact": "campaigns/evaluations/1ae27a27-6880-4ca6-9d50-e6498e771cb7/python-module-M22-1-i13-t15-residual-margin.json",
+          "artifact": "campaigns/evaluations/1ae27a27-6880-4ca6-9d50-e6498e771cb7/python-module-M23-1-i13-t15-residual-margin.json",
           "instrument": "python_module",
           "label": "I13 T15 pre-arrival velocity shaping",
           "module": "robot_learning.lab.residual_margin"
@@ -20623,15 +20676,15 @@
         {
           "args": [
             "--candidate",
-            "campaigns/checkpoints/candidates/1ae27a27-6880-4ca6-9d50-e6498e771cb7/t3/checkpoint-120832",
+            "campaigns/checkpoints/candidates/1ae27a27-6880-4ca6-9d50-e6498e771cb7/t3/checkpoint-120832/model.zip",
             "--episodes",
             "160",
             "--seed",
             "4200",
             "--artifact",
-            "campaigns/evaluations/1ae27a27-6880-4ca6-9d50-e6498e771cb7/python-module-M22-2-i13-t3-residual-margin.json"
+            "campaigns/evaluations/1ae27a27-6880-4ca6-9d50-e6498e771cb7/python-module-M23-2-i13-t3-residual-margin.json"
           ],
-          "artifact": "campaigns/evaluations/1ae27a27-6880-4ca6-9d50-e6498e771cb7/python-module-M22-2-i13-t3-residual-margin.json",
+          "artifact": "campaigns/evaluations/1ae27a27-6880-4ca6-9d50-e6498e771cb7/python-module-M23-2-i13-t3-residual-margin.json",
           "instrument": "python_module",
           "label": "I13 T3 matched control",
           "module": "robot_learning.lab.residual_margin"
@@ -20698,7 +20751,7 @@
       "task_reference_contract": null
     },
     "failure": null,
-    "id": "M22",
+    "id": "M23",
     "inquiry_id": "I13",
     "kind": "measurement",
     "progress": "accepted",
@@ -20709,15 +20762,15 @@
           {
             "args": [
               "--candidate",
-              "campaigns/checkpoints/candidates/1ae27a27-6880-4ca6-9d50-e6498e771cb7/t15/checkpoint-120832",
+              "campaigns/checkpoints/candidates/1ae27a27-6880-4ca6-9d50-e6498e771cb7/t15/checkpoint-120832/model.zip",
               "--episodes",
               "160",
               "--seed",
               "4200",
               "--artifact",
-              "campaigns/evaluations/1ae27a27-6880-4ca6-9d50-e6498e771cb7/python-module-M22-1-i13-t15-residual-margin.json"
+              "campaigns/evaluations/1ae27a27-6880-4ca6-9d50-e6498e771cb7/python-module-M23-1-i13-t15-residual-margin.json"
             ],
-            "artifact": "campaigns/evaluations/1ae27a27-6880-4ca6-9d50-e6498e771cb7/python-module-M22-1-i13-t15-residual-margin.json",
+            "artifact": "campaigns/evaluations/1ae27a27-6880-4ca6-9d50-e6498e771cb7/python-module-M23-1-i13-t15-residual-margin.json",
             "instrument": "python_module",
             "label": "I13 T15 pre-arrival velocity shaping",
             "module": "robot_learning.lab.residual_margin"
@@ -20725,26 +20778,26 @@
           {
             "args": [
               "--candidate",
-              "campaigns/checkpoints/candidates/1ae27a27-6880-4ca6-9d50-e6498e771cb7/t3/checkpoint-120832",
+              "campaigns/checkpoints/candidates/1ae27a27-6880-4ca6-9d50-e6498e771cb7/t3/checkpoint-120832/model.zip",
               "--episodes",
               "160",
               "--seed",
               "4200",
               "--artifact",
-              "campaigns/evaluations/1ae27a27-6880-4ca6-9d50-e6498e771cb7/python-module-M22-2-i13-t3-residual-margin.json"
+              "campaigns/evaluations/1ae27a27-6880-4ca6-9d50-e6498e771cb7/python-module-M23-2-i13-t3-residual-margin.json"
             ],
-            "artifact": "campaigns/evaluations/1ae27a27-6880-4ca6-9d50-e6498e771cb7/python-module-M22-2-i13-t3-residual-margin.json",
+            "artifact": "campaigns/evaluations/1ae27a27-6880-4ca6-9d50-e6498e771cb7/python-module-M23-2-i13-t3-residual-margin.json",
             "instrument": "python_module",
             "label": "I13 T3 matched control",
             "module": "robot_learning.lab.residual_margin"
           }
         ],
-        "rationale": "M19 found identical matched episode outcomes but did not expose arrival-speed or retention-margin values. Measure both candidates from their durable runtime-complete checkpoints on the same 160-seed panel to determine whether the intervention changed the proposed braking mechanism."
+        "rationale": "M19 found identical matched episode outcomes but did not expose arrival-speed or retention-margin values. Use the historical runtime-complete model.zip candidate convention on the same 160-seed panel to determine whether the intervention changed the proposed braking mechanism."
       }
     },
-    "request_fingerprint": "ed1d01797254c6e990052c5d6fcc9e317fea6352e3ee371cdb2bcf20a556d04f",
+    "request_fingerprint": "247c3c05c87a1ae8bea693ed410b30628904bce908fd95a6edce3b375f19c046",
     "session_id": "S27",
-    "supersedes": "M21"
+    "supersedes": "M22"
   },
   "pi_checkpoint": {
     "candidates_and_roles": "T3:checkpoint-120832 remains the strongest evidence-backed development candidate at 153/160 successes, 157 first reaches, and four hold interruptions. T14:checkpoint-120832 remains rejected for the tested radial braking recipe at 149/160 successes. No working, best-known, or retained role is assigned.",
