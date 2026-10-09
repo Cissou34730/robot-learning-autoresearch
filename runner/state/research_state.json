@@ -1,16 +1,5 @@
 {
-  "active_inquiry": {
-    "closure_condition": "Close when completed development evidence under preserved uniform official target coverage either demonstrates at least 98% success with preserved 40/40 inner-band performance and identifies whether residual failures are approach-velocity/hold-phase failures, or shows that the representation route causes broad positive-margin non-reaching or renewed inner-band loss and therefore redirects the campaign to another goal-linked capability.",
-    "goal_connection": "The best measured candidate reaches 150 of 160 development episodes (93.75%), leaving a 6.25 percentage-point gap to the 98% objective. T1 diagnostics identify branch/limit-aligned non-reaching as the dominant observed failure class, while hold instability is a smaller but consequential secondary class. Resolving whether a representation can improve reachability without sacrificing the 40/40 inner-band behavior directly determines whether the campaign can reach at least 196 of 200 official successes.",
-    "handoff_conclusion": "M1 established substantial transient actuation authority and at least one feasible analytic IK solution for every sampled official target; 64 of 576 grid targets had only one feasible branch. T1 trained on the full official radius range and M2 measured 150/160 successes (93.75%), including 40/40 in the 6-10 cm bin. M3 diagnosed seven T1 failures with negative nearest-branch limit margin, supporting branch/limit-sensitive non-reaching as the dominant observed class, and two post-reach failures with high first-reach speed and repeated hold interruptions, supporting a secondary stabilization mechanism. T2's aggressive branch/limit-aware sampler and T3's explicit margin/feasibility features both caused broad recipe-specific learnability collapse; neither result invalidates branch or representation methods generally. I4 tested a minimal previous-action history representation under preserved T1 coverage, reward, PPO, and hold semantics. M7 measured 73/160 successes versus T1's 150/160 on identical seeds, with zero candidate wins across 77 discordant episodes. T4 diagnostics found 86/87 failures without first reach, 76 positive-margin failures, one post-reach failure, and 23/40 inner-band successes. This rejects the tested history recipe as a route to stabilization or reachability improvement, while leaving other velocity-shaping designs unresolved.",
-    "handoff_question": "Can a less disruptive branch/trajectory representation, while preserving T1's uniform official target coverage, raise learned-policy success to at least 98% without losing inner-band performance, and are residual failures then dominated by approach velocity/hold-phase instability?",
-    "handoff_source_session_id": "S9",
-    "id": "I5",
-    "opened_in_session": "S10",
-    "question": "Can a less disruptive branch/trajectory representation, while preserving T1's uniform official target coverage, raise learned-policy success to at least 98% without losing inner-band performance, and are residual failures then dominated by approach velocity/hold-phase instability?",
-    "rationale": "M1 establishes feasible analytic IK solutions across the sampled official targets, and T1 provides the strongest measured baseline with 150/160 successes and 40/40 inner-band successes. M3 links seven T1 failures to negative nearest-branch limit margin and two to high first-reach speed with repeated hold interruptions. T2 and T3 show that aggressive branch/limit-aware sampling and explicit feasibility features can collapse learnability, but do not invalidate less disruptive representations. T4's previous-action history recipe is a bounded negative result: it fell to 73/160, with 86/87 failures before first reach and loss of inner-band performance. The unresolved scientific distinction is therefore whether branch or trajectory information can be exposed without reproducing that learnability collapse, after which the residual failure mechanism can be discriminated by approach and hold diagnostics.",
-    "reframes": []
-  },
+  "active_inquiry": null,
   "campaign": {
     "base_commit": "4e87f6053469bb6648d355bc03a7a70faa91f33f",
     "id": "79395c88-afcd-40f0-a644-16ca95368c28",
@@ -4117,7 +4106,7 @@
     }
   },
   "counters": {
-    "event": 21,
+    "event": 22,
     "inquiry": 5,
     "measurement": 9,
     "session": 11,
@@ -10091,9 +10080,63 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-09T14:35:09Z",
+      "error": null,
+      "id": "E22",
+      "inquiry_id": "I5",
+      "kind": "inquiry",
+      "request": {
+        "action": "close",
+        "outcome": "limited negative: the tested continuous endpoint-velocity representation does not provide a viable route toward the 98% goal under preserved T1 coverage.",
+        "reason": "M8 measured T5 at 107/160 and 108/160 successes for the peak-reward and terminal checkpoints, versus T1 at 150/160 on identical seeds. M9 mechanism diagnostics for the terminal T5 checkpoint found 49 of 52 failures without first reach, 48 failures with nonnegative terminal nearest-branch limit margin, and only 28/40 successes in the 6-10 cm inner band; T1 had 7/10 failures without first reach, 3 nonnegative-margin failures, and 40/40 inner-band successes. The paired loss and diagnostic tradeoff satisfy I5's closure condition: this specific less-disruptive trajectory representation causes broad positive-margin non-reaching and renewed inner-band loss. Its three post-reach failures do not establish a dominant hold-instability mechanism. Close I5 and redirect the campaign to another goal-linked capability rather than continuing this representation route."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I5",
+        "outcome": "limited negative: the tested continuous endpoint-velocity representation does not provide a viable route toward the 98% goal under preserved T1 coverage.",
+        "reason": "M8 measured T5 at 107/160 and 108/160 successes for the peak-reward and terminal checkpoints, versus T1 at 150/160 on identical seeds. M9 mechanism diagnostics for the terminal T5 checkpoint found 49 of 52 failures without first reach, 48 failures with nonnegative terminal nearest-branch limit margin, and only 28/40 successes in the 6-10 cm inner band; T1 had 7/10 failures without first reach, 3 nonnegative-margin failures, and 40/40 inner-band successes. The paired loss and diagnostic tradeoff satisfy I5's closure condition: this specific less-disruptive trajectory representation causes broad positive-margin non-reaching and renewed inner-band loss. Its three post-reach failures do not establish a dominant hold-instability mechanism. Close I5 and redirect the campaign to another goal-linked capability rather than continuing this representation route.",
+        "status": "completed"
+      },
+      "session_id": "S11",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "close",
+        "inquiry_id": "I5",
+        "outcome": "limited negative: the tested continuous endpoint-velocity representation does not provide a viable route toward the 98% goal under preserved T1 coverage.",
+        "reason": "M8 measured T5 at 107/160 and 108/160 successes for the peak-reward and terminal checkpoints, versus T1 at 150/160 on identical seeds. M9 mechanism diagnostics for the terminal T5 checkpoint found 49 of 52 failures without first reach, 48 failures with nonnegative terminal nearest-branch limit margin, and only 28/40 successes in the 6-10 cm inner band; T1 had 7/10 failures without first reach, 3 nonnegative-margin failures, and 40/40 inner-band successes. The paired loss and diagnostic tradeoff satisfy I5's closure condition: this specific less-disruptive trajectory representation causes broad positive-margin non-reaching and renewed inner-band loss. Its three post-reach failures do not establish a dominant hold-instability mechanism. Close I5 and redirect the campaign to another goal-linked capability rather than continuing this representation route."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I5",
+        "outcome": "limited negative: the tested continuous endpoint-velocity representation does not provide a viable route toward the 98% goal under preserved T1 coverage.",
+        "reason": "M8 measured T5 at 107/160 and 108/160 successes for the peak-reward and terminal checkpoints, versus T1 at 150/160 on identical seeds. M9 mechanism diagnostics for the terminal T5 checkpoint found 49 of 52 failures without first reach, 48 failures with nonnegative terminal nearest-branch limit margin, and only 28/40 successes in the 6-10 cm inner band; T1 had 7/10 failures without first reach, 3 nonnegative-margin failures, and 40/40 inner-band successes. The paired loss and diagnostic tradeoff satisfy I5's closure condition: this specific less-disruptive trajectory representation causes broad positive-margin non-reaching and renewed inner-band loss. Its three post-reach failures do not establish a dominant hold-instability mechanism. Close I5 and redirect the campaign to another goal-linked capability rather than continuing this representation route.",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E22",
+    "inquiry_id": "I5",
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "close",
+        "outcome": "limited negative: the tested continuous endpoint-velocity representation does not provide a viable route toward the 98% goal under preserved T1 coverage.",
+        "reason": "M8 measured T5 at 107/160 and 108/160 successes for the peak-reward and terminal checkpoints, versus T1 at 150/160 on identical seeds. M9 mechanism diagnostics for the terminal T5 checkpoint found 49 of 52 failures without first reach, 48 failures with nonnegative terminal nearest-branch limit margin, and only 28/40 successes in the 6-10 cm inner band; T1 had 7/10 failures without first reach, 3 nonnegative-margin failures, and 40/40 inner-band successes. The paired loss and diagnostic tradeoff satisfy I5's closure condition: this specific less-disruptive trajectory representation causes broad positive-margin non-reaching and renewed inner-band loss. Its three post-reach failures do not establish a dominant hold-instability mechanism. Close I5 and redirect the campaign to another goal-linked capability rather than continuing this representation route."
+      }
+    },
+    "request_fingerprint": "65ff764099f48595575a15c62329a5bd1919d3b19209648af8adddb349c507f8",
+    "session_id": "S11",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T1:checkpoint-120832 remains the strongest measured development candidate at 93.75% with 40/40 inner-band successes, but has no assigned working, best-known, or retained role because it is below the goal and lacks a protected assessment. T2:checkpoint-120832, T3:checkpoint-120832, and T4:checkpoint-120832 remain rejected as viable routes based on their paired development results and diagnostics. No candidate has a role.",
     "completed_operations": [
@@ -10146,7 +10189,8 @@
       "E21",
       "T5",
       "M8",
-      "M9"
+      "M9",
+      "E22"
     ],
     "scientific_parent_commit": "353799272fc0ecddb4faefbe40f38c3793d567d4"
   },
