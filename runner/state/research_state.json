@@ -351,47 +351,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "open",
-        "inquiry": {
-          "closure_condition": "Close when completed matched candidate evidence includes full-annulus success and trajectory diagnostics that classify failures by branch validity, joint-limit margin, first-entry velocity, settling, and hold interruptions, and supports a bounded positive, negative, limited, or inconclusive conclusion about the dominant failure class and the PI-owned capability to pursue next. If the evidence shows neither class can be ranked under the tested recipe, preserve that limitation explicitly and redirect the inquiry to the most decision-relevant missing evidence.",
-          "goal_connection": "The human goal requires at least 196 of 200 official episodes to complete an uninterrupted 2 second hold. Resolving whether learned failures arise mainly from branch and joint-limit coverage or from residual-velocity instability determines whether the next intervention should target trajectory and geometry management, stabilization and temporal control, or their combination.",
-          "handoff_conclusion": "M1 completed the planned candidate-free plant and branch measurement. Observed facts: the loaded simulator uses a 0.002 s integration step, 10-step action hold (0.020 s), integrator code 0, explicit derived body masses and inertias, 0.5 joint damping, 0.01 armature, and 5:1 actuator gear. The 256-entry branch catalog has near-zero forward-kinematic residuals, but exact geometric solutions often violate the +/-170 degree joint limits: for example, at radius 0.06 m and target angle -180 degrees the open branch has -66.25 degrees minimum margin while the folded branch has +19.93 degrees; at radius 0.20 m and angle +157.5 degrees the folded branch has -9.83 degrees while the open branch has +34.83 degrees. Thus the initial model's claim that the annulus has multiple physical solutions is geometrically supported but its implication that both branches are feasible across the annulus is contradicted; at least one branch must be selected with limit awareness, while reachability itself is not disproven. The pulse trials support the hold-dynamics concern: one full-control-period pulse followed by zero control produced 31.7 mm post-pulse end-effector travel from the straight reset, 28.7 mm at a 0.20 m target configuration, and 8.35 mm at representative 0.06 m configurations, with peak end-effector speeds up to 1.19 m/s. These excursions are comparable to or larger than the 10 mm tolerance, so braking and low-velocity regulation remain a credible dominant mechanism. M1 therefore supports continuing a combined route: train and measure over the full official annulus while explicitly diagnosing branch validity, limit margin, first-entry velocity, settling, and hold interruptions. M1 does not reveal which mechanism dominates learned-policy failures because no policy was exercised, and its local pulse response does not establish protected-evaluator semantics.",
-          "handoff_question": "Under the current simulator semantics, are failures toward 98% success driven primarily by full-annulus branch and joint-limit coverage or by residual-velocity hold instability, and which PI-owned policy/training capability resolves the dominant failure class?",
-          "handoff_source_session_id": "S1",
-          "id": "I1",
-          "opened_in_session": "S2",
-          "question": "Under the current simulator semantics, are failures toward 98% success driven primarily by full-annulus branch and joint-limit coverage or by residual-velocity hold instability, and which PI-owned policy/training capability resolves the dominant failure class?",
-          "rationale": "M1 established loaded-model timing and dynamics facts, exact geometric solutions, and branch-dependent joint-limit violations, while pulse responses showed post-command travel comparable to or exceeding the 1 cm tolerance. These observations support both mechanisms but do not identify policy failures because no learned candidate was exercised. The proposed first policy trajectory panel is therefore not yet evidence for either explanation; this inquiry obtains and interprets that missing candidate evidence before changing the learning method.",
-          "reframes": []
-        }
-      },
-      "result": {
-        "action": "open",
-        "inquiry_id": "I1",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E2",
-    "inquiry_id": null,
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "open",
-        "closure_condition": "Close when completed matched candidate evidence includes full-annulus success and trajectory diagnostics that classify failures by branch validity, joint-limit margin, first-entry velocity, settling, and hold interruptions, and supports a bounded positive, negative, limited, or inconclusive conclusion about the dominant failure class and the PI-owned capability to pursue next. If the evidence shows neither class can be ranked under the tested recipe, preserve that limitation explicitly and redirect the inquiry to the most decision-relevant missing evidence.",
-        "goal_connection": "The human goal requires at least 196 of 200 official episodes to complete an uninterrupted 2 second hold. Resolving whether learned failures arise mainly from branch and joint-limit coverage or from residual-velocity instability determines whether the next intervention should target trajectory and geometry management, stabilization and temporal control, or their combination.",
-        "question": "Under the current simulator semantics, are failures toward 98% success driven primarily by full-annulus branch and joint-limit coverage or by residual-velocity hold instability, and which PI-owned policy/training capability resolves the dominant failure class?",
-        "rationale": "M1 established loaded-model timing and dynamics facts, exact geometric solutions, and branch-dependent joint-limit violations, while pulse responses showed post-command travel comparable to or exceeding the 1 cm tolerance. These observations support both mechanisms but do not identify policy failures because no learned candidate was exercised. The proposed first policy trajectory panel is therefore not yet evidence for either explanation; this inquiry obtains and interprets that missing candidate evidence before changing the learning method."
-      }
-    },
-    "request_fingerprint": "be0339be67b320c498192a8417f97c5c73e4572ec86be467811d74cb6d8a95ab",
-    "session_id": "S2",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "No training candidate exists. Working, best-known, and retained roles remain empty.",
     "completed_operations": [
