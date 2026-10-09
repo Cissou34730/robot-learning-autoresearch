@@ -1,16 +1,5 @@
 {
-  "active_inquiry": {
-    "closure_condition": "Close when matched development evidence from an inner-radius training intervention is available with radius-controlled success, first_reach_step, max_held_steps, hold_interruptions, timeout status, target angle, and branch or terminal geometry, and that evidence establishes whether coverage materially improves complete-hold success or whether persistent failures redirect the route toward branch- or angle-specific trajectory control. A limited or inconclusive result is sufficient if the diagnostics do not discriminate these alternatives.",
-    "goal_connection": "The human goal requires at least 196 of 200 official-distribution episodes to complete an uninterrupted 100-step hold. The only evaluated candidate achieved 110 of 160 development successes, with failures concentrated in the inner-radius bins, so resolving whether coverage expansion improves acquisition is necessary before selecting a candidate for official assessment.",
-    "handoff_conclusion": "M1 established high actuation authority and substantial residual-motion risk in bounded plant probes, but did not establish the first learned-policy bottleneck. T1 training produced candidates, while its learning statistics are not development evidence. M2 evaluated T1:checkpoint-120832 over 160 development episodes: 118 first reached tolerance, 110 completed the hold, and 8 reached tolerance but failed the complete hold. Success was 10/40 at 6-10 cm, 37/53 at 10-14 cm, 37/39 at 14-18 cm, and 26/28 at 18-20 cm. This supports inner-radius acquisition as the leading route hypothesis, not as a proven cause, because radius composition was uncontrolled and M2 recorded no elbow-branch, terminal-joint, or equivalent geometry. The hold-specific failures were fewer than acquisition failures, but this limited attribution does not reject stabilization as a future requirement. E6 opened I2 to test the coverage hypothesis while preserving branch- and angle-dependent trajectory failure as a competing explanation.",
-    "handoff_question": "Can expanding training to the official inner-radius regime raise complete-hold success toward the 98% goal, and do the remaining failures reveal a branch- or angle-dependent acquisition mechanism?",
-    "handoff_source_session_id": "S4",
-    "id": "I2",
-    "opened_in_session": "S4",
-    "question": "Can expanding training to the official inner-radius regime raise complete-hold success toward the 98% goal, and do the remaining failures reveal a branch- or angle-dependent acquisition mechanism?",
-    "rationale": "M2 supports inner-radius acquisition as the leading observed failure pattern, but its radius composition was uncontrolled and it recorded no elbow-branch, terminal-joint, or equivalent geometry. Therefore the inherited interpretation should remain a route hypothesis rather than a causal conclusion: this inquiry tests the coverage change while preserving branch- and angle-dependent acquisition as a competing explanation.",
-    "reframes": []
-  },
+  "active_inquiry": null,
   "campaign": {
     "base_commit": "5a0ec158aa0741306d5f825a3ec7db8176a3ff13",
     "id": "339736e0-5583-4bc4-8729-5023fc3077b7",
@@ -1658,7 +1647,7 @@
     }
   },
   "counters": {
-    "event": 7,
+    "event": 8,
     "inquiry": 2,
     "measurement": 3,
     "session": 5,
@@ -3137,9 +3126,63 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-09T22:50:43Z",
+      "error": null,
+      "id": "E8",
+      "inquiry_id": "I2",
+      "kind": "inquiry",
+      "request": {
+        "action": "close",
+        "outcome": "limited",
+        "reason": "M3 closes I2 with a limited result. Matched development evidence showed the inner-radius training intervention improved complete-hold success from 110/160 (68.75%) for T1 to 150/160 (93.75%) for T2, with 43 paired wins versus 3 and the required radius, angle, acquisition, hold, timeout, terminal-joint, and IK-branch diagnostics recorded. T2's ten failures comprised eight episodes that never reached tolerance and two episodes that reached tolerance but could not sustain the hold; their target radii ranged across approximately 10.7-18.8 cm rather than isolating the former inner-radius deficit. This supports continuing coverage as a beneficial component but does not establish that coverage alone reaches the 98% goal. Terminal branch diagnostics were available, but the endpoint snapshots do not establish branch selection as the sole mechanism. The remaining goal-relevant route is angle- and trajectory-specific acquisition and stabilization, with branch geometry retained as an attribution variable rather than a proven cause."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I2",
+        "outcome": "limited",
+        "reason": "M3 closes I2 with a limited result. Matched development evidence showed the inner-radius training intervention improved complete-hold success from 110/160 (68.75%) for T1 to 150/160 (93.75%) for T2, with 43 paired wins versus 3 and the required radius, angle, acquisition, hold, timeout, terminal-joint, and IK-branch diagnostics recorded. T2's ten failures comprised eight episodes that never reached tolerance and two episodes that reached tolerance but could not sustain the hold; their target radii ranged across approximately 10.7-18.8 cm rather than isolating the former inner-radius deficit. This supports continuing coverage as a beneficial component but does not establish that coverage alone reaches the 98% goal. Terminal branch diagnostics were available, but the endpoint snapshots do not establish branch selection as the sole mechanism. The remaining goal-relevant route is angle- and trajectory-specific acquisition and stabilization, with branch geometry retained as an attribution variable rather than a proven cause.",
+        "status": "completed"
+      },
+      "session_id": "S5",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "close",
+        "inquiry_id": "I2",
+        "outcome": "limited",
+        "reason": "M3 closes I2 with a limited result. Matched development evidence showed the inner-radius training intervention improved complete-hold success from 110/160 (68.75%) for T1 to 150/160 (93.75%) for T2, with 43 paired wins versus 3 and the required radius, angle, acquisition, hold, timeout, terminal-joint, and IK-branch diagnostics recorded. T2's ten failures comprised eight episodes that never reached tolerance and two episodes that reached tolerance but could not sustain the hold; their target radii ranged across approximately 10.7-18.8 cm rather than isolating the former inner-radius deficit. This supports continuing coverage as a beneficial component but does not establish that coverage alone reaches the 98% goal. Terminal branch diagnostics were available, but the endpoint snapshots do not establish branch selection as the sole mechanism. The remaining goal-relevant route is angle- and trajectory-specific acquisition and stabilization, with branch geometry retained as an attribution variable rather than a proven cause."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I2",
+        "outcome": "limited",
+        "reason": "M3 closes I2 with a limited result. Matched development evidence showed the inner-radius training intervention improved complete-hold success from 110/160 (68.75%) for T1 to 150/160 (93.75%) for T2, with 43 paired wins versus 3 and the required radius, angle, acquisition, hold, timeout, terminal-joint, and IK-branch diagnostics recorded. T2's ten failures comprised eight episodes that never reached tolerance and two episodes that reached tolerance but could not sustain the hold; their target radii ranged across approximately 10.7-18.8 cm rather than isolating the former inner-radius deficit. This supports continuing coverage as a beneficial component but does not establish that coverage alone reaches the 98% goal. Terminal branch diagnostics were available, but the endpoint snapshots do not establish branch selection as the sole mechanism. The remaining goal-relevant route is angle- and trajectory-specific acquisition and stabilization, with branch geometry retained as an attribution variable rather than a proven cause.",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E8",
+    "inquiry_id": "I2",
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "close",
+        "outcome": "limited",
+        "reason": "M3 closes I2 with a limited result. Matched development evidence showed the inner-radius training intervention improved complete-hold success from 110/160 (68.75%) for T1 to 150/160 (93.75%) for T2, with 43 paired wins versus 3 and the required radius, angle, acquisition, hold, timeout, terminal-joint, and IK-branch diagnostics recorded. T2's ten failures comprised eight episodes that never reached tolerance and two episodes that reached tolerance but could not sustain the hold; their target radii ranged across approximately 10.7-18.8 cm rather than isolating the former inner-radius deficit. This supports continuing coverage as a beneficial component but does not establish that coverage alone reaches the 98% goal. Terminal branch diagnostics were available, but the endpoint snapshots do not establish branch selection as the sole mechanism. The remaining goal-relevant route is angle- and trajectory-specific acquisition and stabilization, with branch geometry retained as an attribution variable rather than a proven cause."
+      }
+    },
+    "request_fingerprint": "68e04b390718bfa6ff16401869b859ce8dc99bbe781ffdc2682c153fda611a0c",
+    "session_id": "S5",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T1 produced archived candidates, and T1:checkpoint-120832 is the only candidate with completed development evaluation. Its 68.75% development result is evidence-bearing but does not establish official performance. Working, best-known, and retained roles remain empty because no candidate has yet been justified for those roles.",
     "completed_operations": [
@@ -3183,7 +3226,8 @@
     "objective": "Advance I2 toward an evidence-supported answer to its scientific question: Can expanding training to the official inner-radius regime raise complete-hold success toward the 98% goal, and do the remaining failures reveal a branch- or angle-dependent acquisition mechanism? Before choosing the next action, compare the accumulated evidence with the closure condition. Choose the supported operation that best advances the bounded work; no operation is the default. Close the inquiry when the condition is met.",
     "operation_ids": [
       "T2",
-      "M3"
+      "M3",
+      "E8"
     ],
     "scientific_parent_commit": "b8ade19bbf0639a2b400a0833af5638a0aafbdc4"
   },
