@@ -12558,38 +12558,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I6",
-        "outcome": "limited negative",
-        "reason": "M10 provides a bounded negative answer for the tested slew-limited action interface. T6's high-reward preterminal checkpoint achieved 17/160 successes (10.625%) and its terminal checkpoint achieved 11/160 (6.875%), versus 150/160 (93.75%) for T1 on the identical official-distribution panel; the paired comparisons recorded zero T6 wins and 133 and 139 reference wins. The result establishes that this action smoothing recipe is not a viable route toward the 98% goal and that its training collapse was reflected in development behavior, so it must not be extended. However, the diagnostic artifacts returned only structure metadata without measurement values, and the aggregate summaries do not establish whether the lost performance was dominated by positive-margin non-reaching, renewed inner-band loss, or hold-phase instability. Therefore this closes I6 as a limited negative for the specific slew-limited controller, preserves the broader possibility of other low-disruption control methods, and explicitly leaves the mechanism split unresolved for the next goal-linked inquiry."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I6",
-        "outcome": "limited negative",
-        "reason": "M10 provides a bounded negative answer for the tested slew-limited action interface. T6's high-reward preterminal checkpoint achieved 17/160 successes (10.625%) and its terminal checkpoint achieved 11/160 (6.875%), versus 150/160 (93.75%) for T1 on the identical official-distribution panel; the paired comparisons recorded zero T6 wins and 133 and 139 reference wins. The result establishes that this action smoothing recipe is not a viable route toward the 98% goal and that its training collapse was reflected in development behavior, so it must not be extended. However, the diagnostic artifacts returned only structure metadata without measurement values, and the aggregate summaries do not establish whether the lost performance was dominated by positive-margin non-reaching, renewed inner-band loss, or hold-phase instability. Therefore this closes I6 as a limited negative for the specific slew-limited controller, preserves the broader possibility of other low-disruption control methods, and explicitly leaves the mechanism split unresolved for the next goal-linked inquiry.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E27",
-    "inquiry_id": "I6",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "limited negative",
-        "reason": "M10 provides a bounded negative answer for the tested slew-limited action interface. T6's high-reward preterminal checkpoint achieved 17/160 successes (10.625%) and its terminal checkpoint achieved 11/160 (6.875%), versus 150/160 (93.75%) for T1 on the identical official-distribution panel; the paired comparisons recorded zero T6 wins and 133 and 139 reference wins. The result establishes that this action smoothing recipe is not a viable route toward the 98% goal and that its training collapse was reflected in development behavior, so it must not be extended. However, the diagnostic artifacts returned only structure metadata without measurement values, and the aggregate summaries do not establish whether the lost performance was dominated by positive-margin non-reaching, renewed inner-band loss, or hold-phase instability. Therefore this closes I6 as a limited negative for the specific slew-limited controller, preserves the broader possibility of other low-disruption control methods, and explicitly leaves the mechanism split unresolved for the next goal-linked inquiry."
-      }
-    },
-    "request_fingerprint": "df7a32c6b410f7e7996483f5c2fd68a7a05100db347488fc19213a352a63b93d",
-    "session_id": "S13",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T1:checkpoint-120832 remains the strongest evidence-backed development candidate at 150/160 successes with 40/40 inner-band successes, but no candidate has an assigned working, best-known, or retained role because none meets the development threshold or has a protected assessment. T5:checkpoint-105472 and T5:checkpoint-120832 are rejected for I5 based on M8 and M9. T2, T3, and T4 remain rejected as recipe-specific negative routes. Opening I6 does not change candidate roles.",
     "completed_operations": [
