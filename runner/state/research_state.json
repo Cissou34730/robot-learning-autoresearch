@@ -25880,47 +25880,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "open",
-        "inquiry": {
-          "closure_condition": "Close when completed evidence establishes positive transfer at or above the 196/200-equivalent development threshold with 40/40 inner-band success and compatible first-reach, velocity, branch/limit and hold-interruption diagnostics, or when the best controller-imitation evidence remains materially below that threshold and persistent positive-margin non-reaching failures or other diagnostics redirect the campaign away from this acquisition route. If the result is aggregate-positive but the required diagnostics are contradictory or unavailable, retain the mechanism claim as unresolved.",
-          "goal_connection": "The human goal requires at least 196 uninterrupted-hold successes out of 200 under the full official radius and angular distribution. M17 established 160/160 same-interface computed-torque controllability, including 40/40 inner-band success, while M18's controller-derived PPO action-prior recipe remained at 153/160. Direct controller imitation is therefore a goal-linked capability test of whether the demonstrated control authority can be transferred to a learned policy rather than rediscovered through sparse acquisition.",
-          "handoff_conclusion": "M1 established substantial transient actuation authority and at least one feasible analytic IK branch for every sampled official target, with 64 of 576 grid targets having only one feasible branch. T1 measured 150/160 with 40/40 inner-band success; T8 and T9 improved the unchanged direct-action route to 153/160 while preserving 40/40 inner-band success, with residual reach and hold failures. M17 then established that the unchanged bounded action interface is controllable: computed-torque control achieved 160/160 across gain settings, including 93/93 inner-band success and no reach or hold interruptions. M18 showed that the tested controller-derived PPO action-prior recipe did not transfer that capability and remained at 153/160. T11's coupled phase/history/trajectory recipe measured 0/160; M20 found 150 failures before first reach, 10 after first reach with 134 interruptions, and nonnegative nearest-branch margins, establishing a bounded negative for that recipe rather than for policy methods generally. T12 separated static branch/limit context from trajectory timing and recovered a nonzero training signal, but M21 measured only 44/160, 20/40 inner-band success, 103/116 failures without first reach, and 13 post-reach failures with 13 interruptions. Of the 103 non-reaching failures, 95 had nonnegative nearest-branch limit margins. E48 therefore closed I11 with a limited negative: this max-margin static branch/limit observation contract is insufficient, while the dominant unresolved obstacle is learned acquisition or trajectory execution despite demonstrated same-interface controllability; hold stabilization remains secondary.",
-          "handoff_question": "Can controller-imitation training transfer the demonstrated same-interface computed-torque capability to a learned policy that achieves at least 196/200-equivalent uninterrupted-hold successes under uniform official coverage while preserving the 40/40 inner-band behavior?",
-          "handoff_source_session_id": "S23",
-          "id": "I12",
-          "opened_in_session": "S24",
-          "question": "Can controller-imitation training transfer the demonstrated same-interface computed-torque capability to a learned policy that achieves at least 196/200-equivalent uninterrupted-hold successes under uniform official coverage while preserving the 40/40 inner-band behavior?",
-          "rationale": "The unchanged bounded action interface is controllable by computed torque, so lack of physical authority is no longer the leading explanation. The learned candidates at 153/160 and the failed T11/T12 recipes do not distinguish poor PPO acquisition from failure to reproduce the controller trajectory, and training statistics do not establish candidate behavior. This inquiry keeps that distinction open and requires uniform coverage and uninterrupted-hold diagnostics so an aggregate result cannot be mistaken for transferred control behavior.",
-          "reframes": []
-        }
-      },
-      "result": {
-        "action": "open",
-        "inquiry_id": "I12",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E50",
-    "inquiry_id": null,
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "open",
-        "closure_condition": "Close when completed evidence establishes positive transfer at or above the 196/200-equivalent development threshold with 40/40 inner-band success and compatible first-reach, velocity, branch/limit and hold-interruption diagnostics, or when the best controller-imitation evidence remains materially below that threshold and persistent positive-margin non-reaching failures or other diagnostics redirect the campaign away from this acquisition route. If the result is aggregate-positive but the required diagnostics are contradictory or unavailable, retain the mechanism claim as unresolved.",
-        "goal_connection": "The human goal requires at least 196 uninterrupted-hold successes out of 200 under the full official radius and angular distribution. M17 established 160/160 same-interface computed-torque controllability, including 40/40 inner-band success, while M18's controller-derived PPO action-prior recipe remained at 153/160. Direct controller imitation is therefore a goal-linked capability test of whether the demonstrated control authority can be transferred to a learned policy rather than rediscovered through sparse acquisition.",
-        "question": "Can controller-imitation training transfer the demonstrated same-interface computed-torque capability to a learned policy that achieves at least 196/200-equivalent uninterrupted-hold successes under uniform official coverage while preserving the 40/40 inner-band behavior?",
-        "rationale": "The unchanged bounded action interface is controllable by computed torque, so lack of physical authority is no longer the leading explanation. The learned candidates at 153/160 and the failed T11/T12 recipes do not distinguish poor PPO acquisition from failure to reproduce the controller trajectory, and training statistics do not establish candidate behavior. This inquiry keeps that distinction open and requires uniform coverage and uninterrupted-hold diagnostics so an aggregate result cannot be mistaken for transferred control behavior."
-      }
-    },
-    "request_fingerprint": "f3a4d08e9297c3e38990d47e18a0ec59a84ddb23e7b6f9da356827e72b9b2ef8",
-    "session_id": "S24",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T8:checkpoint-60416 and T9:checkpoint-20480 remain the strongest measured learned candidates at 153/160 but have no protected working, best-known or retained role. T10:checkpoint-10240 and T10:checkpoint-120832 also measured 153/160 and are not promoted. T11:checkpoint-120832 is rejected at 0/160, and T12:checkpoint-120832 is rejected at 44/160 with 20/40 inner-band success. The M17 computed-torque controller is evidence of same-interface capability, not a learned candidate for the human goal. No candidate has an evidence-backed protected role.",
     "completed_operations": [
