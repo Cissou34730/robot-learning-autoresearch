@@ -108,3 +108,4 @@
 | T16 | training | I14 | completed |
 | M28 | measurement | I14 | completed |
 | E62 | inquiry | I14 | completed |
+| E63 | checkpoint | I14 | checkpointed |

@@ -13124,7 +13124,7 @@
     }
   },
   "counters": {
-    "event": 62,
+    "event": 63,
     "inquiry": 14,
     "measurement": 28,
     "session": 30,
@@ -13133,7 +13133,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -35297,57 +35297,169 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-09T17:23:49Z",
+      "error": null,
+      "id": "E63",
+      "inquiry_id": "I14",
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "No learned candidate has an evidence-backed working, best-known, or retained role. T16 is the strongest recent learned candidate by M28 aggregate success at 192/200, but it is not goal-adequate and loses three inner-band episodes relative to T1. T1 remains the inner-band reference at 113/113 on M27 and M28. T15 is an experimental candidate at 190/200 on M27. M17 remains model-based capability evidence rather than a learned candidate role.",
+        "completed_operations": [
+          "T15",
+          "M26",
+          "M27",
+          "T16",
+          "M28",
+          "E62"
+        ],
+        "cumulative_resource_use": "The campaign has used M1 characterization; sixteen 120000-step training allocations T1-T16, each completing at the algorithm rollout boundary; development and diagnostic measurements through M28; and inquiry/checkpoint events through E62. No protected official assessment has been performed.",
+        "current_goal_gap": "No learned candidate meets the 196/200-equivalent development threshold. M27 measured T15 at 190/200 with 107/113 inner-band successes. M28 measured T16 at 192/200 with 110/113 inner-band successes; the paired T1 reference reached 191/200 with 113/113 inner-band successes. No protected official assessment has been performed.",
+        "current_synthesis": "M23 and M24 showed that the smooth target-geometry observation was substantially worse than the restored T1 observation. M25 showed that extending its PPO horizon improved that route but remained far below the reference. M26 showed that restoring the original observation with a 2048-step horizon reached 156/160, but M27 exposed a 190/200 result with degraded inner-band coverage. T16 then replicated the original observation with the 1024-step horizon: M28 reached 192/200 and narrowly beat T1 in paired outcomes, but retained seven pre-reach failures, including two with positive nearest-branch limit margin, and reached only 110/113 inner-band successes; T1 had five post-reach failures and 113/113 inner-band successes. The tested PPO representation/horizon recipes therefore do not meet the goal or preserve the required inner-band behavior. This is a recipe-bounded limited negative: physical controllability, the direct-action interface, learned policies generally, and PPO generally remain unresolved rather than rejected.",
+        "decision_frontier": "The leading unresolved mechanism is learned acquisition under difficult target geometry: positive-margin pre-reach failures persist in both T15 and T16, while the T1 comparison shows that hold stabilization and inner-band coverage can also dominate the residual gap. The tested PPO observation and rollout-horizon combinations have reached a stable negative result without separating all observation aliasing, optimization, and stabilization causes. The next decision should therefore test a materially different acquisition or learning mechanism under the unchanged bounded direct-action interface. Evidence of at least 196/200 with complete inner-band success would justify protected assessment; persistent positive-margin pre-reach failures would support changing the acquisition representation or learning method; predominantly post-reach failures would redirect toward stabilization.",
+        "evidence_references": [
+          "M1",
+          "M17",
+          "M23",
+          "M24",
+          "M25",
+          "M26",
+          "M27",
+          "M28",
+          "E62"
+        ],
+        "human_goal_connection": "The human goal remains at least 196 uninterrupted-hold successes in the protected 200-episode assessment. I14 tested whether the learned-policy gap was caused by observation representation or PPO acquisition while preserving the bounded direct-action interface and inner-band behavior.",
+        "next_direction_or_closure": "I14 is closed as a limited negative for the tested PPO observation and rollout-horizon recipes. The next fresh inquiry should select between a materially different learning method and a materially different acquisition representation or mechanism, retaining the unchanged bounded direct-action interface and requiring the same full diagnostics before any protected official assessment. Do not infer that the physical system, direct actions, PPO, or learned policies generally are inadequate.",
+        "next_question": "Can a materially different learned acquisition method or acquisition mechanism overcome the residual positive-margin pre-reach and inner-band failures under the unchanged bounded direct-action interface, while preserving complete uninterrupted hold behavior, and what evidence distinguishes optimization limits from observation or phase-representation limits?"
+      },
+      "result": {
+        "session_id": "S30",
+        "status": "checkpointed"
+      },
+      "session_id": "S30",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
-  "pi_checkpoint": {
-    "candidates_and_roles": "No learned candidate has an evidence-backed working, best-known, or retained role. T1 remains the measured direct-action reference; T14 is an unassigned experimental candidate with 38.75% development success; M17 is model-based capability evidence rather than a learned candidate role.",
-    "completed_operations": [
-      "E60",
-      "T13",
-      "M23",
-      "M24",
-      "T14",
-      "M25"
-    ],
-    "cumulative_resource_use": "The campaign has used M1 characterization; fourteen 120000-step training allocations T1-T14, each completing at the algorithm rollout boundary; development and diagnostic measurements M2-M15 and M17-M25; and inquiry/checkpoint events through this I14 session. No protected official assessment has been performed.",
-    "current_goal_gap": "No learned candidate meets the 196/200-equivalent development threshold. T1 remains the strongest learned reference at 153/160 historically, while T14 reached only 62/160 (38.75%) and the protected official assessment has not been performed.",
-    "current_synthesis": "M23 and M24 reproducibly show that the T13 smooth target-geometry observation redesign is substantially worse than the restored T1 direct-action reference: 31.875% versus 93.75% on seed 4200 and 27.5% versus 95.0% on seed 4400, with no candidate wins and 99 and 108 discordant episodes respectively. This is a limited negative for that representation, not a rejection of learned policies. T14 kept that representation and changed only PPO rollout horizon from 1024 to 2048; its training checkpoints all had zero training success, but M25 measured 38.75% on a new uniform panel, an improvement over T13 that supports a contribution from PPO temporal credit assignment while remaining far below T1. The completed evaluation artifacts contain first-reach, hold, velocity, and terminal IK/limit diagnostic fields, but their values are not present in the compact evidence available here, so the failure mechanism cannot be classified as adequate-margin pre-reach or post-reach stabilization from aggregate outcomes. Physical and direct-action capability remain established by M1 and M17; the observation-versus-PPO distinction is narrowed but unresolved.",
-    "decision_frontier": "The unresolved distinction is whether T14's partial recovery reflects PPO credit assignment that can be extended to the 98% goal, or whether the smooth target-geometry representation remains the dominant acquisition bottleneck. The next discriminating evidence must expose the recorded T14/T1 first-reach, adequate-margin branch/limit, velocity, and hold-interruption values, or test a materially different representation or learning method under the unchanged bounded direct-action interface. Evidence of adequate-margin pre-reach failures would reject the tested representation-plus-horizon route as a limited negative; evidence of predominantly post-reach interruptions would redirect toward stabilization; a candidate near or above 196/200-equivalent with preserved inner-band success would justify goal-directed continuation.",
-    "evidence_references": [
-      "M1",
-      "M17",
-      "M23",
-      "M24",
-      "T13",
-      "T14",
-      "M25"
-    ],
-    "human_goal_connection": "The human goal requires at least 196 uninterrupted-hold successes in the protected 200-episode assessment. I14 tests whether the remaining learned-policy gap is caused by representation or PPO acquisition rather than physical or action-interface limits.",
-    "inquiry_id": "I14",
-    "next_direction_or_closure": "Continue I14. First obtain interpretable failure-geometry evidence for T14 and the matched T1 reference, because aggregate M25 results do not satisfy the mechanism discriminator. If those diagnostics confirm persistent adequate-margin pre-reach failure, treat the tested smooth representation under two PPO horizons as a limited negative and redirect to a materially different acquisition representation or learning method. If they show post-reach instability, prioritize hold stabilization. Do not request the protected official assessment until a learned candidate reaches the development threshold.",
-    "next_question": "Can a learned policy overcome the persistent adequate-margin pre-reach failures through a broader acquisition/representation redesign while preserving the direct-action interface and 40/40 inner-band behavior, and do controlled evidence distinguish observation/action representation limits from PPO optimization failure?",
-    "scientific_commit": "01b93272a5d3fb1a98f2264dea587c37397ed3c0",
-    "session_id": "S29"
-  },
-  "schema_version": 6,
-  "scientific_model": {
-    "commit": "594a6d7fd3c5662a0834e2909f1267462493c342",
-    "path": "pi_workspace/scientific_model.md",
-    "status": "ready"
-  },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "48a852c0747532933ff84990561c72452653e56d",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "No learned candidate has an evidence-backed working, best-known, or retained role. T16 is the strongest recent learned candidate by M28 aggregate success at 192/200, but it is not goal-adequate and loses three inner-band episodes relative to T1. T1 remains the inner-band reference at 113/113 on M27 and M28. T15 is an experimental candidate at 190/200 on M27. M17 remains model-based capability evidence rather than a learned candidate role.",
+        "completed_operations": [
+          "T15",
+          "M26",
+          "M27",
+          "T16",
+          "M28",
+          "E62"
+        ],
+        "cumulative_resource_use": "The campaign has used M1 characterization; sixteen 120000-step training allocations T1-T16, each completing at the algorithm rollout boundary; development and diagnostic measurements through M28; and inquiry/checkpoint events through E62. No protected official assessment has been performed.",
+        "current_goal_gap": "No learned candidate meets the 196/200-equivalent development threshold. M27 measured T15 at 190/200 with 107/113 inner-band successes. M28 measured T16 at 192/200 with 110/113 inner-band successes; the paired T1 reference reached 191/200 with 113/113 inner-band successes. No protected official assessment has been performed.",
+        "current_synthesis": "M23 and M24 showed that the smooth target-geometry observation was substantially worse than the restored T1 observation. M25 showed that extending its PPO horizon improved that route but remained far below the reference. M26 showed that restoring the original observation with a 2048-step horizon reached 156/160, but M27 exposed a 190/200 result with degraded inner-band coverage. T16 then replicated the original observation with the 1024-step horizon: M28 reached 192/200 and narrowly beat T1 in paired outcomes, but retained seven pre-reach failures, including two with positive nearest-branch limit margin, and reached only 110/113 inner-band successes; T1 had five post-reach failures and 113/113 inner-band successes. The tested PPO representation/horizon recipes therefore do not meet the goal or preserve the required inner-band behavior. This is a recipe-bounded limited negative: physical controllability, the direct-action interface, learned policies generally, and PPO generally remain unresolved rather than rejected.",
+        "decision_frontier": "The leading unresolved mechanism is learned acquisition under difficult target geometry: positive-margin pre-reach failures persist in both T15 and T16, while the T1 comparison shows that hold stabilization and inner-band coverage can also dominate the residual gap. The tested PPO observation and rollout-horizon combinations have reached a stable negative result without separating all observation aliasing, optimization, and stabilization causes. The next decision should therefore test a materially different acquisition or learning mechanism under the unchanged bounded direct-action interface. Evidence of at least 196/200 with complete inner-band success would justify protected assessment; persistent positive-margin pre-reach failures would support changing the acquisition representation or learning method; predominantly post-reach failures would redirect toward stabilization.",
+        "evidence_references": [
+          "M1",
+          "M17",
+          "M23",
+          "M24",
+          "M25",
+          "M26",
+          "M27",
+          "M28",
+          "E62"
+        ],
+        "human_goal_connection": "The human goal remains at least 196 uninterrupted-hold successes in the protected 200-episode assessment. I14 tested whether the learned-policy gap was caused by observation representation or PPO acquisition while preserving the bounded direct-action interface and inner-band behavior.",
+        "inquiry_id": "I14",
+        "next_direction_or_closure": "I14 is closed as a limited negative for the tested PPO observation and rollout-horizon recipes. The next fresh inquiry should select between a materially different learning method and a materially different acquisition representation or mechanism, retaining the unchanged bounded direct-action interface and requiring the same full diagnostics before any protected official assessment. Do not infer that the physical system, direct actions, PPO, or learned policies generally are inadequate.",
+        "next_question": "Can a materially different learned acquisition method or acquisition mechanism overcome the residual positive-margin pre-reach and inner-band failures under the unchanged bounded direct-action interface, while preserving complete uninterrupted hold behavior, and what evidence distinguishes optimization limits from observation or phase-representation limits?",
+        "session_id": "S30"
+      },
+      "presentation": {
+        "backend_session_id": "c3a10685-d34e-4dce-86ca-6a6ed0fc5d2e",
+        "campaign_id": "79395c88-afcd-40f0-a644-16ca95368c28",
+        "campaign_usage": "1h35m | 334.34 AIU | prompt 57.3m (87% cached) | output 370.6k",
+        "session_id": "S30",
+        "session_kind": "inquiry",
+        "session_usage": "6m06s | 23.07 AIU | prompt 4.6m (90% cached) | output 23.1k"
+      },
+      "result": {
+        "session_id": "S30",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "5a1168c06b1de27b4f1eafe8e9c4f19a83224f8a",
+      "scientific_manifest": [],
+      "scientific_paths": []
     },
-    "backend_session_id": "c3a10685-d34e-4dce-86ca-6a6ed0fc5d2e",
-    "id": "S30",
+    "failure": null,
+    "id": "E63",
     "inquiry_id": "I14",
-    "kind": "inquiry",
-    "objective": "Advance I14 toward an evidence-supported answer to its scientific question: Can a learned policy overcome the persistent adequate-margin pre-reach failures through a broader acquisition/representation redesign while preserving the direct-action interface and 40/40 inner-band behavior, and do controlled evidence distinguish observation/action representation limits from PPO optimization failure? Before choosing the next action, compare the accumulated evidence with the closure condition. Restate the unresolved distinction and choose the most decision-relevant available operation; no operation is the default. Close the inquiry when the condition is met.",
-    "operation_ids": [
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "No learned candidate has an evidence-backed working, best-known, or retained role. T16 is the strongest recent learned candidate by M28 aggregate success at 192/200, but it is not goal-adequate and loses three inner-band episodes relative to T1. T1 remains the inner-band reference at 113/113 on M27 and M28. T15 is an experimental candidate at 190/200 on M27. M17 remains model-based capability evidence rather than a learned candidate role.",
+        "completed_operations": [
+          "T15",
+          "M26",
+          "M27",
+          "T16",
+          "M28",
+          "E62"
+        ],
+        "cumulative_resource_use": "The campaign has used M1 characterization; sixteen 120000-step training allocations T1-T16, each completing at the algorithm rollout boundary; development and diagnostic measurements through M28; and inquiry/checkpoint events through E62. No protected official assessment has been performed.",
+        "current_goal_gap": "No learned candidate meets the 196/200-equivalent development threshold. M27 measured T15 at 190/200 with 107/113 inner-band successes. M28 measured T16 at 192/200 with 110/113 inner-band successes; the paired T1 reference reached 191/200 with 113/113 inner-band successes. No protected official assessment has been performed.",
+        "current_synthesis": "M23 and M24 showed that the smooth target-geometry observation was substantially worse than the restored T1 observation. M25 showed that extending its PPO horizon improved that route but remained far below the reference. M26 showed that restoring the original observation with a 2048-step horizon reached 156/160, but M27 exposed a 190/200 result with degraded inner-band coverage. T16 then replicated the original observation with the 1024-step horizon: M28 reached 192/200 and narrowly beat T1 in paired outcomes, but retained seven pre-reach failures, including two with positive nearest-branch limit margin, and reached only 110/113 inner-band successes; T1 had five post-reach failures and 113/113 inner-band successes. The tested PPO representation/horizon recipes therefore do not meet the goal or preserve the required inner-band behavior. This is a recipe-bounded limited negative: physical controllability, the direct-action interface, learned policies generally, and PPO generally remain unresolved rather than rejected.",
+        "decision_frontier": "The leading unresolved mechanism is learned acquisition under difficult target geometry: positive-margin pre-reach failures persist in both T15 and T16, while the T1 comparison shows that hold stabilization and inner-band coverage can also dominate the residual gap. The tested PPO observation and rollout-horizon combinations have reached a stable negative result without separating all observation aliasing, optimization, and stabilization causes. The next decision should therefore test a materially different acquisition or learning mechanism under the unchanged bounded direct-action interface. Evidence of at least 196/200 with complete inner-band success would justify protected assessment; persistent positive-margin pre-reach failures would support changing the acquisition representation or learning method; predominantly post-reach failures would redirect toward stabilization.",
+        "evidence_references": [
+          "M1",
+          "M17",
+          "M23",
+          "M24",
+          "M25",
+          "M26",
+          "M27",
+          "M28",
+          "E62"
+        ],
+        "human_goal_connection": "The human goal remains at least 196 uninterrupted-hold successes in the protected 200-episode assessment. I14 tested whether the learned-policy gap was caused by observation representation or PPO acquisition while preserving the bounded direct-action interface and inner-band behavior.",
+        "next_direction_or_closure": "I14 is closed as a limited negative for the tested PPO observation and rollout-horizon recipes. The next fresh inquiry should select between a materially different learning method and a materially different acquisition representation or mechanism, retaining the unchanged bounded direct-action interface and requiring the same full diagnostics before any protected official assessment. Do not infer that the physical system, direct actions, PPO, or learned policies generally are inadequate.",
+        "next_question": "Can a materially different learned acquisition method or acquisition mechanism overcome the residual positive-margin pre-reach and inner-band failures under the unchanged bounded direct-action interface, while preserving complete uninterrupted hold behavior, and what evidence distinguishes optimization limits from observation or phase-representation limits?"
+      }
+    },
+    "request_fingerprint": "c45213e76835b0eca777e81bb2eba0872ce20133a90150c2957e8caaa75b9acc",
+    "session_id": "S30",
+    "supersedes": null
+  },
+  "pi_checkpoint": {
+    "candidates_and_roles": "No learned candidate has an evidence-backed working, best-known, or retained role. T16 is the strongest recent learned candidate by M28 aggregate success at 192/200, but it is not goal-adequate and loses three inner-band episodes relative to T1. T1 remains the inner-band reference at 113/113 on M27 and M28. T15 is an experimental candidate at 190/200 on M27. M17 remains model-based capability evidence rather than a learned candidate role.",
+    "completed_operations": [
       "T15",
       "M26",
       "M27",
@@ -35355,7 +35467,34 @@
       "M28",
       "E62"
     ],
-    "scientific_parent_commit": "48a852c0747532933ff84990561c72452653e56d"
+    "cumulative_resource_use": "The campaign has used M1 characterization; sixteen 120000-step training allocations T1-T16, each completing at the algorithm rollout boundary; development and diagnostic measurements through M28; and inquiry/checkpoint events through E62. No protected official assessment has been performed.",
+    "current_goal_gap": "No learned candidate meets the 196/200-equivalent development threshold. M27 measured T15 at 190/200 with 107/113 inner-band successes. M28 measured T16 at 192/200 with 110/113 inner-band successes; the paired T1 reference reached 191/200 with 113/113 inner-band successes. No protected official assessment has been performed.",
+    "current_synthesis": "M23 and M24 showed that the smooth target-geometry observation was substantially worse than the restored T1 observation. M25 showed that extending its PPO horizon improved that route but remained far below the reference. M26 showed that restoring the original observation with a 2048-step horizon reached 156/160, but M27 exposed a 190/200 result with degraded inner-band coverage. T16 then replicated the original observation with the 1024-step horizon: M28 reached 192/200 and narrowly beat T1 in paired outcomes, but retained seven pre-reach failures, including two with positive nearest-branch limit margin, and reached only 110/113 inner-band successes; T1 had five post-reach failures and 113/113 inner-band successes. The tested PPO representation/horizon recipes therefore do not meet the goal or preserve the required inner-band behavior. This is a recipe-bounded limited negative: physical controllability, the direct-action interface, learned policies generally, and PPO generally remain unresolved rather than rejected.",
+    "decision_frontier": "The leading unresolved mechanism is learned acquisition under difficult target geometry: positive-margin pre-reach failures persist in both T15 and T16, while the T1 comparison shows that hold stabilization and inner-band coverage can also dominate the residual gap. The tested PPO observation and rollout-horizon combinations have reached a stable negative result without separating all observation aliasing, optimization, and stabilization causes. The next decision should therefore test a materially different acquisition or learning mechanism under the unchanged bounded direct-action interface. Evidence of at least 196/200 with complete inner-band success would justify protected assessment; persistent positive-margin pre-reach failures would support changing the acquisition representation or learning method; predominantly post-reach failures would redirect toward stabilization.",
+    "evidence_references": [
+      "M1",
+      "M17",
+      "M23",
+      "M24",
+      "M25",
+      "M26",
+      "M27",
+      "M28",
+      "E62"
+    ],
+    "human_goal_connection": "The human goal remains at least 196 uninterrupted-hold successes in the protected 200-episode assessment. I14 tested whether the learned-policy gap was caused by observation representation or PPO acquisition while preserving the bounded direct-action interface and inner-band behavior.",
+    "inquiry_id": "I14",
+    "next_direction_or_closure": "I14 is closed as a limited negative for the tested PPO observation and rollout-horizon recipes. The next fresh inquiry should select between a materially different learning method and a materially different acquisition representation or mechanism, retaining the unchanged bounded direct-action interface and requiring the same full diagnostics before any protected official assessment. Do not infer that the physical system, direct actions, PPO, or learned policies generally are inadequate.",
+    "next_question": "Can a materially different learned acquisition method or acquisition mechanism overcome the residual positive-margin pre-reach and inner-band failures under the unchanged bounded direct-action interface, while preserving complete uninterrupted hold behavior, and what evidence distinguishes optimization limits from observation or phase-representation limits?",
+    "scientific_commit": "5a1168c06b1de27b4f1eafe8e9c4f19a83224f8a",
+    "session_id": "S30"
   },
+  "schema_version": 6,
+  "scientific_model": {
+    "commit": "594a6d7fd3c5662a0834e2909f1267462493c342",
+    "path": "pi_workspace/scientific_model.md",
+    "status": "ready"
+  },
+  "scientific_session": null,
   "terminal_state": null
 }
