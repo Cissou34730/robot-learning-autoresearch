@@ -20,7 +20,7 @@
   },
   "candidates": {},
   "counters": {
-    "event": 2,
+    "event": 3,
     "inquiry": 1,
     "measurement": 1,
     "session": 2,
@@ -29,7 +29,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -377,27 +377,145 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-09T12:08:23Z",
+      "error": null,
+      "id": "E3",
+      "inquiry_id": null,
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "No candidates exist; working, best-known, and retained roles are empty.",
+        "completed_operations": [
+          "E2"
+        ],
+        "cumulative_resource_use": "One candidate-free compiled-dynamics measurement completed; inquiry I1 opened; no training run or candidate evaluation has been performed.",
+        "current_goal_gap": "No learned candidate exists and there is no development success evidence. The remaining gap is to produce and diagnose a policy over the full official radius-angle distribution, with particular attention to complete holds rather than first arrival.",
+        "current_synthesis": "M1 directly observed substantial nominal actuation and rapid reversal authority in tested postures, while confirming real joint limits and their constraint reactions. This supports proceeding to a learned baseline rather than assuming generic mechanical inability, but the sparse, non-target-conditioned probes do not establish branch feasibility across the official distribution or learned-policy success. The consequential competing explanations remain insufficient reaching or branch/workspace coverage versus residual velocity or error causing interruption after first tolerance entry. E2 recorded the opening of I1; it contributes no behavioral evidence and does not resolve that distinction.",
+        "decision_frontier": "For a first learned candidate under the fixed task semantics, does failure arise mainly from geometric/branch coverage across the official radius-angle distribution or from post-entry stabilization during the uninterrupted hold? Baseline training followed by diagnostics of first tolerance entry, radius-angle and branch or joint-limit context, entry velocity or post-entry error, maximum held run, and interruptions will discriminate the routes. Pre-entry clustering would favor branch/workspace intervention; frequent entry followed by exits would favor stabilization; mixed outcomes require quantifying the dominant contribution.",
+        "evidence_references": [
+          "M1"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 of 200 official episodes to complete an uninterrupted 2 second hold. M1 rules out generic weak actuation as the strongest current explanation but leaves learned-policy coverage versus post-entry stabilization unresolved; I1 is opened to identify which failure mechanism should guide the next intervention.",
+        "next_direction_or_closure": "Begin the fresh inquiry session and obtain a baseline training candidate, then select a development measurement that directly diagnoses the recorded reaching-versus-hold frontier before changing the learning recipe.",
+        "next_question": "When a fresh baseline policy is evaluated with hold and geometry diagnostics, are its failures dominated by reaching/branch coverage or by interruption after first entering the 1 cm tolerance band?"
+      },
+      "result": {
+        "session_id": "S2",
+        "status": "checkpointed"
+      },
+      "session_id": "S2",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "98df0544f74a6c741ce6bb936f9ff85d08ae3241",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "No candidates exist; working, best-known, and retained roles are empty.",
+        "completed_operations": [
+          "E2"
+        ],
+        "cumulative_resource_use": "One candidate-free compiled-dynamics measurement completed; inquiry I1 opened; no training run or candidate evaluation has been performed.",
+        "current_goal_gap": "No learned candidate exists and there is no development success evidence. The remaining gap is to produce and diagnose a policy over the full official radius-angle distribution, with particular attention to complete holds rather than first arrival.",
+        "current_synthesis": "M1 directly observed substantial nominal actuation and rapid reversal authority in tested postures, while confirming real joint limits and their constraint reactions. This supports proceeding to a learned baseline rather than assuming generic mechanical inability, but the sparse, non-target-conditioned probes do not establish branch feasibility across the official distribution or learned-policy success. The consequential competing explanations remain insufficient reaching or branch/workspace coverage versus residual velocity or error causing interruption after first tolerance entry. E2 recorded the opening of I1; it contributes no behavioral evidence and does not resolve that distinction.",
+        "decision_frontier": "For a first learned candidate under the fixed task semantics, does failure arise mainly from geometric/branch coverage across the official radius-angle distribution or from post-entry stabilization during the uninterrupted hold? Baseline training followed by diagnostics of first tolerance entry, radius-angle and branch or joint-limit context, entry velocity or post-entry error, maximum held run, and interruptions will discriminate the routes. Pre-entry clustering would favor branch/workspace intervention; frequent entry followed by exits would favor stabilization; mixed outcomes require quantifying the dominant contribution.",
+        "evidence_references": [
+          "M1"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 of 200 official episodes to complete an uninterrupted 2 second hold. M1 rules out generic weak actuation as the strongest current explanation but leaves learned-policy coverage versus post-entry stabilization unresolved; I1 is opened to identify which failure mechanism should guide the next intervention.",
+        "inquiry_id": null,
+        "next_direction_or_closure": "Begin the fresh inquiry session and obtain a baseline training candidate, then select a development measurement that directly diagnoses the recorded reaching-versus-hold frontier before changing the learning recipe.",
+        "next_question": "When a fresh baseline policy is evaluated with hold and geometry diagnostics, are its failures dominated by reaching/branch coverage or by interruption after first entering the 1 cm tolerance band?",
+        "session_id": "S2"
+      },
+      "presentation": {
+        "backend_session_id": "d2396b9c-7628-4b57-91ac-86417930cee1",
+        "campaign_id": "81a5458d-ce8f-4c03-b9d2-8ce4f1ff9e9e",
+        "campaign_usage": "6m27s | 9.13 AIU | prompt 926.6k (79% cached) | output 23.6k",
+        "session_id": "S2",
+        "session_kind": "goal_review",
+        "session_usage": "1m03s | 2.18 AIU | prompt 234k (76% cached) | output 3.3k"
+      },
+      "result": {
+        "session_id": "S2",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "7d618e6fd730c15629f00fe406760e5e99c19257",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E3",
+    "inquiry_id": null,
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "No candidates exist; working, best-known, and retained roles are empty.",
+        "completed_operations": [
+          "E2"
+        ],
+        "cumulative_resource_use": "One candidate-free compiled-dynamics measurement completed; inquiry I1 opened; no training run or candidate evaluation has been performed.",
+        "current_goal_gap": "No learned candidate exists and there is no development success evidence. The remaining gap is to produce and diagnose a policy over the full official radius-angle distribution, with particular attention to complete holds rather than first arrival.",
+        "current_synthesis": "M1 directly observed substantial nominal actuation and rapid reversal authority in tested postures, while confirming real joint limits and their constraint reactions. This supports proceeding to a learned baseline rather than assuming generic mechanical inability, but the sparse, non-target-conditioned probes do not establish branch feasibility across the official distribution or learned-policy success. The consequential competing explanations remain insufficient reaching or branch/workspace coverage versus residual velocity or error causing interruption after first tolerance entry. E2 recorded the opening of I1; it contributes no behavioral evidence and does not resolve that distinction.",
+        "decision_frontier": "For a first learned candidate under the fixed task semantics, does failure arise mainly from geometric/branch coverage across the official radius-angle distribution or from post-entry stabilization during the uninterrupted hold? Baseline training followed by diagnostics of first tolerance entry, radius-angle and branch or joint-limit context, entry velocity or post-entry error, maximum held run, and interruptions will discriminate the routes. Pre-entry clustering would favor branch/workspace intervention; frequent entry followed by exits would favor stabilization; mixed outcomes require quantifying the dominant contribution.",
+        "evidence_references": [
+          "M1"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 of 200 official episodes to complete an uninterrupted 2 second hold. M1 rules out generic weak actuation as the strongest current explanation but leaves learned-policy coverage versus post-entry stabilization unresolved; I1 is opened to identify which failure mechanism should guide the next intervention.",
+        "next_direction_or_closure": "Begin the fresh inquiry session and obtain a baseline training candidate, then select a development measurement that directly diagnoses the recorded reaching-versus-hold frontier before changing the learning recipe.",
+        "next_question": "When a fresh baseline policy is evaluated with hold and geometry diagnostics, are its failures dominated by reaching/branch coverage or by interruption after first entering the 1 cm tolerance band?"
+      }
+    },
+    "request_fingerprint": "7b2c7a972ade7ccbd81ae22c441bd8a7aaf69bab2e0962c98dbc75fd844925bc",
+    "session_id": "S2",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No candidates exist; working, best-known, and retained roles are empty.",
     "completed_operations": [
-      "M1"
+      "E2"
     ],
-    "cumulative_resource_use": "One candidate-free compiled-dynamics measurement completed; no training run or candidate evaluation has been performed.",
+    "cumulative_resource_use": "One candidate-free compiled-dynamics measurement completed; inquiry I1 opened; no training run or candidate evaluation has been performed.",
     "current_goal_gap": "No learned candidate exists and there is no development success evidence. The remaining gap is to produce and diagnose a policy over the full official radius-angle distribution, with particular attention to complete holds rather than first arrival.",
-    "current_synthesis": "M1 directly observed the compiled MuJoCo model: timestep 0.002 s, 0.020 s control period, two limited joints, gear-5 bounded motors, nonzero compiled body masses and inertias, and the declared damping and armature. Unit-pulse responses produced large joint accelerations and velocities, while command reversals changed velocity sign within the first post-switch control interval in the tested postures. Limit probes produced explicit constraint forces and returned positions to the declared limits. These observations support the interpretation that the arm has ample nominal actuation and rapid reversal authority, so a generic inability to move or brake is not currently the strongest explanation for future policy failures. They also establish that joint limits are real constraints and could still make one IK branch locally poor. The competing unresolved explanations are therefore (1) insufficient branch/workspace coverage, especially near inner or outer radial regions and angular limit margins, and (2) arrival with residual velocity or error that interrupts the 100-step hold. M1 did not measure target-grid branch feasibility or learned-policy behavior, so it cannot distinguish those explanations or establish task success. The mechanical conclusion is recipe-independent for this compiled model but the response probes were sparse and not target-conditioned.",
-    "decision_frontier": "For a first learned candidate under the fixed task semantics, does failure arise mainly from geometric/branch coverage across the official radius-angle distribution or from post-entry stabilization during the uninterrupted hold? Evidence that failures cluster before first tolerance entry, with radius-angle and joint-limit margins, would favor branch-aware coverage and target-distribution changes. Evidence that most episodes enter tolerance but have short maximum held runs, high entry velocity, or repeated exits would favor stabilization-focused policy or reward design. If both occur, the dominant contribution must be quantified before selecting the intervention. M1 supports obtaining learned-policy evidence next; it does not justify choosing between these routes.",
+    "current_synthesis": "M1 directly observed substantial nominal actuation and rapid reversal authority in tested postures, while confirming real joint limits and their constraint reactions. This supports proceeding to a learned baseline rather than assuming generic mechanical inability, but the sparse, non-target-conditioned probes do not establish branch feasibility across the official distribution or learned-policy success. The consequential competing explanations remain insufficient reaching or branch/workspace coverage versus residual velocity or error causing interruption after first tolerance entry. E2 recorded the opening of I1; it contributes no behavioral evidence and does not resolve that distinction.",
+    "decision_frontier": "For a first learned candidate under the fixed task semantics, does failure arise mainly from geometric/branch coverage across the official radius-angle distribution or from post-entry stabilization during the uninterrupted hold? Baseline training followed by diagnostics of first tolerance entry, radius-angle and branch or joint-limit context, entry velocity or post-entry error, maximum held run, and interruptions will discriminate the routes. Pre-entry clustering would favor branch/workspace intervention; frequent entry followed by exits would favor stabilization; mixed outcomes require quantifying the dominant contribution.",
     "evidence_references": [
       "M1"
     ],
-    "human_goal_connection": "The human goal requires at least 196 of 200 official episodes to complete a 2 second uninterrupted hold. M1 informs whether this is principally a mechanical-authority problem or a learned-policy coverage and stabilization problem.",
+    "human_goal_connection": "The human goal requires at least 196 of 200 official episodes to complete an uninterrupted 2 second hold. M1 rules out generic weak actuation as the strongest current explanation but leaves learned-policy coverage versus post-entry stabilization unresolved; I1 is opened to identify which failure mechanism should guide the next intervention.",
     "inquiry_id": null,
-    "next_direction_or_closure": "End startup and enter goal review. Open an inquiry on the baseline policy's failure mechanism, then train and evaluate one fresh baseline candidate before changing the learning recipe.",
+    "next_direction_or_closure": "Begin the fresh inquiry session and obtain a baseline training candidate, then select a development measurement that directly diagnoses the recorded reaching-versus-hold frontier before changing the learning recipe.",
     "next_question": "When a fresh baseline policy is evaluated with hold and geometry diagnostics, are its failures dominated by reaching/branch coverage or by interruption after first entering the 1 cm tolerance band?",
-    "scientific_commit": "1c7f719d8dde0b35ba5741884631980398793036",
-    "session_id": "S1"
+    "scientific_commit": "7d618e6fd730c15629f00fe406760e5e99c19257",
+    "session_id": "S2"
   },
   "schema_version": 6,
   "scientific_model": {
@@ -405,21 +523,6 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "d2396b9c-7628-4b57-91ac-86417930cee1",
-    "id": "S2",
-    "inquiry_id": null,
-    "kind": "goal_review",
-    "objective": "Use the completed evidence to update the scientific direction toward the human goal. Request measurements when they resolve an uncertainty or develop the method. Then choose one outcome: request the official assessment, or open one bounded goal-linked inquiry.",
-    "operation_ids": [
-      "E2"
-    ],
-    "scientific_parent_commit": "98df0544f74a6c741ce6bb936f9ff85d08ae3241"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
