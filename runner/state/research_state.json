@@ -11495,7 +11495,7 @@
     }
   },
   "counters": {
-    "event": 60,
+    "event": 61,
     "inquiry": 14,
     "measurement": 25,
     "session": 29,
@@ -11504,7 +11504,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -30775,60 +30775,163 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-09T17:02:49Z",
+      "error": null,
+      "id": "E61",
+      "inquiry_id": "I14",
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "No learned candidate has an evidence-backed working, best-known, or retained role. T1 remains the measured direct-action reference; T14 is an unassigned experimental candidate with 38.75% development success; M17 is model-based capability evidence rather than a learned candidate role.",
+        "completed_operations": [
+          "E60",
+          "T13",
+          "M23",
+          "M24",
+          "T14",
+          "M25"
+        ],
+        "cumulative_resource_use": "The campaign has used M1 characterization; fourteen 120000-step training allocations T1-T14, each completing at the algorithm rollout boundary; development and diagnostic measurements M2-M15 and M17-M25; and inquiry/checkpoint events through this I14 session. No protected official assessment has been performed.",
+        "current_goal_gap": "No learned candidate meets the 196/200-equivalent development threshold. T1 remains the strongest learned reference at 153/160 historically, while T14 reached only 62/160 (38.75%) and the protected official assessment has not been performed.",
+        "current_synthesis": "M23 and M24 reproducibly show that the T13 smooth target-geometry observation redesign is substantially worse than the restored T1 direct-action reference: 31.875% versus 93.75% on seed 4200 and 27.5% versus 95.0% on seed 4400, with no candidate wins and 99 and 108 discordant episodes respectively. This is a limited negative for that representation, not a rejection of learned policies. T14 kept that representation and changed only PPO rollout horizon from 1024 to 2048; its training checkpoints all had zero training success, but M25 measured 38.75% on a new uniform panel, an improvement over T13 that supports a contribution from PPO temporal credit assignment while remaining far below T1. The completed evaluation artifacts contain first-reach, hold, velocity, and terminal IK/limit diagnostic fields, but their values are not present in the compact evidence available here, so the failure mechanism cannot be classified as adequate-margin pre-reach or post-reach stabilization from aggregate outcomes. Physical and direct-action capability remain established by M1 and M17; the observation-versus-PPO distinction is narrowed but unresolved.",
+        "decision_frontier": "The unresolved distinction is whether T14's partial recovery reflects PPO credit assignment that can be extended to the 98% goal, or whether the smooth target-geometry representation remains the dominant acquisition bottleneck. The next discriminating evidence must expose the recorded T14/T1 first-reach, adequate-margin branch/limit, velocity, and hold-interruption values, or test a materially different representation or learning method under the unchanged bounded direct-action interface. Evidence of adequate-margin pre-reach failures would reject the tested representation-plus-horizon route as a limited negative; evidence of predominantly post-reach interruptions would redirect toward stabilization; a candidate near or above 196/200-equivalent with preserved inner-band success would justify goal-directed continuation.",
+        "evidence_references": [
+          "M1",
+          "M17",
+          "M23",
+          "M24",
+          "T13",
+          "T14",
+          "M25"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 uninterrupted-hold successes in the protected 200-episode assessment. I14 tests whether the remaining learned-policy gap is caused by representation or PPO acquisition rather than physical or action-interface limits.",
+        "next_direction_or_closure": "Continue I14. First obtain interpretable failure-geometry evidence for T14 and the matched T1 reference, because aggregate M25 results do not satisfy the mechanism discriminator. If those diagnostics confirm persistent adequate-margin pre-reach failure, treat the tested smooth representation under two PPO horizons as a limited negative and redirect to a materially different acquisition representation or learning method. If they show post-reach instability, prioritize hold stabilization. Do not request the protected official assessment until a learned candidate reaches the development threshold.",
+        "next_question": "Can a learned policy overcome the persistent adequate-margin pre-reach failures through a broader acquisition/representation redesign while preserving the direct-action interface and 40/40 inner-band behavior, and do controlled evidence distinguish observation/action representation limits from PPO optimization failure?"
+      },
+      "result": {
+        "session_id": "S29",
+        "status": "checkpointed"
+      },
+      "session_id": "S29",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
-  "pi_checkpoint": {
-    "candidates_and_roles": "No learned candidate has an evidence-backed working, best-known or retained role. T8:checkpoint-60416 and T9:checkpoint-20480 remain the strongest measured learned candidates at 153/160; T10:checkpoint-10240 and T10:checkpoint-120832 also measured 153/160. T11:checkpoint-120832 and T12:checkpoint-120832 are rejected for this route by their completed measurements. M17 is model-based capability evidence, not a learned candidate role.",
-    "completed_operations": [
-      "E58"
-    ],
-    "cumulative_resource_use": "The campaign has used M1 characterization; twelve 120000-step training allocations T1-T12, each completing 120832 simulator steps; development and diagnostic measurements M2-M14 and M17-M22; and inquiry/checkpoint events through E58. No learned candidate meets the 98% development threshold and no protected official assessment has been performed.",
-    "current_goal_gap": "No learned candidate has reached the 196/200-equivalent development threshold. The best learned result remains 153/160 with 40/40 inner-band success; the protected official assessment has not been performed.",
-    "current_synthesis": "Completed evidence establishes physical and interface capability but not its learnability mechanism. M1 found at least one feasible analytic IK branch for every sampled official target. T1, T8 and T9 reached 153/160 while preserving 40/40 inner-band behavior, and M17 reached 160/160 with computed torque through the same bounded direct-action interface. M18 and M22 show that the tested controller-derived PPO recipe remains at 153/160, with failures split between pre-reach and post-reach interruptions; this is a recipe-specific negative, not a rejection of learned policies. T11 and T12 show that the tested phase/history and static branch/limit routes are also negative, with T12 additionally losing inner-band behavior. E56 therefore supports a broader learned-acquisition or representation limitation, but observation aliasing, action-interface representation, PPO optimization and other learned-control limitations remain unresolved. Opening I14 changes the session boundary, not this causal conclusion.",
-    "decision_frontier": "I14 must distinguish whether persistent adequate-margin pre-reach failures arise primarily from observation or action representation, PPO optimization and credit assignment, or another learned-control limitation. The discriminating evidence must preserve the official target distribution, bounded direct-action interface and uninterrupted 100-step hold semantics, while measuring uniform-panel success, 6-10 cm inner-band success, first-reach and post-reach failures, velocity, branch/limit margins and hold interruptions. Improvement in adequate-margin pre-reach failures with preserved 40/40 inner-band behavior supports the revised acquisition route; persistent adequate-margin non-reaching failures after controlled comparison rejects the tested representation or elevates a broader learning limitation; adequate-margin post-reach interruptions elevate stabilization.",
-    "evidence_references": [
-      "M1",
-      "T1",
-      "T8",
-      "T9",
-      "M17",
-      "T10",
-      "M18",
-      "T11",
-      "M19",
-      "M20",
-      "T12",
-      "M21",
-      "M22",
-      "E56",
-      "E58"
-    ],
-    "human_goal_connection": "The human goal requires at least 196 uninterrupted-hold successes in the protected 200-episode assessment. I14 addresses the remaining learned-policy gap: the strongest learned candidates are at 153/160 while same-interface computed-torque control reaches 160/160, so the next evidence must determine whether learning can acquire that capability.",
-    "inquiry_id": null,
-    "next_direction_or_closure": "Checkpoint the goal-review decision and begin fresh inquiry I14. In that inquiry, choose the first operation from the causal frontier rather than treating a training recipe as predetermined; prioritize evidence or a controlled learned redesign that can separate representation limits from PPO optimization while preserving direct-action and inner-band behavior.",
-    "next_question": "Can a learned policy overcome the persistent adequate-margin pre-reach failures through a broader acquisition/representation redesign while preserving the direct-action interface and 40/40 inner-band behavior, and do controlled evidence distinguish observation/action representation limits from PPO optimization failure?",
-    "scientific_commit": "835a274ea11f9e45840cfc0c1438490664d908eb",
-    "session_id": "S28"
-  },
-  "schema_version": 6,
-  "scientific_model": {
-    "commit": "594a6d7fd3c5662a0834e2909f1267462493c342",
-    "path": "pi_workspace/scientific_model.md",
-    "status": "ready"
-  },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "444c7508b8e9321f15e687a6b64e1b6095b546c3",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 2048
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "No learned candidate has an evidence-backed working, best-known, or retained role. T1 remains the measured direct-action reference; T14 is an unassigned experimental candidate with 38.75% development success; M17 is model-based capability evidence rather than a learned candidate role.",
+        "completed_operations": [
+          "E60",
+          "T13",
+          "M23",
+          "M24",
+          "T14",
+          "M25"
+        ],
+        "cumulative_resource_use": "The campaign has used M1 characterization; fourteen 120000-step training allocations T1-T14, each completing at the algorithm rollout boundary; development and diagnostic measurements M2-M15 and M17-M25; and inquiry/checkpoint events through this I14 session. No protected official assessment has been performed.",
+        "current_goal_gap": "No learned candidate meets the 196/200-equivalent development threshold. T1 remains the strongest learned reference at 153/160 historically, while T14 reached only 62/160 (38.75%) and the protected official assessment has not been performed.",
+        "current_synthesis": "M23 and M24 reproducibly show that the T13 smooth target-geometry observation redesign is substantially worse than the restored T1 direct-action reference: 31.875% versus 93.75% on seed 4200 and 27.5% versus 95.0% on seed 4400, with no candidate wins and 99 and 108 discordant episodes respectively. This is a limited negative for that representation, not a rejection of learned policies. T14 kept that representation and changed only PPO rollout horizon from 1024 to 2048; its training checkpoints all had zero training success, but M25 measured 38.75% on a new uniform panel, an improvement over T13 that supports a contribution from PPO temporal credit assignment while remaining far below T1. The completed evaluation artifacts contain first-reach, hold, velocity, and terminal IK/limit diagnostic fields, but their values are not present in the compact evidence available here, so the failure mechanism cannot be classified as adequate-margin pre-reach or post-reach stabilization from aggregate outcomes. Physical and direct-action capability remain established by M1 and M17; the observation-versus-PPO distinction is narrowed but unresolved.",
+        "decision_frontier": "The unresolved distinction is whether T14's partial recovery reflects PPO credit assignment that can be extended to the 98% goal, or whether the smooth target-geometry representation remains the dominant acquisition bottleneck. The next discriminating evidence must expose the recorded T14/T1 first-reach, adequate-margin branch/limit, velocity, and hold-interruption values, or test a materially different representation or learning method under the unchanged bounded direct-action interface. Evidence of adequate-margin pre-reach failures would reject the tested representation-plus-horizon route as a limited negative; evidence of predominantly post-reach interruptions would redirect toward stabilization; a candidate near or above 196/200-equivalent with preserved inner-band success would justify goal-directed continuation.",
+        "evidence_references": [
+          "M1",
+          "M17",
+          "M23",
+          "M24",
+          "T13",
+          "T14",
+          "M25"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 uninterrupted-hold successes in the protected 200-episode assessment. I14 tests whether the remaining learned-policy gap is caused by representation or PPO acquisition rather than physical or action-interface limits.",
+        "inquiry_id": "I14",
+        "next_direction_or_closure": "Continue I14. First obtain interpretable failure-geometry evidence for T14 and the matched T1 reference, because aggregate M25 results do not satisfy the mechanism discriminator. If those diagnostics confirm persistent adequate-margin pre-reach failure, treat the tested smooth representation under two PPO horizons as a limited negative and redirect to a materially different acquisition representation or learning method. If they show post-reach instability, prioritize hold stabilization. Do not request the protected official assessment until a learned candidate reaches the development threshold.",
+        "next_question": "Can a learned policy overcome the persistent adequate-margin pre-reach failures through a broader acquisition/representation redesign while preserving the direct-action interface and 40/40 inner-band behavior, and do controlled evidence distinguish observation/action representation limits from PPO optimization failure?",
+        "session_id": "S29"
+      },
+      "presentation": {
+        "backend_session_id": "825fcb4f-a6e9-4b4d-b565-35bf636820e7",
+        "campaign_id": "79395c88-afcd-40f0-a644-16ca95368c28",
+        "campaign_usage": "1h29m | 311.27 AIU | prompt 52.7m (86% cached) | output 347.5k",
+        "session_id": "S29",
+        "session_kind": "inquiry",
+        "session_usage": "5m58s | 21.17 AIU | prompt 3.9m (88% cached) | output 21.5k"
+      },
+      "result": {
+        "session_id": "S29",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "01b93272a5d3fb1a98f2264dea587c37397ed3c0",
+      "scientific_manifest": [],
+      "scientific_paths": []
     },
-    "backend_session_id": "825fcb4f-a6e9-4b4d-b565-35bf636820e7",
-    "id": "S29",
+    "failure": null,
+    "id": "E61",
     "inquiry_id": "I14",
-    "kind": "inquiry",
-    "objective": "Advance I14 toward an evidence-supported answer to its scientific question: Can a learned policy overcome the persistent adequate-margin pre-reach failures through a broader acquisition/representation redesign while preserving the direct-action interface and 40/40 inner-band behavior, and do controlled evidence distinguish observation/action representation limits from PPO optimization failure? Before choosing the next action, compare the accumulated evidence with the closure condition. Restate the unresolved distinction and choose the most decision-relevant available operation; no operation is the default. Close the inquiry when the condition is met.",
-    "operation_ids": [
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "No learned candidate has an evidence-backed working, best-known, or retained role. T1 remains the measured direct-action reference; T14 is an unassigned experimental candidate with 38.75% development success; M17 is model-based capability evidence rather than a learned candidate role.",
+        "completed_operations": [
+          "E60",
+          "T13",
+          "M23",
+          "M24",
+          "T14",
+          "M25"
+        ],
+        "cumulative_resource_use": "The campaign has used M1 characterization; fourteen 120000-step training allocations T1-T14, each completing at the algorithm rollout boundary; development and diagnostic measurements M2-M15 and M17-M25; and inquiry/checkpoint events through this I14 session. No protected official assessment has been performed.",
+        "current_goal_gap": "No learned candidate meets the 196/200-equivalent development threshold. T1 remains the strongest learned reference at 153/160 historically, while T14 reached only 62/160 (38.75%) and the protected official assessment has not been performed.",
+        "current_synthesis": "M23 and M24 reproducibly show that the T13 smooth target-geometry observation redesign is substantially worse than the restored T1 direct-action reference: 31.875% versus 93.75% on seed 4200 and 27.5% versus 95.0% on seed 4400, with no candidate wins and 99 and 108 discordant episodes respectively. This is a limited negative for that representation, not a rejection of learned policies. T14 kept that representation and changed only PPO rollout horizon from 1024 to 2048; its training checkpoints all had zero training success, but M25 measured 38.75% on a new uniform panel, an improvement over T13 that supports a contribution from PPO temporal credit assignment while remaining far below T1. The completed evaluation artifacts contain first-reach, hold, velocity, and terminal IK/limit diagnostic fields, but their values are not present in the compact evidence available here, so the failure mechanism cannot be classified as adequate-margin pre-reach or post-reach stabilization from aggregate outcomes. Physical and direct-action capability remain established by M1 and M17; the observation-versus-PPO distinction is narrowed but unresolved.",
+        "decision_frontier": "The unresolved distinction is whether T14's partial recovery reflects PPO credit assignment that can be extended to the 98% goal, or whether the smooth target-geometry representation remains the dominant acquisition bottleneck. The next discriminating evidence must expose the recorded T14/T1 first-reach, adequate-margin branch/limit, velocity, and hold-interruption values, or test a materially different representation or learning method under the unchanged bounded direct-action interface. Evidence of adequate-margin pre-reach failures would reject the tested representation-plus-horizon route as a limited negative; evidence of predominantly post-reach interruptions would redirect toward stabilization; a candidate near or above 196/200-equivalent with preserved inner-band success would justify goal-directed continuation.",
+        "evidence_references": [
+          "M1",
+          "M17",
+          "M23",
+          "M24",
+          "T13",
+          "T14",
+          "M25"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 uninterrupted-hold successes in the protected 200-episode assessment. I14 tests whether the remaining learned-policy gap is caused by representation or PPO acquisition rather than physical or action-interface limits.",
+        "next_direction_or_closure": "Continue I14. First obtain interpretable failure-geometry evidence for T14 and the matched T1 reference, because aggregate M25 results do not satisfy the mechanism discriminator. If those diagnostics confirm persistent adequate-margin pre-reach failure, treat the tested smooth representation under two PPO horizons as a limited negative and redirect to a materially different acquisition representation or learning method. If they show post-reach instability, prioritize hold stabilization. Do not request the protected official assessment until a learned candidate reaches the development threshold.",
+        "next_question": "Can a learned policy overcome the persistent adequate-margin pre-reach failures through a broader acquisition/representation redesign while preserving the direct-action interface and 40/40 inner-band behavior, and do controlled evidence distinguish observation/action representation limits from PPO optimization failure?"
+      }
+    },
+    "request_fingerprint": "9476aa44ae5217be8928aae92f0ce522dfee9807b2aee9d58b00358df2ae0b77",
+    "session_id": "S29",
+    "supersedes": null
+  },
+  "pi_checkpoint": {
+    "candidates_and_roles": "No learned candidate has an evidence-backed working, best-known, or retained role. T1 remains the measured direct-action reference; T14 is an unassigned experimental candidate with 38.75% development success; M17 is model-based capability evidence rather than a learned candidate role.",
+    "completed_operations": [
       "E60",
       "T13",
       "M23",
@@ -30836,7 +30939,32 @@
       "T14",
       "M25"
     ],
-    "scientific_parent_commit": "444c7508b8e9321f15e687a6b64e1b6095b546c3"
+    "cumulative_resource_use": "The campaign has used M1 characterization; fourteen 120000-step training allocations T1-T14, each completing at the algorithm rollout boundary; development and diagnostic measurements M2-M15 and M17-M25; and inquiry/checkpoint events through this I14 session. No protected official assessment has been performed.",
+    "current_goal_gap": "No learned candidate meets the 196/200-equivalent development threshold. T1 remains the strongest learned reference at 153/160 historically, while T14 reached only 62/160 (38.75%) and the protected official assessment has not been performed.",
+    "current_synthesis": "M23 and M24 reproducibly show that the T13 smooth target-geometry observation redesign is substantially worse than the restored T1 direct-action reference: 31.875% versus 93.75% on seed 4200 and 27.5% versus 95.0% on seed 4400, with no candidate wins and 99 and 108 discordant episodes respectively. This is a limited negative for that representation, not a rejection of learned policies. T14 kept that representation and changed only PPO rollout horizon from 1024 to 2048; its training checkpoints all had zero training success, but M25 measured 38.75% on a new uniform panel, an improvement over T13 that supports a contribution from PPO temporal credit assignment while remaining far below T1. The completed evaluation artifacts contain first-reach, hold, velocity, and terminal IK/limit diagnostic fields, but their values are not present in the compact evidence available here, so the failure mechanism cannot be classified as adequate-margin pre-reach or post-reach stabilization from aggregate outcomes. Physical and direct-action capability remain established by M1 and M17; the observation-versus-PPO distinction is narrowed but unresolved.",
+    "decision_frontier": "The unresolved distinction is whether T14's partial recovery reflects PPO credit assignment that can be extended to the 98% goal, or whether the smooth target-geometry representation remains the dominant acquisition bottleneck. The next discriminating evidence must expose the recorded T14/T1 first-reach, adequate-margin branch/limit, velocity, and hold-interruption values, or test a materially different representation or learning method under the unchanged bounded direct-action interface. Evidence of adequate-margin pre-reach failures would reject the tested representation-plus-horizon route as a limited negative; evidence of predominantly post-reach interruptions would redirect toward stabilization; a candidate near or above 196/200-equivalent with preserved inner-band success would justify goal-directed continuation.",
+    "evidence_references": [
+      "M1",
+      "M17",
+      "M23",
+      "M24",
+      "T13",
+      "T14",
+      "M25"
+    ],
+    "human_goal_connection": "The human goal requires at least 196 uninterrupted-hold successes in the protected 200-episode assessment. I14 tests whether the remaining learned-policy gap is caused by representation or PPO acquisition rather than physical or action-interface limits.",
+    "inquiry_id": "I14",
+    "next_direction_or_closure": "Continue I14. First obtain interpretable failure-geometry evidence for T14 and the matched T1 reference, because aggregate M25 results do not satisfy the mechanism discriminator. If those diagnostics confirm persistent adequate-margin pre-reach failure, treat the tested smooth representation under two PPO horizons as a limited negative and redirect to a materially different acquisition representation or learning method. If they show post-reach instability, prioritize hold stabilization. Do not request the protected official assessment until a learned candidate reaches the development threshold.",
+    "next_question": "Can a learned policy overcome the persistent adequate-margin pre-reach failures through a broader acquisition/representation redesign while preserving the direct-action interface and 40/40 inner-band behavior, and do controlled evidence distinguish observation/action representation limits from PPO optimization failure?",
+    "scientific_commit": "01b93272a5d3fb1a98f2264dea587c37397ed3c0",
+    "session_id": "S29"
   },
+  "schema_version": 6,
+  "scientific_model": {
+    "commit": "594a6d7fd3c5662a0834e2909f1267462493c342",
+    "path": "pi_workspace/scientific_model.md",
+    "status": "ready"
+  },
+  "scientific_session": null,
   "terminal_state": null
 }
