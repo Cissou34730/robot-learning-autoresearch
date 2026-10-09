@@ -6550,38 +6550,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I4",
-        "outcome": "limited negative",
-        "reason": "M5 completed the matched closure comparison: T5:checkpoint-100352 and T3:checkpoint-120832 each achieved 153/160 successes on the same 160-episode panel, with zero discordant episodes. The seven failures were the same seeds for both candidates and remained concentrated at target angles approximately -130 to -151 degrees. T5 changed terminal distances and branch errors in some failures but rescued none and introduced no different success/failure pattern. Therefore this implemented branch-validity and near-target shoulder-limit reward recipe did not reduce complete-hold failures and does not support a causal branch/limit rescue. The result is limited to this recipe and checkpoint; it does not invalidate broader trajectory or braking control, which remains unresolved for the campaign goal."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I4",
-        "outcome": "limited negative",
-        "reason": "M5 completed the matched closure comparison: T5:checkpoint-100352 and T3:checkpoint-120832 each achieved 153/160 successes on the same 160-episode panel, with zero discordant episodes. The seven failures were the same seeds for both candidates and remained concentrated at target angles approximately -130 to -151 degrees. T5 changed terminal distances and branch errors in some failures but rescued none and introduced no different success/failure pattern. Therefore this implemented branch-validity and near-target shoulder-limit reward recipe did not reduce complete-hold failures and does not support a causal branch/limit rescue. The result is limited to this recipe and checkpoint; it does not invalidate broader trajectory or braking control, which remains unresolved for the campaign goal.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E16",
-    "inquiry_id": "I4",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "limited negative",
-        "reason": "M5 completed the matched closure comparison: T5:checkpoint-100352 and T3:checkpoint-120832 each achieved 153/160 successes on the same 160-episode panel, with zero discordant episodes. The seven failures were the same seeds for both candidates and remained concentrated at target angles approximately -130 to -151 degrees. T5 changed terminal distances and branch errors in some failures but rescued none and introduced no different success/failure pattern. Therefore this implemented branch-validity and near-target shoulder-limit reward recipe did not reduce complete-hold failures and does not support a causal branch/limit rescue. The result is limited to this recipe and checkpoint; it does not invalidate broader trajectory or braking control, which remains unresolved for the campaign goal."
-      }
-    },
-    "request_fingerprint": "2f50b6d9ecba113e8d656c5cab1d84857e7a47eb05cb0a951f933eeaab935e5d",
-    "session_id": "S9",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T3:checkpoint-120832 remains the strongest development-evaluated candidate at 153/160, with T2:checkpoint-120832 as its matched 150/160 reference. Neither candidate has a working, best-known, or retained role; training facts do not establish development performance, and the goal review made no role assignment.",
     "completed_operations": [
