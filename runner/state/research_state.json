@@ -11,7 +11,7 @@
   "counters": {
     "event": 0,
     "inquiry": 0,
-    "measurement": 4,
+    "measurement": 5,
     "session": 1,
     "training": 0
   },
@@ -118,6 +118,37 @@
       "status": "failed",
       "superseded_by": "M4",
       "supersedes": "M2"
+    },
+    {
+      "completed_at": "2026-10-09T08:22:51Z",
+      "error": "robot_learning.lab.dynamics_probe failed:\n\nTraceback (most recent call last):\n  File \"<frozen runpy>\", line 203, in _run_module_as_main\n  File \"<frozen runpy>\", line 88, in _run_code\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\dynamics_probe.py\", line 313, in <module>\n    main()\n    ~~~~^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\dynamics_probe.py\", line 309, in main\n    args.artifact.write_text(json.dumps(artifact, indent=2) + \"\\n\", encoding=\"utf-8\")\n                             ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\cyril.beurier\\AppData\\Roaming\\uv\\python\\cpython-3.13-windows-x86_64-none\\Lib\\json\\__init__.py\", line 242, in dumps\n    **kw).encode(obj)\n          ~~~~~~^^^^^\n  File \"C:\\Users\\cyril.beurier\\AppData\\Roaming\\uv\\python\\cpython-3.13-windows-x86_64-none\\Lib\\json\\encoder.py\", line 202, in encode\n    chunks = self.iterencode(o, _one_shot=True)\n  File \"C:\\Users\\cyril.beurier\\AppData\\Roaming\\uv\\python\\cpython-3.13-windows-x86_64-none\\Lib\\json\\encoder.py\", line 263, in iterencode\n    return _iterencode(o, 0)\n  File \"C:\\Users\\cyril.beurier\\AppData\\Roaming\\uv\\python\\cpython-3.13-windows-x86_64-none\\Lib\\json\\encoder.py\", line 182, in default\n    raise TypeError(f'Object of type {o.__class__.__name__} '\n                    f'is not JSON serializable')\nTypeError: Object of type bool is not JSON serializable\n",
+      "id": "M4",
+      "inquiry_id": null,
+      "kind": "measurement",
+      "request": {
+        "description": "Repeat the compiled MuJoCo dynamics, constrained inverse-kinematics coverage, Jacobian conditioning, and action/braking response characterization after correcting native model-name lookup calls.",
+        "measurements": [
+          {
+            "args": [
+              "--artifact",
+              "campaigns\\evaluations\\58dcd817-4fed-42e6-854b-58f20408e6a1\\dynamics_probe.json"
+            ],
+            "artifact": "campaigns\\evaluations\\58dcd817-4fed-42e6-854b-58f20408e6a1\\dynamics_probe.json",
+            "instrument": "python_module",
+            "label": "repaired model metadata and reset-response characterization",
+            "module": "robot_learning.lab.dynamics_probe"
+          }
+        ],
+        "rationale": "M3 failed before producing any scientific measurement because the probe omitted MjModel from mj_id2name. The failure does not discriminate the competing explanations. The corrected probe preserves the original decision test: complete IK coverage would rule out workspace impossibility, while compiled inertial quantities and reset/representative action responses determine whether the first learning direction should prioritize transient capture, braking and hold regulation, or official inner-radius coverage."
+      },
+      "result": {
+        "error": "robot_learning.lab.dynamics_probe failed:\n\nTraceback (most recent call last):\n  File \"<frozen runpy>\", line 203, in _run_module_as_main\n  File \"<frozen runpy>\", line 88, in _run_code\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\dynamics_probe.py\", line 313, in <module>\n    main()\n    ~~~~^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\dynamics_probe.py\", line 309, in main\n    args.artifact.write_text(json.dumps(artifact, indent=2) + \"\\n\", encoding=\"utf-8\")\n                             ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\cyril.beurier\\AppData\\Roaming\\uv\\python\\cpython-3.13-windows-x86_64-none\\Lib\\json\\__init__.py\", line 242, in dumps\n    **kw).encode(obj)\n          ~~~~~~^^^^^\n  File \"C:\\Users\\cyril.beurier\\AppData\\Roaming\\uv\\python\\cpython-3.13-windows-x86_64-none\\Lib\\json\\encoder.py\", line 202, in encode\n    chunks = self.iterencode(o, _one_shot=True)\n  File \"C:\\Users\\cyril.beurier\\AppData\\Roaming\\uv\\python\\cpython-3.13-windows-x86_64-none\\Lib\\json\\encoder.py\", line 263, in iterencode\n    return _iterencode(o, 0)\n  File \"C:\\Users\\cyril.beurier\\AppData\\Roaming\\uv\\python\\cpython-3.13-windows-x86_64-none\\Lib\\json\\encoder.py\", line 182, in default\n    raise TypeError(f'Object of type {o.__class__.__name__} '\n                    f'is not JSON serializable')\nTypeError: Object of type bool is not JSON serializable\n",
+        "status": "failed"
+      },
+      "session_id": "S1",
+      "status": "failed",
+      "superseded_by": "M5",
+      "supersedes": "M3"
     }
   ],
   "pending_operation": {
@@ -131,7 +162,7 @@
           ],
           "artifact": "campaigns/evaluations/58dcd817-4fed-42e6-854b-58f20408e6a1/dynamics_probe.json",
           "instrument": "python_module",
-          "label": "repaired model metadata and reset-response characterization",
+          "label": "repaired dynamics characterization serialization",
           "module": "robot_learning.lab.dynamics_probe"
         }
       ],
@@ -142,7 +173,7 @@
             "path": "robot_learning/lab/__init__.py"
           },
           {
-            "fingerprint": "6783336181be8028d531374e890a4c10768d9b3c2a886f3c6224bd5733a3541e",
+            "fingerprint": "f3380b5d16b0bd138f18555c3cc6f1f5de9984bfdbe8579eff7b0b4e4560f437",
             "path": "robot_learning/lab/dynamics_probe.py"
           }
         ],
@@ -175,7 +206,7 @@
         "module_manifest": [
           {
             "exists": true,
-            "fingerprint": "6783336181be8028d531374e890a4c10768d9b3c2a886f3c6224bd5733a3541e",
+            "fingerprint": "f3380b5d16b0bd138f18555c3cc6f1f5de9984bfdbe8579eff7b0b4e4560f437",
             "path": "robot_learning/lab/dynamics_probe.py"
           }
         ],
@@ -192,13 +223,13 @@
       "task_reference_contract": null
     },
     "failure": null,
-    "id": "M4",
+    "id": "M5",
     "inquiry_id": null,
     "kind": "measurement",
     "progress": "accepted",
     "request": {
       "measurement": {
-        "description": "Repeat the compiled MuJoCo dynamics, constrained inverse-kinematics coverage, Jacobian conditioning, and action/braking response characterization after correcting native model-name lookup calls.",
+        "description": "Repeat the compiled MuJoCo dynamics, constrained inverse-kinematics coverage, Jacobian conditioning, and action/braking response characterization after normalizing the NumPy IK feasibility flag for JSON serialization.",
         "measurements": [
           {
             "args": [
@@ -207,16 +238,16 @@
             ],
             "artifact": "campaigns\\evaluations\\58dcd817-4fed-42e6-854b-58f20408e6a1\\dynamics_probe.json",
             "instrument": "python_module",
-            "label": "repaired model metadata and reset-response characterization",
+            "label": "repaired dynamics characterization serialization",
             "module": "robot_learning.lab.dynamics_probe"
           }
         ],
-        "rationale": "M3 failed before producing any scientific measurement because the probe omitted MjModel from mj_id2name. The failure does not discriminate the competing explanations. The corrected probe preserves the original decision test: complete IK coverage would rule out workspace impossibility, while compiled inertial quantities and reset/representative action responses determine whether the first learning direction should prioritize transient capture, braking and hold regulation, or official inner-radius coverage."
+        "rationale": "M4 reached the final artifact write but failed because a NumPy boolean was not JSON serializable. No accepted artifact or scientific evidence resulted. The corrected probe preserves the original decision test: complete IK coverage would rule out workspace impossibility, while compiled inertial quantities and reset/representative action responses determine whether the first learning direction should prioritize transient capture, braking and hold regulation, or official inner-radius coverage."
       }
     },
-    "request_fingerprint": "067220477605f2b532e556e8e9bf9070ab6f4794d6f6714262cfffa5f89d115b",
+    "request_fingerprint": "065d958fd840a6bd53a202b5233be3a45b77294ef2a8bcf02d64d81ffbb56ff9",
     "session_id": "S1",
-    "supersedes": "M3"
+    "supersedes": "M4"
   },
   "pi_checkpoint": null,
   "schema_version": 6,
