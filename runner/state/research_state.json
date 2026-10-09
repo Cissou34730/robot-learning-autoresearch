@@ -4897,47 +4897,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "open",
-        "inquiry": {
-          "closure_condition": "Close after a matched T3-derived comparison of a targeted angle- and IK-branch/limit-aware trajectory intervention against T3 on the same official-radius panel reports success, first_reach_step, max_held_steps, hold_interruptions, timeout status, target angle, and terminal branch or joint geometry, and establishes whether any success change is selective for the observed angle/limit cluster or general across angles.",
-          "goal_connection": "The strongest development candidate reaches 153/160 successes, below the 98% target. Resolving whether the remaining failures arise from shoulder-limit and IK-branch path interaction or from angle-dependent acquisition and braking will determine whether targeted trajectory control is a credible route to the required uninterrupted hold performance.",
-          "handoff_conclusion": "M1 established high actuation authority and residual-motion risk but not the learned-policy bottleneck. T2's broader official-radius training materially improved development success over T1, supporting coverage as a component but not as a complete explanation. M4 tested a T2-derived near-target joint-velocity penalty and improved matched success from 150/160 to 153/160, with three paired wins and no losses. The rescues included one acquisition and two hold failures, so the intervention provided a modest beneficial trajectory/stabilization effect rather than a general solution. T3 retained seven failures: four without first reach and three after entry with interrupted hold. These residuals concentrated around target angles -130 to -151 degrees and repeatedly approached the shoulder limit with small open-branch errors while the alternate branch errors were large. This supports targeted angle-/IK-branch/limit trajectory control as the next route, while preserving the limit that endpoint geometry alone does not prove causality.",
-          "handoff_question": "Can targeted angle- and IK-branch/limit-aware trajectory control reduce the remaining T3 failures toward the 98% complete-hold goal, and do the gains distinguish branch/limit interaction from angle-dependent acquisition and braking?",
-          "handoff_source_session_id": "S7",
-          "id": "I4",
-          "opened_in_session": "S8",
-          "question": "Can targeted angle- and IK-branch/limit-aware trajectory control reduce the remaining T3 failures toward the 98% complete-hold goal, and do the gains distinguish branch/limit interaction from angle-dependent acquisition and braking?",
-          "rationale": "M4 improved matched development success from 150/160 to 153/160 but left seven failures. Inspected M4 diagnostics show four failures without first reach and three interrupted holds concentrated near -130 to -151 degrees, with terminal shoulder positions at the configured limit and small open-branch errors while alternate-branch errors are large. These observations support a discriminating inquiry but do not establish that the limit/branch interaction, rather than angle-dependent acquisition or braking, is causal; official assessment is therefore deferred.",
-          "reframes": []
-        }
-      },
-      "result": {
-        "action": "open",
-        "inquiry_id": "I4",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E14",
-    "inquiry_id": null,
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "open",
-        "closure_condition": "Close after a matched T3-derived comparison of a targeted angle- and IK-branch/limit-aware trajectory intervention against T3 on the same official-radius panel reports success, first_reach_step, max_held_steps, hold_interruptions, timeout status, target angle, and terminal branch or joint geometry, and establishes whether any success change is selective for the observed angle/limit cluster or general across angles.",
-        "goal_connection": "The strongest development candidate reaches 153/160 successes, below the 98% target. Resolving whether the remaining failures arise from shoulder-limit and IK-branch path interaction or from angle-dependent acquisition and braking will determine whether targeted trajectory control is a credible route to the required uninterrupted hold performance.",
-        "question": "Can targeted angle- and IK-branch/limit-aware trajectory control reduce the remaining T3 failures toward the 98% complete-hold goal, and do the gains distinguish branch/limit interaction from angle-dependent acquisition and braking?",
-        "rationale": "M4 improved matched development success from 150/160 to 153/160 but left seven failures. Inspected M4 diagnostics show four failures without first reach and three interrupted holds concentrated near -130 to -151 degrees, with terminal shoulder positions at the configured limit and small open-branch errors while alternate-branch errors are large. These observations support a discriminating inquiry but do not establish that the limit/branch interaction, rather than angle-dependent acquisition or braking, is causal; official assessment is therefore deferred."
-      }
-    },
-    "request_fingerprint": "cbda312d44a303248c58483a9608853826a045aa44ed4b2201a4a40f2abad97a",
-    "session_id": "S8",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T3:checkpoint-120832 is the strongest development-evaluated candidate at 153/160 successes, with T2:checkpoint-120832 as the matched 150/160 reference. Neither is assigned working, best-known, or retained status because the inquiry closed with a limited result and no role assignment was requested.",
     "completed_operations": [
