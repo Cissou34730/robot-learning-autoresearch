@@ -1,16 +1,5 @@
 {
-  "active_inquiry": {
-    "closure_condition": "Close after a bounded terminal-control or action-margin intervention built on T3 is evaluated on the full-distribution development panel with success, first-reach coverage, maximum held steps, hold interruptions, final distance, and radius-angle strata. A positive result requires at least 98% success with broad first reach and approximately T3's four interruptions; persistent localized failures with preserved transfer behavior redirect toward targeted representation or branch-conditioned action redesign, while broad interruption regression rejects the tested intervention.",
-    "goal_connection": "The human goal requires at least 196 of 200 episodes to complete an uninterrupted 100-step hold. T3 reaches 95.625% on development evidence, while the T5 angle-oversampling continuation raised first reach but degraded hold integrity to 511 interruptions. This inquiry targets the remaining completion gap while preserving T3's broad first reach and four-interruption terminal behavior.",
-    "handoff_conclusion": "Established physical evidence remains M1's nonzero compiled plant authority, absence of sampled self-contact in valid target branches, and complete local 100-step holds under zero input and bounded local PD. T1 established a reach-limited, geometry-conditioned baseline at 68.75 percent, while T2 rejected an abrupt hard-distribution recipe without rejecting learning generally. T3's incremental radius transfer improved success to 95.625 percent, first reach to 157/160, and reduced hold interruptions to 4, supporting distribution-shift sensitivity as the leading explanation for the earlier reach deficit. M5 is new evidence: T5 continued from T3 with 70 percent sampling in the observed failure-angle band and 30 percent uniform exposure, but achieved only 93.125 percent, first reached 158/160, and accumulated 511 hold interruptions; paired comparison gave T5 zero wins and T3 four wins on four discordant episodes. The targeted oversampling recipe therefore failed to repair the residual stratum and produced broad terminal-control degradation consistent with catastrophic forgetting or unstable fine-tuning. This rejects the tested recipe, not incremental transfer generally, and leaves T3 as the strongest measured candidate. The physical plant still appears locally holdable, so the remaining decision is policy representation/action or learned terminal-control robustness rather than established mechanical infeasibility.",
-    "handoff_question": "Can a targeted terminal-control or action-margin intervention built on T3 eliminate its residual radius-angle completion failures, reaching at least 98% development success while preserving T3's broad first reach and approximately four hold interruptions?",
-    "handoff_source_session_id": "S9",
-    "id": "I5",
-    "opened_in_session": "S10",
-    "question": "Can a targeted terminal-control or action-margin intervention built on T3 eliminate its residual radius-angle completion failures, reaching at least 98% development success while preserving T3's broad first reach and approximately four hold interruptions?",
-    "rationale": "M5 shows that naive residual-angle oversampling did not remove the gap and caused broad terminal-control degradation, so the tested recipe is rejected without establishing that terminal control or action margin is incapable of improvement. M1 establishes that the plant is locally holdable, and M4 shows that T3's incremental transfer preserves a strong learned reach regime. The decisive next test is a bounded intervention that changes terminal control or action margin while retaining T3's learned distribution-transfer mechanism, then uses paired full-distribution diagnostics to separate reduced hold exits from reach or forgetting regression.",
-    "reframes": []
-  },
+  "active_inquiry": null,
   "campaign": {
     "base_commit": "183ba7483c02b821a562dc3107d9c0100b10d3d9",
     "id": "1ae27a27-6880-4ca6-9d50-e6498e771cb7",
@@ -4115,7 +4104,7 @@
     }
   },
   "counters": {
-    "event": 19,
+    "event": 20,
     "inquiry": 5,
     "measurement": 6,
     "session": 11,
@@ -7964,9 +7953,63 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-09T00:35:12Z",
+      "error": null,
+      "id": "E20",
+      "inquiry_id": "I5",
+      "kind": "inquiry",
+      "request": {
+        "action": "close",
+        "outcome": "I5 closes with a negative, intervention-limited result and redirects toward targeted representation or branch-conditioned action design. The hold-exit-forfeiture continuation T6 matched T3 at 95.625 percent success (153/160), and the paired comparison found zero discordant episodes, so the intervention neither repaired the residual failures nor changed the evaluated policy outcomes.",
+        "reason": "M6 satisfies the I5 closure condition with a paired full-distribution evaluation using the same 160 episode seeds and the required episode-diagnostic artifact structure. T6 preserved T3's incremental radius curriculum, uniform angle exposure, observation and action representation, and broad learned regime, while changing only the reward's hold-exit forfeiture. Its null paired result shows that this tested terminal-control reward signal is not sufficient to close the gap. It does not establish that terminal control, action margin, or incremental transfer are generally incapable of improvement; it rejects this reward intervention as a route to at least 98 percent development success. The residual failures persist under preserved transfer behavior, so the next direction should change the policy representation, branch conditioning, or action structure rather than repeat this reward-only recipe."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I5",
+        "outcome": "I5 closes with a negative, intervention-limited result and redirects toward targeted representation or branch-conditioned action design. The hold-exit-forfeiture continuation T6 matched T3 at 95.625 percent success (153/160), and the paired comparison found zero discordant episodes, so the intervention neither repaired the residual failures nor changed the evaluated policy outcomes.",
+        "reason": "M6 satisfies the I5 closure condition with a paired full-distribution evaluation using the same 160 episode seeds and the required episode-diagnostic artifact structure. T6 preserved T3's incremental radius curriculum, uniform angle exposure, observation and action representation, and broad learned regime, while changing only the reward's hold-exit forfeiture. Its null paired result shows that this tested terminal-control reward signal is not sufficient to close the gap. It does not establish that terminal control, action margin, or incremental transfer are generally incapable of improvement; it rejects this reward intervention as a route to at least 98 percent development success. The residual failures persist under preserved transfer behavior, so the next direction should change the policy representation, branch conditioning, or action structure rather than repeat this reward-only recipe.",
+        "status": "completed"
+      },
+      "session_id": "S11",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "close",
+        "inquiry_id": "I5",
+        "outcome": "I5 closes with a negative, intervention-limited result and redirects toward targeted representation or branch-conditioned action design. The hold-exit-forfeiture continuation T6 matched T3 at 95.625 percent success (153/160), and the paired comparison found zero discordant episodes, so the intervention neither repaired the residual failures nor changed the evaluated policy outcomes.",
+        "reason": "M6 satisfies the I5 closure condition with a paired full-distribution evaluation using the same 160 episode seeds and the required episode-diagnostic artifact structure. T6 preserved T3's incremental radius curriculum, uniform angle exposure, observation and action representation, and broad learned regime, while changing only the reward's hold-exit forfeiture. Its null paired result shows that this tested terminal-control reward signal is not sufficient to close the gap. It does not establish that terminal control, action margin, or incremental transfer are generally incapable of improvement; it rejects this reward intervention as a route to at least 98 percent development success. The residual failures persist under preserved transfer behavior, so the next direction should change the policy representation, branch conditioning, or action structure rather than repeat this reward-only recipe."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I5",
+        "outcome": "I5 closes with a negative, intervention-limited result and redirects toward targeted representation or branch-conditioned action design. The hold-exit-forfeiture continuation T6 matched T3 at 95.625 percent success (153/160), and the paired comparison found zero discordant episodes, so the intervention neither repaired the residual failures nor changed the evaluated policy outcomes.",
+        "reason": "M6 satisfies the I5 closure condition with a paired full-distribution evaluation using the same 160 episode seeds and the required episode-diagnostic artifact structure. T6 preserved T3's incremental radius curriculum, uniform angle exposure, observation and action representation, and broad learned regime, while changing only the reward's hold-exit forfeiture. Its null paired result shows that this tested terminal-control reward signal is not sufficient to close the gap. It does not establish that terminal control, action margin, or incremental transfer are generally incapable of improvement; it rejects this reward intervention as a route to at least 98 percent development success. The residual failures persist under preserved transfer behavior, so the next direction should change the policy representation, branch conditioning, or action structure rather than repeat this reward-only recipe.",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E20",
+    "inquiry_id": "I5",
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "close",
+        "outcome": "I5 closes with a negative, intervention-limited result and redirects toward targeted representation or branch-conditioned action design. The hold-exit-forfeiture continuation T6 matched T3 at 95.625 percent success (153/160), and the paired comparison found zero discordant episodes, so the intervention neither repaired the residual failures nor changed the evaluated policy outcomes.",
+        "reason": "M6 satisfies the I5 closure condition with a paired full-distribution evaluation using the same 160 episode seeds and the required episode-diagnostic artifact structure. T6 preserved T3's incremental radius curriculum, uniform angle exposure, observation and action representation, and broad learned regime, while changing only the reward's hold-exit forfeiture. Its null paired result shows that this tested terminal-control reward signal is not sufficient to close the gap. It does not establish that terminal control, action margin, or incremental transfer are generally incapable of improvement; it rejects this reward intervention as a route to at least 98 percent development success. The residual failures persist under preserved transfer behavior, so the next direction should change the policy representation, branch conditioning, or action structure rather than repeat this reward-only recipe."
+      }
+    },
+    "request_fingerprint": "aac8abea6102b189da4312fb533166195f80e21a001e114df3275d1cd4de913c",
+    "session_id": "S11",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T3:checkpoint-120832 remains the strongest measured development candidate at 95.625% on M4 and the reference in M5, but no working, best-known, or retained role is assigned. T5:checkpoint-120832 is a negative, recipe-limited continuation at 93.125% and receives no role. T1:checkpoint-120832 remains the 68.75% baseline reference; T2:checkpoint-120832 remains the 1.25% negative recipe result.",
     "completed_operations": [
@@ -8016,7 +8059,8 @@
     "objective": "Advance I5 toward an evidence-supported answer to its scientific question: Can a targeted terminal-control or action-margin intervention built on T3 eliminate its residual radius-angle completion failures, reaching at least 98% development success while preserving T3's broad first reach and approximately four hold interruptions? Before choosing the next action, compare the accumulated evidence with the closure condition. Close the inquiry when the condition is met.",
     "operation_ids": [
       "T6",
-      "M6"
+      "M6",
+      "E20"
     ],
     "scientific_parent_commit": "64de05fde67e99fbf01d43286886330a4ae20359"
   },
