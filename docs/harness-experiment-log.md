@@ -447,7 +447,7 @@ Implementation checks and unassessed campaign effects are not separate issues.
 |---|---|---|
 | OI-001 | Startup scientific-method selection | **Closed effective 2026-10-09.** Defined as a failure of traceable coupling from the PI-generated scientific briefing, through startup action selection, to the startup handoff. Three failure locations: briefing defect, use defect and handoff defect. Campaign `896c230a` shows the coupling intact end to end: the model named the omitted 0.06-0.14 m region as the most immediate distinction, startup requested T1 as a declared control for that distinction, M1 and M2 measured radius, first-reach and hold before any intervention, and E1 handed off evidence, an unresolved coverage-versus-stabilization frontier and a conditional next question. I1 then tested the named distinction directly. The campaign does not isolate which prompt element produced this; closure rests on the defect not recurring with the coupling observable, not on causal attribution. Startup cost remains OI-006. |
 | OI-002 | Inquiry control and bounded closure | **Closed 2026-10-09; bounded closure observed.** The contract and inquiry reminder permit positive, negative, limited and inconclusive closure. Campaign `1ae27a27` closed all inquiries at their declared evidence boundaries, including negative and limited results. The campaign does not isolate causality, but the original indefinite-continuation symptom did not recur. Inquiry granularity and later progression belong to OI-004; the temporary cap remains OI-013. |
-| OI-003 | Measurement-evidence inspection and interpretation | **Evidence-handoff revision implemented 2026-10-09; campaign effect unmeasured.** Campaign `79395c88` ended by stating that M30 did not expose nearest-branch limit margins even though the completed artifact contains them. The recorded M30 inventory was untruncated and listed `terminal_state` among the `episode_diagnostics` fields, but the inventory does not expand array elements, so the nested margin field never appeared in it. The `current_synthesis` convention now requires a direction-changing conclusion to identify its supporting operation and artifact field, states that an uninspected diagnostic is not missing evidence, and warns that a structure-only inventory can omit existing fields. No Runner scientific gate, fixed diagnostic sequence or exhaustive artifact review was added. Extending inventory depth remains a separate mechanical option. See the [comprehensive campaign RCA](campaign_79395c88_comprehensive_rca_20261009.md). |
+| OI-003 | Measurement-evidence inspection and interpretation | **Evidence-handoff revision implemented 2026-10-09; campaign effect unmeasured.** Campaign `79395c88` ended by stating that M30 did not expose nearest-branch limit margins even though the completed artifact contains them. The recorded M30 inventory was untruncated and listed `terminal_state` among the `episode_diagnostics` fields, but the inventory does not expand array elements, so the nested margin field never appeared in it. The `current_synthesis` convention now requires a direction-changing conclusion to identify its supporting operation and artifact field, states that an uninspected diagnostic is not missing evidence, and warns that a structure-only inventory can omit existing fields. No Runner scientific gate, fixed diagnostic sequence or exhaustive artifact review was added. The missing on-demand access capability is tracked separately as OI-017. See the [comprehensive campaign RCA](campaign_79395c88_comprehensive_rca_20261009.md). |
 | OI-004 | Checkpoint nomination, evidence selection and scientific progression | **Closed effective 2026-10-09.** The bounded repair gives terminal checkpoints no privileged status, preserves failed or unavailable discriminating evidence as unresolved, and requires the next direction to follow completed evidence and the recorded frontier. The final campaign `896c230a` reinforced this behavior: T5 was selected by matched transfer evidence and strong reach-versus-hold diagnostics, while the campaign still failed the protected 196/200 objective. The scientific progression effect is therefore confirmed, although the goal remained unmet. |
 | OI-005 | Counterevidence preservation and official-assessment readiness | **Postponed.** The narrow readiness guidance was withdrawn. Residual-evidence loss and premature readiness conclusions remain unresolved. No replacement readiness prompt is approved. |
 | OI-006 | Full startup-budget review | **Pending.** Shorter startup requests are permitted, but the maintainer-owned 120,000-step ceiling and its scientific effect have not received the planned full review. This budget question is not the cause or solution for OI-001. Campaign `896c230a` spent the full allocation on the T1 control before any measurement, so the question of whether equivalent startup evidence is obtainable more cheaply stays open here. |
@@ -461,6 +461,7 @@ Implementation checks and unassessed campaign effects are not separate issues.
 | OI-014 | Single-change attribution in an intervention | **Open; wording support added 2026-10-09.** An intervention can change several factors at once and then receive a single-cause explanation. Campaign `79395c88` changed training seeds across observation and rollout-horizon variants, so the measured candidates are valid but the individual representation or horizon effects are not isolated. The `current_synthesis` convention now requires a conclusion to preserve that limit and report the result as a property of the compared artifacts when other factors changed with the intended one. This is a reporting requirement only: mandatory matched seeds, repeatable campaigns and attribution instruments remain unapproved, so the issue stays open. See the [comprehensive campaign RCA](campaign_79395c88_comprehensive_rca_20261009.md). |
 | OI-015 | Intended intervention versus effective experiment | **Component observability implemented; semantic realization addressed in wording 2026-10-09.** The serialized-component comparison remains valid and campaign `79395c88` emitted it without false equality claims, but no duplicate-policy case exercised its intended behavioral warning. The campaign also exposed a different realization failure: T10 implemented PPO expert-action reward shaping, while I12 reasoned about direct controller imitation and closed that route without exercising direct supervised imitation. Component hashes cannot detect this semantic mismatch. The `current_synthesis` convention now requires a conclusion about an intended method to state what the operation implemented, limit the claim to what that implementation exercised, and leave the unexercised part in the decision frontier. Campaign effect is unmeasured. See the [comprehensive campaign RCA](campaign_79395c88_comprehensive_rca_20261009.md). |
 | OI-016 | Operation-shaped inquiry formation and first-action precommitment | **Corrective revision implemented 2026-10-09; campaign effect unmeasured.** Campaign `79395c88` showed the first implementation ineffective. The replacement permits method-specific bounded inquiries, makes closed-session `next_question` a revisable proposal for goal review, preserves exact identity only after an inquiry opens, and lets existing evidence correct inherited interpretations, research constraints and proposed actions. After goal review checkpoints, the fresh inquiry now receives that review's actual synthesis and active question instead of stale pre-review state. Repetitive restatement and first-operation justification prompts were removed; peer instruments, bounded closure, PI authority and Runner non-judgment remain unchanged. Two independent fixed-evidence replays of the pre-I13 goal-review boundary, using the historical `gpt-5.6-luna` high-reasoning specification, both declined the inherited question and opened the broader frontier directly, where the campaign had opened and closed I13 with no new operation. This is boundary-level replication, not campaign-level proof. See the [comprehensive campaign RCA](campaign_79395c88_comprehensive_rca_20261009.md) and the earlier [OI-016-focused RCA](oi016_post_campaign_rca_20261009.md). |
+| OI-017 | On-demand access to nested artifact evidence | **Approved for the next implementation round.** The compact structure-only artifact inventory does not expand array elements. In M30 it exposed `episode_diagnostics[*].terminal_state` but not the nested `ik.nearest_branch_limit_margin_rad` field, so evidence present in the immutable artifact was not discoverable from the inventory and was later reported missing. Implement a generic read-only evidence-access capability, preferably as a Copilot SDK custom tool. If that integration is unsuitable, provide the same capability through a PI-visible Runner/adapter query interface; do not replace it with an ever-growing static prompt inventory. The interface must discover paths through arrays, query recorded artifact fields, support bounded filtering and aggregation, distinguish absent, uninspected, unavailable and query-failed states, and return operation ID, artifact path, field path and immutable fingerprint provenance. It remains mechanical: it does not choose diagnostics, interpret values, judge adequacy, require an inspection sequence or expose arbitrary repository files. |
 
 ### Detailed backlog and status context
 
@@ -3106,7 +3107,53 @@ Addresses OI-003, OI-015 and OI-014 together as Priority 2 of the
   the launcher.
 - **Not included:** OI-014 attribution instruments, Priority 3 accidental gates
   and slice labeling, brief compaction and richer artifact indexing remain
-  separate. Extending the artifact inventory to expand nested fields under
-  array rows is a distinct mechanical change and is not made here.
+  separate. The missing on-demand nested artifact access is now OI-017 and is
+  approved for the next implementation round.
 - **Campaign boundary:** no campaign was launched, resumed, reset, trained,
   measured or evaluated. Campaign effect remains unmeasured.
+
+## 2026-10-09: register OI-017 nested artifact evidence access
+
+- **Finding:** the M30 recurrence was not only an interpretation failure. The
+  compact artifact inventory cannot reveal arbitrary nested fields below array
+  rows. Its untruncated entry for the 200 `episode_diagnostics` rows listed
+  `terminal_state`, but it could not expose
+  `terminal_state.ik.nearest_branch_limit_margin_rad`. The full immutable
+  artifact contained the values. A PI using the inventory for discovery could
+  therefore fail to know that a relevant diagnostic existed.
+- **Disposition:** register OI-017 and implement it in the next round. The
+  preferred form is a generic read-only Copilot SDK custom tool. If the SDK
+  cannot provide the required campaign scoping, provenance or bounded output,
+  implement the same capability as a PI-visible Runner/adapter artifact-query
+  interface. The capability is required; the transport is an implementation
+  decision.
+- **Required capability:** discover nested paths through array elements; query
+  a field by path; apply bounded filters and aggregates to array values; and
+  distinguish field absent, field present but not inspected, artifact
+  unavailable and query failure. Every result identifies the completed
+  operation, recorded artifact path, queried field path and immutable artifact
+  fingerprint.
+- **Access boundary:** queries are limited to artifacts already recorded by
+  completed campaign operations. Paths are resolved from Runner state rather
+  than accepted as arbitrary filesystem input. The implementation verifies the
+  recorded fingerprint and returns bounded results. It cannot read unrelated
+  repository files or mutate an artifact.
+- **Scientific boundary:** the interface does not select relevant diagnostics,
+  interpret values, decide whether evidence is sufficient, prescribe a
+  sequence or automatically inject full artifacts into PI context. The PI
+  chooses the query and owns the conclusion. The Runner or adapter only
+  retrieves exact evidence and provenance.
+- **Presentation boundary:** do not solve this by recursively embedding all
+  nested fields or values in the brief. Static inventory remains compact;
+  detailed evidence is retrieved on demand. Brief compaction and general
+  artifact indexing remain separate presentation work, but OI-017 must be
+  completed before the artifact-access defect is considered fixed.
+- **Validation target:** replay the M30 evidence question through the new
+  interface. The PI must be able to discover and query the nearest-branch
+  margin field and obtain the recorded 15 positive and eight nonpositive values
+  among the 23 pre-reach failures without loading the complete 200-episode
+  payload into the prompt. Also verify explicit absent-field, unavailable-
+  artifact, fingerprint-mismatch and bounded-output behavior.
+- **Campaign boundary:** this entry approves and scopes future implementation
+  only. No tool, Runner behavior or campaign state changes here, and no campaign
+  is launched, resumed, reset, trained, measured or evaluated.
