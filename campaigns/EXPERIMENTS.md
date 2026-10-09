@@ -95,3 +95,4 @@
 | M22 | measurement | I13 | failed |
 | M23 | measurement | I13 | completed |
 | E55 | inquiry | I13 | completed |
+| E56 | checkpoint | I13 | checkpointed |
