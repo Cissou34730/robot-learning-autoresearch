@@ -25795,38 +25795,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I11",
-        "outcome": "limited negative",
-        "reason": "M21 establishes a bounded negative for the tested less-coupled static branch- and limit-conditioned PPO recipe. T12:checkpoint-120832 measured 44/160 successes, far below the 196/200-equivalent development condition, and achieved only 20/40 successes for targets below 10 cm, so it did not preserve the established inner-band behavior. The paired branch/limit replay found 103 of 116 failures without first tolerance entry and only 13 after first reach, with 13 total hold interruptions. Among the 103 non-reaching failures, 95 had nonnegative nearest-branch limit margins; only eight were negative-margin observations. The aggregate failure therefore remains dominated by learned acquisition or trajectory execution despite explicit static IK target, branch indicator and limit-margin context, rather than by a broad lack of feasible branch or by post-reach stabilization. T12's improved training trajectory and 44/160 measured result show that separating the coupled T11 contract can recover some learning signal and performance, so this does not invalidate policy methods or all branch-conditioned designs. It does establish that this particular max-margin static observation contract is insufficient for the human goal and does not meet I11's closure threshold. The evidence redirects the campaign toward learned acquisition or controller imitation using the demonstrated same-interface computed-torque capability, while hold stabilization remains secondary. No learned candidate meets the development threshold and no official assessment is justified."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I11",
-        "outcome": "limited negative",
-        "reason": "M21 establishes a bounded negative for the tested less-coupled static branch- and limit-conditioned PPO recipe. T12:checkpoint-120832 measured 44/160 successes, far below the 196/200-equivalent development condition, and achieved only 20/40 successes for targets below 10 cm, so it did not preserve the established inner-band behavior. The paired branch/limit replay found 103 of 116 failures without first tolerance entry and only 13 after first reach, with 13 total hold interruptions. Among the 103 non-reaching failures, 95 had nonnegative nearest-branch limit margins; only eight were negative-margin observations. The aggregate failure therefore remains dominated by learned acquisition or trajectory execution despite explicit static IK target, branch indicator and limit-margin context, rather than by a broad lack of feasible branch or by post-reach stabilization. T12's improved training trajectory and 44/160 measured result show that separating the coupled T11 contract can recover some learning signal and performance, so this does not invalidate policy methods or all branch-conditioned designs. It does establish that this particular max-margin static observation contract is insufficient for the human goal and does not meet I11's closure threshold. The evidence redirects the campaign toward learned acquisition or controller imitation using the demonstrated same-interface computed-torque capability, while hold stabilization remains secondary. No learned candidate meets the development threshold and no official assessment is justified.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E48",
-    "inquiry_id": "I11",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "limited negative",
-        "reason": "M21 establishes a bounded negative for the tested less-coupled static branch- and limit-conditioned PPO recipe. T12:checkpoint-120832 measured 44/160 successes, far below the 196/200-equivalent development condition, and achieved only 20/40 successes for targets below 10 cm, so it did not preserve the established inner-band behavior. The paired branch/limit replay found 103 of 116 failures without first tolerance entry and only 13 after first reach, with 13 total hold interruptions. Among the 103 non-reaching failures, 95 had nonnegative nearest-branch limit margins; only eight were negative-margin observations. The aggregate failure therefore remains dominated by learned acquisition or trajectory execution despite explicit static IK target, branch indicator and limit-margin context, rather than by a broad lack of feasible branch or by post-reach stabilization. T12's improved training trajectory and 44/160 measured result show that separating the coupled T11 contract can recover some learning signal and performance, so this does not invalidate policy methods or all branch-conditioned designs. It does establish that this particular max-margin static observation contract is insufficient for the human goal and does not meet I11's closure threshold. The evidence redirects the campaign toward learned acquisition or controller imitation using the demonstrated same-interface computed-torque capability, while hold stabilization remains secondary. No learned candidate meets the development threshold and no official assessment is justified."
-      }
-    },
-    "request_fingerprint": "c0008f5b34730f6855888c90b465ab63ef346d0c20a56ce75f10bce69a0d66f6",
-    "session_id": "S23",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T8:checkpoint-60416 and T9:checkpoint-20480 remain the strongest measured learned candidates at 153/160 but have no protected working, best-known or retained role. T10:checkpoint-10240 and T10:checkpoint-120832 also measured 153/160 and are not promoted. T11:checkpoint-120832 is rejected as a viable candidate after its 0/160 result and 0/40 inner-band success. The M17 computed-torque controller is evidence of same-interface capability, not a learned candidate for the human goal. No candidate has an evidence-backed protected role. Opening I11 does not change candidate roles.",
     "completed_operations": [
