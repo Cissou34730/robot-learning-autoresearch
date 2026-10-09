@@ -1,16 +1,5 @@
 {
-  "active_inquiry": {
-    "closure_condition": "Close after one bounded reach-focused training intervention has an episode-level development evaluation against the current baseline, including full-distribution success, first-reach coverage, maximum held steps, hold interruptions, and radius-angle strata. A positive result requires improved difficult-geometry first reach and episode success with no material loss of complete holds; a negative or limited result is sufficient if reach does not improve or new hold interruptions become the dominant failure.",
-    "goal_connection": "The current learned candidate succeeds on 68.75% of development episodes, with most failures never entering tolerance and the largest deficits concentrated in short-radius and difficult-angle geometries. The human goal requires at least 196 of 200 complete uninterrupted holds, so the inquiry tests whether recovering global reach coverage can close the gap without trading it for hold failures.",
-    "handoff_conclusion": "M1 established nonzero compiled plant authority, no sampled self-contact in valid target branches, and complete local 100-step holds under zero input and bounded local PD. T1 trained a fresh baseline PPO policy, but its training-buffer success is not episode-level evidence. M2 evaluated its terminal candidate over 160 full-distribution episodes and found 110 successes (68.75%); 42 of 50 failures never entered tolerance, while only 8 entered tolerance without completing the hold. The outcomes were geometry-conditioned, with 59.3% success at 6-16 cm versus 91.5% at 16-20 cm and weak angle sectors below 65%. Therefore the tested recipe's dominant failure is global reach conditioned by target geometry, consistent with reset singularity and branch/joint-limit effects; terminal stabilization remains a secondary residual risk, not eliminated. E4 closes I1 as a limited actionable diagnosis. This result does not invalidate learning as a method or prove that every policy needs the same intervention.",
-    "handoff_question": "Can targeted training changes that improve reach coverage of short-radius and reset-opposed target geometries raise full-distribution first-reach and episode success toward the 98% goal without introducing terminal hold interruptions?",
-    "handoff_source_session_id": "S3",
-    "id": "I2",
-    "opened_in_session": "S4",
-    "question": "Can targeted training changes that improve reach coverage of short-radius and reset-opposed target geometries raise full-distribution first-reach and episode success toward the 98% goal without introducing terminal hold interruptions?",
-    "rationale": "M2 established that the tested baseline recipe is reach-limited and geometry-conditioned: 42 of 50 failures never entered tolerance, while only 8 entered tolerance without completing the hold. M1 established complete local holds under zero input and bounded local PD, but does not establish that a learned policy preserves that margin after a changed trajectory distribution. A fresh inquiry is therefore the highest-value next action: it permits a targeted learning change and requires the same episode-level diagnostics to distinguish genuine global coverage progress from reward or training-buffer improvement.",
-    "reframes": []
-  },
+  "active_inquiry": null,
   "campaign": {
     "base_commit": "183ba7483c02b821a562dc3107d9c0100b10d3d9",
     "id": "1ae27a27-6880-4ca6-9d50-e6498e771cb7",
@@ -1658,7 +1647,7 @@
     }
   },
   "counters": {
-    "event": 7,
+    "event": 8,
     "inquiry": 2,
     "measurement": 3,
     "session": 5,
@@ -3179,9 +3168,63 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-09T00:07:02Z",
+      "error": null,
+      "id": "E8",
+      "inquiry_id": "I2",
+      "kind": "inquiry",
+      "request": {
+        "action": "close",
+        "outcome": "I2 closes with a negative, recipe-limited result: the reach-focused intervention did not improve global reach coverage or episode success.",
+        "reason": "M3 evaluated T2 and T1 on the same 160 full-distribution episode seeds. T2 achieved 1.25% success versus T1's 68.75%, with a paired net result of -108 wins for T2 and only 1 candidate win. This fails the positive closure condition and strongly rejects the tested target-sampling recipe as a route to recover the reach deficit. The result does not establish that learning is invalid, nor does it establish terminal stabilization as the governing bottleneck; T2's broad episode collapse prevents that interpretation. The next direction should be selected in goal review from the remaining implementation and learning-dynamics explanations, while retaining T1 as the strongest measured candidate."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I2",
+        "outcome": "I2 closes with a negative, recipe-limited result: the reach-focused intervention did not improve global reach coverage or episode success.",
+        "reason": "M3 evaluated T2 and T1 on the same 160 full-distribution episode seeds. T2 achieved 1.25% success versus T1's 68.75%, with a paired net result of -108 wins for T2 and only 1 candidate win. This fails the positive closure condition and strongly rejects the tested target-sampling recipe as a route to recover the reach deficit. The result does not establish that learning is invalid, nor does it establish terminal stabilization as the governing bottleneck; T2's broad episode collapse prevents that interpretation. The next direction should be selected in goal review from the remaining implementation and learning-dynamics explanations, while retaining T1 as the strongest measured candidate.",
+        "status": "completed"
+      },
+      "session_id": "S5",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "close",
+        "inquiry_id": "I2",
+        "outcome": "I2 closes with a negative, recipe-limited result: the reach-focused intervention did not improve global reach coverage or episode success.",
+        "reason": "M3 evaluated T2 and T1 on the same 160 full-distribution episode seeds. T2 achieved 1.25% success versus T1's 68.75%, with a paired net result of -108 wins for T2 and only 1 candidate win. This fails the positive closure condition and strongly rejects the tested target-sampling recipe as a route to recover the reach deficit. The result does not establish that learning is invalid, nor does it establish terminal stabilization as the governing bottleneck; T2's broad episode collapse prevents that interpretation. The next direction should be selected in goal review from the remaining implementation and learning-dynamics explanations, while retaining T1 as the strongest measured candidate."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I2",
+        "outcome": "I2 closes with a negative, recipe-limited result: the reach-focused intervention did not improve global reach coverage or episode success.",
+        "reason": "M3 evaluated T2 and T1 on the same 160 full-distribution episode seeds. T2 achieved 1.25% success versus T1's 68.75%, with a paired net result of -108 wins for T2 and only 1 candidate win. This fails the positive closure condition and strongly rejects the tested target-sampling recipe as a route to recover the reach deficit. The result does not establish that learning is invalid, nor does it establish terminal stabilization as the governing bottleneck; T2's broad episode collapse prevents that interpretation. The next direction should be selected in goal review from the remaining implementation and learning-dynamics explanations, while retaining T1 as the strongest measured candidate.",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E8",
+    "inquiry_id": "I2",
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "close",
+        "outcome": "I2 closes with a negative, recipe-limited result: the reach-focused intervention did not improve global reach coverage or episode success.",
+        "reason": "M3 evaluated T2 and T1 on the same 160 full-distribution episode seeds. T2 achieved 1.25% success versus T1's 68.75%, with a paired net result of -108 wins for T2 and only 1 candidate win. This fails the positive closure condition and strongly rejects the tested target-sampling recipe as a route to recover the reach deficit. The result does not establish that learning is invalid, nor does it establish terminal stabilization as the governing bottleneck; T2's broad episode collapse prevents that interpretation. The next direction should be selected in goal review from the remaining implementation and learning-dynamics explanations, while retaining T1 as the strongest measured candidate."
+      }
+    },
+    "request_fingerprint": "c16f41b2d5f59c6fdec1722abfaf8d979df66a41abebf3ddf7baaf9349de9184",
+    "session_id": "S5",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T1:checkpoint-120832 remains the strongest measured candidate, with 68.75% success on M2, but no working or best-known role has been assigned. All other T1 checkpoints remain unassigned; no candidates are retained.",
     "completed_operations": [
@@ -3224,7 +3267,8 @@
     "objective": "Advance I2 toward an evidence-supported answer to its scientific question: Can targeted training changes that improve reach coverage of short-radius and reset-opposed target geometries raise full-distribution first-reach and episode success toward the 98% goal without introducing terminal hold interruptions? Before choosing the next action, compare the accumulated evidence with the closure condition. Close the inquiry when the condition is met.",
     "operation_ids": [
       "T2",
-      "M3"
+      "M3",
+      "E8"
     ],
     "scientific_parent_commit": "389d9791554824ee6c73e941b4dc3d0b760d1eb5"
   },
