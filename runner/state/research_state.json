@@ -9,7 +9,7 @@
   },
   "candidates": {},
   "counters": {
-    "event": 0,
+    "event": 1,
     "inquiry": 0,
     "measurement": 1,
     "session": 1,
@@ -18,7 +18,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -312,31 +312,152 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-09T12:06:40Z",
+      "error": null,
+      "id": "E1",
+      "inquiry_id": null,
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "No candidates exist; working, best-known, and retained roles are empty.",
+        "completed_operations": [
+          "M1"
+        ],
+        "cumulative_resource_use": "One candidate-free compiled-dynamics measurement completed; no training run or candidate evaluation has been performed.",
+        "current_goal_gap": "No learned candidate exists and there is no development success evidence. The remaining gap is to produce and diagnose a policy over the full official radius-angle distribution, with particular attention to complete holds rather than first arrival.",
+        "current_synthesis": "M1 directly observed the compiled MuJoCo model: timestep 0.002 s, 0.020 s control period, two limited joints, gear-5 bounded motors, nonzero compiled body masses and inertias, and the declared damping and armature. Unit-pulse responses produced large joint accelerations and velocities, while command reversals changed velocity sign within the first post-switch control interval in the tested postures. Limit probes produced explicit constraint forces and returned positions to the declared limits. These observations support the interpretation that the arm has ample nominal actuation and rapid reversal authority, so a generic inability to move or brake is not currently the strongest explanation for future policy failures. They also establish that joint limits are real constraints and could still make one IK branch locally poor. The competing unresolved explanations are therefore (1) insufficient branch/workspace coverage, especially near inner or outer radial regions and angular limit margins, and (2) arrival with residual velocity or error that interrupts the 100-step hold. M1 did not measure target-grid branch feasibility or learned-policy behavior, so it cannot distinguish those explanations or establish task success. The mechanical conclusion is recipe-independent for this compiled model but the response probes were sparse and not target-conditioned.",
+        "decision_frontier": "For a first learned candidate under the fixed task semantics, does failure arise mainly from geometric/branch coverage across the official radius-angle distribution or from post-entry stabilization during the uninterrupted hold? Evidence that failures cluster before first tolerance entry, with radius-angle and joint-limit margins, would favor branch-aware coverage and target-distribution changes. Evidence that most episodes enter tolerance but have short maximum held runs, high entry velocity, or repeated exits would favor stabilization-focused policy or reward design. If both occur, the dominant contribution must be quantified before selecting the intervention. M1 supports obtaining learned-policy evidence next; it does not justify choosing between these routes.",
+        "evidence_references": [
+          "M1"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 of 200 official episodes to complete a 2 second uninterrupted hold. M1 informs whether this is principally a mechanical-authority problem or a learned-policy coverage and stabilization problem.",
+        "next_direction_or_closure": "End startup and enter goal review. Open an inquiry on the baseline policy's failure mechanism, then train and evaluate one fresh baseline candidate before changing the learning recipe.",
+        "next_question": "When a fresh baseline policy is evaluated with hold and geometry diagnostics, are its failures dominated by reaching/branch coverage or by interruption after first entering the 1 cm tolerance band?"
+      },
+      "result": {
+        "session_id": "S1",
+        "status": "checkpointed"
+      },
+      "session_id": "S1",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
-  "pi_checkpoint": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "a2fce64a5feef1aa7c583f3082f0aaf33f65699c",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "No candidates exist; working, best-known, and retained roles are empty.",
+        "completed_operations": [
+          "M1"
+        ],
+        "cumulative_resource_use": "One candidate-free compiled-dynamics measurement completed; no training run or candidate evaluation has been performed.",
+        "current_goal_gap": "No learned candidate exists and there is no development success evidence. The remaining gap is to produce and diagnose a policy over the full official radius-angle distribution, with particular attention to complete holds rather than first arrival.",
+        "current_synthesis": "M1 directly observed the compiled MuJoCo model: timestep 0.002 s, 0.020 s control period, two limited joints, gear-5 bounded motors, nonzero compiled body masses and inertias, and the declared damping and armature. Unit-pulse responses produced large joint accelerations and velocities, while command reversals changed velocity sign within the first post-switch control interval in the tested postures. Limit probes produced explicit constraint forces and returned positions to the declared limits. These observations support the interpretation that the arm has ample nominal actuation and rapid reversal authority, so a generic inability to move or brake is not currently the strongest explanation for future policy failures. They also establish that joint limits are real constraints and could still make one IK branch locally poor. The competing unresolved explanations are therefore (1) insufficient branch/workspace coverage, especially near inner or outer radial regions and angular limit margins, and (2) arrival with residual velocity or error that interrupts the 100-step hold. M1 did not measure target-grid branch feasibility or learned-policy behavior, so it cannot distinguish those explanations or establish task success. The mechanical conclusion is recipe-independent for this compiled model but the response probes were sparse and not target-conditioned.",
+        "decision_frontier": "For a first learned candidate under the fixed task semantics, does failure arise mainly from geometric/branch coverage across the official radius-angle distribution or from post-entry stabilization during the uninterrupted hold? Evidence that failures cluster before first tolerance entry, with radius-angle and joint-limit margins, would favor branch-aware coverage and target-distribution changes. Evidence that most episodes enter tolerance but have short maximum held runs, high entry velocity, or repeated exits would favor stabilization-focused policy or reward design. If both occur, the dominant contribution must be quantified before selecting the intervention. M1 supports obtaining learned-policy evidence next; it does not justify choosing between these routes.",
+        "evidence_references": [
+          "M1"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 of 200 official episodes to complete a 2 second uninterrupted hold. M1 informs whether this is principally a mechanical-authority problem or a learned-policy coverage and stabilization problem.",
+        "inquiry_id": null,
+        "next_direction_or_closure": "End startup and enter goal review. Open an inquiry on the baseline policy's failure mechanism, then train and evaluate one fresh baseline candidate before changing the learning recipe.",
+        "next_question": "When a fresh baseline policy is evaluated with hold and geometry diagnostics, are its failures dominated by reaching/branch coverage or by interruption after first entering the 1 cm tolerance band?",
+        "session_id": "S1"
+      },
+      "presentation": {
+        "backend_session_id": "ca5ddaa6-08fb-48fa-a7d3-bc4d3c2a3dc0",
+        "campaign_id": "81a5458d-ce8f-4c03-b9d2-8ce4f1ff9e9e",
+        "campaign_usage": "5m23s | 6.95 AIU | prompt 692.6k (80% cached) | output 20.3k",
+        "session_id": "S1",
+        "session_kind": "startup",
+        "session_usage": "2m16s | 4.12 AIU | prompt 437.6k (80% cached) | output 9.8k"
+      },
+      "result": {
+        "session_id": "S1",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "1c7f719d8dde0b35ba5741884631980398793036",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E1",
+    "inquiry_id": null,
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "No candidates exist; working, best-known, and retained roles are empty.",
+        "completed_operations": [
+          "M1"
+        ],
+        "cumulative_resource_use": "One candidate-free compiled-dynamics measurement completed; no training run or candidate evaluation has been performed.",
+        "current_goal_gap": "No learned candidate exists and there is no development success evidence. The remaining gap is to produce and diagnose a policy over the full official radius-angle distribution, with particular attention to complete holds rather than first arrival.",
+        "current_synthesis": "M1 directly observed the compiled MuJoCo model: timestep 0.002 s, 0.020 s control period, two limited joints, gear-5 bounded motors, nonzero compiled body masses and inertias, and the declared damping and armature. Unit-pulse responses produced large joint accelerations and velocities, while command reversals changed velocity sign within the first post-switch control interval in the tested postures. Limit probes produced explicit constraint forces and returned positions to the declared limits. These observations support the interpretation that the arm has ample nominal actuation and rapid reversal authority, so a generic inability to move or brake is not currently the strongest explanation for future policy failures. They also establish that joint limits are real constraints and could still make one IK branch locally poor. The competing unresolved explanations are therefore (1) insufficient branch/workspace coverage, especially near inner or outer radial regions and angular limit margins, and (2) arrival with residual velocity or error that interrupts the 100-step hold. M1 did not measure target-grid branch feasibility or learned-policy behavior, so it cannot distinguish those explanations or establish task success. The mechanical conclusion is recipe-independent for this compiled model but the response probes were sparse and not target-conditioned.",
+        "decision_frontier": "For a first learned candidate under the fixed task semantics, does failure arise mainly from geometric/branch coverage across the official radius-angle distribution or from post-entry stabilization during the uninterrupted hold? Evidence that failures cluster before first tolerance entry, with radius-angle and joint-limit margins, would favor branch-aware coverage and target-distribution changes. Evidence that most episodes enter tolerance but have short maximum held runs, high entry velocity, or repeated exits would favor stabilization-focused policy or reward design. If both occur, the dominant contribution must be quantified before selecting the intervention. M1 supports obtaining learned-policy evidence next; it does not justify choosing between these routes.",
+        "evidence_references": [
+          "M1"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 of 200 official episodes to complete a 2 second uninterrupted hold. M1 informs whether this is principally a mechanical-authority problem or a learned-policy coverage and stabilization problem.",
+        "next_direction_or_closure": "End startup and enter goal review. Open an inquiry on the baseline policy's failure mechanism, then train and evaluate one fresh baseline candidate before changing the learning recipe.",
+        "next_question": "When a fresh baseline policy is evaluated with hold and geometry diagnostics, are its failures dominated by reaching/branch coverage or by interruption after first entering the 1 cm tolerance band?"
+      }
+    },
+    "request_fingerprint": "476cd1b09f3dbae81630cd8fc301659e1745ff288f91322309fef415ec7037ed",
+    "session_id": "S1",
+    "supersedes": null
+  },
+  "pi_checkpoint": {
+    "candidates_and_roles": "No candidates exist; working, best-known, and retained roles are empty.",
+    "completed_operations": [
+      "M1"
+    ],
+    "cumulative_resource_use": "One candidate-free compiled-dynamics measurement completed; no training run or candidate evaluation has been performed.",
+    "current_goal_gap": "No learned candidate exists and there is no development success evidence. The remaining gap is to produce and diagnose a policy over the full official radius-angle distribution, with particular attention to complete holds rather than first arrival.",
+    "current_synthesis": "M1 directly observed the compiled MuJoCo model: timestep 0.002 s, 0.020 s control period, two limited joints, gear-5 bounded motors, nonzero compiled body masses and inertias, and the declared damping and armature. Unit-pulse responses produced large joint accelerations and velocities, while command reversals changed velocity sign within the first post-switch control interval in the tested postures. Limit probes produced explicit constraint forces and returned positions to the declared limits. These observations support the interpretation that the arm has ample nominal actuation and rapid reversal authority, so a generic inability to move or brake is not currently the strongest explanation for future policy failures. They also establish that joint limits are real constraints and could still make one IK branch locally poor. The competing unresolved explanations are therefore (1) insufficient branch/workspace coverage, especially near inner or outer radial regions and angular limit margins, and (2) arrival with residual velocity or error that interrupts the 100-step hold. M1 did not measure target-grid branch feasibility or learned-policy behavior, so it cannot distinguish those explanations or establish task success. The mechanical conclusion is recipe-independent for this compiled model but the response probes were sparse and not target-conditioned.",
+    "decision_frontier": "For a first learned candidate under the fixed task semantics, does failure arise mainly from geometric/branch coverage across the official radius-angle distribution or from post-entry stabilization during the uninterrupted hold? Evidence that failures cluster before first tolerance entry, with radius-angle and joint-limit margins, would favor branch-aware coverage and target-distribution changes. Evidence that most episodes enter tolerance but have short maximum held runs, high entry velocity, or repeated exits would favor stabilization-focused policy or reward design. If both occur, the dominant contribution must be quantified before selecting the intervention. M1 supports obtaining learned-policy evidence next; it does not justify choosing between these routes.",
+    "evidence_references": [
+      "M1"
+    ],
+    "human_goal_connection": "The human goal requires at least 196 of 200 official episodes to complete a 2 second uninterrupted hold. M1 informs whether this is principally a mechanical-authority problem or a learned-policy coverage and stabilization problem.",
+    "inquiry_id": null,
+    "next_direction_or_closure": "End startup and enter goal review. Open an inquiry on the baseline policy's failure mechanism, then train and evaluate one fresh baseline candidate before changing the learning recipe.",
+    "next_question": "When a fresh baseline policy is evaluated with hold and geometry diagnostics, are its failures dominated by reaching/branch coverage or by interruption after first entering the 1 cm tolerance band?",
+    "scientific_commit": "1c7f719d8dde0b35ba5741884631980398793036",
+    "session_id": "S1"
+  },
   "schema_version": 6,
   "scientific_model": {
     "commit": "97bd94a34abe4423015f13971679d39664c0d4ec",
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "ca5ddaa6-08fb-48fa-a7d3-bc4d3c2a3dc0",
-    "id": "S1",
-    "inquiry_id": null,
-    "kind": "startup",
-    "objective": "Establish the most credible initial scientific direction toward the human goal from the scientific model and available evidence. Use scientific work in this session to establish or refine that direction, including building or adapting reusable scientific tools and PI-owned methods where needed. These capabilities can support subsequent inquiries. Choose the first useful scientific action and explain why it advances the direction. Preserve the work actually performed, resulting understanding, remaining uncertainties and chosen next action in the scientific session record.",
-    "operation_ids": [
-      "M1"
-    ],
-    "scientific_parent_commit": "a2fce64a5feef1aa7c583f3082f0aaf33f65699c"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
