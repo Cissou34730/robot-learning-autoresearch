@@ -270,6 +270,43 @@ It archives all produced candidates.
 It records the parent, scientific recipe, and learning-dynamics facts.
 Completion does not assign working, best-known, or retained roles.
 
+Candidate archival also records versioned SHA-256 fingerprints for identifiable
+serialized learned-state components. For the supported Stable-Baselines3 ZIP
+format these components are the policy, optimizer, additional tensor state and
+normalization file. The executable policy runtime is fingerprinted separately.
+Unsupported formats and unavailable optional components remain explicit; they
+do not prevent normal candidate archival.
+
+The completed training result contains an optional
+`saved_component_comparisons` object with these field types:
+
+| Field | Type |
+|---|---|
+| `schema_version` | integer |
+| `scope` | string |
+| `current_context` | object |
+| `current_context.parent` | string or null |
+| `current_context.seed` | integer |
+| `current_context.requested_steps` | integer |
+| `comparisons` | array |
+| `comparisons[].operation` | string |
+| `comparisons[].context` | object |
+| `comparisons[].current_checkpoint_count` | integer |
+| `comparisons[].prior_checkpoint_count` | integer |
+| `comparisons[].corresponding_checkpoint_count` | integer |
+| `comparisons[].step_sets_equal` | boolean |
+| `comparisons[].components` | object |
+| `comparisons[].runtime` | object |
+| `comparisons[].exact_component_matches` | array |
+
+Component and runtime entries contain integer `compared` and `equal` counts.
+Exact-match entries contain integer `training_steps` and string `candidate` and
+`prior_candidate` identities. Comparisons use corresponding saved training-step
+counts from earlier completed candidates in the same campaign. They report
+exact serialized-component equality only. They do not declare semantic policy
+equivalence, intervention activation, scientific independence, or candidate
+adequacy. The complete-artifact integrity fingerprint remains unchanged.
+
 The learning algorithm can round actual completed steps up to its rollout
 boundary. This does not authorize a different allocation.
 Before dispatch, an accepted training request must still satisfy the current

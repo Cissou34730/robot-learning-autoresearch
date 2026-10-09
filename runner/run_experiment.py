@@ -1307,6 +1307,118 @@ def _ensure_candidate_keys_available(state: dict, candidates: list[dict]) -> Non
         )
 
 
+def _saved_component_comparisons(
+    state: dict,
+    records: list[dict],
+    *,
+    parent: str | None,
+    seed: int,
+    requested_steps: int,
+) -> dict:
+    current_by_steps = {item["training_steps"]: item for item in records}
+    saved_cache: dict[str, dict] = {}
+
+    def saved(candidate: dict) -> dict:
+        artifact = str(candidate["artifact"])
+        if artifact not in saved_cache:
+            saved_cache[artifact] = repository.saved_component_fingerprints(
+                repository.resolve_repo_path(artifact)
+            )
+        return saved_cache[artifact]
+
+    events = {
+        event["id"]: event
+        for event in state["operation_events"]
+        if event.get("status") == "completed" and event.get("kind") == "training"
+    }
+    prior_by_operation: dict[str, list[dict]] = {}
+    for candidate in state["candidates"].values():
+        prior_by_operation.setdefault(candidate["origin_operation"], []).append(candidate)
+
+    comparisons: list[dict] = []
+    for operation_id, prior_candidates in prior_by_operation.items():
+        event = events.get(operation_id)
+        if event is None:
+            continue
+        prior_by_steps = {
+            candidate["training_steps"]: candidate for candidate in prior_candidates
+        }
+        corresponding_steps = sorted(set(current_by_steps) & set(prior_by_steps))
+        if not corresponding_steps:
+            continue
+        component_counts = {
+            name: {"compared": 0, "equal": 0}
+            for name in repository.SAVED_COMPONENT_NAMES
+        }
+        runtime_counts = {"compared": 0, "equal": 0}
+        exact_matches: list[dict] = []
+        for training_steps in corresponding_steps:
+            current = current_by_steps[training_steps]
+            prior = prior_by_steps[training_steps]
+            current_saved = saved(current)
+            prior_saved = saved(prior)
+            checkpoint_exact = True
+            for name in repository.SAVED_COMPONENT_NAMES:
+                current_component = current_saved["components"][name]
+                prior_component = prior_saved["components"][name]
+                if (
+                    current_component["status"] != "available"
+                    or prior_component["status"] != "available"
+                ):
+                    checkpoint_exact = False
+                    continue
+                component_counts[name]["compared"] += 1
+                if current_component["sha256"] == prior_component["sha256"]:
+                    component_counts[name]["equal"] += 1
+                else:
+                    checkpoint_exact = False
+            current_runtime = current_saved["runtime"]
+            prior_runtime = prior_saved["runtime"]
+            if (
+                current_runtime["status"] == "available"
+                and prior_runtime["status"] == "available"
+            ):
+                runtime_counts["compared"] += 1
+                if current_runtime["sha256"] == prior_runtime["sha256"]:
+                    runtime_counts["equal"] += 1
+            if checkpoint_exact:
+                exact_matches.append(
+                    {
+                        "training_steps": training_steps,
+                        "candidate": current["id"],
+                        "prior_candidate": prior["id"],
+                    }
+                )
+        prior_result = event["result"]
+        comparisons.append(
+            {
+                "operation": operation_id,
+                "context": {
+                    "parent": prior_result["parent"],
+                    "seed": prior_result["seed"],
+                    "requested_steps": prior_result["requested_steps"],
+                },
+                "current_checkpoint_count": len(current_by_steps),
+                "prior_checkpoint_count": len(prior_by_steps),
+                "corresponding_checkpoint_count": len(corresponding_steps),
+                "step_sets_equal": set(current_by_steps) == set(prior_by_steps),
+                "components": component_counts,
+                "runtime": runtime_counts,
+                "exact_component_matches": exact_matches,
+            }
+        )
+    return {
+        "schema_version": 1,
+        "scope": "exact_serialized_components",
+        "current_context": {
+            "parent": parent,
+            "seed": seed,
+            "requested_steps": requested_steps,
+        },
+        "comparisons": comparisons,
+    }
+
+
 def execute_training(state: dict, pending: dict) -> int:
     data = pending["data"]
     request = pending["request"]["training"]
@@ -1406,6 +1518,9 @@ def execute_training(state: dict, pending: dict) -> int:
         repository.write_state(state)
         raise
 
+    repository.persist_saved_components_inventory(
+        operation_id, archived, campaign_id=campaign_id
+    )
     records = _candidate_records(
         operation_id,
         archived,
@@ -1438,6 +1553,13 @@ def execute_training(state: dict, pending: dict) -> int:
             }
             for index, item in enumerate(records)
         ],
+        "saved_component_comparisons": _saved_component_comparisons(
+            state,
+            records,
+            parent=parent["id"] if isinstance(parent, dict) else None,
+            seed=int(request["seed"]),
+            requested_steps=timesteps,
+        ),
     }
 
     def apply(current: dict, _result: dict) -> None:

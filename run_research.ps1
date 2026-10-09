@@ -589,11 +589,38 @@ function Get-LatestSessionResult {
             [string]$_.path
         })
         $candidates = @($result.candidates)
+        $savedFact = ""
+        if ($result.saved_component_comparisons) {
+            $exact = @(
+                $result.saved_component_comparisons.comparisons |
+                    Where-Object { @($_.exact_component_matches).Count -gt 0 } |
+                    ForEach-Object {
+                        (
+                            "$($_.operation): " +
+                            "$(@($_.exact_component_matches).Count)/" +
+                            "$($_.corresponding_checkpoint_count) corresponding " +
+                            "checkpoints; runtime files " +
+                            "$($_.runtime.equal)/$($_.runtime.compared)"
+                        )
+                    }
+            )
+            $summary = if ($exact.Count -gt 0) {
+                $exact -join " | "
+            }
+            else {
+                "no exact checkpoint matches"
+            }
+            $savedFact = (
+                " Exact saved-component comparison=$summary. " +
+                "This reports serialized equality only; realization of an " +
+                "intended intervention is not determined."
+            )
+        }
         return (
             "Operation $identifier (training): candidates=$($candidates -join ', '); " +
             "learning dynamics=$($dynamics -join ' | '); provenance parent=" +
             "$($result.mechanical_provenance.code_parent_commit), changed=" +
-            "$($changed -join ', ')."
+            "$($changed -join ', ').$savedFact"
         )
     }
     $fact = if ($result.summary) {

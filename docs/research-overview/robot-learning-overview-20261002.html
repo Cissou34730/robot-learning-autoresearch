@@ -245,7 +245,8 @@
           <span class="tag">Open</span>
           <h3 style="margin-top: 12px">15 issues, OI-001 to OI-015</h3>
           <ul>
-            <li>Active: OI-014, OI-015.</li>
+            <li>Active: OI-014.</li>
+            <li>Implemented, awaiting campaign evidence: OI-015.</li>
             <li>Closed as effective: OI-001, OI-002, OI-003, OI-004.</li>
             <li>Postponed, paused, or waiting for a decision: OI-005, OI-006, OI-007, OI-011, OI-013.</li>
             <li>Not approved: OI-008, OI-009, OI-010, OI-012.</li>
@@ -259,7 +260,8 @@
             <li>OI-001 is closed as effective. In <code>896c230a</code> the briefing, the first startup action, and the handoff formed one traceable chain.</li>
             <li>OI-003 is closed as effective after the final <code>896c230a</code> campaign resolved the aggregate-only interpretation defect in practice.</li>
             <li>OI-004 remains closed as effective after the earlier <code>58dcd817</code> evidence and is consistent with the final campaign's transfer-learning result.</li>
-            <li>OI-014 and OI-015 remain the only open issues. Both come from the independent RCA.</li>
+            <li>OI-015 now reports exact learned-component matches separately from runtime and integrity fingerprints. Its campaign effect is unmeasured.</li>
+            <li>OI-014 remains open and unimplemented.</li>
           </ul>
           <p class="small muted" style="margin-top: 8px">The final campaign did not reach the human goal, but it confirmed the observed process improvements and the bounded scientific direction.</p>
         </article>
@@ -515,7 +517,7 @@
             <tr><td>OI-012</td><td>Publish a frozen policy independent of training. Campaign recovery is not authorized.</td><td><span class="tag">Proposal only</span></td></tr>
             <tr><td>OI-013</td><td>Remove the temporary 15-inquiry cap. The value is unchanged.</td><td><span class="tag">Pending</span></td></tr>
             <tr><td>OI-014</td><td>Single-change attribution. One intervention can change several factors and get a one-cause explanation. That explanation then steers later inquiries. A bundled change is valid if its candidate gets a direct paired evaluation and the open attribution stays visible.</td><td><span class="tag">Open</span></td></tr>
-            <tr><td>OI-015</td><td>Intended intervention versus effective experiment. T16 and T17 recorded different intended controller source, but corresponding learned-policy state, training records, and measured panel behavior were identical. The runtime artifacts differed, and the cause is unknown. The record does not establish that the intended T17 distinction was exercised.</td><td><span class="tag">Open, no repair approved</span></td></tr>
+            <tr><td>OI-015</td><td>Intended intervention versus effective experiment. Training results now report exact serialized learned-component matches across corresponding checkpoints while keeping runtime equality and the complete integrity fingerprint separate. The PI must preserve uncertainty when evidence does not establish that the intended distinction was exercised.</td><td><span class="tag">Implemented, unmeasured</span></td></tr>
           </tbody>
         </table>
       </div>
@@ -549,6 +551,7 @@
       <div class="card timeline">
         <h3 style="margin-top: 0">9 October</h3>
         <ul>
+          <li>OI-015 is implemented. Candidate archival now records separate learned-component and runtime fingerprints, completed training reports exact checkpoint matches, and both feedback paths state that serialized equality does not determine intervention realization. No campaign has measured the behavior change yet.</li>
           <li>OI-001 is closed as effective. Campaign <code>896c230a</code> shows the full chain: the model named the omitted 0.06-0.14 m region, startup ran T1 as a declared control, M1 and M2 measured first, and E1 handed off an unresolved frontier. The startup cost question stays in OI-006.</li>
           <li>Campaign <code>896c230a</code> finished at 193/200. It failed the goal but confirmed the OI-003 interpretation repair in use.</li>
           <li>Campaign <code>58dcd817</code> completed at 195/200. It missed the scientific goal by one episode, while providing the live-campaign evidence needed to close OI-004 as effective.</li>

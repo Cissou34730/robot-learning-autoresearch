@@ -14,6 +14,7 @@ import subprocess
 import tempfile
 import time
 import uuid
+import zipfile
 from collections import deque
 from collections.abc import Iterator
 from pathlib import Path, PureWindowsPath
@@ -50,6 +51,18 @@ OPTIONAL_ARTIFACT_FILES = (
     "replay_buffer.pkl",
     "policy_runtime.pkl",
 )
+SAVED_COMPONENTS_FILE = "saved_components.json"
+SAVED_COMPONENT_NAMES = (
+    "policy",
+    "optimizer",
+    "additional_tensor_state",
+    "normalization",
+)
+SAVED_MODEL_MEMBERS = {
+    "policy": "policy.pth",
+    "optimizer": "policy.optimizer.pth",
+    "additional_tensor_state": "pytorch_variables.pth",
+}
 
 STATE_FIELDS = {
     "schema_version",
@@ -1515,6 +1528,154 @@ def _validate_completed_training_result(result: dict) -> None:
         raise ValueError(
             "completed training learning_dynamics contradict completed_steps"
         )
+    comparisons = result.get("saved_component_comparisons")
+    if comparisons is None:
+        return
+    comparisons = _require_exact_fields(
+        comparisons,
+        {"schema_version", "scope", "current_context", "comparisons"},
+        "completed training saved_component_comparisons",
+    )
+    if comparisons["schema_version"] != 1:
+        raise ValueError("saved-component comparison schema version is unsupported")
+    if comparisons["scope"] != "exact_serialized_components":
+        raise ValueError("saved-component comparison scope is invalid")
+    current_context = _require_exact_fields(
+        comparisons["current_context"],
+        {"parent", "seed", "requested_steps"},
+        "saved-component current_context",
+    )
+    if current_context["parent"] is not None:
+        _nonempty(
+            current_context,
+            "parent",
+            "saved-component current_context parent",
+        )
+    _positive_integer(
+        current_context["seed"],
+        "saved-component current_context seed",
+        allow_zero=True,
+    )
+    _positive_integer(
+        current_context["requested_steps"],
+        "saved-component current_context requested_steps",
+    )
+    entries = comparisons["comparisons"]
+    if not isinstance(entries, list):
+        raise TypeError("saved-component comparisons must be a list")
+    for entry in entries:
+        entry = _require_exact_fields(
+            entry,
+            {
+                "operation",
+                "context",
+                "current_checkpoint_count",
+                "prior_checkpoint_count",
+                "corresponding_checkpoint_count",
+                "step_sets_equal",
+                "components",
+                "runtime",
+                "exact_component_matches",
+            },
+            "saved-component comparison",
+        )
+        _nonempty(entry, "operation", "saved-component comparison operation")
+        context = _require_exact_fields(
+            entry["context"],
+            {"parent", "seed", "requested_steps"},
+            "saved-component comparison context",
+        )
+        if context["parent"] is not None:
+            _nonempty(context, "parent", "saved-component comparison parent")
+        _positive_integer(
+            context["seed"],
+            "saved-component comparison seed",
+            allow_zero=True,
+        )
+        _positive_integer(
+            context["requested_steps"],
+            "saved-component comparison requested_steps",
+        )
+        for field in (
+            "current_checkpoint_count",
+            "prior_checkpoint_count",
+            "corresponding_checkpoint_count",
+        ):
+            _positive_integer(
+                entry[field],
+                f"saved-component comparison {field}",
+                allow_zero=True,
+            )
+        if not isinstance(entry["step_sets_equal"], bool):
+            raise TypeError("saved-component step_sets_equal must be boolean")
+        components = _require_exact_fields(
+            entry["components"],
+            set(SAVED_COMPONENT_NAMES),
+            "saved-component comparison components",
+        )
+        for name, counts in components.items():
+            counts = _require_exact_fields(
+                counts,
+                {"compared", "equal"},
+                f"saved-component comparison {name}",
+            )
+            compared = _positive_integer(
+                counts["compared"],
+                f"saved-component comparison {name} compared",
+                allow_zero=True,
+            )
+            equal = _positive_integer(
+                counts["equal"],
+                f"saved-component comparison {name} equal",
+                allow_zero=True,
+            )
+            if equal > compared:
+                raise ValueError("saved-component equal count exceeds compared count")
+        runtime = _require_exact_fields(
+            entry["runtime"],
+            {"compared", "equal"},
+            "saved-component comparison runtime",
+        )
+        runtime_compared = _positive_integer(
+            runtime["compared"],
+            "saved-component comparison runtime compared",
+            allow_zero=True,
+        )
+        runtime_equal = _positive_integer(
+            runtime["equal"],
+            "saved-component comparison runtime equal",
+            allow_zero=True,
+        )
+        if runtime_equal > runtime_compared:
+            raise ValueError("saved-component runtime equal count exceeds compared count")
+        exact_matches = entry["exact_component_matches"]
+        if not isinstance(exact_matches, list):
+            raise TypeError("saved-component exact matches must be a list")
+        for match in exact_matches:
+            match = _require_exact_fields(
+                match,
+                {"training_steps", "candidate", "prior_candidate"},
+                "saved-component exact match",
+            )
+            _positive_integer(
+                match["training_steps"],
+                "saved-component exact match training_steps",
+                allow_zero=True,
+            )
+            candidate = _nonempty(
+                match,
+                "candidate",
+                "saved-component exact match candidate",
+            )
+            if candidate not in candidates:
+                raise ValueError(
+                    "saved-component exact match names an unknown current candidate"
+                )
+            _nonempty(
+                match,
+                "prior_candidate",
+                "saved-component exact match prior_candidate",
+            )
 
 
 def _validate_completed_event_result(kind: str, result: dict) -> None:
@@ -1533,6 +1694,8 @@ def _validate_completed_event_result(kind: str, result: dict) -> None:
             "candidates",
             "learning_dynamics",
         }
+        if "saved_component_comparisons" in result:
+            fields.add("saved_component_comparisons")
     elif kind == "inquiry":
         fields = {"status", "action", "inquiry_id"}
         if result.get("action") == "close":
@@ -2315,6 +2478,99 @@ def artifact_fingerprint(artifact: Path) -> str:
     return digest.hexdigest()
 
 
+def saved_component_fingerprints(artifact: Path) -> dict:
+    components: dict[str, dict] = {}
+    try:
+        with zipfile.ZipFile(artifact / "model.zip") as archive:
+            members = set(archive.namelist())
+            for component, member in SAVED_MODEL_MEMBERS.items():
+                if member not in members:
+                    components[component] = {"status": "unavailable"}
+                    continue
+                components[component] = {
+                    "status": "available",
+                    "sha256": hashlib.sha256(archive.read(member)).hexdigest(),
+                }
+        model_format = "stable_baselines3_zip"
+    except (OSError, zipfile.BadZipFile):
+        model_format = "unsupported"
+        components.update(
+            {
+                component: {"status": "unsupported"}
+                for component in SAVED_MODEL_MEMBERS
+            }
+        )
+    normalization = artifact / "vecnormalize.pkl"
+    components["normalization"] = (
+        {
+            "status": "available",
+            "sha256": file_fingerprint(normalization),
+        }
+        if normalization.is_file()
+        else {"status": "unavailable"}
+    )
+    runtime = artifact / "policy_runtime.pkl"
+    return {
+        "schema_version": 1,
+        "format": model_format,
+        "components": components,
+        "runtime": (
+            {
+                "status": "available",
+                "sha256": file_fingerprint(runtime),
+            }
+            if runtime.is_file()
+            else {"status": "unavailable"}
+        ),
+    }
+
+
+def _saved_components_inventory(operation_id: str, archived: list[dict]) -> dict:
+    for item in archived:
+        artifact = resolve_repo_path(item["artifact"])
+        require_complete_inference_artifact(
+            artifact, f"archived candidate {item['name']!r}"
+        )
+        if artifact_fingerprint(artifact) != item["fingerprint"]:
+            raise ValueError("archived candidate fingerprint changed")
+    return {
+        "schema_version": 1,
+        "operation": operation_id,
+        "candidates": [
+            {
+                "name": item["name"],
+                "artifact": item["artifact"],
+                "training_steps": int(item["timesteps"]),
+                "saved_components": saved_component_fingerprints(
+                    resolve_repo_path(item["artifact"])
+                ),
+            }
+            for item in archived
+        ],
+    }
+
+
+def persist_saved_components_inventory(
+    operation_id: str,
+    archived: list[dict],
+    *,
+    campaign_id: str,
+) -> dict:
+    path = (
+        paths.campaign_checkpoint_root(campaign_id)
+        / operation_id.lower()
+        / SAVED_COMPONENTS_FILE
+    )
+    inventory = _saved_components_inventory(operation_id, archived)
+    if path.is_file():
+        existing = json.loads(path.read_text(encoding="utf-8"))
+        if existing != inventory:
+            raise ValueError("archived saved-component fingerprints changed")
+    else:
+        atomic_write_json(path, inventory)
+    return inventory
+
+
 def file_fingerprint(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
@@ -2389,6 +2645,9 @@ def archive_candidates(
             )
             if artifact_fingerprint(artifact) != item["fingerprint"]:
                 raise ValueError("archived candidate fingerprint changed")
+        persist_saved_components_inventory(
+            operation_id, archived, campaign_id=campaign_id
+        )
         return archived
     if destination.exists():
         shutil.rmtree(destination)
@@ -2413,4 +2672,5 @@ def archive_candidates(
         inventory_path,
         {"schema_version": 1, "operation": operation_id, "candidates": archived},
     )
+    persist_saved_components_inventory(operation_id, archived, campaign_id=campaign_id)
     return archived

@@ -138,6 +138,13 @@ outcome and mechanism evidence in `current_synthesis`. If the relevant evidence
 is absent, failed or unavailable, keep the mechanism claim unresolved. This
 does not require exhaustive inspection of unrelated artifact fields.
 
+Conclusions about an intended experimental distinction are limited to completed
+evidence that the distinction was exercised under the relevant conditions.
+When its realization remains unresolved, preserve that uncertainty in
+`current_synthesis` and `decision_frontier`. Matching saved state or measured
+outcomes does not by itself establish that an intended change was inactive,
+ineffective or equivalent.
+
 After each completed result, the selected next direction states which evidence
 supports continuing the current route, changing it, or obtaining missing
 evidence. The selected artifact and operation follow the remaining uncertainty

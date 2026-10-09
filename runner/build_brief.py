@@ -230,7 +230,7 @@ def _event_detail_lines(event: dict, *, inventory_refs: dict[str, str]) -> list[
             if isinstance(provenance, dict)
             else []
         )
-        return [
+        lines = [
             (
                 f"  - Training: initialization `{result['initialization']}`; "
                 f"parent `{result['parent'] or 'none'}`; seed {result['seed']}; "
@@ -244,6 +244,27 @@ def _event_detail_lines(event: dict, *, inventory_refs: dict[str, str]) -> list[
             + (", ".join(f"`{item}`" for item in changed) or "none")
             + ".",
         ]
+        saved = result.get("saved_component_comparisons")
+        if isinstance(saved, dict):
+            exact = []
+            for comparison in saved.get("comparisons") or []:
+                matches = comparison.get("exact_component_matches") or []
+                if not matches:
+                    continue
+                runtime = comparison.get("runtime") or {}
+                exact.append(
+                    f"`{comparison['operation']}`: {len(matches)}/"
+                    f"{comparison['corresponding_checkpoint_count']} corresponding "
+                    "checkpoints; runtime files "
+                    f"{runtime.get('equal', 0)}/{runtime.get('compared', 0)}"
+                )
+            lines.append(
+                "  - Exact saved-component comparison: "
+                + ("; ".join(exact) if exact else "no exact checkpoint matches")
+                + ". This reports serialized equality only; realization of an "
+                "intended intervention is not determined."
+            )
+        return lines
     return []
 
 

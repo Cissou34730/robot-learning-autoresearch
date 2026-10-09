@@ -459,7 +459,7 @@ Implementation checks and unassessed campaign effects are not separate issues.
 | OI-012 | Independent frozen-policy publication | **Proposal only.** Publication independent of training is not approved or implemented. Campaign recovery is not authorized. |
 | OI-013 | Remove the temporary fifteen-inquiry cap | **Pending.** The cap now pauses at a checkpointed boundary and no longer represents scientific exhaustion. Its value is unchanged. Removal remains a later maintainer decision. |
 | OI-014 | Single-change attribution in an intervention | **Open.** An intervention can change several factors at once and then receive a single-cause explanation. The explanation directs the following inquiries, so a wrong attribution can send later work along the wrong route. The requirement is attribution that matches the change, not a repeatable campaign. A bundled change stays valid when its candidate receives direct paired evaluation and the unresolved attribution stays visible. No design or runtime change is approved. |
-| OI-015 | Intended intervention versus effective experiment | **Open 2026-10-09; no repair approved.** T16 and T17 recorded different intended controller source, but all corresponding learned-policy and optimizer members, all training records, and all 160 measured episode behaviors were identical. Their complete runtime artifacts were not byte-identical, and the cause is unknown. The record does not establish whether the new intervention was inactive, neutralized, delivered differently at runtime, or equivalent for another reason. An intended source change must not be counted as an independent effective experiment until completed evidence establishes that the experimental distinction was exercised. |
+| OI-015 | Intended intervention versus effective experiment | **Implemented 2026-10-09; campaign effect unmeasured.** Candidate archival now preserves the existing complete-artifact integrity fingerprint and separately fingerprints identifiable learned-state components. Completed training reports exact component matches across corresponding earlier checkpoints, with executable-runtime equality kept separate. Immediate feedback and the durable brief state that serialized equality does not determine realization of the intended intervention. The PI contract requires uncertainty to remain visible until completed evidence establishes that the intended distinction was exercised. |
 
 ### Detailed backlog and status context
 
@@ -2867,3 +2867,41 @@ separate from harness changes so their outcomes are not conflated.
   entry is a read-only review of a campaign the maintainer runs.
 - **Status:** OI-001 closed effective 2026-10-09. Remaining open issues are
   OI-014 and OI-015.
+
+## 2026-10-09: implement the bounded OI-015 realization-observability repair
+
+- **Independent RCA:** `docs/oi015_independent_rca_20261009.md` established exact
+  equality of the policy, optimizer, additional tensor state and normalization
+  files at all 24 corresponding T16/T17 checkpoints, while their executable
+  runtime files differed. It did not establish why the equality occurred or
+  whether the intended controller distinction was exercised.
+- **Mechanical observation:** candidate archival now writes versioned
+  fingerprints for the identifiable serialized learned-state components and
+  for the executable runtime separately. The existing complete-artifact
+  fingerprint remains unchanged for integrity.
+- **Comparison result:** completed training compares corresponding saved step
+  counts with earlier completed candidates in the same campaign. It records
+  per-component compared/equal counts, exact matching candidate identities,
+  checkpoint coverage, runtime equality and parent, seed and allocation
+  context. Unsupported formats or unavailable optional components remain
+  explicit and do not prevent archival.
+- **Delivery:** the comparison is persisted in the completed training result,
+  shown in immediate result feedback, and retained in the durable campaign
+  brief. Interrupted publication reconstructs or verifies the deterministic
+  archival metadata before completing.
+- **Scientific boundary:** exact serialized equality is an observation, not a
+  declaration of semantic policy equivalence, intervention inactivity,
+  scientific independence or candidate adequacy. `contracts/program.md`
+  requires unresolved realization to remain in `current_synthesis` and
+  `decision_frontier`; the PI still chooses whether and how to investigate it.
+- **Validation:** the current schema-6 state and both old and new completed
+  training-result shapes validate. The new component logic reproduces the
+  archived T16/T17 fact: learned components equal and runtime unequal. A
+  temporary end-to-end archival reproduction verifies sidecar persistence,
+  checkpoint matching and runtime separation. Python syntax, PowerShell parsing
+  and touched-file whitespace checks pass.
+- **Boundary:** no campaign was launched, resumed, reset, trained, measured or
+  evaluated. No existing artifact fingerprint, operation permission, candidate
+  acceptance rule or model-role behavior changed.
+- **Status:** OI-015 implementation is complete. Its effect on PI behavior is
+  unmeasured, so the issue is not yet closed.
