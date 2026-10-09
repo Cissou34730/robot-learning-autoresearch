@@ -1,5 +1,16 @@
 {
-  "active_inquiry": null,
+  "active_inquiry": {
+    "closure_condition": "Close when completed uniform-panel evidence from a phase-aware, history-dependent and trajectory-aware policy acquisition method establishes whether it can reach at least 196/200-equivalent successes while preserving 40/40 inner-band success, and reports first-reach, post-reach, velocity, and hold-interruption diagnostics. A positive result supports continued policy development and candidate selection; persistent same-seed failures or loss of inner-band behavior redirects the campaign toward branch- or limit-conditioned trajectory design, while an inconclusive result preserves the distinction.",
+    "goal_connection": "The human goal requires at least 196 successful episodes out of 200 under the official target distribution, with every success requiring an uninterrupted 100-step hold. The best learned candidates remain at 153/160, while same-interface computed-torque control achieved 160/160. Resolving whether a policy acquisition method with explicit phase, history, and trajectory information can transfer that demonstrated capability is the most direct next step toward the goal.",
+    "handoff_conclusion": "M1 established substantial transient actuation authority and at least one feasible analytic IK branch for every sampled official target, with 64 of 576 grid targets having only one feasible branch. T1 measured 150/160 with 40/40 successes for targets below 10 cm, seven pre-reach failures, and three post-reach failures. T8 improved the unchanged direct-action route to 153/160 while preserving 40/40 below 10 cm; M13 measured one pre-reach and six post-reach failures with six hold interruptions. T9 also measured 153/160, matched T8 on paired outcomes, recovered none of its residual episodes, and reduced interruptions from six to five while shifting the failure split. M17 then established same-interface controllability rather than interface incapability: computed-torque control achieved 160/160 for each of three gain settings, including 93/93 targets below 14 cm, with zero pre-reach failures, zero post-reach failures, and zero hold interruptions. M18 tested the controller-derived action-prior PPO recipe using early and terminal T10 checkpoints under the same uniform panel. Both achieved 153/160, preserved 40/40 below 10 cm, and failed on exactly the same seven seeds. The early checkpoint had one pre-reach and six post-reach failures with six interruptions; the terminal checkpoint had four pre-reach and three post-reach failures with three interruptions. Thus the completed evidence supports a limited negative for this PPO action-prior recipe: it did not transfer the available direct-action controllability into the learned policy, although its aggregate result preserved the inner-band behavior. The evidence does not establish that every policy-side method fails. The leading unresolved mechanism is now a policy representation/acquisition mismatch, prioritized over actuator redesign: the policy lacks explicit phase/history and previous-action information while it must switch from approach to a velocity-sensitive uninterrupted hold, and the tested action prior did not solve that acquisition problem.",
+    "handoff_question": "Can an explicitly phase-aware, history-dependent and trajectory-aware policy acquisition method transfer the demonstrated same-interface controllability to at least 196/200-equivalent uninterrupted-hold successes under uniform official coverage while preserving the 40/40 inner-band behavior?",
+    "handoff_source_session_id": "S19",
+    "id": "I10",
+    "opened_in_session": "S20",
+    "question": "Can an explicitly phase-aware, history-dependent and trajectory-aware policy acquisition method transfer the demonstrated same-interface controllability to at least 196/200-equivalent uninterrupted-hold successes under uniform official coverage while preserving the 40/40 inner-band behavior?",
+    "rationale": "M17 established that the unchanged bounded direct-action interface is controllable, with three computed-torque gain settings achieving 160/160 uniform-panel successes, including 93/93 inner-band successes, with no reach or hold failures. M18 then evaluated both an early and terminal checkpoint from the controller-derived PPO action-prior training; both achieved 153/160, preserved 40/40 inner-band success, and failed on exactly the same seven seeds. Their differing pre-reach and post-reach splits show a tradeoff rather than a solved mechanism. This limits the negative to the tested action-prior recipe and leaves policy representation and acquisition unresolved. The inquiry therefore tests the broader capability need without committing to a particular training run or implementation.",
+    "reframes": []
+  },
   "campaign": {
     "base_commit": "4e87f6053469bb6648d355bc03a7a70faa91f33f",
     "id": "79395c88-afcd-40f0-a644-16ca95368c28",
@@ -8208,16 +8219,16 @@
     }
   },
   "counters": {
-    "event": 41,
-    "inquiry": 9,
+    "event": 42,
+    "inquiry": 10,
     "measurement": 18,
-    "session": 19,
+    "session": 20,
     "training": 10
   },
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -21973,9 +21984,72 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-09T15:57:56Z",
+      "error": null,
+      "id": "E42",
+      "inquiry_id": "I10",
+      "kind": "inquiry",
+      "request": {
+        "action": "open",
+        "closure_condition": "Close when completed uniform-panel evidence from a phase-aware, history-dependent and trajectory-aware policy acquisition method establishes whether it can reach at least 196/200-equivalent successes while preserving 40/40 inner-band success, and reports first-reach, post-reach, velocity, and hold-interruption diagnostics. A positive result supports continued policy development and candidate selection; persistent same-seed failures or loss of inner-band behavior redirects the campaign toward branch- or limit-conditioned trajectory design, while an inconclusive result preserves the distinction.",
+        "goal_connection": "The human goal requires at least 196 successful episodes out of 200 under the official target distribution, with every success requiring an uninterrupted 100-step hold. The best learned candidates remain at 153/160, while same-interface computed-torque control achieved 160/160. Resolving whether a policy acquisition method with explicit phase, history, and trajectory information can transfer that demonstrated capability is the most direct next step toward the goal.",
+        "question": "Can an explicitly phase-aware, history-dependent and trajectory-aware policy acquisition method transfer the demonstrated same-interface controllability to at least 196/200-equivalent uninterrupted-hold successes under uniform official coverage while preserving the 40/40 inner-band behavior?",
+        "rationale": "M17 established that the unchanged bounded direct-action interface is controllable, with three computed-torque gain settings achieving 160/160 uniform-panel successes, including 93/93 inner-band successes, with no reach or hold failures. M18 then evaluated both an early and terminal checkpoint from the controller-derived PPO action-prior training; both achieved 153/160, preserved 40/40 inner-band success, and failed on exactly the same seven seeds. Their differing pre-reach and post-reach splits show a tradeoff rather than a solved mechanism. This limits the negative to the tested action-prior recipe and leaves policy representation and acquisition unresolved. The inquiry therefore tests the broader capability need without committing to a particular training run or implementation."
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I10",
+        "status": "completed"
+      },
+      "session_id": "S20",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "open",
+        "inquiry": {
+          "closure_condition": "Close when completed uniform-panel evidence from a phase-aware, history-dependent and trajectory-aware policy acquisition method establishes whether it can reach at least 196/200-equivalent successes while preserving 40/40 inner-band success, and reports first-reach, post-reach, velocity, and hold-interruption diagnostics. A positive result supports continued policy development and candidate selection; persistent same-seed failures or loss of inner-band behavior redirects the campaign toward branch- or limit-conditioned trajectory design, while an inconclusive result preserves the distinction.",
+          "goal_connection": "The human goal requires at least 196 successful episodes out of 200 under the official target distribution, with every success requiring an uninterrupted 100-step hold. The best learned candidates remain at 153/160, while same-interface computed-torque control achieved 160/160. Resolving whether a policy acquisition method with explicit phase, history, and trajectory information can transfer that demonstrated capability is the most direct next step toward the goal.",
+          "handoff_conclusion": "M1 established substantial transient actuation authority and at least one feasible analytic IK branch for every sampled official target, with 64 of 576 grid targets having only one feasible branch. T1 measured 150/160 with 40/40 successes for targets below 10 cm, seven pre-reach failures, and three post-reach failures. T8 improved the unchanged direct-action route to 153/160 while preserving 40/40 below 10 cm; M13 measured one pre-reach and six post-reach failures with six hold interruptions. T9 also measured 153/160, matched T8 on paired outcomes, recovered none of its residual episodes, and reduced interruptions from six to five while shifting the failure split. M17 then established same-interface controllability rather than interface incapability: computed-torque control achieved 160/160 for each of three gain settings, including 93/93 targets below 14 cm, with zero pre-reach failures, zero post-reach failures, and zero hold interruptions. M18 tested the controller-derived action-prior PPO recipe using early and terminal T10 checkpoints under the same uniform panel. Both achieved 153/160, preserved 40/40 below 10 cm, and failed on exactly the same seven seeds. The early checkpoint had one pre-reach and six post-reach failures with six interruptions; the terminal checkpoint had four pre-reach and three post-reach failures with three interruptions. Thus the completed evidence supports a limited negative for this PPO action-prior recipe: it did not transfer the available direct-action controllability into the learned policy, although its aggregate result preserved the inner-band behavior. The evidence does not establish that every policy-side method fails. The leading unresolved mechanism is now a policy representation/acquisition mismatch, prioritized over actuator redesign: the policy lacks explicit phase/history and previous-action information while it must switch from approach to a velocity-sensitive uninterrupted hold, and the tested action prior did not solve that acquisition problem.",
+          "handoff_question": "Can an explicitly phase-aware, history-dependent and trajectory-aware policy acquisition method transfer the demonstrated same-interface controllability to at least 196/200-equivalent uninterrupted-hold successes under uniform official coverage while preserving the 40/40 inner-band behavior?",
+          "handoff_source_session_id": "S19",
+          "id": "I10",
+          "opened_in_session": "S20",
+          "question": "Can an explicitly phase-aware, history-dependent and trajectory-aware policy acquisition method transfer the demonstrated same-interface controllability to at least 196/200-equivalent uninterrupted-hold successes under uniform official coverage while preserving the 40/40 inner-band behavior?",
+          "rationale": "M17 established that the unchanged bounded direct-action interface is controllable, with three computed-torque gain settings achieving 160/160 uniform-panel successes, including 93/93 inner-band successes, with no reach or hold failures. M18 then evaluated both an early and terminal checkpoint from the controller-derived PPO action-prior training; both achieved 153/160, preserved 40/40 inner-band success, and failed on exactly the same seven seeds. Their differing pre-reach and post-reach splits show a tradeoff rather than a solved mechanism. This limits the negative to the tested action-prior recipe and leaves policy representation and acquisition unresolved. The inquiry therefore tests the broader capability need without committing to a particular training run or implementation.",
+          "reframes": []
+        }
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I10",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E42",
+    "inquiry_id": null,
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "open",
+        "closure_condition": "Close when completed uniform-panel evidence from a phase-aware, history-dependent and trajectory-aware policy acquisition method establishes whether it can reach at least 196/200-equivalent successes while preserving 40/40 inner-band success, and reports first-reach, post-reach, velocity, and hold-interruption diagnostics. A positive result supports continued policy development and candidate selection; persistent same-seed failures or loss of inner-band behavior redirects the campaign toward branch- or limit-conditioned trajectory design, while an inconclusive result preserves the distinction.",
+        "goal_connection": "The human goal requires at least 196 successful episodes out of 200 under the official target distribution, with every success requiring an uninterrupted 100-step hold. The best learned candidates remain at 153/160, while same-interface computed-torque control achieved 160/160. Resolving whether a policy acquisition method with explicit phase, history, and trajectory information can transfer that demonstrated capability is the most direct next step toward the goal.",
+        "question": "Can an explicitly phase-aware, history-dependent and trajectory-aware policy acquisition method transfer the demonstrated same-interface controllability to at least 196/200-equivalent uninterrupted-hold successes under uniform official coverage while preserving the 40/40 inner-band behavior?",
+        "rationale": "M17 established that the unchanged bounded direct-action interface is controllable, with three computed-torque gain settings achieving 160/160 uniform-panel successes, including 93/93 inner-band successes, with no reach or hold failures. M18 then evaluated both an early and terminal checkpoint from the controller-derived PPO action-prior training; both achieved 153/160, preserved 40/40 inner-band success, and failed on exactly the same seven seeds. Their differing pre-reach and post-reach splits show a tradeoff rather than a solved mechanism. This limits the negative to the tested action-prior recipe and leaves policy representation and acquisition unresolved. The inquiry therefore tests the broader capability need without committing to a particular training run or implementation."
+      }
+    },
+    "request_fingerprint": "d9264afb68c6deb6e497a5fc285d08046944fe3bc227dd13e456e7f6286cb4a1",
+    "session_id": "S20",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T8:checkpoint-60416 and T9:checkpoint-20480 remain the strongest measured learned candidates at 153/160, but neither meets the development threshold or has a protected working, best-known, or retained role. T10:checkpoint-10240 and T10:checkpoint-120832 are measured controller-prior candidates at the same 153/160 result and are not promoted. The M17 computed-torque controller is evidence of same-interface capability, not a learned candidate for the human goal.",
     "completed_operations": [
@@ -22015,6 +22089,21 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "14fecf15-24e3-4b59-b944-abc166893b1e",
+    "id": "S20",
+    "inquiry_id": null,
+    "kind": "goal_review",
+    "objective": "Use the completed evidence to update the scientific direction toward the human goal. Request measurements when they resolve an uncertainty or develop the method. Then choose one outcome: request the official assessment, or open one bounded goal-linked inquiry. Frame the inquiry as an unresolved distinction, obstacle, or capability need; do not encode a selected training run, measurement, implementation, or recipe as the question.",
+    "operation_ids": [
+      "E42"
+    ],
+    "scientific_parent_commit": "ca7691f5c9f87ca6b6e10a54e440210e87404eeb"
+  },
   "terminal_state": null
 }
