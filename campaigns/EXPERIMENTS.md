@@ -67,3 +67,4 @@
 | M15 | measurement | I9 | failed |
 | M16 | measurement | I9 | failed |
 | M17 | measurement | I9 | completed |
+| T10 | training | I9 | completed |
