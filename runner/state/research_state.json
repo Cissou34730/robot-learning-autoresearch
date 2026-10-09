@@ -3193,38 +3193,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I2",
-        "outcome": "I2 closes with a negative, recipe-limited result: the reach-focused intervention did not improve global reach coverage or episode success.",
-        "reason": "M3 evaluated T2 and T1 on the same 160 full-distribution episode seeds. T2 achieved 1.25% success versus T1's 68.75%, with a paired net result of -108 wins for T2 and only 1 candidate win. This fails the positive closure condition and strongly rejects the tested target-sampling recipe as a route to recover the reach deficit. The result does not establish that learning is invalid, nor does it establish terminal stabilization as the governing bottleneck; T2's broad episode collapse prevents that interpretation. The next direction should be selected in goal review from the remaining implementation and learning-dynamics explanations, while retaining T1 as the strongest measured candidate."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I2",
-        "outcome": "I2 closes with a negative, recipe-limited result: the reach-focused intervention did not improve global reach coverage or episode success.",
-        "reason": "M3 evaluated T2 and T1 on the same 160 full-distribution episode seeds. T2 achieved 1.25% success versus T1's 68.75%, with a paired net result of -108 wins for T2 and only 1 candidate win. This fails the positive closure condition and strongly rejects the tested target-sampling recipe as a route to recover the reach deficit. The result does not establish that learning is invalid, nor does it establish terminal stabilization as the governing bottleneck; T2's broad episode collapse prevents that interpretation. The next direction should be selected in goal review from the remaining implementation and learning-dynamics explanations, while retaining T1 as the strongest measured candidate.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E8",
-    "inquiry_id": "I2",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "I2 closes with a negative, recipe-limited result: the reach-focused intervention did not improve global reach coverage or episode success.",
-        "reason": "M3 evaluated T2 and T1 on the same 160 full-distribution episode seeds. T2 achieved 1.25% success versus T1's 68.75%, with a paired net result of -108 wins for T2 and only 1 candidate win. This fails the positive closure condition and strongly rejects the tested target-sampling recipe as a route to recover the reach deficit. The result does not establish that learning is invalid, nor does it establish terminal stabilization as the governing bottleneck; T2's broad episode collapse prevents that interpretation. The next direction should be selected in goal review from the remaining implementation and learning-dynamics explanations, while retaining T1 as the strongest measured candidate."
-      }
-    },
-    "request_fingerprint": "c16f41b2d5f59c6fdec1722abfaf8d979df66a41abebf3ddf7baaf9349de9184",
-    "session_id": "S5",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T1:checkpoint-120832 remains the strongest measured candidate, with 68.75% success on M2, but no working or best-known role has been assigned. All other T1 checkpoints remain unassigned; no candidates are retained.",
     "completed_operations": [
