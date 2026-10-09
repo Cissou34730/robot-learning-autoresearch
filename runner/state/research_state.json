@@ -37250,38 +37250,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I15",
-        "outcome": "limited_negative",
-        "reason": "I15 is resolved as a limited negative for the tested materially different SAC acquisition route under the unchanged bounded direct-action interface. M30 measured T17 at 168/200 versus paired T1 at 192/200, with SAC losing all 24 discordant episodes. The full diagnostics show 23 T17 failures before first reach and 9 post-reach hold interruptions, compared with 4 and 4 for T1; T17 also achieved 111/118 inner-band successes versus T1's 115/118. The aggregate and mechanism evidence agree that this SAC recipe does not approach the goal and does not preserve the reference behavior. The repeated pre-reach dominance across the tested PPO and SAC routes supports redirecting the next goal-relevant work toward acquisition representation or explicit phase information, while retaining stabilization diagnostics. However, M30 does not expose nearest-branch limit margins for unreached failures, so the specific positive-margin mechanism remains unresolved. This result rejects neither learned control generally, PPO generally, SAC generally, the physical system, nor the bounded direct-action interface; it bounds the negative to the tested observation-plus-acquisition recipes and leaves optimization versus representation causality unresolved."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I15",
-        "outcome": "limited_negative",
-        "reason": "I15 is resolved as a limited negative for the tested materially different SAC acquisition route under the unchanged bounded direct-action interface. M30 measured T17 at 168/200 versus paired T1 at 192/200, with SAC losing all 24 discordant episodes. The full diagnostics show 23 T17 failures before first reach and 9 post-reach hold interruptions, compared with 4 and 4 for T1; T17 also achieved 111/118 inner-band successes versus T1's 115/118. The aggregate and mechanism evidence agree that this SAC recipe does not approach the goal and does not preserve the reference behavior. The repeated pre-reach dominance across the tested PPO and SAC routes supports redirecting the next goal-relevant work toward acquisition representation or explicit phase information, while retaining stabilization diagnostics. However, M30 does not expose nearest-branch limit margins for unreached failures, so the specific positive-margin mechanism remains unresolved. This result rejects neither learned control generally, PPO generally, SAC generally, the physical system, nor the bounded direct-action interface; it bounds the negative to the tested observation-plus-acquisition recipes and leaves optimization versus representation causality unresolved.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E66",
-    "inquiry_id": "I15",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "limited_negative",
-        "reason": "I15 is resolved as a limited negative for the tested materially different SAC acquisition route under the unchanged bounded direct-action interface. M30 measured T17 at 168/200 versus paired T1 at 192/200, with SAC losing all 24 discordant episodes. The full diagnostics show 23 T17 failures before first reach and 9 post-reach hold interruptions, compared with 4 and 4 for T1; T17 also achieved 111/118 inner-band successes versus T1's 115/118. The aggregate and mechanism evidence agree that this SAC recipe does not approach the goal and does not preserve the reference behavior. The repeated pre-reach dominance across the tested PPO and SAC routes supports redirecting the next goal-relevant work toward acquisition representation or explicit phase information, while retaining stabilization diagnostics. However, M30 does not expose nearest-branch limit margins for unreached failures, so the specific positive-margin mechanism remains unresolved. This result rejects neither learned control generally, PPO generally, SAC generally, the physical system, nor the bounded direct-action interface; it bounds the negative to the tested observation-plus-acquisition recipes and leaves optimization versus representation causality unresolved."
-      }
-    },
-    "request_fingerprint": "366c4e64133111b8ed0e4aad6eb1bc7188af3ffe990e3281da4e7c33eea5c15c",
-    "session_id": "S32",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "No candidate has an evidence-backed working, best-known, or retained role. T16 is the strongest recent learned candidate by M28 aggregate success at 192/200, but it is not goal-adequate and loses three inner-band episodes relative to T1. T1 remains the inner-band reference at 113/113 on M27 and M28. T15 remains an experimental candidate at 190/200 on M27. M17 remains model-based capability evidence rather than a learned candidate role.",
     "completed_operations": [
