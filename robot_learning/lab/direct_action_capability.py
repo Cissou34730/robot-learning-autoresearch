@@ -80,7 +80,7 @@ def _computed_torque_action(
     kd: float,
 ) -> np.ndarray:
     mass_matrix = np.zeros((model.nv, model.nv), dtype=np.float64)
-    mujoco.mj_fullM(model, mass_matrix.ravel(), data.qM)
+    mujoco.mj_fullM(model, mass_matrix.ravel(), data.M)
     position_error = np.array(
         [
             _wrap_to_pi(float(target_qpos[index] - data.qpos[index]))
