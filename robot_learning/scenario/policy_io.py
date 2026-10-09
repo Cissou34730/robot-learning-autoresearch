@@ -5,7 +5,7 @@ before export (module-level imports or captured objects, not runtime imports).
 """
 
 from contracts.policy_runtime import PolicyIO
-from robot_learning.scenario.observations import reach_observation
+from robot_learning.scenario.observations import phase_aware_observation
 
 
 def physical_action(action):
@@ -13,4 +13,4 @@ def physical_action(action):
 
 
 def make_policy_io():
-    return PolicyIO(observe=reach_observation, action=physical_action)
+    return PolicyIO(observe=phase_aware_observation, action=physical_action)

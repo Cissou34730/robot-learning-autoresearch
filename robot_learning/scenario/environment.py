@@ -11,6 +11,7 @@ different distribution, tolerance or horizon. The human-defined task is
 enforced only by the protected benchmark in `benchmark/`.
 """
 
+import inspect
 from typing import Any, ClassVar
 
 import gymnasium as gym
@@ -49,6 +50,12 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
         self.frame_skip = frame_skip
         self.target_radius_range = target_radius_range
         self.policy_io = policy_runtime.io if policy_runtime else make_policy_io()
+        self._observation_has_context = {
+            "step_count",
+            "held_steps",
+            "hold_steps_required",
+            "previous_action",
+        }.issubset(inspect.signature(self.policy_io.observe).parameters)
 
         self.model = mujoco.MjModel.from_xml_path(str(TWO_JOINT_ARM_XML_PATH))
         self.data = mujoco.MjData(self.model)
@@ -72,6 +79,7 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
         self._previous_distance = 0.0
         self._held_steps = 0
         self._outside_after_hold = False
+        self._previous_action = np.zeros(2, dtype=np.float64)
 
     def _end_effector_position(self) -> np.ndarray:
         return self.data.site("end_effector").xpos.copy()
@@ -98,6 +106,14 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
         ]
 
     def _observation(self) -> np.ndarray:
+        if self._observation_has_context:
+            return self.policy_io.observe(
+                self.data,
+                step_count=self._step_count,
+                held_steps=self._held_steps,
+                hold_steps_required=self.hold_steps_required,
+                previous_action=self._previous_action,
+            )
         return self.policy_io.observe(self.data)
 
     def reset(
@@ -118,6 +134,7 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
         self._previous_distance = self._distance_to_target()
         self._held_steps = 0
         self._outside_after_hold = False
+        self._previous_action = np.zeros(2, dtype=np.float64)
         return self._observation(), {}
 
     def step(
@@ -128,6 +145,7 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
             self.action_space.low,
             self.action_space.high,
         )
+        self._previous_action = action.copy()
         expert_action = model_based_action(
             self.model,
             self.data,
