@@ -1,16 +1,5 @@
 {
-  "active_inquiry": {
-    "closure_condition": "Close after one bounded targeted continuation of T3's incremental-transfer regime has been evaluated on a full-distribution development panel with success, first-reach coverage, maximum held steps, hold interruptions, and radius-angle strata. A positive result requires at least 98% episode success with preserved low interruptions and broad first reach; persistent residual failures despite preserved transfer behavior redirect the campaign toward a targeted representation, action, or terminal-control change.",
-    "goal_connection": "The human goal requires at least 196 of 200 episodes to complete an uninterrupted 100-step hold. T3 reaches 95.625% on development evidence, so this inquiry targets the remaining radius-angle and terminal-arrival failures while protecting its four hold interruptions and 157/160 first-reach behavior.",
-    "handoff_conclusion": "Established physical evidence remains M1's nonzero compiled plant authority, absence of sampled self-contact in valid target branches, and complete local 100-step holds under zero input and bounded local PD. T1 episode evidence established a reach-limited, geometry-conditioned baseline at 68.75% success, with most failures never entering tolerance. T2's fresh abrupt hard-distribution recipe collapsed to 1.25%, rejecting that recipe but not learning generally or the physical reach hypothesis. T3 transferred from T1 and linearly broadened only the radius distribution while preserving uniform angle coverage, reward, observation-control representation, PPO settings, and hold semantics. M4 evaluated T3 and T1 on the same 160 seeds: T3 achieved 95.625% versus 68.75%, first reached 157 versus 118 episodes, improved low-radius success from 59.29% to 97.35%, left high-radius success at 91.49%, and reduced total hold interruptions from 502 to 4; the paired result was 43 T3 wins and zero T1 wins. T3's non-collapsed transfer learning dynamics and these episode diagnostics support intervention sensitivity to distribution shift as the leading explanation for T2's collapse, while making a broad observation-control representation failure less likely. The claim remains candidate- and panel-limited, and T3 has not yet established the official 98% result.",
-    "handoff_question": "Can targeted continuation of the incremental-transfer regime, focused on T3's remaining radius-angle failure strata, raise full-distribution episode success from 95.625% to at least 98% while preserving its low hold-interruption and broad first-reach behavior?",
-    "handoff_source_session_id": "S7",
-    "id": "I4",
-    "opened_in_session": "S8",
-    "question": "Can targeted continuation of the incremental-transfer regime, focused on T3's remaining radius-angle failure strata, raise full-distribution episode success from 95.625% to at least 98% while preserving its low hold-interruption and broad first-reach behavior?",
-    "rationale": "M4 and E12 show that incremental radius broadening from T1 materially improved difficult-geometry reach without a hold-interruption tradeoff, but T3 remains below the 98% objective and has not received official assessment. The unresolved distinction is whether its seven remaining development failures are a small refinable set of radius-angle or terminal-arrival cases, or evidence of a residual policy/control limitation. Targeted continuation is the highest-value bounded test because it preserves the mechanism already supported by T3 while directly testing whether the remaining gap can be removed.",
-    "reframes": []
-  },
+  "active_inquiry": null,
   "campaign": {
     "base_commit": "183ba7483c02b821a562dc3107d9c0100b10d3d9",
     "id": "1ae27a27-6880-4ca6-9d50-e6498e771cb7",
@@ -3296,7 +3285,7 @@
     }
   },
   "counters": {
-    "event": 15,
+    "event": 16,
     "inquiry": 4,
     "measurement": 5,
     "session": 9,
@@ -6372,9 +6361,63 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-09T00:26:33Z",
+      "error": null,
+      "id": "E16",
+      "inquiry_id": "I4",
+      "kind": "inquiry",
+      "request": {
+        "action": "close",
+        "outcome": "negative, recipe-limited result with redirection",
+        "reason": "M5 completed the bounded targeted continuation and rejects this oversampling recipe as a route to the 98 percent goal. T5 achieved 93.125 percent success (149/160), below T3's 95.625 percent, despite first reaching 158 versus 157 episodes. Its 11 failures included four severe late-hold failures and two unreached targets, and total hold interruptions rose to 511 versus T3's 4. The paired result was zero T5 wins and four T3 wins on the discordant episodes. Thus the observed angle-focused continuation did not remove the residual radius-angle cases; it caused broad terminal-control degradation consistent with catastrophic forgetting or unstable fine-tuning. This is evidence against the tested oversampling recipe, not against incremental transfer generally. I4 closes because its stated redirect condition\u2014persistent residual failures despite transfer behavior, here accompanied by a large interruption regression\u2014is met. The campaign should redirect toward a targeted representation, action, or terminal-control change while retaining T3 as the strongest measured candidate."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I4",
+        "outcome": "negative, recipe-limited result with redirection",
+        "reason": "M5 completed the bounded targeted continuation and rejects this oversampling recipe as a route to the 98 percent goal. T5 achieved 93.125 percent success (149/160), below T3's 95.625 percent, despite first reaching 158 versus 157 episodes. Its 11 failures included four severe late-hold failures and two unreached targets, and total hold interruptions rose to 511 versus T3's 4. The paired result was zero T5 wins and four T3 wins on the discordant episodes. Thus the observed angle-focused continuation did not remove the residual radius-angle cases; it caused broad terminal-control degradation consistent with catastrophic forgetting or unstable fine-tuning. This is evidence against the tested oversampling recipe, not against incremental transfer generally. I4 closes because its stated redirect condition\u2014persistent residual failures despite transfer behavior, here accompanied by a large interruption regression\u2014is met. The campaign should redirect toward a targeted representation, action, or terminal-control change while retaining T3 as the strongest measured candidate.",
+        "status": "completed"
+      },
+      "session_id": "S9",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "close",
+        "inquiry_id": "I4",
+        "outcome": "negative, recipe-limited result with redirection",
+        "reason": "M5 completed the bounded targeted continuation and rejects this oversampling recipe as a route to the 98 percent goal. T5 achieved 93.125 percent success (149/160), below T3's 95.625 percent, despite first reaching 158 versus 157 episodes. Its 11 failures included four severe late-hold failures and two unreached targets, and total hold interruptions rose to 511 versus T3's 4. The paired result was zero T5 wins and four T3 wins on the discordant episodes. Thus the observed angle-focused continuation did not remove the residual radius-angle cases; it caused broad terminal-control degradation consistent with catastrophic forgetting or unstable fine-tuning. This is evidence against the tested oversampling recipe, not against incremental transfer generally. I4 closes because its stated redirect condition\u2014persistent residual failures despite transfer behavior, here accompanied by a large interruption regression\u2014is met. The campaign should redirect toward a targeted representation, action, or terminal-control change while retaining T3 as the strongest measured candidate."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I4",
+        "outcome": "negative, recipe-limited result with redirection",
+        "reason": "M5 completed the bounded targeted continuation and rejects this oversampling recipe as a route to the 98 percent goal. T5 achieved 93.125 percent success (149/160), below T3's 95.625 percent, despite first reaching 158 versus 157 episodes. Its 11 failures included four severe late-hold failures and two unreached targets, and total hold interruptions rose to 511 versus T3's 4. The paired result was zero T5 wins and four T3 wins on the discordant episodes. Thus the observed angle-focused continuation did not remove the residual radius-angle cases; it caused broad terminal-control degradation consistent with catastrophic forgetting or unstable fine-tuning. This is evidence against the tested oversampling recipe, not against incremental transfer generally. I4 closes because its stated redirect condition\u2014persistent residual failures despite transfer behavior, here accompanied by a large interruption regression\u2014is met. The campaign should redirect toward a targeted representation, action, or terminal-control change while retaining T3 as the strongest measured candidate.",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E16",
+    "inquiry_id": "I4",
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "close",
+        "outcome": "negative, recipe-limited result with redirection",
+        "reason": "M5 completed the bounded targeted continuation and rejects this oversampling recipe as a route to the 98 percent goal. T5 achieved 93.125 percent success (149/160), below T3's 95.625 percent, despite first reaching 158 versus 157 episodes. Its 11 failures included four severe late-hold failures and two unreached targets, and total hold interruptions rose to 511 versus T3's 4. The paired result was zero T5 wins and four T3 wins on the discordant episodes. Thus the observed angle-focused continuation did not remove the residual radius-angle cases; it caused broad terminal-control degradation consistent with catastrophic forgetting or unstable fine-tuning. This is evidence against the tested oversampling recipe, not against incremental transfer generally. I4 closes because its stated redirect condition\u2014persistent residual failures despite transfer behavior, here accompanied by a large interruption regression\u2014is met. The campaign should redirect toward a targeted representation, action, or terminal-control change while retaining T3 as the strongest measured candidate."
+      }
+    },
+    "request_fingerprint": "980ed0d64a554c2b4a2e294b06bcee9abcd342e6c0de25cc2434d302b1804984",
+    "session_id": "S9",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T3:checkpoint-120832 remains the strongest measured development candidate at 95.625% on M4 and has the leading evidence-backed transfer recipe, but no working, best-known, or retained role is assigned in this session. T1:checkpoint-120832 remains the baseline reference at 68.75%. T2:checkpoint-120832 remains a negative recipe result at 1.25% and receives no role.",
     "completed_operations": [
@@ -6425,7 +6468,8 @@
     "objective": "Advance I4 toward an evidence-supported answer to its scientific question: Can targeted continuation of the incremental-transfer regime, focused on T3's remaining radius-angle failure strata, raise full-distribution episode success from 95.625% to at least 98% while preserving its low hold-interruption and broad first-reach behavior? Before choosing the next action, compare the accumulated evidence with the closure condition. Close the inquiry when the condition is met.",
     "operation_ids": [
       "T5",
-      "M5"
+      "M5",
+      "E16"
     ],
     "scientific_parent_commit": "91d55d97cd5dac714605582a3c0f11c4d31a0efc"
   },
