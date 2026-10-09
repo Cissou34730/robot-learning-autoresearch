@@ -1,5 +1,16 @@
 {
-  "active_inquiry": null,
+  "active_inquiry": {
+    "closure_condition": "Close when a paired development comparison against T2:checkpoint-120832 on the same 160-episode panel shows whether one stabilization-preserving intervention retains inner-radius success and no-entry performance, recovers outer-radius success, reduces post-entry hold interruptions, and maintains or improves conditional hold success. Continue the route if these criteria improve together; redirect to coverage-versus-braking balance or target-conditioned policy/action smoothness if stabilization requires sacrificing coverage or neither mechanism improves.",
+    "goal_connection": "The official objective requires at least 196 of 200 episodes to complete an uninterrupted 2 second hold. T2 improved development success to 126/160 and inner-radius entry coverage, but reduced outer-radius success and increased hold interruptions. Resolving whether stabilization can be added without giving back coverage is the next direct route toward the required success rate.",
+    "handoff_conclusion": "M1 established substantial nominal actuation and rapid reversal authority with real joint-limit reactions, so generic weak actuation is not the leading explanation. T1 training statistics nominated checkpoints but did not establish development behavior; M2 measured T1:checkpoint-120832 at 110/160 (68.75%) with failures dominated by no entry and inner-radius targets, while entered-episode success was 93.22%. T2 trained with balanced inner/outer radius exposure and nearest-IK-branch progress shaping, then M3 paired it with T1:checkpoint-120832 on the same 160 episodes. T2 improved overall success to 126/160 (78.75%), inner-radius success from 47/93 (50.54%) to 67/93 (72.04%), and inner no-entry failures from 38 to 23; overall entered-episode success improved from 110/118 (93.22%) to 126/131 (96.18%). This supports the causal value of targeted coverage exposure and branch guidance, but the result is not a pure reach success: outer-radius success fell from 63/67 (94.03%) to 59/67 (88.06%), and total hold interruptions rose from 502 to 789. Therefore E8 closed I2 as resolved_limited. The leading mechanism is now a reach-versus-stability tradeoff: the coverage intervention can convert pre-entry failures, but its learned trajectories can lose hold continuity. The T2 recipe result does not invalidate the broader learning method, and the interruption increase does not establish whether the cause is reward shaping, action dynamics, or target-conditioned control.",
+    "handoff_question": "Can a stabilization-preserving training intervention retain T2's inner-radius and inverse-kinematic branch-coverage gains while reducing post-entry hold interruptions and recovering outer-radius success?",
+    "handoff_source_session_id": "S5",
+    "id": "I3",
+    "opened_in_session": "S6",
+    "question": "Can a stabilization-preserving training intervention retain T2's inner-radius and inverse-kinematic branch-coverage gains while reducing post-entry hold interruptions and recovering outer-radius success?",
+    "rationale": "M1 rules out generic weak actuation as the leading explanation, while M3 and E8 establish a recipe-specific tradeoff: T2 converted no-entry failures, especially at inner radii, but fell at outer radii and accumulated more interruptions. Aggregate success alone cannot distinguish reward-induced reach bias, insufficient braking/action smoothness, or target-conditioned control. A bounded stabilization-preserving intervention with the existing diagnostics is therefore the highest-value next test toward the human goal.",
+    "reframes": []
+  },
   "campaign": {
     "base_commit": "fc6eed9ce7e909e3f30fa5c495ca2cde467893b3",
     "id": "81a5458d-ce8f-4c03-b9d2-8ce4f1ff9e9e",
@@ -1649,16 +1660,16 @@
     }
   },
   "counters": {
-    "event": 9,
-    "inquiry": 2,
+    "event": 10,
+    "inquiry": 3,
     "measurement": 3,
-    "session": 5,
+    "session": 6,
     "training": 2
   },
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -3569,9 +3580,72 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-09T12:33:39Z",
+      "error": null,
+      "id": "E10",
+      "inquiry_id": "I3",
+      "kind": "inquiry",
+      "request": {
+        "action": "open",
+        "closure_condition": "Close when a paired development comparison against T2:checkpoint-120832 on the same 160-episode panel shows whether one stabilization-preserving intervention retains inner-radius success and no-entry performance, recovers outer-radius success, reduces post-entry hold interruptions, and maintains or improves conditional hold success. Continue the route if these criteria improve together; redirect to coverage-versus-braking balance or target-conditioned policy/action smoothness if stabilization requires sacrificing coverage or neither mechanism improves.",
+        "goal_connection": "The official objective requires at least 196 of 200 episodes to complete an uninterrupted 2 second hold. T2 improved development success to 126/160 and inner-radius entry coverage, but reduced outer-radius success and increased hold interruptions. Resolving whether stabilization can be added without giving back coverage is the next direct route toward the required success rate.",
+        "question": "Can a stabilization-preserving training intervention retain T2's inner-radius and inverse-kinematic branch-coverage gains while reducing post-entry hold interruptions and recovering outer-radius success?",
+        "rationale": "M1 rules out generic weak actuation as the leading explanation, while M3 and E8 establish a recipe-specific tradeoff: T2 converted no-entry failures, especially at inner radii, but fell at outer radii and accumulated more interruptions. Aggregate success alone cannot distinguish reward-induced reach bias, insufficient braking/action smoothness, or target-conditioned control. A bounded stabilization-preserving intervention with the existing diagnostics is therefore the highest-value next test toward the human goal."
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I3",
+        "status": "completed"
+      },
+      "session_id": "S6",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "open",
+        "inquiry": {
+          "closure_condition": "Close when a paired development comparison against T2:checkpoint-120832 on the same 160-episode panel shows whether one stabilization-preserving intervention retains inner-radius success and no-entry performance, recovers outer-radius success, reduces post-entry hold interruptions, and maintains or improves conditional hold success. Continue the route if these criteria improve together; redirect to coverage-versus-braking balance or target-conditioned policy/action smoothness if stabilization requires sacrificing coverage or neither mechanism improves.",
+          "goal_connection": "The official objective requires at least 196 of 200 episodes to complete an uninterrupted 2 second hold. T2 improved development success to 126/160 and inner-radius entry coverage, but reduced outer-radius success and increased hold interruptions. Resolving whether stabilization can be added without giving back coverage is the next direct route toward the required success rate.",
+          "handoff_conclusion": "M1 established substantial nominal actuation and rapid reversal authority with real joint-limit reactions, so generic weak actuation is not the leading explanation. T1 training statistics nominated checkpoints but did not establish development behavior; M2 measured T1:checkpoint-120832 at 110/160 (68.75%) with failures dominated by no entry and inner-radius targets, while entered-episode success was 93.22%. T2 trained with balanced inner/outer radius exposure and nearest-IK-branch progress shaping, then M3 paired it with T1:checkpoint-120832 on the same 160 episodes. T2 improved overall success to 126/160 (78.75%), inner-radius success from 47/93 (50.54%) to 67/93 (72.04%), and inner no-entry failures from 38 to 23; overall entered-episode success improved from 110/118 (93.22%) to 126/131 (96.18%). This supports the causal value of targeted coverage exposure and branch guidance, but the result is not a pure reach success: outer-radius success fell from 63/67 (94.03%) to 59/67 (88.06%), and total hold interruptions rose from 502 to 789. Therefore E8 closed I2 as resolved_limited. The leading mechanism is now a reach-versus-stability tradeoff: the coverage intervention can convert pre-entry failures, but its learned trajectories can lose hold continuity. The T2 recipe result does not invalidate the broader learning method, and the interruption increase does not establish whether the cause is reward shaping, action dynamics, or target-conditioned control.",
+          "handoff_question": "Can a stabilization-preserving training intervention retain T2's inner-radius and inverse-kinematic branch-coverage gains while reducing post-entry hold interruptions and recovering outer-radius success?",
+          "handoff_source_session_id": "S5",
+          "id": "I3",
+          "opened_in_session": "S6",
+          "question": "Can a stabilization-preserving training intervention retain T2's inner-radius and inverse-kinematic branch-coverage gains while reducing post-entry hold interruptions and recovering outer-radius success?",
+          "rationale": "M1 rules out generic weak actuation as the leading explanation, while M3 and E8 establish a recipe-specific tradeoff: T2 converted no-entry failures, especially at inner radii, but fell at outer radii and accumulated more interruptions. Aggregate success alone cannot distinguish reward-induced reach bias, insufficient braking/action smoothness, or target-conditioned control. A bounded stabilization-preserving intervention with the existing diagnostics is therefore the highest-value next test toward the human goal.",
+          "reframes": []
+        }
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I3",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E10",
+    "inquiry_id": null,
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "open",
+        "closure_condition": "Close when a paired development comparison against T2:checkpoint-120832 on the same 160-episode panel shows whether one stabilization-preserving intervention retains inner-radius success and no-entry performance, recovers outer-radius success, reduces post-entry hold interruptions, and maintains or improves conditional hold success. Continue the route if these criteria improve together; redirect to coverage-versus-braking balance or target-conditioned policy/action smoothness if stabilization requires sacrificing coverage or neither mechanism improves.",
+        "goal_connection": "The official objective requires at least 196 of 200 episodes to complete an uninterrupted 2 second hold. T2 improved development success to 126/160 and inner-radius entry coverage, but reduced outer-radius success and increased hold interruptions. Resolving whether stabilization can be added without giving back coverage is the next direct route toward the required success rate.",
+        "question": "Can a stabilization-preserving training intervention retain T2's inner-radius and inverse-kinematic branch-coverage gains while reducing post-entry hold interruptions and recovering outer-radius success?",
+        "rationale": "M1 rules out generic weak actuation as the leading explanation, while M3 and E8 establish a recipe-specific tradeoff: T2 converted no-entry failures, especially at inner radii, but fell at outer radii and accumulated more interruptions. Aggregate success alone cannot distinguish reward-induced reach bias, insufficient braking/action smoothness, or target-conditioned control. A bounded stabilization-preserving intervention with the existing diagnostics is therefore the highest-value next test toward the human goal."
+      }
+    },
+    "request_fingerprint": "a4d9bfa6fb0165565b61c23d91c18f85bdec6f461dce7aababfef95b54fa0719",
+    "session_id": "S6",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T2:checkpoint-120832 is the strongest measured development candidate at 126/160, but development evidence remains below the human goal and no working, best-known, or retained role is assigned. T1:checkpoint-120832 remains the paired baseline at 110/160. All other T1 and T2 checkpoints remain unmeasured for development and are not treated as superior by terminal status or training statistics.",
     "completed_operations": [
@@ -3606,6 +3680,21 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "2874be85-35bd-4a73-ac42-8eb98fd1b685",
+    "id": "S6",
+    "inquiry_id": null,
+    "kind": "goal_review",
+    "objective": "Use the completed evidence to update the scientific direction toward the human goal. Request measurements when they resolve an uncertainty or develop the method. Then choose one outcome: request the official assessment, or open one bounded goal-linked inquiry.",
+    "operation_ids": [
+      "E10"
+    ],
+    "scientific_parent_commit": "7db3cdebff4f924c31799ed215c4e305818a5a68"
+  },
   "terminal_state": null
 }
