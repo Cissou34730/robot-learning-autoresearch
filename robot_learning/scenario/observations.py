@@ -11,9 +11,7 @@ from contracts.robots.two_joint_arm import FOREARM_LENGTH, UPPER_ARM_LENGTH
 OBSERVATION_SIZE = 13
 
 
-def reach_observation(
-    data, previous_action: np.ndarray | None = None
-) -> np.ndarray:
+def reach_observation(data) -> np.ndarray:
     def wrap_to_pi(angle: float) -> float:
         return float((angle + np.pi) % (2.0 * np.pi) - np.pi)
 
@@ -36,8 +34,39 @@ def reach_observation(
     elbow_folded = -elbow_open
     shoulder_folded = shoulder_for_elbow(elbow_folded)
     end_effector = data.site("end_effector").xpos.copy()
-    if previous_action is None:
-        previous_action = np.zeros(2, dtype=np.float32)
+    shoulder, elbow = (float(value) for value in data.qpos[:2])
+    shoulder_velocity, elbow_velocity = (
+        float(value) for value in data.qvel[:2]
+    )
+    end_effector_velocity = np.asarray(
+        [
+            -UPPER_ARM_LENGTH * np.sin(shoulder) * shoulder_velocity
+            - FOREARM_LENGTH
+            * np.sin(shoulder + elbow)
+            * (shoulder_velocity + elbow_velocity),
+            UPPER_ARM_LENGTH * np.cos(shoulder) * shoulder_velocity
+            + FOREARM_LENGTH
+            * np.cos(shoulder + elbow)
+            * (shoulder_velocity + elbow_velocity),
+        ],
+        dtype=np.float32,
+    )
+    target_error = data.mocap_pos[0][:2] - end_effector[:2]
+    error_norm = float(np.linalg.norm(target_error))
+    if error_norm > 0.0:
+        radial_direction = target_error / error_norm
+        tangential_direction = np.asarray(
+            [-radial_direction[1], radial_direction[0]], dtype=np.float32
+        )
+        approach_velocity = float(
+            np.dot(end_effector_velocity, radial_direction)
+        )
+        tangential_velocity = float(
+            np.dot(end_effector_velocity, tangential_direction)
+        )
+    else:
+        approach_velocity = 0.0
+        tangential_velocity = 0.0
     return np.concatenate(
         [
             data.qpos,
@@ -49,6 +78,6 @@ def reach_observation(
                 wrap_to_pi(shoulder_folded - float(data.qpos[0])),
                 wrap_to_pi(elbow_folded - float(data.qpos[1])),
             ],
-            previous_action,
+            [approach_velocity, tangential_velocity],
         ]
     ).astype(np.float32)
