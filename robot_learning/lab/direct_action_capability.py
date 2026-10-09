@@ -12,6 +12,7 @@ import numpy as np
 from contracts.robots.two_joint_arm import FOREARM_LENGTH, UPPER_ARM_LENGTH
 from contracts.task_spec import TARGET_RADIUS_RANGE
 from robot_learning.scenario.environment import make_evaluation_env
+from robot_learning.scenario.model_based_control import computed_torque_action
 
 JOINT_LIMIT_RAD = float(np.deg2rad(170.0))
 HOLD_STEPS_REQUIRED = 100
@@ -79,19 +80,7 @@ def _computed_torque_action(
     kp: float,
     kd: float,
 ) -> np.ndarray:
-    mass_matrix = np.zeros((model.nv, model.nv), dtype=np.float64)
-    mujoco.mj_fullM(model, data, mass_matrix)
-    position_error = np.array(
-        [
-            _wrap_to_pi(float(target_qpos[index] - data.qpos[index]))
-            for index in range(2)
-        ],
-        dtype=np.float64,
-    )
-    desired_acceleration = kp * position_error - kd * data.qvel[:2]
-    torque = mass_matrix[:2, :2] @ desired_acceleration + data.qfrc_bias[:2]
-    gear = model.actuator_gear[:2, 0]
-    return np.clip(torque / gear, -1.0, 1.0)
+    return computed_torque_action(model, data, target_qpos, kp=kp, kd=kd)
 
 
 def _run_controller(
