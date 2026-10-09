@@ -1,16 +1,5 @@
 {
-  "active_inquiry": {
-    "closure_condition": "Close when completed evidence classifies the ten terminal-candidate failures by first entry, hold interruption, target radius and angle, and IK-branch behavior well enough to select or reject a capture, stabilization, or geometry/representation intervention; if no class dominates, record the mixed result and the next discriminating method.",
-    "goal_connection": "The best development candidate succeeds on 150 of 160 episodes, below the required 98% complete uninterrupted-hold objective. Identifying whether the ten failures are capture, regulation, or geometry/branch-specific failures determines whether the next intervention should change transient control, hold stabilization, or training coverage and representation.",
-    "handoff_conclusion": "Observed: M5 found at least one joint-limit-feasible IK branch for all 576 sampled official radius-angle combinations, while the open and folded branches were individually feasible for 84.375% and 85.764% of samples. M5 also measured substantial action-induced endpoint motion and settling within approximately 7-9 control steps in the tested configurations, with the reset Jacobian singular and non-singular representative configurations better conditioned. Interpretation: workspace impossibility is not the leading explanation for the remaining goal gap, and the plant has enough passive settling that a learned state-feedback controller can plausibly solve the task, although the probe is not a policy-level hold test. Observed: T1 training on the full official radius range produced checkpoints whose training success rose to 0.58, but training statistics are not development evidence. Observed: matched-seed M6 evaluation gave 142/160 successes (88.75%) for checkpoint-115712 and 150/160 (93.75%) for checkpoint-120832; the terminal checkpoint won 10 shared episodes versus 2 for the reference, with 12 discordant episodes. Interpretation: continued optimization under the full-radius recipe improves measured complete-hold performance, so the route is supported, but the terminal candidate remains below the human goal. Limit: the current record exposes aggregate success and the existence of per-episode diagnostics, not an interpreted breakdown of the ten failures by radius, angle, first reach, hold length, or interruption.",
-    "handoff_question": "Among the ten failures of T1:checkpoint-120832 on the matched 160-episode development panel, are failures primarily complete-hold interruptions after first entry, late or absent capture, or concentration in specific target-radius/angle or IK-branch regions, and which failure mechanism should determine the next intervention toward 98% official success?",
-    "handoff_source_session_id": "S1",
-    "id": "I1",
-    "opened_in_session": "S2",
-    "question": "Among the ten failures of T1:checkpoint-120832 on the matched 160-episode development panel, are failures primarily complete-hold interruptions after first entry, late or absent capture, or concentration in specific target-radius/angle or IK-branch regions, and which failure mechanism should determine the next intervention toward 98% official success?",
-    "rationale": "M5 ruled out broad workspace impossibility and showed that the plant can settle, while M6 established that the terminal candidate reaches 93.75% but did not interpret its diagnostics. Direct reading of the M6 artifact shows seven failures with no recorded tolerance entry, one first entry at step 116, and two early entries followed by short holds, so late or absent capture currently appears more prevalent than post-entry interruption. The failures also appear concentrated in particular angle sectors and span both inner and outer radii, but the artifact does not expose IK-branch behavior. This inquiry will distinguish a recipe-specific capture/geometry deficit from a local hold-regulation deficit before changing the learning route.",
-    "reframes": []
-  },
+  "active_inquiry": null,
   "campaign": {
     "base_commit": "810461301b97f055d55cb4dcb9df52971b6a1def",
     "id": "58dcd817-4fed-42e6-854b-58f20408e6a1",
@@ -841,7 +830,7 @@
     }
   },
   "counters": {
-    "event": 3,
+    "event": 4,
     "inquiry": 1,
     "measurement": 7,
     "session": 3,
@@ -2520,9 +2509,63 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-09T08:35:56Z",
+      "error": null,
+      "id": "E4",
+      "inquiry_id": "I1",
+      "kind": "inquiry",
+      "request": {
+        "action": "close",
+        "outcome": "I1 closed with a mechanism-supported, limited conclusion: capture/convergence is dominant, while local regulation is a smaller secondary failure class. M7 classified the ten failures as 7 with no tolerance entry, 1 late tolerance entry, and 2 early entries interrupted after at most 3 held steps. The failures occurred at 10-20 cm (3 at 10-14 cm, 4 at 14-18 cm, 3 at 18-20 cm) and in four angle sectors, with none in the 6-10 cm bin. All ten failures had their closest approach on the open IK branch; three entered on that branch and seven never entered, while no failure entered on the folded branch. The policy also used the open branch for 21625 of 21848 recorded episode-steps, so branch switching or folded-branch selection is not established as the dominant cause.",
+        "reason": "M5 established broad feasible workspace and passive settling, M6 established the 93.75% complete-hold result and the initial capture-versus-interruption split, and M7 supplied the missing radius, angle, branch, and failure-trajectory classification. The closure condition is met: the evidence selects capture/transient coverage and open-branch convergence as the next intervention target, rejects a stabilization-only intervention as sufficient, and does not justify attributing the gap to workspace impossibility or folded-branch behavior. The 2 early interruptions remain consequential but are too few to determine the primary direction. The next inquiry should test whether a capture-focused training or representation change improves these geometry-stratified failures without sacrificing hold stability."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I1",
+        "outcome": "I1 closed with a mechanism-supported, limited conclusion: capture/convergence is dominant, while local regulation is a smaller secondary failure class. M7 classified the ten failures as 7 with no tolerance entry, 1 late tolerance entry, and 2 early entries interrupted after at most 3 held steps. The failures occurred at 10-20 cm (3 at 10-14 cm, 4 at 14-18 cm, 3 at 18-20 cm) and in four angle sectors, with none in the 6-10 cm bin. All ten failures had their closest approach on the open IK branch; three entered on that branch and seven never entered, while no failure entered on the folded branch. The policy also used the open branch for 21625 of 21848 recorded episode-steps, so branch switching or folded-branch selection is not established as the dominant cause.",
+        "reason": "M5 established broad feasible workspace and passive settling, M6 established the 93.75% complete-hold result and the initial capture-versus-interruption split, and M7 supplied the missing radius, angle, branch, and failure-trajectory classification. The closure condition is met: the evidence selects capture/transient coverage and open-branch convergence as the next intervention target, rejects a stabilization-only intervention as sufficient, and does not justify attributing the gap to workspace impossibility or folded-branch behavior. The 2 early interruptions remain consequential but are too few to determine the primary direction. The next inquiry should test whether a capture-focused training or representation change improves these geometry-stratified failures without sacrificing hold stability.",
+        "status": "completed"
+      },
+      "session_id": "S3",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "close",
+        "inquiry_id": "I1",
+        "outcome": "I1 closed with a mechanism-supported, limited conclusion: capture/convergence is dominant, while local regulation is a smaller secondary failure class. M7 classified the ten failures as 7 with no tolerance entry, 1 late tolerance entry, and 2 early entries interrupted after at most 3 held steps. The failures occurred at 10-20 cm (3 at 10-14 cm, 4 at 14-18 cm, 3 at 18-20 cm) and in four angle sectors, with none in the 6-10 cm bin. All ten failures had their closest approach on the open IK branch; three entered on that branch and seven never entered, while no failure entered on the folded branch. The policy also used the open branch for 21625 of 21848 recorded episode-steps, so branch switching or folded-branch selection is not established as the dominant cause.",
+        "reason": "M5 established broad feasible workspace and passive settling, M6 established the 93.75% complete-hold result and the initial capture-versus-interruption split, and M7 supplied the missing radius, angle, branch, and failure-trajectory classification. The closure condition is met: the evidence selects capture/transient coverage and open-branch convergence as the next intervention target, rejects a stabilization-only intervention as sufficient, and does not justify attributing the gap to workspace impossibility or folded-branch behavior. The 2 early interruptions remain consequential but are too few to determine the primary direction. The next inquiry should test whether a capture-focused training or representation change improves these geometry-stratified failures without sacrificing hold stability."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I1",
+        "outcome": "I1 closed with a mechanism-supported, limited conclusion: capture/convergence is dominant, while local regulation is a smaller secondary failure class. M7 classified the ten failures as 7 with no tolerance entry, 1 late tolerance entry, and 2 early entries interrupted after at most 3 held steps. The failures occurred at 10-20 cm (3 at 10-14 cm, 4 at 14-18 cm, 3 at 18-20 cm) and in four angle sectors, with none in the 6-10 cm bin. All ten failures had their closest approach on the open IK branch; three entered on that branch and seven never entered, while no failure entered on the folded branch. The policy also used the open branch for 21625 of 21848 recorded episode-steps, so branch switching or folded-branch selection is not established as the dominant cause.",
+        "reason": "M5 established broad feasible workspace and passive settling, M6 established the 93.75% complete-hold result and the initial capture-versus-interruption split, and M7 supplied the missing radius, angle, branch, and failure-trajectory classification. The closure condition is met: the evidence selects capture/transient coverage and open-branch convergence as the next intervention target, rejects a stabilization-only intervention as sufficient, and does not justify attributing the gap to workspace impossibility or folded-branch behavior. The 2 early interruptions remain consequential but are too few to determine the primary direction. The next inquiry should test whether a capture-focused training or representation change improves these geometry-stratified failures without sacrificing hold stability.",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E4",
+    "inquiry_id": "I1",
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "close",
+        "outcome": "I1 closed with a mechanism-supported, limited conclusion: capture/convergence is dominant, while local regulation is a smaller secondary failure class. M7 classified the ten failures as 7 with no tolerance entry, 1 late tolerance entry, and 2 early entries interrupted after at most 3 held steps. The failures occurred at 10-20 cm (3 at 10-14 cm, 4 at 14-18 cm, 3 at 18-20 cm) and in four angle sectors, with none in the 6-10 cm bin. All ten failures had their closest approach on the open IK branch; three entered on that branch and seven never entered, while no failure entered on the folded branch. The policy also used the open branch for 21625 of 21848 recorded episode-steps, so branch switching or folded-branch selection is not established as the dominant cause.",
+        "reason": "M5 established broad feasible workspace and passive settling, M6 established the 93.75% complete-hold result and the initial capture-versus-interruption split, and M7 supplied the missing radius, angle, branch, and failure-trajectory classification. The closure condition is met: the evidence selects capture/transient coverage and open-branch convergence as the next intervention target, rejects a stabilization-only intervention as sufficient, and does not justify attributing the gap to workspace impossibility or folded-branch behavior. The 2 early interruptions remain consequential but are too few to determine the primary direction. The next inquiry should test whether a capture-focused training or representation change improves these geometry-stratified failures without sacrificing hold stability."
+      }
+    },
+    "request_fingerprint": "b301c2f7c7a7e40a351fa00aea8ef6a5973d3926c7ffa46ef6b37ef81beef721",
+    "session_id": "S3",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No formal model role has been assigned. T1:checkpoint-120832 remains the strongest evidence-backed development candidate at 93.75% on M6; T1:checkpoint-115712 is the matched 88.75% reference. Neither has official assessment evidence or meets the human goal.",
     "completed_operations": [
@@ -2563,7 +2606,8 @@
     "kind": "inquiry",
     "objective": "Advance I1 toward an evidence-supported answer to its scientific question: Among the ten failures of T1:checkpoint-120832 on the matched 160-episode development panel, are failures primarily complete-hold interruptions after first entry, late or absent capture, or concentration in specific target-radius/angle or IK-branch regions, and which failure mechanism should determine the next intervention toward 98% official success? Before choosing the next action, compare the accumulated evidence with the closure condition. Close the inquiry when the condition is met.",
     "operation_ids": [
-      "M7"
+      "M7",
+      "E4"
     ],
     "scientific_parent_commit": "de813a9ac13cfa32237247e7f7875a7273051abe"
   },
