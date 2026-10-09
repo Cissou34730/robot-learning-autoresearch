@@ -1394,7 +1394,34 @@ def build_handlers(
 
 
 def session_options(args, console: Console, finished: asyncio.Event) -> dict:
-    from copilot import ToolSet
+    from copilot import ToolSet, define_tool
+    from robot_learning.lab.artifact_evidence_query import (
+        ArtifactEvidenceQueryParams,
+        query_artifact,
+    )
+
+    def artifact_evidence_query(params) -> str:
+        try:
+            return query_artifact(params.model_dump(exclude_none=True))
+        except (OSError, ValueError, TypeError) as error:
+            return json.dumps(
+                {
+                    "status": "query_failed",
+                    "error": str(error),
+                    "bounded": True,
+                }
+            )
+
+    artifact_evidence_tool = define_tool(
+        "artifact_evidence_query",
+        description=(
+            "Read-only, campaign-scoped discovery and bounded querying of "
+            "nested JSON artifact evidence with provenance."
+        ),
+        handler=artifact_evidence_query,
+        params_type=ArtifactEvidenceQueryParams,
+        defer="auto",
+    )
 
     on_event, on_permission_request = build_handlers(
         console, finished, preliminary=args.preliminary
@@ -1404,7 +1431,12 @@ def session_options(args, console: Console, finished: asyncio.Event) -> dict:
         "reasoning_effort": args.reasoning,
         "on_event": on_event,
         "on_permission_request": on_permission_request,
-        "available_tools": ToolSet().add_builtin(RESEARCH_TOOLS),
+        "tools": [artifact_evidence_tool],
+        "available_tools": (
+            ToolSet()
+            .add_builtin(RESEARCH_TOOLS)
+            .add_custom("artifact_evidence_query")
+        ),
         "working_directory": str(ROOT),
         "streaming": True,
         "enable_file_change_tracking": True,
