@@ -28,3 +28,4 @@
 | E15 | checkpoint | - | checkpointed |
 | E16 | restore_recipe | I4 | restored |
 | T4 | training | I4 | completed |
+| M7 | measurement | I4 | completed |
