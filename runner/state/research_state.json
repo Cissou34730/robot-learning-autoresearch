@@ -1,5 +1,16 @@
 {
-  "active_inquiry": null,
+  "active_inquiry": {
+    "closure_condition": "Close when matched residual-case and local-state-feedback measurements compare compiled dynamics, available braking and retention margin, sampled boundary crossings, final distance, and branch-angle dependence sufficiently to support a positive, negative, limited, or inconclusive direction toward either plant/control-robustness work or a new policy-learning intervention.",
+    "goal_connection": "The best development policy succeeds on 153 of 160 episodes, leaving seven failures relative to the 98% threshold. Identifying whether those residual failures are physically or discretely uncontrollable, or instead arise from learned arrival states, determines whether the next route to the human goal should change control robustness or policy learning.",
+    "handoff_conclusion": "M1 established nonzero compiled plant authority, no sampled self-contact in valid target branches, and complete local 100-step holds under zero input and bounded local PD. T1 exposed reach-limited, geometry-conditioned failures. T3's controlled incremental radius transfer improved success to 95.625 percent, first reach to 157/160, and reduced hold interruptions to 4, supporting distribution-shift sensitivity as a leading explanation for the earlier reach deficit. T5's residual-angle oversampling recipe reduced performance to 93.125 percent with 511 interruptions, rejecting that recipe but not incremental transfer generally. T6 preserved T3's curriculum and changed only hold-exit reward handling; M6 found identical 95.625 percent outcomes with zero discordant episodes, rejecting that tested reward-only intervention as sufficient. T7's explicit branch-feasibility feature preserved the residual -130 to -150 degree failure cluster, reduced first reach to 156/160, and increased interruptions from 4 to 13, rejecting that representation and recipe as sufficient. T9 then implemented a different action intervention: a stateful first-order damped command mapper serialized with the policy while preserving direct actuator semantics. M8 found T9 exactly matched T3 at 95.625 percent with zero discordant episodes. Thus I7 closes negatively for the tested action-space redesign: it preserved the supported reach and hold regime but did not alter the residual failures. The leading unresolved explanation now shifts toward insufficient discrete-time control margin, plant-state sensitivity, or numerical geometry in the residual radius-angle cases; this remains a hypothesis, not established causation. T8 was an infrastructure validation failure and is execution history, not scientific evidence.",
+    "handoff_question": "Can targeted plant-state and numerical-margin measurements determine whether T3's residual radius-angle failures are caused by insufficient discrete-time control margin or by a policy-reachable state limitation, and thereby identify the next credible route to 98%?",
+    "handoff_source_session_id": "S15",
+    "id": "I8",
+    "opened_in_session": "S16",
+    "question": "Can targeted plant-state and numerical-margin measurements determine whether T3's residual radius-angle failures are caused by insufficient discrete-time control margin or by a policy-reachable state limitation, and thereby identify the next credible route to 98%?",
+    "rationale": "T3's failures remain localized after incremental radius transfer, hold-exit reward changes, explicit branch-feasibility features, and a serialized damped action mapper. The existing evidence does not distinguish insufficient sampled control margin from policy-reachable state limitation. Targeted plant-state and near-target measurements are the most direct evidence for choosing the next intervention without repeating rejected recipes.",
+    "reframes": []
+  },
   "campaign": {
     "base_commit": "183ba7483c02b821a562dc3107d9c0100b10d3d9",
     "id": "1ae27a27-6880-4ca6-9d50-e6498e771cb7",
@@ -5742,16 +5753,16 @@
     }
   },
   "counters": {
-    "event": 29,
-    "inquiry": 7,
+    "event": 30,
+    "inquiry": 8,
     "measurement": 8,
-    "session": 15,
+    "session": 16,
     "training": 9
   },
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -11220,9 +11231,72 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-09T00:57:08Z",
+      "error": null,
+      "id": "E30",
+      "inquiry_id": "I8",
+      "kind": "inquiry",
+      "request": {
+        "action": "open",
+        "closure_condition": "Close when matched residual-case and local-state-feedback measurements compare compiled dynamics, available braking and retention margin, sampled boundary crossings, final distance, and branch-angle dependence sufficiently to support a positive, negative, limited, or inconclusive direction toward either plant/control-robustness work or a new policy-learning intervention.",
+        "goal_connection": "The best development policy succeeds on 153 of 160 episodes, leaving seven failures relative to the 98% threshold. Identifying whether those residual failures are physically or discretely uncontrollable, or instead arise from learned arrival states, determines whether the next route to the human goal should change control robustness or policy learning.",
+        "question": "Can targeted plant-state and numerical-margin measurements determine whether T3's residual radius-angle failures are caused by insufficient discrete-time control margin or by a policy-reachable state limitation, and thereby identify the next credible route to 98%?",
+        "rationale": "T3's failures remain localized after incremental radius transfer, hold-exit reward changes, explicit branch-feasibility features, and a serialized damped action mapper. The existing evidence does not distinguish insufficient sampled control margin from policy-reachable state limitation. Targeted plant-state and near-target measurements are the most direct evidence for choosing the next intervention without repeating rejected recipes."
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I8",
+        "status": "completed"
+      },
+      "session_id": "S16",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "open",
+        "inquiry": {
+          "closure_condition": "Close when matched residual-case and local-state-feedback measurements compare compiled dynamics, available braking and retention margin, sampled boundary crossings, final distance, and branch-angle dependence sufficiently to support a positive, negative, limited, or inconclusive direction toward either plant/control-robustness work or a new policy-learning intervention.",
+          "goal_connection": "The best development policy succeeds on 153 of 160 episodes, leaving seven failures relative to the 98% threshold. Identifying whether those residual failures are physically or discretely uncontrollable, or instead arise from learned arrival states, determines whether the next route to the human goal should change control robustness or policy learning.",
+          "handoff_conclusion": "M1 established nonzero compiled plant authority, no sampled self-contact in valid target branches, and complete local 100-step holds under zero input and bounded local PD. T1 exposed reach-limited, geometry-conditioned failures. T3's controlled incremental radius transfer improved success to 95.625 percent, first reach to 157/160, and reduced hold interruptions to 4, supporting distribution-shift sensitivity as a leading explanation for the earlier reach deficit. T5's residual-angle oversampling recipe reduced performance to 93.125 percent with 511 interruptions, rejecting that recipe but not incremental transfer generally. T6 preserved T3's curriculum and changed only hold-exit reward handling; M6 found identical 95.625 percent outcomes with zero discordant episodes, rejecting that tested reward-only intervention as sufficient. T7's explicit branch-feasibility feature preserved the residual -130 to -150 degree failure cluster, reduced first reach to 156/160, and increased interruptions from 4 to 13, rejecting that representation and recipe as sufficient. T9 then implemented a different action intervention: a stateful first-order damped command mapper serialized with the policy while preserving direct actuator semantics. M8 found T9 exactly matched T3 at 95.625 percent with zero discordant episodes. Thus I7 closes negatively for the tested action-space redesign: it preserved the supported reach and hold regime but did not alter the residual failures. The leading unresolved explanation now shifts toward insufficient discrete-time control margin, plant-state sensitivity, or numerical geometry in the residual radius-angle cases; this remains a hypothesis, not established causation. T8 was an infrastructure validation failure and is execution history, not scientific evidence.",
+          "handoff_question": "Can targeted plant-state and numerical-margin measurements determine whether T3's residual radius-angle failures are caused by insufficient discrete-time control margin or by a policy-reachable state limitation, and thereby identify the next credible route to 98%?",
+          "handoff_source_session_id": "S15",
+          "id": "I8",
+          "opened_in_session": "S16",
+          "question": "Can targeted plant-state and numerical-margin measurements determine whether T3's residual radius-angle failures are caused by insufficient discrete-time control margin or by a policy-reachable state limitation, and thereby identify the next credible route to 98%?",
+          "rationale": "T3's failures remain localized after incremental radius transfer, hold-exit reward changes, explicit branch-feasibility features, and a serialized damped action mapper. The existing evidence does not distinguish insufficient sampled control margin from policy-reachable state limitation. Targeted plant-state and near-target measurements are the most direct evidence for choosing the next intervention without repeating rejected recipes.",
+          "reframes": []
+        }
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I8",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E30",
+    "inquiry_id": null,
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "open",
+        "closure_condition": "Close when matched residual-case and local-state-feedback measurements compare compiled dynamics, available braking and retention margin, sampled boundary crossings, final distance, and branch-angle dependence sufficiently to support a positive, negative, limited, or inconclusive direction toward either plant/control-robustness work or a new policy-learning intervention.",
+        "goal_connection": "The best development policy succeeds on 153 of 160 episodes, leaving seven failures relative to the 98% threshold. Identifying whether those residual failures are physically or discretely uncontrollable, or instead arise from learned arrival states, determines whether the next route to the human goal should change control robustness or policy learning.",
+        "question": "Can targeted plant-state and numerical-margin measurements determine whether T3's residual radius-angle failures are caused by insufficient discrete-time control margin or by a policy-reachable state limitation, and thereby identify the next credible route to 98%?",
+        "rationale": "T3's failures remain localized after incremental radius transfer, hold-exit reward changes, explicit branch-feasibility features, and a serialized damped action mapper. The existing evidence does not distinguish insufficient sampled control margin from policy-reachable state limitation. Targeted plant-state and near-target measurements are the most direct evidence for choosing the next intervention without repeating rejected recipes."
+      }
+    },
+    "request_fingerprint": "025d4b7a1cbe188b41d2c7f57f39048b7fecf8475edff691c558a041d990491f",
+    "session_id": "S16",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T3:checkpoint-120832 remains the strongest measured development candidate at 95.625 percent on M4, M6, and M8, with 157/160 first reaches and 4 hold interruptions in the corresponding matched development evidence. T9:checkpoint-120832 is an intervention-limited null matching T3 at 95.625 percent with zero discordant episodes. T7 remains a negative representation intervention at 95.0 percent with reduced first reach and increased interruptions. No candidate has a working, best-known, or retained role.",
     "completed_operations": [
@@ -11264,6 +11338,21 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "253f5f69-5798-44f1-ab80-bd6ef5e40058",
+    "id": "S16",
+    "inquiry_id": null,
+    "kind": "goal_review",
+    "objective": "Use the completed evidence to update the scientific direction toward the human goal. Request measurements when they resolve an uncertainty or develop the method. Then choose one outcome: request the official assessment, or open one bounded goal-linked inquiry.",
+    "operation_ids": [
+      "E30"
+    ],
+    "scientific_parent_commit": "fcfaa6917cff74eece6ceff275c590b0eb066966"
+  },
   "terminal_state": null
 }
