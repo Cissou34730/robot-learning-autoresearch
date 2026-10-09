@@ -8295,38 +8295,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I5",
-        "outcome": "limited negative",
-        "reason": "M6 directly tested one T3-derived angle-dependent acquisition and braking implementation on the matched 160-episode panel. T6:checkpoint-105472 achieved 153/160, exactly matching T3:checkpoint-120832, with zero discordant episodes and therefore no rescue of any recurring T3 failure seed. The M6 artifacts preserve complete-hold success, first_reach_step, max_held_steps, hold_interruptions, timeout status, target angle, and terminal joint and branch geometry diagnostics, so the required evidence was available. This weakens the route that this tested angle-dependent braking recipe can close the goal gap, but it does not disprove general trajectory control or establish endpoint branch geometry as the sole cause; the conclusion is limited to the implementation exercised. The human goal remains unmet and official performance remains unmeasured."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I5",
-        "outcome": "limited negative",
-        "reason": "M6 directly tested one T3-derived angle-dependent acquisition and braking implementation on the matched 160-episode panel. T6:checkpoint-105472 achieved 153/160, exactly matching T3:checkpoint-120832, with zero discordant episodes and therefore no rescue of any recurring T3 failure seed. The M6 artifacts preserve complete-hold success, first_reach_step, max_held_steps, hold_interruptions, timeout status, target angle, and terminal joint and branch geometry diagnostics, so the required evidence was available. This weakens the route that this tested angle-dependent braking recipe can close the goal gap, but it does not disprove general trajectory control or establish endpoint branch geometry as the sole cause; the conclusion is limited to the implementation exercised. The human goal remains unmet and official performance remains unmeasured.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E20",
-    "inquiry_id": "I5",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "limited negative",
-        "reason": "M6 directly tested one T3-derived angle-dependent acquisition and braking implementation on the matched 160-episode panel. T6:checkpoint-105472 achieved 153/160, exactly matching T3:checkpoint-120832, with zero discordant episodes and therefore no rescue of any recurring T3 failure seed. The M6 artifacts preserve complete-hold success, first_reach_step, max_held_steps, hold_interruptions, timeout status, target angle, and terminal joint and branch geometry diagnostics, so the required evidence was available. This weakens the route that this tested angle-dependent braking recipe can close the goal gap, but it does not disprove general trajectory control or establish endpoint branch geometry as the sole cause; the conclusion is limited to the implementation exercised. The human goal remains unmet and official performance remains unmeasured."
-      }
-    },
-    "request_fingerprint": "943468ec3d17ade950aecbf7692dda60430a171fd888c8d5d7f6b6db9a3120ae",
-    "session_id": "S11",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T3:checkpoint-120832 remains the strongest development-evaluated candidate at 153/160, with T5:checkpoint-100352 matching it under the tested branch/limit-aware recipe. No candidate has a working, best-known, or retained role because development evidence remains below the human goal and no role assignment was made.",
     "completed_operations": [
