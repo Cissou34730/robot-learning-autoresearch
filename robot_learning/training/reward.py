@@ -23,6 +23,10 @@ HOLD_EXIT_FORFEIT_FRACTION = 0.0
 OUTSIDE_BAND_WIDTH = 0.01
 OUTSIDE_BAND_PENALTY = 0.1
 HOLD_COMPLETE_BONUS = 50.0
+NEAR_TARGET_VELOCITY_PENALTY = 0.02
+NEAR_TARGET_LIMIT_PENALTY = 0.1
+JOINT_LIMIT_RAD = float(np.deg2rad(170.0))
+NEAR_TARGET_LIMIT_MARGIN_RAD = float(np.deg2rad(15.0))
 
 
 @dataclass(frozen=True)
@@ -53,6 +57,8 @@ def reach_reward(
     previous_held_steps: int = 0,
     hold_steps_required: int = 100,
     penalize_outside: bool = False,
+    qpos: np.ndarray | None = None,
+    qvel: np.ndarray | None = None,
 ) -> RewardResult:
     progress = PROGRESS_COEFFICIENT * (previous_distance - current_distance)
     reward = progress
@@ -90,6 +96,20 @@ def reach_reward(
         hold_complete = HOLD_COMPLETE_BONUS
     reward += hold_complete
 
+    stabilization = 0.0
+    if current_distance <= success_threshold and qpos is not None and qvel is not None:
+        stabilization -= NEAR_TARGET_VELOCITY_PENALTY * float(
+            np.sum(np.square(qvel))
+        )
+        limit_margin = np.maximum(
+            NEAR_TARGET_LIMIT_MARGIN_RAD - (JOINT_LIMIT_RAD - np.abs(qpos)),
+            0.0,
+        )
+        stabilization -= NEAR_TARGET_LIMIT_PENALTY * float(
+            np.sum(np.square(limit_margin))
+        )
+    reward += stabilization
+
     action_cost = 0.0
     if action is not None:
         action_cost = -(ACTION_COST_COEFFICIENT * float(np.sum(np.square(action))))
@@ -103,6 +123,7 @@ def reach_reward(
             "hold_progress": float(hold_progress),
             "outside_band": float(outside_band),
             "hold_complete": float(hold_complete),
+            "stabilization": float(stabilization),
             "action_cost": float(action_cost),
         },
     )
