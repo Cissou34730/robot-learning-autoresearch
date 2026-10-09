@@ -1649,7 +1649,7 @@
     }
   },
   "counters": {
-    "event": 8,
+    "event": 9,
     "inquiry": 2,
     "measurement": 3,
     "session": 5,
@@ -1658,7 +1658,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -3529,31 +3529,181 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-09T12:32:51Z",
+      "error": null,
+      "id": "E9",
+      "inquiry_id": "I2",
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "T2:checkpoint-120832 is the strongest measured development candidate at 126/160, but development evidence remains below the human goal and no working, best-known, or retained role is assigned. T1:checkpoint-120832 remains the paired baseline at 110/160. All other T1 and T2 checkpoints remain unmeasured for development and are not treated as superior by terminal status or training statistics.",
+        "completed_operations": [
+          "T2",
+          "M3",
+          "E8"
+        ],
+        "cumulative_resource_use": "M1 compiled-dynamics measurement completed; T1 fresh baseline training requested for 120000 steps and completed at 120832 rollout-rounded steps; M2 paired 160-episode T1 evaluation completed; E4 closed I1 as resolved_limited; E6 opened I2; T2 fresh intervention training requested for 120000 steps and completed at 120832 rollout-rounded steps; M3 paired 160-episode evaluation of T2 against T1 completed; E8 closed I2 as resolved_limited. No official assessment has been requested.",
+        "current_goal_gap": "The strongest measured development candidate is T2:checkpoint-120832 at 126/160 (78.75%), still below the 196/200 official threshold. The remaining gap is simultaneous full-radius and branch coverage, preserved outer-radius performance, and reliable uninterrupted holds; no candidate has a working or best-known role and no official assessment is justified.",
+        "current_synthesis": "M1 established substantial nominal actuation and rapid reversal authority with real joint-limit reactions, so generic weak actuation is not the leading explanation. T1 training statistics nominated checkpoints but did not establish development behavior; M2 measured T1:checkpoint-120832 at 110/160 (68.75%) with failures dominated by no entry and inner-radius targets, while entered-episode success was 93.22%. T2 trained with balanced inner/outer radius exposure and nearest-IK-branch progress shaping, then M3 paired it with T1:checkpoint-120832 on the same 160 episodes. T2 improved overall success to 126/160 (78.75%), inner-radius success from 47/93 (50.54%) to 67/93 (72.04%), and inner no-entry failures from 38 to 23; overall entered-episode success improved from 110/118 (93.22%) to 126/131 (96.18%). This supports the causal value of targeted coverage exposure and branch guidance, but the result is not a pure reach success: outer-radius success fell from 63/67 (94.03%) to 59/67 (88.06%), and total hold interruptions rose from 502 to 789. Therefore E8 closed I2 as resolved_limited. The leading mechanism is now a reach-versus-stability tradeoff: the coverage intervention can convert pre-entry failures, but its learned trajectories can lose hold continuity. The T2 recipe result does not invalidate the broader learning method, and the interruption increase does not establish whether the cause is reward shaping, action dynamics, or target-conditioned control.",
+        "decision_frontier": "The next unresolved method-development question is whether stabilization can be improved without surrendering T2's inner-radius and branch-coverage gains. The decisive evidence is a paired development comparison using the same 160-episode panel and diagnostics, showing inner-radius and no-entry performance retained, outer-radius recovery, lower post-entry interruption burden, and conditional hold success at least as high as T2. If stabilization improves while coverage holds, continue toward the human goal; if interruptions fall only by losing inner-radius coverage, redesign the balance between coverage and braking/hold control; if both remain poor, investigate target-conditioned policy representation or action smoothness rather than treating the issue as generic actuation.",
+        "evidence_references": [
+          "M1",
+          "T1",
+          "M2",
+          "E4",
+          "E6",
+          "T2",
+          "M3",
+          "E8"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 of 200 official episodes to complete an uninterrupted 2 second hold. I2 improved measured development success from the T1 baseline's 110/160 to 126/160, but the policy remains below the goal and its increased interruption burden shows that coverage alone is insufficient.",
+        "next_direction_or_closure": "I2 is closed as resolved_limited. The next fresh inquiry should test one stabilization-preserving intervention against T2:checkpoint-120832, retaining the same radius, branch, entry, joint-limit, and uninterrupted-hold diagnostics. The route continues only if interruption burden and outer-radius loss improve without giving back the inner-radius coverage gain.",
+        "next_question": "Can a stabilization-preserving training intervention retain T2's inner-radius and inverse-kinematic branch-coverage gains while reducing post-entry hold interruptions and recovering outer-radius success?"
+      },
+      "result": {
+        "session_id": "S5",
+        "status": "checkpointed"
+      },
+      "session_id": "S5",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "e092409534328e4671caaff4fc035797678349da",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "T2:checkpoint-120832 is the strongest measured development candidate at 126/160, but development evidence remains below the human goal and no working, best-known, or retained role is assigned. T1:checkpoint-120832 remains the paired baseline at 110/160. All other T1 and T2 checkpoints remain unmeasured for development and are not treated as superior by terminal status or training statistics.",
+        "completed_operations": [
+          "T2",
+          "M3",
+          "E8"
+        ],
+        "cumulative_resource_use": "M1 compiled-dynamics measurement completed; T1 fresh baseline training requested for 120000 steps and completed at 120832 rollout-rounded steps; M2 paired 160-episode T1 evaluation completed; E4 closed I1 as resolved_limited; E6 opened I2; T2 fresh intervention training requested for 120000 steps and completed at 120832 rollout-rounded steps; M3 paired 160-episode evaluation of T2 against T1 completed; E8 closed I2 as resolved_limited. No official assessment has been requested.",
+        "current_goal_gap": "The strongest measured development candidate is T2:checkpoint-120832 at 126/160 (78.75%), still below the 196/200 official threshold. The remaining gap is simultaneous full-radius and branch coverage, preserved outer-radius performance, and reliable uninterrupted holds; no candidate has a working or best-known role and no official assessment is justified.",
+        "current_synthesis": "M1 established substantial nominal actuation and rapid reversal authority with real joint-limit reactions, so generic weak actuation is not the leading explanation. T1 training statistics nominated checkpoints but did not establish development behavior; M2 measured T1:checkpoint-120832 at 110/160 (68.75%) with failures dominated by no entry and inner-radius targets, while entered-episode success was 93.22%. T2 trained with balanced inner/outer radius exposure and nearest-IK-branch progress shaping, then M3 paired it with T1:checkpoint-120832 on the same 160 episodes. T2 improved overall success to 126/160 (78.75%), inner-radius success from 47/93 (50.54%) to 67/93 (72.04%), and inner no-entry failures from 38 to 23; overall entered-episode success improved from 110/118 (93.22%) to 126/131 (96.18%). This supports the causal value of targeted coverage exposure and branch guidance, but the result is not a pure reach success: outer-radius success fell from 63/67 (94.03%) to 59/67 (88.06%), and total hold interruptions rose from 502 to 789. Therefore E8 closed I2 as resolved_limited. The leading mechanism is now a reach-versus-stability tradeoff: the coverage intervention can convert pre-entry failures, but its learned trajectories can lose hold continuity. The T2 recipe result does not invalidate the broader learning method, and the interruption increase does not establish whether the cause is reward shaping, action dynamics, or target-conditioned control.",
+        "decision_frontier": "The next unresolved method-development question is whether stabilization can be improved without surrendering T2's inner-radius and branch-coverage gains. The decisive evidence is a paired development comparison using the same 160-episode panel and diagnostics, showing inner-radius and no-entry performance retained, outer-radius recovery, lower post-entry interruption burden, and conditional hold success at least as high as T2. If stabilization improves while coverage holds, continue toward the human goal; if interruptions fall only by losing inner-radius coverage, redesign the balance between coverage and braking/hold control; if both remain poor, investigate target-conditioned policy representation or action smoothness rather than treating the issue as generic actuation.",
+        "evidence_references": [
+          "M1",
+          "T1",
+          "M2",
+          "E4",
+          "E6",
+          "T2",
+          "M3",
+          "E8"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 of 200 official episodes to complete an uninterrupted 2 second hold. I2 improved measured development success from the T1 baseline's 110/160 to 126/160, but the policy remains below the goal and its increased interruption burden shows that coverage alone is insufficient.",
+        "inquiry_id": "I2",
+        "next_direction_or_closure": "I2 is closed as resolved_limited. The next fresh inquiry should test one stabilization-preserving intervention against T2:checkpoint-120832, retaining the same radius, branch, entry, joint-limit, and uninterrupted-hold diagnostics. The route continues only if interruption burden and outer-radius loss improve without giving back the inner-radius coverage gain.",
+        "next_question": "Can a stabilization-preserving training intervention retain T2's inner-radius and inverse-kinematic branch-coverage gains while reducing post-entry hold interruptions and recovering outer-radius success?",
+        "session_id": "S5"
+      },
+      "presentation": {
+        "backend_session_id": "dbb07230-a65e-4c0f-b81f-3e336eb6d14a",
+        "campaign_id": "81a5458d-ce8f-4c03-b9d2-8ce4f1ff9e9e",
+        "campaign_usage": "15m32s | 27.62 AIU | prompt 3.9m (86% cached) | output 59k",
+        "session_id": "S5",
+        "session_kind": "inquiry",
+        "session_usage": "3m55s | 7.84 AIU | prompt 1.3m (89% cached) | output 15.6k"
+      },
+      "result": {
+        "session_id": "S5",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "19e39576ea3d9bc17e4a8f8cd8ea57ccd5b156bc",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E9",
+    "inquiry_id": "I2",
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "T2:checkpoint-120832 is the strongest measured development candidate at 126/160, but development evidence remains below the human goal and no working, best-known, or retained role is assigned. T1:checkpoint-120832 remains the paired baseline at 110/160. All other T1 and T2 checkpoints remain unmeasured for development and are not treated as superior by terminal status or training statistics.",
+        "completed_operations": [
+          "T2",
+          "M3",
+          "E8"
+        ],
+        "cumulative_resource_use": "M1 compiled-dynamics measurement completed; T1 fresh baseline training requested for 120000 steps and completed at 120832 rollout-rounded steps; M2 paired 160-episode T1 evaluation completed; E4 closed I1 as resolved_limited; E6 opened I2; T2 fresh intervention training requested for 120000 steps and completed at 120832 rollout-rounded steps; M3 paired 160-episode evaluation of T2 against T1 completed; E8 closed I2 as resolved_limited. No official assessment has been requested.",
+        "current_goal_gap": "The strongest measured development candidate is T2:checkpoint-120832 at 126/160 (78.75%), still below the 196/200 official threshold. The remaining gap is simultaneous full-radius and branch coverage, preserved outer-radius performance, and reliable uninterrupted holds; no candidate has a working or best-known role and no official assessment is justified.",
+        "current_synthesis": "M1 established substantial nominal actuation and rapid reversal authority with real joint-limit reactions, so generic weak actuation is not the leading explanation. T1 training statistics nominated checkpoints but did not establish development behavior; M2 measured T1:checkpoint-120832 at 110/160 (68.75%) with failures dominated by no entry and inner-radius targets, while entered-episode success was 93.22%. T2 trained with balanced inner/outer radius exposure and nearest-IK-branch progress shaping, then M3 paired it with T1:checkpoint-120832 on the same 160 episodes. T2 improved overall success to 126/160 (78.75%), inner-radius success from 47/93 (50.54%) to 67/93 (72.04%), and inner no-entry failures from 38 to 23; overall entered-episode success improved from 110/118 (93.22%) to 126/131 (96.18%). This supports the causal value of targeted coverage exposure and branch guidance, but the result is not a pure reach success: outer-radius success fell from 63/67 (94.03%) to 59/67 (88.06%), and total hold interruptions rose from 502 to 789. Therefore E8 closed I2 as resolved_limited. The leading mechanism is now a reach-versus-stability tradeoff: the coverage intervention can convert pre-entry failures, but its learned trajectories can lose hold continuity. The T2 recipe result does not invalidate the broader learning method, and the interruption increase does not establish whether the cause is reward shaping, action dynamics, or target-conditioned control.",
+        "decision_frontier": "The next unresolved method-development question is whether stabilization can be improved without surrendering T2's inner-radius and branch-coverage gains. The decisive evidence is a paired development comparison using the same 160-episode panel and diagnostics, showing inner-radius and no-entry performance retained, outer-radius recovery, lower post-entry interruption burden, and conditional hold success at least as high as T2. If stabilization improves while coverage holds, continue toward the human goal; if interruptions fall only by losing inner-radius coverage, redesign the balance between coverage and braking/hold control; if both remain poor, investigate target-conditioned policy representation or action smoothness rather than treating the issue as generic actuation.",
+        "evidence_references": [
+          "M1",
+          "T1",
+          "M2",
+          "E4",
+          "E6",
+          "T2",
+          "M3",
+          "E8"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 of 200 official episodes to complete an uninterrupted 2 second hold. I2 improved measured development success from the T1 baseline's 110/160 to 126/160, but the policy remains below the goal and its increased interruption burden shows that coverage alone is insufficient.",
+        "next_direction_or_closure": "I2 is closed as resolved_limited. The next fresh inquiry should test one stabilization-preserving intervention against T2:checkpoint-120832, retaining the same radius, branch, entry, joint-limit, and uninterrupted-hold diagnostics. The route continues only if interruption burden and outer-radius loss improve without giving back the inner-radius coverage gain.",
+        "next_question": "Can a stabilization-preserving training intervention retain T2's inner-radius and inverse-kinematic branch-coverage gains while reducing post-entry hold interruptions and recovering outer-radius success?"
+      }
+    },
+    "request_fingerprint": "1413135f7e877476f036c02c6f75e8942b39b8089b5902dd0eca2d3d31b46b14",
+    "session_id": "S5",
+    "supersedes": null
+  },
   "pi_checkpoint": {
-    "candidates_and_roles": "Available candidates remain T1:checkpoint-100352, T1:checkpoint-10240, T1:checkpoint-105472, T1:checkpoint-110592, T1:checkpoint-115712, T1:checkpoint-120832, T1:checkpoint-15360, T1:checkpoint-20480, T1:checkpoint-25600, T1:checkpoint-30720, T1:checkpoint-35840, T1:checkpoint-40960, T1:checkpoint-45056, T1:checkpoint-50176, T1:checkpoint-5120, T1:checkpoint-55296, T1:checkpoint-60416, T1:checkpoint-65536, T1:checkpoint-70656, T1:checkpoint-75776, T1:checkpoint-80896, T1:checkpoint-86016, T1:checkpoint-90112, and T1:checkpoint-95232. No working, best-known, or retained role is assigned because development evidence is below the human goal and I2 has not yet produced intervention evidence.",
+    "candidates_and_roles": "T2:checkpoint-120832 is the strongest measured development candidate at 126/160, but development evidence remains below the human goal and no working, best-known, or retained role is assigned. T1:checkpoint-120832 remains the paired baseline at 110/160. All other T1 and T2 checkpoints remain unmeasured for development and are not treated as superior by terminal status or training statistics.",
     "completed_operations": [
-      "E6"
+      "T2",
+      "M3",
+      "E8"
     ],
-    "cumulative_resource_use": "M1 compiled-dynamics measurement completed; T1 fresh baseline training requested for 120000 steps and completed at 120832 rollout-rounded steps; M2 paired 160-episode development evaluations completed for two T1 checkpoints; E4 closed I1 as resolved_limited; E6 opened I2. No model role has been assigned and no official assessment has been requested.",
-    "current_goal_gap": "The best measured baseline reaches only 68.75% on the 160-episode development panel, with no candidate assigned as working or best-known and no evidence near the 98% objective. The remaining gap is a policy that covers the full radius-angle distribution, particularly inner-radius and branch-sensitive targets, while preserving complete uninterrupted holds.",
-    "current_synthesis": "M1 observed substantial nominal actuation and rapid reversal authority in tested postures and confirmed real joint-limit reactions, so generic weak actuation is not the leading explanation. T1 produced a learning trajectory but its training success did not establish development performance. M2 evaluated two high-performing T1 checkpoints on the same panel: checkpoint-115712 achieved 105/160 (65.625%) and checkpoint-120832 achieved 110/160 (68.75%), with checkpoint-120832 winning 9 versus 4 discordant episodes; this is a recipe-specific candidate difference, not evidence that the terminal checkpoint is intrinsically superior. The mechanism discriminator is clear: failures without first tolerance entry were 49/55 and 42/50, while entered-episode success was 94.6% and 93.2%. Success was 22.5% and 25.0% for inner-radius targets versus 91.5% for outer-radius targets. Entry branch error was approximately 0.10 radians and minimum joint-limit margins were generally broad, although a small number of entered failures and hold interruptions remain. Therefore I1 was resolved with a limited result in favor of reaching/workspace and branch coverage as the primary intervention target; stabilization remains a secondary constraint and must remain in subsequent diagnostics. E6 opened I2 and adds no new behavioral evidence. The particular branch-coverage intervention and its effect on conditional hold success remain untested, and the result does not establish that the broader learning method is inadequate.",
-    "decision_frontier": "The unresolved method-development question is whether a targeted intervention for inner-radius reach and branch/workspace coverage can convert the dominant pre-entry failures into successful complete holds without worsening the secondary post-entry interruption rate. Evidence that inner-radius success and no-entry failure rates improve while entered-episode hold success remains stable would support continuing that route. Persistent inner-radius no-entry failures despite adequate branch feasibility would redirect toward policy representation or target-conditioned control. A rise in post-entry interruptions or reduced conditional success would require balancing coverage against stabilization rather than treating the intervention as a pure reach fix.",
+    "cumulative_resource_use": "M1 compiled-dynamics measurement completed; T1 fresh baseline training requested for 120000 steps and completed at 120832 rollout-rounded steps; M2 paired 160-episode T1 evaluation completed; E4 closed I1 as resolved_limited; E6 opened I2; T2 fresh intervention training requested for 120000 steps and completed at 120832 rollout-rounded steps; M3 paired 160-episode evaluation of T2 against T1 completed; E8 closed I2 as resolved_limited. No official assessment has been requested.",
+    "current_goal_gap": "The strongest measured development candidate is T2:checkpoint-120832 at 126/160 (78.75%), still below the 196/200 official threshold. The remaining gap is simultaneous full-radius and branch coverage, preserved outer-radius performance, and reliable uninterrupted holds; no candidate has a working or best-known role and no official assessment is justified.",
+    "current_synthesis": "M1 established substantial nominal actuation and rapid reversal authority with real joint-limit reactions, so generic weak actuation is not the leading explanation. T1 training statistics nominated checkpoints but did not establish development behavior; M2 measured T1:checkpoint-120832 at 110/160 (68.75%) with failures dominated by no entry and inner-radius targets, while entered-episode success was 93.22%. T2 trained with balanced inner/outer radius exposure and nearest-IK-branch progress shaping, then M3 paired it with T1:checkpoint-120832 on the same 160 episodes. T2 improved overall success to 126/160 (78.75%), inner-radius success from 47/93 (50.54%) to 67/93 (72.04%), and inner no-entry failures from 38 to 23; overall entered-episode success improved from 110/118 (93.22%) to 126/131 (96.18%). This supports the causal value of targeted coverage exposure and branch guidance, but the result is not a pure reach success: outer-radius success fell from 63/67 (94.03%) to 59/67 (88.06%), and total hold interruptions rose from 502 to 789. Therefore E8 closed I2 as resolved_limited. The leading mechanism is now a reach-versus-stability tradeoff: the coverage intervention can convert pre-entry failures, but its learned trajectories can lose hold continuity. The T2 recipe result does not invalidate the broader learning method, and the interruption increase does not establish whether the cause is reward shaping, action dynamics, or target-conditioned control.",
+    "decision_frontier": "The next unresolved method-development question is whether stabilization can be improved without surrendering T2's inner-radius and branch-coverage gains. The decisive evidence is a paired development comparison using the same 160-episode panel and diagnostics, showing inner-radius and no-entry performance retained, outer-radius recovery, lower post-entry interruption burden, and conditional hold success at least as high as T2. If stabilization improves while coverage holds, continue toward the human goal; if interruptions fall only by losing inner-radius coverage, redesign the balance between coverage and braking/hold control; if both remain poor, investigate target-conditioned policy representation or action smoothness rather than treating the issue as generic actuation.",
     "evidence_references": [
       "M1",
       "T1",
       "M2",
       "E4",
-      "E6"
+      "E6",
+      "T2",
+      "M3",
+      "E8"
     ],
-    "human_goal_connection": "The human goal requires at least 196 of 200 official episodes to complete an uninterrupted 2 second hold. The best measured baseline succeeds on only 110 of 160 development episodes, with failures dominated by no entry into the 1 cm band and concentrated at inner radii. I2 now tests whether addressing that dominant loss can improve full-distribution success without sacrificing the complete-hold behavior that succeeds for most episodes after entry.",
-    "inquiry_id": null,
-    "next_direction_or_closure": "I2 has been opened and this goal-review checkpoint ends the current session. In the fresh inquiry session, implement or restore one targeted inner-radius and inverse-kinematic branch-coverage intervention, then obtain paired development evidence against a baseline using the same reach, branch, joint-limit, entry, and uninterrupted-hold diagnostics. Continue the route only if coverage improves while conditional hold success is preserved; otherwise redirect according to the observed tradeoff.",
-    "next_question": "Can a targeted inner-radius and inverse-kinematic branch-coverage intervention improve full-distribution reach success while preserving the baseline policy's high conditional success after first entering the 1 cm tolerance band?",
-    "scientific_commit": "a933c49edd52e38c8266752072a3031085a3a411",
-    "session_id": "S4"
+    "human_goal_connection": "The human goal requires at least 196 of 200 official episodes to complete an uninterrupted 2 second hold. I2 improved measured development success from the T1 baseline's 110/160 to 126/160, but the policy remains below the goal and its increased interruption burden shows that coverage alone is insufficient.",
+    "inquiry_id": "I2",
+    "next_direction_or_closure": "I2 is closed as resolved_limited. The next fresh inquiry should test one stabilization-preserving intervention against T2:checkpoint-120832, retaining the same radius, branch, entry, joint-limit, and uninterrupted-hold diagnostics. The route continues only if interruption burden and outer-radius loss improve without giving back the inner-radius coverage gain.",
+    "next_question": "Can a stabilization-preserving training intervention retain T2's inner-radius and inverse-kinematic branch-coverage gains while reducing post-entry hold interruptions and recovering outer-radius success?",
+    "scientific_commit": "19e39576ea3d9bc17e4a8f8cd8ea57ccd5b156bc",
+    "session_id": "S5"
   },
   "schema_version": 6,
   "scientific_model": {
@@ -3561,23 +3711,6 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "dbb07230-a65e-4c0f-b81f-3e336eb6d14a",
-    "id": "S5",
-    "inquiry_id": "I2",
-    "kind": "inquiry",
-    "objective": "Advance I2 toward an evidence-supported answer to its scientific question: Can a targeted inner-radius and inverse-kinematic branch-coverage intervention improve full-distribution reach success while preserving the baseline policy's high conditional success after first entering the 1 cm tolerance band? Before choosing the next action, compare the accumulated evidence with the closure condition. Close the inquiry when the condition is met.",
-    "operation_ids": [
-      "T2",
-      "M3",
-      "E8"
-    ],
-    "scientific_parent_commit": "e092409534328e4671caaff4fc035797678349da"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
