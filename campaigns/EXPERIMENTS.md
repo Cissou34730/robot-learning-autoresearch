@@ -90,3 +90,4 @@
 | E54 | restore_recipe | I13 | restored |
 | T15 | training | I13 | completed |
 | M19 | measurement | I13 | completed |
+| M20 | measurement | I13 | failed |
