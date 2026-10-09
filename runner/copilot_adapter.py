@@ -1395,28 +1395,23 @@ def build_handlers(
 
 def session_options(args, console: Console, finished: asyncio.Event) -> dict:
     from copilot import ToolSet, define_tool
-    from robot_learning.lab.artifact_evidence_query import (
+    from runner.artifact_evidence_query import (
         ArtifactEvidenceQueryParams,
         query_artifact,
     )
 
     def artifact_evidence_query(params) -> str:
-        try:
-            return query_artifact(params.model_dump(exclude_none=True))
-        except (OSError, ValueError, TypeError) as error:
-            return json.dumps(
-                {
-                    "status": "query_failed",
-                    "error": str(error),
-                    "bounded": True,
-                }
-            )
+        return query_artifact(
+            params.model_dump(exclude_none=True),
+            campaign_id=str(args.campaign_id or ""),
+        )
 
     artifact_evidence_tool = define_tool(
         "artifact_evidence_query",
         description=(
-            "Read-only, campaign-scoped discovery and bounded querying of "
-            "nested JSON artifact evidence with provenance."
+            "Read-only discovery and bounded querying of nested JSON evidence "
+            "recorded by a completed measurement operation in this campaign. "
+            "Provide the operation ID, not a filesystem path."
         ),
         handler=artifact_evidence_query,
         params_type=ArtifactEvidenceQueryParams,

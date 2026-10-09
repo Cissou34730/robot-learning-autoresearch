@@ -243,10 +243,10 @@
         </article>
         <article class="card">
           <span class="tag">Open</span>
-          <h3 style="margin-top: 12px">16 issues, OI-001 to OI-016</h3>
+          <h3 style="margin-top: 12px">17 issues, OI-001 to OI-017</h3>
           <ul>
             <li>Active: OI-014.</li>
-            <li>Implemented or revised, awaiting campaign evidence: OI-003, OI-015, OI-016.</li>
+            <li>Implemented or revised, awaiting campaign evidence: OI-003, OI-015, OI-016, OI-017.</li>
             <li>Closed as effective: OI-001, OI-002, OI-004.</li>
             <li>Postponed, paused, or waiting for a decision: OI-005, OI-006, OI-007, OI-011, OI-013.</li>
             <li>Not approved: OI-008, OI-009, OI-010, OI-012.</li>
@@ -259,6 +259,7 @@
           <ul>
             <li>The comprehensive RCA for campaign <code>79395c88</code> reopened OI-003, extended OI-015, and showed the first OI-016 implementation ineffective.</li>
             <li>OI-016 now separates a proposed next question from an active inquiry identity and permits correction of inherited interpretation from existing evidence.</li>
+            <li>OI-017 adds an operation-scoped, fingerprint-verified SDK tool for bounded nested artifact discovery and queries.</li>
             <li>OI-001 is closed as effective. In <code>896c230a</code> the briefing, the first startup action, and the handoff formed one traceable chain.</li>
             <li>OI-004 remains closed as effective after the earlier <code>58dcd817</code> evidence and is consistent with the final campaign's transfer-learning result.</li>
           </ul>
@@ -496,7 +497,7 @@
 
     <section class="section" aria-labelledby="issues-heading" id="issues">
       <p class="section-label">5 / WHAT STILL NEEDS WORK</p>
-      <h2 id="issues-heading">Open issues OI-001 to OI-016</h2>
+      <h2 id="issues-heading">Open issues OI-001 to OI-017</h2>
       <p>This list matches the outstanding issue register in the log. Issue ids are never reused. No issue below has an approved fix, unless stated.</p>
       <div class="card table-wrap wide">
         <table>
@@ -518,6 +519,7 @@
             <tr><td>OI-014</td><td>Single-change attribution. Campaign <code>79395c88</code> adds seed-confounded observation and rollout-horizon comparisons. Candidate outcomes are valid, but individual causal effects remain unresolved. A conclusion must now preserve that limit and report the result as a property of the compared artifacts; no attribution instrument or matched-seed rule is approved.</td><td><span class="tag">Open</span></td></tr>
             <tr><td>OI-015</td><td>Intended intervention versus effective experiment. Serialized component observability is implemented, and campaign <code>79395c88</code> also treated PPO expert-action reward shaping as evidence about direct controller imitation. A conclusion about an intended method must now state what the operation implemented and leave the unexercised part in the decision frontier.</td><td><span class="tag">Revised, unmeasured</span></td></tr>
             <tr><td>OI-016</td><td>Inquiry and handoff semantics. The first repair was ineffective. The corrective revision permits method-specific bounded inquiries, treats a closed-session next question as a revisable goal-review proposal, preserves exact identity after opening, and passes the goal review's actual synthesis into the fresh inquiry. Two independent fixed-evidence replays of the pre-I13 boundary both declined the inherited question and opened the broader frontier directly.</td><td><span class="tag">Revised, replay-validated</span></td></tr>
+            <tr><td>OI-017</td><td>Nested artifact evidence access. The deferred SDK tool resolves JSON artifacts from completed measurement operations in active Runner state, verifies their recorded fingerprint, discovers wildcard-normalized nested paths, and supports bounded filtering, projection and aggregation. The M30 replay recovered 15 positive and eight nonpositive margins among 23 pre-reach failures without loading the full payload into context.</td><td><span class="tag">Implemented, replay-validated</span></td></tr>
           </tbody>
         </table>
       </div>
@@ -551,6 +553,7 @@
       <div class="card timeline">
         <h3 style="margin-top: 0">9 October</h3>
         <ul>
+          <li>Batch 3 implements OI-017 as a deferred, operation-scoped SDK query tool. The PI supplies a completed measurement operation ID, while Runner state supplies the artifact path and mandatory fingerprint. M30 fixed-evidence validation recovered the nested 15 positive and eight nonpositive margins among 23 pre-reach failures.</li>
           <li>OI-016 corrective revision is implemented after campaign <code>79395c88</code> showed the first repair ineffective. Proposed next questions are revisable in goal review, active inquiry identity remains exact, and the fresh inquiry receives the goal review's actual synthesis. Bounded closure and peer instruments are preserved. Two independent fixed-evidence replays at the pre-I13 boundary, run on the historical model specification, both avoided the redundant inquiry.</li>
           <li>The evidence-handoff fidelity revision addresses OI-003, OI-015 and OI-014 in one change. A direction-changing conclusion must identify its supporting operation and artifact field, state what an intended method actually implemented, and preserve causal limits when other factors changed. The duplicated interpretation reminders in the inquiry section and the launcher are removed, leaving one owner in the program contract.</li>
           <li>The comprehensive campaign <code>79395c88</code> RCA reopened OI-003 for the false M30 missing-evidence claim, added the T10 imitation mismatch to OI-015, and recorded new comparison-confounding evidence under OI-014.</li>

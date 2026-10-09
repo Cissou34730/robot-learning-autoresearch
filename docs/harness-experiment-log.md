@@ -461,7 +461,7 @@ Implementation checks and unassessed campaign effects are not separate issues.
 | OI-014 | Single-change attribution in an intervention | **Open; wording support added 2026-10-09.** An intervention can change several factors at once and then receive a single-cause explanation. Campaign `79395c88` changed training seeds across observation and rollout-horizon variants, so the measured candidates are valid but the individual representation or horizon effects are not isolated. The `current_synthesis` convention now requires a conclusion to preserve that limit and report the result as a property of the compared artifacts when other factors changed with the intended one. This is a reporting requirement only: mandatory matched seeds, repeatable campaigns and attribution instruments remain unapproved, so the issue stays open. See the [comprehensive campaign RCA](campaign_79395c88_comprehensive_rca_20261009.md). |
 | OI-015 | Intended intervention versus effective experiment | **Component observability implemented; semantic realization addressed in wording 2026-10-09.** The serialized-component comparison remains valid and campaign `79395c88` emitted it without false equality claims, but no duplicate-policy case exercised its intended behavioral warning. The campaign also exposed a different realization failure: T10 implemented PPO expert-action reward shaping, while I12 reasoned about direct controller imitation and closed that route without exercising direct supervised imitation. Component hashes cannot detect this semantic mismatch. The `current_synthesis` convention now requires a conclusion about an intended method to state what the operation implemented, limit the claim to what that implementation exercised, and leave the unexercised part in the decision frontier. Campaign effect is unmeasured. See the [comprehensive campaign RCA](campaign_79395c88_comprehensive_rca_20261009.md). |
 | OI-016 | Operation-shaped inquiry formation and first-action precommitment | **Corrective revision implemented 2026-10-09; campaign effect unmeasured.** Campaign `79395c88` showed the first implementation ineffective. The replacement permits method-specific bounded inquiries, makes closed-session `next_question` a revisable proposal for goal review, preserves exact identity only after an inquiry opens, and lets existing evidence correct inherited interpretations, research constraints and proposed actions. After goal review checkpoints, the fresh inquiry now receives that review's actual synthesis and active question instead of stale pre-review state. Repetitive restatement and first-operation justification prompts were removed; peer instruments, bounded closure, PI authority and Runner non-judgment remain unchanged. Two independent fixed-evidence replays of the pre-I13 goal-review boundary, using the historical `gpt-5.6-luna` high-reasoning specification, both declined the inherited question and opened the broader frontier directly, where the campaign had opened and closed I13 with no new operation. This is boundary-level replication, not campaign-level proof. See the [comprehensive campaign RCA](campaign_79395c88_comprehensive_rca_20261009.md) and the earlier [OI-016-focused RCA](oi016_post_campaign_rca_20261009.md). |
-| OI-017 | On-demand access to nested artifact evidence | **Approved for the next implementation round.** The compact structure-only artifact inventory does not expand array elements. In M30 it exposed `episode_diagnostics[*].terminal_state` but not the nested `ik.nearest_branch_limit_margin_rad` field, so evidence present in the immutable artifact was not discoverable from the inventory and was later reported missing. Implement a generic read-only evidence-access capability, preferably as a Copilot SDK custom tool. If that integration is unsuitable, provide the same capability through a PI-visible Runner/adapter query interface; do not replace it with an ever-growing static prompt inventory. The interface must discover paths through arrays, query recorded artifact fields, support bounded filtering and aggregation, distinguish absent, uninspected, unavailable and query-failed states, and return operation ID, artifact path, field path and immutable fingerprint provenance. It remains mechanical: it does not choose diagnostics, interpret values, judge adequacy, require an inspection sequence or expose arbitrary repository files. |
+| OI-017 | On-demand access to nested artifact evidence | **SDK query tool implemented and fixed-evidence validated 2026-10-09; campaign effect unmeasured.** The compact structure-only inventory cannot expose arbitrary nested fields below array rows. The deferred `artifact_evidence_query` SDK tool now accepts a completed measurement operation ID rather than a filesystem path, resolves its recorded JSON artifacts from the active campaign state, verifies the mandatory recorded fingerprint, discovers wildcard-normalized nested paths, and performs bounded filtering, projection and aggregation. It distinguishes present-but-uninspected discovery, absent fields, unavailable artifacts, fingerprint mismatch and query failure. The M30 replay filtered the 23 pre-reach failures and recovered 15 positive and eight nonpositive nearest-branch margins. The tool remains read-only and mechanical; it cannot select diagnostics, interpret values, inspect unrecorded files or mutate campaign state. |
 
 ### Detailed backlog and status context
 
@@ -3157,3 +3157,53 @@ Addresses OI-003, OI-015 and OI-014 together as Priority 2 of the
 - **Campaign boundary:** this entry approves and scopes future implementation
   only. No tool, Runner behavior or campaign state changes here, and no campaign
   is launched, resumed, reset, trained, measured or evaluated.
+
+## 2026-10-09: implement Batch 3 OI-017 artifact evidence query
+
+- **Placement:** implement the capability as the deferred
+  `artifact_evidence_query` Copilot SDK tool. The implementation belongs to the
+  Runner because campaign scoping, completed-operation resolution and immutable
+  provenance are harness responsibilities; it is not a campaign-scoped
+  scientific analysis under `robot_learning/lab/`.
+- **Operation-first interface:** the PI supplies a completed measurement
+  operation ID and, only when that operation recorded several measurements, a
+  zero-based artifact index. The caller cannot supply an artifact path,
+  operation provenance or expected fingerprint. The tool resolves all three
+  from `runner/state/research_state.json`.
+- **Campaign and access boundary:** the bound SDK session campaign must match
+  active Runner state. The operation must exist, have `status == completed` and
+  have kind `measurement`. The selected record must be a JSON artifact below
+  that campaign's `campaigns/evaluations/<campaign-id>/` directory. Arbitrary
+  repository paths and artifacts from another campaign are rejected.
+- **Integrity:** fingerprint verification is mandatory and uses the immutable
+  fingerprint recorded in the completed measurement result. The result returns
+  both recorded and verified fingerprints. A mismatch has its own status and
+  never returns artifact values.
+- **Query capability:** discovery traverses nested objects and array elements,
+  normalizes wildcard paths and deduplicates repeated row schemas. Querying
+  supports a JSON Pointer scope, an equality filter relative to each matched
+  row, an optional relative projection, and bounded count, numeric-summary or
+  scalar value-count aggregation. Raw match output has count and byte limits.
+- **Explicit states:** discovery identifies present paths whose values were not
+  inspected. Querying distinguishes an absent field from a valid filter with
+  zero matching rows. Missing files, unknown or incomplete operations and
+  operations without measurement artifacts return `artifact_unavailable`.
+  Fingerprint mismatch and query failure remain distinct.
+- **M30 fixed-evidence validation:** the historical campaign-end state and
+  immutable committed M30 artifact were supplied without restoring or mutating
+  campaign state. A query selected the 200 episode rows, filtered
+  `first_reach_step == null`, projected
+  `terminal_state/ik/nearest_branch_limit_margin_rad` and returned 23 numeric
+  values: 15 positive and eight nonpositive. Wildcard discovery returned seven
+  deduplicated fields under terminal-state IK, including the margin path,
+  without truncation.
+- **Failure validation:** explicit checks covered field absence, unknown
+  operation and missing artifact, recorded-fingerprint mismatch, invalid query
+  syntax, operation-scoped schema, and mandatory recorded/verified provenance.
+  Python compilation and whitespace checks pass.
+- **Scientific boundary:** the tool does not select a diagnostic, infer a
+  mechanism, judge adequacy or require an inspection sequence. It retrieves
+  exact bounded evidence and provenance; the PI owns the query and conclusion.
+- **Campaign boundary:** no campaign was launched, resumed, reset, trained,
+  measured or evaluated. Live campaign state and its pending operation request
+  were not edited or committed.
