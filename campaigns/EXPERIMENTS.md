@@ -41,3 +41,4 @@
 | M7 | measurement | I6 | completed |
 | E24 | inquiry | I6 | completed |
 | E25 | checkpoint | I6 | checkpointed |
+| E26 | inquiry | I7 | completed |
