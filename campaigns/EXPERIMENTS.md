@@ -111,3 +111,4 @@
 | E63 | checkpoint | I14 | checkpointed |
 | E64 | inquiry | I15 | completed |
 | E65 | checkpoint | - | checkpointed |
+| T17 | training | I15 | completed |
