@@ -11,7 +11,7 @@
   "counters": {
     "event": 0,
     "inquiry": 0,
-    "measurement": 3,
+    "measurement": 4,
     "session": 1,
     "training": 0
   },
@@ -87,6 +87,37 @@
       "status": "failed",
       "superseded_by": "M3",
       "supersedes": "M1"
+    },
+    {
+      "completed_at": "2026-10-09T08:22:01Z",
+      "error": "robot_learning.lab.dynamics_probe failed:\n\nTraceback (most recent call last):\n  File \"<frozen runpy>\", line 203, in _run_module_as_main\n  File \"<frozen runpy>\", line 88, in _run_code\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\dynamics_probe.py\", line 313, in <module>\n    main()\n    ~~~~^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\dynamics_probe.py\", line 275, in main\n    body_name(model, index): float(model.body_mass[index])\n    ~~~~~~~~~^^^^^^^^^^^^^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\dynamics_probe.py\", line 33, in body_name\n    return mujoco.mj_id2name(mujoco.mjtObj.mjOBJ_BODY, index) or str(index)\n           ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nTypeError: mj_id2name(): incompatible function arguments. The following argument types are supported:\n    1. (m: mujoco._structs.MjModel, type: typing.SupportsInt | typing.SupportsIndex, id: typing.SupportsInt | typing.SupportsIndex) -> str\n\nInvoked with: <mjtObj.mjOBJ_BODY: 1>, 0\n",
+      "id": "M3",
+      "inquiry_id": null,
+      "kind": "measurement",
+      "request": {
+        "description": "Repeat the compiled MuJoCo dynamics, constrained inverse-kinematics coverage, Jacobian conditioning, and action/braking response characterization after correcting the mj_fullM call signature.",
+        "measurements": [
+          {
+            "args": [
+              "--artifact",
+              "campaigns\\evaluations\\58dcd817-4fed-42e6-854b-58f20408e6a1\\dynamics_probe.json"
+            ],
+            "artifact": "campaigns\\evaluations\\58dcd817-4fed-42e6-854b-58f20408e6a1\\dynamics_probe.json",
+            "instrument": "python_module",
+            "label": "repaired mass-matrix and reset-response characterization",
+            "module": "robot_learning.lab.dynamics_probe"
+          }
+        ],
+        "rationale": "M2 failed before producing any scientific measurement because the probe passed the packed mass matrix where the native API requires MjData. The failure does not discriminate the competing explanations. The corrected probe preserves the original decision test: complete IK coverage would rule out workspace impossibility, while compiled inertial quantities and reset/representative action responses determine whether the first learning direction should prioritize transient capture, braking and hold regulation, or official inner-radius coverage."
+      },
+      "result": {
+        "error": "robot_learning.lab.dynamics_probe failed:\n\nTraceback (most recent call last):\n  File \"<frozen runpy>\", line 203, in _run_module_as_main\n  File \"<frozen runpy>\", line 88, in _run_code\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\dynamics_probe.py\", line 313, in <module>\n    main()\n    ~~~~^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\dynamics_probe.py\", line 275, in main\n    body_name(model, index): float(model.body_mass[index])\n    ~~~~~~~~~^^^^^^^^^^^^^^\n  File \"C:\\Users\\cyril.beurier\\code\\robot-learning-inquiry-centered-lifecycle\\robot_learning\\lab\\dynamics_probe.py\", line 33, in body_name\n    return mujoco.mj_id2name(mujoco.mjtObj.mjOBJ_BODY, index) or str(index)\n           ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nTypeError: mj_id2name(): incompatible function arguments. The following argument types are supported:\n    1. (m: mujoco._structs.MjModel, type: typing.SupportsInt | typing.SupportsIndex, id: typing.SupportsInt | typing.SupportsIndex) -> str\n\nInvoked with: <mjtObj.mjOBJ_BODY: 1>, 0\n",
+        "status": "failed"
+      },
+      "session_id": "S1",
+      "status": "failed",
+      "superseded_by": "M4",
+      "supersedes": "M2"
     }
   ],
   "pending_operation": {
@@ -100,7 +131,7 @@
           ],
           "artifact": "campaigns/evaluations/58dcd817-4fed-42e6-854b-58f20408e6a1/dynamics_probe.json",
           "instrument": "python_module",
-          "label": "repaired mass-matrix and reset-response characterization",
+          "label": "repaired model metadata and reset-response characterization",
           "module": "robot_learning.lab.dynamics_probe"
         }
       ],
@@ -111,7 +142,7 @@
             "path": "robot_learning/lab/__init__.py"
           },
           {
-            "fingerprint": "318228ae96d60f94737ec54a4f890d9d69ae81b6b2dd566592d1ecf5234f3ea5",
+            "fingerprint": "6783336181be8028d531374e890a4c10768d9b3c2a886f3c6224bd5733a3541e",
             "path": "robot_learning/lab/dynamics_probe.py"
           }
         ],
@@ -144,7 +175,7 @@
         "module_manifest": [
           {
             "exists": true,
-            "fingerprint": "318228ae96d60f94737ec54a4f890d9d69ae81b6b2dd566592d1ecf5234f3ea5",
+            "fingerprint": "6783336181be8028d531374e890a4c10768d9b3c2a886f3c6224bd5733a3541e",
             "path": "robot_learning/lab/dynamics_probe.py"
           }
         ],
@@ -161,13 +192,13 @@
       "task_reference_contract": null
     },
     "failure": null,
-    "id": "M3",
+    "id": "M4",
     "inquiry_id": null,
     "kind": "measurement",
     "progress": "accepted",
     "request": {
       "measurement": {
-        "description": "Repeat the compiled MuJoCo dynamics, constrained inverse-kinematics coverage, Jacobian conditioning, and action/braking response characterization after correcting the mj_fullM call signature.",
+        "description": "Repeat the compiled MuJoCo dynamics, constrained inverse-kinematics coverage, Jacobian conditioning, and action/braking response characterization after correcting native model-name lookup calls.",
         "measurements": [
           {
             "args": [
@@ -176,16 +207,16 @@
             ],
             "artifact": "campaigns\\evaluations\\58dcd817-4fed-42e6-854b-58f20408e6a1\\dynamics_probe.json",
             "instrument": "python_module",
-            "label": "repaired mass-matrix and reset-response characterization",
+            "label": "repaired model metadata and reset-response characterization",
             "module": "robot_learning.lab.dynamics_probe"
           }
         ],
-        "rationale": "M2 failed before producing any scientific measurement because the probe passed the packed mass matrix where the native API requires MjData. The failure does not discriminate the competing explanations. The corrected probe preserves the original decision test: complete IK coverage would rule out workspace impossibility, while compiled inertial quantities and reset/representative action responses determine whether the first learning direction should prioritize transient capture, braking and hold regulation, or official inner-radius coverage."
+        "rationale": "M3 failed before producing any scientific measurement because the probe omitted MjModel from mj_id2name. The failure does not discriminate the competing explanations. The corrected probe preserves the original decision test: complete IK coverage would rule out workspace impossibility, while compiled inertial quantities and reset/representative action responses determine whether the first learning direction should prioritize transient capture, braking and hold regulation, or official inner-radius coverage."
       }
     },
-    "request_fingerprint": "51e36fcb56e7d48099306b4ad9f98573ec925d4ee4180b7816aa5346c25e47f5",
+    "request_fingerprint": "067220477605f2b532e556e8e9bf9070ab6f4794d6f6714262cfffa5f89d115b",
     "session_id": "S1",
-    "supersedes": "M2"
+    "supersedes": "M3"
   },
   "pi_checkpoint": null,
   "schema_version": 6,
