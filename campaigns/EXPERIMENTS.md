@@ -87,3 +87,4 @@
 | E51 | checkpoint | I12 | checkpointed |
 | E52 | inquiry | I13 | completed |
 | E53 | checkpoint | - | checkpointed |
+| E54 | restore_recipe | I13 | restored |
