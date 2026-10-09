@@ -90,3 +90,4 @@
 | E52 | inquiry | I12 | completed |
 | E53 | checkpoint | I12 | checkpointed |
 | E54 | inquiry | I13 | completed |
+| E55 | checkpoint | - | checkpointed |
