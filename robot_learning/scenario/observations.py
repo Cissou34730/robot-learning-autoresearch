@@ -8,12 +8,12 @@ import numpy as np
 
 from contracts.robots.two_joint_arm import FOREARM_LENGTH, UPPER_ARM_LENGTH
 
-
-JOINT_LIMIT_RAD = float(np.deg2rad(170.0))
-OBSERVATION_SIZE = 15
+OBSERVATION_SIZE = 13
 
 
-def reach_observation(data) -> np.ndarray:
+def reach_observation(
+    data, previous_action: np.ndarray | None = None
+) -> np.ndarray:
     def wrap_to_pi(angle: float) -> float:
         return float((angle + np.pi) % (2.0 * np.pi) - np.pi)
 
@@ -35,22 +35,9 @@ def reach_observation(data) -> np.ndarray:
     shoulder_open = shoulder_for_elbow(elbow_open)
     elbow_folded = -elbow_open
     shoulder_folded = shoulder_for_elbow(elbow_folded)
-    branch_margins = np.asarray(
-        [
-            min(
-                JOINT_LIMIT_RAD - abs(shoulder_open),
-                JOINT_LIMIT_RAD - abs(elbow_open),
-            ),
-            min(
-                JOINT_LIMIT_RAD - abs(shoulder_folded),
-                JOINT_LIMIT_RAD - abs(elbow_folded),
-            ),
-        ],
-        dtype=np.float32,
-    )
-    normalized_margins = branch_margins / JOINT_LIMIT_RAD
-    feasible_branches = (branch_margins >= 0.0).astype(np.float32)
     end_effector = data.site("end_effector").xpos.copy()
+    if previous_action is None:
+        previous_action = np.zeros(2, dtype=np.float32)
     return np.concatenate(
         [
             data.qpos,
@@ -62,7 +49,6 @@ def reach_observation(data) -> np.ndarray:
                 wrap_to_pi(shoulder_folded - float(data.qpos[0])),
                 wrap_to_pi(elbow_folded - float(data.qpos[1])),
             ],
-            normalized_margins,
-            feasible_branches,
+            previous_action,
         ]
     ).astype(np.float32)
