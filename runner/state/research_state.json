@@ -1,5 +1,16 @@
 {
-  "active_inquiry": null,
+  "active_inquiry": {
+    "closure_condition": "A completed matched development comparison of an intervention derived from T2 against the T2 reference, with success, first_reach_step, max_held_steps, hold_interruptions, timeout status, target angle, and terminal branch or joint geometry, is sufficient to determine whether angle- or trajectory-aware control materially improves the goal gap and whether residual failures are angle-specific, branch/limit-specific, or their interaction.",
+    "goal_connection": "The best measured candidate, T2:checkpoint-120832, succeeds on 150 of 160 development episodes (93.75%), below the 196 of 200 episodes required officially. This inquiry targets the remaining acquisition and hold failures while preserving the official 0.06-0.20 m radius range and complete uninterrupted hold criterion.",
+    "handoff_conclusion": "M1 established high actuation authority and substantial residual-motion risk but did not establish the learned-policy bottleneck. M2 showed T1 success of 110/160 (68.75%) with the largest observed deficit in inner-radius acquisition, while lacking branch or terminal geometry. T2 changed only the training radius range to the official 0.06-0.20 m interval. Matched M3 evidence on identical seeds improved complete-hold success to 150/160 (93.75%), with 43 paired wins versus 3 and the required radius, angle, acquisition, hold, timeout, terminal-joint, and IK-branch diagnostics. This establishes that broader radius coverage materially improves the compared recipe, but not that coverage alone reaches the human goal. T2's remaining failures span approximately 10.7-18.8 cm rather than isolating the former inner-radius regime. The recorded terminal branch diagnostics do not establish branch selection as the sole cause, so angle-dependent trajectory acquisition and stabilization remain competing explanations.",
+    "handoff_question": "Can an angle- and trajectory-aware acquisition or stabilization intervention reduce the T2 residual failures toward the 98% complete-hold goal, and do the gains and remaining failures implicate target angle, IK-branch/limit interaction, or their interaction?",
+    "handoff_source_session_id": "S5",
+    "id": "I3",
+    "opened_in_session": "S6",
+    "question": "Can an angle- and trajectory-aware acquisition or stabilization intervention reduce the T2 residual failures toward the 98% complete-hold goal, and do the gains and remaining failures implicate target angle, IK-branch/limit interaction, or their interaction?",
+    "rationale": "M3 established that the broader-radius T2 recipe materially improved the compared policy, but it did not establish coverage alone as the cause of all remaining failures. The ten T2 failures were not confined to the inner-radius regime: seven never entered tolerance and three entered before losing the hold. The acquisition failures were concentrated mostly near target angles of roughly -130 to -151 degrees, while hold failures also occurred near -148, -41, and +17 degrees. Several terminal configurations approached a joint limit and had one small IK branch error, but terminal geometry alone cannot distinguish a branch-selection error from angle-dependent trajectory acquisition, braking, or stabilization. The prior inner-radius framing is therefore too narrow; this inquiry tests the unresolved angle/trajectory versus branch/limit mechanism that can change the route to 98%.",
+    "reframes": []
+  },
   "campaign": {
     "base_commit": "5a0ec158aa0741306d5f825a3ec7db8176a3ff13",
     "id": "339736e0-5583-4bc4-8729-5023fc3077b7",
@@ -1647,16 +1658,16 @@
     }
   },
   "counters": {
-    "event": 9,
-    "inquiry": 2,
+    "event": 10,
+    "inquiry": 3,
     "measurement": 3,
-    "session": 5,
+    "session": 6,
     "training": 2
   },
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -3188,9 +3199,72 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-09T22:53:10Z",
+      "error": null,
+      "id": "E10",
+      "inquiry_id": "I3",
+      "kind": "inquiry",
+      "request": {
+        "action": "open",
+        "closure_condition": "A completed matched development comparison of an intervention derived from T2 against the T2 reference, with success, first_reach_step, max_held_steps, hold_interruptions, timeout status, target angle, and terminal branch or joint geometry, is sufficient to determine whether angle- or trajectory-aware control materially improves the goal gap and whether residual failures are angle-specific, branch/limit-specific, or their interaction.",
+        "goal_connection": "The best measured candidate, T2:checkpoint-120832, succeeds on 150 of 160 development episodes (93.75%), below the 196 of 200 episodes required officially. This inquiry targets the remaining acquisition and hold failures while preserving the official 0.06-0.20 m radius range and complete uninterrupted hold criterion.",
+        "question": "Can an angle- and trajectory-aware acquisition or stabilization intervention reduce the T2 residual failures toward the 98% complete-hold goal, and do the gains and remaining failures implicate target angle, IK-branch/limit interaction, or their interaction?",
+        "rationale": "M3 established that the broader-radius T2 recipe materially improved the compared policy, but it did not establish coverage alone as the cause of all remaining failures. The ten T2 failures were not confined to the inner-radius regime: seven never entered tolerance and three entered before losing the hold. The acquisition failures were concentrated mostly near target angles of roughly -130 to -151 degrees, while hold failures also occurred near -148, -41, and +17 degrees. Several terminal configurations approached a joint limit and had one small IK branch error, but terminal geometry alone cannot distinguish a branch-selection error from angle-dependent trajectory acquisition, braking, or stabilization. The prior inner-radius framing is therefore too narrow; this inquiry tests the unresolved angle/trajectory versus branch/limit mechanism that can change the route to 98%."
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I3",
+        "status": "completed"
+      },
+      "session_id": "S6",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "open",
+        "inquiry": {
+          "closure_condition": "A completed matched development comparison of an intervention derived from T2 against the T2 reference, with success, first_reach_step, max_held_steps, hold_interruptions, timeout status, target angle, and terminal branch or joint geometry, is sufficient to determine whether angle- or trajectory-aware control materially improves the goal gap and whether residual failures are angle-specific, branch/limit-specific, or their interaction.",
+          "goal_connection": "The best measured candidate, T2:checkpoint-120832, succeeds on 150 of 160 development episodes (93.75%), below the 196 of 200 episodes required officially. This inquiry targets the remaining acquisition and hold failures while preserving the official 0.06-0.20 m radius range and complete uninterrupted hold criterion.",
+          "handoff_conclusion": "M1 established high actuation authority and substantial residual-motion risk but did not establish the learned-policy bottleneck. M2 showed T1 success of 110/160 (68.75%) with the largest observed deficit in inner-radius acquisition, while lacking branch or terminal geometry. T2 changed only the training radius range to the official 0.06-0.20 m interval. Matched M3 evidence on identical seeds improved complete-hold success to 150/160 (93.75%), with 43 paired wins versus 3 and the required radius, angle, acquisition, hold, timeout, terminal-joint, and IK-branch diagnostics. This establishes that broader radius coverage materially improves the compared recipe, but not that coverage alone reaches the human goal. T2's remaining failures span approximately 10.7-18.8 cm rather than isolating the former inner-radius regime. The recorded terminal branch diagnostics do not establish branch selection as the sole cause, so angle-dependent trajectory acquisition and stabilization remain competing explanations.",
+          "handoff_question": "Can an angle- and trajectory-aware acquisition or stabilization intervention reduce the T2 residual failures toward the 98% complete-hold goal, and do the gains and remaining failures implicate target angle, IK-branch/limit interaction, or their interaction?",
+          "handoff_source_session_id": "S5",
+          "id": "I3",
+          "opened_in_session": "S6",
+          "question": "Can an angle- and trajectory-aware acquisition or stabilization intervention reduce the T2 residual failures toward the 98% complete-hold goal, and do the gains and remaining failures implicate target angle, IK-branch/limit interaction, or their interaction?",
+          "rationale": "M3 established that the broader-radius T2 recipe materially improved the compared policy, but it did not establish coverage alone as the cause of all remaining failures. The ten T2 failures were not confined to the inner-radius regime: seven never entered tolerance and three entered before losing the hold. The acquisition failures were concentrated mostly near target angles of roughly -130 to -151 degrees, while hold failures also occurred near -148, -41, and +17 degrees. Several terminal configurations approached a joint limit and had one small IK branch error, but terminal geometry alone cannot distinguish a branch-selection error from angle-dependent trajectory acquisition, braking, or stabilization. The prior inner-radius framing is therefore too narrow; this inquiry tests the unresolved angle/trajectory versus branch/limit mechanism that can change the route to 98%.",
+          "reframes": []
+        }
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I3",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E10",
+    "inquiry_id": null,
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "open",
+        "closure_condition": "A completed matched development comparison of an intervention derived from T2 against the T2 reference, with success, first_reach_step, max_held_steps, hold_interruptions, timeout status, target angle, and terminal branch or joint geometry, is sufficient to determine whether angle- or trajectory-aware control materially improves the goal gap and whether residual failures are angle-specific, branch/limit-specific, or their interaction.",
+        "goal_connection": "The best measured candidate, T2:checkpoint-120832, succeeds on 150 of 160 development episodes (93.75%), below the 196 of 200 episodes required officially. This inquiry targets the remaining acquisition and hold failures while preserving the official 0.06-0.20 m radius range and complete uninterrupted hold criterion.",
+        "question": "Can an angle- and trajectory-aware acquisition or stabilization intervention reduce the T2 residual failures toward the 98% complete-hold goal, and do the gains and remaining failures implicate target angle, IK-branch/limit interaction, or their interaction?",
+        "rationale": "M3 established that the broader-radius T2 recipe materially improved the compared policy, but it did not establish coverage alone as the cause of all remaining failures. The ten T2 failures were not confined to the inner-radius regime: seven never entered tolerance and three entered before losing the hold. The acquisition failures were concentrated mostly near target angles of roughly -130 to -151 degrees, while hold failures also occurred near -148, -41, and +17 degrees. Several terminal configurations approached a joint limit and had one small IK branch error, but terminal geometry alone cannot distinguish a branch-selection error from angle-dependent trajectory acquisition, braking, or stabilization. The prior inner-radius framing is therefore too narrow; this inquiry tests the unresolved angle/trajectory versus branch/limit mechanism that can change the route to 98%."
+      }
+    },
+    "request_fingerprint": "2526d4ec16aaf4d39037f3604505500d1dd9ba7987f8aa4e29d7a0fb35db324a",
+    "session_id": "S6",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T2:checkpoint-120832 is the strongest development-evaluated candidate at 150/160 successes, but working, best-known, and retained roles remain empty because no role assignment has been made. T1:checkpoint-120832 remains the matched reference at 110/160. Training statistics nominate candidates but do not establish performance.",
     "completed_operations": [
@@ -3224,6 +3298,21 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "65dafbf2-43ce-4b14-a054-abc540331f2c",
+    "id": "S6",
+    "inquiry_id": null,
+    "kind": "goal_review",
+    "objective": "Use the completed evidence to update the scientific direction toward the human goal. Correct inherited interpretations, constraints or proposed questions when existing evidence warrants it. Request measurements when they resolve an uncertainty or develop the method. Then choose one outcome: request the official assessment, or open one bounded goal-linked inquiry.",
+    "operation_ids": [
+      "E10"
+    ],
+    "scientific_parent_commit": "e46f21fcd779f3bbad72c40670593a352ff011e3"
+  },
   "terminal_state": null
 }
