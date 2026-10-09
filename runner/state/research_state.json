@@ -7391,16 +7391,16 @@
     }
   },
   "counters": {
-    "event": 44,
+    "event": 45,
     "inquiry": 11,
     "measurement": 12,
-    "session": 22,
+    "session": 23,
     "training": 12
   },
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "restored",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -15059,9 +15059,97 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-09T01:26:53Z",
+      "error": null,
+      "id": "E45",
+      "inquiry_id": "I11",
+      "kind": "restore_recipe",
+      "request": {
+        "candidate": "T3:checkpoint-120832",
+        "reason": "Restore the exact T3 incremental-radius transfer recipe before testing route-conditioned action authority. This removes T12's representation change so the next intervention isolates targeted braking in the residual negative-angle geometry while preserving T3's observation, normalization, reward, and training curriculum."
+      },
+      "result": {
+        "candidate": "T3:checkpoint-120832",
+        "restored_paths": [
+          "robot_learning/scenario/observations.py"
+        ],
+        "scientific_commit": "ac80177d270a56c270c2c7ddd930bba9699430be",
+        "status": "restored"
+      },
+      "session_id": "S23",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "candidate_id": "T3:checkpoint-120832",
+        "parameters": {
+          "algorithm": {
+            "name": "ppo"
+          },
+          "policy": {
+            "activation": "tanh",
+            "net_arch": [
+              64,
+              64
+            ]
+          },
+          "ppo": {
+            "batch_size": 64,
+            "ent_coef": 0.01,
+            "gae_lambda": 0.95,
+            "gamma": 0.99,
+            "learning_rate": 0.0003,
+            "n_steps": 1024
+          },
+          "training": {
+            "checkpoint_every_steps": 5000,
+            "n_envs": 1
+          }
+        },
+        "parent": "ac80177d270a56c270c2c7ddd930bba9699430be",
+        "remove_created": [],
+        "restore": [
+          "robot_learning/scenario/observations.py"
+        ],
+        "session_id": "S23"
+      },
+      "pre_restore_manifest": [
+        {
+          "exists": true,
+          "fingerprint": "b43962e3aae2a3746b3eae46ce81284c40af0dcd609f096bc47ee61a7cc31050",
+          "path": "robot_learning/scenario/observations.py"
+        }
+      ],
+      "result": {
+        "candidate": "T3:checkpoint-120832",
+        "restored_paths": [
+          "robot_learning/scenario/observations.py"
+        ],
+        "scientific_commit": "ac80177d270a56c270c2c7ddd930bba9699430be",
+        "status": "restored"
+      }
+    },
+    "failure": null,
+    "id": "E45",
+    "inquiry_id": "I11",
+    "kind": "restore_recipe",
+    "progress": "completed",
+    "request": {
+      "restore_recipe": {
+        "candidate": "T3:checkpoint-120832",
+        "reason": "Restore the exact T3 incremental-radius transfer recipe before testing route-conditioned action authority. This removes T12's representation change so the next intervention isolates targeted braking in the residual negative-angle geometry while preserving T3's observation, normalization, reward, and training curriculum."
+      }
+    },
+    "request_fingerprint": "cecbad35625e29a726d234298fee710ae2bd44a0300df15a0c1d03f00bd80d31",
+    "session_id": "S23",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T3:checkpoint-120832 remains the strongest measured development candidate at 153/160 successes and has no assigned working, best-known, or retained role. T12:checkpoint-120832 is intervention-limited at 151/160 and has no role. No candidate role change is requested.",
     "completed_operations": [
@@ -15096,6 +15184,21 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "e4c39808-afd3-44ce-a004-5111c3fce82a",
+    "id": "S23",
+    "inquiry_id": "I11",
+    "kind": "inquiry",
+    "objective": "Advance I11 toward an evidence-supported answer to its scientific question: Can a route-conditioned action strategy preserve T3's reach coverage while adding targeted braking authority in the residual negative-angle geometry and achieve at least 98% development success? Before choosing the next action, compare the accumulated evidence with the closure condition. Close the inquiry when the condition is met.",
+    "operation_ids": [
+      "E45"
+    ],
+    "scientific_parent_commit": "ac80177d270a56c270c2c7ddd930bba9699430be"
+  },
   "terminal_state": null
 }

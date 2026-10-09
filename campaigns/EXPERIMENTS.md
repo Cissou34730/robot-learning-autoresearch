@@ -70,3 +70,4 @@
 | E42 | checkpoint | I10 | checkpointed |
 | E43 | inquiry | I11 | completed |
 | E44 | checkpoint | - | checkpointed |
+| E45 | restore_recipe | I11 | restored |
