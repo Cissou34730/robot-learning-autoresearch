@@ -21300,38 +21300,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I13",
-        "outcome": "negative",
-        "reason": "M23 closes I13 with a limited, recipe-specific negative result. On the matched 160-episode panel, T15 preserved the 153/160 success count and improved first reaches from T3's 157 to 159, but increased total hold interruptions from 4 to 9. Its zero-action local-feedback mean minimum sampled retention margin was -0.015669 m versus T3's -0.015134 m, so the proposed pre-arrival shaping did not improve the measured policy-reachable braking margin. The result rejects this bounded radial pre-arrival action recipe as a route-and-hold-safe repair; it does not invalidate pre-arrival shaping methods generally. The human-goal gap remains unresolved."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I13",
-        "outcome": "negative",
-        "reason": "M23 closes I13 with a limited, recipe-specific negative result. On the matched 160-episode panel, T15 preserved the 153/160 success count and improved first reaches from T3's 157 to 159, but increased total hold interruptions from 4 to 9. Its zero-action local-feedback mean minimum sampled retention margin was -0.015669 m versus T3's -0.015134 m, so the proposed pre-arrival shaping did not improve the measured policy-reachable braking margin. The result rejects this bounded radial pre-arrival action recipe as a route-and-hold-safe repair; it does not invalidate pre-arrival shaping methods generally. The human-goal gap remains unresolved.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E55",
-    "inquiry_id": "I13",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "negative",
-        "reason": "M23 closes I13 with a limited, recipe-specific negative result. On the matched 160-episode panel, T15 preserved the 153/160 success count and improved first reaches from T3's 157 to 159, but increased total hold interruptions from 4 to 9. Its zero-action local-feedback mean minimum sampled retention margin was -0.015669 m versus T3's -0.015134 m, so the proposed pre-arrival shaping did not improve the measured policy-reachable braking margin. The result rejects this bounded radial pre-arrival action recipe as a route-and-hold-safe repair; it does not invalidate pre-arrival shaping methods generally. The human-goal gap remains unresolved."
-      }
-    },
-    "request_fingerprint": "703f1cf8106bb0e774ae739aca87bd05ef064b03bb89726a75724655cdbb8058",
-    "session_id": "S27",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T3:checkpoint-120832 remains the strongest evidence-backed development candidate at 153/160 successes, 157 first reaches, and four hold interruptions. T14:checkpoint-120832 remains rejected for the tested radial braking recipe at 149/160 successes. No working, best-known, or retained role is assigned.",
     "completed_operations": [
