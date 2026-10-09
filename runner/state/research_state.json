@@ -1,16 +1,5 @@
 {
-  "active_inquiry": {
-    "closure_condition": "Close after a paired 160-episode development comparison against T2:checkpoint-120832 on the same episode panel reports overall success, inner- and outer-radius success, no-entry failures, branch and joint-limit diagnostics, entry motion, conditional hold success, and interruption burden. A joint improvement supports continuing gentle stabilization; fewer interruptions with coverage loss requires redesigning the balance; no interruption or success improvement redirects toward target-conditioned policy representation or action smoothness rather than generic actuation. If the intervention collapses learning or the required diagnostics are unavailable, close as limited or inconclusive and preserve that mechanism uncertainty.",
-    "goal_connection": "The human objective requires at least 196 of 200 complete uninterrupted holds. T2 reaches only 126 of 160 episodes and trades improved inner-radius coverage for lower outer-radius success and more interruptions, so resolving whether gentle stabilization can remove that tradeoff is a direct route toward the required success rate.",
-    "handoff_conclusion": "M1 established substantial nominal actuation and rapid reversal authority with real joint-limit reactions, so generic weak actuation is not the leading explanation. M2 showed that T1 failures were dominated by no entry and inner-radius targets while entered-episode success was 93.22%. M3 showed that T2's balanced inner/outer exposure and nearest-branch guidance improved overall success from 110/160 to 126/160, inner-radius success from 47/93 to 67/93, inner no-entry failures from 38 to 23, and entered-episode success to 126/131, but reduced outer-radius success from 63/67 to 59/67 and increased interruptions from 502 to 789. E8 therefore established a recipe-specific reach-versus-stability tradeoff and supported the causal value of T2's coverage recipe without establishing the cause of its interruptions. T3 applied a full forfeiture of accumulated hold-progress credit after exits while retaining T2's coverage and branch guidance. M4 found only 3/160 successes at T3:checkpoint-70656 and 45/160 at T3:checkpoint-120832 versus 126/160 for T2, with paired losses of 123 and 81 episodes. Thus the tested discontinuous hold penalty caused learning collapse and did not satisfy the I3 closure criteria. It is evidence against this reward realization, not against stabilization as a mechanism, action-smoothness methods, target-conditioned control, or the broader learning method. Interruption reduction itself remains unestablished because the available M4 summary does not provide the detailed comparison values.",
-    "handoff_question": "Can a gentler braking or action-smoothness intervention preserve T2's inner-radius and inverse-kinematic branch-coverage gains while reducing post-entry hold interruptions and recovering outer-radius success?",
-    "handoff_source_session_id": "S7",
-    "id": "I4",
-    "opened_in_session": "S8",
-    "question": "Can a gentler braking or action-smoothness intervention preserve T2's inner-radius and inverse-kinematic branch-coverage gains while reducing post-entry hold interruptions and recovering outer-radius success?",
-    "rationale": "M1 established substantial nominal actuation and reversal authority, so weak generic actuation is not the leading explanation. M3 established that T2's balanced radius exposure and nearest-branch guidance improved inner-radius reach and overall success but reduced outer-radius success while increasing interruptions. M4 showed that full forfeiture of accumulated hold credit collapses learning, ruling out that discontinuous reward realization but not gentler braking or action smoothing. The remaining decision is whether post-entry failures are caused by insufficient braking or action variability while T2's coverage mechanism remains useful; the existing M4 summary lacks the interruption diagnostics needed to distinguish these explanations.",
-    "reframes": []
-  },
+  "active_inquiry": null,
   "campaign": {
     "base_commit": "fc6eed9ce7e909e3f30fa5c495ca2cde467893b3",
     "id": "81a5458d-ce8f-4c03-b9d2-8ce4f1ff9e9e",
@@ -4116,7 +4105,7 @@
     }
   },
   "counters": {
-    "event": 15,
+    "event": 16,
     "inquiry": 4,
     "measurement": 5,
     "session": 9,
@@ -8369,9 +8358,63 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-09T13:02:46Z",
+      "error": null,
+      "id": "E16",
+      "inquiry_id": "I4",
+      "kind": "inquiry",
+      "request": {
+        "action": "close",
+        "outcome": "resolved_limited",
+        "reason": "M5 met the I4 closure condition with a paired 160-episode comparison and complete required diagnostics. The isolated action-change regularizer reduced total hold interruptions from 789 to 1 and reduced entered-episode interruption burden from 6.02 to 0.009 per entered episode, but it reduced overall success from 126/160 to 110/160, inner-radius success from 67/93 to 62/93, outer-radius success from 59/67 to 48/67, and entries from 131 to 111. Conditional entered success was 110/111 versus 126/131, so the recipe improved stability conditional on entry but lost reach and did not recover outer-radius performance. Entry speed also increased from 0.459 to 0.935 cm/control-step, while branch-error and joint-limit diagnostics were comparable. This establishes a recipe-specific stability-versus-reach tradeoff, not that action smoothness or stabilization is ineffective in general. I4 closes with balance redesign required and the broader mechanism uncertainty preserved."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I4",
+        "outcome": "resolved_limited",
+        "reason": "M5 met the I4 closure condition with a paired 160-episode comparison and complete required diagnostics. The isolated action-change regularizer reduced total hold interruptions from 789 to 1 and reduced entered-episode interruption burden from 6.02 to 0.009 per entered episode, but it reduced overall success from 126/160 to 110/160, inner-radius success from 67/93 to 62/93, outer-radius success from 59/67 to 48/67, and entries from 131 to 111. Conditional entered success was 110/111 versus 126/131, so the recipe improved stability conditional on entry but lost reach and did not recover outer-radius performance. Entry speed also increased from 0.459 to 0.935 cm/control-step, while branch-error and joint-limit diagnostics were comparable. This establishes a recipe-specific stability-versus-reach tradeoff, not that action smoothness or stabilization is ineffective in general. I4 closes with balance redesign required and the broader mechanism uncertainty preserved.",
+        "status": "completed"
+      },
+      "session_id": "S9",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "close",
+        "inquiry_id": "I4",
+        "outcome": "resolved_limited",
+        "reason": "M5 met the I4 closure condition with a paired 160-episode comparison and complete required diagnostics. The isolated action-change regularizer reduced total hold interruptions from 789 to 1 and reduced entered-episode interruption burden from 6.02 to 0.009 per entered episode, but it reduced overall success from 126/160 to 110/160, inner-radius success from 67/93 to 62/93, outer-radius success from 59/67 to 48/67, and entries from 131 to 111. Conditional entered success was 110/111 versus 126/131, so the recipe improved stability conditional on entry but lost reach and did not recover outer-radius performance. Entry speed also increased from 0.459 to 0.935 cm/control-step, while branch-error and joint-limit diagnostics were comparable. This establishes a recipe-specific stability-versus-reach tradeoff, not that action smoothness or stabilization is ineffective in general. I4 closes with balance redesign required and the broader mechanism uncertainty preserved."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I4",
+        "outcome": "resolved_limited",
+        "reason": "M5 met the I4 closure condition with a paired 160-episode comparison and complete required diagnostics. The isolated action-change regularizer reduced total hold interruptions from 789 to 1 and reduced entered-episode interruption burden from 6.02 to 0.009 per entered episode, but it reduced overall success from 126/160 to 110/160, inner-radius success from 67/93 to 62/93, outer-radius success from 59/67 to 48/67, and entries from 131 to 111. Conditional entered success was 110/111 versus 126/131, so the recipe improved stability conditional on entry but lost reach and did not recover outer-radius performance. Entry speed also increased from 0.459 to 0.935 cm/control-step, while branch-error and joint-limit diagnostics were comparable. This establishes a recipe-specific stability-versus-reach tradeoff, not that action smoothness or stabilization is ineffective in general. I4 closes with balance redesign required and the broader mechanism uncertainty preserved.",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E16",
+    "inquiry_id": "I4",
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "close",
+        "outcome": "resolved_limited",
+        "reason": "M5 met the I4 closure condition with a paired 160-episode comparison and complete required diagnostics. The isolated action-change regularizer reduced total hold interruptions from 789 to 1 and reduced entered-episode interruption burden from 6.02 to 0.009 per entered episode, but it reduced overall success from 126/160 to 110/160, inner-radius success from 67/93 to 62/93, outer-radius success from 59/67 to 48/67, and entries from 131 to 111. Conditional entered success was 110/111 versus 126/131, so the recipe improved stability conditional on entry but lost reach and did not recover outer-radius performance. Entry speed also increased from 0.459 to 0.935 cm/control-step, while branch-error and joint-limit diagnostics were comparable. This establishes a recipe-specific stability-versus-reach tradeoff, not that action smoothness or stabilization is ineffective in general. I4 closes with balance redesign required and the broader mechanism uncertainty preserved."
+      }
+    },
+    "request_fingerprint": "37348e7c98427a98cfd3ae22ebf6f83edf0d2ce45d3e810bedc3ff52cdb3f3ac",
+    "session_id": "S9",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T2:checkpoint-120832 remains the strongest measured development candidate and the reference for I4 at 126/160, but no candidate has a working, best-known, or retained role because development evidence remains below the human goal. T3:checkpoint-70656 and T3:checkpoint-120832 are not role candidates after their severe paired losses against T2. T1:checkpoint-120832 remains the earlier paired baseline at 110/160.",
     "completed_operations": [
@@ -8419,7 +8462,8 @@
     "operation_ids": [
       "T4",
       "T5",
-      "M5"
+      "M5",
+      "E16"
     ],
     "scientific_parent_commit": "8896307a547a66a2fa580ad4d73e1b5c0b449d81"
   },
