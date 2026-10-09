@@ -14,8 +14,10 @@ from dataclasses import dataclass
 import numpy as np
 
 PROGRESS_COEFFICIENT = 10.0
-CLOSENESS_COEFFICIENT = 4.0
-CLOSENESS_LENGTH_SCALE = 0.05
+# Concentrate the distance potential near the tolerance boundary so training
+# receives a stronger capture signal after the broad approach phase.
+CLOSENESS_COEFFICIENT = 8.0
+CLOSENESS_LENGTH_SCALE = 0.02
 ACTION_COST_COEFFICIENT = 0.01
 HOLD_PROGRESS_BONUS = 50.0
 HOLD_PROGRESS_EXPONENT = 1.0
