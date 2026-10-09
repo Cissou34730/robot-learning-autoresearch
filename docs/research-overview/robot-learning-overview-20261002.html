@@ -198,7 +198,7 @@
       <p class="intro">Robot AutoResearch is a harness. It lets an independent AI agent, the Principal Investigator (PI), train a robot.</p>
       <p class="intro">The human owns the goal. The PI owns the science and the training. The Runner is the gatekeeper. It checks and runs every operation.</p>
       <p class="intro">The working example is a two-joint arm that must reach a target and hold still. Work is organized in campaigns. A campaign is split into inquiries. An inquiry is one scientific question.</p>
-      <p class="snapshot">Last updated <time datetime="2026-10-08">2026-10-08</time>. This page is a snapshot. It does not update itself. The log <a href="../harness-experiment-log.md"><code>docs\harness-experiment-log.md</code></a> is the source of truth. If the two differ, the log is right.</p>
+      <p class="snapshot">Last updated <time datetime="2026-10-09">2026-10-09</time>. This page is a snapshot. It does not update itself. The log <a href="../harness-experiment-log.md"><code>docs\harness-experiment-log.md</code></a> is the source of truth. If the two differ, the log is right.</p>
       <nav class="page-nav" aria-label="Page navigation">
         <a href="#status">1 Status</a>
         <a href="#roles">2 Roles</a>
@@ -218,16 +218,16 @@
       <h2 id="status-heading">Where the project stands</h2>
       <div class="grid two status-grid">
         <article class="card hot">
-          <span class="tag">Running</span>
-          <h3 style="margin-top: 12px">Campaign <code>bd32cc79</code></h3>
+          <span class="tag">Paused</span>
+          <h3 style="margin-top: 12px">Campaign <code>1ae27a27</code></h3>
           <ul>
-            <li>The maintainer runs it.</li>
-            <li>It is the first campaign with the bundled scientific-model prompt.</li>
-            <li>Through inquiry I2, the paired evaluation M5 gave T2 150/160 and T1 110/160.</li>
-            <li>T2 changed only the training range.</li>
-            <li>Inquiry I3 is open.</li>
+            <li>It reached the temporary 15-inquiry cap.</li>
+            <li>T3 was strongest at 153/160, or 95.625%.</li>
+            <li>Fourteen of fifteen inquiries contained one training run and a matched evaluation.</li>
+            <li>Only I8 was measurement-only.</li>
+            <li>No official assessment was requested.</li>
           </ul>
-          <p class="small muted" style="margin-top: 8px">No report exists yet. We cannot say which prompt change caused the good result. See OI-001 and OI-014.</p>
+          <p class="small muted" style="margin-top: 8px">OI-002 produced bounded closure as intended. Inquiry granularity and later scientific progression remain separate questions. <a href="robot-campaign-1ae27a27-oi002-review-20261009.html">Read the campaign review</a>.</p>
         </article>
         <article class="card">
           <span class="tag">Latest finished result</span>
@@ -243,9 +243,9 @@
         </article>
         <article class="card">
           <span class="tag">Open</span>
-          <h3 style="margin-top: 12px">14 issues, OI-001 to OI-014</h3>
+          <h3 style="margin-top: 12px">15 issues, OI-001 to OI-015</h3>
           <ul>
-            <li>Active: OI-001, OI-002, OI-003, OI-004, OI-014.</li>
+            <li>Active: OI-001, OI-003, OI-004, OI-014, OI-015.</li>
             <li>Postponed, paused, or waiting for a decision: OI-005, OI-006, OI-007, OI-011, OI-013.</li>
             <li>Not approved: OI-008, OI-009, OI-010, OI-012.</li>
           </ul>
@@ -255,12 +255,12 @@
           <span class="tag">Changed last</span>
           <h3 style="margin-top: 12px">8 October 2026</h3>
           <ul>
-            <li><code>5437ff2</code> restored the closing section "Decision-relevant synthesis" of the scientific model, in controlled English.</li>
-            <li><code>b3f4307</code> fixed a heading-layout bug in the same prompt.</li>
-            <li><code>adff08e</code> (R8 correction) restored the PI-authority sentence.</li>
-            <li><code>ef9516f</code> rewrote the scientific-model prompt. It changed language, persona, and closing section at once.</li>
+            <li><code>a3d05ac</code> clarified the OI-002 closure boundary and added an explicit closure check.</li>
+            <li>Campaign <code>1ae27a27</code> showed clean inquiry closure and many one-recipe inquiry boundaries.</li>
+            <li>The campaign review separates closure behavior, inquiry granularity, scientific progression, and the cap interaction.</li>
+            <li>Earlier scientific-model and handoff changes remain bundled in this campaign.</li>
           </ul>
-          <p class="small muted" style="margin-top: 8px">Language and analyst persona are kept. Their separate effect is not measured.</p>
+          <p class="small muted" style="margin-top: 8px">The campaign evidence does not isolate the effect of any one prompt change.</p>
         </article>
       </div>
       <p class="small muted" style="margin-top: 12px">Prompt-stack review items R1, R5-1, R5-2, R6, R7, and R8 are implemented. R2 is partly implemented and paused. R3 and R4 are discarded. Implemented does not mean effective. Scientific effect is stated separately in each item.</p>
@@ -494,16 +494,16 @@
 
     <section class="section" aria-labelledby="issues-heading" id="issues">
       <p class="section-label">5 / WHAT STILL NEEDS WORK</p>
-      <h2 id="issues-heading">Open issues OI-001 to OI-014</h2>
+      <h2 id="issues-heading">Open issues OI-001 to OI-015</h2>
       <p>This list matches the outstanding issue register in the log. Issue ids are never reused. No issue below has an approved fix, unless stated.</p>
       <div class="card table-wrap wide">
         <table>
           <thead><tr><th scope="col">ID</th><th scope="col">Issue</th><th scope="col">Status</th></tr></thead>
           <tbody>
             <tr><td>OI-001</td><td>Startup method selection. The link from the scientific briefing to the first startup action and its handoff is not traceable. A five-campaign review found sound startups in four of five and no handoff collapse. R8 correction <code>adff08e</code> and the prompt changes <code>ef9516f</code>, <code>b3f4307</code>, <code>5437ff2</code> are in place. Their effect is not separable yet. Not the same as OI-006.</td><td><span class="tag">Open, narrowed</span></td></tr>
-            <tr><td>OI-002</td><td>Inquiry control. The closure condition must define sufficient evidence for the inquiry boundary. The PI must compare accumulated evidence with that boundary before choosing more work. Several operations remain possible.</td><td><span class="tag">Implemented, unmeasured</span></td></tr>
-            <tr><td>OI-003</td><td>Measurement evidence. The PI skipped advertised diagnostics, read partial files as complete, and lost counterevidence in its synthesis.</td><td><span class="tag">Open</span></td></tr>
-            <tr><td>OI-004</td><td>Checkpoint nomination and progression. Training facts can nominate a checkpoint. They do not prove development performance.</td><td><span class="tag">Open, partly deferred behind OI-002</span></td></tr>
+            <tr><td>OI-002</td><td>Inquiry control. The closure condition defines sufficient evidence and permits positive, negative, limited, or inconclusive closure. Campaign <code>1ae27a27</code> closed all inquiries at their declared boundaries. The original indefinite-continuation symptom did not recur.</td><td><span class="tag">Closed, bounded closure observed</span></td></tr>
+            <tr><td>OI-003</td><td>Measurement evidence. In I9, available arrival-speed diagnostics were not used. In I11, equal success labels were treated as preserved behavior despite fewer first reaches and more interruptions. Decision-linked inspection and aggregate-versus-mechanism interpretation remain unresolved.</td><td><span class="tag">Open, expanded</span></td></tr>
+            <tr><td>OI-004</td><td>Checkpoint nomination, evidence selection, and scientific progression. The bounded repair gives terminal checkpoints no privileged status, preserves missing discriminating evidence as unresolved, and connects the next direction to completed evidence and the frontier. I12-I14 show that evidence-dependent progression was already possible. Post-change campaign effect is not measured.</td><td><span class="tag">Implemented, unmeasured</span></td></tr>
             <tr><td>OI-005</td><td>Counterevidence and readiness. The readiness guidance was withdrawn. Lost residual evidence and early readiness claims remain. Campaign <code>06656182</code> showed the open point: the PI did not weigh a 95% and a 98% result against one more inquiry.</td><td><span class="tag">Postponed</span></td></tr>
             <tr><td>OI-006</td><td>Full review of the 120,000-step startup budget.</td><td><span class="tag">Pending</span></td></tr>
             <tr><td>OI-007</td><td>Prompt review item R2. Ordinary sessions still put the PI role before the human goal.</td><td><span class="tag">Paused</span></td></tr>
@@ -514,6 +514,7 @@
             <tr><td>OI-012</td><td>Publish a frozen policy independent of training. Campaign recovery is not authorized.</td><td><span class="tag">Proposal only</span></td></tr>
             <tr><td>OI-013</td><td>Remove the temporary 15-inquiry cap. The value is unchanged.</td><td><span class="tag">Pending</span></td></tr>
             <tr><td>OI-014</td><td>Single-change attribution. One intervention can change several factors and get a one-cause explanation. That explanation then steers later inquiries. A bundled change is valid if its candidate gets a direct paired evaluation and the open attribution stays visible.</td><td><span class="tag">Open</span></td></tr>
+            <tr><td>OI-015</td><td>Intended intervention versus effective experiment. T16 and T17 recorded different intended controller source, but corresponding learned-policy state, training records, and measured panel behavior were identical. The runtime artifacts differed, and the cause is unknown. The record does not establish that the intended T17 distinction was exercised.</td><td><span class="tag">Open, no repair approved</span></td></tr>
           </tbody>
         </table>
       </div>
@@ -693,7 +694,8 @@
         <table>
           <thead><tr><th scope="col">Campaign</th><th scope="col">Start</th><th scope="col">Outcome</th><th scope="col">Report</th></tr></thead>
           <tbody>
-            <tr><td><code>bd32cc79</code></td><td>8 Oct</td><td>Running (maintainer-run). Through I2: T2 150/160, T1 110/160 on paired M5. I3 open.</td><td>None yet</td></tr>
+            <tr><td><code>1ae27a27</code></td><td>8 Oct</td><td>Paused at 15 inquiries. T3 reached 153/160. OI-002 produced bounded closure. Inquiry granularity, scientific progression, and the cap interaction remain distinct findings.</td><td><a href="robot-campaign-1ae27a27-oi002-review-20261009.html">Campaign review</a></td></tr>
+            <tr><td><code>bd32cc79</code></td><td>8 Oct</td><td>Earlier maintainer-run campaign. Through I2: T2 150/160, T1 110/160 on paired M5.</td><td>Read the log</td></tr>
             <tr><td><code>06656182</code></td><td>7 Oct, 21:45 CEST</td><td>Official pass: 98.0% (196/200).</td><td><a href="robot-campaign-06656182-final-analysis-20261008.html">Final analysis</a></td></tr>
             <tr><td><code>b366ab54</code></td><td>7 Oct</td><td>Official fail: 194/200 with T1. No tested change beat T1 on paired evidence.</td><td><a href="robot-campaign-b366ab54-final-analysis-20261007.html">Final analysis</a></td></tr>
             <tr><td><code>97633a56</code>, <code>ab62348f</code>, <code>0284114e</code></td><td>Not recorded here</td><td>Analyzed only in the OI-001 review. No separate report.</td><td>See the log</td></tr>

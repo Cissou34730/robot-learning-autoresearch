@@ -118,6 +118,22 @@ action.
 Measurements may characterize behavior, compare policies, examine learning
 dynamics, test an explanation or reveal that the question itself should change.
 
+Training dynamics and saved checkpoints can nominate candidate artifacts for
+development measurement. They do not establish development performance, and
+the terminal checkpoint has no privileged status. Select the artifact or
+comparison that best addresses the recorded decision frontier; this does not
+require evaluating every checkpoint.
+
+Treat planned discriminating evidence that fails or remains unavailable as an
+unresolved part of the decision frontier. Base mechanism conclusions and
+redirects on completed evidence, and preserve the limits of a recipe-specific
+result.
+
+After each completed result, the selected next direction states which evidence
+supports continuing the current route, changing it, or obtaining missing
+evidence. The selected artifact and operation follow the remaining uncertainty
+recorded in the decision frontier.
+
 The maintainer controls the per-run training allocation through the launcher's
 `-Timesteps` option, which defaults to 120,000 steps. During startup, that
 allocation is a requested-step ceiling: the PI may choose a shorter run but

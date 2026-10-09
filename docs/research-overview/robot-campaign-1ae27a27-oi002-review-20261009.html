@@ -1,0 +1,337 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Campaign review for 1ae27a27-6880-4ca6-9d50-e6498e771cb7, including bounded inquiry closure, inquiry granularity, and scientific progression.">
+  <title>Campaign 1ae27a27 review</title>
+  <script>
+    (() => {
+      const param = new URLSearchParams(window.location.search).get("scoutTheme");
+      const theme =
+        param || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+      document.documentElement.setAttribute("data-theme", theme);
+    })();
+  </script>
+  <style>
+    :root {
+      color-scheme: light;
+      --cp-bg: #f7f4ef;
+      --cp-bg-elevated: #fcfbf8;
+      --cp-surface: #ffffff;
+      --cp-surface-soft: #f5f5f5;
+      --cp-border: #dedede;
+      --cp-border-strong: #919191;
+      --cp-text: #242424;
+      --cp-text-muted: #5c5c5c;
+      --cp-text-soft: #6f6f6f;
+      --cp-accent: #b11f4b;
+      --cp-accent-hover: #9a1a41;
+      --cp-accent-soft: rgba(177, 31, 75, 0.08);
+      --cp-accent-fg: #ffffff;
+      --cp-success: #16a34a;
+      --cp-danger: #dc2626;
+      --cp-warning: #f59e0b;
+      --cp-link: #0078d4;
+      --cp-shadow: 0 18px 48px rgba(0, 0, 0, 0.12);
+      --cp-overlay: rgba(255, 255, 255, 0.8);
+      --cp-panel: rgba(255, 255, 255, 0.86);
+      --cp-panel-strong: rgba(255, 255, 255, 0.96);
+      --cp-sheen: rgba(255, 255, 255, 0.55);
+      --cp-highlight: rgba(177, 31, 75, 0.12);
+    }
+    html[data-theme="dark"] {
+      color-scheme: dark;
+      --cp-bg: #3d3b3a;
+      --cp-bg-elevated: #343231;
+      --cp-surface: #292929;
+      --cp-surface-soft: #2e2e2e;
+      --cp-border: #474747;
+      --cp-border-strong: #5f5f5f;
+      --cp-text: #dedede;
+      --cp-text-muted: #919191;
+      --cp-text-soft: #b0b0b0;
+      --cp-accent: #fd8ea1;
+      --cp-accent-hover: #fb7b91;
+      --cp-accent-soft: rgba(253, 142, 161, 0.14);
+      --cp-accent-fg: #1a1a1a;
+      --cp-success: #4ade80;
+      --cp-danger: #f87171;
+      --cp-warning: #fbbf24;
+      --cp-link: #4da6ff;
+      --cp-shadow: 0 18px 48px rgba(0, 0, 0, 0.32);
+      --cp-overlay: rgba(41, 41, 41, 0.88);
+      --cp-panel: rgba(41, 41, 41, 0.72);
+      --cp-panel-strong: rgba(41, 41, 41, 0.96);
+      --cp-sheen: rgba(255, 255, 255, 0.04);
+      --cp-highlight: rgba(253, 142, 161, 0.12);
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: var(--cp-bg);
+      color: var(--cp-text);
+      font-family: "Segoe UI", Aptos, Calibri, -apple-system, BlinkMacSystemFont, sans-serif;
+      line-height: 1.6;
+    }
+    a { color: var(--cp-link); text-underline-offset: .18em; }
+    a:hover { color: var(--cp-accent-hover); }
+    :focus-visible { outline: 3px solid var(--cp-accent); outline-offset: 3px; }
+    .page { width: min(1160px, calc(100% - 32px)); margin: 0 auto; padding: 32px 0 64px; }
+    .hero, .card {
+      background: var(--cp-surface);
+      border: 1px solid var(--cp-border);
+      border-radius: 16px;
+      box-shadow: 0 0 2px var(--cp-border), 0 1px 2px var(--cp-highlight);
+    }
+    .hero { padding: clamp(24px, 5vw, 48px); border-top: 6px solid var(--cp-accent); }
+    .card { padding: clamp(20px, 4vw, 32px); }
+    .eyebrow { color: var(--cp-accent); font-size: .8rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+    h1, h2, h3 { line-height: 1.2; text-wrap: balance; }
+    h1 { max-width: 18ch; margin: 8px 0 12px; font-size: clamp(2rem, 6vw, 4rem); letter-spacing: -.035em; }
+    h2 { margin: 0 0 16px; font-size: clamp(1.4rem, 3vw, 2rem); }
+    h3 { margin: 0 0 8px; font-size: 1.08rem; }
+    p { margin: 0 0 12px; }
+    p:last-child { margin-bottom: 0; }
+    code, .mono { font-family: Consolas, "Courier New", Courier, monospace; overflow-wrap: anywhere; }
+    .lede { max-width: 76ch; color: var(--cp-text-soft); font-size: 1.08rem; }
+    .meta { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; }
+    .pill, .tag {
+      display: inline-flex; align-items: center; min-height: 32px; padding: 4px 12px;
+      border: 1px solid var(--cp-border); border-radius: .625rem; background: var(--cp-surface-soft);
+      color: var(--cp-text); font-size: .84rem; font-weight: 600;
+    }
+    .pill.bad { border-color: var(--cp-danger); color: var(--cp-danger); background: var(--cp-accent-soft); }
+    nav {
+      position: sticky; top: 0; z-index: 5; margin: 16px 0; padding: 12px 16px;
+      background: var(--cp-panel-strong); border: 1px solid var(--cp-border); border-radius: .625rem;
+    }
+    nav ul { display: flex; flex-wrap: wrap; gap: 8px 18px; margin: 0; padding: 0; list-style: none; }
+    nav a { font-size: .9rem; font-weight: 600; }
+    section { scroll-margin-top: 72px; margin-top: 16px; }
+    .grid { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 16px; }
+    .span-4 { grid-column: span 4; }
+    .span-6 { grid-column: span 6; }
+    .span-8 { grid-column: span 8; }
+    .span-12 { grid-column: span 12; }
+    .accent { background: var(--cp-accent-soft); border-color: var(--cp-accent); }
+    .warning { border-left: 6px solid var(--cp-warning); }
+    .danger { border-left: 6px solid var(--cp-danger); }
+    .stat { display: grid; gap: 4px; margin: 16px 0; }
+    .stat strong { font-size: 2rem; line-height: 1; }
+    .stat span, .muted, .small { color: var(--cp-text-muted); }
+    .small { font-size: .86rem; }
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: .92rem; }
+    th, td { padding: 12px; text-align: left; vertical-align: top; border-bottom: 1px solid var(--cp-border); }
+    th { background: var(--cp-surface-soft); color: var(--cp-text-muted); font-size: .78rem; letter-spacing: .03em; text-transform: uppercase; }
+    tr:last-child td { border-bottom: 0; }
+    ul, ol { padding-left: 22px; }
+    li + li { margin-top: 8px; }
+    .callout { margin-top: 16px; padding: 16px 20px; background: var(--cp-accent-soft); border: 1px solid var(--cp-accent); border-radius: .625rem; }
+    dl { display: grid; grid-template-columns: 180px 1fr; gap: 10px 20px; margin: 0; }
+    dt { font-weight: 700; }
+    dd { margin: 0; }
+    footer { margin-top: 16px; padding: 20px 0; color: var(--cp-text-muted); border-top: 1px solid var(--cp-border); font-size: .84rem; }
+    @media (max-width: 800px) {
+      .span-4, .span-6, .span-8 { grid-column: span 12; }
+      nav { position: static; }
+      dl { grid-template-columns: 1fr; gap: 4px; }
+      dd { margin-bottom: 10px; }
+    }
+    @media print {
+      body { background: var(--cp-surface); font-size: 10.5pt; }
+      .page { width: 100%; padding: 0; }
+      nav { display: none; }
+      .hero, .card { box-shadow: none; break-inside: avoid; }
+      a { color: var(--cp-text); text-decoration: none; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header class="hero">
+      <p class="eyebrow">Campaign review · 9 October 2026</p>
+      <h1>OI-002 produced bounded closure as intended</h1>
+      <p class="lede">
+        Campaign <code>1ae27a27-6880-4ca6-9d50-e6498e771cb7</code> ran to the temporary
+        15-inquiry cap. It produced useful robot evidence, but it did not reach the 98% goal.
+        The campaign is paused, not concluded.
+      </p>
+      <div class="meta" aria-label="Campaign summary">
+        <span class="pill bad">Paused at inquiry cap</span>
+        <span class="pill">15 inquiries</span>
+        <span class="pill">17 training runs</span>
+        <span class="pill">28 measurements</span>
+        <span class="pill">No official assessment</span>
+      </div>
+    </header>
+
+    <nav aria-label="Report sections">
+      <ul>
+        <li><a href="#result">Result</a></li>
+        <li><a href="#evidence">Evidence</a></li>
+        <li><a href="#pattern">Inquiry pattern</a></li>
+        <li><a href="#oi002">OI-002 review</a></li>
+        <li><a href="#rca">RCA</a></li>
+        <li><a href="#limits">Limits</a></li>
+      </ul>
+    </nav>
+
+    <section id="result" class="grid" aria-labelledby="result-title">
+      <article class="card span-8">
+        <p class="eyebrow">Result</p>
+        <h2 id="result-title">The strongest policy remained below the goal</h2>
+        <p>
+          T3 reached <strong>153 of 160</strong> development episodes, or <strong>95.625%</strong>.
+          The official goal requires 196 of 200 episodes, or 98%.
+        </p>
+        <p>
+          The campaign reached the inquiry cap after 31 sessions. No candidate received a
+          working, best-known, or retained role. No official assessment was requested.
+        </p>
+        <p>
+          T3 was the strongest measured candidate. It had 157 first reaches, 4 hold interruptions,
+          and 7 residual failures. Seven later interventions did not convert those failures into
+          successful holds.
+          </p>
+      </article>
+      <aside class="card span-4 accent" aria-label="Campaign metrics">
+        <h2>Key numbers</h2>
+        <div class="stat"><strong>153/160</strong><span>T3 development success</span></div>
+        <div class="stat"><strong>4</strong><span>T3 hold interruptions</span></div>
+        <div class="stat"><strong>511</strong><span>T5 interruptions after targeted oversampling</span></div>
+        <p class="small">The campaign used the fresh <code>baseline-distinct-episodes-v3</code> reset.</p>
+      </aside>
+    </section>
+
+    <section id="evidence" class="card" aria-labelledby="evidence-title">
+      <p class="eyebrow">Scientific evidence</p>
+      <h2 id="evidence-title">What the campaign established</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th scope="col">Operation</th><th scope="col">Purpose</th><th scope="col">Result</th></tr></thead>
+          <tbody>
+            <tr><td>M1</td><td>Measure compiled plant properties, valid branches, contacts, and local hold margin.</td><td>All sampled valid target configurations had no active contact. Local 100-step holds completed under both zero input and bounded local PD. The plant is locally holdable.</td></tr>
+            <tr><td>T1 + M2</td><td>Train and evaluate the first policy from the exact extended reset.</td><td>110/160, or 68.75%. The first policy was reach-limited and geometry-conditioned.</td></tr>
+            <tr><td>T2 + M3</td><td>Train from scratch with hard full-range exposure.</td><td>2/160, or 1.25%. This rejected the abrupt recipe, not learning in general.</td></tr>
+            <tr><td>T3 + M4</td><td>Transfer from T1 with incremental radius expansion.</td><td>153/160, or 95.625%. First reach improved to 157/160 and interruptions fell to 4.</td></tr>
+            <tr><td>T5 + M5</td><td>Continue from T3 with 70% sampling in the observed failure-angle band.</td><td>149/160, or 93.125%. First reach rose to 158/160, but interruptions rose to 511. T3 won all 4 discordant episodes.</td></tr>
+            <tr><td>M10</td><td>Diagnose the residual failures.</td><td>The failures associated with high-speed folded-branch arrivals, negative radial velocity, and weak zero-action retention.</td></tr>
+            <tr><td>I9–I15</td><td>Test seven later routes after the arrival-state finding.</td><td>None reached the goal. They remained variants of the same arrival-shaping route.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="pattern" class="card" aria-labelledby="pattern-title">
+      <p class="eyebrow">Campaign structure</p>
+      <h2 id="pattern-title">Most inquiries opened with a one-recipe evidence boundary</h2>
+      <p>
+        Fourteen of the fifteen inquiries contained one training run and a matched evaluation.
+        Only I8 was measurement-only. The repeated shape was:
+        <strong>open question → train → evaluate → close → open a similar question</strong>.
+      </p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th scope="col">Inquiries</th><th scope="col">Completed operations</th><th scope="col">Reading</th></tr></thead>
+          <tbody>
+            <tr><td>I1, I2, I3</td><td>T1/M2, T2/M3, T3/M4</td><td>Baseline, hard-range test, then incremental transfer.</td></tr>
+            <tr><td>I4, I5, I6, I7</td><td>T5/M5, T6/M6, T7/M7, T9/M8</td><td>Targeted continuation and route variants after the T3 result.</td></tr>
+            <tr><td>I8</td><td>M10</td><td>The only measurement-only inquiry. It produced the arrival-state explanation.</td></tr>
+            <tr><td>I9–I15</td><td>T10/M11 through T17/M28</td><td>Seven further training-centered inquiries. I14 and I15 used identical question text.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="callout">
+        <strong>Interpretation:</strong> Many inquiry openings explicitly required one bounded
+        intervention and one matched evaluation. The closure reminder enforced those declared
+        boundaries. It did not create their one-recipe scope. Small inquiries are not inherently
+        wrong, but they consume the temporary inquiry cap and can leave the broader method question
+        unresolved.
+      </div>
+    </section>
+
+    <section id="oi002" class="card accent" aria-labelledby="oi002-title">
+      <p class="eyebrow">OI-002 assessment</p>
+      <h2 id="oi002-title">The original indefinite-continuation symptom did not recur</h2>
+      <p>
+        The change in <code>contracts/program.md</code> correctly defined the closure boundary:
+        sufficient evidence could support a positive, negative, limited, or inconclusive result.
+        The inquiry prompt also told the PI to compare accumulated evidence with that condition
+        before choosing another action.
+      </p>
+      <p>
+        This worked inside inquiries. Negative and limited results closed cleanly. The campaign
+        did not show indefinite continuation inside one inquiry.
+      </p>
+      <p>
+        The campaign does not show that the new reminder caused one-recipe inquiries. The same
+        train-and-evaluate pattern existed in earlier campaigns before this implementation.
+        Inquiry granularity was largely determined at opening, where many closure conditions
+        explicitly prescribed one intervention and its evaluation.
+      </p>
+      <p>
+        The supported conclusion is narrower: OI-002 achieved bounded closure in this campaign.
+        Scientific effectiveness remained insufficient. A replacement closure mechanism is not
+        justified by this record.
+      </p>
+    </section>
+
+    <section id="rca" class="grid" aria-labelledby="rca-title">
+      <article class="card span-8 warning">
+        <p class="eyebrow">Root-cause analysis</p>
+        <h2 id="rca-title">Boundary formation and boundary enforcement are separate</h2>
+        <ol>
+          <li><strong>Symptom:</strong> 14 of 15 inquiries were one training run plus one evaluation. Seven later inquiries repeated the same arrival-shaping route.</li>
+          <li><strong>Boundary formation:</strong> Many inquiries opened with closure conditions tied to one recipe and one matched evaluation. The broader method question could remain unresolved after that recipe was tested.</li>
+          <li><strong>Boundary enforcement:</strong> The new reminder correctly closed the inquiry when its declared evidence became available, including after negative and limited results.</li>
+          <li><strong>Scientific progression:</strong> Whether the later interventions justified continuing the same method requires assessment of their distinctions and evidence. Repeated failures do not automatically invalidate a method.</li>
+          <li><strong>Cap interaction:</strong> Small inquiries consumed the temporary 15-inquiry allowance. The cap exposed this granularity but did not cause it.</li>
+          <li><strong>Attribution limit:</strong> The campaign included other prompt changes, and the one-training pattern predates OI-002. No isolated causal comparison exists.</li>
+        </ol>
+      </article>
+      <aside class="card span-4">
+        <h2>Issue boundaries</h2>
+        <ul>
+          <li><strong>OI-002:</strong> bounded closure, now closed with observed behavior.</li>
+          <li><strong>OI-003:</strong> available detailed evidence was not always inspected or interpreted against aggregate success.</li>
+          <li><strong>OI-004:</strong> checkpoint nomination, evidence selection, and scientific progression. The bounded repair is implemented; campaign effect is unmeasured.</li>
+          <li><strong>OI-013:</strong> the operational effect of the temporary inquiry cap.</li>
+          <li><strong>OI-015:</strong> the intended T17 change was not established as an effective experiment distinct from T16.</li>
+          <li>None of these issues authorizes the Runner to reject a scientific method.</li>
+        </ul>
+      </aside>
+    </section>
+
+    <section id="limits" class="card" aria-labelledby="limits-title">
+      <p class="eyebrow">Limits and next investigation</p>
+      <h2 id="limits-title">The harness should not change before the causes are separated</h2>
+      <ul>
+        <li>It does not isolate OI-002 from the handoff and goal-review wording changes.</li>
+        <li>It does not prove that the closure sentence increased training frequency.</li>
+        <li>It does not prove that a different intervention would have reached 98%.</li>
+        <li>It does not show that repeated negative recipes invalidate the broader method.</li>
+      </ul>
+      <p>
+        OI-002 is closed and its current wording stays. The next investigation is OI-004:
+        checkpoint nomination, evidence selection, and scientific progression. It must distinguish
+        supported redirects from progression that outruns missing evidence or repeats a route
+        despite its recorded decision frontier.
+      </p>
+      <p>
+        The OI-004 repair must not require evaluation of every checkpoint, prescribe a scientific
+        method, or treat fewer operations, fewer inquiries, or a changed direction as automatic
+        improvements.
+      </p>
+    </section>
+
+    <footer>
+      <p>Evidence sources: <code>campaigns/results.jsonl</code>, campaign evaluation artifacts, and the OI-002 entry in <code>docs/harness-experiment-log.md</code>.</p>
+      <p>This report is a campaign analysis. It does not change campaign state or declare an official result.</p>
+      <p><a href="robot-learning-overview-20261002.html#reports">Back to the overview</a></p>
+    </footer>
+  </main>
+</body>
+</html>

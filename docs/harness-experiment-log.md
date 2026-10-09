@@ -446,9 +446,9 @@ Implementation checks and unassessed campaign effects are not separate issues.
 | ID | Issue | Status / boundary |
 |---|---|---|
 | OI-001 | Startup scientific-method selection | **Open, narrowed 2026-10-08.** Defined as a failure of traceable coupling from the PI-generated scientific briefing, through startup action selection, to the startup handoff. Three failure locations: briefing defect, use defect and handoff defect. A five-campaign retrospective found no handoff collapse and sound startups in four of five. It found one use defect (06656182) and a briefing that steered the method in four of five. R8 had removed the PI-authority sentence, now restored. The scientific-model prompt (`ef9516f`) changed language, persona and closing section at once. The closing section is restored in controlled English; language and persona stay. Campaign bd32cc79 ran the bundled prompt without the synthesis. Effect on startup selection is not separable. This is separate from the startup training budget. |
-| OI-002 | Inquiry control and bounded closure | **Open.** An inquiry can continue after its evidence answers the decision need. Questions and closure conditions must permit positive, negative, limited or inconclusive conclusions without requiring a successful intervention. No design or runtime change is approved. |
-| OI-003 | Measurement-evidence inspection and interpretation | **Open.** The PI has overlooked advertised diagnostic strata, read partial artifacts as complete and lost consequential counterevidence in synthesis. Discoverability is retained, but decision-linked inspection remains unresolved. |
-| OI-004 | Checkpoint nomination, evidence selection and scientific progression | **Open; partly deferred behind OI-002.** Available training facts can nominate an artifact but do not prove development performance. The PI must select artifacts and subsequent operations from the learning trajectory, evidence need and remaining uncertainty rather than defaulting to another training recipe. |
+| OI-002 | Inquiry control and bounded closure | **Closed 2026-10-09; bounded closure observed.** The contract and inquiry reminder permit positive, negative, limited and inconclusive closure. Campaign `1ae27a27` closed all inquiries at their declared evidence boundaries, including negative and limited results. The campaign does not isolate causality, but the original indefinite-continuation symptom did not recur. Inquiry granularity and later progression belong to OI-004; the temporary cap remains OI-013. |
+| OI-003 | Measurement-evidence inspection and interpretation | **Open; expanded 2026-10-09.** The PI has overlooked advertised diagnostic strata, read partial artifacts as complete and lost consequential counterevidence in synthesis. In campaign `1ae27a27`, I9 said arrival-speed change was unestablished although completed M11 artifacts contained the relevant speed diagnostics. I11 treated equal success labels as preserved behavior although M13 showed fewer first reaches and more interruptions. Discoverability is retained, but decision-linked inspection and aggregate-versus-mechanism interpretation remain unresolved. |
+| OI-004 | Checkpoint nomination, evidence selection and scientific progression | **Implemented 2026-10-09; campaign effect unmeasured.** Campaign `1ae27a27` evaluated only terminal checkpoints in I9-I15 despite earlier training peaks being available for nomination. I11 then progressed from a behavior-preservation interpretation contradicted by completed diagnostics, while I12-I14 show that the PI could obtain and use further mechanism evidence. The program and ordinary-session prompt now give terminal checkpoints no privileged status, preserve failed or unavailable discriminating evidence as unresolved, and require the next direction to follow completed evidence and the recorded frontier. No Runner gate or required operation sequence was added. OI-004 is not closed until post-change campaign evidence shows whether progression improves. |
 | OI-005 | Counterevidence preservation and official-assessment readiness | **Postponed.** The narrow readiness guidance was withdrawn. Residual-evidence loss and premature readiness conclusions remain unresolved. No replacement readiness prompt is approved. |
 | OI-006 | Full startup-budget review | **Pending.** Shorter startup requests are permitted, but the maintainer-owned 120,000-step ceiling and its scientific effect have not received the planned full review. This budget question is not the cause or solution for OI-001. |
 | OI-007 | Complete prompt-stack review item R2 | **Paused.** Scientific context now precedes operational options, but ordinary sessions do not place the human goal before the PI role. The remaining ordering change is not approved. |
@@ -459,6 +459,7 @@ Implementation checks and unassessed campaign effects are not separate issues.
 | OI-012 | Independent frozen-policy publication | **Proposal only.** Publication independent of training is not approved or implemented. Campaign recovery is not authorized. |
 | OI-013 | Remove the temporary fifteen-inquiry cap | **Pending.** The cap now pauses at a checkpointed boundary and no longer represents scientific exhaustion. Its value is unchanged. Removal remains a later maintainer decision. |
 | OI-014 | Single-change attribution in an intervention | **Open.** An intervention can change several factors at once and then receive a single-cause explanation. The explanation directs the following inquiries, so a wrong attribution can send later work along the wrong route. The requirement is attribution that matches the change, not a repeatable campaign. A bundled change stays valid when its candidate receives direct paired evaluation and the unresolved attribution stays visible. No design or runtime change is approved. |
+| OI-015 | Intended intervention versus effective experiment | **Open 2026-10-09; no repair approved.** T16 and T17 recorded different intended controller source, but all corresponding learned-policy and optimizer members, all training records, and all 160 measured episode behaviors were identical. Their complete runtime artifacts were not byte-identical, and the cause is unknown. The record does not establish whether the new intervention was inactive, neutralized, delivered differently at runtime, or equivalent for another reason. An intended source change must not be counted as an independent effective experiment until completed evidence establishes that the experimental distinction was exercised. |
 
 ### Detailed backlog and status context
 
@@ -2656,3 +2657,109 @@ separate from harness changes so their outcomes are not conflated.
   The change remains unmeasured until a maintainer-run campaign uses it.
 - **Status:** OI-002 implementation is complete and unmeasured. OI-002 must
   be reviewed for both premature closure and indefinite continuation.
+
+## 2026-10-09: close OI-002 and activate OI-004 progression review
+
+- **OI-002 disposition:** campaign `1ae27a27` closed positive, negative,
+  limited and inconclusive inquiries at their declared evidence boundaries. The
+  indefinite-continuation symptom did not recur. The campaign does not isolate
+  the reminder's causal effect because one-intervention inquiry closure existed
+  in earlier campaigns and other prompt changes were active. OI-002 is closed
+  with observed bounded closure; its current contract and prompt text stay.
+- **Issue separation:** one-recipe inquiry granularity is not attributed to the
+  OI-002 reminder. Scientific progression and artifact selection are OI-004.
+  Consuming the temporary inquiry allowance remains OI-013. Bundled-change
+  attribution remains OI-014.
+- **OI-004 checkpoint-selection evidence:** I9-I15 evaluated the terminal
+  checkpoint for every completed training run. Earlier training peaks were
+  available for T10 and T12-T17, including 1.00 training-success checkpoints
+  for T13-T17. Training-distribution metrics do not prove development
+  performance, but they can nominate contrasting artifacts. None of those
+  earlier checkpoints received development measurement, so the recipe-level
+  negative conclusions cover the terminal artifacts that were tested and leave
+  the alternatives unmeasured.
+- **OI-004 progression evidence:** I9 and I10 made supported changes from reward
+  shaping to representation and then action design. I12 used completed
+  mechanism evidence to redirect. I13 is a positive counterexample: after the
+  recipe result, goal review ran M25 to discriminate branch- and
+  trajectory-conditioned arrival states before opening I14. The progression
+  defect is therefore not a universal train-after-failure rule.
+- **Direct progression failures:** I11's planned residual-margin measurements
+  failed and produced no evidence, but the inquiry still concluded that the
+  unchanged paired outcome justified moving to plant-level control. I14 found
+  a modest failed-case margin improvement together with more interruptions; its
+  frontier called for a different mechanism or redirection, yet its checkpoint
+  selected the exact same question for I15. These are the strongest OI-004
+  examples in this campaign.
+- **Boundary:** this entry changes issue status and records a read-only RCA. It
+  does not approve a prompt or contract repair, reject the broader method, add
+  Runner scientific judgment, or require evaluation of every checkpoint. No
+  campaign was launched, resumed, reset or trained.
+- **Next step:** propose a bounded OI-004 change that improves candidate
+  nomination and requires the next direction to follow the recorded evidence
+  and decision frontier. Present the proposal for maintainer approval before
+  implementation.
+## 2026-10-09: implement the bounded OI-004 progression repair
+
+- **Approved scope:** improve candidate nomination, preserve missing
+  discriminating evidence as unresolved, and connect the next direction to the
+  completed evidence and recorded decision frontier. The repair does not add a
+  Runner scientific gate, an operation count, compulsory measurement,
+  automatic method rejection or a requirement to evaluate every checkpoint.
+- **Program contract:** training dynamics and saved checkpoints can nominate
+  artifacts for development measurement, but do not establish development
+  performance. The terminal checkpoint has no privileged status. The PI
+  selects the artifact or comparison that best addresses the frontier. Failed
+  or unavailable planned evidence remains unresolved, and mechanism conclusions
+  and redirects use completed evidence with recipe-specific limits preserved.
+- **Ordinary-session prompt:** the decision instruction now asks the PI to
+  review completed evidence, the learning trajectory and unmeasured artifacts;
+  distinguish nomination from development evidence; preserve missing evidence;
+  and state which evidence supports continuation, redirection or obtaining the
+  missing evidence.
+- **Fixed-context subsession checks:** four cases covered an earlier training
+  peak versus a terminal checkpoint, identical aggregate outcomes with a failed
+  mechanism diagnostic, a supported recipe-level redirect, and a proposed
+  repeated question that contradicted the recorded frontier. The guidance kept
+  training facts as nomination evidence, preserved the missing mechanism result
+  as unresolved, permitted the supported redirect with limits, and rejected the
+  unsupported repeated question.
+- **Validation correction:** the first prompt draft asked how "the selected
+  result" would change direction, which implied choosing an outcome in advance.
+  It now asks how the decision-relevant possible outcomes of the selected
+  operation would affect direction.
+- **Validation:** `run_research.ps1` parses with zero PowerShell errors and the
+  touched-file whitespace checks pass. No campaign was launched, resumed,
+  reset, trained, measured or evaluated.
+- **Status:** OI-004 implementation is complete. Its campaign effect remains
+  unmeasured. OI-013 and OI-014 remain separate open issues; this change may
+  affect their observed symptoms but does not close them.
+
+## 2026-10-09: refine OI ownership from the detailed I9-I15 RCA
+
+- **Scope decision:** keep the approved OI-004 program and prompt repair
+  unchanged. Do not combine evidence inspection, scientific progression and
+  experimental realization into one broader harness change.
+- **OI-003 evidence:** completed M11 artifacts contained arrival-speed
+  diagnostics that the I9 interpretation described as unestablished. M13
+  recorded equal complete-success labels for T13 and T3, but T13 had 155 first
+  reaches and 6 interruptions versus T3's 157 first reaches and 4
+  interruptions. I11 nevertheless described reach and hold behavior as
+  preserved. These are inspection and interpretation findings, not new
+  checkpoint-selection requirements.
+- **OI-004 refinement:** terminal-only checkpoint nomination remains supported.
+  The progression finding is narrower than an automatic train-after-failure
+  loop. I12 obtained M18, I13 obtained M23, and goal review obtained M25 before
+  opening I14. These are evidence-dependent progression counterexamples. The
+  bounded OI-004 repair remains implemented, but its campaign effect is
+  unmeasured and the issue is not closed.
+- **OI-015 opened:** T16 and T17 had different intended source snapshots, but
+  corresponding saved learned-policy and optimizer members, all 24 training
+  records, and the complete 160-episode measured behavior were identical. The
+  runtime artifacts differed, so the complete candidates are not described as
+  byte-identical. The available evidence does not identify the cause or prove
+  that the T17 experimental distinction was active. This realization gap is
+  separate from OI-014's bundled-change attribution problem.
+- **Boundary:** this update records issue ownership and evidence only. It does
+  not alter the OI-004 implementation, approve an OI-003 or OI-015 repair,
+  modify scientific code, or launch, resume, reset or train a campaign.
