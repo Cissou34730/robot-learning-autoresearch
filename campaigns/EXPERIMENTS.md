@@ -38,3 +38,4 @@
 | M8 | measurement | I5 | completed |
 | M9 | measurement | I5 | completed |
 | E22 | inquiry | I5 | completed |
+| E23 | checkpoint | I5 | checkpointed |
