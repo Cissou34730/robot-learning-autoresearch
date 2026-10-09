@@ -62,3 +62,4 @@
 | M14 | measurement | I8 | completed |
 | E36 | inquiry | I8 | completed |
 | E37 | checkpoint | I8 | checkpointed |
+| E38 | inquiry | I9 | completed |
