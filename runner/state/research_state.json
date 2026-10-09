@@ -26278,47 +26278,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "open",
-        "inquiry": {
-          "closure_condition": "Close when completed evidence under uniform official coverage and the bounded action interface either shows threshold-level learned success with preserved 40/40 inner-band behavior, or shows that explicit trajectory/branch-limit handling fails to remove the residual failures or leaves adequate-margin failures that redirect the work toward a broader learned-acquisition or stabilization limitation.",
-          "goal_connection": "The human goal requires a learned policy with at least 196 uninterrupted-hold successes in the protected 200-episode official assessment. The strongest learned candidates remain at 153/160, while same-interface computed torque reached 160/160, so resolving whether explicit geometry or trajectory structure can transfer that capability is the most direct route toward the goal.",
-          "handoff_conclusion": "M1 established substantial transient actuation authority and at least one feasible analytic IK branch for every sampled official target, with 64 of 576 grid targets having only one feasible branch. T1, T8 and T9 established that the unchanged direct-action route can reach 153/160 while preserving 40/40 inner-band behavior. M17 established same-interface computed-torque controllability at 160/160 across gain settings, including 93/93 inner-band success and no reach or hold interruptions. M18 showed that the tested controller-derived PPO action-prior recipe remained at 153/160, so it is a recipe-specific negative rather than a method-level rejection of controller imitation or learned policies. M22 replayed T10 on the same uniform 160-episode panel and supplied the missing diagnostics: 153 successes and 7 failures, with 4 failures before first reach and 3 after first reach with 3 hold interruptions. All seven failures had nonpositive nearest-analytic-branch limit margins. The candidate preserved 40/40 success in the 6-10 cm band but did not transfer M17's demonstrated capability to the required threshold. E52 therefore closed I12 as a limited negative for the tested controller-imitation recipe. This changes the leading interpretation from an unresolved controller-transfer-versus-PPO distinction to a more specific need for explicit trajectory or branch-limit handling of geometry-sensitive acquisition; the result does not invalidate controller imitation generally.",
-          "handoff_question": "Can explicit trajectory-conditioned or branch/limit handling raise learned-policy success to at least 196/200-equivalent under uniform official coverage while preserving the 40/40 inner-band behavior, and do any remaining failures occur despite adequate branch/limit margin?",
-          "handoff_source_session_id": "S25",
-          "id": "I13",
-          "opened_in_session": "S26",
-          "question": "Can explicit trajectory-conditioned or branch/limit handling raise learned-policy success to at least 196/200-equivalent under uniform official coverage while preserving the 40/40 inner-band behavior, and do any remaining failures occur despite adequate branch/limit margin?",
-          "rationale": "M22 found four pre-reach and three post-reach failures in T10, all with nonpositive nearest-analytic-branch limit margins, while T8 and T9 also plateaued at 153/160 and T12's static branch/limit route collapsed to 44/160. These results support changing away from the tested controller-prior recipe but do not distinguish whether a usable trajectory or branch choice would fix acquisition. The inquiry preserves the official target distribution, 100-step uninterrupted hold semantics, inner-band behavior, velocity, branch/limit margin and hold-interruption diagnostics needed to decide whether geometry-aware learned acquisition is a credible route.",
-          "reframes": []
-        }
-      },
-      "result": {
-        "action": "open",
-        "inquiry_id": "I13",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E54",
-    "inquiry_id": null,
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "open",
-        "closure_condition": "Close when completed evidence under uniform official coverage and the bounded action interface either shows threshold-level learned success with preserved 40/40 inner-band behavior, or shows that explicit trajectory/branch-limit handling fails to remove the residual failures or leaves adequate-margin failures that redirect the work toward a broader learned-acquisition or stabilization limitation.",
-        "goal_connection": "The human goal requires a learned policy with at least 196 uninterrupted-hold successes in the protected 200-episode official assessment. The strongest learned candidates remain at 153/160, while same-interface computed torque reached 160/160, so resolving whether explicit geometry or trajectory structure can transfer that capability is the most direct route toward the goal.",
-        "question": "Can explicit trajectory-conditioned or branch/limit handling raise learned-policy success to at least 196/200-equivalent under uniform official coverage while preserving the 40/40 inner-band behavior, and do any remaining failures occur despite adequate branch/limit margin?",
-        "rationale": "M22 found four pre-reach and three post-reach failures in T10, all with nonpositive nearest-analytic-branch limit margins, while T8 and T9 also plateaued at 153/160 and T12's static branch/limit route collapsed to 44/160. These results support changing away from the tested controller-prior recipe but do not distinguish whether a usable trajectory or branch choice would fix acquisition. The inquiry preserves the official target distribution, 100-step uninterrupted hold semantics, inner-band behavior, velocity, branch/limit margin and hold-interruption diagnostics needed to decide whether geometry-aware learned acquisition is a credible route."
-      }
-    },
-    "request_fingerprint": "aa4b9b5d941da0026b1a703e26b5decee182986d9f6135255d33f75878427f44",
-    "session_id": "S26",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T8:checkpoint-60416 and T9:checkpoint-20480 remain the strongest measured learned candidates at 153/160; T10:checkpoint-10240 and T10:checkpoint-120832 also measured 153/160. None has a protected working, best-known or retained role. T11:checkpoint-120832 is rejected at 0/160, and T12:checkpoint-120832 is rejected at 44/160 with 20/40 inner-band success. M17 is evidence of same-interface model-based capability, not a learned candidate. No candidate has an evidence-backed protected role.",
     "completed_operations": [
