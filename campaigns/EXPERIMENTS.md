@@ -62,3 +62,4 @@
 | E37 | checkpoint | I9 | checkpointed |
 | E38 | inquiry | I10 | completed |
 | E39 | checkpoint | - | checkpointed |
+| E40 | restore_recipe | I10 | restored |
