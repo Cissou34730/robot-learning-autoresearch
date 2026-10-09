@@ -1,16 +1,5 @@
 {
-  "active_inquiry": {
-    "closure_condition": "Close the inquiry when completed candidate evidence establishes a bounded positive, negative, limited, or inconclusive answer about full-distribution stable holds and the dominant failure mechanism: either a candidate reaches the required success level with consistent radius-binned reach and hold diagnostics, or completed evidence redirects the route toward dynamics/representation or branch/limit coverage work, or the available evidence cannot discriminate those mechanisms.",
-    "goal_connection": "The human goal requires at least 196 of 200 official episodes to complete an uninterrupted 100-step hold. This inquiry directly measures whether learned behavior can turn the characterized actuator authority and reachable geometry into that capability across the full official radius and angular distribution.",
-    "handoff_conclusion": "Observation from completed M1: the native compiled model has 0.5 rad/s damping, 0.01 rad2 armature, 5-unit motor gear, and geom-derived link masses of about 0.099 kg and 0.052 kg; saturated one-control-interval pulses produce initial accelerations of about 414-492 rad/s2 and peak joint speeds of about 5.5-6.1 rad/s, then return to near-zero velocity after 24 further 20 ms intervals. Interpretation: actuation is not obviously too weak, but the transient authority and configuration-dependent coupling make velocity shaping central to the hold problem. Observation from M1: all 576 radius-angle grid targets have at least one feasible analytic IK solution; 512 have both branches feasible and 64 have only one feasible branch, with no target lacking a solution. Interpretation: the official annulus is geometrically reachable, so a primary unreachable-target explanation is contradicted, while branch selection and limit margin remain consequential near angular boundaries and inner radii. The pulse experiment did not exercise target tracking, policy behavior, hold interruption, substep excursions, or the training distribution, so it cannot establish that strong action authority yields a successful learned policy or that branch asymmetry causes failures.",
-    "handoff_question": "Under the exact official target distribution and uninterrupted endpoint-hold semantics, can a learned policy achieve stable holds across both the inner and outer radius bands, and are any failures dominated by approach velocity/oscillation or by branch and limit-margin coverage?",
-    "handoff_source_session_id": "S1",
-    "id": "I1",
-    "opened_in_session": "S2",
-    "question": "Under the exact official target distribution and uninterrupted endpoint-hold semantics, can a learned policy achieve stable holds across both the inner and outer radius bands, and are any failures dominated by approach velocity/oscillation or by branch and limit-margin coverage?",
-    "rationale": "M1 established substantial but transient actuation authority and at least one feasible analytic IK solution for every sampled official target, while also showing one-branch regions and configuration-dependent dynamics. It did not measure any learned policy, inner-band behavior, first reach, hold interruption, entry velocity, oscillation, or substep behavior. Therefore the campaign should not request official assessment or infer a mechanism from M1. A bounded inquiry preserves the exact unresolved distinction and allows the next session to select the first evidence-producing operation rather than presupposing training, measurement, or a recipe.",
-    "reframes": []
-  },
+  "active_inquiry": null,
   "campaign": {
     "base_commit": "4e87f6053469bb6648d355bc03a7a70faa91f33f",
     "id": "79395c88-afcd-40f0-a644-16ca95368c28",
@@ -839,7 +828,7 @@
     }
   },
   "counters": {
-    "event": 3,
+    "event": 4,
     "inquiry": 1,
     "measurement": 3,
     "session": 3,
@@ -1925,9 +1914,63 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-09T13:36:20Z",
+      "error": null,
+      "id": "E4",
+      "inquiry_id": "I1",
+      "kind": "inquiry",
+      "request": {
+        "action": "close",
+        "outcome": "limited negative",
+        "reason": "M2 established 93.75% success on the 160-episode full-distribution development panel, below the 98% objective, so generic full-distribution learning has not yet demonstrated the required capability. M3 resolved the dominant failure distinction sufficiently to redirect the route: 7 of 10 failures had negative nearest-IK-branch limit margin, including all three failures in the 10-14 cm bin and four failures at larger radii/angles, indicating branch and joint-limit coverage failure; 2 of 10 failures entered tolerance with high first-reach joint speed (4.17 and 5.99 rad/s), good limit margin, and 242 and 192 hold interruptions, indicating a secondary approach-velocity/hold-stabilization failure; one further failure had positive limit margin but never reached. The evidence supports a limited negative answer to I1: the tested policy can hold most targets and all sampled 6-10 cm targets, but it does not meet the goal and its failures are mixed but predominantly geometry/limit aligned, with a distinct velocity-driven hold mechanism. M1's reachability result remains valid because the failures are not global unreachable targets; they are policy behavior aligned with branch/limit margin and transient dynamics. Close I1 and redirect the campaign toward branch/limit-aware coverage while preserving velocity shaping as a secondary decision frontier."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I1",
+        "outcome": "limited negative",
+        "reason": "M2 established 93.75% success on the 160-episode full-distribution development panel, below the 98% objective, so generic full-distribution learning has not yet demonstrated the required capability. M3 resolved the dominant failure distinction sufficiently to redirect the route: 7 of 10 failures had negative nearest-IK-branch limit margin, including all three failures in the 10-14 cm bin and four failures at larger radii/angles, indicating branch and joint-limit coverage failure; 2 of 10 failures entered tolerance with high first-reach joint speed (4.17 and 5.99 rad/s), good limit margin, and 242 and 192 hold interruptions, indicating a secondary approach-velocity/hold-stabilization failure; one further failure had positive limit margin but never reached. The evidence supports a limited negative answer to I1: the tested policy can hold most targets and all sampled 6-10 cm targets, but it does not meet the goal and its failures are mixed but predominantly geometry/limit aligned, with a distinct velocity-driven hold mechanism. M1's reachability result remains valid because the failures are not global unreachable targets; they are policy behavior aligned with branch/limit margin and transient dynamics. Close I1 and redirect the campaign toward branch/limit-aware coverage while preserving velocity shaping as a secondary decision frontier.",
+        "status": "completed"
+      },
+      "session_id": "S3",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "close",
+        "inquiry_id": "I1",
+        "outcome": "limited negative",
+        "reason": "M2 established 93.75% success on the 160-episode full-distribution development panel, below the 98% objective, so generic full-distribution learning has not yet demonstrated the required capability. M3 resolved the dominant failure distinction sufficiently to redirect the route: 7 of 10 failures had negative nearest-IK-branch limit margin, including all three failures in the 10-14 cm bin and four failures at larger radii/angles, indicating branch and joint-limit coverage failure; 2 of 10 failures entered tolerance with high first-reach joint speed (4.17 and 5.99 rad/s), good limit margin, and 242 and 192 hold interruptions, indicating a secondary approach-velocity/hold-stabilization failure; one further failure had positive limit margin but never reached. The evidence supports a limited negative answer to I1: the tested policy can hold most targets and all sampled 6-10 cm targets, but it does not meet the goal and its failures are mixed but predominantly geometry/limit aligned, with a distinct velocity-driven hold mechanism. M1's reachability result remains valid because the failures are not global unreachable targets; they are policy behavior aligned with branch/limit margin and transient dynamics. Close I1 and redirect the campaign toward branch/limit-aware coverage while preserving velocity shaping as a secondary decision frontier."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I1",
+        "outcome": "limited negative",
+        "reason": "M2 established 93.75% success on the 160-episode full-distribution development panel, below the 98% objective, so generic full-distribution learning has not yet demonstrated the required capability. M3 resolved the dominant failure distinction sufficiently to redirect the route: 7 of 10 failures had negative nearest-IK-branch limit margin, including all three failures in the 10-14 cm bin and four failures at larger radii/angles, indicating branch and joint-limit coverage failure; 2 of 10 failures entered tolerance with high first-reach joint speed (4.17 and 5.99 rad/s), good limit margin, and 242 and 192 hold interruptions, indicating a secondary approach-velocity/hold-stabilization failure; one further failure had positive limit margin but never reached. The evidence supports a limited negative answer to I1: the tested policy can hold most targets and all sampled 6-10 cm targets, but it does not meet the goal and its failures are mixed but predominantly geometry/limit aligned, with a distinct velocity-driven hold mechanism. M1's reachability result remains valid because the failures are not global unreachable targets; they are policy behavior aligned with branch/limit margin and transient dynamics. Close I1 and redirect the campaign toward branch/limit-aware coverage while preserving velocity shaping as a secondary decision frontier.",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E4",
+    "inquiry_id": "I1",
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "close",
+        "outcome": "limited negative",
+        "reason": "M2 established 93.75% success on the 160-episode full-distribution development panel, below the 98% objective, so generic full-distribution learning has not yet demonstrated the required capability. M3 resolved the dominant failure distinction sufficiently to redirect the route: 7 of 10 failures had negative nearest-IK-branch limit margin, including all three failures in the 10-14 cm bin and four failures at larger radii/angles, indicating branch and joint-limit coverage failure; 2 of 10 failures entered tolerance with high first-reach joint speed (4.17 and 5.99 rad/s), good limit margin, and 242 and 192 hold interruptions, indicating a secondary approach-velocity/hold-stabilization failure; one further failure had positive limit margin but never reached. The evidence supports a limited negative answer to I1: the tested policy can hold most targets and all sampled 6-10 cm targets, but it does not meet the goal and its failures are mixed but predominantly geometry/limit aligned, with a distinct velocity-driven hold mechanism. M1's reachability result remains valid because the failures are not global unreachable targets; they are policy behavior aligned with branch/limit margin and transient dynamics. Close I1 and redirect the campaign toward branch/limit-aware coverage while preserving velocity shaping as a secondary decision frontier."
+      }
+    },
+    "request_fingerprint": "275bdb23dcb8aee0bdc7184e58abd8b95736671854a1067d55e429d353a2aad7",
+    "session_id": "S3",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No learned candidates exist; working, best-known, and retained roles remain empty.",
     "completed_operations": [
@@ -1968,7 +2011,8 @@
     "operation_ids": [
       "T1",
       "M2",
-      "M3"
+      "M3",
+      "E4"
     ],
     "scientific_parent_commit": "704bda91e822fc41c3c76dd2479310938b417fdb"
   },
