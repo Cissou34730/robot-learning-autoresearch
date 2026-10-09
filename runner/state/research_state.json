@@ -5757,7 +5757,7 @@
     }
   },
   "counters": {
-    "event": 33,
+    "event": 34,
     "inquiry": 8,
     "measurement": 11,
     "session": 16,
@@ -5766,7 +5766,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -14811,40 +14811,181 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-09T15:11:28Z",
+      "error": null,
+      "id": "E34",
+      "inquiry_id": null,
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "T1:checkpoint-120832 remains the strongest evidence-backed development candidate at 150/160 successes with 40/40 inner-band successes. T7:checkpoint-120832 is rejected for I7 based on M11. T2, T3, T4, T5 and T6 remain rejected as recipe-specific negative routes. No candidate has an assigned working, best-known or retained role because none has met the development threshold or received a protected assessment.",
+        "completed_operations": [
+          "E33"
+        ],
+        "cumulative_resource_use": "The campaign has used M1 characterization; seven 120000-step fresh training allocations T1-T7, each completing 120832 simulator steps; development and diagnostic measurements M2-M11; and inquiry/checkpoint events E1-E33, including restoration E26, closure of I6 at E27, opening I7 at E29, T7 training, M11 measurement, I7 closure at E31, and opening I8 at E33. No candidate meets the 98% development threshold.",
+        "current_goal_gap": "No candidate reaches the 98% development threshold. T1 has seven failures without first reach and three failures after first reach, so the remaining gap is primarily pre-reach while uninterrupted hold behavior remains consequential.",
+        "current_synthesis": "Established evidence: M1 found substantial transient actuation authority and at least one feasible analytic IK branch for every sampled official target, with 64 of 576 grid targets having only one feasible branch. M2, M9 and M11 measure T1 at 150/160 with 40/40 inner-band successes, seven pre-reach failures and three post-reach failures. M3 and M9 support branch-, limit- and trajectory-sensitive non-reaching as the dominant residual class, with approach velocity and hold interruptions secondary. T2, T3, T4 and T5 reject their tested sampling or representation recipes, T6 rejects its tested global action slew interface, and T7 rejects its tested selective joint-limit guard through severe development and inner-band loss; these are recipe-specific negatives, not proof that all policy-side methods or action interfaces fail. The unresolved competing explanations are that T1's feasible-but-missed targets can be recovered by a policy-side trajectory or branch-selection capability while preserving direct-action behavior, or that the residual non-reaching failures are inseparable from the action interface. I8 was opened to discriminate these explanations rather than commit to a training recipe.",
+        "decision_frontier": "Determine whether a policy-side method can improve T1's seven pre-reach failures under uniform official coverage without sacrificing its 40/40 inner-band behavior or uninterrupted hold. A candidate that improves full-distribution success and pre-reach outcomes while preserving inner-band success, first-reach dynamics and hold interruptions supports continuing the direct-action route; broad positive-margin non-reaching or renewed inner-band or hold degradation redirects attention toward an action-interface limitation. The tested recipe negatives remain limited to their realized methods.",
+        "evidence_references": [
+          "M1",
+          "M2",
+          "M3",
+          "M9",
+          "T6",
+          "M10",
+          "T7",
+          "M11",
+          "E31",
+          "E33"
+        ],
+        "human_goal_connection": "The campaign requires at least 196 successes in the protected 200-episode official assessment. T1 is the strongest measured candidate at 150/160 development successes, including 40/40 inner-band successes, but remains below the 98% development threshold; official assessment is therefore unjustified.",
+        "next_direction_or_closure": "Checkpoint the goal-review transition after opening I8. In the fresh inquiry session, choose the first operation from the evidence and decision frontier; preserve T1's direct action authority and uniform official coverage, and require evaluation of full-distribution success together with pre-reach failures, inner-band success, first-reach dynamics and uninterrupted hold behavior.",
+        "next_question": "Can a policy-side method improve T1's seven pre-reach failures under uniform official coverage while preserving its 40/40 inner-band behavior and uninterrupted hold, or is the remaining gap intrinsically coupled to the action interface?"
+      },
+      "result": {
+        "session_id": "S16",
+        "status": "checkpointed"
+      },
+      "session_id": "S16",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "aab8450944b45d5d884dcac66720303a14396cac",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "T1:checkpoint-120832 remains the strongest evidence-backed development candidate at 150/160 successes with 40/40 inner-band successes. T7:checkpoint-120832 is rejected for I7 based on M11. T2, T3, T4, T5 and T6 remain rejected as recipe-specific negative routes. No candidate has an assigned working, best-known or retained role because none has met the development threshold or received a protected assessment.",
+        "completed_operations": [
+          "E33"
+        ],
+        "cumulative_resource_use": "The campaign has used M1 characterization; seven 120000-step fresh training allocations T1-T7, each completing 120832 simulator steps; development and diagnostic measurements M2-M11; and inquiry/checkpoint events E1-E33, including restoration E26, closure of I6 at E27, opening I7 at E29, T7 training, M11 measurement, I7 closure at E31, and opening I8 at E33. No candidate meets the 98% development threshold.",
+        "current_goal_gap": "No candidate reaches the 98% development threshold. T1 has seven failures without first reach and three failures after first reach, so the remaining gap is primarily pre-reach while uninterrupted hold behavior remains consequential.",
+        "current_synthesis": "Established evidence: M1 found substantial transient actuation authority and at least one feasible analytic IK branch for every sampled official target, with 64 of 576 grid targets having only one feasible branch. M2, M9 and M11 measure T1 at 150/160 with 40/40 inner-band successes, seven pre-reach failures and three post-reach failures. M3 and M9 support branch-, limit- and trajectory-sensitive non-reaching as the dominant residual class, with approach velocity and hold interruptions secondary. T2, T3, T4 and T5 reject their tested sampling or representation recipes, T6 rejects its tested global action slew interface, and T7 rejects its tested selective joint-limit guard through severe development and inner-band loss; these are recipe-specific negatives, not proof that all policy-side methods or action interfaces fail. The unresolved competing explanations are that T1's feasible-but-missed targets can be recovered by a policy-side trajectory or branch-selection capability while preserving direct-action behavior, or that the residual non-reaching failures are inseparable from the action interface. I8 was opened to discriminate these explanations rather than commit to a training recipe.",
+        "decision_frontier": "Determine whether a policy-side method can improve T1's seven pre-reach failures under uniform official coverage without sacrificing its 40/40 inner-band behavior or uninterrupted hold. A candidate that improves full-distribution success and pre-reach outcomes while preserving inner-band success, first-reach dynamics and hold interruptions supports continuing the direct-action route; broad positive-margin non-reaching or renewed inner-band or hold degradation redirects attention toward an action-interface limitation. The tested recipe negatives remain limited to their realized methods.",
+        "evidence_references": [
+          "M1",
+          "M2",
+          "M3",
+          "M9",
+          "T6",
+          "M10",
+          "T7",
+          "M11",
+          "E31",
+          "E33"
+        ],
+        "human_goal_connection": "The campaign requires at least 196 successes in the protected 200-episode official assessment. T1 is the strongest measured candidate at 150/160 development successes, including 40/40 inner-band successes, but remains below the 98% development threshold; official assessment is therefore unjustified.",
+        "inquiry_id": null,
+        "next_direction_or_closure": "Checkpoint the goal-review transition after opening I8. In the fresh inquiry session, choose the first operation from the evidence and decision frontier; preserve T1's direct action authority and uniform official coverage, and require evaluation of full-distribution success together with pre-reach failures, inner-band success, first-reach dynamics and uninterrupted hold behavior.",
+        "next_question": "Can a policy-side method improve T1's seven pre-reach failures under uniform official coverage while preserving its 40/40 inner-band behavior and uninterrupted hold, or is the remaining gap intrinsically coupled to the action interface?",
+        "session_id": "S16"
+      },
+      "presentation": {
+        "backend_session_id": "480d0b55-acc2-4f1c-be04-afd1e1f67572",
+        "campaign_id": "79395c88-afcd-40f0-a644-16ca95368c28",
+        "campaign_usage": "46m14s | 145.34 AIU | prompt 25.2m (87% cached) | output 179.9k",
+        "session_id": "S16",
+        "session_kind": "goal_review",
+        "session_usage": "1m10s | 5.33 AIU | prompt 705.8k (79% cached) | output 4.5k"
+      },
+      "result": {
+        "session_id": "S16",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "dd6a0a70e193efc777e0852a53235ef8159d1d52",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E34",
+    "inquiry_id": null,
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "T1:checkpoint-120832 remains the strongest evidence-backed development candidate at 150/160 successes with 40/40 inner-band successes. T7:checkpoint-120832 is rejected for I7 based on M11. T2, T3, T4, T5 and T6 remain rejected as recipe-specific negative routes. No candidate has an assigned working, best-known or retained role because none has met the development threshold or received a protected assessment.",
+        "completed_operations": [
+          "E33"
+        ],
+        "cumulative_resource_use": "The campaign has used M1 characterization; seven 120000-step fresh training allocations T1-T7, each completing 120832 simulator steps; development and diagnostic measurements M2-M11; and inquiry/checkpoint events E1-E33, including restoration E26, closure of I6 at E27, opening I7 at E29, T7 training, M11 measurement, I7 closure at E31, and opening I8 at E33. No candidate meets the 98% development threshold.",
+        "current_goal_gap": "No candidate reaches the 98% development threshold. T1 has seven failures without first reach and three failures after first reach, so the remaining gap is primarily pre-reach while uninterrupted hold behavior remains consequential.",
+        "current_synthesis": "Established evidence: M1 found substantial transient actuation authority and at least one feasible analytic IK branch for every sampled official target, with 64 of 576 grid targets having only one feasible branch. M2, M9 and M11 measure T1 at 150/160 with 40/40 inner-band successes, seven pre-reach failures and three post-reach failures. M3 and M9 support branch-, limit- and trajectory-sensitive non-reaching as the dominant residual class, with approach velocity and hold interruptions secondary. T2, T3, T4 and T5 reject their tested sampling or representation recipes, T6 rejects its tested global action slew interface, and T7 rejects its tested selective joint-limit guard through severe development and inner-band loss; these are recipe-specific negatives, not proof that all policy-side methods or action interfaces fail. The unresolved competing explanations are that T1's feasible-but-missed targets can be recovered by a policy-side trajectory or branch-selection capability while preserving direct-action behavior, or that the residual non-reaching failures are inseparable from the action interface. I8 was opened to discriminate these explanations rather than commit to a training recipe.",
+        "decision_frontier": "Determine whether a policy-side method can improve T1's seven pre-reach failures under uniform official coverage without sacrificing its 40/40 inner-band behavior or uninterrupted hold. A candidate that improves full-distribution success and pre-reach outcomes while preserving inner-band success, first-reach dynamics and hold interruptions supports continuing the direct-action route; broad positive-margin non-reaching or renewed inner-band or hold degradation redirects attention toward an action-interface limitation. The tested recipe negatives remain limited to their realized methods.",
+        "evidence_references": [
+          "M1",
+          "M2",
+          "M3",
+          "M9",
+          "T6",
+          "M10",
+          "T7",
+          "M11",
+          "E31",
+          "E33"
+        ],
+        "human_goal_connection": "The campaign requires at least 196 successes in the protected 200-episode official assessment. T1 is the strongest measured candidate at 150/160 development successes, including 40/40 inner-band successes, but remains below the 98% development threshold; official assessment is therefore unjustified.",
+        "next_direction_or_closure": "Checkpoint the goal-review transition after opening I8. In the fresh inquiry session, choose the first operation from the evidence and decision frontier; preserve T1's direct action authority and uniform official coverage, and require evaluation of full-distribution success together with pre-reach failures, inner-band success, first-reach dynamics and uninterrupted hold behavior.",
+        "next_question": "Can a policy-side method improve T1's seven pre-reach failures under uniform official coverage while preserving its 40/40 inner-band behavior and uninterrupted hold, or is the remaining gap intrinsically coupled to the action interface?"
+      }
+    },
+    "request_fingerprint": "85fe04a7a4e2a5ced8367dd46d86430d730275623093b480df927695a0cabaa6",
+    "session_id": "S16",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T1:checkpoint-120832 remains the strongest evidence-backed development candidate at 150/160 successes with 40/40 inner-band successes. T7:checkpoint-120832 is rejected for I7 based on M11. T2, T3, T4, T5 and T6 remain rejected as recipe-specific negative routes. No candidate has an assigned working, best-known or retained role because none has met the development threshold or received a protected assessment.",
     "completed_operations": [
-      "T7",
-      "M11",
-      "E31"
+      "E33"
     ],
-    "cumulative_resource_use": "The campaign has used M1 characterization; seven 120000-step fresh training allocations T1-T7, each completing 120832 simulator steps; development and diagnostic measurements M2-M11; and inquiry/checkpoint events E1-E31, including restoration E26, closure of I6 at E27, opening I7 at E29, T7 training, M11 measurement and I7 closure at E31. No candidate meets the 98% development threshold.",
-    "current_goal_gap": "No candidate reaches the 98% development threshold. T1 remains at 150/160 (93.75%) with 40/40 inner-band successes. T7 reached only 30/160 and is rejected; official assessment remains unjustified.",
-    "current_synthesis": "M1 established substantial transient actuation authority and at least one feasible analytic IK solution for every sampled official target, with 64 of 576 grid targets having only one feasible branch. T1 remains the strongest measured policy: M2, M9 and M11 give 150/160 successes, 40/40 inner-band successes, seven failures without first reach, and three failures after first reach. M3 and M9 support branch-, limit- and trajectory-sensitive non-reaching as the dominant residual class, with approach velocity and hold interruptions secondary. T2, T3, T4 and T5 reject their tested sampling or representation recipes through broad performance collapse, while T6 rejects the tested global action slew interface. T7 tested a different selective action interface, but its zero-success training trajectory agreed with its 30/160 M11 development result; it lost inner-band performance (29/93 versus T1's 90/93), won zero paired episodes, and had 119/130 failures without first reach. Every T7 pre-reach failure had at least one nonnegative-margin analytic IK branch, so the guard did not reduce the targeted positive-margin non-reaching mechanism. E31 closes I7 as a limited negative for the tested 15-degree outward joint-limit attenuation only. The aggregate and diagnostic evidence agree that this interface is not a viable route, but they do not establish that all policy-side methods or all action interfaces fail.",
-    "decision_frontier": "The tested global slew limit and selective joint-limit guard both caused learnability or development collapse, and the tested added representations and branch-aware sampling also failed; these are recipe-specific negatives, not proof that the remaining gap is unaddressable. T1's residual gap is dominated by seven pre-reach failures, while only three failures are post-reach, so hold stabilization is consequential but cannot by itself reach 98%. The leading unresolved distinction is whether T1's feasible-but-missed targets arise from policy-side trajectory or branch-selection limitations that can be improved without changing the direct action interface, or whether the remaining non-reaching gap is inseparable from an action-interface limitation. Evidence that improves pre-reach success while retaining T1's inner-band and hold behavior supports the new route; broad positive-margin non-reaching or renewed inner-band loss redirects it. Hold interruptions, first-reach velocity, branch margin and target-radius/angle stratification remain the discriminating diagnostics.",
+    "cumulative_resource_use": "The campaign has used M1 characterization; seven 120000-step fresh training allocations T1-T7, each completing 120832 simulator steps; development and diagnostic measurements M2-M11; and inquiry/checkpoint events E1-E33, including restoration E26, closure of I6 at E27, opening I7 at E29, T7 training, M11 measurement, I7 closure at E31, and opening I8 at E33. No candidate meets the 98% development threshold.",
+    "current_goal_gap": "No candidate reaches the 98% development threshold. T1 has seven failures without first reach and three failures after first reach, so the remaining gap is primarily pre-reach while uninterrupted hold behavior remains consequential.",
+    "current_synthesis": "Established evidence: M1 found substantial transient actuation authority and at least one feasible analytic IK branch for every sampled official target, with 64 of 576 grid targets having only one feasible branch. M2, M9 and M11 measure T1 at 150/160 with 40/40 inner-band successes, seven pre-reach failures and three post-reach failures. M3 and M9 support branch-, limit- and trajectory-sensitive non-reaching as the dominant residual class, with approach velocity and hold interruptions secondary. T2, T3, T4 and T5 reject their tested sampling or representation recipes, T6 rejects its tested global action slew interface, and T7 rejects its tested selective joint-limit guard through severe development and inner-band loss; these are recipe-specific negatives, not proof that all policy-side methods or action interfaces fail. The unresolved competing explanations are that T1's feasible-but-missed targets can be recovered by a policy-side trajectory or branch-selection capability while preserving direct-action behavior, or that the residual non-reaching failures are inseparable from the action interface. I8 was opened to discriminate these explanations rather than commit to a training recipe.",
+    "decision_frontier": "Determine whether a policy-side method can improve T1's seven pre-reach failures under uniform official coverage without sacrificing its 40/40 inner-band behavior or uninterrupted hold. A candidate that improves full-distribution success and pre-reach outcomes while preserving inner-band success, first-reach dynamics and hold interruptions supports continuing the direct-action route; broad positive-margin non-reaching or renewed inner-band or hold degradation redirects attention toward an action-interface limitation. The tested recipe negatives remain limited to their realized methods.",
     "evidence_references": [
       "M1",
       "M2",
       "M3",
       "M9",
-      "E26",
       "T6",
       "M10",
-      "E27",
-      "E29",
       "T7",
       "M11",
-      "E31"
+      "E31",
+      "E33"
     ],
-    "human_goal_connection": "The human goal requires at least 196 of 200 protected official episodes to complete an uninterrupted 100-step hold. T1 remains the strongest evidence-backed candidate at 150/160 development successes, including 40/40 inner-band successes, so the remaining gap is ten failures and cannot be closed by hold stabilization alone unless the seven pre-reach failures are also addressed.",
-    "inquiry_id": "I7",
-    "next_direction_or_closure": "I7 is closed as a limited negative. The next fresh inquiry should preserve T1's direct action authority and uniform official coverage while testing whether the remaining pre-reach failures can be addressed by a policy-side trajectory or branch-selection capability. It must evaluate full-distribution success together with inner-band success, positive- and negative-margin non-reaching, first-reach dynamics and hold interruptions. Do not request official assessment until a candidate reaches the development threshold with consistent geometry and uninterrupted-hold behavior.",
+    "human_goal_connection": "The campaign requires at least 196 successes in the protected 200-episode official assessment. T1 is the strongest measured candidate at 150/160 development successes, including 40/40 inner-band successes, but remains below the 98% development threshold; official assessment is therefore unjustified.",
+    "inquiry_id": null,
+    "next_direction_or_closure": "Checkpoint the goal-review transition after opening I8. In the fresh inquiry session, choose the first operation from the evidence and decision frontier; preserve T1's direct action authority and uniform official coverage, and require evaluation of full-distribution success together with pre-reach failures, inner-band success, first-reach dynamics and uninterrupted hold behavior.",
     "next_question": "Can a policy-side method improve T1's seven pre-reach failures under uniform official coverage while preserving its 40/40 inner-band behavior and uninterrupted hold, or is the remaining gap intrinsically coupled to the action interface?",
-    "scientific_commit": "ba79b613f060e274b0f52ed0d2e867dccbf301ad",
-    "session_id": "S15"
+    "scientific_commit": "dd6a0a70e193efc777e0852a53235ef8159d1d52",
+    "session_id": "S16"
   },
   "schema_version": 6,
   "scientific_model": {
@@ -14852,21 +14993,6 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "480d0b55-acc2-4f1c-be04-afd1e1f67572",
-    "id": "S16",
-    "inquiry_id": null,
-    "kind": "goal_review",
-    "objective": "Use the completed evidence to update the scientific direction toward the human goal. Request measurements when they resolve an uncertainty or develop the method. Then choose one outcome: request the official assessment, or open one bounded goal-linked inquiry. Frame the inquiry as an unresolved distinction, obstacle, or capability need; do not encode a selected training run, measurement, implementation, or recipe as the question.",
-    "operation_ids": [
-      "E33"
-    ],
-    "scientific_parent_commit": "aab8450944b45d5d884dcac66720303a14396cac"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
