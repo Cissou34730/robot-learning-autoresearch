@@ -5739,7 +5739,7 @@
     }
   },
   "counters": {
-    "event": 24,
+    "event": 25,
     "inquiry": 6,
     "measurement": 7,
     "session": 13,
@@ -5748,7 +5748,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -11347,37 +11347,189 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-09T23:49:46Z",
+      "error": null,
+      "id": "E25",
+      "inquiry_id": "I6",
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "T3:checkpoint-120832 remains the strongest development-evaluated candidate at 153/160. T9:checkpoint-105472 matched T3 and has no superior development role. T8 candidates are not development evidence and are not assigned roles. No candidate has a working, best-known, or retained role assigned in this session.",
+        "completed_operations": [
+          "T8",
+          "T9",
+          "M7",
+          "E24"
+        ],
+        "cumulative_resource_use": "Prior work includes M1; I1 with T1 and M2; I2 with T2 and M3; I3 with T3 and M4; I4 with T5 and M5 followed by E16; I5 with T6 and M6 followed by E20; and I6 with T8, T9, M7, and E24. I6 used two 120000-step training allocations and one matched 160-episode development measurement; T8's implementation validation failed before scientific measurement, while T9 completed and was measured.",
+        "current_goal_gap": "Seven failures remain on the established 160-episode development panel: four without first reach and three with interrupted holding. The official 98% criterion remains unmeasured and unmet.",
+        "current_synthesis": "T2 established that broader radius coverage improved matched development success from 110/160 to 150/160, and T3's near-target joint-velocity penalty improved it to 153/160 with acquisition and hold rescues. M4 associated the remaining failures with approximately -130 to -151 degree targets, near-limit terminal shoulder positions, small open-branch errors, and large alternate-branch errors. M5 and M6 each matched T3 at 153/160 with zero discordant episodes, rejecting only their tested reward implementations rather than explicit trajectory control in general. T8 then collapsed in training, so it was an implementation failure rather than evidence about the method. T9 recovered training performance after restricting trajectory guidance to acquisition and weak limit braking, but M7 showed T9:checkpoint-105472 matched T3 at 153/160 with zero discordant episodes. The same seven failure seeds persisted, including the recurring angular failures; inspected diagnostics for seeds 4201 and 4208 show no rescue and retain near-limit shoulder and alternate-branch error patterns. E24 therefore closed I6 with a limited negative conclusion: the tested explicit branch-constrained acquisition plus weak limit-braking implementation did not improve the failure set. This does not establish that all trajectory control is ineffective, but it supports redirecting the next experiment to a different control or learning method.",
+        "decision_frontier": "The explicit trajectory-control route tested in I6 produced a matched null result and is no longer the leading route for the recurring -130 to -151 degree failures. The next decision is which different control or learning method can address the coupled acquisition and hold failures without changing the complete-hold task. Evidence that raises success above 153/160 while rescuing recurring seeds and preserving first_reach_step, max_held_steps, hold_interruptions, timeout status, target angle, and terminal joint/branch geometry would support the new route; another matched null or training collapse would redirect again. Development evidence remains necessary before any official assessment.",
+        "evidence_references": [
+          "T2",
+          "T3",
+          "M4",
+          "M5",
+          "M6",
+          "T8",
+          "T9",
+          "M7",
+          "E24"
+        ],
+        "human_goal_connection": "The human goal remains at least 196 successful episodes out of 200 under the official distribution, with every success requiring a complete uninterrupted 100-step hold. The best development result remains 153/160, so the goal is unmet and official performance is unmeasured.",
+        "next_direction_or_closure": "I6 is closed with a limited negative result recorded by E24. The campaign should return to goal review and select a fresh inquiry centered on a different control or learning method, using T3 as the matched development reference and retaining the complete-hold and trajectory diagnostics as the decision criteria.",
+        "next_question": "Can a different control or learning method improve complete-hold success beyond the 153/160 plateau by rescuing the recurring -130 to -151 degree failures without material regressions elsewhere?"
+      },
+      "result": {
+        "session_id": "S13",
+        "status": "checkpointed"
+      },
+      "session_id": "S13",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "e41a12818ca3627f11a93d1cd2ac4aad119cab36",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "T3:checkpoint-120832 remains the strongest development-evaluated candidate at 153/160. T9:checkpoint-105472 matched T3 and has no superior development role. T8 candidates are not development evidence and are not assigned roles. No candidate has a working, best-known, or retained role assigned in this session.",
+        "completed_operations": [
+          "T8",
+          "T9",
+          "M7",
+          "E24"
+        ],
+        "cumulative_resource_use": "Prior work includes M1; I1 with T1 and M2; I2 with T2 and M3; I3 with T3 and M4; I4 with T5 and M5 followed by E16; I5 with T6 and M6 followed by E20; and I6 with T8, T9, M7, and E24. I6 used two 120000-step training allocations and one matched 160-episode development measurement; T8's implementation validation failed before scientific measurement, while T9 completed and was measured.",
+        "current_goal_gap": "Seven failures remain on the established 160-episode development panel: four without first reach and three with interrupted holding. The official 98% criterion remains unmeasured and unmet.",
+        "current_synthesis": "T2 established that broader radius coverage improved matched development success from 110/160 to 150/160, and T3's near-target joint-velocity penalty improved it to 153/160 with acquisition and hold rescues. M4 associated the remaining failures with approximately -130 to -151 degree targets, near-limit terminal shoulder positions, small open-branch errors, and large alternate-branch errors. M5 and M6 each matched T3 at 153/160 with zero discordant episodes, rejecting only their tested reward implementations rather than explicit trajectory control in general. T8 then collapsed in training, so it was an implementation failure rather than evidence about the method. T9 recovered training performance after restricting trajectory guidance to acquisition and weak limit braking, but M7 showed T9:checkpoint-105472 matched T3 at 153/160 with zero discordant episodes. The same seven failure seeds persisted, including the recurring angular failures; inspected diagnostics for seeds 4201 and 4208 show no rescue and retain near-limit shoulder and alternate-branch error patterns. E24 therefore closed I6 with a limited negative conclusion: the tested explicit branch-constrained acquisition plus weak limit-braking implementation did not improve the failure set. This does not establish that all trajectory control is ineffective, but it supports redirecting the next experiment to a different control or learning method.",
+        "decision_frontier": "The explicit trajectory-control route tested in I6 produced a matched null result and is no longer the leading route for the recurring -130 to -151 degree failures. The next decision is which different control or learning method can address the coupled acquisition and hold failures without changing the complete-hold task. Evidence that raises success above 153/160 while rescuing recurring seeds and preserving first_reach_step, max_held_steps, hold_interruptions, timeout status, target angle, and terminal joint/branch geometry would support the new route; another matched null or training collapse would redirect again. Development evidence remains necessary before any official assessment.",
+        "evidence_references": [
+          "T2",
+          "T3",
+          "M4",
+          "M5",
+          "M6",
+          "T8",
+          "T9",
+          "M7",
+          "E24"
+        ],
+        "human_goal_connection": "The human goal remains at least 196 successful episodes out of 200 under the official distribution, with every success requiring a complete uninterrupted 100-step hold. The best development result remains 153/160, so the goal is unmet and official performance is unmeasured.",
+        "inquiry_id": "I6",
+        "next_direction_or_closure": "I6 is closed with a limited negative result recorded by E24. The campaign should return to goal review and select a fresh inquiry centered on a different control or learning method, using T3 as the matched development reference and retaining the complete-hold and trajectory diagnostics as the decision criteria.",
+        "next_question": "Can a different control or learning method improve complete-hold success beyond the 153/160 plateau by rescuing the recurring -130 to -151 degree failures without material regressions elsewhere?",
+        "session_id": "S13"
+      },
+      "presentation": {
+        "backend_session_id": "2d387084-1be8-4f40-978e-c53506c10834",
+        "campaign_id": "339736e0-5583-4bc4-8729-5023fc3077b7",
+        "campaign_usage": "34m54s | 84.96 AIU | prompt 13.5m (86% cached) | output 132.9k",
+        "session_id": "S13",
+        "session_kind": "inquiry",
+        "session_usage": "5m07s | 9.89 AIU | prompt 1.8m (90% cached) | output 18.5k"
+      },
+      "result": {
+        "session_id": "S13",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "39d91468c9435b5bf99e858c91c16f83cf6a8806",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E25",
+    "inquiry_id": "I6",
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "T3:checkpoint-120832 remains the strongest development-evaluated candidate at 153/160. T9:checkpoint-105472 matched T3 and has no superior development role. T8 candidates are not development evidence and are not assigned roles. No candidate has a working, best-known, or retained role assigned in this session.",
+        "completed_operations": [
+          "T8",
+          "T9",
+          "M7",
+          "E24"
+        ],
+        "cumulative_resource_use": "Prior work includes M1; I1 with T1 and M2; I2 with T2 and M3; I3 with T3 and M4; I4 with T5 and M5 followed by E16; I5 with T6 and M6 followed by E20; and I6 with T8, T9, M7, and E24. I6 used two 120000-step training allocations and one matched 160-episode development measurement; T8's implementation validation failed before scientific measurement, while T9 completed and was measured.",
+        "current_goal_gap": "Seven failures remain on the established 160-episode development panel: four without first reach and three with interrupted holding. The official 98% criterion remains unmeasured and unmet.",
+        "current_synthesis": "T2 established that broader radius coverage improved matched development success from 110/160 to 150/160, and T3's near-target joint-velocity penalty improved it to 153/160 with acquisition and hold rescues. M4 associated the remaining failures with approximately -130 to -151 degree targets, near-limit terminal shoulder positions, small open-branch errors, and large alternate-branch errors. M5 and M6 each matched T3 at 153/160 with zero discordant episodes, rejecting only their tested reward implementations rather than explicit trajectory control in general. T8 then collapsed in training, so it was an implementation failure rather than evidence about the method. T9 recovered training performance after restricting trajectory guidance to acquisition and weak limit braking, but M7 showed T9:checkpoint-105472 matched T3 at 153/160 with zero discordant episodes. The same seven failure seeds persisted, including the recurring angular failures; inspected diagnostics for seeds 4201 and 4208 show no rescue and retain near-limit shoulder and alternate-branch error patterns. E24 therefore closed I6 with a limited negative conclusion: the tested explicit branch-constrained acquisition plus weak limit-braking implementation did not improve the failure set. This does not establish that all trajectory control is ineffective, but it supports redirecting the next experiment to a different control or learning method.",
+        "decision_frontier": "The explicit trajectory-control route tested in I6 produced a matched null result and is no longer the leading route for the recurring -130 to -151 degree failures. The next decision is which different control or learning method can address the coupled acquisition and hold failures without changing the complete-hold task. Evidence that raises success above 153/160 while rescuing recurring seeds and preserving first_reach_step, max_held_steps, hold_interruptions, timeout status, target angle, and terminal joint/branch geometry would support the new route; another matched null or training collapse would redirect again. Development evidence remains necessary before any official assessment.",
+        "evidence_references": [
+          "T2",
+          "T3",
+          "M4",
+          "M5",
+          "M6",
+          "T8",
+          "T9",
+          "M7",
+          "E24"
+        ],
+        "human_goal_connection": "The human goal remains at least 196 successful episodes out of 200 under the official distribution, with every success requiring a complete uninterrupted 100-step hold. The best development result remains 153/160, so the goal is unmet and official performance is unmeasured.",
+        "next_direction_or_closure": "I6 is closed with a limited negative result recorded by E24. The campaign should return to goal review and select a fresh inquiry centered on a different control or learning method, using T3 as the matched development reference and retaining the complete-hold and trajectory diagnostics as the decision criteria.",
+        "next_question": "Can a different control or learning method improve complete-hold success beyond the 153/160 plateau by rescuing the recurring -130 to -151 degree failures without material regressions elsewhere?"
+      }
+    },
+    "request_fingerprint": "dff8b4fa70f12fe0e7f7ccb4a6ee3a526d0ef643530613df23093082d0cb9ce8",
+    "session_id": "S13",
+    "supersedes": null
+  },
   "pi_checkpoint": {
-    "candidates_and_roles": "T3:checkpoint-120832 remains the strongest development-evaluated candidate at 153/160. T5:checkpoint-100352 and T6:checkpoint-105472 matched T3 in their paired measurements. No candidate has a working, best-known, or retained role assigned in this session.",
+    "candidates_and_roles": "T3:checkpoint-120832 remains the strongest development-evaluated candidate at 153/160. T9:checkpoint-105472 matched T3 and has no superior development role. T8 candidates are not development evidence and are not assigned roles. No candidate has a working, best-known, or retained role assigned in this session.",
     "completed_operations": [
-      "E22"
+      "T8",
+      "T9",
+      "M7",
+      "E24"
     ],
-    "cumulative_resource_use": "Prior work includes M1; I1 with T1 and M2; I2 with T2 and M3; I3 with T3 and M4; I4 with T5 and M5 followed by E16; and I5 with T6 and M6 followed by E20. The current goal-review session opened I6 through E22 and has not requested training, measurement, model-role assignment, restoration, or official assessment.",
-    "current_goal_gap": "Seven failures remain in the 160-episode development panel: four without first reach and three with interrupted holding. The official 98% criterion remains unmeasured and unmet.",
-    "current_synthesis": "T2 established that broader radius coverage improved matched development success from 110/160 to 150/160. T3's near-target joint-velocity penalty improved the result to 153/160 with paired acquisition and hold rescues. M4 localized the remaining failures to approximately -130 to -151 degrees, with near-limit terminal shoulder positions, small open-branch errors, and large alternate-branch errors. M5 evaluated one branch-validity and shoulder-limit-aware reward implementation and matched T3 at 153/160 with zero discordant episodes; this is a negative result for that reward implementation, not proof that branch geometry is causal or that explicit path selection is ineffective. M6 likewise found that the tested angle-dependent braking implementation matched T3 at 153/160 with zero discordant episodes while preserving first_reach_step, max_held_steps, hold_interruptions, timeout status, target angle, and terminal joint/branch geometry. That result is limited to the tested implementation and does not invalidate general trajectory control. The goal-review correction is therefore to treat explicit trajectory realization as unresolved rather than as already tested by the reward interventions. E22 opened I6 to test that unresolved distinction.",
-    "decision_frontier": "The remaining decision is whether the recurring -130 to -151 degree failures are recoverable through explicit branch-constrained trajectory selection and limit-aware control, or whether matched failures persist and require a different control or learning method. The discriminating evidence is a matched candidate comparison that preserves complete-hold success, first_reach_step, max_held_steps, hold_interruptions, timeout status, target angle, and terminal joint/branch geometry. Rescues of recurring seeds without material regressions would support continuing the trajectory-control route; another null result would support redirecting it.",
+    "cumulative_resource_use": "Prior work includes M1; I1 with T1 and M2; I2 with T2 and M3; I3 with T3 and M4; I4 with T5 and M5 followed by E16; I5 with T6 and M6 followed by E20; and I6 with T8, T9, M7, and E24. I6 used two 120000-step training allocations and one matched 160-episode development measurement; T8's implementation validation failed before scientific measurement, while T9 completed and was measured.",
+    "current_goal_gap": "Seven failures remain on the established 160-episode development panel: four without first reach and three with interrupted holding. The official 98% criterion remains unmeasured and unmet.",
+    "current_synthesis": "T2 established that broader radius coverage improved matched development success from 110/160 to 150/160, and T3's near-target joint-velocity penalty improved it to 153/160 with acquisition and hold rescues. M4 associated the remaining failures with approximately -130 to -151 degree targets, near-limit terminal shoulder positions, small open-branch errors, and large alternate-branch errors. M5 and M6 each matched T3 at 153/160 with zero discordant episodes, rejecting only their tested reward implementations rather than explicit trajectory control in general. T8 then collapsed in training, so it was an implementation failure rather than evidence about the method. T9 recovered training performance after restricting trajectory guidance to acquisition and weak limit braking, but M7 showed T9:checkpoint-105472 matched T3 at 153/160 with zero discordant episodes. The same seven failure seeds persisted, including the recurring angular failures; inspected diagnostics for seeds 4201 and 4208 show no rescue and retain near-limit shoulder and alternate-branch error patterns. E24 therefore closed I6 with a limited negative conclusion: the tested explicit branch-constrained acquisition plus weak limit-braking implementation did not improve the failure set. This does not establish that all trajectory control is ineffective, but it supports redirecting the next experiment to a different control or learning method.",
+    "decision_frontier": "The explicit trajectory-control route tested in I6 produced a matched null result and is no longer the leading route for the recurring -130 to -151 degree failures. The next decision is which different control or learning method can address the coupled acquisition and hold failures without changing the complete-hold task. Evidence that raises success above 153/160 while rescuing recurring seeds and preserving first_reach_step, max_held_steps, hold_interruptions, timeout status, target angle, and terminal joint/branch geometry would support the new route; another matched null or training collapse would redirect again. Development evidence remains necessary before any official assessment.",
     "evidence_references": [
-      "M1",
       "T2",
-      "M3",
       "T3",
       "M4",
-      "T5",
       "M5",
-      "T6",
       "M6",
-      "E20",
-      "E22"
+      "T8",
+      "T9",
+      "M7",
+      "E24"
     ],
-    "human_goal_connection": "The human goal remains at least 196 successful episodes out of 200, with every success requiring a complete uninterrupted 100-step hold. The strongest development result is 153/160, so the goal is unmet and official performance remains unmeasured. I6 was opened to test whether explicit branch-constrained trajectory selection with limit-aware control can recover the remaining angular failures.",
-    "inquiry_id": null,
-    "next_direction_or_closure": "Checkpoint the goal-review decision and transition to the fresh I6 inquiry session. Within I6, choose the smallest credible scientific operation that exercises explicit trajectory realization and then compare the resulting candidate against T3 on the established matched panel with the required acquisition, holding, timeout, target, and terminal branch diagnostics.",
-    "next_question": "Can explicit branch-constrained trajectory selection with limit-aware control rescue the persistent -130 to -151 degree failures toward the 98% complete-hold goal, or do matched failures persist and require a different control or learning method?",
-    "scientific_commit": "1e23e11f8cc02e35327ed4b50c456e17cb81cc68",
-    "session_id": "S12"
+    "human_goal_connection": "The human goal remains at least 196 successful episodes out of 200 under the official distribution, with every success requiring a complete uninterrupted 100-step hold. The best development result remains 153/160, so the goal is unmet and official performance is unmeasured.",
+    "inquiry_id": "I6",
+    "next_direction_or_closure": "I6 is closed with a limited negative result recorded by E24. The campaign should return to goal review and select a fresh inquiry centered on a different control or learning method, using T3 as the matched development reference and retaining the complete-hold and trajectory diagnostics as the decision criteria.",
+    "next_question": "Can a different control or learning method improve complete-hold success beyond the 153/160 plateau by rescuing the recurring -130 to -151 degree failures without material regressions elsewhere?",
+    "scientific_commit": "39d91468c9435b5bf99e858c91c16f83cf6a8806",
+    "session_id": "S13"
   },
   "schema_version": 6,
   "scientific_model": {
@@ -11385,24 +11537,6 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "2d387084-1be8-4f40-978e-c53506c10834",
-    "id": "S13",
-    "inquiry_id": "I6",
-    "kind": "inquiry",
-    "objective": "Advance I6 toward an evidence-supported answer to its scientific question: Can explicit branch-constrained trajectory selection with limit-aware control rescue the persistent -130 to -151 degree failures toward the 98% complete-hold goal, or do matched failures persist and require a different control or learning method? Before choosing the next action, compare the accumulated evidence with the closure condition. Choose the supported operation that best advances the bounded work; no operation is the default. Close the inquiry when the condition is met.",
-    "operation_ids": [
-      "T8",
-      "T9",
-      "M7",
-      "E24"
-    ],
-    "scientific_parent_commit": "e41a12818ca3627f11a93d1cd2ac4aad119cab36"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
