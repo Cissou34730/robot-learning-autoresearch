@@ -18907,38 +18907,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I12",
-        "outcome": "negative",
-        "reason": "I12 closes negatively for the tested plant-level task-space radial braking design. M16 showed T14 achieved 149/160 successes versus T3's 153/160, with four paired losses and no paired wins. M18 identifies the mechanism of that degradation: T14 reached only 156/160 targets versus T3's 157/160, expanded the residual cases from 7 to 11, and produced 71 hold interruptions versus T3's 4. Its local residual feedback summaries do not establish an improved policy-reachable braking margin, and representative opposing-action probes include negative speed reductions, showing that the radial action layer could add rather than remove transient motion in the nonlinear plant. The closure condition's negative branch is met because the design materially reduced first-reach coverage and did not improve complete holds. This rejects the tested task-space radial braking recipe, not plant-level control authority in general; the observed route and interruption tradeoff redirects future work away from an always-on radial action correction."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I12",
-        "outcome": "negative",
-        "reason": "I12 closes negatively for the tested plant-level task-space radial braking design. M16 showed T14 achieved 149/160 successes versus T3's 153/160, with four paired losses and no paired wins. M18 identifies the mechanism of that degradation: T14 reached only 156/160 targets versus T3's 157/160, expanded the residual cases from 7 to 11, and produced 71 hold interruptions versus T3's 4. Its local residual feedback summaries do not establish an improved policy-reachable braking margin, and representative opposing-action probes include negative speed reductions, showing that the radial action layer could add rather than remove transient motion in the nonlinear plant. The closure condition's negative branch is met because the design materially reduced first-reach coverage and did not improve complete holds. This rejects the tested task-space radial braking recipe, not plant-level control authority in general; the observed route and interruption tradeoff redirects future work away from an always-on radial action correction.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E50",
-    "inquiry_id": "I12",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "negative",
-        "reason": "I12 closes negatively for the tested plant-level task-space radial braking design. M16 showed T14 achieved 149/160 successes versus T3's 153/160, with four paired losses and no paired wins. M18 identifies the mechanism of that degradation: T14 reached only 156/160 targets versus T3's 157/160, expanded the residual cases from 7 to 11, and produced 71 hold interruptions versus T3's 4. Its local residual feedback summaries do not establish an improved policy-reachable braking margin, and representative opposing-action probes include negative speed reductions, showing that the radial action layer could add rather than remove transient motion in the nonlinear plant. The closure condition's negative branch is met because the design materially reduced first-reach coverage and did not improve complete holds. This rejects the tested task-space radial braking recipe, not plant-level control authority in general; the observed route and interruption tradeoff redirects future work away from an always-on radial action correction."
-      }
-    },
-    "request_fingerprint": "fddff07ea4394710f971690bc14a6d4f7f54dd5340d6148be54f134a0c8929ef",
-    "session_id": "S25",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T3:checkpoint-120832 remains the strongest measured development candidate at 153/160 successes, 157 first reaches, and four hold interruptions. T13:checkpoint-120832 exactly matched T3 on the M13 panel and has no assigned role. T12:checkpoint-120832 remains intervention-limited at 151/160. No working, best-known, or retained role is assigned.",
     "completed_operations": [
