@@ -1939,38 +1939,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I1",
-        "outcome": "limited negative",
-        "reason": "M2 established 93.75% success on the 160-episode full-distribution development panel, below the 98% objective, so generic full-distribution learning has not yet demonstrated the required capability. M3 resolved the dominant failure distinction sufficiently to redirect the route: 7 of 10 failures had negative nearest-IK-branch limit margin, including all three failures in the 10-14 cm bin and four failures at larger radii/angles, indicating branch and joint-limit coverage failure; 2 of 10 failures entered tolerance with high first-reach joint speed (4.17 and 5.99 rad/s), good limit margin, and 242 and 192 hold interruptions, indicating a secondary approach-velocity/hold-stabilization failure; one further failure had positive limit margin but never reached. The evidence supports a limited negative answer to I1: the tested policy can hold most targets and all sampled 6-10 cm targets, but it does not meet the goal and its failures are mixed but predominantly geometry/limit aligned, with a distinct velocity-driven hold mechanism. M1's reachability result remains valid because the failures are not global unreachable targets; they are policy behavior aligned with branch/limit margin and transient dynamics. Close I1 and redirect the campaign toward branch/limit-aware coverage while preserving velocity shaping as a secondary decision frontier."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I1",
-        "outcome": "limited negative",
-        "reason": "M2 established 93.75% success on the 160-episode full-distribution development panel, below the 98% objective, so generic full-distribution learning has not yet demonstrated the required capability. M3 resolved the dominant failure distinction sufficiently to redirect the route: 7 of 10 failures had negative nearest-IK-branch limit margin, including all three failures in the 10-14 cm bin and four failures at larger radii/angles, indicating branch and joint-limit coverage failure; 2 of 10 failures entered tolerance with high first-reach joint speed (4.17 and 5.99 rad/s), good limit margin, and 242 and 192 hold interruptions, indicating a secondary approach-velocity/hold-stabilization failure; one further failure had positive limit margin but never reached. The evidence supports a limited negative answer to I1: the tested policy can hold most targets and all sampled 6-10 cm targets, but it does not meet the goal and its failures are mixed but predominantly geometry/limit aligned, with a distinct velocity-driven hold mechanism. M1's reachability result remains valid because the failures are not global unreachable targets; they are policy behavior aligned with branch/limit margin and transient dynamics. Close I1 and redirect the campaign toward branch/limit-aware coverage while preserving velocity shaping as a secondary decision frontier.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E4",
-    "inquiry_id": "I1",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "limited negative",
-        "reason": "M2 established 93.75% success on the 160-episode full-distribution development panel, below the 98% objective, so generic full-distribution learning has not yet demonstrated the required capability. M3 resolved the dominant failure distinction sufficiently to redirect the route: 7 of 10 failures had negative nearest-IK-branch limit margin, including all three failures in the 10-14 cm bin and four failures at larger radii/angles, indicating branch and joint-limit coverage failure; 2 of 10 failures entered tolerance with high first-reach joint speed (4.17 and 5.99 rad/s), good limit margin, and 242 and 192 hold interruptions, indicating a secondary approach-velocity/hold-stabilization failure; one further failure had positive limit margin but never reached. The evidence supports a limited negative answer to I1: the tested policy can hold most targets and all sampled 6-10 cm targets, but it does not meet the goal and its failures are mixed but predominantly geometry/limit aligned, with a distinct velocity-driven hold mechanism. M1's reachability result remains valid because the failures are not global unreachable targets; they are policy behavior aligned with branch/limit margin and transient dynamics. Close I1 and redirect the campaign toward branch/limit-aware coverage while preserving velocity shaping as a secondary decision frontier."
-      }
-    },
-    "request_fingerprint": "275bdb23dcb8aee0bdc7184e58abd8b95736671854a1067d55e429d353a2aad7",
-    "session_id": "S3",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "No learned candidates exist; working, best-known, and retained roles remain empty.",
     "completed_operations": [
