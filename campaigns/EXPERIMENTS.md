@@ -40,3 +40,4 @@
 | T7 | training | I6 | failed |
 | T8 | training | I6 | completed |
 | T9 | training | I6 | completed |
+| M7 | measurement | I6 | completed |
