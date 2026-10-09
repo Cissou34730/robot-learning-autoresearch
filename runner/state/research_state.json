@@ -1,5 +1,16 @@
 {
-  "active_inquiry": null,
+  "active_inquiry": {
+    "closure_condition": "Close after a paired 160-episode development comparison against T2:checkpoint-120832 on the same episode panel reports overall success, inner- and outer-radius success, no-entry failures, branch and joint-limit diagnostics, entry motion, conditional hold success, and interruption burden. A joint improvement supports continuing gentle stabilization; fewer interruptions with coverage loss requires redesigning the balance; no interruption or success improvement redirects toward target-conditioned policy representation or action smoothness rather than generic actuation. If the intervention collapses learning or the required diagnostics are unavailable, close as limited or inconclusive and preserve that mechanism uncertainty.",
+    "goal_connection": "The human objective requires at least 196 of 200 complete uninterrupted holds. T2 reaches only 126 of 160 episodes and trades improved inner-radius coverage for lower outer-radius success and more interruptions, so resolving whether gentle stabilization can remove that tradeoff is a direct route toward the required success rate.",
+    "handoff_conclusion": "M1 established substantial nominal actuation and rapid reversal authority with real joint-limit reactions, so generic weak actuation is not the leading explanation. M2 showed that T1 failures were dominated by no entry and inner-radius targets while entered-episode success was 93.22%. M3 showed that T2's balanced inner/outer exposure and nearest-branch guidance improved overall success from 110/160 to 126/160, inner-radius success from 47/93 to 67/93, inner no-entry failures from 38 to 23, and entered-episode success to 126/131, but reduced outer-radius success from 63/67 to 59/67 and increased interruptions from 502 to 789. E8 therefore established a recipe-specific reach-versus-stability tradeoff and supported the causal value of T2's coverage recipe without establishing the cause of its interruptions. T3 applied a full forfeiture of accumulated hold-progress credit after exits while retaining T2's coverage and branch guidance. M4 found only 3/160 successes at T3:checkpoint-70656 and 45/160 at T3:checkpoint-120832 versus 126/160 for T2, with paired losses of 123 and 81 episodes. Thus the tested discontinuous hold penalty caused learning collapse and did not satisfy the I3 closure criteria. It is evidence against this reward realization, not against stabilization as a mechanism, action-smoothness methods, target-conditioned control, or the broader learning method. Interruption reduction itself remains unestablished because the available M4 summary does not provide the detailed comparison values.",
+    "handoff_question": "Can a gentler braking or action-smoothness intervention preserve T2's inner-radius and inverse-kinematic branch-coverage gains while reducing post-entry hold interruptions and recovering outer-radius success?",
+    "handoff_source_session_id": "S7",
+    "id": "I4",
+    "opened_in_session": "S8",
+    "question": "Can a gentler braking or action-smoothness intervention preserve T2's inner-radius and inverse-kinematic branch-coverage gains while reducing post-entry hold interruptions and recovering outer-radius success?",
+    "rationale": "M1 established substantial nominal actuation and reversal authority, so weak generic actuation is not the leading explanation. M3 established that T2's balanced radius exposure and nearest-branch guidance improved inner-radius reach and overall success but reduced outer-radius success while increasing interruptions. M4 showed that full forfeiture of accumulated hold credit collapses learning, ruling out that discontinuous reward realization but not gentler braking or action smoothing. The remaining decision is whether post-entry failures are caused by insufficient braking or action variability while T2's coverage mechanism remains useful; the existing M4 summary lacks the interruption diagnostics needed to distinguish these explanations.",
+    "reframes": []
+  },
   "campaign": {
     "base_commit": "fc6eed9ce7e909e3f30fa5c495ca2cde467893b3",
     "id": "81a5458d-ce8f-4c03-b9d2-8ce4f1ff9e9e",
@@ -2470,16 +2481,16 @@
     }
   },
   "counters": {
-    "event": 13,
-    "inquiry": 3,
+    "event": 14,
+    "inquiry": 4,
     "measurement": 4,
-    "session": 7,
+    "session": 8,
     "training": 3
   },
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -5534,9 +5545,72 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-09T12:46:46Z",
+      "error": null,
+      "id": "E14",
+      "inquiry_id": "I4",
+      "kind": "inquiry",
+      "request": {
+        "action": "open",
+        "closure_condition": "Close after a paired 160-episode development comparison against T2:checkpoint-120832 on the same episode panel reports overall success, inner- and outer-radius success, no-entry failures, branch and joint-limit diagnostics, entry motion, conditional hold success, and interruption burden. A joint improvement supports continuing gentle stabilization; fewer interruptions with coverage loss requires redesigning the balance; no interruption or success improvement redirects toward target-conditioned policy representation or action smoothness rather than generic actuation. If the intervention collapses learning or the required diagnostics are unavailable, close as limited or inconclusive and preserve that mechanism uncertainty.",
+        "goal_connection": "The human objective requires at least 196 of 200 complete uninterrupted holds. T2 reaches only 126 of 160 episodes and trades improved inner-radius coverage for lower outer-radius success and more interruptions, so resolving whether gentle stabilization can remove that tradeoff is a direct route toward the required success rate.",
+        "question": "Can a gentler braking or action-smoothness intervention preserve T2's inner-radius and inverse-kinematic branch-coverage gains while reducing post-entry hold interruptions and recovering outer-radius success?",
+        "rationale": "M1 established substantial nominal actuation and reversal authority, so weak generic actuation is not the leading explanation. M3 established that T2's balanced radius exposure and nearest-branch guidance improved inner-radius reach and overall success but reduced outer-radius success while increasing interruptions. M4 showed that full forfeiture of accumulated hold credit collapses learning, ruling out that discontinuous reward realization but not gentler braking or action smoothing. The remaining decision is whether post-entry failures are caused by insufficient braking or action variability while T2's coverage mechanism remains useful; the existing M4 summary lacks the interruption diagnostics needed to distinguish these explanations."
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I4",
+        "status": "completed"
+      },
+      "session_id": "S8",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "open",
+        "inquiry": {
+          "closure_condition": "Close after a paired 160-episode development comparison against T2:checkpoint-120832 on the same episode panel reports overall success, inner- and outer-radius success, no-entry failures, branch and joint-limit diagnostics, entry motion, conditional hold success, and interruption burden. A joint improvement supports continuing gentle stabilization; fewer interruptions with coverage loss requires redesigning the balance; no interruption or success improvement redirects toward target-conditioned policy representation or action smoothness rather than generic actuation. If the intervention collapses learning or the required diagnostics are unavailable, close as limited or inconclusive and preserve that mechanism uncertainty.",
+          "goal_connection": "The human objective requires at least 196 of 200 complete uninterrupted holds. T2 reaches only 126 of 160 episodes and trades improved inner-radius coverage for lower outer-radius success and more interruptions, so resolving whether gentle stabilization can remove that tradeoff is a direct route toward the required success rate.",
+          "handoff_conclusion": "M1 established substantial nominal actuation and rapid reversal authority with real joint-limit reactions, so generic weak actuation is not the leading explanation. M2 showed that T1 failures were dominated by no entry and inner-radius targets while entered-episode success was 93.22%. M3 showed that T2's balanced inner/outer exposure and nearest-branch guidance improved overall success from 110/160 to 126/160, inner-radius success from 47/93 to 67/93, inner no-entry failures from 38 to 23, and entered-episode success to 126/131, but reduced outer-radius success from 63/67 to 59/67 and increased interruptions from 502 to 789. E8 therefore established a recipe-specific reach-versus-stability tradeoff and supported the causal value of T2's coverage recipe without establishing the cause of its interruptions. T3 applied a full forfeiture of accumulated hold-progress credit after exits while retaining T2's coverage and branch guidance. M4 found only 3/160 successes at T3:checkpoint-70656 and 45/160 at T3:checkpoint-120832 versus 126/160 for T2, with paired losses of 123 and 81 episodes. Thus the tested discontinuous hold penalty caused learning collapse and did not satisfy the I3 closure criteria. It is evidence against this reward realization, not against stabilization as a mechanism, action-smoothness methods, target-conditioned control, or the broader learning method. Interruption reduction itself remains unestablished because the available M4 summary does not provide the detailed comparison values.",
+          "handoff_question": "Can a gentler braking or action-smoothness intervention preserve T2's inner-radius and inverse-kinematic branch-coverage gains while reducing post-entry hold interruptions and recovering outer-radius success?",
+          "handoff_source_session_id": "S7",
+          "id": "I4",
+          "opened_in_session": "S8",
+          "question": "Can a gentler braking or action-smoothness intervention preserve T2's inner-radius and inverse-kinematic branch-coverage gains while reducing post-entry hold interruptions and recovering outer-radius success?",
+          "rationale": "M1 established substantial nominal actuation and reversal authority, so weak generic actuation is not the leading explanation. M3 established that T2's balanced radius exposure and nearest-branch guidance improved inner-radius reach and overall success but reduced outer-radius success while increasing interruptions. M4 showed that full forfeiture of accumulated hold credit collapses learning, ruling out that discontinuous reward realization but not gentler braking or action smoothing. The remaining decision is whether post-entry failures are caused by insufficient braking or action variability while T2's coverage mechanism remains useful; the existing M4 summary lacks the interruption diagnostics needed to distinguish these explanations.",
+          "reframes": []
+        }
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I4",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E14",
+    "inquiry_id": null,
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "open",
+        "closure_condition": "Close after a paired 160-episode development comparison against T2:checkpoint-120832 on the same episode panel reports overall success, inner- and outer-radius success, no-entry failures, branch and joint-limit diagnostics, entry motion, conditional hold success, and interruption burden. A joint improvement supports continuing gentle stabilization; fewer interruptions with coverage loss requires redesigning the balance; no interruption or success improvement redirects toward target-conditioned policy representation or action smoothness rather than generic actuation. If the intervention collapses learning or the required diagnostics are unavailable, close as limited or inconclusive and preserve that mechanism uncertainty.",
+        "goal_connection": "The human objective requires at least 196 of 200 complete uninterrupted holds. T2 reaches only 126 of 160 episodes and trades improved inner-radius coverage for lower outer-radius success and more interruptions, so resolving whether gentle stabilization can remove that tradeoff is a direct route toward the required success rate.",
+        "question": "Can a gentler braking or action-smoothness intervention preserve T2's inner-radius and inverse-kinematic branch-coverage gains while reducing post-entry hold interruptions and recovering outer-radius success?",
+        "rationale": "M1 established substantial nominal actuation and reversal authority, so weak generic actuation is not the leading explanation. M3 established that T2's balanced radius exposure and nearest-branch guidance improved inner-radius reach and overall success but reduced outer-radius success while increasing interruptions. M4 showed that full forfeiture of accumulated hold credit collapses learning, ruling out that discontinuous reward realization but not gentler braking or action smoothing. The remaining decision is whether post-entry failures are caused by insufficient braking or action variability while T2's coverage mechanism remains useful; the existing M4 summary lacks the interruption diagnostics needed to distinguish these explanations."
+      }
+    },
+    "request_fingerprint": "5d0f0f417d5d430a5a43d116fc589670cbece496addf8df70284de632aa45112",
+    "session_id": "S8",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T2:checkpoint-120832 remains the strongest measured development candidate at 126/160 and the reference for the next inquiry, but no candidate has a working, best-known, or retained role because development evidence remains below the human goal. T3:checkpoint-70656 and T3:checkpoint-120832 were measured but are not role candidates after their severe losses against T2. T1:checkpoint-120832 remains the earlier paired baseline at 110/160.",
     "completed_operations": [
@@ -5571,6 +5645,21 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "ce88cefb-c735-4604-9872-5a3aa80e1840",
+    "id": "S8",
+    "inquiry_id": null,
+    "kind": "goal_review",
+    "objective": "Use the completed evidence to update the scientific direction toward the human goal. Request measurements when they resolve an uncertainty or develop the method. Then choose one outcome: request the official assessment, or open one bounded goal-linked inquiry.",
+    "operation_ids": [
+      "E14"
+    ],
+    "scientific_parent_commit": "53e0e1079fa0d6d8e4afaa8ad3c94d14af5f3f92"
+  },
   "terminal_state": null
 }
