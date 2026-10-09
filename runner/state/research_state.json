@@ -6572,7 +6572,7 @@
     }
   },
   "counters": {
-    "event": 38,
+    "event": 39,
     "inquiry": 10,
     "measurement": 11,
     "session": 20,
@@ -6581,7 +6581,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -13381,20 +13381,169 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-09T01:13:44Z",
+      "error": null,
+      "id": "E39",
+      "inquiry_id": null,
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "T3:checkpoint-120832 remains the strongest measured development candidate at 153/160 (95.625%) and has no assigned working, best-known, or retained role. T10:checkpoint-120832 is intervention-limited at 142/160 and has no role. No candidate role change is requested.",
+        "completed_operations": [
+          "E38"
+        ],
+        "cumulative_resource_use": "Before this session, training allocations T1, T2, T3, T5, T6, T7, T9, and T10 each used the 120000-step maintainer allocation, with matched 160-episode development measurements M2-M8 and M11 and plant measurements M1 and M10. T4, T8, and M9 were execution-history failures, not scientific evidence. This goal-review session opened I10 through E38 and used no training or measurement allocation.",
+        "current_goal_gap": "The best measured development performance remains 153/160 from T3:checkpoint-120832. Seven failures remain concentrated near -130 to -151 degrees; M10 measured high-speed arrivals and insufficient one-interval braking margin, while M11's tested global near-target speed penalty reduced performance to 142/160.",
+        "current_synthesis": "M1 established nonzero compiled plant authority, no sampled self-contact in valid target branches, and complete 100-step local holds from low-velocity perturbations. M4 showed that incremental radius transfer produced T3 at 153/160 successes, 157/160 first reaches, and four hold interruptions. M6, M7, and M8 showed that hold-exit forfeiture, branch-feasibility features, and a serialized damped action mapper did not repair the residual failures. M10 localized all seven T3 failures to the negative-angle cluster: four entered tolerance and later interrupted, while three never first reached; their residual arrival states had 5.24-7.56 rad/s joint speed, and opposing-action probes generally had negative 1 cm retention margin. This supports insufficient discrete-time braking margin from a policy-reachable route, while M1 shows that low-velocity local retention is feasible. M11 rejects the tested global speed-penalty recipe because it degraded the broad regime, but its available summary does not establish that residual arrival speed fell; it therefore does not reject the control-aware explanation. The remaining competing explanations are that a route- or arrival-state-conditioned policy can select a safer low-speed route, or that the current policy representation cannot express that route and requires a different state or action structure.",
+        "decision_frontier": "I9 is closed with a negative, intervention-limited result. The unresolved distinction for I10 is whether M10's braking-margin mechanism can be addressed by changing the policy's arrival-state representation or route-conditioned control rather than globally penalizing speed. Evidence that a bounded intervention lowers residual arrival speed or sampled braking deficit and reduces interruptions while preserving T3's 157 first reaches and broad 153-success regime would support the mechanism and advance the goal. Unchanged localized failures despite preserved T3 behavior would redirect toward a different state abstraction or plant-level control design; broad degradation would reject that recipe while leaving M10's local-margin evidence intact.",
+        "evidence_references": [
+          "M1",
+          "M4",
+          "M6",
+          "M7",
+          "M8",
+          "M10",
+          "E32",
+          "E34",
+          "T10",
+          "M11",
+          "E36",
+          "E38"
+        ],
+        "human_goal_connection": "The campaign requires at least 196 successes in the 200-episode official assessment. T3:checkpoint-120832 remains at 153/160 development successes (95.625%), with 157 first reaches and four hold interruptions, so official assessment is not justified. E38 opened I10 to target the residual negative-angle braking-margin failures without sacrificing T3's broad reach regime.",
+        "next_direction_or_closure": "Goal review opened I10 through E38 and now ends at this checkpoint. In the fresh I10 inquiry session, choose one bounded arrival-state-conditioned representation or route-conditioned control intervention built on T3, then evaluate it against T3 on the matched full-distribution panel using success, first reach, hold interruptions, maximum held steps, radius-angle strata, arrival joint speed, and sampled retention margin. Close or redirect I10 according to its stated positive, negative, or broad-degradation condition.",
+        "next_question": "Can an arrival-state-conditioned policy representation or route-conditioned control strategy improve discrete-time braking margin in the residual negative-angle geometry while preserving T3's reach regime and reaching at least 98% development success?"
+      },
+      "result": {
+        "session_id": "S20",
+        "status": "checkpointed"
+      },
+      "session_id": "S20",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "a4d7a19d8a028f9b57bb50f57ca4eb8008d0d0af",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "T3:checkpoint-120832 remains the strongest measured development candidate at 153/160 (95.625%) and has no assigned working, best-known, or retained role. T10:checkpoint-120832 is intervention-limited at 142/160 and has no role. No candidate role change is requested.",
+        "completed_operations": [
+          "E38"
+        ],
+        "cumulative_resource_use": "Before this session, training allocations T1, T2, T3, T5, T6, T7, T9, and T10 each used the 120000-step maintainer allocation, with matched 160-episode development measurements M2-M8 and M11 and plant measurements M1 and M10. T4, T8, and M9 were execution-history failures, not scientific evidence. This goal-review session opened I10 through E38 and used no training or measurement allocation.",
+        "current_goal_gap": "The best measured development performance remains 153/160 from T3:checkpoint-120832. Seven failures remain concentrated near -130 to -151 degrees; M10 measured high-speed arrivals and insufficient one-interval braking margin, while M11's tested global near-target speed penalty reduced performance to 142/160.",
+        "current_synthesis": "M1 established nonzero compiled plant authority, no sampled self-contact in valid target branches, and complete 100-step local holds from low-velocity perturbations. M4 showed that incremental radius transfer produced T3 at 153/160 successes, 157/160 first reaches, and four hold interruptions. M6, M7, and M8 showed that hold-exit forfeiture, branch-feasibility features, and a serialized damped action mapper did not repair the residual failures. M10 localized all seven T3 failures to the negative-angle cluster: four entered tolerance and later interrupted, while three never first reached; their residual arrival states had 5.24-7.56 rad/s joint speed, and opposing-action probes generally had negative 1 cm retention margin. This supports insufficient discrete-time braking margin from a policy-reachable route, while M1 shows that low-velocity local retention is feasible. M11 rejects the tested global speed-penalty recipe because it degraded the broad regime, but its available summary does not establish that residual arrival speed fell; it therefore does not reject the control-aware explanation. The remaining competing explanations are that a route- or arrival-state-conditioned policy can select a safer low-speed route, or that the current policy representation cannot express that route and requires a different state or action structure.",
+        "decision_frontier": "I9 is closed with a negative, intervention-limited result. The unresolved distinction for I10 is whether M10's braking-margin mechanism can be addressed by changing the policy's arrival-state representation or route-conditioned control rather than globally penalizing speed. Evidence that a bounded intervention lowers residual arrival speed or sampled braking deficit and reduces interruptions while preserving T3's 157 first reaches and broad 153-success regime would support the mechanism and advance the goal. Unchanged localized failures despite preserved T3 behavior would redirect toward a different state abstraction or plant-level control design; broad degradation would reject that recipe while leaving M10's local-margin evidence intact.",
+        "evidence_references": [
+          "M1",
+          "M4",
+          "M6",
+          "M7",
+          "M8",
+          "M10",
+          "E32",
+          "E34",
+          "T10",
+          "M11",
+          "E36",
+          "E38"
+        ],
+        "human_goal_connection": "The campaign requires at least 196 successes in the 200-episode official assessment. T3:checkpoint-120832 remains at 153/160 development successes (95.625%), with 157 first reaches and four hold interruptions, so official assessment is not justified. E38 opened I10 to target the residual negative-angle braking-margin failures without sacrificing T3's broad reach regime.",
+        "inquiry_id": null,
+        "next_direction_or_closure": "Goal review opened I10 through E38 and now ends at this checkpoint. In the fresh I10 inquiry session, choose one bounded arrival-state-conditioned representation or route-conditioned control intervention built on T3, then evaluate it against T3 on the matched full-distribution panel using success, first reach, hold interruptions, maximum held steps, radius-angle strata, arrival joint speed, and sampled retention margin. Close or redirect I10 according to its stated positive, negative, or broad-degradation condition.",
+        "next_question": "Can an arrival-state-conditioned policy representation or route-conditioned control strategy improve discrete-time braking margin in the residual negative-angle geometry while preserving T3's reach regime and reaching at least 98% development success?",
+        "session_id": "S20"
+      },
+      "presentation": {
+        "backend_session_id": "45042d4b-f141-4449-8c52-844c8dee1c43",
+        "campaign_id": "1ae27a27-6880-4ca6-9d50-e6498e771cb7",
+        "campaign_usage": "48m52s | 145.36 AIU | prompt 23.6m (86% cached) | output 186.5k",
+        "session_id": "S20",
+        "session_kind": "goal_review",
+        "session_usage": "1m19s | 8.37 AIU | prompt 1.2m (80% cached) | output 5.1k"
+      },
+      "result": {
+        "session_id": "S20",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "09d55a4771a3f9b1cf2caf0b6737276dfdd77e34",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E39",
+    "inquiry_id": null,
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "T3:checkpoint-120832 remains the strongest measured development candidate at 153/160 (95.625%) and has no assigned working, best-known, or retained role. T10:checkpoint-120832 is intervention-limited at 142/160 and has no role. No candidate role change is requested.",
+        "completed_operations": [
+          "E38"
+        ],
+        "cumulative_resource_use": "Before this session, training allocations T1, T2, T3, T5, T6, T7, T9, and T10 each used the 120000-step maintainer allocation, with matched 160-episode development measurements M2-M8 and M11 and plant measurements M1 and M10. T4, T8, and M9 were execution-history failures, not scientific evidence. This goal-review session opened I10 through E38 and used no training or measurement allocation.",
+        "current_goal_gap": "The best measured development performance remains 153/160 from T3:checkpoint-120832. Seven failures remain concentrated near -130 to -151 degrees; M10 measured high-speed arrivals and insufficient one-interval braking margin, while M11's tested global near-target speed penalty reduced performance to 142/160.",
+        "current_synthesis": "M1 established nonzero compiled plant authority, no sampled self-contact in valid target branches, and complete 100-step local holds from low-velocity perturbations. M4 showed that incremental radius transfer produced T3 at 153/160 successes, 157/160 first reaches, and four hold interruptions. M6, M7, and M8 showed that hold-exit forfeiture, branch-feasibility features, and a serialized damped action mapper did not repair the residual failures. M10 localized all seven T3 failures to the negative-angle cluster: four entered tolerance and later interrupted, while three never first reached; their residual arrival states had 5.24-7.56 rad/s joint speed, and opposing-action probes generally had negative 1 cm retention margin. This supports insufficient discrete-time braking margin from a policy-reachable route, while M1 shows that low-velocity local retention is feasible. M11 rejects the tested global speed-penalty recipe because it degraded the broad regime, but its available summary does not establish that residual arrival speed fell; it therefore does not reject the control-aware explanation. The remaining competing explanations are that a route- or arrival-state-conditioned policy can select a safer low-speed route, or that the current policy representation cannot express that route and requires a different state or action structure.",
+        "decision_frontier": "I9 is closed with a negative, intervention-limited result. The unresolved distinction for I10 is whether M10's braking-margin mechanism can be addressed by changing the policy's arrival-state representation or route-conditioned control rather than globally penalizing speed. Evidence that a bounded intervention lowers residual arrival speed or sampled braking deficit and reduces interruptions while preserving T3's 157 first reaches and broad 153-success regime would support the mechanism and advance the goal. Unchanged localized failures despite preserved T3 behavior would redirect toward a different state abstraction or plant-level control design; broad degradation would reject that recipe while leaving M10's local-margin evidence intact.",
+        "evidence_references": [
+          "M1",
+          "M4",
+          "M6",
+          "M7",
+          "M8",
+          "M10",
+          "E32",
+          "E34",
+          "T10",
+          "M11",
+          "E36",
+          "E38"
+        ],
+        "human_goal_connection": "The campaign requires at least 196 successes in the 200-episode official assessment. T3:checkpoint-120832 remains at 153/160 development successes (95.625%), with 157 first reaches and four hold interruptions, so official assessment is not justified. E38 opened I10 to target the residual negative-angle braking-margin failures without sacrificing T3's broad reach regime.",
+        "next_direction_or_closure": "Goal review opened I10 through E38 and now ends at this checkpoint. In the fresh I10 inquiry session, choose one bounded arrival-state-conditioned representation or route-conditioned control intervention built on T3, then evaluate it against T3 on the matched full-distribution panel using success, first reach, hold interruptions, maximum held steps, radius-angle strata, arrival joint speed, and sampled retention margin. Close or redirect I10 according to its stated positive, negative, or broad-degradation condition.",
+        "next_question": "Can an arrival-state-conditioned policy representation or route-conditioned control strategy improve discrete-time braking margin in the residual negative-angle geometry while preserving T3's reach regime and reaching at least 98% development success?"
+      }
+    },
+    "request_fingerprint": "5f18e995d5e8fced9bf2fe32cb5e8179b52ddeb9405ca9e6b634b7842b37e817",
+    "session_id": "S20",
+    "supersedes": null
+  },
   "pi_checkpoint": {
-    "candidates_and_roles": "T3:checkpoint-120832 remains the strongest measured development candidate at 153/160 (95.625%) on the matched panel. T10:checkpoint-120832 is intervention-limited at 142/160 and has no role. No candidate has working, best-known, or retained status.",
+    "candidates_and_roles": "T3:checkpoint-120832 remains the strongest measured development candidate at 153/160 (95.625%) and has no assigned working, best-known, or retained role. T10:checkpoint-120832 is intervention-limited at 142/160 and has no role. No candidate role change is requested.",
     "completed_operations": [
-      "T10",
-      "M11",
-      "E36"
+      "E38"
     ],
-    "cumulative_resource_use": "Training allocations T1, T2, T3, T5, T6, T7, T9, and T10 each used the 120000-step maintainer allocation and completed 120832 rollout-aligned steps where applicable. Development measurements include M1, matched 160-episode panels M2-M8 and M11, and M10 residual-state plant measurements. T4 and T8 were execution-history validation failures, and M9 was an execution/configuration failure missing --artifact; none is scientific evidence. E30 opened I8, E32 closed I8 as limited, E33 checkpointed I8, E34 opened I9, T10 trained the bounded I9 intervention, M11 measured it against T3, and E36 closed I9. No candidate role or official assessment has been requested.",
-    "current_goal_gap": "The best measured development performance remains 153/160 from T3:checkpoint-120832. The seven residual failures are concentrated in the approximately -130 to -151 degree cluster; M10 measured high-speed arrivals and insufficient one-interval braking margin, while M11 showed that the tested near-target speed-penalty transfer fell to 142/160.",
-    "current_synthesis": "Established evidence: M1 found nonzero compiled plant authority, no sampled self-contact in valid target branches, and complete 100-step local holds from low-velocity perturbations. M4 showed that T3 improved the matched panel to 153/160 successes and 157/160 first reaches, with four hold interruptions through incremental radius transfer. M6, M7, and M8 showed that hold-exit reward forfeiture, an explicit branch-feasibility feature, and a serialized damped action mapper did not repair the residual failures. M10 replayed the T3 panel and localized all seven failures to the negative-angle cluster: four entered tolerance and later interrupted, while three never first reached. Their residual arrival states had 5.24-7.56 rad/s joint speed, and opposing-action probes generally left a negative 1 cm retention margin; zero input, nominal local PD, and stronger local PD produced no completed holds from those exact states. This supports insufficient discrete-time braking margin from a policy-reachable route as the immediate bottleneck, while M1 limits the claim by showing that low-velocity local retention is feasible. I9 tested one causal intervention rather than proving the mechanism: T10 added a localized near-target joint-speed penalty to a T3 transfer, but M11 measured only 142/160 successes versus 153/160 for T3, with 11 paired losses and broad degradation. The available M11 summary and structure-only inventory do not establish that arrival speed fell in the residual geometry, so the result rejects this reward recipe but does not reject the control-aware explanation. Competing explanations remain: the penalty distorted global reach and learning dynamics before producing usable braking behavior, or the policy representation cannot select a low-speed route in the negative-angle geometry; M10's matched-state plant evidence keeps broad plant uncontrollability less likely but does not establish that every policy representation must fail.",
-    "decision_frontier": "I9 is closed with a negative, intervention-limited result. The unresolved distinction for the next inquiry is whether the braking-margin mechanism can be addressed by changing the policy's arrival-state representation or route-conditioned control, rather than by globally penalizing speed: a successful method must preserve T3's 157 first reaches and broad 153-success regime while reducing the negative-angle failures and their sampled braking deficit. Evidence that a representation or route-conditioned controller lowers residual arrival speed and interruptions without broad reach loss would support the mechanism and advance the goal; unchanged negative-angle failures would redirect toward a different state abstraction or plant-level control design; broad degradation would reject that recipe while leaving M10's local-margin evidence intact.",
+    "cumulative_resource_use": "Before this session, training allocations T1, T2, T3, T5, T6, T7, T9, and T10 each used the 120000-step maintainer allocation, with matched 160-episode development measurements M2-M8 and M11 and plant measurements M1 and M10. T4, T8, and M9 were execution-history failures, not scientific evidence. This goal-review session opened I10 through E38 and used no training or measurement allocation.",
+    "current_goal_gap": "The best measured development performance remains 153/160 from T3:checkpoint-120832. Seven failures remain concentrated near -130 to -151 degrees; M10 measured high-speed arrivals and insufficient one-interval braking margin, while M11's tested global near-target speed penalty reduced performance to 142/160.",
+    "current_synthesis": "M1 established nonzero compiled plant authority, no sampled self-contact in valid target branches, and complete 100-step local holds from low-velocity perturbations. M4 showed that incremental radius transfer produced T3 at 153/160 successes, 157/160 first reaches, and four hold interruptions. M6, M7, and M8 showed that hold-exit forfeiture, branch-feasibility features, and a serialized damped action mapper did not repair the residual failures. M10 localized all seven T3 failures to the negative-angle cluster: four entered tolerance and later interrupted, while three never first reached; their residual arrival states had 5.24-7.56 rad/s joint speed, and opposing-action probes generally had negative 1 cm retention margin. This supports insufficient discrete-time braking margin from a policy-reachable route, while M1 shows that low-velocity local retention is feasible. M11 rejects the tested global speed-penalty recipe because it degraded the broad regime, but its available summary does not establish that residual arrival speed fell; it therefore does not reject the control-aware explanation. The remaining competing explanations are that a route- or arrival-state-conditioned policy can select a safer low-speed route, or that the current policy representation cannot express that route and requires a different state or action structure.",
+    "decision_frontier": "I9 is closed with a negative, intervention-limited result. The unresolved distinction for I10 is whether M10's braking-margin mechanism can be addressed by changing the policy's arrival-state representation or route-conditioned control rather than globally penalizing speed. Evidence that a bounded intervention lowers residual arrival speed or sampled braking deficit and reduces interruptions while preserving T3's 157 first reaches and broad 153-success regime would support the mechanism and advance the goal. Unchanged localized failures despite preserved T3 behavior would redirect toward a different state abstraction or plant-level control design; broad degradation would reject that recipe while leaving M10's local-margin evidence intact.",
     "evidence_references": [
       "M1",
       "M4",
@@ -13406,14 +13555,15 @@
       "E34",
       "T10",
       "M11",
-      "E36"
+      "E36",
+      "E38"
     ],
-    "human_goal_connection": "The campaign still requires at least 196 successes in the 200-episode official assessment. T3:checkpoint-120832 remains at 153/160 development successes (95.625%), seven short of the 157/160 development threshold, so official assessment is not justified. I9 has been closed because its tested arrival-speed penalty degraded performance rather than closing this gap.",
-    "inquiry_id": "I9",
-    "next_direction_or_closure": "I9 is explicitly closed as a broad-degradation, recipe-limited result: the localized speed penalty did not meet the positive closure condition and is not retained as a route toward the goal. The campaign returns to goal review. The next inquiry should prioritize an arrival-state representation or route-conditioned control design, using M10's residual-state braking margins and matched-panel first-reach, hold-interruption, and arrival-speed diagnostics to discriminate whether the policy can learn a safer route without sacrificing T3's supported regime.",
+    "human_goal_connection": "The campaign requires at least 196 successes in the 200-episode official assessment. T3:checkpoint-120832 remains at 153/160 development successes (95.625%), with 157 first reaches and four hold interruptions, so official assessment is not justified. E38 opened I10 to target the residual negative-angle braking-margin failures without sacrificing T3's broad reach regime.",
+    "inquiry_id": null,
+    "next_direction_or_closure": "Goal review opened I10 through E38 and now ends at this checkpoint. In the fresh I10 inquiry session, choose one bounded arrival-state-conditioned representation or route-conditioned control intervention built on T3, then evaluate it against T3 on the matched full-distribution panel using success, first reach, hold interruptions, maximum held steps, radius-angle strata, arrival joint speed, and sampled retention margin. Close or redirect I10 according to its stated positive, negative, or broad-degradation condition.",
     "next_question": "Can an arrival-state-conditioned policy representation or route-conditioned control strategy improve discrete-time braking margin in the residual negative-angle geometry while preserving T3's reach regime and reaching at least 98% development success?",
-    "scientific_commit": "fc5c3fdfbd70d2e6a7eb83fb9fd16c73f3149666",
-    "session_id": "S19"
+    "scientific_commit": "09d55a4771a3f9b1cf2caf0b6737276dfdd77e34",
+    "session_id": "S20"
   },
   "schema_version": 6,
   "scientific_model": {
@@ -13421,21 +13571,6 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "45042d4b-f141-4449-8c52-844c8dee1c43",
-    "id": "S20",
-    "inquiry_id": null,
-    "kind": "goal_review",
-    "objective": "Use the completed evidence to update the scientific direction toward the human goal. Request measurements when they resolve an uncertainty or develop the method. Then choose one outcome: request the official assessment, or open one bounded goal-linked inquiry.",
-    "operation_ids": [
-      "E38"
-    ],
-    "scientific_parent_commit": "a4d7a19d8a028f9b57bb50f57ca4eb8008d0d0af"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
