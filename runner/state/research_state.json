@@ -13306,38 +13306,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I9",
-        "outcome": "negative",
-        "reason": "M11 closes I9 as an intervention-limited result. The T3-derived near-target joint-speed penalty produced 142/160 successes (88.75%) versus 153/160 (95.625%) for T3, with 11 paired losses and broad degradation that fails the requirement to preserve the supported regime. The available result summary and structure-only artifact inventory do not establish that arrival speed was reduced in the residual geometry, so no causal benefit is claimed. This rejects the tested reward recipe, not the broader control-aware explanation supported by M10 and M1; the next direction should seek a different arrival-state or policy representation that preserves reach while improving braking margin."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I9",
-        "outcome": "negative",
-        "reason": "M11 closes I9 as an intervention-limited result. The T3-derived near-target joint-speed penalty produced 142/160 successes (88.75%) versus 153/160 (95.625%) for T3, with 11 paired losses and broad degradation that fails the requirement to preserve the supported regime. The available result summary and structure-only artifact inventory do not establish that arrival speed was reduced in the residual geometry, so no causal benefit is claimed. This rejects the tested reward recipe, not the broader control-aware explanation supported by M10 and M1; the next direction should seek a different arrival-state or policy representation that preserves reach while improving braking margin.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E36",
-    "inquiry_id": "I9",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "negative",
-        "reason": "M11 closes I9 as an intervention-limited result. The T3-derived near-target joint-speed penalty produced 142/160 successes (88.75%) versus 153/160 (95.625%) for T3, with 11 paired losses and broad degradation that fails the requirement to preserve the supported regime. The available result summary and structure-only artifact inventory do not establish that arrival speed was reduced in the residual geometry, so no causal benefit is claimed. This rejects the tested reward recipe, not the broader control-aware explanation supported by M10 and M1; the next direction should seek a different arrival-state or policy representation that preserves reach while improving braking margin."
-      }
-    },
-    "request_fingerprint": "adafdd390a4bc0c767f07cf554244660a8dbaf78bbcf0494cd633306dfed6267",
-    "session_id": "S19",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T3:checkpoint-120832 remains the strongest measured development candidate at 95.625% on the matched panels, but no candidate has been assigned working, best-known, or retained status.",
     "completed_operations": [
