@@ -9026,7 +9026,7 @@
     }
   },
   "counters": {
-    "event": 44,
+    "event": 45,
     "inquiry": 10,
     "measurement": 20,
     "session": 21,
@@ -9035,7 +9035,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -23859,18 +23859,190 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-09T16:13:33Z",
+      "error": null,
+      "id": "E45",
+      "inquiry_id": "I10",
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "T8:checkpoint-60416 and T9:checkpoint-20480 remain the strongest measured learned candidates at 153/160 but have no protected working, best-known or retained role. T10:checkpoint-10240 and T10:checkpoint-120832 also measured 153/160 and are not promoted. T11:checkpoint-120832 is rejected as a viable candidate after its 0/160 result and 0/40 inner-band success. The M17 computed-torque controller is evidence of same-interface capability, not a learned candidate for the human goal. No candidate has an evidence-backed protected role.",
+        "completed_operations": [
+          "T11",
+          "M19",
+          "M20",
+          "E44"
+        ],
+        "cumulative_resource_use": "The campaign used M1 characterization; eleven 120000-step training allocations T1-T11, each completing 120832 simulator steps; development and diagnostic measurements M2-M14; same-interface controllability measurement M17; controller-prior training T10; paired development measurement M18; phase/history/trajectory training T11; development evaluation M19; diagnostic replay M20; and inquiry/checkpoint events through E44. No candidate meets the 98% development threshold and no protected official assessment has been performed.",
+        "current_goal_gap": "The strongest measured learned candidates remain four development successes short of the 98% threshold at 153/160. T11 measured 0/160 and lost the 40/40 inner-band behavior, leaving no candidate near the required 196/200-equivalent result and no evidence-backed best-known role.",
+        "current_synthesis": "M1 established substantial transient actuation authority and at least one feasible analytic IK branch for every sampled official target, with 64 of 576 grid targets having only one feasible branch. T1 measured 150/160 with 40/40 inner-band success, seven pre-reach failures and three post-reach failures; T8 and T9 improved the unchanged direct-action route to 153/160 while preserving 40/40 inner-band success, with residual hold interruptions and shifted reach-versus-hold splits. M17 then established that the unchanged bounded action interface is controllable: computed-torque control achieved 160/160 for each of three gain settings, including 93/93 inner-band successes, with no reach or hold interruptions. M18 showed that the tested controller-derived PPO action prior did not transfer that capability: early and terminal T10 checkpoints both measured 153/160 and failed on the same seven seeds, although their failure splits traded pre-reach against post-reach interruptions. T11 implemented explicit phase, a smooth trajectory reference and previous-action history, but its learning trajectory recorded zero success and M19 measured 0/160. M20 diagnosed 150/160 failures without first tolerance entry and only 10 after first reach; those 10 accumulated 134 interruptions. T11 also had 0/40 inner-band success, and all 160 terminal or first-reach nearest-branch margin observations were nonnegative. Thus the tested phase/history/trajectory contract caused a broad acquisition or trajectory-contract failure rather than demonstrating transfer, while post-reach instability remains a secondary mechanism. E44 closed I10 with a limited negative for this implementation and recipe, not for policy methods generally. The leading route now changes toward a less-coupled branch- or limit-conditioned trajectory design that preserves uniform target acquisition and inner-band behavior, while retaining hold stabilization as a secondary discriminator.",
+        "decision_frontier": "The unresolved distinction is now whether a less-coupled branch- or limit-conditioned trajectory design can correct the original policy's geometry-sensitive failures without the broad acquisition collapse caused by T11, versus whether learned acquisition remains the dominant obstacle even when branch and trajectory choices are separated. The design must preserve uniform official target coverage and the established inner-band behavior; aggressive target oversampling is rejected by M4/M5, and the tightly coupled phase/history/trajectory contract is rejected at the recipe level by M19/M20. Evidence of at least 196/200-equivalent development success with 40/40 inner-band success, reduced non-reaching failures, and complete hold diagnostics would support candidate selection and continued policy development. Persistent positive-margin non-reaching failures would redirect toward acquisition or imitation of the demonstrated controller; branch/limit-aligned failures would support explicit branch-conditioned trajectory design; adequate-margin post-reach interruptions with high velocity would elevate hold stabilization. No current evidence supports actuator/interface redesign or official assessment.",
+        "evidence_references": [
+          "M1",
+          "T1",
+          "T8",
+          "M13",
+          "T9",
+          "M14",
+          "M17",
+          "T10",
+          "M18",
+          "E40",
+          "E42",
+          "T11",
+          "M19",
+          "M20",
+          "E44"
+        ],
+        "human_goal_connection": "The human goal remains at least 196 successful episodes out of 200 under the official target distribution, with every success requiring an uninterrupted 100-step hold. No learned candidate meets that threshold: T8, T9 and T10 each measured 153/160, while M17 established 160/160 same-interface computed-torque controllability. I10 tested whether explicit phase, history and trajectory-aware policy acquisition could transfer that capability and closed with a limited negative, so protected official assessment remains unjustified.",
+        "next_direction_or_closure": "I10 is closed by E44 with a limited negative for the tested phase/history/trajectory acquisition recipe. The next fresh inquiry should test a less-coupled branch- or limit-conditioned trajectory design under preserved uniform official coverage, using T1/T8/T9/M3 failure geometry and M17 controllability as the reference. The first operation should be selected from the new frontier rather than assumed to be training; any candidate must be measured with full success, inner-band, first-reach, post-reach, velocity and hold-interruption diagnostics before official assessment is considered.",
+        "next_question": "Can a less-coupled branch- or limit-conditioned trajectory design, while preserving uniform official target coverage and the 40/40 inner-band behavior, raise learned-policy success to at least 196/200-equivalent uninterrupted-hold successes and reduce the dominant non-reaching failures?"
+      },
+      "result": {
+        "session_id": "S21",
+        "status": "checkpointed"
+      },
+      "session_id": "S21",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "1523dd195daa41add9d437424c308b035e9b1d2e",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "T8:checkpoint-60416 and T9:checkpoint-20480 remain the strongest measured learned candidates at 153/160 but have no protected working, best-known or retained role. T10:checkpoint-10240 and T10:checkpoint-120832 also measured 153/160 and are not promoted. T11:checkpoint-120832 is rejected as a viable candidate after its 0/160 result and 0/40 inner-band success. The M17 computed-torque controller is evidence of same-interface capability, not a learned candidate for the human goal. No candidate has an evidence-backed protected role.",
+        "completed_operations": [
+          "T11",
+          "M19",
+          "M20",
+          "E44"
+        ],
+        "cumulative_resource_use": "The campaign used M1 characterization; eleven 120000-step training allocations T1-T11, each completing 120832 simulator steps; development and diagnostic measurements M2-M14; same-interface controllability measurement M17; controller-prior training T10; paired development measurement M18; phase/history/trajectory training T11; development evaluation M19; diagnostic replay M20; and inquiry/checkpoint events through E44. No candidate meets the 98% development threshold and no protected official assessment has been performed.",
+        "current_goal_gap": "The strongest measured learned candidates remain four development successes short of the 98% threshold at 153/160. T11 measured 0/160 and lost the 40/40 inner-band behavior, leaving no candidate near the required 196/200-equivalent result and no evidence-backed best-known role.",
+        "current_synthesis": "M1 established substantial transient actuation authority and at least one feasible analytic IK branch for every sampled official target, with 64 of 576 grid targets having only one feasible branch. T1 measured 150/160 with 40/40 inner-band success, seven pre-reach failures and three post-reach failures; T8 and T9 improved the unchanged direct-action route to 153/160 while preserving 40/40 inner-band success, with residual hold interruptions and shifted reach-versus-hold splits. M17 then established that the unchanged bounded action interface is controllable: computed-torque control achieved 160/160 for each of three gain settings, including 93/93 inner-band successes, with no reach or hold interruptions. M18 showed that the tested controller-derived PPO action prior did not transfer that capability: early and terminal T10 checkpoints both measured 153/160 and failed on the same seven seeds, although their failure splits traded pre-reach against post-reach interruptions. T11 implemented explicit phase, a smooth trajectory reference and previous-action history, but its learning trajectory recorded zero success and M19 measured 0/160. M20 diagnosed 150/160 failures without first tolerance entry and only 10 after first reach; those 10 accumulated 134 interruptions. T11 also had 0/40 inner-band success, and all 160 terminal or first-reach nearest-branch margin observations were nonnegative. Thus the tested phase/history/trajectory contract caused a broad acquisition or trajectory-contract failure rather than demonstrating transfer, while post-reach instability remains a secondary mechanism. E44 closed I10 with a limited negative for this implementation and recipe, not for policy methods generally. The leading route now changes toward a less-coupled branch- or limit-conditioned trajectory design that preserves uniform target acquisition and inner-band behavior, while retaining hold stabilization as a secondary discriminator.",
+        "decision_frontier": "The unresolved distinction is now whether a less-coupled branch- or limit-conditioned trajectory design can correct the original policy's geometry-sensitive failures without the broad acquisition collapse caused by T11, versus whether learned acquisition remains the dominant obstacle even when branch and trajectory choices are separated. The design must preserve uniform official target coverage and the established inner-band behavior; aggressive target oversampling is rejected by M4/M5, and the tightly coupled phase/history/trajectory contract is rejected at the recipe level by M19/M20. Evidence of at least 196/200-equivalent development success with 40/40 inner-band success, reduced non-reaching failures, and complete hold diagnostics would support candidate selection and continued policy development. Persistent positive-margin non-reaching failures would redirect toward acquisition or imitation of the demonstrated controller; branch/limit-aligned failures would support explicit branch-conditioned trajectory design; adequate-margin post-reach interruptions with high velocity would elevate hold stabilization. No current evidence supports actuator/interface redesign or official assessment.",
+        "evidence_references": [
+          "M1",
+          "T1",
+          "T8",
+          "M13",
+          "T9",
+          "M14",
+          "M17",
+          "T10",
+          "M18",
+          "E40",
+          "E42",
+          "T11",
+          "M19",
+          "M20",
+          "E44"
+        ],
+        "human_goal_connection": "The human goal remains at least 196 successful episodes out of 200 under the official target distribution, with every success requiring an uninterrupted 100-step hold. No learned candidate meets that threshold: T8, T9 and T10 each measured 153/160, while M17 established 160/160 same-interface computed-torque controllability. I10 tested whether explicit phase, history and trajectory-aware policy acquisition could transfer that capability and closed with a limited negative, so protected official assessment remains unjustified.",
+        "inquiry_id": "I10",
+        "next_direction_or_closure": "I10 is closed by E44 with a limited negative for the tested phase/history/trajectory acquisition recipe. The next fresh inquiry should test a less-coupled branch- or limit-conditioned trajectory design under preserved uniform official coverage, using T1/T8/T9/M3 failure geometry and M17 controllability as the reference. The first operation should be selected from the new frontier rather than assumed to be training; any candidate must be measured with full success, inner-band, first-reach, post-reach, velocity and hold-interruption diagnostics before official assessment is considered.",
+        "next_question": "Can a less-coupled branch- or limit-conditioned trajectory design, while preserving uniform official target coverage and the 40/40 inner-band behavior, raise learned-policy success to at least 196/200-equivalent uninterrupted-hold successes and reduce the dominant non-reaching failures?",
+        "session_id": "S21"
+      },
+      "presentation": {
+        "backend_session_id": "307d2980-9541-43aa-b0f1-4ca4047e0c6f",
+        "campaign_id": "79395c88-afcd-40f0-a644-16ca95368c28",
+        "campaign_usage": "1h10m | 231.08 AIU | prompt 39.7m (87% cached) | output 270.4k",
+        "session_id": "S21",
+        "session_kind": "inquiry",
+        "session_usage": "4m58s | 14.70 AIU | prompt 2.8m (89% cached) | output 18.5k"
+      },
+      "result": {
+        "session_id": "S21",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "bbb44df9517884a4159a437aba2cbd2bccb0a297",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E45",
+    "inquiry_id": "I10",
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "T8:checkpoint-60416 and T9:checkpoint-20480 remain the strongest measured learned candidates at 153/160 but have no protected working, best-known or retained role. T10:checkpoint-10240 and T10:checkpoint-120832 also measured 153/160 and are not promoted. T11:checkpoint-120832 is rejected as a viable candidate after its 0/160 result and 0/40 inner-band success. The M17 computed-torque controller is evidence of same-interface capability, not a learned candidate for the human goal. No candidate has an evidence-backed protected role.",
+        "completed_operations": [
+          "T11",
+          "M19",
+          "M20",
+          "E44"
+        ],
+        "cumulative_resource_use": "The campaign used M1 characterization; eleven 120000-step training allocations T1-T11, each completing 120832 simulator steps; development and diagnostic measurements M2-M14; same-interface controllability measurement M17; controller-prior training T10; paired development measurement M18; phase/history/trajectory training T11; development evaluation M19; diagnostic replay M20; and inquiry/checkpoint events through E44. No candidate meets the 98% development threshold and no protected official assessment has been performed.",
+        "current_goal_gap": "The strongest measured learned candidates remain four development successes short of the 98% threshold at 153/160. T11 measured 0/160 and lost the 40/40 inner-band behavior, leaving no candidate near the required 196/200-equivalent result and no evidence-backed best-known role.",
+        "current_synthesis": "M1 established substantial transient actuation authority and at least one feasible analytic IK branch for every sampled official target, with 64 of 576 grid targets having only one feasible branch. T1 measured 150/160 with 40/40 inner-band success, seven pre-reach failures and three post-reach failures; T8 and T9 improved the unchanged direct-action route to 153/160 while preserving 40/40 inner-band success, with residual hold interruptions and shifted reach-versus-hold splits. M17 then established that the unchanged bounded action interface is controllable: computed-torque control achieved 160/160 for each of three gain settings, including 93/93 inner-band successes, with no reach or hold interruptions. M18 showed that the tested controller-derived PPO action prior did not transfer that capability: early and terminal T10 checkpoints both measured 153/160 and failed on the same seven seeds, although their failure splits traded pre-reach against post-reach interruptions. T11 implemented explicit phase, a smooth trajectory reference and previous-action history, but its learning trajectory recorded zero success and M19 measured 0/160. M20 diagnosed 150/160 failures without first tolerance entry and only 10 after first reach; those 10 accumulated 134 interruptions. T11 also had 0/40 inner-band success, and all 160 terminal or first-reach nearest-branch margin observations were nonnegative. Thus the tested phase/history/trajectory contract caused a broad acquisition or trajectory-contract failure rather than demonstrating transfer, while post-reach instability remains a secondary mechanism. E44 closed I10 with a limited negative for this implementation and recipe, not for policy methods generally. The leading route now changes toward a less-coupled branch- or limit-conditioned trajectory design that preserves uniform target acquisition and inner-band behavior, while retaining hold stabilization as a secondary discriminator.",
+        "decision_frontier": "The unresolved distinction is now whether a less-coupled branch- or limit-conditioned trajectory design can correct the original policy's geometry-sensitive failures without the broad acquisition collapse caused by T11, versus whether learned acquisition remains the dominant obstacle even when branch and trajectory choices are separated. The design must preserve uniform official target coverage and the established inner-band behavior; aggressive target oversampling is rejected by M4/M5, and the tightly coupled phase/history/trajectory contract is rejected at the recipe level by M19/M20. Evidence of at least 196/200-equivalent development success with 40/40 inner-band success, reduced non-reaching failures, and complete hold diagnostics would support candidate selection and continued policy development. Persistent positive-margin non-reaching failures would redirect toward acquisition or imitation of the demonstrated controller; branch/limit-aligned failures would support explicit branch-conditioned trajectory design; adequate-margin post-reach interruptions with high velocity would elevate hold stabilization. No current evidence supports actuator/interface redesign or official assessment.",
+        "evidence_references": [
+          "M1",
+          "T1",
+          "T8",
+          "M13",
+          "T9",
+          "M14",
+          "M17",
+          "T10",
+          "M18",
+          "E40",
+          "E42",
+          "T11",
+          "M19",
+          "M20",
+          "E44"
+        ],
+        "human_goal_connection": "The human goal remains at least 196 successful episodes out of 200 under the official target distribution, with every success requiring an uninterrupted 100-step hold. No learned candidate meets that threshold: T8, T9 and T10 each measured 153/160, while M17 established 160/160 same-interface computed-torque controllability. I10 tested whether explicit phase, history and trajectory-aware policy acquisition could transfer that capability and closed with a limited negative, so protected official assessment remains unjustified.",
+        "next_direction_or_closure": "I10 is closed by E44 with a limited negative for the tested phase/history/trajectory acquisition recipe. The next fresh inquiry should test a less-coupled branch- or limit-conditioned trajectory design under preserved uniform official coverage, using T1/T8/T9/M3 failure geometry and M17 controllability as the reference. The first operation should be selected from the new frontier rather than assumed to be training; any candidate must be measured with full success, inner-band, first-reach, post-reach, velocity and hold-interruption diagnostics before official assessment is considered.",
+        "next_question": "Can a less-coupled branch- or limit-conditioned trajectory design, while preserving uniform official target coverage and the 40/40 inner-band behavior, raise learned-policy success to at least 196/200-equivalent uninterrupted-hold successes and reduce the dominant non-reaching failures?"
+      }
+    },
+    "request_fingerprint": "bf7098b7110a0c28c880bd6513ef8fd99b26ba474766752cfa1c606fc053b5c5",
+    "session_id": "S21",
+    "supersedes": null
+  },
   "pi_checkpoint": {
-    "candidates_and_roles": "T8:checkpoint-60416 and T9:checkpoint-20480 remain the strongest measured learned candidates at 153/160, but neither meets the development threshold or has a protected working, best-known, or retained role. T10:checkpoint-10240 and T10:checkpoint-120832 are measured controller-prior candidates at the same 153/160 result and are not promoted. The M17 computed-torque controller is evidence of same-interface capability, not a learned candidate for the human goal. Opening I10 does not change candidate roles.",
+    "candidates_and_roles": "T8:checkpoint-60416 and T9:checkpoint-20480 remain the strongest measured learned candidates at 153/160 but have no protected working, best-known or retained role. T10:checkpoint-10240 and T10:checkpoint-120832 also measured 153/160 and are not promoted. T11:checkpoint-120832 is rejected as a viable candidate after its 0/160 result and 0/40 inner-band success. The M17 computed-torque controller is evidence of same-interface capability, not a learned candidate for the human goal. No candidate has an evidence-backed protected role.",
     "completed_operations": [
-      "E42"
+      "T11",
+      "M19",
+      "M20",
+      "E44"
     ],
-    "cumulative_resource_use": "The campaign used M1 characterization; ten 120000-step training allocations T1-T10, each completing 120832 simulator steps; development and diagnostic measurements M2-M14; same-interface controllability measurement M17; controller-prior training T10; paired development measurement M18; and inquiry/checkpoint events through E42. No candidate meets the 98% development threshold and no protected official assessment has been performed.",
-    "current_goal_gap": "The best measured learned policies, T8 and T9, are four development successes short of the 98% threshold. T10's controller-derived action-prior policy also measured 153/160, leaving the same seven failed panel seeds and providing no evidence for a 196/200 candidate.",
-    "current_synthesis": "M1 established substantial transient actuation authority and at least one feasible analytic IK branch for every sampled official target, with 64 of 576 sampled grid targets having only one feasible branch. T1 measured 150/160 with 40/40 successes below 10 cm, seven pre-reach failures, and three post-reach failures. T8 improved the unchanged direct-action route to 153/160 while preserving 40/40 inner-band success; M13 measured one pre-reach and six post-reach failures with six hold interruptions. T9 also measured 153/160, matched T8 on paired outcomes, recovered none of its residual episodes, and reduced interruptions from six to five while shifting the failure split. M17 then established same-interface controllability rather than interface incapability: computed-torque control achieved 160/160 for each of three gain settings, including 93/93 targets below 14 cm, with zero pre-reach failures, zero post-reach failures, and zero hold interruptions. M18 tested the controller-derived action-prior PPO recipe using early and terminal T10 checkpoints under the same uniform panel. Both achieved 153/160, preserved 40/40 below 10 cm, and failed on exactly the same seven seeds. The early checkpoint had one pre-reach and six post-reach failures with six interruptions; the terminal checkpoint had four pre-reach and three post-reach failures with three interruptions. This is a limited negative for the tested PPO action-prior recipe, not for policy methods generally: it did not transfer the available direct-action controllability into a learned policy, and its differing failure splits show a tradeoff rather than a solved mechanism. The leading unresolved mechanism remains a policy representation/acquisition mismatch involving explicit task phase, relevant history, and trajectory-aware acquisition. E42 opened I10 to test that broader capability need without selecting a training run or implementation.",
-    "decision_frontier": "I9 is closed with a limited negative. The unchanged bounded action interface is demonstrably capable on the same development coverage, so immediate actuator/interface redesign is not supported. The tested PPO continuation, stabilization reward, and controller-derived action-prior recipe all failed to recover the residual learned-policy seeds, but these bounded recipe results do not invalidate policy methods generally. I10 now tests whether an explicitly phase-aware, history-dependent and trajectory-aware policy acquisition method can transfer same-interface controllability while preserving 40/40 inner-band success and uninterrupted hold. Uniform-panel evidence at or above 196/200-equivalent performance with first-reach, post-reach, velocity, and interruption diagnostics would support continued policy development and candidate selection. Persistent same-seed failures despite the added policy information, or loss of inner-band behavior, would redirect investigation toward branch- or limit-conditioned trajectory design; incomplete or unavailable diagnostics would preserve the mechanism distinction.",
+    "cumulative_resource_use": "The campaign used M1 characterization; eleven 120000-step training allocations T1-T11, each completing 120832 simulator steps; development and diagnostic measurements M2-M14; same-interface controllability measurement M17; controller-prior training T10; paired development measurement M18; phase/history/trajectory training T11; development evaluation M19; diagnostic replay M20; and inquiry/checkpoint events through E44. No candidate meets the 98% development threshold and no protected official assessment has been performed.",
+    "current_goal_gap": "The strongest measured learned candidates remain four development successes short of the 98% threshold at 153/160. T11 measured 0/160 and lost the 40/40 inner-band behavior, leaving no candidate near the required 196/200-equivalent result and no evidence-backed best-known role.",
+    "current_synthesis": "M1 established substantial transient actuation authority and at least one feasible analytic IK branch for every sampled official target, with 64 of 576 grid targets having only one feasible branch. T1 measured 150/160 with 40/40 inner-band success, seven pre-reach failures and three post-reach failures; T8 and T9 improved the unchanged direct-action route to 153/160 while preserving 40/40 inner-band success, with residual hold interruptions and shifted reach-versus-hold splits. M17 then established that the unchanged bounded action interface is controllable: computed-torque control achieved 160/160 for each of three gain settings, including 93/93 inner-band successes, with no reach or hold interruptions. M18 showed that the tested controller-derived PPO action prior did not transfer that capability: early and terminal T10 checkpoints both measured 153/160 and failed on the same seven seeds, although their failure splits traded pre-reach against post-reach interruptions. T11 implemented explicit phase, a smooth trajectory reference and previous-action history, but its learning trajectory recorded zero success and M19 measured 0/160. M20 diagnosed 150/160 failures without first tolerance entry and only 10 after first reach; those 10 accumulated 134 interruptions. T11 also had 0/40 inner-band success, and all 160 terminal or first-reach nearest-branch margin observations were nonnegative. Thus the tested phase/history/trajectory contract caused a broad acquisition or trajectory-contract failure rather than demonstrating transfer, while post-reach instability remains a secondary mechanism. E44 closed I10 with a limited negative for this implementation and recipe, not for policy methods generally. The leading route now changes toward a less-coupled branch- or limit-conditioned trajectory design that preserves uniform target acquisition and inner-band behavior, while retaining hold stabilization as a secondary discriminator.",
+    "decision_frontier": "The unresolved distinction is now whether a less-coupled branch- or limit-conditioned trajectory design can correct the original policy's geometry-sensitive failures without the broad acquisition collapse caused by T11, versus whether learned acquisition remains the dominant obstacle even when branch and trajectory choices are separated. The design must preserve uniform official target coverage and the established inner-band behavior; aggressive target oversampling is rejected by M4/M5, and the tightly coupled phase/history/trajectory contract is rejected at the recipe level by M19/M20. Evidence of at least 196/200-equivalent development success with 40/40 inner-band success, reduced non-reaching failures, and complete hold diagnostics would support candidate selection and continued policy development. Persistent positive-margin non-reaching failures would redirect toward acquisition or imitation of the demonstrated controller; branch/limit-aligned failures would support explicit branch-conditioned trajectory design; adequate-margin post-reach interruptions with high velocity would elevate hold stabilization. No current evidence supports actuator/interface redesign or official assessment.",
     "evidence_references": [
       "M1",
       "T1",
@@ -23878,20 +24050,22 @@
       "M13",
       "T9",
       "M14",
-      "E36",
-      "E38",
       "M17",
       "T10",
       "M18",
       "E40",
-      "E42"
+      "E42",
+      "T11",
+      "M19",
+      "M20",
+      "E44"
     ],
-    "human_goal_connection": "The human goal remains at least 196 successful episodes out of 200 under the official distribution, with every success requiring an uninterrupted 100-step hold. The best learned candidates remain at 153/160 on the uniform development panel, while same-interface computed-torque control achieved 160/160. I10 was opened to determine whether explicit phase, history, and trajectory-aware policy acquisition can transfer that demonstrated capability; no official assessment is justified.",
-    "inquiry_id": null,
-    "next_direction_or_closure": "I10 is open and this goal-review checkpoint ends the current session. In the fresh I10 inquiry session, choose the first operation from the evidence and decision frontier; do not assume that training is required. The selected operation should test the phase/history/trajectory acquisition distinction under uniform official coverage and retain full success, 40/40 inner-band success, first-reach and post-reach outcomes, velocity, and hold-interruption diagnostics.",
-    "next_question": "Can an explicitly phase-aware, history-dependent and trajectory-aware policy acquisition method transfer the demonstrated same-interface controllability to at least 196/200-equivalent uninterrupted-hold successes under uniform official coverage while preserving the 40/40 inner-band behavior?",
-    "scientific_commit": "f58de3cd21be0f2c4e39d13fe7e65596a9e9838f",
-    "session_id": "S20"
+    "human_goal_connection": "The human goal remains at least 196 successful episodes out of 200 under the official target distribution, with every success requiring an uninterrupted 100-step hold. No learned candidate meets that threshold: T8, T9 and T10 each measured 153/160, while M17 established 160/160 same-interface computed-torque controllability. I10 tested whether explicit phase, history and trajectory-aware policy acquisition could transfer that capability and closed with a limited negative, so protected official assessment remains unjustified.",
+    "inquiry_id": "I10",
+    "next_direction_or_closure": "I10 is closed by E44 with a limited negative for the tested phase/history/trajectory acquisition recipe. The next fresh inquiry should test a less-coupled branch- or limit-conditioned trajectory design under preserved uniform official coverage, using T1/T8/T9/M3 failure geometry and M17 controllability as the reference. The first operation should be selected from the new frontier rather than assumed to be training; any candidate must be measured with full success, inner-band, first-reach, post-reach, velocity and hold-interruption diagnostics before official assessment is considered.",
+    "next_question": "Can a less-coupled branch- or limit-conditioned trajectory design, while preserving uniform official target coverage and the 40/40 inner-band behavior, raise learned-policy success to at least 196/200-equivalent uninterrupted-hold successes and reduce the dominant non-reaching failures?",
+    "scientific_commit": "bbb44df9517884a4159a437aba2cbd2bccb0a297",
+    "session_id": "S21"
   },
   "schema_version": 6,
   "scientific_model": {
@@ -23899,24 +24073,6 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "307d2980-9541-43aa-b0f1-4ca4047e0c6f",
-    "id": "S21",
-    "inquiry_id": "I10",
-    "kind": "inquiry",
-    "objective": "Advance I10 toward an evidence-supported answer to its scientific question: Can an explicitly phase-aware, history-dependent and trajectory-aware policy acquisition method transfer the demonstrated same-interface controllability to at least 196/200-equivalent uninterrupted-hold successes under uniform official coverage while preserving the 40/40 inner-band behavior? Before choosing the next action, compare the accumulated evidence with the closure condition. Restate the unresolved distinction and choose the most decision-relevant available operation; no operation is the default. Close the inquiry when the condition is met.",
-    "operation_ids": [
-      "T11",
-      "M19",
-      "M20",
-      "E44"
-    ],
-    "scientific_parent_commit": "1523dd195daa41add9d437424c308b035e9b1d2e"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
