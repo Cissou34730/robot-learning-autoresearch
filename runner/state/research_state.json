@@ -24040,38 +24040,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I14",
-        "outcome": "limited",
-        "reason": "M27 completed the required matched evaluation of the single I14 design. T16 preserved T3's 157/160 first reaches and 153/160 complete holds, but increased terminal hold interruptions from 4 to 8, so it failed the governing uninterrupted-hold safety condition. The residual-margin measurement found a modest improvement in the seven failed-case mean zero-action minimum retention margin, from -0.015134 m for T3 to -0.013948 m for T16, but this did not improve complete success and was accompanied by added interruptions. The result supports that localized branch- and trajectory-conditioned shaping can change the measured arrival state, but this tested recipe does not safely repair the policy-reachable braking bottleneck. It is limited, recipe-specific negative evidence and does not reject all trajectory-aware or branch-conditioned control designs."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I14",
-        "outcome": "limited",
-        "reason": "M27 completed the required matched evaluation of the single I14 design. T16 preserved T3's 157/160 first reaches and 153/160 complete holds, but increased terminal hold interruptions from 4 to 8, so it failed the governing uninterrupted-hold safety condition. The residual-margin measurement found a modest improvement in the seven failed-case mean zero-action minimum retention margin, from -0.015134 m for T3 to -0.013948 m for T16, but this did not improve complete success and was accompanied by added interruptions. The result supports that localized branch- and trajectory-conditioned shaping can change the measured arrival state, but this tested recipe does not safely repair the policy-reachable braking bottleneck. It is limited, recipe-specific negative evidence and does not reject all trajectory-aware or branch-conditioned control designs.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E59",
-    "inquiry_id": "I14",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "limited",
-        "reason": "M27 completed the required matched evaluation of the single I14 design. T16 preserved T3's 157/160 first reaches and 153/160 complete holds, but increased terminal hold interruptions from 4 to 8, so it failed the governing uninterrupted-hold safety condition. The residual-margin measurement found a modest improvement in the seven failed-case mean zero-action minimum retention margin, from -0.015134 m for T3 to -0.013948 m for T16, but this did not improve complete success and was accompanied by added interruptions. The result supports that localized branch- and trajectory-conditioned shaping can change the measured arrival state, but this tested recipe does not safely repair the policy-reachable braking bottleneck. It is limited, recipe-specific negative evidence and does not reject all trajectory-aware or branch-conditioned control designs."
-      }
-    },
-    "request_fingerprint": "bcdf1470d74225d67d6f7fe27c42a76ae7605bea3939d67cccc2be189b383fce",
-    "session_id": "S29",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T3:checkpoint-120832 remains the strongest evidence-backed development candidate at 153/160 successes, 157 first reaches, and four hold interruptions. T15:checkpoint-120832 remains rejected for the tested bounded radial pre-arrival recipe because it retained 153/160 successes, added interruptions, and did not improve the measured zero-action retention margin. No working, best-known, or retained role is assigned.",
     "completed_operations": [
