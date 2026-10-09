@@ -1,16 +1,5 @@
 {
-  "active_inquiry": {
-    "closure_condition": "Close after one bounded branch- and trajectory-conditioned pre-arrival velocity-shaping intervention is evaluated against T3 on the same 160-episode development panel with success, first-reach coverage, hold interruptions, negative-angle arrival state, and sampled zero-action retention margin. A positive result requires at least 157 first reaches, at least 157 complete holds, no more than four interruptions, and a meaningful improvement in the negative-angle arrival or retention margin. Failure to meet these protections, especially any interruption regression, is sufficient for a limited recipe-specific result and redirection.",
-    "goal_connection": "The human goal requires at least 196 of 200 complete uninterrupted holds. T3 reaches 153 of 160 development episodes with 157 first reaches and four hold interruptions, leaving seven localized negative-angle failures. This inquiry tests whether a terminal-safe, trajectory-aware intervention can close that gap without sacrificing the reach and hold behavior that makes T3 the strongest candidate.",
-    "handoff_conclusion": "Established evidence: T3's incremental-radius transfer preserved broad route coverage but left seven negative-angle failures. M10 found high-speed residual arrivals and generally negative one-interval retention margins, supporting a policy-reachable braking-margin bottleneck. T13's route-conditioned joint damping changed no paired outcomes. T14's tested plant-level task-space radial braking layer reduced success from 153/160 to 149/160, first reaches from 157 to 156, and increased hold interruptions from four to 71; this rejects that radial action recipe, not plant-level shaping in general. T15's generic pre-arrival radial velocity shaping reached 159 targets but remained at 153 complete holds, increased interruptions from four to nine, and slightly worsened the zero-action mean minimum retention margin; this is recipe-specific negative evidence. M25 showed that all seven T3 failures were folded-branch arrivals with negative mean radial velocity and poor zero-action retention, while successful folded arrivals existed in the same negative-angle sector, supporting a localized arrival-state mechanism. I14's T16 localized intervention preserved T3's 157 first reaches and 153 complete holds, but increased terminal interruptions from four to eight. Its seven failed-case mean zero-action minimum retention margin improved modestly from -0.015134 m to -0.013948 m, without improving complete success. Thus the intervention changed the measured arrival state but did not safely convert it into uninterrupted holds. I14 closes as a limited, recipe-specific negative result; the evidence does not reject all branch-conditioned or trajectory-aware control designs.",
-    "handoff_question": "Can branch- and trajectory-conditioned pre-arrival velocity shaping improve negative-angle sampled braking margin while preserving T3's uninterrupted hold behavior and first-reach coverage?",
-    "handoff_source_session_id": "S29",
-    "id": "I15",
-    "opened_in_session": "S30",
-    "question": "Can branch- and trajectory-conditioned pre-arrival velocity shaping improve negative-angle sampled braking margin while preserving T3's uninterrupted hold behavior and first-reach coverage?",
-    "rationale": "M25 found that all seven T3 failures were folded-branch arrivals with negative mean radial velocity and poor zero-action retention, while successful folded arrivals existed in the same negative-angle sector. M27 showed that the tested localized pre-arrival correction modestly improved failed-case margin but increased interruptions and did not improve complete success. The unresolved distinction is therefore whether the mechanism is useful when conditioned on both branch and approach trajectory with explicit terminal protection, or whether the apparent margin signal cannot be safely converted into uninterrupted holds. This inquiry changes the controller design rather than repeating T16, while preserving T3 as the matched behavioral reference.",
-    "reframes": []
-  },
+  "active_inquiry": null,
   "campaign": {
     "base_commit": "183ba7483c02b821a562dc3107d9c0100b10d3d9",
     "id": "1ae27a27-6880-4ca6-9d50-e6498e771cb7",
@@ -11486,7 +11475,7 @@
     }
   },
   "counters": {
-    "event": 62,
+    "event": 63,
     "inquiry": 15,
     "measurement": 28,
     "session": 31,
@@ -26272,9 +26261,63 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-09T02:26:11Z",
+      "error": null,
+      "id": "E63",
+      "inquiry_id": "I15",
+      "kind": "inquiry",
+      "request": {
+        "action": "close",
+        "outcome": "I15 closes with a limited, recipe-specific negative result: the T17 branch- and trajectory-conditioned safe radial-velocity envelope did not improve the matched development outcome.",
+        "reason": "M28 evaluated T17 and T3 on the same 160-episode panel. Both achieved 153 complete holds (95.625 percent), and the paired comparison had zero discordant episodes. T17 therefore failed I15's positive protection threshold of at least 157 complete holds, regardless of its training-buffer statistics; the inquiry cannot support the claim that this shaping recipe safely converts the observed negative-angle arrival association into better uninterrupted holds. The result rejects this distance-envelope and overshoot-risk controller, not branch conditioning, trajectory awareness, or terminal control generally. The next direction should move away from another pre-arrival velocity-shaping variant and reassess the residual mechanism through a different terminal-state or plant-control representation before spending another training allocation."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I15",
+        "outcome": "I15 closes with a limited, recipe-specific negative result: the T17 branch- and trajectory-conditioned safe radial-velocity envelope did not improve the matched development outcome.",
+        "reason": "M28 evaluated T17 and T3 on the same 160-episode panel. Both achieved 153 complete holds (95.625 percent), and the paired comparison had zero discordant episodes. T17 therefore failed I15's positive protection threshold of at least 157 complete holds, regardless of its training-buffer statistics; the inquiry cannot support the claim that this shaping recipe safely converts the observed negative-angle arrival association into better uninterrupted holds. The result rejects this distance-envelope and overshoot-risk controller, not branch conditioning, trajectory awareness, or terminal control generally. The next direction should move away from another pre-arrival velocity-shaping variant and reassess the residual mechanism through a different terminal-state or plant-control representation before spending another training allocation.",
+        "status": "completed"
+      },
+      "session_id": "S31",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "close",
+        "inquiry_id": "I15",
+        "outcome": "I15 closes with a limited, recipe-specific negative result: the T17 branch- and trajectory-conditioned safe radial-velocity envelope did not improve the matched development outcome.",
+        "reason": "M28 evaluated T17 and T3 on the same 160-episode panel. Both achieved 153 complete holds (95.625 percent), and the paired comparison had zero discordant episodes. T17 therefore failed I15's positive protection threshold of at least 157 complete holds, regardless of its training-buffer statistics; the inquiry cannot support the claim that this shaping recipe safely converts the observed negative-angle arrival association into better uninterrupted holds. The result rejects this distance-envelope and overshoot-risk controller, not branch conditioning, trajectory awareness, or terminal control generally. The next direction should move away from another pre-arrival velocity-shaping variant and reassess the residual mechanism through a different terminal-state or plant-control representation before spending another training allocation."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I15",
+        "outcome": "I15 closes with a limited, recipe-specific negative result: the T17 branch- and trajectory-conditioned safe radial-velocity envelope did not improve the matched development outcome.",
+        "reason": "M28 evaluated T17 and T3 on the same 160-episode panel. Both achieved 153 complete holds (95.625 percent), and the paired comparison had zero discordant episodes. T17 therefore failed I15's positive protection threshold of at least 157 complete holds, regardless of its training-buffer statistics; the inquiry cannot support the claim that this shaping recipe safely converts the observed negative-angle arrival association into better uninterrupted holds. The result rejects this distance-envelope and overshoot-risk controller, not branch conditioning, trajectory awareness, or terminal control generally. The next direction should move away from another pre-arrival velocity-shaping variant and reassess the residual mechanism through a different terminal-state or plant-control representation before spending another training allocation.",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E63",
+    "inquiry_id": "I15",
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "close",
+        "outcome": "I15 closes with a limited, recipe-specific negative result: the T17 branch- and trajectory-conditioned safe radial-velocity envelope did not improve the matched development outcome.",
+        "reason": "M28 evaluated T17 and T3 on the same 160-episode panel. Both achieved 153 complete holds (95.625 percent), and the paired comparison had zero discordant episodes. T17 therefore failed I15's positive protection threshold of at least 157 complete holds, regardless of its training-buffer statistics; the inquiry cannot support the claim that this shaping recipe safely converts the observed negative-angle arrival association into better uninterrupted holds. The result rejects this distance-envelope and overshoot-risk controller, not branch conditioning, trajectory awareness, or terminal control generally. The next direction should move away from another pre-arrival velocity-shaping variant and reassess the residual mechanism through a different terminal-state or plant-control representation before spending another training allocation."
+      }
+    },
+    "request_fingerprint": "8fdeccb5b8d17ca8ed8b5a2d16df0a0f4b4fe1605a6b7fba1fc88c8fa9631bea",
+    "session_id": "S31",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T3:checkpoint-120832 remains the strongest evidence-backed development candidate at 153/160 complete holds, 157/160 first reaches, and four hold interruptions across the cited matched panels. T16:checkpoint-120832 matched T3's complete holds and first reaches but increased interruptions to eight and is not promoted. No candidate has a working, best-known, or retained role.",
     "completed_operations": [
@@ -26323,7 +26366,8 @@
     "objective": "Advance I15 toward an evidence-supported answer to its scientific question: Can branch- and trajectory-conditioned pre-arrival velocity shaping improve negative-angle sampled braking margin while preserving T3's uninterrupted hold behavior and first-reach coverage? Before choosing the next action, compare the accumulated evidence with the closure condition. Close the inquiry when the condition is met.",
     "operation_ids": [
       "T17",
-      "M28"
+      "M28",
+      "E63"
     ],
     "scientific_parent_commit": "9988ffc29a16b3a02efa13c3f6cbc5528299ad9b"
   },

@@ -109,3 +109,4 @@
 | E62 | checkpoint | - | checkpointed |
 | T17 | training | I15 | completed |
 | M28 | measurement | I15 | completed |
+| E63 | inquiry | I15 | completed |
