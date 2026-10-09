@@ -26,6 +26,7 @@ from contracts.task_spec import (
     TARGET_RADIUS_RANGE,
 )
 from robot_learning.scenario.observations import OBSERVATION_SIZE
+from robot_learning.scenario.observations import reach_observation
 from robot_learning.scenario.policy_io import make_policy_io
 from robot_learning.training.reward import reach_reward
 
@@ -142,6 +143,8 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
                 self._outside_after_hold = True
             self._held_steps = 0
 
+        observation = self._observation()
+        physical_observation = reach_observation(self.data)
         reward = reach_reward(
             self._previous_distance,
             distance,
@@ -152,6 +155,8 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
             previous_held_steps=previous_held_steps,
             hold_steps_required=self.hold_steps_required,
             penalize_outside=self._outside_after_hold,
+            joint_position=self.data.qpos[:2],
+            branch_errors=physical_observation[7:11],
         )
         self._previous_distance = distance
 
@@ -166,7 +171,7 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
             # ever sees `reward.total`.
             "reward_components": reward.components,
         }
-        return self._observation(), float(reward.total), terminated, truncated, info
+        return observation, float(reward.total), terminated, truncated, info
 
 
 def make_evaluation_env(*, policy_runtime=None) -> gym.Env:
