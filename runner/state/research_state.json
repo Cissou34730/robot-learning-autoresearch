@@ -10667,7 +10667,7 @@
     }
   },
   "counters": {
-    "event": 61,
+    "event": 62,
     "inquiry": 15,
     "measurement": 27,
     "session": 30,
@@ -10676,7 +10676,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -24114,22 +24114,168 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-09T02:19:02Z",
+      "error": null,
+      "id": "E62",
+      "inquiry_id": null,
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "T3:checkpoint-120832 remains the strongest evidence-backed development candidate at 153/160 complete holds, 157/160 first reaches, and four hold interruptions across the cited matched panels. T16:checkpoint-120832 matched T3's complete holds and first reaches but increased interruptions to eight and is not promoted. No candidate has a working, best-known, or retained role.",
+        "completed_operations": [
+          "E61"
+        ],
+        "cumulative_resource_use": "The goal-review session used no training or measurement allocation. It recorded E61, opening I15. Prior cited resources include T15's 120000-step transfer and M19/M23, M25's T3 arrival-strata measurement, T16's 120000-step transfer, and M27's paired evaluation and residual-margin analyses; E54, E55, E57, E59, and E61 are transition or inquiry records. No official assessment has been requested.",
+        "current_goal_gap": "No candidate has demonstrated the required 98% official success rate. T3 remains seven complete holds short of the corresponding 160-episode development threshold, while T16 matched T3's success and first reach but increased interruptions from four to eight. No best-known role is assigned and official assessment is not justified.",
+        "current_synthesis": "Established evidence: M1 found substantial local plant hold margin and no sampled self-contact in valid target branches, so broad mechanical infeasibility is not the leading explanation. T3's incremental-radius transfer improved the learned regime to 157 first reaches and 153 complete holds with four interruptions, but left seven localized negative-angle failures. M10 found high-speed residual arrivals and generally negative one-interval retention margins. M25 showed that all seven failures were folded-branch arrivals with negative mean radial velocity and poor zero-action retention, while successful folded arrivals existed in the same sector; this supports a localized arrival-state mechanism but does not prove causation. T13's route-conditioned joint damping, T15's generic pre-arrival radial shaping, and T16's localized correction did not improve complete success; T16 modestly improved failed-case margin but increased interruptions from four to eight. These are recipe-specific negative results: they reject the tested controllers, not branch conditioning, trajectory awareness, or terminal control generally. I15 therefore carries forward a competing distinction between a safely correctable trajectory-dependent braking state and a margin signal that cannot be converted into uninterrupted holds without destabilizing T3's learned regime.",
+        "decision_frontier": "The unresolved scientific distinction is whether branch- and trajectory-conditioned pre-arrival shaping can improve the negative-angle sampled braking margin while explicitly protecting terminal hold continuity, or whether the observed arrival-margin association is not safely actionable. I15 should use matched evidence against T3: at least 157 first reaches, at least 157 complete holds, no more than four interruptions, and a meaningful improvement in negative-angle arrival or zero-action retention margin would support the mechanism; interruption regression or failure to preserve T3 would make this tested shaping recipe limited and redirect the campaign.",
+        "evidence_references": [
+          "M1",
+          "T15",
+          "M19",
+          "M23",
+          "E55",
+          "M25",
+          "E57",
+          "T16",
+          "M27",
+          "E59",
+          "E61"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 of 200 official episodes to complete an uninterrupted 100-step hold. T3 remains the strongest development candidate at 153 of 160 complete holds, with 157 first reaches and four hold interruptions. I15 now tests whether a different branch- and trajectory-conditioned pre-arrival shaping mechanism can close the remaining localized negative-angle gap without sacrificing those protections.",
+        "next_direction_or_closure": "Goal review opened I15 through E61. This checkpoint ends the goal-review session. In the fresh I15 inquiry session, choose one bounded branch- and trajectory-conditioned pre-arrival velocity-shaping intervention that differs mechanistically from T16, evaluate it against T3 with the stated hold and margin protections, and close or redirect I15 from that matched evidence.",
+        "next_question": "Can branch- and trajectory-conditioned pre-arrival velocity shaping improve negative-angle sampled braking margin while preserving T3's uninterrupted hold behavior and first-reach coverage?"
+      },
+      "result": {
+        "session_id": "S30",
+        "status": "checkpointed"
+      },
+      "session_id": "S30",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "ece8a9e70f99478114f22cfb8093366e355dbb4d",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "T3:checkpoint-120832 remains the strongest evidence-backed development candidate at 153/160 complete holds, 157/160 first reaches, and four hold interruptions across the cited matched panels. T16:checkpoint-120832 matched T3's complete holds and first reaches but increased interruptions to eight and is not promoted. No candidate has a working, best-known, or retained role.",
+        "completed_operations": [
+          "E61"
+        ],
+        "cumulative_resource_use": "The goal-review session used no training or measurement allocation. It recorded E61, opening I15. Prior cited resources include T15's 120000-step transfer and M19/M23, M25's T3 arrival-strata measurement, T16's 120000-step transfer, and M27's paired evaluation and residual-margin analyses; E54, E55, E57, E59, and E61 are transition or inquiry records. No official assessment has been requested.",
+        "current_goal_gap": "No candidate has demonstrated the required 98% official success rate. T3 remains seven complete holds short of the corresponding 160-episode development threshold, while T16 matched T3's success and first reach but increased interruptions from four to eight. No best-known role is assigned and official assessment is not justified.",
+        "current_synthesis": "Established evidence: M1 found substantial local plant hold margin and no sampled self-contact in valid target branches, so broad mechanical infeasibility is not the leading explanation. T3's incremental-radius transfer improved the learned regime to 157 first reaches and 153 complete holds with four interruptions, but left seven localized negative-angle failures. M10 found high-speed residual arrivals and generally negative one-interval retention margins. M25 showed that all seven failures were folded-branch arrivals with negative mean radial velocity and poor zero-action retention, while successful folded arrivals existed in the same sector; this supports a localized arrival-state mechanism but does not prove causation. T13's route-conditioned joint damping, T15's generic pre-arrival radial shaping, and T16's localized correction did not improve complete success; T16 modestly improved failed-case margin but increased interruptions from four to eight. These are recipe-specific negative results: they reject the tested controllers, not branch conditioning, trajectory awareness, or terminal control generally. I15 therefore carries forward a competing distinction between a safely correctable trajectory-dependent braking state and a margin signal that cannot be converted into uninterrupted holds without destabilizing T3's learned regime.",
+        "decision_frontier": "The unresolved scientific distinction is whether branch- and trajectory-conditioned pre-arrival shaping can improve the negative-angle sampled braking margin while explicitly protecting terminal hold continuity, or whether the observed arrival-margin association is not safely actionable. I15 should use matched evidence against T3: at least 157 first reaches, at least 157 complete holds, no more than four interruptions, and a meaningful improvement in negative-angle arrival or zero-action retention margin would support the mechanism; interruption regression or failure to preserve T3 would make this tested shaping recipe limited and redirect the campaign.",
+        "evidence_references": [
+          "M1",
+          "T15",
+          "M19",
+          "M23",
+          "E55",
+          "M25",
+          "E57",
+          "T16",
+          "M27",
+          "E59",
+          "E61"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 of 200 official episodes to complete an uninterrupted 100-step hold. T3 remains the strongest development candidate at 153 of 160 complete holds, with 157 first reaches and four hold interruptions. I15 now tests whether a different branch- and trajectory-conditioned pre-arrival shaping mechanism can close the remaining localized negative-angle gap without sacrificing those protections.",
+        "inquiry_id": null,
+        "next_direction_or_closure": "Goal review opened I15 through E61. This checkpoint ends the goal-review session. In the fresh I15 inquiry session, choose one bounded branch- and trajectory-conditioned pre-arrival velocity-shaping intervention that differs mechanistically from T16, evaluate it against T3 with the stated hold and margin protections, and close or redirect I15 from that matched evidence.",
+        "next_question": "Can branch- and trajectory-conditioned pre-arrival velocity shaping improve negative-angle sampled braking margin while preserving T3's uninterrupted hold behavior and first-reach coverage?",
+        "session_id": "S30"
+      },
+      "presentation": {
+        "backend_session_id": "07566ebb-352f-4a5a-b651-74d9a5fd184d",
+        "campaign_id": "1ae27a27-6880-4ca6-9d50-e6498e771cb7",
+        "campaign_usage": "1h22m | 270.47 AIU | prompt 46.5m (87% cached) | output 303.9k",
+        "session_id": "S30",
+        "session_kind": "goal_review",
+        "session_usage": "1m17s | 8.81 AIU | prompt 1.1m (77% cached) | output 4.8k"
+      },
+      "result": {
+        "session_id": "S30",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "20518045d62d7368eb371af7680a4581dd6aefb8",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E62",
+    "inquiry_id": null,
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "T3:checkpoint-120832 remains the strongest evidence-backed development candidate at 153/160 complete holds, 157/160 first reaches, and four hold interruptions across the cited matched panels. T16:checkpoint-120832 matched T3's complete holds and first reaches but increased interruptions to eight and is not promoted. No candidate has a working, best-known, or retained role.",
+        "completed_operations": [
+          "E61"
+        ],
+        "cumulative_resource_use": "The goal-review session used no training or measurement allocation. It recorded E61, opening I15. Prior cited resources include T15's 120000-step transfer and M19/M23, M25's T3 arrival-strata measurement, T16's 120000-step transfer, and M27's paired evaluation and residual-margin analyses; E54, E55, E57, E59, and E61 are transition or inquiry records. No official assessment has been requested.",
+        "current_goal_gap": "No candidate has demonstrated the required 98% official success rate. T3 remains seven complete holds short of the corresponding 160-episode development threshold, while T16 matched T3's success and first reach but increased interruptions from four to eight. No best-known role is assigned and official assessment is not justified.",
+        "current_synthesis": "Established evidence: M1 found substantial local plant hold margin and no sampled self-contact in valid target branches, so broad mechanical infeasibility is not the leading explanation. T3's incremental-radius transfer improved the learned regime to 157 first reaches and 153 complete holds with four interruptions, but left seven localized negative-angle failures. M10 found high-speed residual arrivals and generally negative one-interval retention margins. M25 showed that all seven failures were folded-branch arrivals with negative mean radial velocity and poor zero-action retention, while successful folded arrivals existed in the same sector; this supports a localized arrival-state mechanism but does not prove causation. T13's route-conditioned joint damping, T15's generic pre-arrival radial shaping, and T16's localized correction did not improve complete success; T16 modestly improved failed-case margin but increased interruptions from four to eight. These are recipe-specific negative results: they reject the tested controllers, not branch conditioning, trajectory awareness, or terminal control generally. I15 therefore carries forward a competing distinction between a safely correctable trajectory-dependent braking state and a margin signal that cannot be converted into uninterrupted holds without destabilizing T3's learned regime.",
+        "decision_frontier": "The unresolved scientific distinction is whether branch- and trajectory-conditioned pre-arrival shaping can improve the negative-angle sampled braking margin while explicitly protecting terminal hold continuity, or whether the observed arrival-margin association is not safely actionable. I15 should use matched evidence against T3: at least 157 first reaches, at least 157 complete holds, no more than four interruptions, and a meaningful improvement in negative-angle arrival or zero-action retention margin would support the mechanism; interruption regression or failure to preserve T3 would make this tested shaping recipe limited and redirect the campaign.",
+        "evidence_references": [
+          "M1",
+          "T15",
+          "M19",
+          "M23",
+          "E55",
+          "M25",
+          "E57",
+          "T16",
+          "M27",
+          "E59",
+          "E61"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 of 200 official episodes to complete an uninterrupted 100-step hold. T3 remains the strongest development candidate at 153 of 160 complete holds, with 157 first reaches and four hold interruptions. I15 now tests whether a different branch- and trajectory-conditioned pre-arrival shaping mechanism can close the remaining localized negative-angle gap without sacrificing those protections.",
+        "next_direction_or_closure": "Goal review opened I15 through E61. This checkpoint ends the goal-review session. In the fresh I15 inquiry session, choose one bounded branch- and trajectory-conditioned pre-arrival velocity-shaping intervention that differs mechanistically from T16, evaluate it against T3 with the stated hold and margin protections, and close or redirect I15 from that matched evidence.",
+        "next_question": "Can branch- and trajectory-conditioned pre-arrival velocity shaping improve negative-angle sampled braking margin while preserving T3's uninterrupted hold behavior and first-reach coverage?"
+      }
+    },
+    "request_fingerprint": "9b3d319c8065fefc3a90dbf729d0852577b0642655401c32f3a10e72eff76295",
+    "session_id": "S30",
+    "supersedes": null
+  },
   "pi_checkpoint": {
-    "candidates_and_roles": "T3:checkpoint-120832 remains the strongest evidence-backed development candidate at 153/160 complete holds, 157 first reaches, and four interruptions. T16:checkpoint-120832 is not promoted because it matched success and first reach but increased interruptions to eight despite modest failed-case margin improvement. T15 remains rejected for its tested generic radial recipe. No working, best-known, or retained role is assigned.",
+    "candidates_and_roles": "T3:checkpoint-120832 remains the strongest evidence-backed development candidate at 153/160 complete holds, 157/160 first reaches, and four hold interruptions across the cited matched panels. T16:checkpoint-120832 matched T3's complete holds and first reaches but increased interruptions to eight and is not promoted. No candidate has a working, best-known, or retained role.",
     "completed_operations": [
-      "T16",
-      "M27",
-      "E59"
+      "E61"
     ],
-    "cumulative_resource_use": "I14 used one 120000-step transfer training allocation (T16), one matched 160-episode research evaluation with T3 control (M27), and two matched 160-episode residual-margin analyses within M27. The inquiry-close record is E59. Prior cumulative use includes T15's 120000-step transfer, M19, M23, and the M25 T3 arrival-strata measurement; failed execution M26 contributes no scientific evidence.",
-    "current_goal_gap": "T3 remains the strongest development behavior at 157 of 160 first reaches, 153 of 160 complete holds, and four hold interruptions. T16 matched first reaches and complete holds but increased interruptions to eight. No candidate has demonstrated the required 98% official success rate.",
-    "current_synthesis": "Established evidence: T3's incremental-radius transfer preserved broad route coverage but left seven negative-angle failures. M10 found high-speed residual arrivals and generally negative one-interval retention margins, supporting a policy-reachable braking-margin bottleneck. T13's route-conditioned joint damping changed no paired outcomes. T14's tested plant-level task-space radial braking layer reduced success from 153/160 to 149/160, first reaches from 157 to 156, and increased hold interruptions from four to 71; this rejects that radial action recipe, not plant-level shaping in general. T15's generic pre-arrival radial velocity shaping reached 159 targets but remained at 153 complete holds, increased interruptions from four to nine, and slightly worsened the zero-action mean minimum retention margin; this is recipe-specific negative evidence. M25 showed that all seven T3 failures were folded-branch arrivals with negative mean radial velocity and poor zero-action retention, while successful folded arrivals existed in the same negative-angle sector, supporting a localized arrival-state mechanism. I14's T16 localized intervention preserved T3's 157 first reaches and 153 complete holds, but increased terminal interruptions from four to eight. Its seven failed-case mean zero-action minimum retention margin improved modestly from -0.015134 m to -0.013948 m, without improving complete success. Thus the intervention changed the measured arrival state but did not safely convert it into uninterrupted holds. I14 closes as a limited, recipe-specific negative result; the evidence does not reject all branch-conditioned or trajectory-aware control designs.",
-    "decision_frontier": "The next scientific decision is whether to pursue a different mechanism for the same localized folded-branch braking bottleneck, such as trajectory-aware state feedback that explicitly protects the terminal hold, or to redirect toward another goal-limiting mechanism. M25 establishes that successful and failed folded arrivals coexist with sharply different signed radial velocity and zero-action retention. M27 establishes that the tested localized pre-arrival correction can improve failed-case margin modestly while increasing hold interruptions. A future intervention would need matched evidence showing at least 157 first reaches, at least 157 complete holds, no more than four interruptions, and a meaningful improvement in the negative-angle arrival or zero-action retention margin; otherwise the shaping line should be treated as recipe-limited and redirected.",
+    "cumulative_resource_use": "The goal-review session used no training or measurement allocation. It recorded E61, opening I15. Prior cited resources include T15's 120000-step transfer and M19/M23, M25's T3 arrival-strata measurement, T16's 120000-step transfer, and M27's paired evaluation and residual-margin analyses; E54, E55, E57, E59, and E61 are transition or inquiry records. No official assessment has been requested.",
+    "current_goal_gap": "No candidate has demonstrated the required 98% official success rate. T3 remains seven complete holds short of the corresponding 160-episode development threshold, while T16 matched T3's success and first reach but increased interruptions from four to eight. No best-known role is assigned and official assessment is not justified.",
+    "current_synthesis": "Established evidence: M1 found substantial local plant hold margin and no sampled self-contact in valid target branches, so broad mechanical infeasibility is not the leading explanation. T3's incremental-radius transfer improved the learned regime to 157 first reaches and 153 complete holds with four interruptions, but left seven localized negative-angle failures. M10 found high-speed residual arrivals and generally negative one-interval retention margins. M25 showed that all seven failures were folded-branch arrivals with negative mean radial velocity and poor zero-action retention, while successful folded arrivals existed in the same sector; this supports a localized arrival-state mechanism but does not prove causation. T13's route-conditioned joint damping, T15's generic pre-arrival radial shaping, and T16's localized correction did not improve complete success; T16 modestly improved failed-case margin but increased interruptions from four to eight. These are recipe-specific negative results: they reject the tested controllers, not branch conditioning, trajectory awareness, or terminal control generally. I15 therefore carries forward a competing distinction between a safely correctable trajectory-dependent braking state and a margin signal that cannot be converted into uninterrupted holds without destabilizing T3's learned regime.",
+    "decision_frontier": "The unresolved scientific distinction is whether branch- and trajectory-conditioned pre-arrival shaping can improve the negative-angle sampled braking margin while explicitly protecting terminal hold continuity, or whether the observed arrival-margin association is not safely actionable. I15 should use matched evidence against T3: at least 157 first reaches, at least 157 complete holds, no more than four interruptions, and a meaningful improvement in negative-angle arrival or zero-action retention margin would support the mechanism; interruption regression or failure to preserve T3 would make this tested shaping recipe limited and redirect the campaign.",
     "evidence_references": [
-      "E54",
+      "M1",
       "T15",
       "M19",
       "M23",
@@ -24138,14 +24284,15 @@
       "E57",
       "T16",
       "M27",
-      "E59"
+      "E59",
+      "E61"
     ],
-    "human_goal_connection": "The campaign remains below the human goal: T3 and T16 each completed 153 of 160 development holds, below the 196 of 200 official-success requirement. I14 tested whether localized folded-branch, negative-angle pre-arrival shaping could repair this gap without sacrificing uninterrupted holds.",
-    "inquiry_id": "I14",
-    "next_direction_or_closure": "I14 is closed with a limited, recipe-specific negative result. The fresh goal-review session should carry forward the same exact question and leading localized folded-branch braking mechanism, while recognizing that the tested pre-arrival correction is unsafe under the uninterrupted-hold criterion. The next inquiry should be selected only after comparing this result with the human goal gap and should discriminate a different terminal-safe control mechanism rather than repeating T16.",
+    "human_goal_connection": "The human goal requires at least 196 of 200 official episodes to complete an uninterrupted 100-step hold. T3 remains the strongest development candidate at 153 of 160 complete holds, with 157 first reaches and four hold interruptions. I15 now tests whether a different branch- and trajectory-conditioned pre-arrival shaping mechanism can close the remaining localized negative-angle gap without sacrificing those protections.",
+    "inquiry_id": null,
+    "next_direction_or_closure": "Goal review opened I15 through E61. This checkpoint ends the goal-review session. In the fresh I15 inquiry session, choose one bounded branch- and trajectory-conditioned pre-arrival velocity-shaping intervention that differs mechanistically from T16, evaluate it against T3 with the stated hold and margin protections, and close or redirect I15 from that matched evidence.",
     "next_question": "Can branch- and trajectory-conditioned pre-arrival velocity shaping improve negative-angle sampled braking margin while preserving T3's uninterrupted hold behavior and first-reach coverage?",
-    "scientific_commit": "018b809faa32abaa93f5086773cb667c112c0c8f",
-    "session_id": "S29"
+    "scientific_commit": "20518045d62d7368eb371af7680a4581dd6aefb8",
+    "session_id": "S30"
   },
   "schema_version": 6,
   "scientific_model": {
@@ -24153,21 +24300,6 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "07566ebb-352f-4a5a-b651-74d9a5fd184d",
-    "id": "S30",
-    "inquiry_id": null,
-    "kind": "goal_review",
-    "objective": "Use the completed evidence to update the scientific direction toward the human goal. Request measurements when they resolve an uncertainty or develop the method. Then choose one outcome: request the official assessment, or open one bounded goal-linked inquiry.",
-    "operation_ids": [
-      "E61"
-    ],
-    "scientific_parent_commit": "ece8a9e70f99478114f22cfb8093366e355dbb4d"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
