@@ -88,3 +88,4 @@
 | E52 | inquiry | I13 | completed |
 | E53 | checkpoint | - | checkpointed |
 | E54 | restore_recipe | I13 | restored |
+| T15 | training | I13 | completed |
