@@ -94,3 +94,4 @@
 | M21 | measurement | I13 | failed |
 | M22 | measurement | I13 | failed |
 | M23 | measurement | I13 | completed |
+| E55 | inquiry | I13 | completed |
