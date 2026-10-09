@@ -483,47 +483,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "open",
-        "inquiry": {
-          "closure_condition": "Close the inquiry when completed candidate evidence establishes a bounded positive, negative, limited, or inconclusive answer about full-distribution stable holds and the dominant failure mechanism: either a candidate reaches the required success level with consistent radius-binned reach and hold diagnostics, or completed evidence redirects the route toward dynamics/representation or branch/limit coverage work, or the available evidence cannot discriminate those mechanisms.",
-          "goal_connection": "The human goal requires at least 196 of 200 official episodes to complete an uninterrupted 100-step hold. This inquiry directly measures whether learned behavior can turn the characterized actuator authority and reachable geometry into that capability across the full official radius and angular distribution.",
-          "handoff_conclusion": "Observation from completed M1: the native compiled model has 0.5 rad/s damping, 0.01 rad2 armature, 5-unit motor gear, and geom-derived link masses of about 0.099 kg and 0.052 kg; saturated one-control-interval pulses produce initial accelerations of about 414-492 rad/s2 and peak joint speeds of about 5.5-6.1 rad/s, then return to near-zero velocity after 24 further 20 ms intervals. Interpretation: actuation is not obviously too weak, but the transient authority and configuration-dependent coupling make velocity shaping central to the hold problem. Observation from M1: all 576 radius-angle grid targets have at least one feasible analytic IK solution; 512 have both branches feasible and 64 have only one feasible branch, with no target lacking a solution. Interpretation: the official annulus is geometrically reachable, so a primary unreachable-target explanation is contradicted, while branch selection and limit margin remain consequential near angular boundaries and inner radii. The pulse experiment did not exercise target tracking, policy behavior, hold interruption, substep excursions, or the training distribution, so it cannot establish that strong action authority yields a successful learned policy or that branch asymmetry causes failures.",
-          "handoff_question": "Under the exact official target distribution and uninterrupted endpoint-hold semantics, can a learned policy achieve stable holds across both the inner and outer radius bands, and are any failures dominated by approach velocity/oscillation or by branch and limit-margin coverage?",
-          "handoff_source_session_id": "S1",
-          "id": "I1",
-          "opened_in_session": "S2",
-          "question": "Under the exact official target distribution and uninterrupted endpoint-hold semantics, can a learned policy achieve stable holds across both the inner and outer radius bands, and are any failures dominated by approach velocity/oscillation or by branch and limit-margin coverage?",
-          "rationale": "M1 established substantial but transient actuation authority and at least one feasible analytic IK solution for every sampled official target, while also showing one-branch regions and configuration-dependent dynamics. It did not measure any learned policy, inner-band behavior, first reach, hold interruption, entry velocity, oscillation, or substep behavior. Therefore the campaign should not request official assessment or infer a mechanism from M1. A bounded inquiry preserves the exact unresolved distinction and allows the next session to select the first evidence-producing operation rather than presupposing training, measurement, or a recipe.",
-          "reframes": []
-        }
-      },
-      "result": {
-        "action": "open",
-        "inquiry_id": "I1",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E2",
-    "inquiry_id": null,
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "open",
-        "closure_condition": "Close the inquiry when completed candidate evidence establishes a bounded positive, negative, limited, or inconclusive answer about full-distribution stable holds and the dominant failure mechanism: either a candidate reaches the required success level with consistent radius-binned reach and hold diagnostics, or completed evidence redirects the route toward dynamics/representation or branch/limit coverage work, or the available evidence cannot discriminate those mechanisms.",
-        "goal_connection": "The human goal requires at least 196 of 200 official episodes to complete an uninterrupted 100-step hold. This inquiry directly measures whether learned behavior can turn the characterized actuator authority and reachable geometry into that capability across the full official radius and angular distribution.",
-        "question": "Under the exact official target distribution and uninterrupted endpoint-hold semantics, can a learned policy achieve stable holds across both the inner and outer radius bands, and are any failures dominated by approach velocity/oscillation or by branch and limit-margin coverage?",
-        "rationale": "M1 established substantial but transient actuation authority and at least one feasible analytic IK solution for every sampled official target, while also showing one-branch regions and configuration-dependent dynamics. It did not measure any learned policy, inner-band behavior, first reach, hold interruption, entry velocity, oscillation, or substep behavior. Therefore the campaign should not request official assessment or infer a mechanism from M1. A bounded inquiry preserves the exact unresolved distinction and allows the next session to select the first evidence-producing operation rather than presupposing training, measurement, or a recipe."
-      }
-    },
-    "request_fingerprint": "3fa71ec26a6d52ad3f2fb986b44abb7c2901c496a453e45955d3d6ae9e72473d",
-    "session_id": "S2",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "No learned candidates exist; working, best-known, and retained roles remain empty.",
     "completed_operations": [
