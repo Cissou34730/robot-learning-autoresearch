@@ -14876,72 +14876,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "candidate_id": "T1:checkpoint-120832",
-        "parameters": {
-          "algorithm": {
-            "name": "ppo"
-          },
-          "policy": {
-            "activation": "tanh",
-            "net_arch": [
-              64,
-              64
-            ]
-          },
-          "ppo": {
-            "batch_size": 64,
-            "ent_coef": 0.01,
-            "gae_lambda": 0.95,
-            "gamma": 0.99,
-            "learning_rate": 0.0003,
-            "n_steps": 1024
-          },
-          "training": {
-            "checkpoint_every_steps": 5000,
-            "n_envs": 1
-          }
-        },
-        "parent": "704bda91e822fc41c3c76dd2479310938b417fdb",
-        "remove_created": [],
-        "restore": [
-          "robot_learning/scenario/policy_io.py"
-        ],
-        "session_id": "S17"
-      },
-      "pre_restore_manifest": [
-        {
-          "exists": true,
-          "fingerprint": "ade43c157c6e2bed339ef5187de95eac668b7badc59f8fd06cf6a01afaef0be4",
-          "path": "robot_learning/scenario/policy_io.py"
-        }
-      ],
-      "result": {
-        "candidate": "T1:checkpoint-120832",
-        "restored_paths": [
-          "robot_learning/scenario/policy_io.py"
-        ],
-        "scientific_commit": "704bda91e822fc41c3c76dd2479310938b417fdb",
-        "status": "restored"
-      }
-    },
-    "failure": null,
-    "id": "E35",
-    "inquiry_id": "I8",
-    "kind": "restore_recipe",
-    "progress": "completed",
-    "request": {
-      "restore_recipe": {
-        "candidate": "T1:checkpoint-120832",
-        "reason": "I8 requires a policy-side test against T1's strongest measured direct-action behavior, while the active workspace currently contains the rejected T7 selective joint-limit action guard. Restore T1 to preserve its uniform official target coverage, identity action mapping, observation representation, reward, and hold semantics before selecting the next policy-side operation. This clean baseline is necessary to attribute any subsequent change to the intended policy-side method rather than to residual T7 action-interface code."
-      }
-    },
-    "request_fingerprint": "450a0e90a7002a7556eafd5fe3375e4a83d591c0f2675f632c2614970ac5efde",
-    "session_id": "S17",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T1:checkpoint-120832 remains the strongest evidence-backed development candidate at 150/160 successes with 40/40 inner-band successes. T7:checkpoint-120832 is rejected for I7 based on M11. T2, T3, T4, T5 and T6 remain rejected as recipe-specific negative routes. No candidate has an assigned working, best-known or retained role because none has met the development threshold or received a protected assessment.",
     "completed_operations": [
