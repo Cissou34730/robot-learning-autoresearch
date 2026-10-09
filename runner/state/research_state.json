@@ -1,5 +1,16 @@
 {
-  "active_inquiry": null,
+  "active_inquiry": {
+    "closure_condition": "Close when completed evidence classifies the ten terminal-candidate failures by first entry, hold interruption, target radius and angle, and IK-branch behavior well enough to select or reject a capture, stabilization, or geometry/representation intervention; if no class dominates, record the mixed result and the next discriminating method.",
+    "goal_connection": "The best development candidate succeeds on 150 of 160 episodes, below the required 98% complete uninterrupted-hold objective. Identifying whether the ten failures are capture, regulation, or geometry/branch-specific failures determines whether the next intervention should change transient control, hold stabilization, or training coverage and representation.",
+    "handoff_conclusion": "Observed: M5 found at least one joint-limit-feasible IK branch for all 576 sampled official radius-angle combinations, while the open and folded branches were individually feasible for 84.375% and 85.764% of samples. M5 also measured substantial action-induced endpoint motion and settling within approximately 7-9 control steps in the tested configurations, with the reset Jacobian singular and non-singular representative configurations better conditioned. Interpretation: workspace impossibility is not the leading explanation for the remaining goal gap, and the plant has enough passive settling that a learned state-feedback controller can plausibly solve the task, although the probe is not a policy-level hold test. Observed: T1 training on the full official radius range produced checkpoints whose training success rose to 0.58, but training statistics are not development evidence. Observed: matched-seed M6 evaluation gave 142/160 successes (88.75%) for checkpoint-115712 and 150/160 (93.75%) for checkpoint-120832; the terminal checkpoint won 10 shared episodes versus 2 for the reference, with 12 discordant episodes. Interpretation: continued optimization under the full-radius recipe improves measured complete-hold performance, so the route is supported, but the terminal candidate remains below the human goal. Limit: the current record exposes aggregate success and the existence of per-episode diagnostics, not an interpreted breakdown of the ten failures by radius, angle, first reach, hold length, or interruption.",
+    "handoff_question": "Among the ten failures of T1:checkpoint-120832 on the matched 160-episode development panel, are failures primarily complete-hold interruptions after first entry, late or absent capture, or concentration in specific target-radius/angle or IK-branch regions, and which failure mechanism should determine the next intervention toward 98% official success?",
+    "handoff_source_session_id": "S1",
+    "id": "I1",
+    "opened_in_session": "S2",
+    "question": "Among the ten failures of T1:checkpoint-120832 on the matched 160-episode development panel, are failures primarily complete-hold interruptions after first entry, late or absent capture, or concentration in specific target-radius/angle or IK-branch regions, and which failure mechanism should determine the next intervention toward 98% official success?",
+    "rationale": "M5 ruled out broad workspace impossibility and showed that the plant can settle, while M6 established that the terminal candidate reaches 93.75% but did not interpret its diagnostics. Direct reading of the M6 artifact shows seven failures with no recorded tolerance entry, one first entry at step 116, and two early entries followed by short holds, so late or absent capture currently appears more prevalent than post-entry interruption. The failures also appear concentrated in particular angle sectors and span both inner and outer radii, but the artifact does not expose IK-branch behavior. This inquiry will distinguish a recipe-specific capture/geometry deficit from a local hold-regulation deficit before changing the learning route.",
+    "reframes": []
+  },
   "campaign": {
     "base_commit": "810461301b97f055d55cb4dcb9df52971b6a1def",
     "id": "58dcd817-4fed-42e6-854b-58f20408e6a1",
@@ -830,16 +841,16 @@
     }
   },
   "counters": {
-    "event": 1,
-    "inquiry": 0,
+    "event": 2,
+    "inquiry": 1,
     "measurement": 6,
-    "session": 1,
+    "session": 2,
     "training": 1
   },
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -2046,9 +2057,72 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-09T08:31:09Z",
+      "error": null,
+      "id": "E2",
+      "inquiry_id": "I1",
+      "kind": "inquiry",
+      "request": {
+        "action": "open",
+        "closure_condition": "Close when completed evidence classifies the ten terminal-candidate failures by first entry, hold interruption, target radius and angle, and IK-branch behavior well enough to select or reject a capture, stabilization, or geometry/representation intervention; if no class dominates, record the mixed result and the next discriminating method.",
+        "goal_connection": "The best development candidate succeeds on 150 of 160 episodes, below the required 98% complete uninterrupted-hold objective. Identifying whether the ten failures are capture, regulation, or geometry/branch-specific failures determines whether the next intervention should change transient control, hold stabilization, or training coverage and representation.",
+        "question": "Among the ten failures of T1:checkpoint-120832 on the matched 160-episode development panel, are failures primarily complete-hold interruptions after first entry, late or absent capture, or concentration in specific target-radius/angle or IK-branch regions, and which failure mechanism should determine the next intervention toward 98% official success?",
+        "rationale": "M5 ruled out broad workspace impossibility and showed that the plant can settle, while M6 established that the terminal candidate reaches 93.75% but did not interpret its diagnostics. Direct reading of the M6 artifact shows seven failures with no recorded tolerance entry, one first entry at step 116, and two early entries followed by short holds, so late or absent capture currently appears more prevalent than post-entry interruption. The failures also appear concentrated in particular angle sectors and span both inner and outer radii, but the artifact does not expose IK-branch behavior. This inquiry will distinguish a recipe-specific capture/geometry deficit from a local hold-regulation deficit before changing the learning route."
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I1",
+        "status": "completed"
+      },
+      "session_id": "S2",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "open",
+        "inquiry": {
+          "closure_condition": "Close when completed evidence classifies the ten terminal-candidate failures by first entry, hold interruption, target radius and angle, and IK-branch behavior well enough to select or reject a capture, stabilization, or geometry/representation intervention; if no class dominates, record the mixed result and the next discriminating method.",
+          "goal_connection": "The best development candidate succeeds on 150 of 160 episodes, below the required 98% complete uninterrupted-hold objective. Identifying whether the ten failures are capture, regulation, or geometry/branch-specific failures determines whether the next intervention should change transient control, hold stabilization, or training coverage and representation.",
+          "handoff_conclusion": "Observed: M5 found at least one joint-limit-feasible IK branch for all 576 sampled official radius-angle combinations, while the open and folded branches were individually feasible for 84.375% and 85.764% of samples. M5 also measured substantial action-induced endpoint motion and settling within approximately 7-9 control steps in the tested configurations, with the reset Jacobian singular and non-singular representative configurations better conditioned. Interpretation: workspace impossibility is not the leading explanation for the remaining goal gap, and the plant has enough passive settling that a learned state-feedback controller can plausibly solve the task, although the probe is not a policy-level hold test. Observed: T1 training on the full official radius range produced checkpoints whose training success rose to 0.58, but training statistics are not development evidence. Observed: matched-seed M6 evaluation gave 142/160 successes (88.75%) for checkpoint-115712 and 150/160 (93.75%) for checkpoint-120832; the terminal checkpoint won 10 shared episodes versus 2 for the reference, with 12 discordant episodes. Interpretation: continued optimization under the full-radius recipe improves measured complete-hold performance, so the route is supported, but the terminal candidate remains below the human goal. Limit: the current record exposes aggregate success and the existence of per-episode diagnostics, not an interpreted breakdown of the ten failures by radius, angle, first reach, hold length, or interruption.",
+          "handoff_question": "Among the ten failures of T1:checkpoint-120832 on the matched 160-episode development panel, are failures primarily complete-hold interruptions after first entry, late or absent capture, or concentration in specific target-radius/angle or IK-branch regions, and which failure mechanism should determine the next intervention toward 98% official success?",
+          "handoff_source_session_id": "S1",
+          "id": "I1",
+          "opened_in_session": "S2",
+          "question": "Among the ten failures of T1:checkpoint-120832 on the matched 160-episode development panel, are failures primarily complete-hold interruptions after first entry, late or absent capture, or concentration in specific target-radius/angle or IK-branch regions, and which failure mechanism should determine the next intervention toward 98% official success?",
+          "rationale": "M5 ruled out broad workspace impossibility and showed that the plant can settle, while M6 established that the terminal candidate reaches 93.75% but did not interpret its diagnostics. Direct reading of the M6 artifact shows seven failures with no recorded tolerance entry, one first entry at step 116, and two early entries followed by short holds, so late or absent capture currently appears more prevalent than post-entry interruption. The failures also appear concentrated in particular angle sectors and span both inner and outer radii, but the artifact does not expose IK-branch behavior. This inquiry will distinguish a recipe-specific capture/geometry deficit from a local hold-regulation deficit before changing the learning route.",
+          "reframes": []
+        }
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I1",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E2",
+    "inquiry_id": null,
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "open",
+        "closure_condition": "Close when completed evidence classifies the ten terminal-candidate failures by first entry, hold interruption, target radius and angle, and IK-branch behavior well enough to select or reject a capture, stabilization, or geometry/representation intervention; if no class dominates, record the mixed result and the next discriminating method.",
+        "goal_connection": "The best development candidate succeeds on 150 of 160 episodes, below the required 98% complete uninterrupted-hold objective. Identifying whether the ten failures are capture, regulation, or geometry/branch-specific failures determines whether the next intervention should change transient control, hold stabilization, or training coverage and representation.",
+        "question": "Among the ten failures of T1:checkpoint-120832 on the matched 160-episode development panel, are failures primarily complete-hold interruptions after first entry, late or absent capture, or concentration in specific target-radius/angle or IK-branch regions, and which failure mechanism should determine the next intervention toward 98% official success?",
+        "rationale": "M5 ruled out broad workspace impossibility and showed that the plant can settle, while M6 established that the terminal candidate reaches 93.75% but did not interpret its diagnostics. Direct reading of the M6 artifact shows seven failures with no recorded tolerance entry, one first entry at step 116, and two early entries followed by short holds, so late or absent capture currently appears more prevalent than post-entry interruption. The failures also appear concentrated in particular angle sectors and span both inner and outer radii, but the artifact does not expose IK-branch behavior. This inquiry will distinguish a recipe-specific capture/geometry deficit from a local hold-regulation deficit before changing the learning route."
+      }
+    },
+    "request_fingerprint": "9f61fe25606c2c0424e0744f07089ac04e409d4b4dbc1128bd70806b41b6ec63",
+    "session_id": "S2",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "No formal model role has been assigned. T1:checkpoint-120832 is the strongest evidence-backed development candidate at 93.75% on M6; T1:checkpoint-115712 is the matched non-terminal reference at 88.75%. Neither meets the human goal or has official assessment evidence.",
     "completed_operations": [
@@ -2078,6 +2152,21 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "0956eb53-2cca-4ca2-a503-063c680da136",
+    "id": "S2",
+    "inquiry_id": null,
+    "kind": "goal_review",
+    "objective": "Use the completed evidence to update the scientific direction toward the human goal. Request measurements when they resolve an uncertainty or develop the method. Then choose one outcome: request the official assessment, or open one bounded goal-linked inquiry.",
+    "operation_ids": [
+      "E2"
+    ],
+    "scientific_parent_commit": "13914bcc9dd99d234106b5e9528e12ed004df49b"
+  },
   "terminal_state": null
 }
