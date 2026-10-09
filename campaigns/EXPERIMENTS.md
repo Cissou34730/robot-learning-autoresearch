@@ -74,3 +74,4 @@
 | E42 | inquiry | I10 | completed |
 | E43 | checkpoint | - | checkpointed |
 | T11 | training | I10 | completed |
+| M19 | measurement | I10 | completed |
