@@ -5742,7 +5742,7 @@
     }
   },
   "counters": {
-    "event": 28,
+    "event": 29,
     "inquiry": 7,
     "measurement": 8,
     "session": 15,
@@ -5751,7 +5751,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -11173,18 +11173,186 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-09T00:56:25Z",
+      "error": null,
+      "id": "E29",
+      "inquiry_id": "I7",
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "T3:checkpoint-120832 remains the strongest measured development candidate at 95.625 percent on M4, M6, and M8, with 157/160 first reaches and 4 hold interruptions in the corresponding matched development evidence. T9:checkpoint-120832 is an intervention-limited null matching T3 at 95.625 percent with zero discordant episodes. T7 remains a negative representation intervention at 95.0 percent with reduced first reach and increased interruptions. No candidate has a working, best-known, or retained role.",
+        "completed_operations": [
+          "T9",
+          "M8",
+          "E28"
+        ],
+        "cumulative_resource_use": "The campaign used T1, T2, T3, T5, T6, T7, and T9 training allocations, each completing 120832 rollout-aligned steps where applicable. Development measurements include M1 and matched 160-episode panels M2 through M8. T8 failed validation before training and is execution history, not evidence. E28 closed I7 after M8; no candidate role has been assigned and no official assessment has been requested.",
+        "current_goal_gap": "The best measured development performance remains 95.625 percent from T3, seven successes short of the corresponding 98 percent development threshold. No candidate has been assigned a best-known role and no official assessment has been requested.",
+        "current_synthesis": "M1 established nonzero compiled plant authority, no sampled self-contact in valid target branches, and complete local 100-step holds under zero input and bounded local PD. T1 exposed reach-limited, geometry-conditioned failures. T3's controlled incremental radius transfer improved success to 95.625 percent, first reach to 157/160, and reduced hold interruptions to 4, supporting distribution-shift sensitivity as a leading explanation for the earlier reach deficit. T5's residual-angle oversampling recipe reduced performance to 93.125 percent with 511 interruptions, rejecting that recipe but not incremental transfer generally. T6 preserved T3's curriculum and changed only hold-exit reward handling; M6 found identical 95.625 percent outcomes with zero discordant episodes, rejecting that tested reward-only intervention as sufficient. T7's explicit branch-feasibility feature preserved the residual -130 to -150 degree failure cluster, reduced first reach to 156/160, and increased interruptions from 4 to 13, rejecting that representation and recipe as sufficient. T9 then implemented a different action intervention: a stateful first-order damped command mapper serialized with the policy while preserving direct actuator semantics. M8 found T9 exactly matched T3 at 95.625 percent with zero discordant episodes. Thus I7 closes negatively for the tested action-space redesign: it preserved the supported reach and hold regime but did not alter the residual failures. The leading unresolved explanation now shifts toward insufficient discrete-time control margin, plant-state sensitivity, or numerical geometry in the residual radius-angle cases; this remains a hypothesis, not established causation. T8 was an infrastructure validation failure and is execution history, not scientific evidence.",
+        "decision_frontier": "The unresolved distinction is whether T3's persistent localized radius-angle failures reflect insufficient plant-state or discrete-time/numerical control margin, or instead a policy-reachable state limitation that another learning representation could still overcome. Targeted measurements of compiled dynamics and near-target rollouts from matched residual-case states should compare available braking/retention margin, sampled boundary crossings, final distance, and branch/angle dependence. Repeated exits or narrow margins under strong local state feedback would support a plant or numerical limitation and redirect work toward task-compatible control or robustness changes; robust local retention with failures only under learned arrival states would preserve policy-level explanations and justify a different training or representation intervention.",
+        "evidence_references": [
+          "M1",
+          "M4",
+          "E12",
+          "M5",
+          "E16",
+          "M6",
+          "E20",
+          "E22",
+          "T7",
+          "M7",
+          "E24",
+          "E26",
+          "T9",
+          "M8",
+          "E28"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 of 200 official episodes to complete an uninterrupted 100-step hold. T3 remains the strongest measured development candidate at 153/160 successes (95.625 percent), leaving seven development failures relative to the corresponding 98 percent threshold. I7 tested whether action structure and explicit terminal stabilization could close that gap without sacrificing reach; the result was negative for the tested action mapper, so the campaign must identify whether the remaining failures are physically or discretely controllable before selecting another policy intervention or requesting official assessment.",
+        "next_direction_or_closure": "I7 is closed with a negative, intervention-limited result. M8 showed that the tested first-order damped action mapper preserved T3's behavior but did not remove the localized failures, so repeating this action or reward-only route is not justified. The next fresh inquiry should perform targeted compiled-plant and near-target state-feedback measurements to determine whether the residual cases are limited by sampled control margin, numerical geometry, or learned arrival states. That result will choose between a plant/control-robustness direction and a new policy-learning intervention; no official assessment is justified before the remaining gap is resolved or a best-known role is explicitly assigned.",
+        "next_question": "Can targeted plant-state and numerical-margin measurements determine whether T3's residual radius-angle failures are caused by insufficient discrete-time control margin or by a policy-reachable state limitation, and thereby identify the next credible route to 98%?"
+      },
+      "result": {
+        "session_id": "S15",
+        "status": "checkpointed"
+      },
+      "session_id": "S15",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "64265fc6d17a67bad487401a44945861cea80285",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "T3:checkpoint-120832 remains the strongest measured development candidate at 95.625 percent on M4, M6, and M8, with 157/160 first reaches and 4 hold interruptions in the corresponding matched development evidence. T9:checkpoint-120832 is an intervention-limited null matching T3 at 95.625 percent with zero discordant episodes. T7 remains a negative representation intervention at 95.0 percent with reduced first reach and increased interruptions. No candidate has a working, best-known, or retained role.",
+        "completed_operations": [
+          "T9",
+          "M8",
+          "E28"
+        ],
+        "cumulative_resource_use": "The campaign used T1, T2, T3, T5, T6, T7, and T9 training allocations, each completing 120832 rollout-aligned steps where applicable. Development measurements include M1 and matched 160-episode panels M2 through M8. T8 failed validation before training and is execution history, not evidence. E28 closed I7 after M8; no candidate role has been assigned and no official assessment has been requested.",
+        "current_goal_gap": "The best measured development performance remains 95.625 percent from T3, seven successes short of the corresponding 98 percent development threshold. No candidate has been assigned a best-known role and no official assessment has been requested.",
+        "current_synthesis": "M1 established nonzero compiled plant authority, no sampled self-contact in valid target branches, and complete local 100-step holds under zero input and bounded local PD. T1 exposed reach-limited, geometry-conditioned failures. T3's controlled incremental radius transfer improved success to 95.625 percent, first reach to 157/160, and reduced hold interruptions to 4, supporting distribution-shift sensitivity as a leading explanation for the earlier reach deficit. T5's residual-angle oversampling recipe reduced performance to 93.125 percent with 511 interruptions, rejecting that recipe but not incremental transfer generally. T6 preserved T3's curriculum and changed only hold-exit reward handling; M6 found identical 95.625 percent outcomes with zero discordant episodes, rejecting that tested reward-only intervention as sufficient. T7's explicit branch-feasibility feature preserved the residual -130 to -150 degree failure cluster, reduced first reach to 156/160, and increased interruptions from 4 to 13, rejecting that representation and recipe as sufficient. T9 then implemented a different action intervention: a stateful first-order damped command mapper serialized with the policy while preserving direct actuator semantics. M8 found T9 exactly matched T3 at 95.625 percent with zero discordant episodes. Thus I7 closes negatively for the tested action-space redesign: it preserved the supported reach and hold regime but did not alter the residual failures. The leading unresolved explanation now shifts toward insufficient discrete-time control margin, plant-state sensitivity, or numerical geometry in the residual radius-angle cases; this remains a hypothesis, not established causation. T8 was an infrastructure validation failure and is execution history, not scientific evidence.",
+        "decision_frontier": "The unresolved distinction is whether T3's persistent localized radius-angle failures reflect insufficient plant-state or discrete-time/numerical control margin, or instead a policy-reachable state limitation that another learning representation could still overcome. Targeted measurements of compiled dynamics and near-target rollouts from matched residual-case states should compare available braking/retention margin, sampled boundary crossings, final distance, and branch/angle dependence. Repeated exits or narrow margins under strong local state feedback would support a plant or numerical limitation and redirect work toward task-compatible control or robustness changes; robust local retention with failures only under learned arrival states would preserve policy-level explanations and justify a different training or representation intervention.",
+        "evidence_references": [
+          "M1",
+          "M4",
+          "E12",
+          "M5",
+          "E16",
+          "M6",
+          "E20",
+          "E22",
+          "T7",
+          "M7",
+          "E24",
+          "E26",
+          "T9",
+          "M8",
+          "E28"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 of 200 official episodes to complete an uninterrupted 100-step hold. T3 remains the strongest measured development candidate at 153/160 successes (95.625 percent), leaving seven development failures relative to the corresponding 98 percent threshold. I7 tested whether action structure and explicit terminal stabilization could close that gap without sacrificing reach; the result was negative for the tested action mapper, so the campaign must identify whether the remaining failures are physically or discretely controllable before selecting another policy intervention or requesting official assessment.",
+        "inquiry_id": "I7",
+        "next_direction_or_closure": "I7 is closed with a negative, intervention-limited result. M8 showed that the tested first-order damped action mapper preserved T3's behavior but did not remove the localized failures, so repeating this action or reward-only route is not justified. The next fresh inquiry should perform targeted compiled-plant and near-target state-feedback measurements to determine whether the residual cases are limited by sampled control margin, numerical geometry, or learned arrival states. That result will choose between a plant/control-robustness direction and a new policy-learning intervention; no official assessment is justified before the remaining gap is resolved or a best-known role is explicitly assigned.",
+        "next_question": "Can targeted plant-state and numerical-margin measurements determine whether T3's residual radius-angle failures are caused by insufficient discrete-time control margin or by a policy-reachable state limitation, and thereby identify the next credible route to 98%?",
+        "session_id": "S15"
+      },
+      "presentation": {
+        "backend_session_id": "7edb5f2c-858c-46b4-8743-cbd8a53c6711",
+        "campaign_id": "1ae27a27-6880-4ca6-9d50-e6498e771cb7",
+        "campaign_usage": "39m06s | 110.54 AIU | prompt 18.2m (86% cached) | output 146.9k",
+        "session_id": "S15",
+        "session_kind": "inquiry",
+        "session_usage": "4m15s | 16.51 AIU | prompt 3.4m (90% cached) | output 14.6k"
+      },
+      "result": {
+        "session_id": "S15",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "6015757003f6c12403bb66770882c65e1c9b4f05",
+      "scientific_manifest": [],
+      "scientific_paths": []
+    },
+    "failure": null,
+    "id": "E29",
+    "inquiry_id": "I7",
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "T3:checkpoint-120832 remains the strongest measured development candidate at 95.625 percent on M4, M6, and M8, with 157/160 first reaches and 4 hold interruptions in the corresponding matched development evidence. T9:checkpoint-120832 is an intervention-limited null matching T3 at 95.625 percent with zero discordant episodes. T7 remains a negative representation intervention at 95.0 percent with reduced first reach and increased interruptions. No candidate has a working, best-known, or retained role.",
+        "completed_operations": [
+          "T9",
+          "M8",
+          "E28"
+        ],
+        "cumulative_resource_use": "The campaign used T1, T2, T3, T5, T6, T7, and T9 training allocations, each completing 120832 rollout-aligned steps where applicable. Development measurements include M1 and matched 160-episode panels M2 through M8. T8 failed validation before training and is execution history, not evidence. E28 closed I7 after M8; no candidate role has been assigned and no official assessment has been requested.",
+        "current_goal_gap": "The best measured development performance remains 95.625 percent from T3, seven successes short of the corresponding 98 percent development threshold. No candidate has been assigned a best-known role and no official assessment has been requested.",
+        "current_synthesis": "M1 established nonzero compiled plant authority, no sampled self-contact in valid target branches, and complete local 100-step holds under zero input and bounded local PD. T1 exposed reach-limited, geometry-conditioned failures. T3's controlled incremental radius transfer improved success to 95.625 percent, first reach to 157/160, and reduced hold interruptions to 4, supporting distribution-shift sensitivity as a leading explanation for the earlier reach deficit. T5's residual-angle oversampling recipe reduced performance to 93.125 percent with 511 interruptions, rejecting that recipe but not incremental transfer generally. T6 preserved T3's curriculum and changed only hold-exit reward handling; M6 found identical 95.625 percent outcomes with zero discordant episodes, rejecting that tested reward-only intervention as sufficient. T7's explicit branch-feasibility feature preserved the residual -130 to -150 degree failure cluster, reduced first reach to 156/160, and increased interruptions from 4 to 13, rejecting that representation and recipe as sufficient. T9 then implemented a different action intervention: a stateful first-order damped command mapper serialized with the policy while preserving direct actuator semantics. M8 found T9 exactly matched T3 at 95.625 percent with zero discordant episodes. Thus I7 closes negatively for the tested action-space redesign: it preserved the supported reach and hold regime but did not alter the residual failures. The leading unresolved explanation now shifts toward insufficient discrete-time control margin, plant-state sensitivity, or numerical geometry in the residual radius-angle cases; this remains a hypothesis, not established causation. T8 was an infrastructure validation failure and is execution history, not scientific evidence.",
+        "decision_frontier": "The unresolved distinction is whether T3's persistent localized radius-angle failures reflect insufficient plant-state or discrete-time/numerical control margin, or instead a policy-reachable state limitation that another learning representation could still overcome. Targeted measurements of compiled dynamics and near-target rollouts from matched residual-case states should compare available braking/retention margin, sampled boundary crossings, final distance, and branch/angle dependence. Repeated exits or narrow margins under strong local state feedback would support a plant or numerical limitation and redirect work toward task-compatible control or robustness changes; robust local retention with failures only under learned arrival states would preserve policy-level explanations and justify a different training or representation intervention.",
+        "evidence_references": [
+          "M1",
+          "M4",
+          "E12",
+          "M5",
+          "E16",
+          "M6",
+          "E20",
+          "E22",
+          "T7",
+          "M7",
+          "E24",
+          "E26",
+          "T9",
+          "M8",
+          "E28"
+        ],
+        "human_goal_connection": "The human goal requires at least 196 of 200 official episodes to complete an uninterrupted 100-step hold. T3 remains the strongest measured development candidate at 153/160 successes (95.625 percent), leaving seven development failures relative to the corresponding 98 percent threshold. I7 tested whether action structure and explicit terminal stabilization could close that gap without sacrificing reach; the result was negative for the tested action mapper, so the campaign must identify whether the remaining failures are physically or discretely controllable before selecting another policy intervention or requesting official assessment.",
+        "next_direction_or_closure": "I7 is closed with a negative, intervention-limited result. M8 showed that the tested first-order damped action mapper preserved T3's behavior but did not remove the localized failures, so repeating this action or reward-only route is not justified. The next fresh inquiry should perform targeted compiled-plant and near-target state-feedback measurements to determine whether the residual cases are limited by sampled control margin, numerical geometry, or learned arrival states. That result will choose between a plant/control-robustness direction and a new policy-learning intervention; no official assessment is justified before the remaining gap is resolved or a best-known role is explicitly assigned.",
+        "next_question": "Can targeted plant-state and numerical-margin measurements determine whether T3's residual radius-angle failures are caused by insufficient discrete-time control margin or by a policy-reachable state limitation, and thereby identify the next credible route to 98%?"
+      }
+    },
+    "request_fingerprint": "d8409dbea7a32806afcb5e12989427d0341d35bd927e36820e412c6dc66a0418",
+    "session_id": "S15",
+    "supersedes": null
+  },
   "pi_checkpoint": {
-    "candidates_and_roles": "T3:checkpoint-120832 remains the strongest measured development candidate at 95.625 percent on M4, M6, and the matched M7 reference. T7:checkpoint-120832 is a negative, intervention-limited candidate at 95.0 percent with reduced first reach and increased interruptions. No candidate has a working, best-known, or retained role.",
+    "candidates_and_roles": "T3:checkpoint-120832 remains the strongest measured development candidate at 95.625 percent on M4, M6, and M8, with 157/160 first reaches and 4 hold interruptions in the corresponding matched development evidence. T9:checkpoint-120832 is an intervention-limited null matching T3 at 95.625 percent with zero discordant episodes. T7 remains a negative representation intervention at 95.0 percent with reduced first reach and increased interruptions. No candidate has a working, best-known, or retained role.",
     "completed_operations": [
-      "E26"
+      "T9",
+      "M8",
+      "E28"
     ],
-    "cumulative_resource_use": "The campaign has used the prior T1, T2, T3, T5, and T6 training allocations plus the T7 120000-step transfer allocation, which completed 120832 rollout-aligned steps. Development measurements include M1 and matched 160-episode panels M2 through M7. E26 opened I7 without consuming a training or measurement allocation. No official assessment has been requested and no candidate role has been assigned.",
-    "current_goal_gap": "The best measured development performance is 95.625 percent from T3, seven successes short of the corresponding 98 percent development threshold. No candidate has been assigned a best-known role and no official assessment has been requested.",
-    "current_synthesis": "Evidence: M1 established nonzero compiled plant authority, no sampled self-contact in valid target branches, and complete local 100-step holds under zero input and bounded local PD. T1 exposed reach-limited, geometry-conditioned failures. T3's incremental radius transfer improved success to 95.625 percent, first reach to 157/160, and reduced hold interruptions to 4, supporting distribution-shift sensitivity as a leading explanation for the earlier reach deficit. T5's residual-angle oversampling recipe reduced performance to 93.125 percent with 511 interruptions, rejecting that recipe but not incremental transfer generally. T6 preserved T3's curriculum and changed only hold-exit reward handling; M6 found identical 95.625 percent outcomes with zero discordant episodes, rejecting that tested reward-only intervention as sufficient. T7 tested an explicit branch-feasibility feature transferred from T3. M7 found T7 at 95.0 percent versus T3 at 95.625 percent, with the same -130 to -150 degree residual cluster, an added failure near -52 degrees, first reach reduced to 156/160, and hold interruptions increased from 4 to 13. This rejects the tested branch-feasibility representation and training recipe as sufficient and shows broad interruption regression, but it does not reject branch conditioning, action redesign, or terminal control generally. E26 opened I7; that opening is a transition decision, not new performance evidence. The leading unresolved interpretation remains an action-structure or terminal-stabilization limitation versus a deeper plant-state or numerical-margin limitation.",
-    "decision_frontier": "Can an action-space redesign with explicit terminal-stabilizing control, built on the T3 reach curriculum, eliminate the localized radius-angle completion failures without reproducing T7's interruption regression? The discriminating result is a T3-derived action intervention evaluated on the same 160-seed panel with success, first-reach coverage, maximum held steps, hold interruptions, final distance, and radius-angle strata. Reaching at least 98 percent with broad reach and approximately four interruptions would support action-structure/terminal-control as the route to the human goal; persistent localized failures with preserved reach would favor a deeper plant-state or numerical-margin limitation; broad interruption regression would reject the tested action intervention.",
+    "cumulative_resource_use": "The campaign used T1, T2, T3, T5, T6, T7, and T9 training allocations, each completing 120832 rollout-aligned steps where applicable. Development measurements include M1 and matched 160-episode panels M2 through M8. T8 failed validation before training and is execution history, not evidence. E28 closed I7 after M8; no candidate role has been assigned and no official assessment has been requested.",
+    "current_goal_gap": "The best measured development performance remains 95.625 percent from T3, seven successes short of the corresponding 98 percent development threshold. No candidate has been assigned a best-known role and no official assessment has been requested.",
+    "current_synthesis": "M1 established nonzero compiled plant authority, no sampled self-contact in valid target branches, and complete local 100-step holds under zero input and bounded local PD. T1 exposed reach-limited, geometry-conditioned failures. T3's controlled incremental radius transfer improved success to 95.625 percent, first reach to 157/160, and reduced hold interruptions to 4, supporting distribution-shift sensitivity as a leading explanation for the earlier reach deficit. T5's residual-angle oversampling recipe reduced performance to 93.125 percent with 511 interruptions, rejecting that recipe but not incremental transfer generally. T6 preserved T3's curriculum and changed only hold-exit reward handling; M6 found identical 95.625 percent outcomes with zero discordant episodes, rejecting that tested reward-only intervention as sufficient. T7's explicit branch-feasibility feature preserved the residual -130 to -150 degree failure cluster, reduced first reach to 156/160, and increased interruptions from 4 to 13, rejecting that representation and recipe as sufficient. T9 then implemented a different action intervention: a stateful first-order damped command mapper serialized with the policy while preserving direct actuator semantics. M8 found T9 exactly matched T3 at 95.625 percent with zero discordant episodes. Thus I7 closes negatively for the tested action-space redesign: it preserved the supported reach and hold regime but did not alter the residual failures. The leading unresolved explanation now shifts toward insufficient discrete-time control margin, plant-state sensitivity, or numerical geometry in the residual radius-angle cases; this remains a hypothesis, not established causation. T8 was an infrastructure validation failure and is execution history, not scientific evidence.",
+    "decision_frontier": "The unresolved distinction is whether T3's persistent localized radius-angle failures reflect insufficient plant-state or discrete-time/numerical control margin, or instead a policy-reachable state limitation that another learning representation could still overcome. Targeted measurements of compiled dynamics and near-target rollouts from matched residual-case states should compare available braking/retention margin, sampled boundary crossings, final distance, and branch/angle dependence. Repeated exits or narrow margins under strong local state feedback would support a plant or numerical limitation and redirect work toward task-compatible control or robustness changes; robust local retention with failures only under learned arrival states would preserve policy-level explanations and justify a different training or representation intervention.",
     "evidence_references": [
       "M1",
       "M4",
@@ -11197,14 +11365,17 @@
       "T7",
       "M7",
       "E24",
-      "E26"
+      "E26",
+      "T9",
+      "M8",
+      "E28"
     ],
-    "human_goal_connection": "The human goal requires at least 196 of 200 official episodes to complete an uninterrupted 100-step hold. T3 remains below that threshold at 153 of 160 development successes, while T7 preserved the residual failure cluster and increased interruptions. I7 tests whether action structure and explicit terminal stabilization can close this remaining gap without sacrificing T3's broad reach regime.",
-    "inquiry_id": null,
-    "next_direction_or_closure": "Goal review opened I7 through E26 and ends at this checkpoint. The fresh I7 inquiry session should select and execute one bounded T3-derived action-space intervention with explicit terminal stabilization, then evaluate it against T3 on the same 160-seed panel using the specified diagnostics. The result will determine whether action/control redesign is a credible route toward the human goal or whether the campaign should redirect toward a deeper plant-state or numerical-margin explanation.",
-    "next_question": "Can an action-space redesign with explicit terminal-stabilizing control, built on the T3 reach curriculum, eliminate the localized radius-angle completion failures without reproducing T7's interruption regression?",
-    "scientific_commit": "54a011997cca285004ed631fd3325adba14574ae",
-    "session_id": "S14"
+    "human_goal_connection": "The human goal requires at least 196 of 200 official episodes to complete an uninterrupted 100-step hold. T3 remains the strongest measured development candidate at 153/160 successes (95.625 percent), leaving seven development failures relative to the corresponding 98 percent threshold. I7 tested whether action structure and explicit terminal stabilization could close that gap without sacrificing reach; the result was negative for the tested action mapper, so the campaign must identify whether the remaining failures are physically or discretely controllable before selecting another policy intervention or requesting official assessment.",
+    "inquiry_id": "I7",
+    "next_direction_or_closure": "I7 is closed with a negative, intervention-limited result. M8 showed that the tested first-order damped action mapper preserved T3's behavior but did not remove the localized failures, so repeating this action or reward-only route is not justified. The next fresh inquiry should perform targeted compiled-plant and near-target state-feedback measurements to determine whether the residual cases are limited by sampled control margin, numerical geometry, or learned arrival states. That result will choose between a plant/control-robustness direction and a new policy-learning intervention; no official assessment is justified before the remaining gap is resolved or a best-known role is explicitly assigned.",
+    "next_question": "Can targeted plant-state and numerical-margin measurements determine whether T3's residual radius-angle failures are caused by insufficient discrete-time control margin or by a policy-reachable state limitation, and thereby identify the next credible route to 98%?",
+    "scientific_commit": "6015757003f6c12403bb66770882c65e1c9b4f05",
+    "session_id": "S15"
   },
   "schema_version": 6,
   "scientific_model": {
@@ -11212,23 +11383,6 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
-    },
-    "backend_session_id": "7edb5f2c-858c-46b4-8743-cbd8a53c6711",
-    "id": "S15",
-    "inquiry_id": "I7",
-    "kind": "inquiry",
-    "objective": "Advance I7 toward an evidence-supported answer to its scientific question: Can an action-space redesign with explicit terminal-stabilizing control, built on the T3 reach curriculum, eliminate the localized radius-angle completion failures without reproducing T7's interruption regression? Before choosing the next action, compare the accumulated evidence with the closure condition. Close the inquiry when the condition is met.",
-    "operation_ids": [
-      "T9",
-      "M8",
-      "E28"
-    ],
-    "scientific_parent_commit": "64265fc6d17a67bad487401a44945861cea80285"
-  },
+  "scientific_session": null,
   "terminal_state": null
 }
