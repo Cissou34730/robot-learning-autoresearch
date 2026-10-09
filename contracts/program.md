@@ -137,22 +137,6 @@ unresolved part of the decision frontier. Base mechanism conclusions and
 redirects on completed evidence, and preserve the limits of a recipe-specific
 result.
 
-When a completed measurement is intended to discriminate a mechanism, interpret
-the completed evidence for that discriminator rather than relying on the
-aggregate task outcome alone. Equal aggregate outcomes do not establish
-preserved behavior when decision-relevant diagnostics differ. Record
-consequential agreement, contradiction or tradeoff between the aggregate
-outcome and mechanism evidence in `current_synthesis`. If the relevant evidence
-is absent, failed or unavailable, keep the mechanism claim unresolved. This
-does not require exhaustive inspection of unrelated artifact fields.
-
-Conclusions about an intended experimental distinction are limited to completed
-evidence that the distinction was exercised under the relevant conditions.
-When its realization remains unresolved, preserve that uncertainty in
-`current_synthesis` and `decision_frontier`. Matching saved state or measured
-outcomes does not by itself establish that an intended change was inactive,
-ineffective or equivalent.
-
 After each completed result, the selected next direction states which evidence
 supports continuing the current route, changing it, or obtaining missing
 evidence. The selected artifact and operation follow the remaining uncertainty
@@ -196,6 +180,31 @@ scientific progress.
 `current_synthesis` distinguishes observations from interpretations and
 preserves consequential competing explanations, supporting and contradictory
 evidence, and the limits of current claims.
+
+A conclusion that changes the next direction identifies the completed operation
+and the artifact field or diagnostic that supports it. A diagnostic that was
+not inspected is not missing evidence: evidence is missing when the operation
+did not complete, or when its artifact does not contain the diagnostic. The
+recorded artifact inventory describes structure only and does not expand array
+elements, so a field absent from the inventory may still exist in the artifact
+at its recorded path. An aggregate outcome does not establish preserved
+behavior when the diagnostics relevant to the stated discriminator differ, and
+matching saved state or aggregate outcomes does not by itself establish that an
+intended change was inactive, ineffective or equivalent.
+
+A conclusion about an intended method states what the operation implemented,
+and limits the claim to what that implementation exercised. When an
+implementation realizes the intended method only in part, the difference and
+its consequence for the claim belong in `current_synthesis`, and the
+unexercised part remains in `decision_frontier`.
+
+When experimental factors changed together with the intended one, the
+conclusion preserves that limit and reports the measured result as a property
+of the compared artifacts rather than of the intended factor alone.
+
+These meanings do not require exhaustive inspection of unrelated artifact
+fields, a fixed diagnostic set, matched conditions for every experiment, or an
+additional operation.
 
 `decision_frontier` records the unresolved scientific distinction or
 method-development question and the evidence that would discriminate or
