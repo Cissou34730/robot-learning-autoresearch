@@ -447,7 +447,7 @@ Implementation checks and unassessed campaign effects are not separate issues.
 |---|---|---|
 | OI-001 | Startup scientific-method selection | **Closed effective 2026-10-09.** Defined as a failure of traceable coupling from the PI-generated scientific briefing, through startup action selection, to the startup handoff. Three failure locations: briefing defect, use defect and handoff defect. Campaign `896c230a` shows the coupling intact end to end: the model named the omitted 0.06-0.14 m region as the most immediate distinction, startup requested T1 as a declared control for that distinction, M1 and M2 measured radius, first-reach and hold before any intervention, and E1 handed off evidence, an unresolved coverage-versus-stabilization frontier and a conditional next question. I1 then tested the named distinction directly. The campaign does not isolate which prompt element produced this; closure rests on the defect not recurring with the coupling observable, not on causal attribution. Startup cost remains OI-006. |
 | OI-002 | Inquiry control and bounded closure | **Closed 2026-10-09; bounded closure observed.** The contract and inquiry reminder permit positive, negative, limited and inconclusive closure. Campaign `1ae27a27` closed all inquiries at their declared evidence boundaries, including negative and limited results. The campaign does not isolate causality, but the original indefinite-continuation symptom did not recur. Inquiry granularity and later progression belong to OI-004; the temporary cap remains OI-013. |
-| OI-003 | Measurement-evidence inspection and interpretation | **Closed effective 2026-10-09.** The final campaign `896c230a` showed the repaired interpretation in use: I1 and I2 tracked full-radius reach and bearing/radius deficits separately, I3 kept the reach-versus-hold discriminator explicit, and I4 used matched mechanism diagnostics instead of equal aggregate labels. This is the positive campaign effect observed for the prompt/contract repair. The issue is closed as effective without adding a Runner gate or required diagnostic sequence. |
+| OI-003 | Measurement-evidence inspection and interpretation | **Reopened 2026-10-09 after a campaign recurrence.** Campaign `896c230a` showed the repaired interpretation in use, but campaign `79395c88` ended by stating that M30 did not expose nearest-branch limit margins even though the completed artifact contains them. The correction must improve claim-to-artifact traceability without adding a Runner scientific gate, a fixed diagnostic sequence or exhaustive artifact review. See the [comprehensive campaign RCA](campaign_79395c88_comprehensive_rca_20261009.md). |
 | OI-004 | Checkpoint nomination, evidence selection and scientific progression | **Closed effective 2026-10-09.** The bounded repair gives terminal checkpoints no privileged status, preserves failed or unavailable discriminating evidence as unresolved, and requires the next direction to follow completed evidence and the recorded frontier. The final campaign `896c230a` reinforced this behavior: T5 was selected by matched transfer evidence and strong reach-versus-hold diagnostics, while the campaign still failed the protected 196/200 objective. The scientific progression effect is therefore confirmed, although the goal remained unmet. |
 | OI-005 | Counterevidence preservation and official-assessment readiness | **Postponed.** The narrow readiness guidance was withdrawn. Residual-evidence loss and premature readiness conclusions remain unresolved. No replacement readiness prompt is approved. |
 | OI-006 | Full startup-budget review | **Pending.** Shorter startup requests are permitted, but the maintainer-owned 120,000-step ceiling and its scientific effect have not received the planned full review. This budget question is not the cause or solution for OI-001. Campaign `896c230a` spent the full allocation on the T1 control before any measurement, so the question of whether equivalent startup evidence is obtainable more cheaply stays open here. |
@@ -458,9 +458,9 @@ Implementation checks and unassessed campaign effects are not separate issues.
 | OI-011 | Console clarity and maintainer-file read controls | **Deferred.** Phase-specific source-read controls are implemented. Console presentation and any further maintainer-file controls remain separate work. |
 | OI-012 | Independent frozen-policy publication | **Proposal only.** Publication independent of training is not approved or implemented. Campaign recovery is not authorized. |
 | OI-013 | Remove the temporary fifteen-inquiry cap | **Pending.** The cap now pauses at a checkpointed boundary and no longer represents scientific exhaustion. Its value is unchanged. Removal remains a later maintainer decision. |
-| OI-014 | Single-change attribution in an intervention | **Open.** An intervention can change several factors at once and then receive a single-cause explanation. The explanation directs the following inquiries, so a wrong attribution can send later work along the wrong route. The requirement is attribution that matches the change, not a repeatable campaign. A bundled change stays valid when its candidate receives direct paired evaluation and the unresolved attribution stays visible. No design or runtime change is approved. |
-| OI-015 | Intended intervention versus effective experiment | **Implemented 2026-10-09; campaign effect unmeasured.** Candidate archival now preserves the existing complete-artifact integrity fingerprint and separately fingerprints identifiable learned-state components. Completed training reports exact component matches across corresponding earlier checkpoints, with executable-runtime equality kept separate. Immediate feedback and the durable brief state that serialized equality does not determine realization of the intended intervention. The PI contract requires uncertainty to remain visible until completed evidence establishes that the intended distinction was exercised. |
-| OI-016 | Operation-shaped inquiry formation and first-action precommitment | **Implemented 2026-10-09; campaign effect unmeasured.** The latest three campaigns show training-first ordering in nearly every inquiry, while older campaigns demonstrate measurement-only, tool-building, physical-probe and multi-operation inquiries. The inquiry contract and handoff now state that a question is an unresolved distinction, obstacle, or capability need—not a preselected operation or recipe—and that opening an inquiry does not commit the PI to an instrument. The first operation remains a PI choice; no measurement-first sequence or Runner judgment is imposed. |
+| OI-014 | Single-change attribution in an intervention | **Open; additional campaign evidence recorded 2026-10-09.** An intervention can change several factors at once and then receive a single-cause explanation. Campaign `79395c88` changed training seeds across observation and rollout-horizon variants, so the measured candidates are valid but the individual representation or horizon effects are not isolated. The requirement remains attribution that matches the change, not mandatory matched seeds or repeatable campaigns. No design or runtime change is approved. See the [comprehensive campaign RCA](campaign_79395c88_comprehensive_rca_20261009.md). |
+| OI-015 | Intended intervention versus effective experiment | **Component observability implemented; semantic realization gap added 2026-10-09.** The serialized-component comparison remains valid and campaign `79395c88` emitted it without false equality claims, but no duplicate-policy case exercised its intended behavioral warning. The campaign also exposed a different realization failure: T10 implemented PPO expert-action reward shaping, while I12 reasoned about direct controller imitation and closed that route without exercising direct supervised imitation. Component hashes cannot detect this semantic mismatch. See the [comprehensive campaign RCA](campaign_79395c88_comprehensive_rca_20261009.md). |
+| OI-016 | Operation-shaped inquiry formation and first-action precommitment | **Implemented 2026-10-09; campaign evidence shows the implementation ineffective; corrective revision pending.** Campaign `79395c88` retained method/recipe coupling, provisional handoff decisions acquired excessive authority, and all fifteen inquiry slots were consumed. Do not roll back to the earlier semantics or ban method-specific inquiries. Replace the current repetitive guidance with a bounded inquiry definition and revisable handoff that distinguish completed facts, provisional interpretations, proposed next questions and active inquiry identity. Preserve bounded closure, peer instruments, PI authority and Runner non-judgment. See the [comprehensive campaign RCA](campaign_79395c88_comprehensive_rca_20261009.md) and the earlier [OI-016-focused RCA](oi016_post_campaign_rca_20261009.md). |
 
 ### Detailed backlog and status context
 
@@ -2943,3 +2943,41 @@ separate from harness changes so their outcomes are not conflated.
   evaluated.
 - **Status:** OI-016 implementation is complete. Its effect on inquiry
   instrument selection is unmeasured.
+
+## 2026-10-09: register the campaign 79395c88 comprehensive RCA and corrective streams
+
+- **Authoritative review:** the independent
+  [`campaign_79395c88_comprehensive_rca_20261009.md`](campaign_79395c88_comprehensive_rca_20261009.md)
+  is the primary campaign-wide RCA. The earlier
+  [`oi016_post_campaign_rca_20261009.md`](oi016_post_campaign_rca_20261009.md)
+  remains the initial OI-016-focused analysis, but its proposed prohibition on
+  method-specific inquiry questions and its preference for continuing a route
+  inside the same inquiry are superseded by the comprehensive review.
+- **Established campaign corrections:** T10 implemented PPO expert-action
+  reward shaping rather than the direct supervised imitation route later
+  invoked by I12. M30 contained terminal nearest-branch margin diagnostics even
+  though E66/E67 carried them forward as missing. Candidate comparisons remain
+  valid artifact-level results, but several representation and rollout-horizon
+  explanations are confounded by simultaneous seed or implementation changes.
+- **OI registration:** reopen OI-003 for the M30 claim-to-artifact recurrence;
+  add the T10 intended-versus-implemented mismatch to OI-015; retain the
+  comparison-confounding evidence under open OI-014; retain OI-004's
+  candidate-selection improvement while recording that evidence-backed
+  progression remains imperfect; mark the tested OI-016 implementation
+  ineffective rather than reverting it.
+- **Implementation sequencing:** proceed in separate attributable batches.
+  First replace OI-016's handoff and inquiry-boundary wording, including the
+  distinction between a proposed next question and an active inquiry identity.
+  Then address evidence fidelity under OI-003, OI-015 and OI-014. Evaluate
+  brief compaction and richer artifact indexing separately because their
+  cognitive effect is not established and bundling them would recreate the
+  OI-014 attribution problem.
+- **Validation before another campaign:** replay the fixed pre-I13 goal review,
+  T10/I12 handoff and M30 closure evidence against the current wording, the
+  historical pre-OI-016 wording and the proposed replacement. Preserve control
+  cases where training first, measurement-only work, method-specific inquiry
+  and limited or inconclusive closure are valid. Do not change the 120,000-step
+  allocation or fifteen-inquiry cap as part of these repairs.
+- **Boundary:** this entry records evidence and implementation order only. It
+  makes no contract, prompt, state, Runner, brief or scientific-runtime change.
+  No campaign was launched, resumed, reset, trained, measured or evaluated.
