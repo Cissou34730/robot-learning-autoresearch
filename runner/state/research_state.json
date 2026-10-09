@@ -7996,38 +7996,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I4",
-        "outcome": "positive result for the tested transfer learning-dynamics recipe",
-        "reason": "M6 satisfies I4's closure condition with matched 128-episode diagnostics. T5:checkpoint-115712, obtained by transferring T1:checkpoint-115712 and adapting it to the official 0.06-0.20 m radius distribution, achieved 125/128 complete holds (97.65625%) versus T1's 92/128 (71.875%) on identical seeds. T5 reduced never-reached failures from 29 to 1 overall; by radius, never-reached counts changed from 16/32, 10/44, and 3/52 for 6-10, 10-14, and 14-20 cm under T1 to 0/32, 1/44, and 0/52 under T5. By bearing using the matched angle strata, back-bearing never-reached failures fell from 6/38 to 0/38 and left remained 0/25 for both, while first reach improved or remained comparable across the full range. Hold interruptions fell from 443 to 231 and complete 100-step holds increased by 33 episodes, so the higher T5 mean hold qvel (6.96 versus 4.60 in the recorded max-component summary) did not create a consequential stabilization tradeoff. Both policies used the open branch when reaching and saturated action magnitude in all episodes, so the result is not explained by a branch change or removal of saturation. The aggregate and mechanism diagnostics agree: transferring a competent policy into the official-radius distribution repaired the dominant never-reached left/back and outer-radius deficit while preserving holds. This establishes a positive result for the tested curriculum-like transfer and learning-dynamics recipe, not a method-level claim that all PPO conditioning or representations will succeed. I4 is closed; the human goal remains unresolved because 97.65625% on this development panel is not the protected 98% official assessment."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I4",
-        "outcome": "positive result for the tested transfer learning-dynamics recipe",
-        "reason": "M6 satisfies I4's closure condition with matched 128-episode diagnostics. T5:checkpoint-115712, obtained by transferring T1:checkpoint-115712 and adapting it to the official 0.06-0.20 m radius distribution, achieved 125/128 complete holds (97.65625%) versus T1's 92/128 (71.875%) on identical seeds. T5 reduced never-reached failures from 29 to 1 overall; by radius, never-reached counts changed from 16/32, 10/44, and 3/52 for 6-10, 10-14, and 14-20 cm under T1 to 0/32, 1/44, and 0/52 under T5. By bearing using the matched angle strata, back-bearing never-reached failures fell from 6/38 to 0/38 and left remained 0/25 for both, while first reach improved or remained comparable across the full range. Hold interruptions fell from 443 to 231 and complete 100-step holds increased by 33 episodes, so the higher T5 mean hold qvel (6.96 versus 4.60 in the recorded max-component summary) did not create a consequential stabilization tradeoff. Both policies used the open branch when reaching and saturated action magnitude in all episodes, so the result is not explained by a branch change or removal of saturation. The aggregate and mechanism diagnostics agree: transferring a competent policy into the official-radius distribution repaired the dominant never-reached left/back and outer-radius deficit while preserving holds. This establishes a positive result for the tested curriculum-like transfer and learning-dynamics recipe, not a method-level claim that all PPO conditioning or representations will succeed. I4 is closed; the human goal remains unresolved because 97.65625% on this development panel is not the protected 98% official assessment.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E16",
-    "inquiry_id": "I4",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "positive result for the tested transfer learning-dynamics recipe",
-        "reason": "M6 satisfies I4's closure condition with matched 128-episode diagnostics. T5:checkpoint-115712, obtained by transferring T1:checkpoint-115712 and adapting it to the official 0.06-0.20 m radius distribution, achieved 125/128 complete holds (97.65625%) versus T1's 92/128 (71.875%) on identical seeds. T5 reduced never-reached failures from 29 to 1 overall; by radius, never-reached counts changed from 16/32, 10/44, and 3/52 for 6-10, 10-14, and 14-20 cm under T1 to 0/32, 1/44, and 0/52 under T5. By bearing using the matched angle strata, back-bearing never-reached failures fell from 6/38 to 0/38 and left remained 0/25 for both, while first reach improved or remained comparable across the full range. Hold interruptions fell from 443 to 231 and complete 100-step holds increased by 33 episodes, so the higher T5 mean hold qvel (6.96 versus 4.60 in the recorded max-component summary) did not create a consequential stabilization tradeoff. Both policies used the open branch when reaching and saturated action magnitude in all episodes, so the result is not explained by a branch change or removal of saturation. The aggregate and mechanism diagnostics agree: transferring a competent policy into the official-radius distribution repaired the dominant never-reached left/back and outer-radius deficit while preserving holds. This establishes a positive result for the tested curriculum-like transfer and learning-dynamics recipe, not a method-level claim that all PPO conditioning or representations will succeed. I4 is closed; the human goal remains unresolved because 97.65625% on this development panel is not the protected 98% official assessment."
-      }
-    },
-    "request_fingerprint": "a5022c08e549dd9cf3c469f2fb700ce104b4ec55d3b5547c00aea04188f79176",
-    "session_id": "S9",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "No working, best-known, or retained role is assigned. T1:checkpoint-115712 remains the strongest development-measured candidate at 67.97%, and T3:checkpoint-120832 measured 53.125% after the geometry-conditioned observation change; neither establishes the official goal.",
     "completed_operations": [
