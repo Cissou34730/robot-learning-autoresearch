@@ -9642,47 +9642,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "open",
-        "inquiry": {
-          "closure_condition": "Close after one T3-derived action-space intervention with explicit terminal stabilization is evaluated on the same 160-seed development panel using success, first-reach coverage, maximum held steps, hold interruptions, final distance, and radius-angle strata. A positive result requires at least 98 percent success with broad first reach and approximately four interruptions; persistent localized failures with preserved reach favor a deeper plant-state or numerical-margin limitation; broad interruption regression rejects the tested action intervention.",
-          "goal_connection": "The human goal requires at least 196 of 200 official episodes to complete an uninterrupted 100-step hold. T3 reaches 153 of 160 development episodes, while T7 preserved the residual failure cluster and increased interruptions from 4 to 13. This inquiry tests whether changing action structure and terminal stabilization can close the remaining gap without sacrificing T3's broad reach regime.",
-          "handoff_conclusion": "M1 established nonzero compiled plant authority, no sampled self-contact in valid target branches, and complete local 100-step holds under zero input and bounded local PD. T1 exposed reach-limited, geometry-conditioned failures. T3's incremental radius transfer improved success to 95.625 percent, first reach to 157/160, and reduced hold interruptions to 4, supporting distribution-shift sensitivity as a leading explanation for the earlier reach deficit. T5's residual-angle oversampling recipe reduced performance to 93.125 percent with 511 interruptions, rejecting that recipe but not incremental transfer generally. T6 preserved T3's curriculum and changed only hold-exit reward handling; M6 found identical 95.625 percent outcomes with zero discordant episodes, rejecting that tested reward-only intervention as sufficient. T7 tested an explicit branch-feasibility feature transferred from T3. M7 found T7 at 95.0 percent (152/160) versus T3 at 95.625 percent, with the same -130 to -150 degree residual cluster, an added failure near -52 degrees, first reach reduced to 156/160, and hold interruptions increased from 4 to 13. This rejects the tested branch-feasibility representation and training recipe as sufficient and shows broad interruption regression, but it does not reject branch conditioning, action redesign, or terminal control generally. The leading unresolved interpretation is now an action-structure or terminal-stabilization limitation, with branch representation alone deprioritized because it did not remove the localized failures and worsened hold continuity.",
-          "handoff_question": "Can an action-space redesign with explicit terminal-stabilizing control, built on the T3 reach curriculum, eliminate the localized radius-angle completion failures without reproducing T7's interruption regression?",
-          "handoff_source_session_id": "S13",
-          "id": "I7",
-          "opened_in_session": "S14",
-          "question": "Can an action-space redesign with explicit terminal-stabilizing control, built on the T3 reach curriculum, eliminate the localized radius-angle completion failures without reproducing T7's interruption regression?",
-          "rationale": "M1 established local plant hold margin and no sampled self-contact in valid target branches. M4 showed that incremental radius transfer preserved reach and reduced interruptions, while M6 found that changing only hold-exit reward handling left T3 unchanged. M7 then showed that an explicit branch-feasibility feature did not remove the localized failures and increased interruptions. The unresolved distinction is therefore whether a genuinely different action structure with explicit terminal stabilization can supply the missing control margin, or whether the residual cases require a deeper plant-state or numerical explanation. A matched-panel action intervention is the next result most likely to separate those directions while preserving the supported T3 curriculum.",
-          "reframes": []
-        }
-      },
-      "result": {
-        "action": "open",
-        "inquiry_id": "I7",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E26",
-    "inquiry_id": null,
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "open",
-        "closure_condition": "Close after one T3-derived action-space intervention with explicit terminal stabilization is evaluated on the same 160-seed development panel using success, first-reach coverage, maximum held steps, hold interruptions, final distance, and radius-angle strata. A positive result requires at least 98 percent success with broad first reach and approximately four interruptions; persistent localized failures with preserved reach favor a deeper plant-state or numerical-margin limitation; broad interruption regression rejects the tested action intervention.",
-        "goal_connection": "The human goal requires at least 196 of 200 official episodes to complete an uninterrupted 100-step hold. T3 reaches 153 of 160 development episodes, while T7 preserved the residual failure cluster and increased interruptions from 4 to 13. This inquiry tests whether changing action structure and terminal stabilization can close the remaining gap without sacrificing T3's broad reach regime.",
-        "question": "Can an action-space redesign with explicit terminal-stabilizing control, built on the T3 reach curriculum, eliminate the localized radius-angle completion failures without reproducing T7's interruption regression?",
-        "rationale": "M1 established local plant hold margin and no sampled self-contact in valid target branches. M4 showed that incremental radius transfer preserved reach and reduced interruptions, while M6 found that changing only hold-exit reward handling left T3 unchanged. M7 then showed that an explicit branch-feasibility feature did not remove the localized failures and increased interruptions. The unresolved distinction is therefore whether a genuinely different action structure with explicit terminal stabilization can supply the missing control margin, or whether the residual cases require a deeper plant-state or numerical explanation. A matched-panel action intervention is the next result most likely to separate those directions while preserving the supported T3 curriculum."
-      }
-    },
-    "request_fingerprint": "554f0761b2dea21c293aa4fcadc6463f1f0d040d112503c58333afee26361deb",
-    "session_id": "S14",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T3:checkpoint-120832 remains the strongest measured development candidate at 95.625 percent on M4, M6, and the matched M7 reference. T7:checkpoint-120832 is a negative, intervention-limited candidate at 95.0 percent with reduced first reach and increased interruptions. No candidate has a working, best-known, or retained role.",
     "completed_operations": [
