@@ -221,7 +221,11 @@ is copied.
 The documentation structure is adopted, but full thematic curation of the
 legacy archive is **pending**. The comprehensive campaign RCA has already been
 cross-checked against the live tracker, resulting in explicit registration of
-OI-020 and the three still-pending fixed-evidence validation checks.
+OI-020. Campaign `ec7f3d3a` subsequently closed OI-003 and OI-016 without an
+expensive replay. OI-015 remains implemented but unmeasured because its
+historical T10/I12 semantic mismatch was not exercised by that campaign; this
+is recorded as a limitation rather than treated as a reason to run a
+campaign-length validation.
 
 No claim should be made that the historical narrative is complete until all
 legacy headings have been inventoried and reconciled against the tracker.
