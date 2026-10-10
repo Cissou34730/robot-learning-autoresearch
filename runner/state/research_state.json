@@ -18608,38 +18608,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I9",
-        "outcome": "limited negative",
-        "reason": "M10 identified a real shoulder-limit interaction: outward commands overshot the compiled 2.9671-radian limit, generated opposing constraint force up to about 10.02 against actuator force 5, and reversed with high authority. However, the behavior-informed T13 controller built from that evidence did not recover the recurring failures: M11 measured 147/160 successes versus 153/160 for the matched T3 reference, with six discordant episodes all favoring T3. The required complete-hold, first-reach, interruption, terminal-joint, and branch diagnostic fields are present in both M11 artifacts. This closes I9 with a limited negative result for the tested state-triggered soft-limit impedance: the plant interaction is real but was not sufficient to produce a goal-supporting intervention, and the regression redirects the campaign away from another limit-governor variant. It does not disprove other plant-aware control or policy mechanisms beyond this implementation."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I9",
-        "outcome": "limited negative",
-        "reason": "M10 identified a real shoulder-limit interaction: outward commands overshot the compiled 2.9671-radian limit, generated opposing constraint force up to about 10.02 against actuator force 5, and reversed with high authority. However, the behavior-informed T13 controller built from that evidence did not recover the recurring failures: M11 measured 147/160 successes versus 153/160 for the matched T3 reference, with six discordant episodes all favoring T3. The required complete-hold, first-reach, interruption, terminal-joint, and branch diagnostic fields are present in both M11 artifacts. This closes I9 with a limited negative result for the tested state-triggered soft-limit impedance: the plant interaction is real but was not sufficient to produce a goal-supporting intervention, and the regression redirects the campaign away from another limit-governor variant. It does not disprove other plant-aware control or policy mechanisms beyond this implementation.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E36",
-    "inquiry_id": "I9",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "limited negative",
-        "reason": "M10 identified a real shoulder-limit interaction: outward commands overshot the compiled 2.9671-radian limit, generated opposing constraint force up to about 10.02 against actuator force 5, and reversed with high authority. However, the behavior-informed T13 controller built from that evidence did not recover the recurring failures: M11 measured 147/160 successes versus 153/160 for the matched T3 reference, with six discordant episodes all favoring T3. The required complete-hold, first-reach, interruption, terminal-joint, and branch diagnostic fields are present in both M11 artifacts. This closes I9 with a limited negative result for the tested state-triggered soft-limit impedance: the plant interaction is real but was not sufficient to produce a goal-supporting intervention, and the regression redirects the campaign away from another limit-governor variant. It does not disprove other plant-aware control or policy mechanisms beyond this implementation."
-      }
-    },
-    "request_fingerprint": "80e6dabad60f4bbfcaaa405423a3d1e31005b870f8d086928c66eb30c1d9c72c",
-    "session_id": "S19",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T3:checkpoint-120832 remains the strongest development-evaluated candidate and paired reference at 153/160. T12:checkpoint-100352 matched T3 at 153/160 with zero candidate wins and is not assigned a model role. T11:checkpoint-120832 remains unassigned after its 100/160 M8 result. No candidate is assigned working, best-known, or retained status.",
     "completed_operations": [
