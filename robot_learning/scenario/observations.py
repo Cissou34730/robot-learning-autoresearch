@@ -5,10 +5,11 @@ observation space declared by the scenario environment.
 """
 
 import numpy as np
+import mujoco
 
 from contracts.robots.two_joint_arm import FOREARM_LENGTH, UPPER_ARM_LENGTH
 
-OBSERVATION_SIZE = 11
+OBSERVATION_SIZE = 13
 
 
 def reach_observation(data) -> np.ndarray:
@@ -34,11 +35,24 @@ def reach_observation(data) -> np.ndarray:
     elbow_folded = -elbow_open
     shoulder_folded = shoulder_for_elbow(elbow_folded)
     end_effector = data.site("end_effector").xpos.copy()
+    velocity = np.zeros(6, dtype=np.float64)
+    site_id = mujoco.mj_name2id(
+        data.model, mujoco.mjtObj.mjOBJ_SITE, "end_effector"
+    )
+    mujoco.mj_objectVelocity(
+        data.model,
+        data,
+        mujoco.mjtObj.mjOBJ_SITE,
+        site_id,
+        velocity,
+        0,
+    )
     return np.concatenate(
         [
             data.qpos,
             data.qvel,
             end_effector - data.mocap_pos[0],
+            velocity[3:5],
             [
                 wrap_to_pi(shoulder_open - float(data.qpos[0])),
                 wrap_to_pi(elbow_open - float(data.qpos[1])),

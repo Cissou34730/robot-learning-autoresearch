@@ -80,21 +80,6 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
             np.linalg.norm(self._end_effector_position() - self.data.mocap_pos[0])
         )
 
-    def _end_effector_speed(self) -> float:
-        velocity = np.zeros(6, dtype=np.float64)
-        site_id = mujoco.mj_name2id(
-            self.model, mujoco.mjtObj.mjOBJ_SITE, "end_effector"
-        )
-        mujoco.mj_objectVelocity(
-            self.model,
-            self.data,
-            mujoco.mjtObj.mjOBJ_SITE,
-            site_id,
-            velocity,
-            0,
-        )
-        return float(np.linalg.norm(velocity[3:]))
-
     def _sample_target_position(self) -> None:
         angle = float(self.np_random.uniform(-np.pi, np.pi))
         radius = float(
@@ -166,7 +151,6 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
             previous_held_steps=previous_held_steps,
             hold_steps_required=self.hold_steps_required,
             penalize_outside=self._outside_after_hold,
-            end_effector_speed=self._end_effector_speed(),
         )
         self._previous_distance = distance
 

@@ -17,7 +17,6 @@ PROGRESS_COEFFICIENT = 10.0
 CLOSENESS_COEFFICIENT = 4.0
 CLOSENESS_LENGTH_SCALE = 0.05
 ACTION_COST_COEFFICIENT = 0.01
-VELOCITY_COST_COEFFICIENT = 0.005
 HOLD_PROGRESS_BONUS = 50.0
 HOLD_PROGRESS_EXPONENT = 1.0
 HOLD_EXIT_FORFEIT_FRACTION = 0.0
@@ -54,7 +53,6 @@ def reach_reward(
     previous_held_steps: int = 0,
     hold_steps_required: int = 100,
     penalize_outside: bool = False,
-    end_effector_speed: float | None = None,
 ) -> RewardResult:
     progress = PROGRESS_COEFFICIENT * (previous_distance - current_distance)
     reward = progress
@@ -97,14 +95,6 @@ def reach_reward(
         action_cost = -(ACTION_COST_COEFFICIENT * float(np.sum(np.square(action))))
     reward += action_cost
 
-    velocity_cost = 0.0
-    if (
-        end_effector_speed is not None
-        and current_distance <= success_threshold
-    ):
-        velocity_cost = -VELOCITY_COST_COEFFICIENT * float(end_effector_speed**2)
-    reward += velocity_cost
-
     return RewardResult(
         total=float(reward),
         components={
@@ -114,6 +104,5 @@ def reach_reward(
             "outside_band": float(outside_band),
             "hold_complete": float(hold_complete),
             "action_cost": float(action_cost),
-            "velocity_cost": float(velocity_cost),
         },
     )
