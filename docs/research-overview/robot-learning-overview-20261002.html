@@ -243,14 +243,14 @@
         </article>
         <article class="card">
           <span class="tag">Issue register</span>
-          <h3 style="margin-top: 12px">20 issues, OI-001 to OI-020</h3>
+          <h3 style="margin-top: 12px">21 issues, OI-001 to OI-021</h3>
           <ul>
-            <li>Active (4): OI-005, OI-006, OI-014, OI-019.</li>
+            <li>Active or open (8): OI-005, OI-006, OI-008, OI-009, OI-010, OI-014, OI-019, OI-021.</li>
             <li>Implemented or revised, awaiting campaign evidence (2): OI-015, OI-018.</li>
             <li>Closed as effective (7): OI-001, OI-002, OI-003, OI-004, OI-011, OI-016, OI-017.</li>
-            <li>Withdrawn / accepted operational limit (1): OI-013.</li>
-            <li>Paused or proposal (5): OI-007, OI-008, OI-009, OI-010, OI-012.</li>
-            <li>Newly registered open issue: OI-020.</li>
+            <li>Withdrawn / accepted operational limit (2): OI-013, OI-020.</li>
+            <li>Paused or proposal (2): OI-007, OI-012.</li>
+            <li>Highest-priority new issue: OI-021.</li>
           </ul>
           <p class="small"><a href="#issues">See the full table</a></p>
         </article>
@@ -263,6 +263,7 @@
             <li>OI-017 is closed effective after campaign evidence showed the operation-scoped, fingerprint-verified tool changed scientific conclusions.</li>
             <li>OI-018 adds fair bounded batching with per-query traversal budgets and shared result/output limits.</li>
             <li>OI-003 and OI-016 close on campaign <code>ec7f3d3a</code> evidence; no campaign-length replay was required.</li>
+            <li>OI-020 is withdrawn as an invalid generalization of campaign-specific evidence. OI-021 records the scenario-specific scientific-model prompt; impact analysis must precede repair.</li>
           </ul>
           <p class="small muted" style="margin-top: 8px">Campaign evidence can confirm one repair and later expose a recurrence or a different failure mode. Implemented does not mean effective.</p>
         </article>
@@ -498,7 +499,7 @@
 
     <section class="section" aria-labelledby="issues-heading" id="issues">
       <p class="section-label">5 / WHAT STILL NEEDS WORK</p>
-      <h2 id="issues-heading">Issue register OI-001 to OI-020</h2>
+      <h2 id="issues-heading">Issue register OI-001 to OI-021</h2>
       <p>This list matches the outstanding issue register in the log. Issue ids are never reused. No issue below has an approved fix, unless stated.</p>
       <div class="card table-wrap wide">
         <table>
@@ -523,7 +524,8 @@
             <tr><td>OI-017</td><td>Nested artifact evidence access. Campaign <code>339736e0</code> used the operation-scoped, fingerprint-verified tool successfully, and the retrieved evidence changed scientific conclusions. Repetitive query mechanics are tracked separately as OI-018.</td><td><span class="tag">Closed, effective</span></td></tr>
             <tr><td>OI-018</td><td>Artifact-query ergonomics and context amplification. One invocation can now run up to 16 related path, filter, projection, and aggregation specifications against one resolved and verified artifact, with shared provenance and invocation-wide bounds. Discovery returns at most 200 paths and reports truncation.</td><td><span class="tag">Implemented, unmeasured</span></td></tr>
             <tr><td>OI-019</td><td>Terminal brief consistency. The generated brief can place a final official pass beside stale pre-assessment checkpoint prose.</td><td><span class="tag">Open, low priority</span></td></tr>
-            <tr><td>OI-020</td><td>Self-imposed acceptance gates and slice-label drift. PI preferences can become inherited gates, while radius boundaries and evaluation panels are not always labeled consistently.</td><td><span class="tag">Open, newly registered</span></td></tr>
+            <tr><td>OI-020</td><td>Self-imposed acceptance gates and slice-label drift. This issue improperly generalized scenario-specific evidence and overlapped the assessment-readiness scope already owned by OI-005. The original observation remains in the <code>79395c88</code> RCA.</td><td><span class="tag">Withdrawn</span></td></tr>
+            <tr><td>OI-021</td><td>Scenario-specific scientific-model prompt. The preliminary objective explicitly names reaching, trajectory control, convergence, stabilization and multiple kinematic solutions. The direct wording is confined to fresh-campaign scientific-model generation, but the generated model and synthesis are handed into startup. All 57 recorded scientific-model sessions were exposed; measured policy evidence remains factual, while independent mechanism discovery and robot-generic claims are contaminated.</td><td><span class="tag">Open, high priority</span></td></tr>
           </tbody>
         </table>
       </div>

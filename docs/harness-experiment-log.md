@@ -77,7 +77,8 @@ next actions; it does not reproduce full RCAs, campaign logs or prompt text.
 | OI-017 | Nested artifact evidence access | **Closed** | Operation-scoped, fingerprint-verified access retrieved nested evidence and changed conclusions in campaign `339736e0`. | None. |
 | OI-018 | Artifact-query ergonomics and context amplification | **Implemented / unmeasured** | Batch queries, bounded discovery and modifier-visible console output are implemented. The 544-call historical problem was not measured under the new interface. | Capture query-shape and cost evidence in a future campaign. |
 | OI-019 | Terminal brief contradiction | **Open / low priority** | `build_brief.py` can place a final pass beside a stale pre-assessment checkpoint. No later PI session exists to refresh it. | Repair the durable brief when reporting work resumes. |
-| OI-020 | Self-imposed acceptance gates and slice-label drift | **Open / newly registered** | The comprehensive RCA found PI preferences treated as gates: unlabeled “inner-band” populations, changing radius/panel meanings, and readiness/role decisions tied to non-contract criteria. The latest pass does not prove this is fixed. | Define reporting boundaries and preserve PI authority without adding Runner judgment. |
+| OI-020 | Self-imposed acceptance gates and slice-label drift | **Withdrawn as an invalid generic issue.** | The `79395c88` RCA observation remains valid campaign history, but this issue improperly combined assessment-readiness concerns already owned by OI-005 with scenario-specific radius and panel terminology. No generic harness repair is authorized from that symptom. | Preserve the finding in the campaign RCA; do not add scenario vocabulary to generic guidance. |
+| OI-021 | Scenario-specific scientific-model prompt | **Open / high priority.** | The preliminary scientific-model objective in `run_research.ps1` explicitly names reaching, trajectory control, convergence, stabilization and multiple kinematic solutions. The wording is delivered only during the fresh-campaign scientific-model phase, but its generated model and decision-relevant synthesis are handed into startup and remain available throughout the campaign. All 57 recorded scientific-model sessions were exposed, so there is no clean campaign control. Policy scores and recorded measurements remain factual; independent mechanism discovery and robot-generic harness claims are contaminated. | Complete the impact RCA before changing the prompt. Then replace scenario-supplied capability categories with a robot- and task-derived requirement without weakening physical analysis. |
 
 ## Comprehensive RCA crosswalk
 
@@ -90,7 +91,7 @@ Source: [`campaign_79395c88_comprehensive_rca_20261009.md`](campaign_79395c88_co
 | Intended method differed from implemented experiment | OI-015 | Wording repair exists; semantic realization still needs the planned replay. |
 | Available evidence was carried forward as missing | OI-003 and OI-017 | Closed for the tracked defect: access was fixed under OI-017 and the current campaign did not repeat the false-absence interpretation. |
 | Candidate comparisons were mistaken for causal comparisons | OI-014 | Still open. Artifact results are valid; causal explanations remain bounded hypotheses. |
-| Research preferences became acceptance criteria | OI-020 | Newly registered; not fixed. |
+| Research preferences became acceptance criteria | OI-005; campaign-specific evidence remains in the RCA | The generic readiness question remains open under OI-005. The radius/panel symptom is not generic harness guidance. |
 | The brief became large and cognitively expensive | OI-008, partly addressed | Brief compaction was implemented, but context-delivery causes and scientific effect remain unmeasured. |
 
 ## RCA validation still outstanding
@@ -124,8 +125,9 @@ operations and must remain separate from campaign execution:
 | 2026-10-10 | OI-017 nested artifact query | Closed after successful campaign use. |
 | 2026-10-10 | OI-018 batch query and console guidance | Implemented; campaign effect unmeasured. |
 | 2026-10-10 | OI-019 terminal brief contradiction | Registered; no repair approved. |
-| 2026-10-10 | OI-020 acceptance-gate and slice-label drift | Registered from comprehensive RCA; no repair approved. |
+| 2026-10-10 | OI-020 acceptance-gate and slice-label drift | Withdrawn as an invalid generic issue. The campaign-specific RCA observation remains preserved. |
 | 2026-10-11 | OI-003 and OI-016 closure | Closed from `ec7f3d3a` campaign evidence; no replay or campaign mutation was required. OI-015 remains implemented/unmeasured because its historical semantic mismatch was not exercised. |
+| 2026-10-11 | OI-021 scenario-specific scientific-model prompt | Registered high priority. Direct leakage is confined to the preliminary scientific-model prompt, with downstream influence through its durable output. Impact review precedes repair. |
 | 2026-10-10 | Three-layer harness documentation structure | Adopted: compact tracker, curated thematic narrative and unchanged chronological archive. Narrative curation remains pending. |
 
 ## Evidence index

@@ -87,7 +87,10 @@ terminal outcomes and accidental Runner judgment.
 
 Cover startup action selection, scientific-model handoff, baseline-first
 behavior, physical investigation before training, shorter startup requests and
-the still-open 120,000-step budget review.
+the still-open 120,000-step budget review. Also cover the scientific-model
+prompt's robot neutrality: the preliminary analyst must derive consequential
+capabilities from the human-owned robot and task rather than receive
+scenario-specific capability categories from the harness.
 
 Distinguish:
 
@@ -97,7 +100,7 @@ Distinguish:
 - scientific coupling between the model, first action and later inquiry;
 - cost questions that do not invalidate the scientific choice.
 
-Primary tracker ownership: OI-001 and OI-006.
+Primary tracker ownership: OI-001, OI-006 and OI-021.
 
 ### 3. Inquiry semantics, closure and progression
 
@@ -144,12 +147,14 @@ Preserve the distinction between:
 
 - the protected official success threshold;
 - development evidence used by the PI to decide whether assessment is useful;
-- research preferences such as preserving a sub-band or interface;
+- research preferences selected during a campaign;
 - accidental requirements not present in the human goal or immutable
-  contracts;
-- slice statistics whose radius boundary or evaluation panel changed.
+  contracts.
 
-Primary tracker ownership: OI-005, OI-019 and OI-020.
+Scenario-specific examples, populations and diagnostic labels remain in their
+campaign RCA rather than becoming generic harness instructions.
+
+Primary tracker ownership: OI-005 and OI-019. OI-020 is withdrawn.
 
 ### 6. Context delivery, cost and evidence tooling
 
@@ -219,13 +224,13 @@ is copied.
 ## Current curation status
 
 The documentation structure is adopted, but full thematic curation of the
-legacy archive is **pending**. The comprehensive campaign RCA has already been
-cross-checked against the live tracker, resulting in explicit registration of
-OI-020. Campaign `ec7f3d3a` subsequently closed OI-003 and OI-016 without an
-expensive replay. OI-015 remains implemented but unmeasured because its
-historical T10/I12 semantic mismatch was not exercised by that campaign; this
-is recorded as a limitation rather than treated as a reason to run a
-campaign-length validation.
+legacy archive is **pending**. Campaign `ec7f3d3a` closed OI-003 and OI-016
+without an expensive replay. OI-015 remains implemented but unmeasured because
+its historical T10/I12 semantic mismatch was not exercised by that campaign.
+OI-020 was withdrawn after review showed that it improperly generalized a
+scenario-specific RCA symptom. OI-021 now owns the confirmed
+scenario-specific scientific-model prompt, whose impact must be documented
+before repair.
 
 No claim should be made that the historical narrative is complete until all
 legacy headings have been inventoried and reconciled against the tracker.
