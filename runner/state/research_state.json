@@ -7034,47 +7034,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "open",
-        "inquiry": {
-          "closure_condition": "Close the inquiry after a T4-preserving branch-aware controller has been developed and measured on a non-overlapping 200-episode research panel with radius- and angle-stratified diagnostics. Improvement to at least 196/200 with no reappearance of the inner-radius acquisition failures supports the route; failure to improve, or failures concentrated in a branch or geometry despite preserved acquisition, redirects the campaign to goal review.",
-          "goal_connection": "The human goal requires at least 196 successes in the protected 200-episode assessment. T4 remains below that threshold, and M5/M6 show that acquisition is largely solved while a small residual failure tail remains. A controller that represents and stabilizes the selected inverse-kinematic branch could improve that tail without discarding the staged-transfer and inner-radius coverage that produced T4.",
-          "handoff_conclusion": "Observed: M1 measured active +/-170 degree joint limits, collision-free sampled IK branches, and strong bounded actuation with rapid settling. M2 measured T1 at 68.0%, with 56 of 64 failures never reaching tolerance, exposing inadequate 14-20 cm training coverage for official inner radii. T2 fresh full-radius training measured 35.0% with 120/200 never-reached episodes, so changing coverage without preserving the outer controller was not viable in that tested recipe. Weighted transfer T3 measured 89.5%, with all 15 never-reached failures at radii 6.6-11.9 cm. T4 increased inner-radius exposure to 50% and measured 95.5% on M5; only one episode never reached tolerance, while 20 episodes recorded hold interruptions. M5 therefore supported staged transfer plus targeted inner-radius exposure as an acquisition route and made hold robustness a credible bottleneck, but interruptions were also present in successful episodes and branch identity, continuous internal-step behavior, and hold-history effects remained unmeasured. T5 implemented one hold-focused reward intervention: full forfeiture of accumulated hold-progress reward after tolerance exit, while preserving T4's training coverage and transfer parent. M6 falsified improvement for that tested recipe on matched seeds: T5 achieved 184/200 versus T4's 187/200, with 8 T5 wins, 11 T4 wins, and 19 discordant episodes; T5 had 16 failures and 16 interrupted episodes versus T4's 13 failures and 17 interrupted episodes. Interpretation: the specific reward-forfeiture continuation did not reduce the failure tail and is not supported for further repetition. This is a limited negative result about that implementation, not evidence that all stabilization, temporal-memory, branch-aware, or representation changes are ineffective.",
-          "handoff_question": "Can an explicitly branch-aware stabilization controller reduce the T4 failure tail to at least 196/200 while preserving inner-radius acquisition?",
-          "handoff_source_session_id": "S3",
-          "id": "I2",
-          "opened_in_session": "S4",
-          "question": "Can an explicitly branch-aware stabilization controller reduce the T4 failure tail to at least 196/200 while preserving inner-radius acquisition?",
-          "rationale": "Requesting the official assessment now would terminally commit a candidate measured at 191/200 on M5 and 187/200 on the matched M6 panel, both below the 196/200 target. M5 shows that 8 of 9 failures had interruptions but interruptions also occurred in successful episodes, so hold interruption is an association rather than an established sole cause. M6 rules out improvement from the specific full hold-progress forfeiture continuation, not from controller or representation changes. The remaining branch-specific mechanism is consequential, consistent with the physical model, and can be tested while preserving T4's demonstrated inner-radius acquisition route.",
-          "reframes": []
-        }
-      },
-      "result": {
-        "action": "open",
-        "inquiry_id": "I2",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E6",
-    "inquiry_id": null,
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "open",
-        "closure_condition": "Close the inquiry after a T4-preserving branch-aware controller has been developed and measured on a non-overlapping 200-episode research panel with radius- and angle-stratified diagnostics. Improvement to at least 196/200 with no reappearance of the inner-radius acquisition failures supports the route; failure to improve, or failures concentrated in a branch or geometry despite preserved acquisition, redirects the campaign to goal review.",
-        "goal_connection": "The human goal requires at least 196 successes in the protected 200-episode assessment. T4 remains below that threshold, and M5/M6 show that acquisition is largely solved while a small residual failure tail remains. A controller that represents and stabilizes the selected inverse-kinematic branch could improve that tail without discarding the staged-transfer and inner-radius coverage that produced T4.",
-        "question": "Can an explicitly branch-aware stabilization controller reduce the T4 failure tail to at least 196/200 while preserving inner-radius acquisition?",
-        "rationale": "Requesting the official assessment now would terminally commit a candidate measured at 191/200 on M5 and 187/200 on the matched M6 panel, both below the 196/200 target. M5 shows that 8 of 9 failures had interruptions but interruptions also occurred in successful episodes, so hold interruption is an association rather than an established sole cause. M6 rules out improvement from the specific full hold-progress forfeiture continuation, not from controller or representation changes. The remaining branch-specific mechanism is consequential, consistent with the physical model, and can be tested while preserving T4's demonstrated inner-radius acquisition route."
-      }
-    },
-    "request_fingerprint": "591743c4db461893f9fa87c85cef84028bd04d847f79b5191adc289d9881705a",
-    "session_id": "S4",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "No working, best-known, or retained role has been assigned. T4:checkpoint-105472 remains the strongest evidence-backed candidate by the original M5 result (191/200, 95.5%), while its matched M6 reference result was 187/200 and does not certify official performance.",
     "completed_operations": [
