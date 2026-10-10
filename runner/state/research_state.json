@@ -5999,47 +5999,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "open",
-        "inquiry": {
-          "closure_condition": "Close the inquiry after a fresh trained candidate is evaluated on a held-out panel with radius-stratified success, branch residuals, reach-versus-hold failure classes, first-reach velocity, and action diagnostics. A candidate reaching at least 98% with no demonstrated inner-radius degradation supports official-assessment readiness; otherwise record the measured failure mechanism and whether terminal damping is rejected or requires revision.",
-          "goal_connection": "The current best development candidate is five successes short of the 196/200 official threshold. Baseline failures include saturated non-reaches and a high-velocity hold interruption, so reducing control effort specifically during terminal approach and hold may close the gap without changing the official task or removing inner-radius coverage.",
-          "handoff_conclusion": "M2 supports adequate actuator authority and passive settling, weakening insufficient authority and persistent free-motion instability as leading explanations. M4 supplied branch-aware and hold-aware diagnostics. M5 showed the restored T1 baseline at 96.875% with four non-reaches ending near shoulder limits and one hold interruption, while the tested branch-residual plus near-target velocity reward intervention fell to 81.875% and 81.25% with 28 non-reaches for both evaluated T2 checkpoints. T3's explicit polar/branch observation expansion and T4's shoulder-limit action guard produced poor learning trajectories and therefore reject those recipes without resolving the broader mechanisms. The closed I1 inquiry supports a limited-negative conclusion: the tested targeted intervention route did not reach 98%, while branch/limit reach generation, approach stabilization, and policy optimization remain competing explanations.",
-          "handoff_question": "Can a single-factor terminal action-damping intervention, with the restored T1 full-radius training distribution and unchanged observations and task semantics, raise held-out success from 96.875% to at least 98% without sacrificing inner-radius performance, as shown by branch-aware reach and uninterrupted-hold diagnostics?",
-          "handoff_source_session_id": "S3",
-          "id": "I2",
-          "opened_in_session": "S4",
-          "question": "Can a single-factor terminal action-damping intervention, with the restored T1 full-radius training distribution and unchanged observations and task semantics, raise held-out success from 96.875% to at least 98% without sacrificing inner-radius performance, as shown by branch-aware reach and uninterrupted-hold diagnostics?",
-          "rationale": "The inherited inner-coverage premise is outdated for the restored T1 recipe: robot_learning/training/environment.py currently samples the full official 0.06-0.20 m radius range, and M5 failures span 11.14-17.99 cm rather than clustering below 14 cm. M5 shows four non-reaches with max_abs_action=1.0 and open-branch residuals of 0.12-0.19 rad, plus one hold interruption at 17.37 cm entering with high end-effector speed. M2 weakens insufficient authority as a general explanation, while T2's combined branch-residual and near-target-velocity recipe degraded learning; a narrowly scoped terminal action-damping change tests approach stabilization without repeating that confounded recipe.",
-          "reframes": []
-        }
-      },
-      "result": {
-        "action": "open",
-        "inquiry_id": "I2",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E9",
-    "inquiry_id": null,
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "open",
-        "closure_condition": "Close the inquiry after a fresh trained candidate is evaluated on a held-out panel with radius-stratified success, branch residuals, reach-versus-hold failure classes, first-reach velocity, and action diagnostics. A candidate reaching at least 98% with no demonstrated inner-radius degradation supports official-assessment readiness; otherwise record the measured failure mechanism and whether terminal damping is rejected or requires revision.",
-        "goal_connection": "The current best development candidate is five successes short of the 196/200 official threshold. Baseline failures include saturated non-reaches and a high-velocity hold interruption, so reducing control effort specifically during terminal approach and hold may close the gap without changing the official task or removing inner-radius coverage.",
-        "question": "Can a single-factor terminal action-damping intervention, with the restored T1 full-radius training distribution and unchanged observations and task semantics, raise held-out success from 96.875% to at least 98% without sacrificing inner-radius performance, as shown by branch-aware reach and uninterrupted-hold diagnostics?",
-        "rationale": "The inherited inner-coverage premise is outdated for the restored T1 recipe: robot_learning/training/environment.py currently samples the full official 0.06-0.20 m radius range, and M5 failures span 11.14-17.99 cm rather than clustering below 14 cm. M5 shows four non-reaches with max_abs_action=1.0 and open-branch residuals of 0.12-0.19 rad, plus one hold interruption at 17.37 cm entering with high end-effector speed. M2 weakens insufficient authority as a general explanation, while T2's combined branch-residual and near-target-velocity recipe degraded learning; a narrowly scoped terminal action-damping change tests approach stabilization without repeating that confounded recipe."
-      }
-    },
-    "request_fingerprint": "2c44f67c3f4515f90c98cf649d3ccdf25db276c096ab237401bb93b7d0a4e8e5",
-    "session_id": "S4",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T1:checkpoint-120832 remains the strongest measured development candidate at 96.875% on M5 and is not assigned a formal model role. T2 checkpoints are rejected for the tested reward recipe, and T3 and T4 are rejected as learning-degrading recipes. No candidate establishes the official 98% goal.",
     "completed_operations": [
