@@ -1,16 +1,5 @@
 {
-  "active_inquiry": {
-    "closure_condition": "Evaluate one bounded state-aware or branch-transition intervention against T3 on the shared 160-episode development panel. Continue only if it recovers at least four recurring T3 failures without material loss in complete success, while diagnostics show the change in first reach, hold interruptions, terminal joint positions, and branch errors. Close with a limited negative or redirect if it matches or regresses T3, or if the recovered failures are offset by new failures elsewhere.",
-    "goal_connection": "The established T3 candidate succeeds on 153 of 160 development episodes, leaving seven failures concentrated in negative-angle, shoulder-limit situations. Recovering at least four of those failures without losing complete-hold successes would move the candidate toward the 98% official objective.",
-    "handoff_conclusion": "T2 established that broader radius coverage improved development success from 110/160 to 150/160, and T3 improved it to 153/160 through a near-target joint-velocity penalty, with both acquisition and hold rescues. M4 localized the remaining failures to approximately -130 to -151 degree targets at the shoulder limit, with small selected/open-branch error and large alternate-branch error. M5, M6, M7, and M9 matched T3 for their tested branch-limit, braking, explicit-trajectory, and direct-action near-limit recipes; M8 regressed to 100/160 for its tested residual-setpoint feedback recipe. These results reject only those recorded implementations, not the broader methods. M10 established that the compiled shoulder limit produces a real plant interaction: outward commands overshot the nominal 2.9671-radian limit, produced opposing generalized constraint force up to about 10.02 against actuator force 5, and reversed with high authority. M11 then tested a state-triggered soft-limit impedance derived from that observation and regressed to 147/160 versus T3 at 153/160, with six discordant episodes all favoring T3. Thus limit interaction is physically real, but this compensation did not show that it is a sufficient or remediable cause of the recurring policy failures. The goal-review correction is that branch-transition or policy-state work remains unresolved: M4's small selected-branch error does not establish branch choice as the cause, and M11's negative result is specific to its tested soft-limit controller rather than to all plant-aware or policy-state mechanisms.",
-    "handoff_question": "Can a policy-state or branch-transition intervention recover at least four recurring negative-angle acquisition and interrupted-hold failures without sacrificing T3's complete-hold baseline, after the measured soft-limit compensation proved insufficient?",
-    "handoff_source_session_id": "S20",
-    "id": "I10",
-    "opened_in_session": "S20",
-    "question": "Can a policy-state or branch-transition intervention recover at least four recurring negative-angle acquisition and interrupted-hold failures without sacrificing T3's complete-hold baseline, after the measured soft-limit compensation proved insufficient?",
-    "rationale": "M4 localizes the recurring failures to approximately -130 to -151 degree targets near the shoulder limit, but many failures have small selected/open-branch error and large alternate-branch error, so branch choice alone does not establish the cause. M10 establishes real limit interaction, while M11 shows that the tested state-triggered soft-limit impedance regressed from 153/160 to 147/160 and therefore does not support another small limit-governor variant. The remaining decision-relevant distinction is whether policy action selection or transition timing/state use can exploit the controllable plant without sacrificing T3's complete-hold behavior.",
-    "reframes": []
-  },
+  "active_inquiry": null,
   "campaign": {
     "base_commit": "5a0ec158aa0741306d5f825a3ec7db8176a3ff13",
     "id": "339736e0-5583-4bc4-8729-5023fc3077b7",
@@ -9842,7 +9831,7 @@
     }
   },
   "counters": {
-    "event": 39,
+    "event": 40,
     "inquiry": 10,
     "measurement": 12,
     "session": 21,
@@ -20593,9 +20582,63 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-10T00:47:03Z",
+      "error": null,
+      "id": "E40",
+      "inquiry_id": "I10",
+      "kind": "inquiry",
+      "request": {
+        "action": "close",
+        "outcome": "limited negative",
+        "reason": "M12 tested the trained stateful branch-transition intervention against T3 on the shared 160-episode panel. T14:checkpoint-100352 achieved 153/160, exactly matching T3, with zero discordant episodes and therefore no recovery of the required four recurring failures. The intervention did not sacrifice complete success, but it also provided no measurable benefit. This closes I10 for the tested policy-state and branch-transition recipe without rejecting the broader class of state-aware methods. The result redirects the campaign away from another small branch-transition variant toward a different plant-aware mechanism or discriminating measurement of the residual failures."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I10",
+        "outcome": "limited negative",
+        "reason": "M12 tested the trained stateful branch-transition intervention against T3 on the shared 160-episode panel. T14:checkpoint-100352 achieved 153/160, exactly matching T3, with zero discordant episodes and therefore no recovery of the required four recurring failures. The intervention did not sacrifice complete success, but it also provided no measurable benefit. This closes I10 for the tested policy-state and branch-transition recipe without rejecting the broader class of state-aware methods. The result redirects the campaign away from another small branch-transition variant toward a different plant-aware mechanism or discriminating measurement of the residual failures.",
+        "status": "completed"
+      },
+      "session_id": "S21",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "close",
+        "inquiry_id": "I10",
+        "outcome": "limited negative",
+        "reason": "M12 tested the trained stateful branch-transition intervention against T3 on the shared 160-episode panel. T14:checkpoint-100352 achieved 153/160, exactly matching T3, with zero discordant episodes and therefore no recovery of the required four recurring failures. The intervention did not sacrifice complete success, but it also provided no measurable benefit. This closes I10 for the tested policy-state and branch-transition recipe without rejecting the broader class of state-aware methods. The result redirects the campaign away from another small branch-transition variant toward a different plant-aware mechanism or discriminating measurement of the residual failures."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I10",
+        "outcome": "limited negative",
+        "reason": "M12 tested the trained stateful branch-transition intervention against T3 on the shared 160-episode panel. T14:checkpoint-100352 achieved 153/160, exactly matching T3, with zero discordant episodes and therefore no recovery of the required four recurring failures. The intervention did not sacrifice complete success, but it also provided no measurable benefit. This closes I10 for the tested policy-state and branch-transition recipe without rejecting the broader class of state-aware methods. The result redirects the campaign away from another small branch-transition variant toward a different plant-aware mechanism or discriminating measurement of the residual failures.",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E40",
+    "inquiry_id": "I10",
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "close",
+        "outcome": "limited negative",
+        "reason": "M12 tested the trained stateful branch-transition intervention against T3 on the shared 160-episode panel. T14:checkpoint-100352 achieved 153/160, exactly matching T3, with zero discordant episodes and therefore no recovery of the required four recurring failures. The intervention did not sacrifice complete success, but it also provided no measurable benefit. This closes I10 for the tested policy-state and branch-transition recipe without rejecting the broader class of state-aware methods. The result redirects the campaign away from another small branch-transition variant toward a different plant-aware mechanism or discriminating measurement of the residual failures."
+      }
+    },
+    "request_fingerprint": "4e0f45c8c0d4d06f30f66dcdd929a76d7b249c6517519e5d73e756f625d983f7",
+    "session_id": "S21",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T3:checkpoint-120832 remains the strongest development-evaluated candidate and reference at 153/160. T13:checkpoint-115712 regressed to 147/160 in M11 and is not assigned a role. T12:checkpoint-100352 matched T3 at 153/160 in M9 and is not assigned a role. No candidate is assigned working, best-known, or retained status.",
     "completed_operations": [
@@ -20648,7 +20691,8 @@
     "objective": "Advance I10 toward an evidence-supported answer to its scientific question: Can a policy-state or branch-transition intervention recover at least four recurring negative-angle acquisition and interrupted-hold failures without sacrificing T3's complete-hold baseline, after the measured soft-limit compensation proved insufficient? Before choosing the next action, compare the accumulated evidence with the closure condition. Choose the supported operation that best advances the bounded work; no operation is the default. Close the inquiry when the condition is met.",
     "operation_ids": [
       "T14",
-      "M12"
+      "M12",
+      "E40"
     ],
     "scientific_parent_commit": "b8745a05859eb84987df3e859a56929f7066583a"
   },
