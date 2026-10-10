@@ -33,3 +33,4 @@
 | E16 | restore_recipe | I3 | restored |
 | T7 | training | I3 | completed |
 | E17 | restore_recipe | I3 | restored |
+| T8 | training | I3 | completed |
