@@ -19,6 +19,12 @@ next actions; it does not reproduce full RCAs, campaign logs or prompt text.
 - Resolved, withdrawn and superseded work remains discoverable through Git
   history and the archived log
   [`archive/harness-experiment-log-legacy.md`](archive/harness-experiment-log-legacy.md).
+- Harness documentation uses three layers: this live tracker, a curated
+  thematic narrative, and the untouched chronological archive. The narrative
+  preserves failures, reversals, superseded reasoning and decision evolution;
+  the archive is supporting source material, not the primary explanation.
+  See
+  [`harness-change-narrative.md`](harness-change-narrative.md).
 
 ## Current baseline
 
@@ -116,6 +122,7 @@ operations and must remain separate from campaign execution:
 | 2026-10-10 | OI-018 batch query and console guidance | Implemented; campaign effect unmeasured. |
 | 2026-10-10 | OI-019 terminal brief contradiction | Registered; no repair approved. |
 | 2026-10-10 | OI-020 acceptance-gate and slice-label drift | Registered from comprehensive RCA; no repair approved. |
+| 2026-10-10 | Three-layer harness documentation structure | Adopted: compact tracker, curated thematic narrative and unchanged chronological archive. Narrative curation remains pending. |
 
 ## Evidence index
 
@@ -128,6 +135,7 @@ operations and must remain separate from campaign execution:
 | `docs/campaign_79395c88_comprehensive_rca_20261009.md` | Full independent RCA and proposed validation. |
 | `docs/oi016_post_campaign_rca_20261009.md` | Earlier OI-016-specific analysis; superseded where the comprehensive RCA differs. |
 | `docs/research-overview/robot-campaign-ec7f3d3a-20261010-error-correction-report.html` | Detailed report for the latest successful campaign. |
+| `docs/harness-change-narrative.md` | Curated explanation of harness failures, attempted repairs, reversals and current conclusions. |
 | `archive/harness-experiment-log-legacy.md` | Full prior narrative log, retained for historical lookup only. |
 
 ## Maintenance template
