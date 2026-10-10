@@ -35,3 +35,4 @@
 | E17 | restore_recipe | I3 | restored |
 | T8 | training | I3 | completed |
 | M8 | measurement | I3 | completed |
+| E18 | restore_recipe | I3 | restored |
