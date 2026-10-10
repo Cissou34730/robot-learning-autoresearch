@@ -30263,38 +30263,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I15",
-        "outcome": "I15 resolved by redirecting away from a plant-aware redesign: the M20 boundary-directed replay activated the official shoulder constraint in all six trials at control step 6, with exact limited/counterfactual pre-constraint position and velocity agreement through step 5. Despite post-constraint force up to 7.12 and a transient shoulder velocity, every limited and disabled-limit trial achieved a complete uninterrupted 100-step hold. The plant-side transient is real, but matched post-constraint hold loss did not persist under controlled acquisition.",
-        "reason": "M20 satisfies the closure condition's absence branch. M19 was inconclusive because it never activated the constraint; M20 corrected that limitation and still found no plant-specific loss of the required hold. The remaining development failures therefore remain better explained by candidate-specific pre-constraint acquisition or branch representation errors supported by M17. Future work should return to that route; this closure does not establish that plant transients never contribute, nor does it establish official 200-episode performance."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I15",
-        "outcome": "I15 resolved by redirecting away from a plant-aware redesign: the M20 boundary-directed replay activated the official shoulder constraint in all six trials at control step 6, with exact limited/counterfactual pre-constraint position and velocity agreement through step 5. Despite post-constraint force up to 7.12 and a transient shoulder velocity, every limited and disabled-limit trial achieved a complete uninterrupted 100-step hold. The plant-side transient is real, but matched post-constraint hold loss did not persist under controlled acquisition.",
-        "reason": "M20 satisfies the closure condition's absence branch. M19 was inconclusive because it never activated the constraint; M20 corrected that limitation and still found no plant-specific loss of the required hold. The remaining development failures therefore remain better explained by candidate-specific pre-constraint acquisition or branch representation errors supported by M17. Future work should return to that route; this closure does not establish that plant transients never contribute, nor does it establish official 200-episode performance.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E62",
-    "inquiry_id": "I15",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "I15 resolved by redirecting away from a plant-aware redesign: the M20 boundary-directed replay activated the official shoulder constraint in all six trials at control step 6, with exact limited/counterfactual pre-constraint position and velocity agreement through step 5. Despite post-constraint force up to 7.12 and a transient shoulder velocity, every limited and disabled-limit trial achieved a complete uninterrupted 100-step hold. The plant-side transient is real, but matched post-constraint hold loss did not persist under controlled acquisition.",
-        "reason": "M20 satisfies the closure condition's absence branch. M19 was inconclusive because it never activated the constraint; M20 corrected that limitation and still found no plant-specific loss of the required hold. The remaining development failures therefore remain better explained by candidate-specific pre-constraint acquisition or branch representation errors supported by M17. Future work should return to that route; this closure does not establish that plant transients never contribute, nor does it establish official 200-episode performance."
-      }
-    },
-    "request_fingerprint": "ba5b5584129419c04ce7858ce7536ac1117c956646564d69f370ae079fdd8260",
-    "session_id": "S32",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "No candidate is assigned working, best-known, or retained status. T3:checkpoint-120832 remains the strongest development-evaluated reference at 153/160; T18:checkpoint-65536 achieved 152/160 and is not an improvement. Training statistics nominate artifacts but do not establish development performance.",
     "completed_operations": [
