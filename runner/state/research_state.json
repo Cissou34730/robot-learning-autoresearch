@@ -1,5 +1,16 @@
 {
-  "active_inquiry": null,
+  "active_inquiry": {
+    "closure_condition": "Close with a positive result if a candidate evaluated on the same 160-episode panel reaches at least 157 successes and the recovered episodes show valid first reach plus uninterrupted 100-step holds without material regressions elsewhere. Close with a limited negative result if a branch-aware near-limit candidate is measured and fails to improve the plateau or regresses the reference, while preserving the diagnostic evidence needed to state whether the remaining failures are acquisition or hold-control failures.",
+    "goal_connection": "The human goal requires at least 98% complete-hold success. T3 reaches 153/160 on the development panel, so at least four of the seven localized failures must be recovered without sacrificing the existing successes before an official assessment can be credible.",
+    "handoff_conclusion": "Completed evidence establishes that broader radius coverage improved development success from 110/160 to 150/160 (T2), and a near-target joint-velocity penalty improved it to 153/160 with both acquisition and hold rescues (T3, M4). M4 associated the remaining failures with approximately -130 to -151 degree targets, near-limit terminal shoulder positions, small open-branch errors, and large alternate-branch errors. M5 and M6 matched T3 with zero discordant episodes, rejecting only the tested branch-limit-aware and angle-dependent-braking reward recipes. T8 collapsed in training and T9 recovered training performance after restricted guidance, but M7 again matched T3 with zero discordant episodes; E24 therefore closed I6 with a limited negative conclusion about that specific partial trajectory-control implementation. T10 then collapsed completely while implementing absolute joint setpoints with bounded feedback, exposing an action-conditioning limitation for that recipe rather than a general negative result for feedback control. T11 recovered learning after changing the action to a bounded residual around an admissible analytic IK branch, but M8 measured its strongest training nominee at only 100/160 successes versus 153/160 for T3, with 53 discordant episodes and zero candidate wins. M8 therefore closes I7 with a limited negative result for the tested residual-setpoint-plus-feedback recipe: it did not improve the plateau and incurred material regressions. Because the M8 artifact inventory records the required episode-diagnostic fields but their values were not inspected, the aggregate regression does not establish whether the remaining errors are specifically branch/near-limit failures or hold-control failures. The broader claim that all feedback, setpoint control, or trajectory control is ineffective remains unsupported.",
+    "handoff_question": "Can a branch-aware near-limit acquisition intervention preserve T3's 153/160 complete-hold baseline and recover the four no-first-reach and three interrupted-hold failures concentrated at negative-angle, shoulder-limit targets?",
+    "handoff_source_session_id": "S15",
+    "id": "I8",
+    "opened_in_session": "S16",
+    "question": "Can a branch-aware near-limit acquisition intervention preserve T3's 153/160 complete-hold baseline and recover the four no-first-reach and three interrupted-hold failures concentrated at negative-angle, shoulder-limit targets?",
+    "rationale": "The previously proposed broad distinction is narrowed by the completed M8 T3 reference diagnostics: all seven failures lie in the same negative-angle shoulder-limit regime; four never first reach, while three enter tolerance briefly and then interrupt holding. Their terminal joint positions sit at the shoulder limit, their selected/open-branch errors are small, and alternate-branch errors are large. This supports testing branch/near-limit acquisition directly, while retaining complete-hold success and paired comparison against T3 as the decision criteria. M8's T11 regression rejects the tested residual-setpoint recipe, not branch-aware control generally.",
+    "reframes": []
+  },
   "campaign": {
     "base_commit": "5a0ec158aa0741306d5f825a3ec7db8176a3ff13",
     "id": "339736e0-5583-4bc4-8729-5023fc3077b7",
@@ -7374,16 +7385,16 @@
     }
   },
   "counters": {
-    "event": 29,
-    "inquiry": 7,
+    "event": 30,
+    "inquiry": 8,
     "measurement": 8,
-    "session": 15,
+    "session": 16,
     "training": 11
   },
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "checkpointed",
+  "last_verdict": "completed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -14558,9 +14569,72 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-10T00:09:09Z",
+      "error": null,
+      "id": "E30",
+      "inquiry_id": "I8",
+      "kind": "inquiry",
+      "request": {
+        "action": "open",
+        "closure_condition": "Close with a positive result if a candidate evaluated on the same 160-episode panel reaches at least 157 successes and the recovered episodes show valid first reach plus uninterrupted 100-step holds without material regressions elsewhere. Close with a limited negative result if a branch-aware near-limit candidate is measured and fails to improve the plateau or regresses the reference, while preserving the diagnostic evidence needed to state whether the remaining failures are acquisition or hold-control failures.",
+        "goal_connection": "The human goal requires at least 98% complete-hold success. T3 reaches 153/160 on the development panel, so at least four of the seven localized failures must be recovered without sacrificing the existing successes before an official assessment can be credible.",
+        "question": "Can a branch-aware near-limit acquisition intervention preserve T3's 153/160 complete-hold baseline and recover the four no-first-reach and three interrupted-hold failures concentrated at negative-angle, shoulder-limit targets?",
+        "rationale": "The previously proposed broad distinction is narrowed by the completed M8 T3 reference diagnostics: all seven failures lie in the same negative-angle shoulder-limit regime; four never first reach, while three enter tolerance briefly and then interrupt holding. Their terminal joint positions sit at the shoulder limit, their selected/open-branch errors are small, and alternate-branch errors are large. This supports testing branch/near-limit acquisition directly, while retaining complete-hold success and paired comparison against T3 as the decision criteria. M8's T11 regression rejects the tested residual-setpoint recipe, not branch-aware control generally."
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I8",
+        "status": "completed"
+      },
+      "session_id": "S16",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "open",
+        "inquiry": {
+          "closure_condition": "Close with a positive result if a candidate evaluated on the same 160-episode panel reaches at least 157 successes and the recovered episodes show valid first reach plus uninterrupted 100-step holds without material regressions elsewhere. Close with a limited negative result if a branch-aware near-limit candidate is measured and fails to improve the plateau or regresses the reference, while preserving the diagnostic evidence needed to state whether the remaining failures are acquisition or hold-control failures.",
+          "goal_connection": "The human goal requires at least 98% complete-hold success. T3 reaches 153/160 on the development panel, so at least four of the seven localized failures must be recovered without sacrificing the existing successes before an official assessment can be credible.",
+          "handoff_conclusion": "Completed evidence establishes that broader radius coverage improved development success from 110/160 to 150/160 (T2), and a near-target joint-velocity penalty improved it to 153/160 with both acquisition and hold rescues (T3, M4). M4 associated the remaining failures with approximately -130 to -151 degree targets, near-limit terminal shoulder positions, small open-branch errors, and large alternate-branch errors. M5 and M6 matched T3 with zero discordant episodes, rejecting only the tested branch-limit-aware and angle-dependent-braking reward recipes. T8 collapsed in training and T9 recovered training performance after restricted guidance, but M7 again matched T3 with zero discordant episodes; E24 therefore closed I6 with a limited negative conclusion about that specific partial trajectory-control implementation. T10 then collapsed completely while implementing absolute joint setpoints with bounded feedback, exposing an action-conditioning limitation for that recipe rather than a general negative result for feedback control. T11 recovered learning after changing the action to a bounded residual around an admissible analytic IK branch, but M8 measured its strongest training nominee at only 100/160 successes versus 153/160 for T3, with 53 discordant episodes and zero candidate wins. M8 therefore closes I7 with a limited negative result for the tested residual-setpoint-plus-feedback recipe: it did not improve the plateau and incurred material regressions. Because the M8 artifact inventory records the required episode-diagnostic fields but their values were not inspected, the aggregate regression does not establish whether the remaining errors are specifically branch/near-limit failures or hold-control failures. The broader claim that all feedback, setpoint control, or trajectory control is ineffective remains unsupported.",
+          "handoff_question": "Can a branch-aware near-limit acquisition intervention preserve T3's 153/160 complete-hold baseline and recover the four no-first-reach and three interrupted-hold failures concentrated at negative-angle, shoulder-limit targets?",
+          "handoff_source_session_id": "S15",
+          "id": "I8",
+          "opened_in_session": "S16",
+          "question": "Can a branch-aware near-limit acquisition intervention preserve T3's 153/160 complete-hold baseline and recover the four no-first-reach and three interrupted-hold failures concentrated at negative-angle, shoulder-limit targets?",
+          "rationale": "The previously proposed broad distinction is narrowed by the completed M8 T3 reference diagnostics: all seven failures lie in the same negative-angle shoulder-limit regime; four never first reach, while three enter tolerance briefly and then interrupt holding. Their terminal joint positions sit at the shoulder limit, their selected/open-branch errors are small, and alternate-branch errors are large. This supports testing branch/near-limit acquisition directly, while retaining complete-hold success and paired comparison against T3 as the decision criteria. M8's T11 regression rejects the tested residual-setpoint recipe, not branch-aware control generally.",
+          "reframes": []
+        }
+      },
+      "result": {
+        "action": "open",
+        "inquiry_id": "I8",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E30",
+    "inquiry_id": null,
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "open",
+        "closure_condition": "Close with a positive result if a candidate evaluated on the same 160-episode panel reaches at least 157 successes and the recovered episodes show valid first reach plus uninterrupted 100-step holds without material regressions elsewhere. Close with a limited negative result if a branch-aware near-limit candidate is measured and fails to improve the plateau or regresses the reference, while preserving the diagnostic evidence needed to state whether the remaining failures are acquisition or hold-control failures.",
+        "goal_connection": "The human goal requires at least 98% complete-hold success. T3 reaches 153/160 on the development panel, so at least four of the seven localized failures must be recovered without sacrificing the existing successes before an official assessment can be credible.",
+        "question": "Can a branch-aware near-limit acquisition intervention preserve T3's 153/160 complete-hold baseline and recover the four no-first-reach and three interrupted-hold failures concentrated at negative-angle, shoulder-limit targets?",
+        "rationale": "The previously proposed broad distinction is narrowed by the completed M8 T3 reference diagnostics: all seven failures lie in the same negative-angle shoulder-limit regime; four never first reach, while three enter tolerance briefly and then interrupt holding. Their terminal joint positions sit at the shoulder limit, their selected/open-branch errors are small, and alternate-branch errors are large. This supports testing branch/near-limit acquisition directly, while retaining complete-hold success and paired comparison against T3 as the decision criteria. M8's T11 regression rejects the tested residual-setpoint recipe, not branch-aware control generally."
+      }
+    },
+    "request_fingerprint": "7b40defc48c646692696e36afa8260624982e6960599368965eae8b82800c39b",
+    "session_id": "S16",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T3:checkpoint-120832 remains the strongest development-evaluated candidate at 153/160 and the campaign reference. T11:checkpoint-120832 is not assigned a model role because M8 measured it at 100/160. T10 candidates are not development evidence because training success was zero. T9:checkpoint-105472 remains a matched null to T3. No candidate is assigned working, best-known, or retained status in this session.",
     "completed_operations": [
@@ -14602,6 +14676,21 @@
     "path": "pi_workspace/scientific_model.md",
     "status": "ready"
   },
-  "scientific_session": null,
+  "scientific_session": {
+    "backend_descriptor": {
+      "adapter": "copilot",
+      "model": "gpt-5.6-luna",
+      "reasoning": "high"
+    },
+    "backend_session_id": "b0509a95-72d2-4ac8-84a1-904f346e0552",
+    "id": "S16",
+    "inquiry_id": null,
+    "kind": "goal_review",
+    "objective": "Use the completed evidence to update the scientific direction toward the human goal. Correct inherited interpretations, constraints or proposed questions when existing evidence warrants it. Request measurements when they resolve an uncertainty or develop the method. Then choose one outcome: request the official assessment, or open one bounded goal-linked inquiry.",
+    "operation_ids": [
+      "E30"
+    ],
+    "scientific_parent_commit": "bd13cf558ab61b9bed0d56cebf754eacafef6730"
+  },
   "terminal_state": null
 }
