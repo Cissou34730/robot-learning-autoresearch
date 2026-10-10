@@ -14513,38 +14513,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I7",
-        "outcome": "limited negative",
-        "reason": "I7 is closed with a recipe-specific negative result. M8 measured the strongest training nominee from the residual-setpoint route, T11:checkpoint-120832, at 100/160 successes (62.5%) against 153/160 for T3:checkpoint-120832, with 53 discordant episodes and zero candidate wins. The candidate therefore did not improve the plateau and incurred material regressions, satisfying the inquiry closure condition. T10's collapse remains an implementation-limited training result, while T11's recovery shows the residual-setpoint implementation can learn but does not support the proposed development benefit. This does not invalidate target-conditioned control or establish that branch/near-limit geometry is the sole cause; the broad regression and uninspected episode-level values leave that mechanism unresolved. The human goal remains unmet and the official assessment remains premature."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I7",
-        "outcome": "limited negative",
-        "reason": "I7 is closed with a recipe-specific negative result. M8 measured the strongest training nominee from the residual-setpoint route, T11:checkpoint-120832, at 100/160 successes (62.5%) against 153/160 for T3:checkpoint-120832, with 53 discordant episodes and zero candidate wins. The candidate therefore did not improve the plateau and incurred material regressions, satisfying the inquiry closure condition. T10's collapse remains an implementation-limited training result, while T11's recovery shows the residual-setpoint implementation can learn but does not support the proposed development benefit. This does not invalidate target-conditioned control or establish that branch/near-limit geometry is the sole cause; the broad regression and uninspected episode-level values leave that mechanism unresolved. The human goal remains unmet and the official assessment remains premature.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E28",
-    "inquiry_id": "I7",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "limited negative",
-        "reason": "I7 is closed with a recipe-specific negative result. M8 measured the strongest training nominee from the residual-setpoint route, T11:checkpoint-120832, at 100/160 successes (62.5%) against 153/160 for T3:checkpoint-120832, with 53 discordant episodes and zero candidate wins. The candidate therefore did not improve the plateau and incurred material regressions, satisfying the inquiry closure condition. T10's collapse remains an implementation-limited training result, while T11's recovery shows the residual-setpoint implementation can learn but does not support the proposed development benefit. This does not invalidate target-conditioned control or establish that branch/near-limit geometry is the sole cause; the broad regression and uninspected episode-level values leave that mechanism unresolved. The human goal remains unmet and the official assessment remains premature."
-      }
-    },
-    "request_fingerprint": "17207cede2bebcbc94c93c4ab1c0f7d06007cb572215b48ed465fecde563c1f3",
-    "session_id": "S15",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T3:checkpoint-120832 remains the strongest development-evaluated candidate at 153/160 and is the matched development reference for I7. T9:checkpoint-105472 matched T3 and has no superior development role. T8 candidates are not development evidence. No candidate has a working, best-known, or retained role assigned in this session.",
     "completed_operations": [
