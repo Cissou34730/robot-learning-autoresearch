@@ -7374,7 +7374,7 @@
     }
   },
   "counters": {
-    "event": 19,
+    "event": 20,
     "inquiry": 3,
     "measurement": 9,
     "session": 7,
@@ -7383,7 +7383,7 @@
   "human_goal": {
     "source": "contracts/scenario.md"
   },
-  "last_verdict": "completed",
+  "last_verdict": "checkpointed",
   "model_roles": {
     "best_known": null,
     "retained": {},
@@ -14345,54 +14345,199 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-10T07:21:36Z",
+      "error": null,
+      "id": "E20",
+      "inquiry_id": "I3",
+      "kind": "checkpoint",
+      "request": {
+        "candidates_and_roles": "T9:checkpoint-110592 is the strongest evidence-backed candidate at 158/160 on M9 but has no formal role yet. T1:checkpoint-120832 remains the restored baseline at 155/160 on M9 and is not best-known after T9's improvement. T6, T7, and T8 are rejected for their tested recipes. No candidate has established the official goal and no candidate is formally assigned best-known, working, or retained status.",
+        "completed_operations": [
+          "E15",
+          "T6",
+          "M7",
+          "E16",
+          "T7",
+          "E17",
+          "T8",
+          "M8",
+          "E18",
+          "T9",
+          "M9",
+          "E19"
+        ],
+        "cumulative_resource_use": "Prior campaign use includes M2, T1-T5 training, M3-M6 evaluations, and earlier inquiry operations. This inquiry used T6, T7, and T8 fresh 120000-step training allocations, M7-M9 matched 160-episode research evaluations, and restore/inquiry operations E15-E19. No official assessment has been requested.",
+        "current_goal_gap": "No official assessment has been requested. The best completed development result is T9:checkpoint-110592 at 158/160 successes (98.75%) on M9, exceeding the 157/160 development threshold, but this does not establish the protected 196/200 official result.",
+        "current_synthesis": "M2 supports adequate actuator authority and passive settling. M4-M6 showed that T1 failures alternate between non-reaches and hold interruptions, and their failed episodes retained the open IK branch as the best endpoint branch while exhibiting saturated, high-velocity motion. T6 hold-progress forfeiture, T7 broad near-target velocity shaping, and T8 narrow in-band velocity shaping were recipe-specific failures and do not reject stabilization as a physical mechanism. T9 changed only the learned observation by adding planar end-effector velocity, retained the restored T1 reward and full target distribution, and achieved 158/160 versus 155/160 for paired T1 on M9. T9 had two non-reaches and no hold interruptions; paired T1 had one non-reach and four hold interruptions. The inspected failures for both policies were at outer radii above 17 cm, with no observed inner-radius failures on the matched panel. Thus the completed evidence supports Cartesian velocity observability as the targeted mechanism that removed the development gap, while the two remaining T9 non-reaches and the finite panel leave official generalization unresolved.",
+        "decision_frontier": "The I3 mechanism question is closed positively by M9. The remaining goal-level decision is whether T9:checkpoint-110592 should be assigned the best-known role and advanced to the protected official assessment. Evidence supporting that route is 158/160 development success, three net paired wins over T1, elimination of observed hold interruptions, and preserved inner-radius behavior on the matched panel. Evidence still needed for the human goal is the official 200-episode result; development evidence cannot substitute for it.",
+        "evidence_references": [
+          "M2",
+          "M4",
+          "M5",
+          "M6",
+          "M7",
+          "M8",
+          "M9",
+          "T1",
+          "T6",
+          "T7",
+          "T8",
+          "T9",
+          "E19"
+        ],
+        "human_goal_connection": "The campaign remains below the human goal until a frozen policy achieves at least 196 successes on the protected 200-episode official panel. Closed inquiry I3 produced a candidate that meets the equivalent development threshold and is now the strongest route toward official assessment.",
+        "next_direction_or_closure": "I3 is closed positively. At goal review, compare the completed M9 T9-versus-T1 evidence and decide whether to assign T9:checkpoint-110592 as best-known and request official assessment. Do not treat the 158/160 development result as official success; if the goal review does not advance T9, any new inquiry should target the remaining outer-radius non-reaches or another evidence-supported route.",
+        "next_question": "Does the completed T9 development evidence justify assigning T9:checkpoint-110592 as best-known and requesting the protected official assessment?"
+      },
+      "result": {
+        "session_id": "S7",
+        "status": "checkpointed"
+      },
+      "session_id": "S7",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
-  "pi_checkpoint": {
-    "candidates_and_roles": "T1:checkpoint-120832 remains the strongest evidence-backed development candidate at 155/160 on M5, with no formal model role. T5:checkpoint-120832 is rejected for the tested terminal action-damping recipe after M6 measured 98/160. T2, T3, and T4 remain rejected for their tested learning-degrading recipes. No candidate establishes the official 98% goal and no candidate is assigned a new formal role.",
-    "completed_operations": [
-      "E13"
-    ],
-    "cumulative_resource_use": "Prior use: M2 system characterization; T1 through T5 fresh 120000-step PPO runs with 120832 actual steps; M3 through M6 held-out research measurements; inquiry and checkpoint operations E2, E3, E7, E8, E9, E10, E11, and E12; M6 used two matched 160-episode evaluations. E13 opened I3 and used no training or evaluation allocation. No official assessment has been requested.",
-    "current_goal_gap": "The best completed development result is T1 at 155/160 successes (96.875%), five successes short of the 157/160 development threshold corresponding to 98%. M6 measured the matched fresh T1 reference at 154/160 (96.25%). No result establishes the official goal.",
-    "current_synthesis": "Completed evidence supports adequate actuator authority and passive settling from M2, while M4, M5, and M6 show that T1 failures vary between non-reaches and hold interruptions: M4 recorded 7 non-reaches and 3 hold interruptions, M5 recorded 4 and 1, and M6 recorded 2 and 4. M6 rejects the tested terminal action-damping implementation as a route for improving learning, but does not reject approach stabilization generally or identify the unique cause of T1 failures. I3 corrects the inherited inner-workspace interpretation: robot_learning/training/environment.py currently samples the full 0.06-0.20 m range, so inner radii are not absent from training. The consequential unresolved distinction is therefore whether rare reach-generation or branch errors, singularity escape, or hold stabilization is the controllable source of the gap.",
-    "decision_frontier": "Determine whether a targeted PI-owned measurement or intervention can remove at least five failures from the T1 baseline by addressing reach/branch generation or hold stabilization without degrading inner-radius or outer-radius behavior. Radius-stratified branch residuals, first-reach and action-saturation diagnostics, and hold interruption and velocity diagnostics discriminate the mechanisms. A held-out full-distribution result at or above 157/160 with preserved inner-radius behavior supports continuing toward official assessment; a lower result or a tradeoff redirects the route.",
-    "evidence_references": [
-      "M2",
-      "M4",
-      "M5",
-      "E7",
-      "E9",
-      "T5",
-      "M6",
-      "E11",
-      "E13"
-    ],
-    "human_goal_connection": "The campaign remains below the requirement of at least 196 successes in the protected 200-episode official panel. I3 is opened to identify and improve the failure mechanism responsible for the remaining T1 gap while preserving uninterrupted hold performance across the official distribution.",
-    "inquiry_id": null,
-    "next_direction_or_closure": "I3 has been opened with a limited, goal-linked question. The fresh inquiry session should select the single operation that best discriminates or improves the reach/branch versus hold mechanism, using the restored T1 baseline, the full 0.06-0.20 m distribution, unchanged official task semantics, and branch-aware and hold-aware diagnostics. Official assessment remains deferred.",
-    "next_question": "Which T1 failure mechanism - rare reach-generation or branch errors versus hold stabilization - must be targeted to raise held-out success to at least 98% without degrading performance across the full 0.06-0.20 m task distribution?",
-    "scientific_commit": "ea0312a6bb8986d593b3b2d42e4c05b8a3cf4761",
-    "session_id": "S6"
-  },
-  "schema_version": 6,
-  "scientific_model": {
-    "commit": "2ba18f99f4945f95885cdb0f0cfa31d467bb7edb",
-    "path": "pi_workspace/scientific_model.md",
-    "status": "ready"
-  },
-  "scientific_session": {
-    "backend_descriptor": {
-      "adapter": "copilot",
-      "model": "gpt-5.6-luna",
-      "reasoning": "high"
+  "pending_operation": {
+    "data": {
+      "code_parent_commit": "53f29236c13331d2a96df8582da48ae88ed3ac99",
+      "effective_parameters": {
+        "algorithm": {
+          "name": "ppo"
+        },
+        "policy": {
+          "activation": "tanh",
+          "net_arch": [
+            64,
+            64
+          ]
+        },
+        "ppo": {
+          "batch_size": 64,
+          "ent_coef": 0.01,
+          "gae_lambda": 0.95,
+          "gamma": 0.99,
+          "learning_rate": 0.0003,
+          "n_steps": 1024
+        },
+        "training": {
+          "checkpoint_every_steps": 5000,
+          "n_envs": 1
+        }
+      },
+      "plan": {
+        "candidates_and_roles": "T9:checkpoint-110592 is the strongest evidence-backed candidate at 158/160 on M9 but has no formal role yet. T1:checkpoint-120832 remains the restored baseline at 155/160 on M9 and is not best-known after T9's improvement. T6, T7, and T8 are rejected for their tested recipes. No candidate has established the official goal and no candidate is formally assigned best-known, working, or retained status.",
+        "completed_operations": [
+          "E15",
+          "T6",
+          "M7",
+          "E16",
+          "T7",
+          "E17",
+          "T8",
+          "M8",
+          "E18",
+          "T9",
+          "M9",
+          "E19"
+        ],
+        "cumulative_resource_use": "Prior campaign use includes M2, T1-T5 training, M3-M6 evaluations, and earlier inquiry operations. This inquiry used T6, T7, and T8 fresh 120000-step training allocations, M7-M9 matched 160-episode research evaluations, and restore/inquiry operations E15-E19. No official assessment has been requested.",
+        "current_goal_gap": "No official assessment has been requested. The best completed development result is T9:checkpoint-110592 at 158/160 successes (98.75%) on M9, exceeding the 157/160 development threshold, but this does not establish the protected 196/200 official result.",
+        "current_synthesis": "M2 supports adequate actuator authority and passive settling. M4-M6 showed that T1 failures alternate between non-reaches and hold interruptions, and their failed episodes retained the open IK branch as the best endpoint branch while exhibiting saturated, high-velocity motion. T6 hold-progress forfeiture, T7 broad near-target velocity shaping, and T8 narrow in-band velocity shaping were recipe-specific failures and do not reject stabilization as a physical mechanism. T9 changed only the learned observation by adding planar end-effector velocity, retained the restored T1 reward and full target distribution, and achieved 158/160 versus 155/160 for paired T1 on M9. T9 had two non-reaches and no hold interruptions; paired T1 had one non-reach and four hold interruptions. The inspected failures for both policies were at outer radii above 17 cm, with no observed inner-radius failures on the matched panel. Thus the completed evidence supports Cartesian velocity observability as the targeted mechanism that removed the development gap, while the two remaining T9 non-reaches and the finite panel leave official generalization unresolved.",
+        "decision_frontier": "The I3 mechanism question is closed positively by M9. The remaining goal-level decision is whether T9:checkpoint-110592 should be assigned the best-known role and advanced to the protected official assessment. Evidence supporting that route is 158/160 development success, three net paired wins over T1, elimination of observed hold interruptions, and preserved inner-radius behavior on the matched panel. Evidence still needed for the human goal is the official 200-episode result; development evidence cannot substitute for it.",
+        "evidence_references": [
+          "M2",
+          "M4",
+          "M5",
+          "M6",
+          "M7",
+          "M8",
+          "M9",
+          "T1",
+          "T6",
+          "T7",
+          "T8",
+          "T9",
+          "E19"
+        ],
+        "human_goal_connection": "The campaign remains below the human goal until a frozen policy achieves at least 196 successes on the protected 200-episode official panel. Closed inquiry I3 produced a candidate that meets the equivalent development threshold and is now the strongest route toward official assessment.",
+        "inquiry_id": "I3",
+        "next_direction_or_closure": "I3 is closed positively. At goal review, compare the completed M9 T9-versus-T1 evidence and decide whether to assign T9:checkpoint-110592 as best-known and request official assessment. Do not treat the 158/160 development result as official success; if the goal review does not advance T9, any new inquiry should target the remaining outer-radius non-reaches or another evidence-supported route.",
+        "next_question": "Does the completed T9 development evidence justify assigning T9:checkpoint-110592 as best-known and requesting the protected official assessment?",
+        "session_id": "S7"
+      },
+      "presentation": {
+        "backend_session_id": "e62ad7f8-3b67-4e37-b310-4871edf9e211",
+        "campaign_id": "ec7f3d3a-1db0-4ec0-8521-1181b99ade8d",
+        "campaign_usage": "29m54s | 79.23 AIU | prompt 16.2m (91% cached) | output 118.3k",
+        "session_id": "S7",
+        "session_kind": "inquiry",
+        "session_usage": "7m53s | 20.60 AIU | prompt 5.4m (95% cached) | output 28.6k"
+      },
+      "result": {
+        "session_id": "S7",
+        "status": "checkpointed"
+      },
+      "scientific_commit": "f857649199ddb41bd5d9b1635c00e5072cf42d00",
+      "scientific_manifest": [],
+      "scientific_paths": []
     },
-    "backend_session_id": "e62ad7f8-3b67-4e37-b310-4871edf9e211",
-    "id": "S7",
+    "failure": null,
+    "id": "E20",
     "inquiry_id": "I3",
-    "kind": "inquiry",
-    "objective": "Advance I3 toward an evidence-supported answer to its scientific question: Which T1 failure mechanism - rare reach-generation or branch errors versus hold stabilization - must be targeted to raise held-out success to at least 98% without degrading performance across the full 0.06-0.20 m task distribution? Before choosing the next action, compare the accumulated evidence with the closure condition. Choose the supported operation that best advances the bounded work; no operation is the default. Close the inquiry when the condition is met.",
-    "operation_ids": [
+    "kind": "checkpoint",
+    "progress": "completed",
+    "request": {
+      "checkpoint": {
+        "candidates_and_roles": "T9:checkpoint-110592 is the strongest evidence-backed candidate at 158/160 on M9 but has no formal role yet. T1:checkpoint-120832 remains the restored baseline at 155/160 on M9 and is not best-known after T9's improvement. T6, T7, and T8 are rejected for their tested recipes. No candidate has established the official goal and no candidate is formally assigned best-known, working, or retained status.",
+        "completed_operations": [
+          "E15",
+          "T6",
+          "M7",
+          "E16",
+          "T7",
+          "E17",
+          "T8",
+          "M8",
+          "E18",
+          "T9",
+          "M9",
+          "E19"
+        ],
+        "cumulative_resource_use": "Prior campaign use includes M2, T1-T5 training, M3-M6 evaluations, and earlier inquiry operations. This inquiry used T6, T7, and T8 fresh 120000-step training allocations, M7-M9 matched 160-episode research evaluations, and restore/inquiry operations E15-E19. No official assessment has been requested.",
+        "current_goal_gap": "No official assessment has been requested. The best completed development result is T9:checkpoint-110592 at 158/160 successes (98.75%) on M9, exceeding the 157/160 development threshold, but this does not establish the protected 196/200 official result.",
+        "current_synthesis": "M2 supports adequate actuator authority and passive settling. M4-M6 showed that T1 failures alternate between non-reaches and hold interruptions, and their failed episodes retained the open IK branch as the best endpoint branch while exhibiting saturated, high-velocity motion. T6 hold-progress forfeiture, T7 broad near-target velocity shaping, and T8 narrow in-band velocity shaping were recipe-specific failures and do not reject stabilization as a physical mechanism. T9 changed only the learned observation by adding planar end-effector velocity, retained the restored T1 reward and full target distribution, and achieved 158/160 versus 155/160 for paired T1 on M9. T9 had two non-reaches and no hold interruptions; paired T1 had one non-reach and four hold interruptions. The inspected failures for both policies were at outer radii above 17 cm, with no observed inner-radius failures on the matched panel. Thus the completed evidence supports Cartesian velocity observability as the targeted mechanism that removed the development gap, while the two remaining T9 non-reaches and the finite panel leave official generalization unresolved.",
+        "decision_frontier": "The I3 mechanism question is closed positively by M9. The remaining goal-level decision is whether T9:checkpoint-110592 should be assigned the best-known role and advanced to the protected official assessment. Evidence supporting that route is 158/160 development success, three net paired wins over T1, elimination of observed hold interruptions, and preserved inner-radius behavior on the matched panel. Evidence still needed for the human goal is the official 200-episode result; development evidence cannot substitute for it.",
+        "evidence_references": [
+          "M2",
+          "M4",
+          "M5",
+          "M6",
+          "M7",
+          "M8",
+          "M9",
+          "T1",
+          "T6",
+          "T7",
+          "T8",
+          "T9",
+          "E19"
+        ],
+        "human_goal_connection": "The campaign remains below the human goal until a frozen policy achieves at least 196 successes on the protected 200-episode official panel. Closed inquiry I3 produced a candidate that meets the equivalent development threshold and is now the strongest route toward official assessment.",
+        "next_direction_or_closure": "I3 is closed positively. At goal review, compare the completed M9 T9-versus-T1 evidence and decide whether to assign T9:checkpoint-110592 as best-known and request official assessment. Do not treat the 158/160 development result as official success; if the goal review does not advance T9, any new inquiry should target the remaining outer-radius non-reaches or another evidence-supported route.",
+        "next_question": "Does the completed T9 development evidence justify assigning T9:checkpoint-110592 as best-known and requesting the protected official assessment?"
+      }
+    },
+    "request_fingerprint": "e524aef924a39003052287af6d64dcf3e5cbe155841a5787636f661180617806",
+    "session_id": "S7",
+    "supersedes": null
+  },
+  "pi_checkpoint": {
+    "candidates_and_roles": "T9:checkpoint-110592 is the strongest evidence-backed candidate at 158/160 on M9 but has no formal role yet. T1:checkpoint-120832 remains the restored baseline at 155/160 on M9 and is not best-known after T9's improvement. T6, T7, and T8 are rejected for their tested recipes. No candidate has established the official goal and no candidate is formally assigned best-known, working, or retained status.",
+    "completed_operations": [
       "E15",
       "T6",
       "M7",
@@ -14406,7 +14551,38 @@
       "M9",
       "E19"
     ],
-    "scientific_parent_commit": "53f29236c13331d2a96df8582da48ae88ed3ac99"
+    "cumulative_resource_use": "Prior campaign use includes M2, T1-T5 training, M3-M6 evaluations, and earlier inquiry operations. This inquiry used T6, T7, and T8 fresh 120000-step training allocations, M7-M9 matched 160-episode research evaluations, and restore/inquiry operations E15-E19. No official assessment has been requested.",
+    "current_goal_gap": "No official assessment has been requested. The best completed development result is T9:checkpoint-110592 at 158/160 successes (98.75%) on M9, exceeding the 157/160 development threshold, but this does not establish the protected 196/200 official result.",
+    "current_synthesis": "M2 supports adequate actuator authority and passive settling. M4-M6 showed that T1 failures alternate between non-reaches and hold interruptions, and their failed episodes retained the open IK branch as the best endpoint branch while exhibiting saturated, high-velocity motion. T6 hold-progress forfeiture, T7 broad near-target velocity shaping, and T8 narrow in-band velocity shaping were recipe-specific failures and do not reject stabilization as a physical mechanism. T9 changed only the learned observation by adding planar end-effector velocity, retained the restored T1 reward and full target distribution, and achieved 158/160 versus 155/160 for paired T1 on M9. T9 had two non-reaches and no hold interruptions; paired T1 had one non-reach and four hold interruptions. The inspected failures for both policies were at outer radii above 17 cm, with no observed inner-radius failures on the matched panel. Thus the completed evidence supports Cartesian velocity observability as the targeted mechanism that removed the development gap, while the two remaining T9 non-reaches and the finite panel leave official generalization unresolved.",
+    "decision_frontier": "The I3 mechanism question is closed positively by M9. The remaining goal-level decision is whether T9:checkpoint-110592 should be assigned the best-known role and advanced to the protected official assessment. Evidence supporting that route is 158/160 development success, three net paired wins over T1, elimination of observed hold interruptions, and preserved inner-radius behavior on the matched panel. Evidence still needed for the human goal is the official 200-episode result; development evidence cannot substitute for it.",
+    "evidence_references": [
+      "M2",
+      "M4",
+      "M5",
+      "M6",
+      "M7",
+      "M8",
+      "M9",
+      "T1",
+      "T6",
+      "T7",
+      "T8",
+      "T9",
+      "E19"
+    ],
+    "human_goal_connection": "The campaign remains below the human goal until a frozen policy achieves at least 196 successes on the protected 200-episode official panel. Closed inquiry I3 produced a candidate that meets the equivalent development threshold and is now the strongest route toward official assessment.",
+    "inquiry_id": "I3",
+    "next_direction_or_closure": "I3 is closed positively. At goal review, compare the completed M9 T9-versus-T1 evidence and decide whether to assign T9:checkpoint-110592 as best-known and request official assessment. Do not treat the 158/160 development result as official success; if the goal review does not advance T9, any new inquiry should target the remaining outer-radius non-reaches or another evidence-supported route.",
+    "next_question": "Does the completed T9 development evidence justify assigning T9:checkpoint-110592 as best-known and requesting the protected official assessment?",
+    "scientific_commit": "f857649199ddb41bd5d9b1635c00e5072cf42d00",
+    "session_id": "S7"
   },
+  "schema_version": 6,
+  "scientific_model": {
+    "commit": "2ba18f99f4945f95885cdb0f0cfa31d467bb7edb",
+    "path": "pi_workspace/scientific_model.md",
+    "status": "ready"
+  },
+  "scientific_session": null,
   "terminal_state": null
 }
