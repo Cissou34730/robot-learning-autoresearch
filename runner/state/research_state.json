@@ -24952,38 +24952,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I12",
-        "outcome": "Limited negative result",
-        "reason": "I12 closure evidence is complete. M15 compared the bounded anticipatory target-conditioned T16 rescue with T3 on the same 160-episode panel: both achieved 153/160 complete uninterrupted holds, with zero discordant episodes. The rescue therefore recovered none of the seven residual failures and preserved no measurable behavioral distinction from T3. This closes the tested anticipatory trajectory realization as limited negative and redirects away from this rescue class. It does not establish that plant transients are irrelevant or that all anticipatory or branch-selection mechanisms fail; the unresolved distinction remains candidate-specific trajectory error versus an untested plant-aware mechanism."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I12",
-        "outcome": "Limited negative result",
-        "reason": "I12 closure evidence is complete. M15 compared the bounded anticipatory target-conditioned T16 rescue with T3 on the same 160-episode panel: both achieved 153/160 complete uninterrupted holds, with zero discordant episodes. The rescue therefore recovered none of the seven residual failures and preserved no measurable behavioral distinction from T3. This closes the tested anticipatory trajectory realization as limited negative and redirects away from this rescue class. It does not establish that plant transients are irrelevant or that all anticipatory or branch-selection mechanisms fail; the unresolved distinction remains candidate-specific trajectory error versus an untested plant-aware mechanism.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E48",
-    "inquiry_id": "I12",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "Limited negative result",
-        "reason": "I12 closure evidence is complete. M15 compared the bounded anticipatory target-conditioned T16 rescue with T3 on the same 160-episode panel: both achieved 153/160 complete uninterrupted holds, with zero discordant episodes. The rescue therefore recovered none of the seven residual failures and preserved no measurable behavioral distinction from T3. This closes the tested anticipatory trajectory realization as limited negative and redirects away from this rescue class. It does not establish that plant transients are irrelevant or that all anticipatory or branch-selection mechanisms fail; the unresolved distinction remains candidate-specific trajectory error versus an untested plant-aware mechanism."
-      }
-    },
-    "request_fingerprint": "7302225d5044cca481485abac4523baf045faf2ce36655fca5986e31f42f5018",
-    "session_id": "S25",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T3:checkpoint-120832 remains the strongest development-evaluated reference at 153/160. T15:checkpoint-86016 is measured at 153/160 with no improvement and has no assigned role. T13:checkpoint-115712 and T14:checkpoint-100352 remain unassigned comparison candidates. No candidate is assigned working, best-known, or retained status.",
     "completed_operations": [
