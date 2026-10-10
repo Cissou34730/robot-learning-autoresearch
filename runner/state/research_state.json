@@ -196,7 +196,8 @@
         "campaigns/evaluations/ec7f3d3a-1db0-4ec0-8521-1181b99ade8d/evaluation-ec7f3d3a-1db0-4ec0-8521-1181b99ade8d-m4-T1-checkpoint-120832-160ep-seed4600-bd4893e223c5.json",
         "campaigns/evaluations/ec7f3d3a-1db0-4ec0-8521-1181b99ade8d/evaluation-ec7f3d3a-1db0-4ec0-8521-1181b99ade8d-m5-T1-checkpoint-120832-160ep-seed4800-88c2a406af6e.json",
         "campaigns/evaluations/ec7f3d3a-1db0-4ec0-8521-1181b99ade8d/evaluation-ec7f3d3a-1db0-4ec0-8521-1181b99ade8d-m6-T1-checkpoint-120832-160ep-seed5000-528568fa7d49.json",
-        "campaigns/evaluations/ec7f3d3a-1db0-4ec0-8521-1181b99ade8d/evaluation-ec7f3d3a-1db0-4ec0-8521-1181b99ade8d-m7-T1-checkpoint-120832-160ep-seed5200-528568fa7d49.json"
+        "campaigns/evaluations/ec7f3d3a-1db0-4ec0-8521-1181b99ade8d/evaluation-ec7f3d3a-1db0-4ec0-8521-1181b99ade8d-m7-T1-checkpoint-120832-160ep-seed5200-528568fa7d49.json",
+        "campaigns/evaluations/ec7f3d3a-1db0-4ec0-8521-1181b99ade8d/evaluation-ec7f3d3a-1db0-4ec0-8521-1181b99ade8d-m8-T1-checkpoint-120832-160ep-seed5400-0966cafc150f.json"
       ],
       "fingerprint": "812455e14c06104ba377114c442ff1262dd2e800ffc92f6b2ae0212f8c354252",
       "id": "T1:checkpoint-120832",
@@ -5883,7 +5884,9 @@
     },
     "T8:checkpoint-115712": {
       "artifact": "campaigns/checkpoints/candidates/ec7f3d3a-1db0-4ec0-8521-1181b99ade8d/t8/checkpoint-115712",
-      "evaluation_artifacts": [],
+      "evaluation_artifacts": [
+        "campaigns/evaluations/ec7f3d3a-1db0-4ec0-8521-1181b99ade8d/evaluation-ec7f3d3a-1db0-4ec0-8521-1181b99ade8d-m8-T8-checkpoint-115712-160ep-seed5400-0966cafc150f.json"
+      ],
       "fingerprint": "76e1c0854c74a36fc4e2978b1fb0e58d330ae15d1aae3865391c0ce83964c2e8",
       "id": "T8:checkpoint-115712",
       "name": "checkpoint-115712",
@@ -6565,7 +6568,7 @@
   "counters": {
     "event": 17,
     "inquiry": 3,
-    "measurement": 7,
+    "measurement": 8,
     "session": 7,
     "training": 8
   },
@@ -12073,9 +12076,1338 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-10T07:13:58Z",
+      "error": null,
+      "id": "M8",
+      "inquiry_id": "I3",
+      "kind": "measurement",
+      "request": {
+        "description": "Paired fresh 160-episode full-distribution diagnostic evaluation of T8 checkpoint-115712 and the restored T1 baseline.",
+        "measurements": [
+          {
+            "candidate": "T8:checkpoint-115712",
+            "episodes": 160,
+            "instrument": "research_evaluation",
+            "label": "T8 narrow in-band velocity shaping on fresh full-distribution panel",
+            "seed": 5400
+          },
+          {
+            "candidate": "T1:checkpoint-120832",
+            "episodes": 160,
+            "instrument": "research_evaluation",
+            "label": "paired restored T1 baseline on T8 panel",
+            "seed": 5400
+          }
+        ],
+        "paired_comparisons": [
+          {
+            "candidate": "T8:checkpoint-115712",
+            "reference": "T1:checkpoint-120832"
+          }
+        ],
+        "rationale": "T8 is the first stabilization recipe after T7 whose learning trajectory is sufficiently developed to nominate a candidate: checkpoint-115712 has the highest recorded T8 reward at 130.92, while terminal-checkpoint status is not privileged. Training facts do not establish development behavior. Evaluating T8:checkpoint-115712 against T1:checkpoint-120832 on identical fresh seeds will test whether low-weight velocity shaping confined to the 1 cm hold band reduces hold interruptions and high-velocity exits without increasing non-reaches, branch residuals, or inner-radius degradation. At least 157/160 with preserved diagnostics would support continuing toward official assessment; a lower result or tradeoff redirects the route."
+      },
+      "result": {
+        "measurements": [
+          {
+            "candidate": "T8:checkpoint-115712",
+            "candidate_id": "T8:checkpoint-115712",
+            "instrument": "research_evaluation",
+            "label": "T8 narrow in-band velocity shaping on fresh full-distribution panel",
+            "metrics": {
+              "episodes": 160,
+              "evaluation_artifact": "campaigns/evaluations/ec7f3d3a-1db0-4ec0-8521-1181b99ade8d/evaluation-ec7f3d3a-1db0-4ec0-8521-1181b99ade8d-m8-T8-checkpoint-115712-160ep-seed5400-0966cafc150f.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 8,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/model",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/seed",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/official_benchmark",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 160,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "reward_total",
+                      "steps",
+                      "success",
+                      "terminated",
+                      "truncated"
+                    ],
+                    "path": "/episode_results",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 160,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "failure_class",
+                      "final_action",
+                      "final_branch_residuals",
+                      "final_distance_cm",
+                      "final_end_effector_velocity_m_s",
+                      "final_qpos_rad",
+                      "final_qvel_rad_s",
+                      "first_reach_action",
+                      "first_reach_end_effector_velocity_m_s",
+                      "first_reach_qvel_rad_s",
+                      "first_reach_step",
+                      "hold_interruptions",
+                      "in_tolerance_steps",
+                      "max_abs_action",
+                      "max_end_effector_speed_m_s",
+                      "max_held_steps",
+                      "min_distance_cm",
+                      "target_angle_degrees",
+                      "target_radius_cm"
+                    ],
+                    "path": "/research_evidence/episode_diagnostics",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence/units",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/research_evidence/units/distance",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/time",
+                    "type": "string"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "a76e520e2f6611e41b75715b0a5196f9229177f22a5d8da235b7acb4b81d8fad",
+              "evaluation_semantics": "0966cafc150f",
+              "model_fingerprint": "76e1c0854c74a36fc4e2978b1fb0e58d330ae15d1aae3865391c0ce83964c2e8",
+              "official_benchmark": false,
+              "schema_version": 5,
+              "seed": 5400,
+              "success_percent": 68.125,
+              "successes": 109
+            }
+          },
+          {
+            "candidate": "T1:checkpoint-120832",
+            "candidate_id": "T1:checkpoint-120832",
+            "instrument": "research_evaluation",
+            "label": "paired restored T1 baseline on T8 panel",
+            "metrics": {
+              "episodes": 160,
+              "evaluation_artifact": "campaigns/evaluations/ec7f3d3a-1db0-4ec0-8521-1181b99ade8d/evaluation-ec7f3d3a-1db0-4ec0-8521-1181b99ade8d-m8-T1-checkpoint-120832-160ep-seed5400-0966cafc150f.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 8,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/model",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/seed",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/official_benchmark",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 160,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "reward_total",
+                      "steps",
+                      "success",
+                      "terminated",
+                      "truncated"
+                    ],
+                    "path": "/episode_results",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 160,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "failure_class",
+                      "final_action",
+                      "final_branch_residuals",
+                      "final_distance_cm",
+                      "final_end_effector_velocity_m_s",
+                      "final_qpos_rad",
+                      "final_qvel_rad_s",
+                      "first_reach_action",
+                      "first_reach_end_effector_velocity_m_s",
+                      "first_reach_qvel_rad_s",
+                      "first_reach_step",
+                      "hold_interruptions",
+                      "in_tolerance_steps",
+                      "max_abs_action",
+                      "max_end_effector_speed_m_s",
+                      "max_held_steps",
+                      "min_distance_cm",
+                      "target_angle_degrees",
+                      "target_radius_cm"
+                    ],
+                    "path": "/research_evidence/episode_diagnostics",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence/units",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/research_evidence/units/distance",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/time",
+                    "type": "string"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "0ba4024ad81b7580d7589fb2cc9a89a49c7e4b2863aab5660470003fb7ecd1b3",
+              "evaluation_semantics": "0966cafc150f",
+              "model_fingerprint": "812455e14c06104ba377114c442ff1262dd2e800ffc92f6b2ae0212f8c354252",
+              "official_benchmark": false,
+              "schema_version": 5,
+              "seed": 5400,
+              "success_percent": 95.0,
+              "successes": 152
+            }
+          }
+        ],
+        "paired_comparisons": [
+          {
+            "candidate": "T8:checkpoint-115712",
+            "candidate_model_fingerprint": "76e1c0854c74a36fc4e2978b1fb0e58d330ae15d1aae3865391c0ce83964c2e8",
+            "candidate_wins": 2,
+            "discordant_episodes": 47,
+            "episodes": 160,
+            "net_wins": -43,
+            "reference": "T1:checkpoint-120832",
+            "reference_model_fingerprint": "812455e14c06104ba377114c442ff1262dd2e800ffc92f6b2ae0212f8c354252",
+            "reference_wins": 45,
+            "shared_episode_seeds": [
+              5400,
+              5401,
+              5402,
+              5403,
+              5404,
+              5405,
+              5406,
+              5407,
+              5408,
+              5409,
+              5410,
+              5411,
+              5412,
+              5413,
+              5414,
+              5415,
+              5416,
+              5417,
+              5418,
+              5419,
+              5420,
+              5421,
+              5422,
+              5423,
+              5424,
+              5425,
+              5426,
+              5427,
+              5428,
+              5429,
+              5430,
+              5431,
+              5432,
+              5433,
+              5434,
+              5435,
+              5436,
+              5437,
+              5438,
+              5439,
+              5440,
+              5441,
+              5442,
+              5443,
+              5444,
+              5445,
+              5446,
+              5447,
+              5448,
+              5449,
+              5450,
+              5451,
+              5452,
+              5453,
+              5454,
+              5455,
+              5456,
+              5457,
+              5458,
+              5459,
+              5460,
+              5461,
+              5462,
+              5463,
+              5464,
+              5465,
+              5466,
+              5467,
+              5468,
+              5469,
+              5470,
+              5471,
+              5472,
+              5473,
+              5474,
+              5475,
+              5476,
+              5477,
+              5478,
+              5479,
+              5480,
+              5481,
+              5482,
+              5483,
+              5484,
+              5485,
+              5486,
+              5487,
+              5488,
+              5489,
+              5490,
+              5491,
+              5492,
+              5493,
+              5494,
+              5495,
+              5496,
+              5497,
+              5498,
+              5499,
+              5500,
+              5501,
+              5502,
+              5503,
+              5504,
+              5505,
+              5506,
+              5507,
+              5508,
+              5509,
+              5510,
+              5511,
+              5512,
+              5513,
+              5514,
+              5515,
+              5516,
+              5517,
+              5518,
+              5519,
+              5520,
+              5521,
+              5522,
+              5523,
+              5524,
+              5525,
+              5526,
+              5527,
+              5528,
+              5529,
+              5530,
+              5531,
+              5532,
+              5533,
+              5534,
+              5535,
+              5536,
+              5537,
+              5538,
+              5539,
+              5540,
+              5541,
+              5542,
+              5543,
+              5544,
+              5545,
+              5546,
+              5547,
+              5548,
+              5549,
+              5550,
+              5551,
+              5552,
+              5553,
+              5554,
+              5555,
+              5556,
+              5557,
+              5558,
+              5559
+            ],
+            "source_artifacts": [
+              "campaigns/evaluations/ec7f3d3a-1db0-4ec0-8521-1181b99ade8d/evaluation-ec7f3d3a-1db0-4ec0-8521-1181b99ade8d-m8-T8-checkpoint-115712-160ep-seed5400-0966cafc150f.json",
+              "campaigns/evaluations/ec7f3d3a-1db0-4ec0-8521-1181b99ade8d/evaluation-ec7f3d3a-1db0-4ec0-8521-1181b99ade8d-m8-T1-checkpoint-120832-160ep-seed5400-0966cafc150f.json"
+            ],
+            "success_delta_percent": -26.875
+          }
+        ],
+        "status": "completed",
+        "tool_provenance": null
+      },
+      "session_id": "S7",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "evaluation_semantics": "0966cafc150f",
+      "measurements": [
+        {
+          "artifact": "campaigns/checkpoints/candidates/ec7f3d3a-1db0-4ec0-8521-1181b99ade8d/t8/checkpoint-115712",
+          "candidate": "T8:checkpoint-115712",
+          "candidate_id": "T8:checkpoint-115712",
+          "episodes": 160,
+          "instrument": "research_evaluation",
+          "label": "T8 narrow in-band velocity shaping on fresh full-distribution panel",
+          "model_fingerprint": "76e1c0854c74a36fc4e2978b1fb0e58d330ae15d1aae3865391c0ce83964c2e8",
+          "seed": 5400
+        },
+        {
+          "artifact": "campaigns/checkpoints/candidates/ec7f3d3a-1db0-4ec0-8521-1181b99ade8d/t1/checkpoint-120832",
+          "candidate": "T1:checkpoint-120832",
+          "candidate_id": "T1:checkpoint-120832",
+          "episodes": 160,
+          "instrument": "research_evaluation",
+          "label": "paired restored T1 baseline on T8 panel",
+          "model_fingerprint": "812455e14c06104ba377114c442ff1262dd2e800ffc92f6b2ae0212f8c354252",
+          "seed": 5400
+        }
+      ],
+      "module_provenance": null,
+      "paired_comparisons": [
+        {
+          "candidate": "T8:checkpoint-115712",
+          "candidate_measurement_indexes": [
+            0
+          ],
+          "candidate_model_fingerprint": "76e1c0854c74a36fc4e2978b1fb0e58d330ae15d1aae3865391c0ce83964c2e8",
+          "reference": "T1:checkpoint-120832",
+          "reference_measurement_indexes": [
+            1
+          ],
+          "reference_model_fingerprint": "812455e14c06104ba377114c442ff1262dd2e800ffc92f6b2ae0212f8c354252",
+          "shared_episode_seeds": [
+            5400,
+            5401,
+            5402,
+            5403,
+            5404,
+            5405,
+            5406,
+            5407,
+            5408,
+            5409,
+            5410,
+            5411,
+            5412,
+            5413,
+            5414,
+            5415,
+            5416,
+            5417,
+            5418,
+            5419,
+            5420,
+            5421,
+            5422,
+            5423,
+            5424,
+            5425,
+            5426,
+            5427,
+            5428,
+            5429,
+            5430,
+            5431,
+            5432,
+            5433,
+            5434,
+            5435,
+            5436,
+            5437,
+            5438,
+            5439,
+            5440,
+            5441,
+            5442,
+            5443,
+            5444,
+            5445,
+            5446,
+            5447,
+            5448,
+            5449,
+            5450,
+            5451,
+            5452,
+            5453,
+            5454,
+            5455,
+            5456,
+            5457,
+            5458,
+            5459,
+            5460,
+            5461,
+            5462,
+            5463,
+            5464,
+            5465,
+            5466,
+            5467,
+            5468,
+            5469,
+            5470,
+            5471,
+            5472,
+            5473,
+            5474,
+            5475,
+            5476,
+            5477,
+            5478,
+            5479,
+            5480,
+            5481,
+            5482,
+            5483,
+            5484,
+            5485,
+            5486,
+            5487,
+            5488,
+            5489,
+            5490,
+            5491,
+            5492,
+            5493,
+            5494,
+            5495,
+            5496,
+            5497,
+            5498,
+            5499,
+            5500,
+            5501,
+            5502,
+            5503,
+            5504,
+            5505,
+            5506,
+            5507,
+            5508,
+            5509,
+            5510,
+            5511,
+            5512,
+            5513,
+            5514,
+            5515,
+            5516,
+            5517,
+            5518,
+            5519,
+            5520,
+            5521,
+            5522,
+            5523,
+            5524,
+            5525,
+            5526,
+            5527,
+            5528,
+            5529,
+            5530,
+            5531,
+            5532,
+            5533,
+            5534,
+            5535,
+            5536,
+            5537,
+            5538,
+            5539,
+            5540,
+            5541,
+            5542,
+            5543,
+            5544,
+            5545,
+            5546,
+            5547,
+            5548,
+            5549,
+            5550,
+            5551,
+            5552,
+            5553,
+            5554,
+            5555,
+            5556,
+            5557,
+            5558,
+            5559
+          ]
+        }
+      ],
+      "partial_results": [
+        {
+          "candidate": "T8:checkpoint-115712",
+          "candidate_id": "T8:checkpoint-115712",
+          "instrument": "research_evaluation",
+          "label": "T8 narrow in-band velocity shaping on fresh full-distribution panel",
+          "metrics": {
+            "episodes": 160,
+            "evaluation_artifact": "campaigns/evaluations/ec7f3d3a-1db0-4ec0-8521-1181b99ade8d/evaluation-ec7f3d3a-1db0-4ec0-8521-1181b99ade8d-m8-T8-checkpoint-115712-160ep-seed5400-0966cafc150f.json",
+            "evaluation_artifact_contents": {
+              "scope": "structure_only",
+              "sections": [
+                {
+                  "entries": 8,
+                  "path": "",
+                  "type": "object"
+                },
+                {
+                  "path": "/schema_version",
+                  "type": "number"
+                },
+                {
+                  "path": "/model",
+                  "type": "string"
+                },
+                {
+                  "path": "/episodes",
+                  "type": "number"
+                },
+                {
+                  "path": "/seed",
+                  "type": "number"
+                },
+                {
+                  "path": "/official_benchmark",
+                  "type": "boolean"
+                },
+                {
+                  "path": "/success_percent",
+                  "type": "number"
+                },
+                {
+                  "entries": 160,
+                  "field_names": [
+                    "episode",
+                    "episode_seed",
+                    "reward_total",
+                    "steps",
+                    "success",
+                    "terminated",
+                    "truncated"
+                  ],
+                  "path": "/episode_results",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/research_evidence",
+                  "type": "object"
+                },
+                {
+                  "entries": 160,
+                  "field_names": [
+                    "episode",
+                    "episode_seed",
+                    "failure_class",
+                    "final_action",
+                    "final_branch_residuals",
+                    "final_distance_cm",
+                    "final_end_effector_velocity_m_s",
+                    "final_qpos_rad",
+                    "final_qvel_rad_s",
+                    "first_reach_action",
+                    "first_reach_end_effector_velocity_m_s",
+                    "first_reach_qvel_rad_s",
+                    "first_reach_step",
+                    "hold_interruptions",
+                    "in_tolerance_steps",
+                    "max_abs_action",
+                    "max_end_effector_speed_m_s",
+                    "max_held_steps",
+                    "min_distance_cm",
+                    "target_angle_degrees",
+                    "target_radius_cm"
+                  ],
+                  "path": "/research_evidence/episode_diagnostics",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/research_evidence/units",
+                  "type": "object"
+                },
+                {
+                  "path": "/research_evidence/units/distance",
+                  "type": "string"
+                },
+                {
+                  "path": "/research_evidence/units/time",
+                  "type": "string"
+                }
+              ],
+              "truncated": false
+            },
+            "evaluation_artifact_fingerprint": "a76e520e2f6611e41b75715b0a5196f9229177f22a5d8da235b7acb4b81d8fad",
+            "evaluation_semantics": "0966cafc150f",
+            "model_fingerprint": "76e1c0854c74a36fc4e2978b1fb0e58d330ae15d1aae3865391c0ce83964c2e8",
+            "official_benchmark": false,
+            "schema_version": 5,
+            "seed": 5400,
+            "success_percent": 68.125,
+            "successes": 109
+          }
+        },
+        {
+          "candidate": "T1:checkpoint-120832",
+          "candidate_id": "T1:checkpoint-120832",
+          "instrument": "research_evaluation",
+          "label": "paired restored T1 baseline on T8 panel",
+          "metrics": {
+            "episodes": 160,
+            "evaluation_artifact": "campaigns/evaluations/ec7f3d3a-1db0-4ec0-8521-1181b99ade8d/evaluation-ec7f3d3a-1db0-4ec0-8521-1181b99ade8d-m8-T1-checkpoint-120832-160ep-seed5400-0966cafc150f.json",
+            "evaluation_artifact_contents": {
+              "scope": "structure_only",
+              "sections": [
+                {
+                  "entries": 8,
+                  "path": "",
+                  "type": "object"
+                },
+                {
+                  "path": "/schema_version",
+                  "type": "number"
+                },
+                {
+                  "path": "/model",
+                  "type": "string"
+                },
+                {
+                  "path": "/episodes",
+                  "type": "number"
+                },
+                {
+                  "path": "/seed",
+                  "type": "number"
+                },
+                {
+                  "path": "/official_benchmark",
+                  "type": "boolean"
+                },
+                {
+                  "path": "/success_percent",
+                  "type": "number"
+                },
+                {
+                  "entries": 160,
+                  "field_names": [
+                    "episode",
+                    "episode_seed",
+                    "reward_total",
+                    "steps",
+                    "success",
+                    "terminated",
+                    "truncated"
+                  ],
+                  "path": "/episode_results",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/research_evidence",
+                  "type": "object"
+                },
+                {
+                  "entries": 160,
+                  "field_names": [
+                    "episode",
+                    "episode_seed",
+                    "failure_class",
+                    "final_action",
+                    "final_branch_residuals",
+                    "final_distance_cm",
+                    "final_end_effector_velocity_m_s",
+                    "final_qpos_rad",
+                    "final_qvel_rad_s",
+                    "first_reach_action",
+                    "first_reach_end_effector_velocity_m_s",
+                    "first_reach_qvel_rad_s",
+                    "first_reach_step",
+                    "hold_interruptions",
+                    "in_tolerance_steps",
+                    "max_abs_action",
+                    "max_end_effector_speed_m_s",
+                    "max_held_steps",
+                    "min_distance_cm",
+                    "target_angle_degrees",
+                    "target_radius_cm"
+                  ],
+                  "path": "/research_evidence/episode_diagnostics",
+                  "type": "array"
+                },
+                {
+                  "entries": 2,
+                  "path": "/research_evidence/units",
+                  "type": "object"
+                },
+                {
+                  "path": "/research_evidence/units/distance",
+                  "type": "string"
+                },
+                {
+                  "path": "/research_evidence/units/time",
+                  "type": "string"
+                }
+              ],
+              "truncated": false
+            },
+            "evaluation_artifact_fingerprint": "0ba4024ad81b7580d7589fb2cc9a89a49c7e4b2863aab5660470003fb7ecd1b3",
+            "evaluation_semantics": "0966cafc150f",
+            "model_fingerprint": "812455e14c06104ba377114c442ff1262dd2e800ffc92f6b2ae0212f8c354252",
+            "official_benchmark": false,
+            "schema_version": 5,
+            "seed": 5400,
+            "success_percent": 95.0,
+            "successes": 152
+          }
+        }
+      ],
+      "result": {
+        "measurements": [
+          {
+            "candidate": "T8:checkpoint-115712",
+            "candidate_id": "T8:checkpoint-115712",
+            "instrument": "research_evaluation",
+            "label": "T8 narrow in-band velocity shaping on fresh full-distribution panel",
+            "metrics": {
+              "episodes": 160,
+              "evaluation_artifact": "campaigns/evaluations/ec7f3d3a-1db0-4ec0-8521-1181b99ade8d/evaluation-ec7f3d3a-1db0-4ec0-8521-1181b99ade8d-m8-T8-checkpoint-115712-160ep-seed5400-0966cafc150f.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 8,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/model",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/seed",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/official_benchmark",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 160,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "reward_total",
+                      "steps",
+                      "success",
+                      "terminated",
+                      "truncated"
+                    ],
+                    "path": "/episode_results",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 160,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "failure_class",
+                      "final_action",
+                      "final_branch_residuals",
+                      "final_distance_cm",
+                      "final_end_effector_velocity_m_s",
+                      "final_qpos_rad",
+                      "final_qvel_rad_s",
+                      "first_reach_action",
+                      "first_reach_end_effector_velocity_m_s",
+                      "first_reach_qvel_rad_s",
+                      "first_reach_step",
+                      "hold_interruptions",
+                      "in_tolerance_steps",
+                      "max_abs_action",
+                      "max_end_effector_speed_m_s",
+                      "max_held_steps",
+                      "min_distance_cm",
+                      "target_angle_degrees",
+                      "target_radius_cm"
+                    ],
+                    "path": "/research_evidence/episode_diagnostics",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence/units",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/research_evidence/units/distance",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/time",
+                    "type": "string"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "a76e520e2f6611e41b75715b0a5196f9229177f22a5d8da235b7acb4b81d8fad",
+              "evaluation_semantics": "0966cafc150f",
+              "model_fingerprint": "76e1c0854c74a36fc4e2978b1fb0e58d330ae15d1aae3865391c0ce83964c2e8",
+              "official_benchmark": false,
+              "schema_version": 5,
+              "seed": 5400,
+              "success_percent": 68.125,
+              "successes": 109
+            }
+          },
+          {
+            "candidate": "T1:checkpoint-120832",
+            "candidate_id": "T1:checkpoint-120832",
+            "instrument": "research_evaluation",
+            "label": "paired restored T1 baseline on T8 panel",
+            "metrics": {
+              "episodes": 160,
+              "evaluation_artifact": "campaigns/evaluations/ec7f3d3a-1db0-4ec0-8521-1181b99ade8d/evaluation-ec7f3d3a-1db0-4ec0-8521-1181b99ade8d-m8-T1-checkpoint-120832-160ep-seed5400-0966cafc150f.json",
+              "evaluation_artifact_contents": {
+                "scope": "structure_only",
+                "sections": [
+                  {
+                    "entries": 8,
+                    "path": "",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/schema_version",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/model",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/episodes",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/seed",
+                    "type": "number"
+                  },
+                  {
+                    "path": "/official_benchmark",
+                    "type": "boolean"
+                  },
+                  {
+                    "path": "/success_percent",
+                    "type": "number"
+                  },
+                  {
+                    "entries": 160,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "reward_total",
+                      "steps",
+                      "success",
+                      "terminated",
+                      "truncated"
+                    ],
+                    "path": "/episode_results",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence",
+                    "type": "object"
+                  },
+                  {
+                    "entries": 160,
+                    "field_names": [
+                      "episode",
+                      "episode_seed",
+                      "failure_class",
+                      "final_action",
+                      "final_branch_residuals",
+                      "final_distance_cm",
+                      "final_end_effector_velocity_m_s",
+                      "final_qpos_rad",
+                      "final_qvel_rad_s",
+                      "first_reach_action",
+                      "first_reach_end_effector_velocity_m_s",
+                      "first_reach_qvel_rad_s",
+                      "first_reach_step",
+                      "hold_interruptions",
+                      "in_tolerance_steps",
+                      "max_abs_action",
+                      "max_end_effector_speed_m_s",
+                      "max_held_steps",
+                      "min_distance_cm",
+                      "target_angle_degrees",
+                      "target_radius_cm"
+                    ],
+                    "path": "/research_evidence/episode_diagnostics",
+                    "type": "array"
+                  },
+                  {
+                    "entries": 2,
+                    "path": "/research_evidence/units",
+                    "type": "object"
+                  },
+                  {
+                    "path": "/research_evidence/units/distance",
+                    "type": "string"
+                  },
+                  {
+                    "path": "/research_evidence/units/time",
+                    "type": "string"
+                  }
+                ],
+                "truncated": false
+              },
+              "evaluation_artifact_fingerprint": "0ba4024ad81b7580d7589fb2cc9a89a49c7e4b2863aab5660470003fb7ecd1b3",
+              "evaluation_semantics": "0966cafc150f",
+              "model_fingerprint": "812455e14c06104ba377114c442ff1262dd2e800ffc92f6b2ae0212f8c354252",
+              "official_benchmark": false,
+              "schema_version": 5,
+              "seed": 5400,
+              "success_percent": 95.0,
+              "successes": 152
+            }
+          }
+        ],
+        "paired_comparisons": [
+          {
+            "candidate": "T8:checkpoint-115712",
+            "candidate_model_fingerprint": "76e1c0854c74a36fc4e2978b1fb0e58d330ae15d1aae3865391c0ce83964c2e8",
+            "candidate_wins": 2,
+            "discordant_episodes": 47,
+            "episodes": 160,
+            "net_wins": -43,
+            "reference": "T1:checkpoint-120832",
+            "reference_model_fingerprint": "812455e14c06104ba377114c442ff1262dd2e800ffc92f6b2ae0212f8c354252",
+            "reference_wins": 45,
+            "shared_episode_seeds": [
+              5400,
+              5401,
+              5402,
+              5403,
+              5404,
+              5405,
+              5406,
+              5407,
+              5408,
+              5409,
+              5410,
+              5411,
+              5412,
+              5413,
+              5414,
+              5415,
+              5416,
+              5417,
+              5418,
+              5419,
+              5420,
+              5421,
+              5422,
+              5423,
+              5424,
+              5425,
+              5426,
+              5427,
+              5428,
+              5429,
+              5430,
+              5431,
+              5432,
+              5433,
+              5434,
+              5435,
+              5436,
+              5437,
+              5438,
+              5439,
+              5440,
+              5441,
+              5442,
+              5443,
+              5444,
+              5445,
+              5446,
+              5447,
+              5448,
+              5449,
+              5450,
+              5451,
+              5452,
+              5453,
+              5454,
+              5455,
+              5456,
+              5457,
+              5458,
+              5459,
+              5460,
+              5461,
+              5462,
+              5463,
+              5464,
+              5465,
+              5466,
+              5467,
+              5468,
+              5469,
+              5470,
+              5471,
+              5472,
+              5473,
+              5474,
+              5475,
+              5476,
+              5477,
+              5478,
+              5479,
+              5480,
+              5481,
+              5482,
+              5483,
+              5484,
+              5485,
+              5486,
+              5487,
+              5488,
+              5489,
+              5490,
+              5491,
+              5492,
+              5493,
+              5494,
+              5495,
+              5496,
+              5497,
+              5498,
+              5499,
+              5500,
+              5501,
+              5502,
+              5503,
+              5504,
+              5505,
+              5506,
+              5507,
+              5508,
+              5509,
+              5510,
+              5511,
+              5512,
+              5513,
+              5514,
+              5515,
+              5516,
+              5517,
+              5518,
+              5519,
+              5520,
+              5521,
+              5522,
+              5523,
+              5524,
+              5525,
+              5526,
+              5527,
+              5528,
+              5529,
+              5530,
+              5531,
+              5532,
+              5533,
+              5534,
+              5535,
+              5536,
+              5537,
+              5538,
+              5539,
+              5540,
+              5541,
+              5542,
+              5543,
+              5544,
+              5545,
+              5546,
+              5547,
+              5548,
+              5549,
+              5550,
+              5551,
+              5552,
+              5553,
+              5554,
+              5555,
+              5556,
+              5557,
+              5558,
+              5559
+            ],
+            "source_artifacts": [
+              "campaigns/evaluations/ec7f3d3a-1db0-4ec0-8521-1181b99ade8d/evaluation-ec7f3d3a-1db0-4ec0-8521-1181b99ade8d-m8-T8-checkpoint-115712-160ep-seed5400-0966cafc150f.json",
+              "campaigns/evaluations/ec7f3d3a-1db0-4ec0-8521-1181b99ade8d/evaluation-ec7f3d3a-1db0-4ec0-8521-1181b99ade8d-m8-T1-checkpoint-120832-160ep-seed5400-0966cafc150f.json"
+            ],
+            "success_delta_percent": -26.875
+          }
+        ],
+        "status": "completed",
+        "tool_provenance": null
+      },
+      "task_reference_contract": null
+    },
+    "failure": null,
+    "id": "M8",
+    "inquiry_id": "I3",
+    "kind": "measurement",
+    "progress": "completed",
+    "request": {
+      "measurement": {
+        "description": "Paired fresh 160-episode full-distribution diagnostic evaluation of T8 checkpoint-115712 and the restored T1 baseline.",
+        "measurements": [
+          {
+            "candidate": "T8:checkpoint-115712",
+            "episodes": 160,
+            "instrument": "research_evaluation",
+            "label": "T8 narrow in-band velocity shaping on fresh full-distribution panel",
+            "seed": 5400
+          },
+          {
+            "candidate": "T1:checkpoint-120832",
+            "episodes": 160,
+            "instrument": "research_evaluation",
+            "label": "paired restored T1 baseline on T8 panel",
+            "seed": 5400
+          }
+        ],
+        "paired_comparisons": [
+          {
+            "candidate": "T8:checkpoint-115712",
+            "reference": "T1:checkpoint-120832"
+          }
+        ],
+        "rationale": "T8 is the first stabilization recipe after T7 whose learning trajectory is sufficiently developed to nominate a candidate: checkpoint-115712 has the highest recorded T8 reward at 130.92, while terminal-checkpoint status is not privileged. Training facts do not establish development behavior. Evaluating T8:checkpoint-115712 against T1:checkpoint-120832 on identical fresh seeds will test whether low-weight velocity shaping confined to the 1 cm hold band reduces hold interruptions and high-velocity exits without increasing non-reaches, branch residuals, or inner-radius degradation. At least 157/160 with preserved diagnostics would support continuing toward official assessment; a lower result or tradeoff redirects the route."
+      }
+    },
+    "request_fingerprint": "1a98acdf9cf827ca9a8090f6f3f67deddf5262f131bd2c9f37a7a6d1e368c217",
+    "session_id": "S7",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T1:checkpoint-120832 remains the strongest evidence-backed development candidate at 155/160 on M5, with no formal model role. T5:checkpoint-120832 is rejected for the tested terminal action-damping recipe after M6 measured 98/160. T2, T3, and T4 remain rejected for their tested learning-degrading recipes. No candidate establishes the official 98% goal and no candidate is assigned a new formal role.",
     "completed_operations": [
@@ -12127,7 +13459,8 @@
       "E16",
       "T7",
       "E17",
-      "T8"
+      "T8",
+      "M8"
     ],
     "scientific_parent_commit": "2f09da9469c97faea804e6f723219a9949023054"
   },
