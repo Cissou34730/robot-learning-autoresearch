@@ -27,7 +27,7 @@ from contracts.task_spec import (
 )
 from robot_learning.scenario.observations import OBSERVATION_SIZE
 from robot_learning.scenario.policy_io import make_policy_io
-from robot_learning.training.reward import reach_reward
+from robot_learning.training.reward import minimum_branch_residual, reach_reward
 
 
 class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
@@ -69,6 +69,7 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
 
         self._step_count = 0
         self._previous_distance = 0.0
+        self._previous_branch_residual = 0.0
         self._held_steps = 0
         self._outside_after_hold = False
 
@@ -115,6 +116,9 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
 
         self._step_count = 0
         self._previous_distance = self._distance_to_target()
+        self._previous_branch_residual = minimum_branch_residual(
+            self.data.mocap_pos[0], self.data.qpos[:2]
+        )
         self._held_steps = 0
         self._outside_after_hold = False
         return self._observation(), {}
@@ -151,8 +155,16 @@ class TwoJointArmReachEnv(gym.Env[np.ndarray, np.ndarray]):
             previous_held_steps=previous_held_steps,
             hold_steps_required=self.hold_steps_required,
             penalize_outside=self._outside_after_hold,
+            previous_branch_residual=self._previous_branch_residual,
+            branch_residual=minimum_branch_residual(
+                self.data.mocap_pos[0], self.data.qpos[:2]
+            ),
+            qvel=self.data.qvel[:2],
         )
         self._previous_distance = distance
+        self._previous_branch_residual = minimum_branch_residual(
+            self.data.mocap_pos[0], self.data.qpos[:2]
+        )
 
         self._step_count += 1
         terminated = self._held_steps >= self.hold_steps_required
