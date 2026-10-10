@@ -27604,38 +27604,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "close",
-        "inquiry_id": "I14",
-        "outcome": "Positive for candidate-specific pre-constraint trajectory or branch representation error as the dominant mechanism; the plant-transient alternative remains a possible state-dependent contributor but is not the dominant explanation supported by the matched evidence.",
-        "reason": "M17 matched T3:checkpoint-120832 and T17:checkpoint-65536 on the fixed 160-episode panel. In discordant episode seed 4342, T3 was within tolerance at control step 17 with zero shoulder constraint force, reached 100 uninterrupted hold steps, and remained successful under active constraint. T17 was outside tolerance at step 17 before constraint activation, reached at step 18 with shoulder constraint force 4.6332 and positive shoulder-directed velocity 2.1851, then held only 3 steps with 121 interruptions. This separates the candidate trajectories before active force and satisfies I14's closure condition in favor of the representation or trajectory route. M10 and M13 still establish that shoulder-limit transients exist, and M14-M16 only reject the tested rescue recipes; neither result warrants claiming that all plant-side contributions are absent. The next campaign direction should therefore target policy representation, branch selection, or trajectory acquisition rather than another plant-rescue recipe."
-      },
-      "result": {
-        "action": "close",
-        "inquiry_id": "I14",
-        "outcome": "Positive for candidate-specific pre-constraint trajectory or branch representation error as the dominant mechanism; the plant-transient alternative remains a possible state-dependent contributor but is not the dominant explanation supported by the matched evidence.",
-        "reason": "M17 matched T3:checkpoint-120832 and T17:checkpoint-65536 on the fixed 160-episode panel. In discordant episode seed 4342, T3 was within tolerance at control step 17 with zero shoulder constraint force, reached 100 uninterrupted hold steps, and remained successful under active constraint. T17 was outside tolerance at step 17 before constraint activation, reached at step 18 with shoulder constraint force 4.6332 and positive shoulder-directed velocity 2.1851, then held only 3 steps with 121 interruptions. This separates the candidate trajectories before active force and satisfies I14's closure condition in favor of the representation or trajectory route. M10 and M13 still establish that shoulder-limit transients exist, and M14-M16 only reject the tested rescue recipes; neither result warrants claiming that all plant-side contributions are absent. The next campaign direction should therefore target policy representation, branch selection, or trajectory acquisition rather than another plant-rescue recipe.",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E56",
-    "inquiry_id": "I14",
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "close",
-        "outcome": "Positive for candidate-specific pre-constraint trajectory or branch representation error as the dominant mechanism; the plant-transient alternative remains a possible state-dependent contributor but is not the dominant explanation supported by the matched evidence.",
-        "reason": "M17 matched T3:checkpoint-120832 and T17:checkpoint-65536 on the fixed 160-episode panel. In discordant episode seed 4342, T3 was within tolerance at control step 17 with zero shoulder constraint force, reached 100 uninterrupted hold steps, and remained successful under active constraint. T17 was outside tolerance at step 17 before constraint activation, reached at step 18 with shoulder constraint force 4.6332 and positive shoulder-directed velocity 2.1851, then held only 3 steps with 121 interruptions. This separates the candidate trajectories before active force and satisfies I14's closure condition in favor of the representation or trajectory route. M10 and M13 still establish that shoulder-limit transients exist, and M14-M16 only reject the tested rescue recipes; neither result warrants claiming that all plant-side contributions are absent. The next campaign direction should therefore target policy representation, branch selection, or trajectory acquisition rather than another plant-rescue recipe."
-      }
-    },
-    "request_fingerprint": "c796834ea4b328c8d3ddd3312b96a04c4923ffa1747b65d24ebb97c55e3a024b",
-    "session_id": "S29",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "No candidate is assigned working, best-known, or retained status. T3:checkpoint-120832 remains the strongest development-evaluated reference at 153/160. T17:checkpoint-65536 is an evaluated limited-negative candidate at 152/160; training statistics do not establish candidate adequacy or a role.",
     "completed_operations": [
