@@ -11,6 +11,12 @@ LIMIT_BRAKE_BLEND = 0.08
 POSITION_GAIN = np.array([1.4, 1.0], dtype=np.float64)
 VELOCITY_GAIN = np.array([0.12, 0.08], dtype=np.float64)
 LIMIT_MARGIN = np.deg2rad(8.0)
+TARGET_LIMIT_MARGIN = np.deg2rad(18.0)
+ACQUISITION_DISTANCE = 0.025
+ACQUISITION_BLEND = 0.25
+HOLD_BLEND = 0.08
+NEAR_LIMIT_POSITION_GAIN = np.array([1.0, 0.7], dtype=np.float64)
+NEAR_LIMIT_VELOCITY_GAIN = np.array([0.10, 0.08], dtype=np.float64)
 
 
 def wrap_to_pi(angle: float) -> float:
@@ -67,6 +73,49 @@ def select_branch_target(target_position: np.ndarray) -> np.ndarray:
 
 def _smoothstep(phase: float) -> float:
     return phase * phase * (3.0 - 2.0 * phase)
+
+
+def near_limit_acquisition_action(data, action: np.ndarray) -> np.ndarray:
+    """Preserve direct actions while guarding an admissible limit-near branch."""
+    target = select_branch_target(np.asarray(data.mocap_pos[0]))
+    if abs(target[0]) < JOINT_LIMIT - TARGET_LIMIT_MARGIN:
+        return np.clip(np.asarray(action, dtype=np.float64), -1.0, 1.0)
+
+    qpos = np.asarray(data.qpos[:2], dtype=np.float64)
+    qvel = np.asarray(data.qvel[:2], dtype=np.float64)
+    distance = float(
+        np.linalg.norm(
+            data.site("end_effector").xpos - np.asarray(data.mocap_pos[0])
+        )
+    )
+    acquisition_weight = np.clip(
+        (distance - 0.01) / (ACQUISITION_DISTANCE - 0.01),
+        0.0,
+        1.0,
+    )
+    branch_error = np.asarray(
+        [wrap_to_pi(float(target[index] - qpos[index])) for index in range(2)],
+        dtype=np.float64,
+    )
+    reference_action = (
+        NEAR_LIMIT_POSITION_GAIN * branch_error
+        - NEAR_LIMIT_VELOCITY_GAIN * qvel
+    )
+    blend = HOLD_BLEND + (ACQUISITION_BLEND - HOLD_BLEND) * acquisition_weight
+    guided = (1.0 - blend) * np.asarray(action, dtype=np.float64) + blend * np.clip(
+        reference_action,
+        -1.0,
+        1.0,
+    )
+
+    near_limit = abs(qpos[0]) >= JOINT_LIMIT - LIMIT_MARGIN
+    moving_outward = qpos[0] * qvel[0] > 0.0
+    if near_limit and moving_outward:
+        guided[0] -= np.sign(qpos[0]) * LIMIT_BRAKE_BLEND * min(
+            abs(qvel[0]),
+            1.0,
+        )
+    return np.clip(guided, -1.0, 1.0)
 
 
 def guided_action(data, action: np.ndarray, step_count: int) -> np.ndarray:
