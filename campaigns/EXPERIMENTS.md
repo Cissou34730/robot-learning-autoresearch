@@ -100,3 +100,4 @@
 | E60 | inquiry | I15 | completed |
 | E61 | checkpoint | I15 | checkpointed |
 | M19 | measurement | I15 | completed |
+| M20 | measurement | I15 | completed |
