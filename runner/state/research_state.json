@@ -14430,52 +14430,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "set_best_known",
-        "candidate_id": "T9:checkpoint-110592",
-        "evidence": [
-          "M9",
-          "E19"
-        ],
-        "reason": "M9 is the strongest completed development evidence: T9 achieved 158/160 successes (98.75%) on a fresh full-distribution panel versus 155/160 for paired T1, with three net paired wins, no observed hold interruptions, and no observed inner-radius failures. This establishes T9 as best-known without treating development performance as official success."
-      },
-      "publication": {
-        "destination": "campaigns/checkpoints/retained/ec7f3d3a-1db0-4ec0-8521-1181b99ade8d/t9-c720dc389-15d77d8d5b8483d3b0daa79bcf07ee7073af8f7bb56274e6e539030e4c7ec193",
-        "fingerprint": "15d77d8d5b8483d3b0daa79bcf07ee7073af8f7bb56274e6e539030e4c7ec193",
-        "source": "campaigns/checkpoints/candidates/ec7f3d3a-1db0-4ec0-8521-1181b99ade8d/t9/checkpoint-110592"
-      },
-      "result": {
-        "action": "set_best_known",
-        "candidate": "T9:checkpoint-110592",
-        "evidence": [
-          "M9",
-          "E19"
-        ],
-        "status": "assigned"
-      }
-    },
-    "failure": null,
-    "id": "E21",
-    "inquiry_id": null,
-    "kind": "model_role",
-    "progress": "completed",
-    "request": {
-      "model_role": {
-        "action": "set_best_known",
-        "candidate": "T9:checkpoint-110592",
-        "evidence": [
-          "M9",
-          "E19"
-        ],
-        "reason": "M9 is the strongest completed development evidence: T9 achieved 158/160 successes (98.75%) on a fresh full-distribution panel versus 155/160 for paired T1, with three net paired wins, no observed hold interruptions, and no observed inner-radius failures. This establishes T9 as best-known without treating development performance as official success."
-      }
-    },
-    "request_fingerprint": "9d39ea8374f511b195f11c7048996e8882907bb5467c3848f4e3d6c089925a01",
-    "session_id": "S8",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T9:checkpoint-110592 is the strongest evidence-backed candidate at 158/160 on M9 but has no formal role yet. T1:checkpoint-120832 remains the restored baseline at 155/160 on M9 and is not best-known after T9's improvement. T6, T7, and T8 are rejected for their tested recipes. No candidate has established the official goal and no candidate is formally assigned best-known, working, or retained status.",
     "completed_operations": [
