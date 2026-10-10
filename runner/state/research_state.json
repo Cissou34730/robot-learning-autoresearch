@@ -20687,47 +20687,7 @@
       "supersedes": null
     }
   ],
-  "pending_operation": {
-    "data": {
-      "plan": {
-        "action": "open",
-        "inquiry": {
-          "closure_condition": "Close after a completed same-panel trajectory and plant-diagnostic measurement identifies whether the residual failures carry a shoulder-limit transient signature, or shows that they do not; if a limit signature is present, close only after a bounded plant-aware candidate comparison tests recovery against T3's complete-hold baseline, otherwise close with the corresponding redirected policy-development conclusion.",
-          "goal_connection": "The current best development behavior is 153/160 successes, below the 98% objective, with four acquisition failures and three interrupted-hold failures concentrated near negative-angle shoulder-limit targets. Resolving their cause is necessary to choose a plant-aware rescue that can raise success without sacrificing the complete-hold behavior already established by T3.",
-          "handoff_conclusion": "T2 established that broader radius coverage improved development success from 110/160 to 150/160, and T3 improved it to 153/160 through a near-target joint-velocity penalty, with both acquisition and hold rescues. M4 localized the remaining failures to approximately -130 to -151 degree targets at the shoulder limit, with small selected/open-branch error and large alternate-branch error. M5, M6, M7, and M9 matched T3 for their tested branch-limit, braking, explicit-trajectory, and direct-action near-limit recipes; M8 regressed to 100/160 for its tested residual-setpoint feedback recipe. M10 established that the compiled shoulder limit produces a real plant interaction, while M11 showed that its tested state-triggered soft-limit impedance regressed to 147/160 versus T3 at 153/160; this rejects that compensation recipe, not all plant-aware mechanisms. M12 then tested a different policy-state and branch-transition implementation trained from T3: T14:checkpoint-100352 matched T3 at 153/160 with zero discordant episodes. It preserved complete success but recovered none of the required recurring failures. Therefore I10 is a limited negative result for the tested stateful branch-transition intervention, while the broader state-aware method and alternative plant-aware mechanisms remain untested.",
-          "handoff_question": "Can trajectory-level plant diagnostics distinguish whether T3's residual negative-angle failures are caused by shoulder-limit transients rather than candidate-specific policy error, and identify a rescue mechanism that preserves T3's complete-hold baseline?",
-          "handoff_source_session_id": "S21",
-          "id": "I11",
-          "opened_in_session": "S22",
-          "question": "Can trajectory-level plant diagnostics distinguish whether T3's residual negative-angle failures are caused by shoulder-limit transients rather than candidate-specific policy error, and identify a rescue mechanism that preserves T3's complete-hold baseline?",
-          "rationale": "M10 measured real shoulder-limit constraint force and joint-position overshoot beyond the declared limit, supporting a plant interaction but not proving it causes policy failures. M12 preserved T3's 153/160 result with zero discordant episodes, rejecting the tested stateful branch-transition recipe but not the broader plant-aware explanation. Its episode diagnostics localize the residual failures but contain no trajectory-level q, qdot, action, or limit-force history, so the causal distinction remains unresolved.",
-          "reframes": []
-        }
-      },
-      "result": {
-        "action": "open",
-        "inquiry_id": "I11",
-        "status": "completed"
-      }
-    },
-    "failure": null,
-    "id": "E42",
-    "inquiry_id": null,
-    "kind": "inquiry",
-    "progress": "completed",
-    "request": {
-      "inquiry": {
-        "action": "open",
-        "closure_condition": "Close after a completed same-panel trajectory and plant-diagnostic measurement identifies whether the residual failures carry a shoulder-limit transient signature, or shows that they do not; if a limit signature is present, close only after a bounded plant-aware candidate comparison tests recovery against T3's complete-hold baseline, otherwise close with the corresponding redirected policy-development conclusion.",
-        "goal_connection": "The current best development behavior is 153/160 successes, below the 98% objective, with four acquisition failures and three interrupted-hold failures concentrated near negative-angle shoulder-limit targets. Resolving their cause is necessary to choose a plant-aware rescue that can raise success without sacrificing the complete-hold behavior already established by T3.",
-        "question": "Can trajectory-level plant diagnostics distinguish whether T3's residual negative-angle failures are caused by shoulder-limit transients rather than candidate-specific policy error, and identify a rescue mechanism that preserves T3's complete-hold baseline?",
-        "rationale": "M10 measured real shoulder-limit constraint force and joint-position overshoot beyond the declared limit, supporting a plant interaction but not proving it causes policy failures. M12 preserved T3's 153/160 result with zero discordant episodes, rejecting the tested stateful branch-transition recipe but not the broader plant-aware explanation. Its episode diagnostics localize the residual failures but contain no trajectory-level q, qdot, action, or limit-force history, so the causal distinction remains unresolved."
-      }
-    },
-    "request_fingerprint": "fc0b98293a0c04cfe56a1fb8315b51075dc444fed6992e7b3db5cde935ff8150",
-    "session_id": "S22",
-    "supersedes": null
-  },
+  "pending_operation": null,
   "pi_checkpoint": {
     "candidates_and_roles": "T3:checkpoint-120832 remains the strongest development-evaluated candidate at 153/160 and the reference used in M12. T14:checkpoint-100352 matched T3 at 153/160 in M12 and is not assigned a role. T13:checkpoint-115712 regressed to 147/160 in M11 and is not assigned a role. No candidate is assigned working, best-known, or retained status.",
     "completed_operations": [
