@@ -17,8 +17,7 @@ PROGRESS_COEFFICIENT = 10.0
 CLOSENESS_COEFFICIENT = 4.0
 CLOSENESS_LENGTH_SCALE = 0.05
 ACTION_COST_COEFFICIENT = 0.01
-VELOCITY_COST_COEFFICIENT = 0.1
-VELOCITY_COST_RADIUS = 0.03
+VELOCITY_COST_COEFFICIENT = 0.005
 HOLD_PROGRESS_BONUS = 50.0
 HOLD_PROGRESS_EXPONENT = 1.0
 HOLD_EXIT_FORFEIT_FRACTION = 0.0
@@ -101,7 +100,7 @@ def reach_reward(
     velocity_cost = 0.0
     if (
         end_effector_speed is not None
-        and current_distance <= VELOCITY_COST_RADIUS
+        and current_distance <= success_threshold
     ):
         velocity_cost = -VELOCITY_COST_COEFFICIENT * float(end_effector_speed**2)
     reward += velocity_cost
