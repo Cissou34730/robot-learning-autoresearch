@@ -1,16 +1,5 @@
 {
-  "active_inquiry": {
-    "closure_condition": "Close the inquiry after a fresh trained candidate is evaluated on a held-out panel with radius-stratified success, branch residuals, reach-versus-hold failure classes, first-reach velocity, and action diagnostics. A candidate reaching at least 98% with no demonstrated inner-radius degradation supports official-assessment readiness; otherwise record the measured failure mechanism and whether terminal damping is rejected or requires revision.",
-    "goal_connection": "The current best development candidate is five successes short of the 196/200 official threshold. Baseline failures include saturated non-reaches and a high-velocity hold interruption, so reducing control effort specifically during terminal approach and hold may close the gap without changing the official task or removing inner-radius coverage.",
-    "handoff_conclusion": "M2 supports adequate actuator authority and passive settling, weakening insufficient authority and persistent free-motion instability as leading explanations. M4 and M5 establish that the restored T1 baseline has distinct reach and hold failures: on the M5 paired panel it achieved 155/160, with four non-reaches and one hold interruption. The four non-reaches occurred across 11.14-17.99 cm, remained closest to the open branch with final best-branch residuals of about 0.12-0.19 rad, and reached max_abs_action=1.0; the hold interruption occurred at 17.37 cm with high first-reach end-effector speed. This supports approach-state stabilization as a consequential hypothesis, but does not establish that action damping will improve learning. The prior T2 result is limited to its combined branch-residual and near-target-velocity reward implementation, which degraded learning to 81.875% and 81.25%; it does not invalidate terminal damping as a separate method. I correct the inherited claim that inner-workspace coverage is currently absent: the restored T1 training environment samples the full 0.06-0.20 m official radius range, and the M5 failures do not cluster exclusively below 14 cm. T3 and T4 remain rejected as learning-degrading recipes, without resolving all remaining reach-generation mechanisms.",
-    "handoff_question": "Can a single-factor terminal action-damping intervention, with the restored T1 full-radius training distribution and unchanged observations and task semantics, raise held-out success from 96.875% to at least 98% without sacrificing inner-radius performance, as shown by branch-aware reach and uninterrupted-hold diagnostics?",
-    "handoff_source_session_id": "S4",
-    "id": "I2",
-    "opened_in_session": "S4",
-    "question": "Can a single-factor terminal action-damping intervention, with the restored T1 full-radius training distribution and unchanged observations and task semantics, raise held-out success from 96.875% to at least 98% without sacrificing inner-radius performance, as shown by branch-aware reach and uninterrupted-hold diagnostics?",
-    "rationale": "The inherited inner-coverage premise is outdated for the restored T1 recipe: robot_learning/training/environment.py currently samples the full official 0.06-0.20 m radius range, and M5 failures span 11.14-17.99 cm rather than clustering below 14 cm. M5 shows four non-reaches with max_abs_action=1.0 and open-branch residuals of 0.12-0.19 rad, plus one hold interruption at 17.37 cm entering with high end-effector speed. M2 weakens insufficient authority as a general explanation, while T2's combined branch-residual and near-target-velocity recipe degraded learning; a narrowly scoped terminal action-damping change tests approach stabilization without repeating that confounded recipe.",
-    "reframes": []
-  },
+  "active_inquiry": null,
   "campaign": {
     "base_commit": "750df697358f311c6fc98151715d3b2d963e98fe",
     "id": "ec7f3d3a-1db0-4ec0-8521-1181b99ade8d",
@@ -4112,7 +4101,7 @@
     }
   },
   "counters": {
-    "event": 10,
+    "event": 11,
     "inquiry": 2,
     "measurement": 6,
     "session": 5,
@@ -7660,9 +7649,63 @@
       "status": "completed",
       "superseded_by": null,
       "supersedes": null
+    },
+    {
+      "completed_at": "2026-10-10T06:55:13Z",
+      "error": null,
+      "id": "E11",
+      "inquiry_id": "I2",
+      "kind": "inquiry",
+      "request": {
+        "action": "close",
+        "outcome": "limited_negative",
+        "reason": "M6 satisfies the I2 closure condition but rejects the tested single-factor terminal action-damping recipe. On the matched fresh 160-episode panel, T5 achieved 98/160 successes (61.25%) versus restored T1 at 154/160 (96.25%), with a paired delta of -35 percentage points and candidate wins 3 to 59. The diagnostic mechanism is a reach-generation failure, not an improved hold tail: T5 had 60 non-reaches and 2 hold interruptions, while T1 had 2 non-reaches and 4 hold interruptions. T5 non-reaches occurred across the full sampled radius span including inner and outer targets, retained max_abs_action=1.0, and showed large branch residuals; its two hold interruptions were at 15.48 cm and 19.69 cm. Therefore this implementation's terminal action cost worsened policy optimization or saturated reach generation and did not preserve inner-radius performance. The result rejects this damping recipe and does not invalidate the broader approach-stabilization hypothesis or other less confounded interventions."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I2",
+        "outcome": "limited_negative",
+        "reason": "M6 satisfies the I2 closure condition but rejects the tested single-factor terminal action-damping recipe. On the matched fresh 160-episode panel, T5 achieved 98/160 successes (61.25%) versus restored T1 at 154/160 (96.25%), with a paired delta of -35 percentage points and candidate wins 3 to 59. The diagnostic mechanism is a reach-generation failure, not an improved hold tail: T5 had 60 non-reaches and 2 hold interruptions, while T1 had 2 non-reaches and 4 hold interruptions. T5 non-reaches occurred across the full sampled radius span including inner and outer targets, retained max_abs_action=1.0, and showed large branch residuals; its two hold interruptions were at 15.48 cm and 19.69 cm. Therefore this implementation's terminal action cost worsened policy optimization or saturated reach generation and did not preserve inner-radius performance. The result rejects this damping recipe and does not invalidate the broader approach-stabilization hypothesis or other less confounded interventions.",
+        "status": "completed"
+      },
+      "session_id": "S5",
+      "status": "completed",
+      "superseded_by": null,
+      "supersedes": null
     }
   ],
-  "pending_operation": null,
+  "pending_operation": {
+    "data": {
+      "plan": {
+        "action": "close",
+        "inquiry_id": "I2",
+        "outcome": "limited_negative",
+        "reason": "M6 satisfies the I2 closure condition but rejects the tested single-factor terminal action-damping recipe. On the matched fresh 160-episode panel, T5 achieved 98/160 successes (61.25%) versus restored T1 at 154/160 (96.25%), with a paired delta of -35 percentage points and candidate wins 3 to 59. The diagnostic mechanism is a reach-generation failure, not an improved hold tail: T5 had 60 non-reaches and 2 hold interruptions, while T1 had 2 non-reaches and 4 hold interruptions. T5 non-reaches occurred across the full sampled radius span including inner and outer targets, retained max_abs_action=1.0, and showed large branch residuals; its two hold interruptions were at 15.48 cm and 19.69 cm. Therefore this implementation's terminal action cost worsened policy optimization or saturated reach generation and did not preserve inner-radius performance. The result rejects this damping recipe and does not invalidate the broader approach-stabilization hypothesis or other less confounded interventions."
+      },
+      "result": {
+        "action": "close",
+        "inquiry_id": "I2",
+        "outcome": "limited_negative",
+        "reason": "M6 satisfies the I2 closure condition but rejects the tested single-factor terminal action-damping recipe. On the matched fresh 160-episode panel, T5 achieved 98/160 successes (61.25%) versus restored T1 at 154/160 (96.25%), with a paired delta of -35 percentage points and candidate wins 3 to 59. The diagnostic mechanism is a reach-generation failure, not an improved hold tail: T5 had 60 non-reaches and 2 hold interruptions, while T1 had 2 non-reaches and 4 hold interruptions. T5 non-reaches occurred across the full sampled radius span including inner and outer targets, retained max_abs_action=1.0, and showed large branch residuals; its two hold interruptions were at 15.48 cm and 19.69 cm. Therefore this implementation's terminal action cost worsened policy optimization or saturated reach generation and did not preserve inner-radius performance. The result rejects this damping recipe and does not invalidate the broader approach-stabilization hypothesis or other less confounded interventions.",
+        "status": "completed"
+      }
+    },
+    "failure": null,
+    "id": "E11",
+    "inquiry_id": "I2",
+    "kind": "inquiry",
+    "progress": "completed",
+    "request": {
+      "inquiry": {
+        "action": "close",
+        "outcome": "limited_negative",
+        "reason": "M6 satisfies the I2 closure condition but rejects the tested single-factor terminal action-damping recipe. On the matched fresh 160-episode panel, T5 achieved 98/160 successes (61.25%) versus restored T1 at 154/160 (96.25%), with a paired delta of -35 percentage points and candidate wins 3 to 59. The diagnostic mechanism is a reach-generation failure, not an improved hold tail: T5 had 60 non-reaches and 2 hold interruptions, while T1 had 2 non-reaches and 4 hold interruptions. T5 non-reaches occurred across the full sampled radius span including inner and outer targets, retained max_abs_action=1.0, and showed large branch residuals; its two hold interruptions were at 15.48 cm and 19.69 cm. Therefore this implementation's terminal action cost worsened policy optimization or saturated reach generation and did not preserve inner-radius performance. The result rejects this damping recipe and does not invalidate the broader approach-stabilization hypothesis or other less confounded interventions."
+      }
+    },
+    "request_fingerprint": "a7fc39c68e08062be4e3d77a47b2b3ef33b9dce53c0836475a555b380a722e81",
+    "session_id": "S5",
+    "supersedes": null
+  },
   "pi_checkpoint": {
     "candidates_and_roles": "T1:checkpoint-120832 remains the strongest measured development candidate at 96.875% on M5 and has no formal model role. T2 checkpoints are rejected for the tested combined reward recipe; T3 and T4 are rejected as learning-degrading recipes. No candidate establishes the official 98% goal, and no new candidate is assigned a role in this goal-review checkpoint.",
     "completed_operations": [
@@ -7705,7 +7748,8 @@
     "objective": "Advance I2 toward an evidence-supported answer to its scientific question: Can a single-factor terminal action-damping intervention, with the restored T1 full-radius training distribution and unchanged observations and task semantics, raise held-out success from 96.875% to at least 98% without sacrificing inner-radius performance, as shown by branch-aware reach and uninterrupted-hold diagnostics? Before choosing the next action, compare the accumulated evidence with the closure condition. Choose the supported operation that best advances the bounded work; no operation is the default. Close the inquiry when the condition is met.",
     "operation_ids": [
       "T5",
-      "M6"
+      "M6",
+      "E11"
     ],
     "scientific_parent_commit": "87d96386e3ee2d9973bee45126e14542f6a4affc"
   },
