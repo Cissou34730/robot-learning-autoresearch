@@ -73,3 +73,4 @@
 | E43 | checkpoint | - | checkpointed |
 | M13 | measurement | I11 | completed |
 | T15 | training | I11 | completed |
+| M14 | measurement | I11 | completed |
